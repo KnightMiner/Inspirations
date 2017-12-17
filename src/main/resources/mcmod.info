@@ -1,0 +1,16 @@
+[
+  {
+    "modid": "inspirations",
+    "name": "Inspirations",
+    "description": "Adds many small features with a vareity of inspirations.",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "",
+    "updateUrl": "",
+    "authorList": ["KnightMiner"],
+    "credits": "",
+    "logoFile": "",
+    "screenshots": [],
+    "dependencies": ["mantle"]
+  }
+]

@@ -1,0 +1,5 @@
+{
+  "conditions": {
+    "pulse_loaded": "knightminer.inspirations.common.Config$PulseLoaded"
+  }
+}
