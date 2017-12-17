@@ -1,0 +1,25 @@
+{
+  "conditions": [
+    {
+      "type": "pulse_loaded",
+      "pulse": "InspirationsRedstone"
+    }
+  ],
+  "result": {
+    "item": "inspirations:torch_lever",
+    "data": 0
+  },
+  "pattern": [
+    "T",
+    "S"
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "S": {
+      "item": "minecraft:cobblestone"
+    },
+    "T": {
+      "item": "minecraft:torch"
+    }
+  }
+}

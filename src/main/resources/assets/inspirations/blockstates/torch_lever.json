@@ -1,0 +1,15 @@
+{
+  "forge_marker": 1,
+  "variants": {
+    "side": {
+      "east":  {},
+      "south": { "y":  90 },
+      "west":  { "y": 180 },
+      "north": { "y": 270 }
+    },
+    "powered": {
+      "true":  { "model": "inspirations:torch_lever" },
+      "false": { "model": "normal_torch" }
+    }
+  }
+}
