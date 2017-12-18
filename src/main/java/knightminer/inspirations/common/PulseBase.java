@@ -5,6 +5,7 @@ import java.util.Locale;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.library.Util;
+import knightminer.inspirations.redstone.InspirationsRedstone;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.item.Item;
@@ -27,6 +28,7 @@ public class PulseBase {
 		return Inspirations.pulseManager.isPulseLoaded(InspirationsRedstone.pulseID);
 	}
 
+
 	/* Normal registration */
 	protected static <T extends Block> T registerBlock(IForgeRegistry<Block> registry, T block, String name) {
 		if(!name.equals(name.toLowerCase(Locale.US))) {
@@ -41,61 +43,6 @@ public class PulseBase {
 		return block;
 	}
 
-	protected static <E extends Enum<E> & EnumBlock.IEnumMeta & IStringSerializable> BlockStairsBase registerBlockStairsFrom(
-			IForgeRegistry<Block> registry, EnumBlock<E> block, E value, String name) {
-		return registerBlock(registry, new BlockStairsBase(block.getDefaultState().withProperty(block.prop, value)),
-				name);
-	}
-
-	protected static <T extends Block> T registerItemBlock(IForgeRegistry<Item> registry, T block) {
-
-		ItemBlock itemBlock = new ItemBlockMeta(block);
-
-		itemBlock.setUnlocalizedName(block.getUnlocalizedName());
-
-		register(registry, itemBlock, block.getRegistryName());
-		return block;
-	}
-
-	protected static <T extends EnumBlock<?>> T registerEnumItemBlock(IForgeRegistry<Item> registry, T block) {
-		ItemBlock itemBlock = new ItemBlockMeta(block);
-
-		itemBlock.setUnlocalizedName(block.getUnlocalizedName());
-
-		register(registry, itemBlock, block.getRegistryName());
-		ItemBlockMeta.setMappingProperty(block, block.prop);
-		return block;
-	}
-
-	@SuppressWarnings("unchecked")
-	protected static <T extends Block> T registerItemBlock(IForgeRegistry<Item> registry, ItemBlock itemBlock) {
-		itemBlock.setUnlocalizedName(itemBlock.getBlock().getUnlocalizedName());
-
-		register(registry, itemBlock, itemBlock.getBlock().getRegistryName());
-		return (T) itemBlock.getBlock();
-	}
-
-	protected static ItemBlockMeta registerItemBlock(IForgeRegistry<Item> registry, Block block,
-			IProperty<?> property) {
-		ItemBlockMeta itemBlock = new ItemBlockMeta(block);
-		itemBlock.setUnlocalizedName(itemBlock.getBlock().getUnlocalizedName());
-
-		register(registry, itemBlock, itemBlock.getBlock().getRegistryName());
-		ItemBlockMeta.setMappingProperty(itemBlock.getBlock(), property);
-		return itemBlock;
-	}
-
-	protected static <T extends EnumBlockSlab<?>> T registerEnumItemBlockSlab(IForgeRegistry<Item> registry, T block) {
-		@SuppressWarnings({"unchecked", "rawtypes"})
-		ItemBlock itemBlock = new ItemBlockSlab(block);
-
-		itemBlock.setUnlocalizedName(block.getUnlocalizedName());
-
-		register(registry, itemBlock, block.getRegistryName());
-		ItemBlockMeta.setMappingProperty(block, block.prop);
-		return block;
-	}
-
 	/**
 	 * Sets the correct unlocalized name and registers the item.
 	 */
@@ -104,26 +51,61 @@ public class PulseBase {
 			throw new IllegalArgumentException(
 					String.format("Unlocalized names need to be all lowercase! Item: %s", name));
 		}
-
 		item.setUnlocalizedName(Util.prefix(name));
-		item.setRegistryName(Util.getResource(name));
-		registry.register(item);
+
+		register(registry, item, name);
 		return item;
 	}
 
-	protected static <T extends IForgeRegistryEntry<T>> T register(IForgeRegistry<T> registry, T thing, String name) {
-		thing.setRegistryName(Util.getResource(name));
-		registry.register(thing);
-		return thing;
+	// stairs
+	protected static <E extends Enum<E> & EnumBlock.IEnumMeta & IStringSerializable> BlockStairsBase registerBlockStairsFrom(
+			IForgeRegistry<Block> registry, EnumBlock<E> block, E value, String name) {
+		return registerBlock(registry, new BlockStairsBase(block.getDefaultState().withProperty(block.prop, value)), name);
 	}
 
-	protected static <T extends IForgeRegistryEntry<T>> T register(IForgeRegistry<T> registry, T thing,
-			ResourceLocation name) {
+
+	/* Itemblocks */
+	protected static ItemBlockMeta registerItemBlock(IForgeRegistry<Item> registry, Block block) {
+		return registerItemBlock(registry, new ItemBlockMeta(block));
+	}
+
+	protected static ItemBlockMeta registerEnumItemBlock(IForgeRegistry<Item> registry, EnumBlock<?> block) {
+		return registerItemBlock(registry, block, block.prop);
+	}
+
+	protected static <T extends ItemBlockMeta> T registerItemBlock(IForgeRegistry<Item> registry, T itemBlock, IProperty<?> property) {
+		registerItemBlock(registry, itemBlock);
+		ItemBlockMeta.setMappingProperty(itemBlock.getBlock(), property);
+		return itemBlock;
+	}
+
+	protected static <T extends ItemBlock> T registerItemBlock(IForgeRegistry<Item> registry, T itemBlock) {
+		itemBlock.setUnlocalizedName(itemBlock.getBlock().getUnlocalizedName());
+		register(registry, itemBlock, itemBlock.getBlock().getRegistryName());
+		return itemBlock;
+	}
+
+	protected static ItemBlockMeta registerItemBlock(IForgeRegistry<Item> registry, Block block, IProperty<?> property) {
+		return registerItemBlock(registry, new ItemBlockMeta(block), property);
+	}
+
+	protected static <T extends Enum<T> &EnumBlock.IEnumMeta & IStringSerializable> ItemBlockSlab<T> registerEnumItemBlockSlab(IForgeRegistry<Item> registry, EnumBlockSlab<T> block) {
+		return registerItemBlock(registry, new ItemBlockSlab<T>(block), block.prop);
+	}
+
+	/* Base methods */
+	protected static <T extends IForgeRegistryEntry<T>> T register(IForgeRegistry<T> registry, T thing, String name) {
+		return register(registry, thing, Util.getResource(name));
+	}
+
+	protected static <T extends IForgeRegistryEntry<T>> T register(IForgeRegistry<T> registry, T thing, ResourceLocation name) {
 		thing.setRegistryName(name);
 		registry.register(thing);
 		return thing;
 	}
 
+
+	/* Tile Entity */
 	protected static void registerTE(Class<? extends TileEntity> teClazz, String name) {
 		if(!name.equals(name.toLowerCase(Locale.US))) {
 			throw new IllegalArgumentException(
