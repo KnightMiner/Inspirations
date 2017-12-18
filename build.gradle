@@ -51,7 +51,7 @@ repositories {
 }
 
 dependencies {
-    deobfCompile "mezz.jei:jei_${config.minecraft_base_version}:${config.jei_version}"
+    deobfCompile "mezz.jei:jei_${config.minecraft_version}:${config.jei_version}"
     deobfCompile "slimeknights.mantle:Mantle:${config.minecraft_base_version}-${config.mantle_version}"
 }
 

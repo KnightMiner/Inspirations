@@ -1,4 +1,30 @@
 
 
+# Building
+tile.inspirations.bookshelf.normal.name=Bookshelf
+tile.inspirations.bookshelf.rainbow.name=Rainbow Bookshelf
+tile.inspirations.bookshelf.ancient.name=Ancient Bookshelf
+tile.inspirations.bookshelf.tomes.name=Tomes Bookshelf
+
+item.inspirations.books.white.name=White Book
+item.inspirations.books.orange.name=Orange Book
+item.inspirations.books.magenta.name=Magenta Book
+item.inspirations.books.light_blue.name=Light Blue Book
+item.inspirations.books.yellow.name=Yellow Book
+item.inspirations.books.lime.name=Lime Book
+item.inspirations.books.pink.name=Pink Book
+item.inspirations.books.gray.name=Gray Book
+item.inspirations.books.silver.name=Light Gray Book
+item.inspirations.books.cyan.name=Cyan Book
+item.inspirations.books.purple.name=Purple Book
+item.inspirations.books.blue.name=Blue Book
+item.inspirations.books.brown.name=Brown Book
+item.inspirations.books.green.name=Green Book
+item.inspirations.books.red.name=Red Book
+item.inspirations.books.black.name=Black Book
+
+
 # Redstone
 tile.inspirations.torch_lever.name=Torch Lever
+
+item.inspirations.books.redstone.name=Trapped Book

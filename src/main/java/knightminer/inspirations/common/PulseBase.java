@@ -2,6 +2,8 @@ package knightminer.inspirations.common;
 
 import java.util.Locale;
 
+import knightminer.inspirations.Inspirations;
+import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.library.Util;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
@@ -20,6 +22,11 @@ import slimeknights.mantle.item.ItemBlockMeta;
 import slimeknights.mantle.item.ItemBlockSlab;
 
 public class PulseBase {
+	/* Loaded */
+	protected boolean isRedstoneLoaded() {
+		return Inspirations.pulseManager.isPulseLoaded(InspirationsRedstone.pulseID);
+	}
+
 	/* Normal registration */
 	protected static <T extends Block> T registerBlock(IForgeRegistry<Block> registry, T block, String name) {
 		if(!name.equals(name.toLowerCase(Locale.US))) {
@@ -123,6 +130,6 @@ public class PulseBase {
 					String.format("Unlocalized names need to be all lowercase! TE: %s", name));
 		}
 
-		GameRegistry.registerTileEntity(teClazz, Util.prefix(name));
+		GameRegistry.registerTileEntity(teClazz, Util.resource(name));
 	}
 }

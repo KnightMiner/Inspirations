@@ -3,7 +3,9 @@ package knightminer.inspirations;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.common.Config;
+import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.redstone.InspirationsRedstone;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -33,11 +35,14 @@ public class Inspirations {
 
 	static {
 		pulseManager.registerPulse(new InspirationsRedstone());
+		pulseManager.registerPulse(new InspirationsBuilding());
 	}
 
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		Config.load(event);
 		NetworkRegistry.INSTANCE.registerGuiHandler(instance, guiHandler);
+
+		InspirationsNetwork.instance.setup();
 	}
 }

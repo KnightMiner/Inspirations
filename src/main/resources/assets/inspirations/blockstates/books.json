@@ -1,0 +1,31 @@
+{
+    "forge_marker": 1,
+    "defaults": {
+        "transform": "forge:default-item",
+        "model": "forge:item-layer",
+        "textures": {
+          "layer0": "inspirations:items/book_cover",
+          "layer1": "inspirations:items/book_pages"
+        }
+    },
+    "variants": {
+        "white": [{}],
+        "orange": [{}],
+        "magenta": [{}],
+        "light_blue": [{}],
+        "yellow": [{}],
+        "lime": [{}],
+        "pink": [{}],
+        "gray": [{}],
+        "silver": [{}],
+        "cyan": [{}],
+        "purple": [{}],
+        "blue": [{}],
+        "brown": [{}],
+        "green": [{}],
+        "red": [{}],
+        "black": [{}],
+        
+        "redstone": [{ "textures": { "layer0": "inspirations:items/redstone_book", "layer1": "" }}]
+    }
+}
