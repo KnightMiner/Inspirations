@@ -8,9 +8,13 @@ import javax.vecmath.Matrix4f;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.google.common.base.Function;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
 import knightminer.inspirations.building.block.BlockBookshelf;
+import knightminer.inspirations.library.util.RecipeUtil;
+import knightminer.inspirations.library.util.TagUtil;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -19,10 +23,14 @@ import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.block.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.VertexFormat;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.common.property.IExtendedBlockState;
+import slimeknights.mantle.client.ModelHelper;
 
 public class BookshelfModel implements IBakedModel {
 
@@ -53,10 +61,20 @@ public class BookshelfModel implements IBakedModel {
 					builder.put("#bookLabel" + i, "");
 				}
 			}
-			IModel retextured = model.retexture(builder.build());
-			bakedModel = retextured.bake(retextured.getDefaultState(), format, textureGetter);
+
+			String texture = extendedState.getValue(BlockBookshelf.TEXTURE);
+			if(texture != null) {
+				builder.put("texture", texture);
+			}
+
+			bakedModel = getTexturedModel(builder.build());
 		}
 		return bakedModel.getQuads(state, side, rand);
+	}
+
+	private IBakedModel getTexturedModel(ImmutableMap<String, String> textures) {
+		IModel retextured = model.retexture(textures);
+		return retextured.bake(retextured.getDefaultState(), format, textureGetter);
 	}
 
 	@Override
@@ -90,7 +108,7 @@ public class BookshelfModel implements IBakedModel {
 	@Nonnull
 	@Override
 	public ItemOverrideList getOverrides() {
-		return standard.getOverrides();
+		return BookshelfTextureOverride.INSTANCE;
 	}
 
 	@Override
@@ -99,4 +117,30 @@ public class BookshelfModel implements IBakedModel {
 		return Pair.of(this, pair.getRight());
 	}
 
+
+	private static class BookshelfTextureOverride extends ItemOverrideList {
+
+		static BookshelfTextureOverride INSTANCE = new BookshelfTextureOverride();
+
+		private BookshelfTextureOverride() {
+			super(ImmutableList.of());
+		}
+
+		@Nonnull
+		@Override
+		public IBakedModel handleItemState(@Nonnull IBakedModel originalModel, ItemStack stack, World world, EntityLivingBase entity) {
+			if(originalModel instanceof BookshelfModel) {
+				// read out the data on the itemstack
+				ItemStack blockStack = new ItemStack(TagUtil.getTagSafe(stack).getCompoundTag(RecipeUtil.TAG_TEXTURE));
+				if(!blockStack.isEmpty()) {
+					// get model from data
+					Block block = Block.getBlockFromItem(blockStack.getItem());
+					String texture = ModelHelper.getTextureFromBlock(block, blockStack.getItemDamage()).getIconName();
+					return ((BookshelfModel) originalModel).getTexturedModel(ImmutableMap.of("texture", texture));
+				}
+			}
+
+			return originalModel;
+		}
+	}
 }

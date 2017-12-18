@@ -1,0 +1,31 @@
+{
+  "conditions": [{
+    "type": "pulse_loaded",
+    "pulse": "InspirationsBuilding"
+  }],
+  "type": "forge:ore_shapeless",
+  "group": "inspirations:colored_book",
+  "result": {
+    "item": "inspirations:books",
+    "data": 16,
+    "count": 1
+  },
+  "ingredients": [
+    {
+      "type": "forge:ore_dict",
+      "ore": "leather"
+    },
+    {
+      "type": "forge:ore_dict",
+      "ore": "paper"
+    },
+    {
+      "type": "forge:ore_dict",
+      "ore": "paper"
+    },
+    {
+      "type": "forge:ore_dict",
+      "ore": "dustRedstone"
+    }
+  ]
+}

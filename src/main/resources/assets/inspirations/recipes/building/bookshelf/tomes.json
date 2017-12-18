@@ -1,0 +1,25 @@
+{
+  "conditions": [{
+    "type": "pulse_loaded",
+    "pulse": "InspirationsBuilding"
+  }],
+  "type": "inspirations:texture_recipe",
+  "group": "inspirations:bookshelf",
+  "texture": {
+    "item": "#WOOD_SLAB"
+  },
+  "pattern": [
+    "SSS",
+    " B ",
+    "SSS"
+  ],
+  "key": {
+    "S": { "item": "#WOOD_SLAB" },
+    "B": { "item": "minecraft:book" }
+  },
+  "result": {
+    "item": "inspirations:bookshelf",
+    "data": 2,
+    "count": 2
+  }
+}

@@ -1,4 +1,7 @@
 {
+  "recipes": {
+    "texture_recipe": "knightminer.inspirations.library.recipe.TextureRecipe$Factory"
+  },
   "conditions": {
     "pulse_loaded": "knightminer.inspirations.common.Config$PulseLoaded"
   }

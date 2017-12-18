@@ -75,6 +75,7 @@ public class BuildingClientProxy extends ClientProxy {
 						String.format("facing=%s,type=%s", facing.getName(), type.getName())));
 			}
 		}
+		replaceBookshelfModel(event, new ModelResourceLocation(MODEL_BOOKSHELF, "inventory"));
 	}
 
 	private static void replaceBookshelfModel(ModelBakeEvent event, ModelResourceLocation location) {

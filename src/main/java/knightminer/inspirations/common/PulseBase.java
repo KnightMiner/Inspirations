@@ -24,7 +24,11 @@ import slimeknights.mantle.item.ItemBlockSlab;
 
 public class PulseBase {
 	/* Loaded */
-	protected boolean isRedstoneLoaded() {
+	public static boolean isBuildingLoaded() {
+		return Inspirations.pulseManager.isPulseLoaded(InspirationsBuilding.pulseID);
+	}
+
+	public static boolean isRedstoneLoaded() {
 		return Inspirations.pulseManager.isPulseLoaded(InspirationsRedstone.pulseID);
 	}
 

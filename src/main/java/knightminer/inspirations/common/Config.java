@@ -17,6 +17,8 @@ public class Config {
 	public static ForgeCFG pulseConfig = new ForgeCFG("inspirationsModules", "Modules");
 
 	private static Configuration configFile;
+
+	public static boolean showAllVariants = true;
 	public static void load(FMLPreInitializationEvent event) {
 		configFile = new Configuration(event.getSuggestedConfigurationFile(), "0.1", false);
 

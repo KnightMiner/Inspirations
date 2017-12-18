@@ -9,6 +9,8 @@ import com.google.common.collect.ImmutableMap;
 
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.building.tileentity.TileBookshelf;
+import knightminer.inspirations.library.util.RecipeUtil;
+import knightminer.inspirations.library.util.TagUtil;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
@@ -18,14 +20,18 @@ import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -39,28 +45,34 @@ import net.minecraftforge.common.property.Properties;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import slimeknights.mantle.block.BlockInventory;
+import slimeknights.mantle.property.PropertyString;
 
 @SuppressWarnings("unchecked")
 public class BlockBookshelf extends BlockInventory implements ITileEntityProvider {
 
 	public static final PropertyEnum<BookshelfType> TYPE = PropertyEnum.create("type", BookshelfType.class);
 	public static final PropertyDirection FACING = BlockHorizontal.FACING;
+	public static final PropertyString TEXTURE = new PropertyString("texture");
+	public static final IUnlistedProperty<?>[] PROPS;
 	public static final IUnlistedProperty<Boolean>[] BOOKS;
 	static {
+		PROPS = new IUnlistedProperty<?>[15];
 		BOOKS = (IUnlistedProperty<Boolean>[])new IUnlistedProperty<?>[14];
 		for(int i = 0; i < 14; i++) {
-			BOOKS[i] = Properties.toUnlisted(PropertyBool.create("book" + i));
+			PROPS[i] = BOOKS[i] = Properties.toUnlisted(PropertyBool.create("book" + i));
 		}
+		PROPS[14] = TEXTURE;
 	}
 
 	public BlockBookshelf() {
 		super(Material.WOOD);
 		this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
+		this.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
 	}
 
 	@Override
 	protected ExtendedBlockState createBlockState() {
-		return new ExtendedBlockState(this, new IProperty<?>[]{TYPE, FACING}, BOOKS);
+		return new ExtendedBlockState(this, new IProperty<?>[]{TYPE, FACING}, PROPS);
 	}
 
 	/**
@@ -95,6 +107,23 @@ public class BlockBookshelf extends BlockInventory implements ITileEntityProvide
 		return this.getStateFromMeta(meta).withProperty(FACING, facing);
 	}
 
+	@Override
+	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer,
+			ItemStack stack) {
+		super.onBlockPlacedBy(world, pos, state, placer, stack);
+
+		NBTTagCompound tag = TagUtil.getTagSafe(stack);
+		TileEntity te = world.getTileEntity(pos);
+		if(te instanceof TileBookshelf) {
+			TileBookshelf table = (TileBookshelf) te;
+			NBTTagCompound textureTag = tag.getCompoundTag(RecipeUtil.TAG_TEXTURE);
+			if(textureTag == null) {
+				textureTag = new NBTTagCompound();
+			}
+
+			table.updateTextureBlock(textureTag);
+		}
+	}
 
 	@Override
 	public TileEntity createNewTileEntity(World worldIn, int meta) {
@@ -288,6 +317,13 @@ public class BlockBookshelf extends BlockInventory implements ITileEntityProvide
 	@Override
 	public boolean isOpaqueCube(IBlockState state) {
 		return false;
+	}
+
+	@Override
+	public void getSubBlocks(CreativeTabs tab, NonNullList<ItemStack> list) {
+		for(BookshelfType type : BookshelfType.values()) {
+			RecipeUtil.addBlocksFromOredict("slabWood", this, type.getMeta(), list);
+		}
 	}
 
 	public static enum BookshelfType implements IStringSerializable {

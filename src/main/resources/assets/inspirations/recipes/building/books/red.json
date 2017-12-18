@@ -1,0 +1,22 @@
+{
+  "conditions": [{
+    "type": "pulse_loaded",
+    "pulse": "InspirationsBuilding"
+  }],
+  "type": "forge:ore_shapeless",
+  "group": "inspirations:colored_book",
+  "result": {
+    "item": "inspirations:books",
+    "data": 14,
+    "count": 1
+  },
+  "ingredients": [
+    {
+      "type": "forge:ore_dict",
+      "ore": "dyeRed"
+    },
+    {
+      "item": "minecraft:book"
+    }
+  ]
+}

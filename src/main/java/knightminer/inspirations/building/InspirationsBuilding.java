@@ -6,6 +6,7 @@ import knightminer.inspirations.building.block.BlockBookshelf;
 import knightminer.inspirations.building.tileentity.TileBookshelf;
 import knightminer.inspirations.common.CommonProxy;
 import knightminer.inspirations.common.PulseBase;
+import knightminer.inspirations.common.item.ItemBlockTexture;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.EnumDyeColor;
@@ -64,7 +65,7 @@ public class InspirationsBuilding extends PulseBase {
 			redstoneBook = books.addMeta(16, "redstone");
 		}
 
-		registerItemBlock(r, bookshelf, BlockBookshelf.TYPE);
+		registerItemBlock(r, new ItemBlockTexture(bookshelf), BlockBookshelf.TYPE);
 	}
 
 	@Subscribe

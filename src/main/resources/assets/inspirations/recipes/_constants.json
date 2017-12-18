@@ -1,0 +1,26 @@
+[
+  {
+    "name": "WOOD_SLAB",
+    "ingredient": {
+      "type": "forge:ore_dict",
+      "ore": "slabWood"
+    }
+  },
+  {
+    "conditions": [{
+      "type": "forge:mod_loaded",
+      "modid": "tconstruct"
+    }],
+    "name": "WOOD_SLAB",
+    "ingredient": [
+      {
+        "type": "forge:ore_dict",
+        "ore": "slabWood"
+      },
+      {
+        "item": "tconstruct:firewood_slab",
+        "data": 0
+      }
+    ]
+  }
+]

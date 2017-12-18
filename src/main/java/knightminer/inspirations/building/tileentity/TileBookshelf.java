@@ -6,6 +6,7 @@ import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.building.block.BlockBookshelf;
 import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.common.network.InventorySlotSyncPacket;
+import knightminer.inspirations.library.util.RecipeUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -14,12 +15,16 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.items.ItemHandlerHelper;
+import slimeknights.mantle.client.ModelHelper;
 import slimeknights.mantle.tileentity.TileInventory;
 
 public class TileBookshelf extends TileInventory {
@@ -27,6 +32,39 @@ public class TileBookshelf extends TileInventory {
 	public TileBookshelf() {
 		super("gui.inspirations.bookshelf.name", 14, 1);
 	}
+
+	@Override
+	public void setInventorySlotContents(int slot, ItemStack itemstack) {
+		ItemStack oldStack = this.getStackInSlot(slot);
+
+		// we sync slot changes to all clients around
+		if(getWorld() != null && getWorld() instanceof WorldServer && !getWorld().isRemote && !ItemStack.areItemStacksEqual(itemstack, getStackInSlot(slot))) {
+			InspirationsNetwork.sendToClients((WorldServer) getWorld(), this.pos, new InventorySlotSyncPacket(itemstack, slot, pos));
+		}
+		super.setInventorySlotContents(slot, itemstack);
+
+		if(getWorld() != null) {
+			// update for rendering
+			if(getWorld().isRemote) {
+				Minecraft.getMinecraft().renderGlobal.notifyBlockUpdate(null, pos, null, null, 0);
+			}
+
+			// if we have redstone books and either the old stack or the new one is a book, update
+			if(InspirationsBuilding.redstoneBook != null
+					&& (InspirationsBuilding.redstoneBook.isItemEqual(oldStack) ^ InspirationsBuilding.redstoneBook.isItemEqual(itemstack))) {
+
+				world.notifyNeighborsOfStateChange(pos, this.getBlockType(), false);
+				IBlockState state = world.getBlockState(pos);
+				if(state.getBlock() == this.getBlockType()) {
+					world.notifyNeighborsOfStateChange(pos.offset(state.getValue(BlockBookshelf.FACING).getOpposite()), this.getBlockType(), false);
+				}
+			}
+		}
+	}
+
+	/*
+	 * Book logic
+	 */
 
 	public boolean interact(EntityPlayer player, EnumHand hand, EnumFacing facing, float clickX, float clickY, float clickZ) {
 		int bookClicked = bookClicked(facing, clickX, clickY, clickZ);
@@ -96,6 +134,11 @@ public class TileBookshelf extends TileInventory {
 		return shelf + Math.min((int)(clicked * 8), 7);
 	}
 
+
+	/*
+	 * Redstone logic
+	 */
+
 	public int getPower() {
 		if(InspirationsBuilding.redstoneBook == null) {
 			return 0;
@@ -109,42 +152,46 @@ public class TileBookshelf extends TileInventory {
 		return 0;
 	}
 
+
+	/*
+	 * Rendering
+	 */
+
 	public IBlockState writeExtendedBlockState(IExtendedBlockState state) {
 		for(int i = 0; i < 14; i++) {
 			state = state.withProperty(BlockBookshelf.BOOKS[i], isStackInSlot(i));
 		}
 
+		// texture not loaded
+		String texture = getTileData().getString("texture");
+		if(texture.isEmpty()) {
+			// load it from saved block
+			ItemStack stack = new ItemStack(getTileData().getCompoundTag(RecipeUtil.TAG_TEXTURE));
+			if(!stack.isEmpty()) {
+				Block block = Block.getBlockFromItem(stack.getItem());
+				texture = ModelHelper.getTextureFromBlock(block, stack.getItemDamage()).getIconName();
+				getTileData().setString("texture", texture);
+			}
+		}
+		if(!texture.isEmpty()) {
+			state = state.withProperty(BlockBookshelf.TEXTURE, texture);
+		}
+
 		return state;
 	}
 
-	@Override
-	public void setInventorySlotContents(int slot, ItemStack itemstack) {
-		ItemStack oldStack = this.getStackInSlot(slot);
-
-		// we sync slot changes to all clients around
-		if(getWorld() != null && getWorld() instanceof WorldServer && !getWorld().isRemote && !ItemStack.areItemStacksEqual(itemstack, getStackInSlot(slot))) {
-			InspirationsNetwork.sendToClients((WorldServer) getWorld(), this.pos, new InventorySlotSyncPacket(itemstack, slot, pos));
-		}
-		super.setInventorySlotContents(slot, itemstack);
-
-		if(getWorld() != null) {
-			// update for rendering
-			if(getWorld().isRemote) {
-				Minecraft.getMinecraft().renderGlobal.notifyBlockUpdate(null, pos, null, null, 0);
-			}
-
-			// if we have redstone books and either the old stack or the new one is a book, update
-			if(InspirationsBuilding.redstoneBook != null
-					&& (InspirationsBuilding.redstoneBook.isItemEqual(oldStack) ^ InspirationsBuilding.redstoneBook.isItemEqual(itemstack))) {
-
-				world.notifyNeighborsOfStateChange(pos, this.getBlockType(), false);
-				IBlockState state = world.getBlockState(pos);
-				if(state.getBlock() == this.getBlockType()) {
-					world.notifyNeighborsOfStateChange(pos.offset(state.getValue(BlockBookshelf.FACING).getOpposite()), this.getBlockType(), false);
-				}
-			}
-		}
+	public void updateTextureBlock(NBTTagCompound tag) {
+		getTileData().setTag(RecipeUtil.TAG_TEXTURE, tag);
 	}
+
+	public NBTTagCompound getTextureBlock() {
+		return getTileData().getCompoundTag(RecipeUtil.TAG_TEXTURE);
+	}
+
+
+	/*
+	 * Networking
+	 */
 
 	@Nonnull
 	@Override
@@ -152,4 +199,23 @@ public class TileBookshelf extends TileInventory {
 		// new tag instead of super since default implementation calls the super of writeToNBT
 		return writeToNBT(new NBTTagCompound());
 	}
+
+	@Override
+	public SPacketUpdateTileEntity getUpdatePacket() {
+		// note that this sends all of the tile data. you should change this if you use additional tile data
+		NBTTagCompound tag = getTileData().copy();
+		writeToNBT(tag);
+		return new SPacketUpdateTileEntity(this.getPos(), this.getBlockMetadata(), tag);
+	}
+
+	@Override
+	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
+		NBTTagCompound tag = pkt.getNbtCompound();
+		NBTBase texture = tag.getTag(RecipeUtil.TAG_TEXTURE);
+		if(texture != null) {
+			getTileData().setTag(RecipeUtil.TAG_TEXTURE, texture);
+		}
+		readFromNBT(tag);
+	}
+
 }

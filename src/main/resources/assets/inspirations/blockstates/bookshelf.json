@@ -2,7 +2,7 @@
   "forge_marker": 1,
   "defaults": {
     "textures": {
-      "planks": "blocks/planks_oak"
+      "texture": "blocks/planks_oak"
     }
   },
   "variants": {

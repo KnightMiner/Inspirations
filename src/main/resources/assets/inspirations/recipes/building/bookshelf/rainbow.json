@@ -1,0 +1,28 @@
+{
+  "conditions": [{
+    "type": "pulse_loaded",
+    "pulse": "InspirationsBuilding"
+  }],
+  "type": "inspirations:texture_recipe",
+  "group": "inspirations:bookshelf",
+  "texture": {
+    "item": "#WOOD_SLAB"
+  },
+  "mirrored": true,
+  "pattern": [
+    "SSS",
+    "RGB",
+    "SSS"
+  ],
+  "key": {
+    "S": { "item": "#WOOD_SLAB" },
+    "R": { "type": "forge:ore_dict", "ore": "dyeRed" },
+    "G": { "type": "forge:ore_dict", "ore": "dyeGreen" },
+    "B": { "type": "forge:ore_dict", "ore": "dyeBlue" }
+  },
+  "result": {
+    "item": "inspirations:bookshelf",
+    "data": 1,
+    "count": 2
+  }
+}
