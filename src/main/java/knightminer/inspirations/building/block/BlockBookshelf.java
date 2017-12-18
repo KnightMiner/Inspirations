@@ -7,6 +7,7 @@ import java.util.Locale;
 import javax.annotation.Nonnull;
 import com.google.common.collect.ImmutableMap;
 
+import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.building.tileentity.TileBookshelf;
 import knightminer.inspirations.library.util.RecipeUtil;
@@ -132,21 +133,30 @@ public class BlockBookshelf extends BlockInventory implements ITileEntityProvide
 
 	@Override
 	protected boolean openGui(EntityPlayer player, World world, BlockPos pos) {
-		// TODO: GUI?
-		return false;
+		player.openGui(Inspirations.instance, 0, world, pos.getX(), pos.getY(), pos.getZ());
+		return true;
 	}
 
 
 	/* Activation */
 	@Override
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float clickX, float clickY, float clickZ) {
+		EnumFacing facing = state.getValue(FACING);
+
+		// just skip logic for non-front, we only interact with the front
+		if(facing != side) {
+			return false;
+		}
+
+		// if sneaking, open gui
+		if(player.isSneaking() && !world.isRemote) {
+			return openGui(player, world, pos);
+		}
+
 		if(world.isRemote) {
 			return true;
 		}
-		EnumFacing facing = state.getValue(FACING);
-		if(facing.getOpposite() == side) {
-			return false;
-		}
+
 		TileEntity te = world.getTileEntity(pos);
 		if(te instanceof TileBookshelf) {
 			return ((TileBookshelf) te).interact(player, hand, facing, clickX, clickY, clickZ);

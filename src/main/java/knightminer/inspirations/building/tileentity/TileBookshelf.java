@@ -4,6 +4,8 @@ import javax.annotation.Nonnull;
 
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.building.block.BlockBookshelf;
+import knightminer.inspirations.building.client.GuiBookshelf;
+import knightminer.inspirations.building.inventory.ContainerBookshelf;
 import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.common.network.InventorySlotSyncPacket;
 import knightminer.inspirations.library.InspirationsRegistry;
@@ -11,10 +13,9 @@ import knightminer.inspirations.library.util.RecipeUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -22,13 +23,18 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.property.IExtendedBlockState;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.ItemHandlerHelper;
 import slimeknights.mantle.client.ModelHelper;
+import slimeknights.mantle.common.IInventoryGui;
 import slimeknights.mantle.tileentity.TileInventory;
 
-public class TileBookshelf extends TileInventory {
+public class TileBookshelf extends TileInventory implements IInventoryGui {
 
 	public TileBookshelf() {
 		super("gui.inspirations.bookshelf.name", 14, 1);
@@ -127,6 +133,22 @@ public class TileBookshelf extends TileInventory {
 
 		// multiply by 8 to account for extra 2 pixels
 		return shelf + Math.min((int)(clicked * 8), 7);
+	}
+
+
+	/*
+	 * GUI
+	 */
+
+	@Override
+	public ContainerBookshelf createContainer(InventoryPlayer inventoryplayer, World world, BlockPos pos) {
+		return new ContainerBookshelf(inventoryplayer, this);
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public GuiContainer createGui(InventoryPlayer inventoryplayer, World world, BlockPos pos) {
+		return new GuiBookshelf(createContainer(inventoryplayer, world, pos));
 	}
 
 

@@ -23,6 +23,8 @@ item.inspirations.books.green.name=Green Book
 item.inspirations.books.red.name=Red Book
 item.inspirations.books.black.name=Black Book
 
+gui.inspirations.bookshelf.name=Bookshelf
+
 
 # Redstone
 tile.inspirations.torch_lever.name=Torch Lever
