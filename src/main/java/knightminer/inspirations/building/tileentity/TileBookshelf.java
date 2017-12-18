@@ -74,7 +74,7 @@ public class TileBookshelf extends TileInventory {
 
 		// if it contains a book, take the book out
 		if(isStackInSlot(bookClicked)) {
-			ItemHandlerHelper.giveItemToPlayer(player, getStackInSlot(bookClicked));
+			ItemHandlerHelper.giveItemToPlayer(player, getStackInSlot(bookClicked), player.inventory.currentItem);
 			setInventorySlotContents(bookClicked, ItemStack.EMPTY);
 		} else {
 			// otherwise try putting a book in
