@@ -1,5 +1,10 @@
 {
   "forge_marker": 1,
+  "defaults": {
+    "textures": {
+      "torch": "inspirations:blocks/torch_lever"
+    }
+  },
   "variants": {
     "side": {
       "east":  {},
@@ -9,7 +14,7 @@
     },
     "powered": {
       "true":  { "model": "inspirations:torch_lever" },
-      "false": { "model": "normal_torch" }
+      "false": { "model": "torch" }
     }
   }
 }
