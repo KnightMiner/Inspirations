@@ -17,6 +17,14 @@ public class ItemMetaKey {
 		this.meta = meta;
 	}
 
+	public Item getItem() {
+		return item;
+	}
+
+	public int getMeta() {
+		return meta;
+	}
+
 	public ItemStack makeItemStack() {
 		return new ItemStack(item, 1, meta);
 	}

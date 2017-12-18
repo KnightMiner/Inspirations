@@ -6,6 +6,7 @@ import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.building.block.BlockBookshelf;
 import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.common.network.InventorySlotSyncPacket;
+import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.util.RecipeUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -79,7 +80,7 @@ public class TileBookshelf extends TileInventory {
 		} else {
 			// otherwise try putting a book in
 			ItemStack stack = player.getHeldItemMainhand();
-			if(!isBook(stack)) {
+			if(!InspirationsRegistry.isBook(stack)) {
 				return true;
 			}
 
@@ -89,12 +90,6 @@ public class TileBookshelf extends TileInventory {
 		return true;
 	}
 
-	public static boolean isBook(ItemStack stack) {
-		Item item = stack.getItem();
-		return Block.getBlockFromItem(item) == Blocks.AIR
-				&& (item == Items.DYE || item.getRegistryName().getResourcePath().contains("book")
-				|| item.getUnlocalizedName(stack).contains("book"));
-	}
 
 	private static int bookClicked(EnumFacing facing, float clickX, float clickY, float clickZ) {
 		// if we did not click between the shelves, ignore
