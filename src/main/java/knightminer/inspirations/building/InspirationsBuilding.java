@@ -3,6 +3,7 @@ package knightminer.inspirations.building;
 import com.google.common.eventbus.Subscribe;
 
 import knightminer.inspirations.building.block.BlockBookshelf;
+import knightminer.inspirations.building.block.BlockRope;
 import knightminer.inspirations.building.tileentity.TileBookshelf;
 import knightminer.inspirations.common.CommonProxy;
 import knightminer.inspirations.common.PulseBase;
@@ -31,6 +32,7 @@ public class InspirationsBuilding extends PulseBase {
 
 	// blocks
 	public static Block bookshelf;
+	public static BlockRope rope;
 
 	// items
 	public static ItemMetaDynamic books;
@@ -48,6 +50,7 @@ public class InspirationsBuilding extends PulseBase {
 		IForgeRegistry<Block> r = event.getRegistry();
 
 		bookshelf = registerBlock(r, new BlockBookshelf(), "bookshelf");
+		rope = registerBlock(r, new BlockRope(), "rope");
 
 		registerTE(TileBookshelf.class, "bookshelf");
 	}
@@ -66,6 +69,7 @@ public class InspirationsBuilding extends PulseBase {
 		}
 
 		registerItemBlock(r, new ItemBlockTexture(bookshelf), BlockBookshelf.TYPE);
+		registerEnumItemBlock(r, rope);
 	}
 
 	@Subscribe

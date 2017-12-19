@@ -6,6 +6,10 @@ tile.inspirations.bookshelf.rainbow.name=Rainbow Bookshelf
 tile.inspirations.bookshelf.ancient.name=Ancient Bookshelf
 tile.inspirations.bookshelf.tomes.name=Tomes Bookshelf
 
+tile.inspirations.rope.rope.name=Rope
+tile.inspirations.rope.chain.name=Chain
+tile.inspirations.rope.vine.name=Vine Rope
+
 item.inspirations.books.white.name=White Book
 item.inspirations.books.orange.name=Orange Book
 item.inspirations.books.magenta.name=Magenta Book

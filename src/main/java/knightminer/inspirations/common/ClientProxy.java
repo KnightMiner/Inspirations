@@ -56,6 +56,13 @@ public class ClientProxy extends CommonProxy {
 	}
 
 	/** Registers the given item with the given meta and its registry name for the given variant */
+	public static void registerItemModel(Block block, int meta, String variant) {
+		if(block != null) {
+			registerItemModel(Item.getItemFromBlock(block), meta, block.getRegistryName(), variant);
+		}
+	}
+
+	/** Registers the given item with the given meta and its registry name for the given variant */
 	public static void registerItemModel(Item item, int meta, String variant) {
 		if(item != null) {
 			registerItemModel(item, meta, item.getRegistryName(), variant);

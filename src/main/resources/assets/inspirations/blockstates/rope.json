@@ -1,0 +1,31 @@
+{
+  "forge_marker": 1,
+  "variants": {
+    "bottom": {
+      "item":  {
+        "transform": "forge:default-item",
+        "model": "forge:item-layer",
+        "textures": {
+          "layer0": "#texture"
+        }
+      },
+      "false": { "model": "inspirations:rope" },
+      "true":  { "model": "inspirations:rope_bottom" }
+    },
+    "type": {
+      "rope": { "textures": {
+        "texture": "inspirations:blocks/rope",
+        "bottom":  "inspirations:blocks/rope_bottom"
+      }},
+      "chain": { "textures": {
+        "texture": "inspirations:blocks/chain"
+      }},
+      "vine": { "textures": {
+        "texture": "inspirations:blocks/vine",
+        "bottom":  "inspirations:blocks/vine_bottom"
+      }}
+    },
+    "bottom=false,type=chain": { "model": "inspirations:chain" },
+    "bottom=true,type=chain": { "model": "inspirations:chain_bottom" }
+  }
+}

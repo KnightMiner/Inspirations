@@ -1,0 +1,23 @@
+{
+  "conditions": [{
+    "type": "pulse_loaded",
+    "pulse": "InspirationsBuilding"
+  }],
+  "type": "forge:ore_shaped",
+  "group": "inspirations:rope",
+  "pattern": [
+    "B",
+    "B",
+    "B"
+  ],
+  "key": {
+    "B": {
+      "item": "minecraft:iron_bars"
+    }
+  },
+  "result": {
+    "item": "inspirations:rope",
+    "data": 1,
+    "count": 6
+  }
+}
