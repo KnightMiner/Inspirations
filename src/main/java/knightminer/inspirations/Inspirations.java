@@ -7,6 +7,7 @@ import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.redstone.InspirationsRedstone;
+import knightminer.inspirations.tweaks.InspirationsTweaks;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
@@ -36,6 +37,7 @@ public class Inspirations {
 	static {
 		pulseManager.registerPulse(new InspirationsRedstone());
 		pulseManager.registerPulse(new InspirationsBuilding());
+		pulseManager.registerPulse(new InspirationsTweaks());
 	}
 
 	@Mod.EventHandler
