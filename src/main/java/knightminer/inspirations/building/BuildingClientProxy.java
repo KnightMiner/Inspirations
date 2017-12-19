@@ -38,7 +38,6 @@ import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.IModel;
-import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -48,10 +47,10 @@ public class BuildingClientProxy extends ClientProxy {
 
 	@SubscribeEvent
 	public void registerModels(ModelRegistryEvent event) {
-		ModelLoader.setCustomStateMapper(InspirationsBuilding.torchLever, new TorchLeverStateMapper());
+		setModelStateMapper(InspirationsBuilding.torchLever, new TorchLeverStateMapper());
 
 		// items
-		InspirationsBuilding.books.registerItemModels();
+		registerItemMetaDynamic(InspirationsBuilding.books);
 
 		// blocks
 		registerItemModel(InspirationsBuilding.torchLever);
@@ -60,16 +59,19 @@ public class BuildingClientProxy extends ClientProxy {
 	}
 
 	private void registerRopeModels(Block rope) {
-		for(RopeType type : RopeType.values()) {
-			registerItemModel(rope, type.getMeta(), "bottom=item,type=" + type.getName());
+		if(rope != null) {
+			for(RopeType type : RopeType.values()) {
+				registerItemModel(rope, type.getMeta(), "bottom=item,type=" + type.getName());
+			}
 		}
 	}
 
 	@SubscribeEvent
 	public void registerBlockColors(ColorHandlerEvent.Block event) {
 		BlockColors blockColors = event.getBlockColors();
+
 		// coloring of books for normal bookshelf
-		blockColors.registerBlockColorHandler((state, world, pos, tintIndex) -> {
+		registerBlockColors(blockColors, (state, world, pos, tintIndex) -> {
 			if(state.getValue(BlockBookshelf.TYPE) == BookshelfType.NORMAL && tintIndex > 0 && tintIndex <= 14) {
 				TileEntity te = world.getTileEntity(pos);
 				if(te instanceof TileBookshelf) {
@@ -90,7 +92,7 @@ public class BuildingClientProxy extends ClientProxy {
 		}, InspirationsBuilding.bookshelf);
 
 		// rope vine coloring
-		blockColors.registerBlockColorHandler((state, world, pos, tintIndex) -> {
+		registerBlockColors(blockColors, (state, world, pos, tintIndex) -> {
 			if(state.getValue(BlockRope.TYPE) == RopeType.VINE) {
 				if(world != null && pos != null) {
 					return BiomeColorHelper.getFoliageColorAtPos(world, pos);
@@ -107,8 +109,8 @@ public class BuildingClientProxy extends ClientProxy {
 		BlockColors blockColors = event.getBlockColors();
 		ItemColors itemColors = event.getItemColors();
 
-		// book covers, to lazy to make 16 cover textures
-		itemColors.registerItemColorHandler((stack, tintIndex) -> {
+		// book covers, too lazy to make 16 cover textures
+		registerItemColors(itemColors, (stack, tintIndex) -> {
 			int meta = stack.getItemDamage();
 			if(tintIndex == 0 && meta < 16) {
 				return EnumDyeColor.byMetadata(meta).getColorValue();
@@ -117,13 +119,16 @@ public class BuildingClientProxy extends ClientProxy {
 		}, InspirationsBuilding.books);
 
 		// vine coloring for rope vine
-		itemColors.registerItemColorHandler((stack, tintIndex) -> {
+		registerItemColors(itemColors, (stack, tintIndex) -> {
 			@SuppressWarnings("deprecation")
 			IBlockState iblockstate = ((ItemBlock)stack.getItem()).getBlock().getStateFromMeta(stack.getMetadata());
 			return blockColors.colorMultiplier(iblockstate, null, null, tintIndex);
 		}, InspirationsBuilding.rope);
 	}
 
+	/**
+	 * Replaces the bookshelf models with the dynamic texture model, which also handles books
+	 */
 	@SubscribeEvent
 	public void onModelBake(ModelBakeEvent event) {
 		for(BlockBookshelf.BookshelfType type : BlockBookshelf.BookshelfType.values()) {
@@ -144,6 +149,9 @@ public class BuildingClientProxy extends ClientProxy {
 	}
 
 
+	/**
+	 * Mapper for torch levers, to simplify rotations for the floor state
+	 */
 	private static class TorchLeverStateMapper extends StateMapperBase {
 		@Nonnull
 		@Override

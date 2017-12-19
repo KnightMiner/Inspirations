@@ -3,6 +3,7 @@ package knightminer.inspirations.common;
 import java.util.function.BooleanSupplier;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.InspirationsRegistry;
@@ -27,7 +28,12 @@ public class Config {
 	private static Configuration configFile;
 
 
-	// bookshelf
+	// building
+	public static boolean enableTorchLever = true;
+	public static boolean enableRope = true;
+	public static boolean enableBookshelf = true;
+	public static boolean enableColoredBooks = true;
+	public static boolean enableRedstoneBook = true;
 	public static boolean showAllVariants = true;
 	private static String[] bookKeywords = {
 			"book",
@@ -36,6 +42,10 @@ public class Config {
 	};
 	private static String[] bookOverrides = new String[0];
 
+	// tweaks
+	public static boolean enablePigDesaddle = true;
+	public static boolean enableFittedCarpets = true;
+
 	/**
 	 * Loads the configuration file from the event
 	 * @param event  PreInit event from main mod class
@@ -43,17 +53,35 @@ public class Config {
 	public static void load(FMLPreInitializationEvent event) {
 		configFile = new Configuration(event.getSuggestedConfigurationFile(), "0.1", false);
 
-		// bookshelves
 		showAllVariants = configFile.getBoolean("showAllVariants", "general", showAllVariants,
 				"Shows all variants for dynamically textured blocks, like bookshelves. If false just the first will be shown");
 
-		bookKeywords = configFile.getStringList("bookKeywords", "bookshelf", bookKeywords,
-				"List of keywords for valid books, used to determine valid books in the bookshelf");
-		InspirationsRegistry.setBookKeywords(bookKeywords);
+		// building
+		{
+			// bookshelves
+			enableBookshelf = configFile.getBoolean("bookshelf", "building", enableBookshelf, "Enables the bookshelf, a decorative block to display books");
+			enableColoredBooks = configFile.getBoolean("coloredBooks", "building.bookshelf", enableColoredBooks, "Enables colored books, basically colored versions of the vanilla book to decorate bookshelves") && enableBookshelf;
+			enableRedstoneBook = configFile.getBoolean("redstoneBook", "building.bookshelf", enableRedstoneBook, "Enables the trapped book, which will emit redstone power when placed in a bookshelf") && enableBookshelf;
+			bookKeywords = configFile.getStringList("bookKeywords", "building.bookshelf", bookKeywords,
+					"List of keywords for valid books, used to determine valid books in the bookshelf");
+			InspirationsRegistry.setBookKeywords(bookKeywords);
 
-		bookOverrides = configFile.getStringList("bookOverrides", "bookshelf", bookOverrides,
-				"List of itemstacks to override book behavior. Format is modid:name[:meta[:isBook]]. Unset meta will default wildcard. Unset isBook will default true");
-		processBookOverrides(bookOverrides);
+			bookOverrides = configFile.getStringList("bookOverrides", "building.bookshelf", bookOverrides,
+					"List of itemstacks to override book behavior. Format is modid:name[:meta[:isBook]]. Unset meta will default wildcard. Unset isBook will default true");
+			processBookOverrides(bookOverrides);
+
+			// torch lever
+			enableTorchLever = configFile.getBoolean("torchLever", "building", enableTorchLever, "Enables the torch lever. Basically a lever which looks like a torch");
+
+			// rope
+			enableRope = configFile.getBoolean("rope", "building", enableRope, "Enables rope, can be climbed like ladders and extended with additional rope");
+		}
+
+		// tweaks
+		{
+			enablePigDesaddle = configFile.getBoolean("desaddlePig", "tweaks", enablePigDesaddle, "Allows pigs to be desaddled by shift-right click with an empty hand");
+			enableFittedCarpets = configFile.getBoolean("fittedCarpets", "tweaks", enableFittedCarpets, "Carpets fit to stairs. Uses a block override, so disable if another mod replaces carpets");
+		}
 
 		// saving
 		if(configFile.hasChanged()) {
@@ -133,6 +161,27 @@ public class Config {
 		public BooleanSupplier parse(JsonContext context, JsonObject json) {
 			String pulse = JsonUtils.getString(json, "pulse");
 			return () -> Inspirations.pulseManager.isPulseLoaded(pulse);
+		}
+	}
+
+	public static class ConfigProperty implements IConditionFactory {
+		@Override
+		public BooleanSupplier parse(JsonContext context, JsonObject json) {
+			String prop = JsonUtils.getString(json, "prop");
+			return () -> propertyEnabled(prop);
+		}
+
+		private static boolean propertyEnabled(String property) {
+			switch(property) {
+				// building
+				case "torch_lever": return enableTorchLever;
+				case "rope": return enableRope;
+				case "bookshelf": return enableBookshelf;
+				case "colored_books": return enableColoredBooks;
+				case "redstone_book": return enableRedstoneBook;
+			}
+
+			throw new JsonSyntaxException("Invalid propertyname '" + property + "'");
 		}
 	}
 }

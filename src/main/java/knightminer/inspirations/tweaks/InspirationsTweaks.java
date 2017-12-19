@@ -3,6 +3,7 @@ package knightminer.inspirations.tweaks;
 import com.google.common.eventbus.Subscribe;
 
 import knightminer.inspirations.common.CommonProxy;
+import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.tweaks.block.BlockFittedCarpet;
 import net.minecraft.block.Block;
@@ -40,14 +41,18 @@ public class InspirationsTweaks extends PulseBase {
 	public void registerBlocks(Register<Block> event) {
 		IForgeRegistry<Block> r = event.getRegistry();
 
-		carpet = register(r, new BlockFittedCarpet(), new ResourceLocation("carpet"));
+		if(Config.enableFittedCarpets) {
+			carpet = register(r, new BlockFittedCarpet(), new ResourceLocation("carpet"));
+		}
 	}
 
 	@SubscribeEvent
 	public void registerItems(Register<Item> event) {
 		IForgeRegistry<Item> r = event.getRegistry();
 
-		registerItemBlock(r, new ItemCloth(carpet));
+		if(carpet != null) {
+			registerItemBlock(r, new ItemCloth(carpet));
+		}
 	}
 
 	@Subscribe

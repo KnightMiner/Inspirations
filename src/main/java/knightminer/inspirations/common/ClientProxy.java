@@ -7,7 +7,12 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.ItemMeshDefinition;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.renderer.block.statemap.IStateMapper;
 import net.minecraft.client.renderer.block.statemap.StateMapperBase;
+import net.minecraft.client.renderer.color.BlockColors;
+import net.minecraft.client.renderer.color.IBlockColor;
+import net.minecraft.client.renderer.color.IItemColor;
+import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -17,6 +22,7 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.Fluid;
 import slimeknights.mantle.item.ItemBlockMeta;
+import slimeknights.mantle.item.ItemMetaDynamic;
 
 public class ClientProxy extends CommonProxy {
 	public static final String VARIANT_INVENTORY = "inventory";
@@ -85,6 +91,13 @@ public class ClientProxy extends CommonProxy {
 		}
 	}
 
+	/** Registers an itemblockmeta model for the blocks inventory variant. */
+	public static void registerItemMetaDynamic(ItemMetaDynamic item) {
+		if(item != null) {
+			item.registerItemModels();
+		}
+	}
+
 	public static void registerFluidModels(Fluid fluid) {
 		if(fluid == null) {
 			return;
@@ -102,6 +115,42 @@ public class ClientProxy extends CommonProxy {
 			}
 			// block-model
 			ModelLoader.setCustomStateMapper(block, mapper);
+		}
+	}
+
+	protected static void setModelStateMapper(Block block, IStateMapper mapper) {
+		if(block != null) {
+			ModelLoader.setCustomStateMapper(block, mapper);
+		}
+	}
+
+	/*
+	 * Item and block color handlers
+	 */
+
+	protected static void registerBlockColors(BlockColors blockColors, IBlockColor handler, Block ... blocks) {
+		for(Block block : blocks) {
+			if(block != null) {
+				blockColors.registerBlockColorHandler(handler, block);
+			}
+		}
+	}
+
+	protected static void registerItemColors(ItemColors itemColors, IItemColor handler, Block ... blocks) {
+		for(Block block : blocks) {
+			if(block != null) {
+				Item item = Item.getItemFromBlock(block);
+				if(item != Items.AIR) {
+					itemColors.registerItemColorHandler(handler, item);
+				}
+			}
+		}
+	}
+	protected static void registerItemColors(ItemColors itemColors, IItemColor handler, Item ... items) {
+		for(Item item : items) {
+			if(item != null) {
+				itemColors.registerItemColorHandler(handler, item);
+			}
 		}
 	}
 

@@ -1,5 +1,6 @@
 package knightminer.inspirations.tweaks;
 
+import knightminer.inspirations.common.Config;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.entity.player.EntityPlayer;
@@ -15,6 +16,10 @@ public class TweaksEvents {
 
 	@SubscribeEvent
 	public static void unsaddlePig(EntityInteract event) {
+		if(!Config.enablePigDesaddle) {
+			return;
+		}
+
 		EntityPlayer player = event.getEntityPlayer();
 		ItemStack stack = player.getHeldItem(event.getHand());
 		// must be sneaking and holding nothing

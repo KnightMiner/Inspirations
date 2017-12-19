@@ -3,6 +3,10 @@
     {
       "type": "pulse_loaded",
       "pulse": "InspirationsBuilding"
+    },
+    {
+      "type": "config",
+      "prop": "torch_lever"
     }
   ],
   "result": {

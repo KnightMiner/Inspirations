@@ -7,6 +7,7 @@ import knightminer.inspirations.building.block.BlockRope;
 import knightminer.inspirations.building.block.BlockTorchLever;
 import knightminer.inspirations.building.tileentity.TileBookshelf;
 import knightminer.inspirations.common.CommonProxy;
+import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.common.item.ItemBlockTexture;
 import net.minecraft.block.Block;
@@ -53,11 +54,18 @@ public class InspirationsBuilding extends PulseBase {
 	public void registerBlocks(Register<Block> event) {
 		IForgeRegistry<Block> r = event.getRegistry();
 
-		bookshelf = registerBlock(r, new BlockBookshelf(), "bookshelf");
-		rope = registerBlock(r, new BlockRope(), "rope");
-		torchLever = registerBlock(r, new BlockTorchLever(), "torch_lever");
+		if(Config.enableBookshelf) {
+			bookshelf = registerBlock(r, new BlockBookshelf(), "bookshelf");
+			registerTE(TileBookshelf.class, "bookshelf");
+		}
 
-		registerTE(TileBookshelf.class, "bookshelf");
+		if(Config.enableRope) {
+			rope = registerBlock(r, new BlockRope(), "rope");
+		}
+
+		if(Config.enableTorchLever) {
+			torchLever = registerBlock(r, new BlockTorchLever(), "torch_lever");
+		}
 	}
 
 	@SubscribeEvent
@@ -66,15 +74,25 @@ public class InspirationsBuilding extends PulseBase {
 
 		books = registerItem(r, new ItemMetaDynamic(), "books");
 		books.setCreativeTab(CreativeTabs.MATERIALS);
-		for(EnumDyeColor color : EnumDyeColor.values()) {
-			books.addMeta(color.getMetadata(), color.getName());
+		if(Config.enableColoredBooks) {
+			for(EnumDyeColor color : EnumDyeColor.values()) {
+				books.addMeta(color.getMetadata(), color.getName());
+			}
 		}
-		redstoneBook = books.addMeta(16, "redstone");
+		if(Config.enableRedstoneBook) {
+			redstoneBook = books.addMeta(16, "redstone");
+		}
 
 		// itemblocks
-		registerItemBlock(r, torchLever);
-		registerItemBlock(r, new ItemBlockTexture(bookshelf), BlockBookshelf.TYPE);
-		registerEnumItemBlock(r, rope);
+		if(torchLever != null) {
+			registerItemBlock(r, torchLever);
+		}
+		if(bookshelf != null) {
+			registerItemBlock(r, new ItemBlockTexture(bookshelf), BlockBookshelf.TYPE);
+		}
+		if(rope != null) {
+			registerEnumItemBlock(r, rope);
+		}
 	}
 
 	@Subscribe

@@ -1,8 +1,14 @@
 {
-  "conditions": [{
-    "type": "pulse_loaded",
-    "pulse": "InspirationsBuilding"
-  }],
+  "conditions": [
+    {
+      "type": "pulse_loaded",
+      "pulse": "InspirationsBuilding"
+    },
+    {
+      "type": "config",
+      "prop": "rope"
+    }
+  ],
   "type": "forge:ore_shaped",
   "group": "inspirations:rope",
   "pattern": [
