@@ -9,7 +9,7 @@ public class ItemMetaKey {
 
 	public ItemMetaKey(ItemStack stack) {
 		this.item = stack.getItem();
-		this.meta = stack.getItemDamage();
+		this.meta = stack.getMetadata();
 	}
 
 	public ItemMetaKey(Item item, int meta) {
