@@ -56,7 +56,7 @@ public class BookshelfModel implements IBakedModel {
 
 			for(int i = 0; i < 14; i++) {
 				// if there is no book in the slot, remove the texture so the quad is removed
-				if(!extendedState.getValue(BlockBookshelf.BOOKS[i])) {
+				if(extendedState.getValue(BlockBookshelf.BOOKS[i]) != Boolean.TRUE) {
 					builder.put("#book" + i, "");
 					builder.put("#bookLabel" + i, "");
 				}
