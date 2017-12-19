@@ -2,31 +2,61 @@ package knightminer.inspirations.tweaks;
 
 import com.google.common.eventbus.Subscribe;
 
+import knightminer.inspirations.common.CommonProxy;
 import knightminer.inspirations.common.PulseBase;
+import knightminer.inspirations.tweaks.block.BlockFittedCarpet;
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemCloth;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegistryEvent.Register;
+import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import slimeknights.mantle.item.ItemMetaDynamic;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.pulsar.pulse.Pulse;
 
 @Pulse(id = InspirationsTweaks.pulseID, description = "Various vanilla tweaks")
 public class InspirationsTweaks extends PulseBase {
 	public static final String pulseID = "InspirationsTweaks";
 
-	// items
-	public static ItemMetaDynamic materials;
+	@SidedProxy(clientSide = "knightminer.inspirations.tweaks.TweaksClientProxy", serverSide = "knightminer.inspirations.common.CommonProxy")
+	public static CommonProxy proxy;
+
+	// blocks
+	public static Block carpet;
 
 	@Subscribe
 	public void preInit(FMLPreInitializationEvent event) {
 		MinecraftForge.EVENT_BUS.register(TweaksEvents.class);
+
+		proxy.preInit();
+	}
+
+	@SubscribeEvent
+	public void registerBlocks(Register<Block> event) {
+		IForgeRegistry<Block> r = event.getRegistry();
+
+		carpet = register(r, new BlockFittedCarpet(), new ResourceLocation("carpet"));
+	}
+
+	@SubscribeEvent
+	public void registerItems(Register<Item> event) {
+		IForgeRegistry<Item> r = event.getRegistry();
+
+		registerItemBlock(r, new ItemCloth(carpet));
 	}
 
 	@Subscribe
 	public void init(FMLInitializationEvent event) {
+		proxy.init();
 	}
 
 	@Subscribe
 	public void postInit(FMLPostInitializationEvent event) {
+		proxy.postInit();
 	}
 }

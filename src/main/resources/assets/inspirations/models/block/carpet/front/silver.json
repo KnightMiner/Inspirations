@@ -1,0 +1,6 @@
+{
+    "parent": "inspirations:block/carpet/front/base",
+    "textures": {
+        "wool": "blocks/wool_colored_silver"
+    }
+}

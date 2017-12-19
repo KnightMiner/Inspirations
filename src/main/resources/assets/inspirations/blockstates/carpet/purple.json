@@ -1,0 +1,93 @@
+{
+    "multipart": [
+        {   "when": { "northwest": "true" },
+            "apply": { "model": "inspirations:carpet/lower/purple" }
+        },
+        {   "when": { "northwest": "false" },
+            "apply": { "model": "inspirations:carpet/corner/purple" }
+        },
+        {   "when": { "northwest": "false", "northeast": "true" },
+            "apply": { "model": "inspirations:carpet/wall_right/purple" }
+        },
+        {   "when": { "northwest": "false", "southwest": "true" },
+            "apply": { "model": "inspirations:carpet/wall_left/purple" }
+        },
+        {   "when": { "northwest": "false", "northeast": "true", "southwest": "true", "southeast": "true" },
+            "apply": { "model": "inspirations:carpet/wall_post/purple" }
+        },
+        
+        {   "when": { "northeast": "true" },
+            "apply": { "model": "inspirations:carpet/lower/purple", "y": 90, "uvlock": true }
+        },
+        {   "when": { "northeast": "false" },
+            "apply": { "model": "inspirations:carpet/corner/purple", "y": 90, "uvlock": true }
+        },
+        {   "when": { "northeast": "false", "southeast": "true" },
+            "apply": { "model": "inspirations:carpet/wall_right/purple", "y": 90, "uvlock": true }
+        },
+        {   "when": { "northeast": "false", "northwest": "true" },
+            "apply": { "model": "inspirations:carpet/wall_left/purple", "y": 90, "uvlock": true }
+        },
+        {   "when": { "northeast": "false", "northwest": "true", "southwest": "true", "southeast": "true" },
+            "apply": { "model": "inspirations:carpet/wall_post/purple", "y": 90, "uvlock": true }
+        },
+        
+        {   "when": { "southeast": "true" },
+            "apply": { "model": "inspirations:carpet/lower/purple", "y": 180, "uvlock": true }
+        },
+        {   "when": { "southeast": "false" },
+            "apply": { "model": "inspirations:carpet/corner/purple", "y": 180, "uvlock": true }
+        },
+        {   "when": { "southeast": "false", "southwest": "true" },
+            "apply": { "model": "inspirations:carpet/wall_right/purple", "y": 180, "uvlock": true }
+        },
+        {   "when": { "southeast": "false", "northeast": "true" },
+            "apply": { "model": "inspirations:carpet/wall_left/purple", "y": 180, "uvlock": true }
+        },
+        {   "when": { "southeast": "false", "northeast": "true", "southwest": "true", "northwest": "true" },
+            "apply": { "model": "inspirations:carpet/wall_post/purple", "y": 180, "uvlock": true }
+        },
+        
+        {   "when": { "southwest": "true" },
+            "apply": { "model": "inspirations:carpet/lower/purple", "y": 270, "uvlock": true }
+        },
+        {   "when": { "southwest": "false" },
+            "apply": { "model": "inspirations:carpet/corner/purple", "y": 270, "uvlock": true }
+        },
+        {   "when": { "southwest": "false", "northwest": "true" },
+            "apply": { "model": "inspirations:carpet/wall_right/purple", "y": 270, "uvlock": true }
+        },
+        {   "when": { "southwest": "false", "southeast": "true" },
+            "apply": { "model": "inspirations:carpet/wall_left/purple", "y": 270, "uvlock": true }
+        },
+        {   "when": { "southwest": "false", "northeast": "true", "northwest": "true", "southeast": "true" },
+            "apply": { "model": "inspirations:carpet/wall_post/purple", "y": 270, "uvlock": true }
+        },
+        
+        {   "when": { "southwest": "true", "southeast": "true" },
+            "apply": { "model": "inspirations:carpet/front/purple" }
+        },
+        {   "when": { "northwest": "true", "southwest": "true" },
+            "apply": { "model": "inspirations:carpet/front/purple", "y": 90, "uvlock": true }
+        },
+        {   "when": { "northwest": "true", "northeast": "true" },
+            "apply": { "model": "inspirations:carpet/front/purple", "y": 180, "uvlock": true }
+        },
+        {   "when": { "northeast": "true", "southeast": "true" },
+            "apply": { "model": "inspirations:carpet/front/purple", "y": 270, "uvlock": true }
+        },
+        
+        {   "when": { "northeast": "true", "southwest": "true", "southeast": "true" },
+            "apply": { "model": "inspirations:carpet/front_post/purple" }
+        },
+        {   "when": { "northwest": "true", "southwest": "true", "southeast": "true" },
+            "apply": { "model": "inspirations:carpet/front_post/purple", "y": 90, "uvlock": true }
+        },
+        {   "when": { "northwest": "true", "northeast": "true", "southwest": "true" },
+            "apply": { "model": "inspirations:carpet/front_post/purple", "y": 180, "uvlock": true }
+        },
+        {   "when": { "northwest": "true", "northeast": "true", "southeast": "true" },
+            "apply": { "model": "inspirations:carpet/front_post/purple", "y": 270, "uvlock": true }
+        }
+    ]
+}

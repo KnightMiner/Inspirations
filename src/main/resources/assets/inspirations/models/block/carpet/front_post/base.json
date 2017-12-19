@@ -1,0 +1,20 @@
+{
+    "textures": {
+        "particle": "#wool"
+    },
+    "elements": [
+        {
+            "name": "Cube",
+            "from": [ 16, -15.99, 16 ], 
+            "to": [ 16.995, -7.01, 16.995 ], 
+            "faces": {
+                "north": { "texture": "#wool", "uv": [ 15,  7, 16, 16 ] },
+                "east":  { "texture": "#wool", "uv": [ 15,  7, 16, 16 ] },
+                "south": { "texture": "#wool", "uv": [  0,  7,  1, 16 ] },
+                "west":  { "texture": "#wool", "uv": [  0,  6,  1, 16 ] },
+                "up":    { "texture": "#wool", "uv": [  0,  0,  1,  1 ] },
+                "down":  { "texture": "#wool", "uv": [  0, 15,  1, 16 ] }
+            }
+        }
+    ]
+}
