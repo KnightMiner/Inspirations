@@ -5,7 +5,6 @@ import java.util.Locale;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.library.Util;
-import knightminer.inspirations.redstone.InspirationsRedstone;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.item.Item;
@@ -26,10 +25,6 @@ public class PulseBase {
 	/* Loaded */
 	public static boolean isBuildingLoaded() {
 		return Inspirations.pulseManager.isPulseLoaded(InspirationsBuilding.pulseID);
-	}
-
-	public static boolean isRedstoneLoaded() {
-		return Inspirations.pulseManager.isPulseLoaded(InspirationsRedstone.pulseID);
 	}
 
 

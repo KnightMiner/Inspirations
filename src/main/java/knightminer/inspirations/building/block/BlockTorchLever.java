@@ -1,4 +1,4 @@
-package knightminer.inspirations.redstone.block;
+package knightminer.inspirations.building.block;
 
 import java.util.Random;
 

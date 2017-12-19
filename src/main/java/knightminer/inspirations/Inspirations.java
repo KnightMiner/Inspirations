@@ -6,7 +6,6 @@ import org.apache.logging.log4j.Logger;
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.network.InspirationsNetwork;
-import knightminer.inspirations.redstone.InspirationsRedstone;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -35,7 +34,6 @@ public class Inspirations {
 	public static GuiHandler guiHandler = new GuiHandler();
 
 	static {
-		pulseManager.registerPulse(new InspirationsRedstone());
 		pulseManager.registerPulse(new InspirationsBuilding());
 		pulseManager.registerPulse(new InspirationsTweaks());
 	}

@@ -4,6 +4,7 @@ import com.google.common.eventbus.Subscribe;
 
 import knightminer.inspirations.building.block.BlockBookshelf;
 import knightminer.inspirations.building.block.BlockRope;
+import knightminer.inspirations.building.block.BlockTorchLever;
 import knightminer.inspirations.building.tileentity.TileBookshelf;
 import knightminer.inspirations.common.CommonProxy;
 import knightminer.inspirations.common.PulseBase;
@@ -40,6 +41,9 @@ public class InspirationsBuilding extends PulseBase {
 	// materials
 	public static ItemStack redstoneBook;
 
+	// blocks
+	public static Block torchLever;
+
 	@Subscribe
 	public void preInit(FMLPreInitializationEvent event) {
 		proxy.preInit();
@@ -51,6 +55,7 @@ public class InspirationsBuilding extends PulseBase {
 
 		bookshelf = registerBlock(r, new BlockBookshelf(), "bookshelf");
 		rope = registerBlock(r, new BlockRope(), "rope");
+		torchLever = registerBlock(r, new BlockTorchLever(), "torch_lever");
 
 		registerTE(TileBookshelf.class, "bookshelf");
 	}
@@ -64,10 +69,10 @@ public class InspirationsBuilding extends PulseBase {
 		for(EnumDyeColor color : EnumDyeColor.values()) {
 			books.addMeta(color.getMetadata(), color.getName());
 		}
-		if(isRedstoneLoaded()) {
-			redstoneBook = books.addMeta(16, "redstone");
-		}
+		redstoneBook = books.addMeta(16, "redstone");
 
+		// itemblocks
+		registerItemBlock(r, torchLever);
 		registerItemBlock(r, new ItemBlockTexture(bookshelf), BlockBookshelf.TYPE);
 		registerEnumItemBlock(r, rope);
 	}

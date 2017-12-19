@@ -1,14 +1,8 @@
 {
-  "conditions": [
-    {
-      "type": "pulse_loaded",
-      "pulse": "InspirationsBuilding"
-    },
-    {
-      "type": "pulse_loaded",
-      "pulse": "InspirationsRedstone"
-    }
-  ],
+  "conditions": [{
+    "type": "pulse_loaded",
+    "pulse": "InspirationsBuilding"
+  }],
   "type": "forge:ore_shapeless",
   "group": "inspirations:colored_book",
   "result": {
