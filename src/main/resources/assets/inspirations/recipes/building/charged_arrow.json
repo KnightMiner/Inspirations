@@ -1,0 +1,37 @@
+{
+  "conditions": [
+    {
+      "type": "pulse_loaded",
+      "pulse": "InspirationsBuilding"
+    },
+    {
+      "type": "config",
+      "prop": "redstone_charge"
+    }
+  ],
+  "result": {
+    "item": "inspirations:arrow",
+    "data": 0,
+    "count": 8
+  },
+  "pattern": [
+    "R",
+    "S",
+    "F"
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "R": {
+      "type": "forge:ore_dict",
+      "ore": "dustRedstone"
+    },
+    "S": {
+      "type": "forge:ore_dict",
+      "ore": "stickWood"
+    },
+    "F": {
+      "type": "forge:ore_dict",
+      "ore": "feather"
+    }
+  }
+}

@@ -34,3 +34,7 @@ gui.inspirations.bookshelf.name=Bookshelf
 tile.inspirations.torch_lever.name=Torch Lever
 
 item.inspirations.books.redstone.name=Trapped Book
+item.inspirations.redstone_charger.name=Redstone Charger
+item.inspirations.arrow.charged.name=Charged Arrow
+
+entity.inspirations.arrow.name=Arrow

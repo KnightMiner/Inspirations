@@ -34,6 +34,7 @@ public class Config {
 	public static boolean enableBookshelf = true;
 	public static boolean enableColoredBooks = true;
 	public static boolean enableRedstoneBook = true;
+	public static boolean enableRedstoneCharge = true;
 	public static boolean showAllVariants = true;
 	private static String[] bookKeywords = {
 			"book",
@@ -45,6 +46,7 @@ public class Config {
 	// tweaks
 	public static boolean enablePigDesaddle = true;
 	public static boolean enableFittedCarpets = true;
+
 
 	/**
 	 * Loads the configuration file from the event
@@ -72,6 +74,9 @@ public class Config {
 
 			// torch lever
 			enableTorchLever = configFile.getBoolean("torchLever", "building", enableTorchLever, "Enables the torch lever. Basically a lever which looks like a torch");
+
+			// redstone charger
+			enableRedstoneCharge = configFile.getBoolean("redstoneCharge", "building", enableRedstoneCharge, "Enables the redstone charge, a quick pulse created with a flint and steel like item");
 
 			// rope
 			enableRope = configFile.getBoolean("rope", "building", enableRope, "Enables rope, can be climbed like ladders and extended with additional rope");
@@ -175,6 +180,7 @@ public class Config {
 			switch(property) {
 				// building
 				case "torch_lever": return enableTorchLever;
+				case "redstone_charge": return enableRedstoneCharge;
 				case "rope": return enableRope;
 				case "bookshelf": return enableBookshelf;
 				case "colored_books": return enableColoredBooks;

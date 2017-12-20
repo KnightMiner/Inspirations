@@ -6,12 +6,16 @@ import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.library.Util;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockDispenser;
 import net.minecraft.block.properties.IProperty;
+import net.minecraft.dispenser.IBehaviorDispenseItem;
+import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
@@ -104,7 +108,14 @@ public class PulseBase {
 	}
 
 
-	/* Tile Entity */
+	/* Tile Entity & Entity */
+	protected static <T extends Entity> EntityEntryBuilder<T> getEntityBuilder(Class<T> clazz, String name, int id) {
+		return EntityEntryBuilder.<T>create()
+				.entity(clazz)
+				.id(Util.getResource(name), id)
+				.name(Util.prefix(name));
+	}
+
 	protected static void registerTE(Class<? extends TileEntity> teClazz, String name) {
 		if(!name.equals(name.toLowerCase(Locale.US))) {
 			throw new IllegalArgumentException(
@@ -112,5 +123,12 @@ public class PulseBase {
 		}
 
 		GameRegistry.registerTileEntity(teClazz, Util.resource(name));
+	}
+
+	/* Other */
+	protected static void registerDispenserBehavior(Item item, IBehaviorDispenseItem behavior) {
+		if(item != null) {
+			BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(item, behavior);
+		}
 	}
 }

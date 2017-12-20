@@ -8,10 +8,13 @@ import com.google.common.collect.Maps;
 
 import knightminer.inspirations.building.block.BlockBookshelf;
 import knightminer.inspirations.building.block.BlockBookshelf.BookshelfType;
+import knightminer.inspirations.building.block.BlockRedstoneCharge;
 import knightminer.inspirations.building.block.BlockRope;
 import knightminer.inspirations.building.block.BlockTorchLever;
 import knightminer.inspirations.building.block.BlockRope.RopeType;
 import knightminer.inspirations.building.client.BookshelfModel;
+import knightminer.inspirations.building.client.RenderModArrow;
+import knightminer.inspirations.building.entity.EntityModArrow;
 import knightminer.inspirations.building.tileentity.TileBookshelf;
 import knightminer.inspirations.common.ClientProxy;
 import knightminer.inspirations.library.Util;
@@ -22,6 +25,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.renderer.block.statemap.StateMap;
 import net.minecraft.client.renderer.block.statemap.StateMapperBase;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.ItemColors;
@@ -39,18 +43,29 @@ import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class BuildingClientProxy extends ClientProxy {
 	private static final Minecraft mc = Minecraft.getMinecraft();
 	private static final ResourceLocation MODEL_BOOKSHELF = Util.getResource("bookshelf");
 
+	@Override
+	public void preInit() {
+		super.preInit();
+
+		RenderingRegistry.registerEntityRenderingHandler(EntityModArrow.class, RenderModArrow::new);
+	}
+
 	@SubscribeEvent
 	public void registerModels(ModelRegistryEvent event) {
 		setModelStateMapper(InspirationsBuilding.torchLever, new TorchLeverStateMapper());
+		setModelStateMapper(InspirationsBuilding.redstoneCharge, new StateMap.Builder().ignore(BlockRedstoneCharge.FACING, BlockRedstoneCharge.QUICK).build());
 
 		// items
 		registerItemMetaDynamic(InspirationsBuilding.books);
+		registerItemModel(InspirationsBuilding.redstoneCharger);
+		registerItemModel(InspirationsBuilding.arrow, 0, "charged");
 
 		// blocks
 		registerItemModel(InspirationsBuilding.torchLever);
