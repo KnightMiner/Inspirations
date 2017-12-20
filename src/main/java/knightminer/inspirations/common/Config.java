@@ -41,6 +41,7 @@ public class Config {
 	private static String[] bookOverrides = new String[0];
 
 	// utility
+	public static boolean enableLock = true;
 	public static boolean enableTorchLever = true;
 	public static boolean enableRedstoneBook = true;
 	public static boolean enableRedstoneCharge = true;
@@ -88,6 +89,9 @@ public class Config {
 
 			// redstone charge
 			enableRedstoneCharge = configFile.getBoolean("redstoneCharge", "utility", enableRedstoneCharge, "Enables the redstone charge, a quick pulse created with a flint and steel like item");
+
+			// lock
+			enableLock = configFile.getBoolean("lock", "utility", enableLock, "An item allowing you to lock a tile entity to only open for a special named item");
 
 		}
 
@@ -193,6 +197,7 @@ public class Config {
 				case "rope": return enableRope;
 
 				// utility
+				case "lock": return enableLock;
 				case "redstone_book": return enableRedstoneBook;
 				case "redstone_charge": return enableRedstoneCharge;
 				case "torch_lever": return enableTorchLever;

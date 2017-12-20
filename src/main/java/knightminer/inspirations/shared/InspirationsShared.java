@@ -55,6 +55,11 @@ public class InspirationsShared extends PulseBase {
 
 		materials = registerItem(r, new ItemMetaDynamic(), "materials");
 		materials.setCreativeTab(CreativeTabs.MATERIALS);
+
+		if(isUtilityLoaded()) {
+			lock = materials.addMeta(0, "lock");
+			key = materials.addMeta(1, "key");
+		}
 	}
 
 	@SubscribeEvent

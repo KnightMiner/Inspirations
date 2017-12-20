@@ -1,0 +1,11 @@
+{
+    "forge_marker": 1,
+    "defaults": {
+        "transform": "forge:default-item",
+        "model": "forge:item-layer"
+    },
+    "variants": {
+        "lock": [{ "textures": { "layer0": "inspirations:items/lock" }}],
+        "key": [{ "textures": { "layer0": "inspirations:items/key" }}]
+    }
+}

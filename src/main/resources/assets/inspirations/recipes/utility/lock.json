@@ -1,0 +1,32 @@
+{
+  "conditions": [
+    {
+      "type": "pulse_loaded",
+      "pulse": "InspirationsUtility"
+    },
+    {
+      "type": "config",
+      "prop": "lock"
+    }
+  ],
+  "result": {
+    "item": "inspirations:materials",
+    "data": 0
+  },
+  "mirrored": true,
+  "pattern": [
+    "N",
+    "I"
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "I": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIron"
+    },
+    "N": {
+      "type": "forge:ore_dict",
+      "ore": "nuggetIron"
+    }
+  }
+}

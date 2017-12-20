@@ -37,3 +37,15 @@ item.inspirations.books.redstone.name=Trapped Book
 item.inspirations.redstone_charger.name=Redstone Charger
 item.inspirations.arrow.charged.name=Charged Arrow
 
+item.inspirations.materials.lock.name=Blank Lock
+item.inspirations.materials.lock.tooltip=Used to lock containers\nMust first be named in an anvil
+item.inspirations.materials.key.name=Blank Key
+item.inspirations.materials.key.tooltip=Used to remove matching locks
+
+inspirations.lock.success=Container locked
+inspirations.lock.fail.locked=This container is already locked
+inspirations.lock.fail.blank=The lock is blank, it must be named in an anvil
+
+inspirations.unlock.success=Container unlocked
+inspirations.unlock.fail.no_match=This key does not fit the lock
+inspirations.unlock.fail.unlocked=The container is not locked
