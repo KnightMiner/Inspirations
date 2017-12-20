@@ -159,7 +159,9 @@ public class BlockRope extends EnumBlock<BlockRope.RopeType> {
 				IBlockState newState = world.getBlockState(pos);
 				SoundType soundtype = newState.getBlock().getSoundType(newState, world, pos, player);
 				world.playSound(player, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
-				stack.shrink(1);
+				if(!player.capabilities.isCreativeMode) {
+					stack.shrink(1);
+				}
 			}
 		}
 
