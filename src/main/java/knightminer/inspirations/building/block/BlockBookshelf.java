@@ -14,6 +14,7 @@ import knightminer.inspirations.library.util.RecipeUtil;
 import knightminer.inspirations.library.util.TagUtil;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.ITileEntityProvider;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
@@ -28,7 +29,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.IStringSerializable;
@@ -69,6 +69,9 @@ public class BlockBookshelf extends BlockInventory implements ITileEntityProvide
 		super(Material.WOOD);
 		this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
 		this.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
+		this.setHardness(2.0F);
+		this.setResistance(5.0F);
+		this.setSoundType(SoundType.WOOD);
 	}
 
 	@Override
@@ -101,11 +104,7 @@ public class BlockBookshelf extends BlockInventory implements ITileEntityProvide
 	 */
 	@Override
 	public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
-		if(facing.getAxis().isVertical()) {
-			facing = placer.getHorizontalFacing().getOpposite();
-		}
-
-		return this.getStateFromMeta(meta).withProperty(FACING, facing);
+		return this.getStateFromMeta(meta).withProperty(FACING, placer.getHorizontalFacing().getOpposite());
 	}
 
 	@Override
@@ -287,12 +286,6 @@ public class BlockBookshelf extends BlockInventory implements ITileEntityProvide
 	/*
 	 * Block properties
 	 */
-	@Nonnull
-	@Override
-	public EnumBlockRenderType getRenderType(IBlockState state) {
-		return EnumBlockRenderType.MODEL;
-	}
-
 	@Override
 	@SideOnly(Side.CLIENT)
 	public BlockRenderLayer getBlockLayer() {

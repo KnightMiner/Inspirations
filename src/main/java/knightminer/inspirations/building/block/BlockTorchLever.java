@@ -30,7 +30,7 @@ public class BlockTorchLever extends BlockTorch {
 				.withProperty(FACING, EnumFacing.UP)
 				.withProperty(SIDE, EnumFacing.NORTH)
 				.withProperty(POWERED, false));
-		this.setLightLevel(1.0F);
+		this.setLightLevel(0.9375f);
 	}
 
 	@Override
@@ -85,8 +85,12 @@ public class BlockTorchLever extends BlockTorch {
 			return true;
 		}
 
+		if(sideHit.getAxis().isVertical()) {
+			sideHit = playerIn.getHorizontalFacing();
+		}
+
 		// update state
-		state = state.cycleProperty(POWERED).withProperty(SIDE, playerIn.getHorizontalFacing());
+		state = state.cycleProperty(POWERED).withProperty(SIDE, sideHit);
 		world.setBlockState(pos, state, 3);
 		// play sound
 		float pitch = state.getValue(POWERED) ? 0.6F : 0.5F;
