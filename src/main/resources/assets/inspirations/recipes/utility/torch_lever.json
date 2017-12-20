@@ -2,7 +2,7 @@
   "conditions": [
     {
       "type": "pulse_loaded",
-      "pulse": "InspirationsBuilding"
+      "pulse": "InspirationsUtility"
     },
     {
       "type": "config",
@@ -20,10 +20,12 @@
   "type": "forge:ore_shaped",
   "key": {
     "S": {
-      "item": "minecraft:cobblestone"
+      "type": "forge:ore_dict",
+      "ore": "cobblestone"
     },
     "T": {
-      "item": "minecraft:torch"
+      "type": "forge:ore_dict",
+      "ore": "torch"
     }
   }
 }

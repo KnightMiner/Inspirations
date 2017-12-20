@@ -29,12 +29,9 @@ public class Config {
 
 
 	// building
-	public static boolean enableTorchLever = true;
 	public static boolean enableRope = true;
 	public static boolean enableBookshelf = true;
 	public static boolean enableColoredBooks = true;
-	public static boolean enableRedstoneBook = true;
-	public static boolean enableRedstoneCharge = true;
 	public static boolean showAllVariants = true;
 	private static String[] bookKeywords = {
 			"book",
@@ -43,9 +40,15 @@ public class Config {
 	};
 	private static String[] bookOverrides = new String[0];
 
+	// utility
+	public static boolean enableTorchLever = true;
+	public static boolean enableRedstoneBook = true;
+	public static boolean enableRedstoneCharge = true;
+
 	// tweaks
 	public static boolean enablePigDesaddle = true;
 	public static boolean enableFittedCarpets = true;
+
 
 
 	/**
@@ -63,7 +66,6 @@ public class Config {
 			// bookshelves
 			enableBookshelf = configFile.getBoolean("bookshelf", "building", enableBookshelf, "Enables the bookshelf, a decorative block to display books");
 			enableColoredBooks = configFile.getBoolean("coloredBooks", "building.bookshelf", enableColoredBooks, "Enables colored books, basically colored versions of the vanilla book to decorate bookshelves") && enableBookshelf;
-			enableRedstoneBook = configFile.getBoolean("redstoneBook", "building.bookshelf", enableRedstoneBook, "Enables the trapped book, which will emit redstone power when placed in a bookshelf") && enableBookshelf;
 			bookKeywords = configFile.getStringList("bookKeywords", "building.bookshelf", bookKeywords,
 					"List of keywords for valid books, used to determine valid books in the bookshelf");
 			InspirationsRegistry.setBookKeywords(bookKeywords);
@@ -72,14 +74,21 @@ public class Config {
 					"List of itemstacks to override book behavior. Format is modid:name[:meta[:isBook]]. Unset meta will default wildcard. Unset isBook will default true");
 			processBookOverrides(bookOverrides);
 
-			// torch lever
-			enableTorchLever = configFile.getBoolean("torchLever", "building", enableTorchLever, "Enables the torch lever. Basically a lever which looks like a torch");
-
-			// redstone charger
-			enableRedstoneCharge = configFile.getBoolean("redstoneCharge", "building", enableRedstoneCharge, "Enables the redstone charge, a quick pulse created with a flint and steel like item");
 
 			// rope
 			enableRope = configFile.getBoolean("rope", "building", enableRope, "Enables rope, can be climbed like ladders and extended with additional rope");
+		}
+
+		// utility
+		{
+			enableRedstoneBook = configFile.getBoolean("redstoneBook", "utility", enableRedstoneBook, "Enables the trapped book, which will emit redstone power when placed in a bookshelf. Requires bookshelf.") && enableBookshelf;
+
+			// torch lever
+			enableTorchLever = configFile.getBoolean("torchLever", "utility", enableTorchLever, "Enables the torch lever. Basically a lever which looks like a torch");
+
+			// redstone charge
+			enableRedstoneCharge = configFile.getBoolean("redstoneCharge", "utility", enableRedstoneCharge, "Enables the redstone charge, a quick pulse created with a flint and steel like item");
+
 		}
 
 		// tweaks
@@ -179,12 +188,14 @@ public class Config {
 		private static boolean propertyEnabled(String property) {
 			switch(property) {
 				// building
-				case "torch_lever": return enableTorchLever;
-				case "redstone_charge": return enableRedstoneCharge;
-				case "rope": return enableRope;
 				case "bookshelf": return enableBookshelf;
 				case "colored_books": return enableColoredBooks;
+				case "rope": return enableRope;
+
+				// utility
 				case "redstone_book": return enableRedstoneBook;
+				case "redstone_charge": return enableRedstoneCharge;
+				case "torch_lever": return enableTorchLever;
 			}
 
 			throw new JsonSyntaxException("Invalid propertyname '" + property + "'");

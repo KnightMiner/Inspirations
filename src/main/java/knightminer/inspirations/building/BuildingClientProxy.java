@@ -1,32 +1,18 @@
 package knightminer.inspirations.building;
 
-import java.util.LinkedHashMap;
-
-import javax.annotation.Nonnull;
-
-import com.google.common.collect.Maps;
-
 import knightminer.inspirations.building.block.BlockBookshelf;
 import knightminer.inspirations.building.block.BlockBookshelf.BookshelfType;
-import knightminer.inspirations.building.block.BlockRedstoneCharge;
 import knightminer.inspirations.building.block.BlockRope;
-import knightminer.inspirations.building.block.BlockTorchLever;
 import knightminer.inspirations.building.block.BlockRope.RopeType;
 import knightminer.inspirations.building.client.BookshelfModel;
-import knightminer.inspirations.building.client.RenderModArrow;
-import knightminer.inspirations.building.entity.EntityModArrow;
 import knightminer.inspirations.building.tileentity.TileBookshelf;
 import knightminer.inspirations.common.ClientProxy;
-import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.client.ClientUtil;
 import net.minecraft.block.Block;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.client.renderer.block.statemap.StateMap;
-import net.minecraft.client.renderer.block.statemap.StateMapperBase;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -43,32 +29,17 @@ import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
-import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class BuildingClientProxy extends ClientProxy {
 	private static final Minecraft mc = Minecraft.getMinecraft();
-	private static final ResourceLocation MODEL_BOOKSHELF = Util.getResource("bookshelf");
-
-	@Override
-	public void preInit() {
-		super.preInit();
-
-		RenderingRegistry.registerEntityRenderingHandler(EntityModArrow.class, RenderModArrow::new);
-	}
 
 	@SubscribeEvent
 	public void registerModels(ModelRegistryEvent event) {
-		setModelStateMapper(InspirationsBuilding.torchLever, new TorchLeverStateMapper());
-		setModelStateMapper(InspirationsBuilding.redstoneCharge, new StateMap.Builder().ignore(BlockRedstoneCharge.FACING, BlockRedstoneCharge.QUICK).build());
-
 		// items
 		registerItemMetaDynamic(InspirationsBuilding.books);
-		registerItemModel(InspirationsBuilding.redstoneCharger);
-		registerItemModel(InspirationsBuilding.arrow, 0, "charged");
 
 		// blocks
-		registerItemModel(InspirationsBuilding.torchLever);
 		registerItemModel(InspirationsBuilding.bookshelf);
 		registerRopeModels(InspirationsBuilding.rope);
 	}
@@ -146,13 +117,14 @@ public class BuildingClientProxy extends ClientProxy {
 	 */
 	@SubscribeEvent
 	public void onModelBake(ModelBakeEvent event) {
+		ResourceLocation bookshelfLoc = InspirationsBuilding.bookshelf.getRegistryName();
 		for(BlockBookshelf.BookshelfType type : BlockBookshelf.BookshelfType.values()) {
 			for(EnumFacing facing : EnumFacing.HORIZONTALS) {
-				replaceBookshelfModel(event, new ModelResourceLocation(MODEL_BOOKSHELF,
+				replaceBookshelfModel(event, new ModelResourceLocation(bookshelfLoc,
 						String.format("facing=%s,type=%s", facing.getName(), type.getName())));
 			}
 		}
-		replaceBookshelfModel(event, new ModelResourceLocation(MODEL_BOOKSHELF, "inventory"));
+		replaceBookshelfModel(event, new ModelResourceLocation(bookshelfLoc, "inventory"));
 	}
 
 	private static void replaceBookshelfModel(ModelBakeEvent event, ModelResourceLocation location) {
@@ -161,29 +133,5 @@ public class BuildingClientProxy extends ClientProxy {
 		IBakedModel finalModel = new BookshelfModel(standard, model, DefaultVertexFormats.BLOCK);
 
 		event.getModelRegistry().putObject(location, finalModel);
-	}
-
-
-	/**
-	 * Mapper for torch levers, to simplify rotations for the floor state
-	 */
-	private static class TorchLeverStateMapper extends StateMapperBase {
-		@Nonnull
-		@Override
-		protected ModelResourceLocation getModelResourceLocation(@Nonnull IBlockState state) {
-			ResourceLocation base = state.getBlock().getRegistryName();
-			LinkedHashMap<IProperty<?>, Comparable<?>> map = Maps.newLinkedHashMap(state.getProperties());
-			String suffix = "";
-			// if up, use the up file and ignore facing
-			if(state.getValue(BlockTorchLever.FACING) == EnumFacing.UP) {
-				map.remove(BlockTorchLever.FACING);
-			} else {
-				// otherwise ignore side
-				map.remove(BlockTorchLever.SIDE);
-				suffix = "_wall";
-			}
-			ResourceLocation res = new ResourceLocation(base.getResourceDomain(), base.getResourcePath() + suffix);
-			return new ModelResourceLocation(res, this.getPropertyString(map));
-		}
 	}
 }

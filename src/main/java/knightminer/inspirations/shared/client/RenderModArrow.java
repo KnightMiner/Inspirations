@@ -1,7 +1,7 @@
-package knightminer.inspirations.building.client;
+package knightminer.inspirations.shared.client;
 
-import knightminer.inspirations.building.entity.EntityModArrow;
 import knightminer.inspirations.library.Util;
+import knightminer.inspirations.shared.entity.EntityModArrow;
 import net.minecraft.client.renderer.entity.RenderArrow;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.util.ResourceLocation;

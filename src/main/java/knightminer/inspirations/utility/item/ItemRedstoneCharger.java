@@ -1,8 +1,8 @@
-package knightminer.inspirations.building.item;
+package knightminer.inspirations.utility.item;
 
-import static knightminer.inspirations.building.InspirationsBuilding.redstoneCharge;
+import static knightminer.inspirations.utility.InspirationsUtility.redstoneCharge;
 
-import knightminer.inspirations.building.block.BlockRedstoneCharge;
+import knightminer.inspirations.utility.block.BlockRedstoneCharge;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;

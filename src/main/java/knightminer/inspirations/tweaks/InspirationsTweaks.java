@@ -32,8 +32,6 @@ public class InspirationsTweaks extends PulseBase {
 
 	@Subscribe
 	public void preInit(FMLPreInitializationEvent event) {
-		MinecraftForge.EVENT_BUS.register(TweaksEvents.class);
-
 		proxy.preInit();
 	}
 
@@ -63,5 +61,6 @@ public class InspirationsTweaks extends PulseBase {
 	@Subscribe
 	public void postInit(FMLPostInitializationEvent event) {
 		proxy.postInit();
+		MinecraftForge.EVENT_BUS.register(TweaksEvents.class);
 	}
 }

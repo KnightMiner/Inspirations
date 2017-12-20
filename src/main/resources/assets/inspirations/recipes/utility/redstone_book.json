@@ -5,6 +5,10 @@
       "pulse": "InspirationsBuilding"
     },
     {
+      "type": "pulse_loaded",
+      "pulse": "InspirationsUtility"
+    },
+    {
       "type": "config",
       "prop": "redstone_book"
     }

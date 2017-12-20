@@ -1,4 +1,4 @@
-
+entity.inspirations.arrow.name=Arrow
 
 # Building
 tile.inspirations.bookshelf.normal.name=Bookshelf
@@ -30,11 +30,10 @@ item.inspirations.books.black.name=Black Book
 gui.inspirations.bookshelf.name=Bookshelf
 
 
-# Redstone
+# Utility
 tile.inspirations.torch_lever.name=Torch Lever
 
 item.inspirations.books.redstone.name=Trapped Book
 item.inspirations.redstone_charger.name=Redstone Charger
 item.inspirations.arrow.charged.name=Charged Arrow
 
-entity.inspirations.arrow.name=Arrow
