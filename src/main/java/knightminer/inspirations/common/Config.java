@@ -50,6 +50,8 @@ public class Config {
 	public static boolean enablePigDesaddle = true;
 	public static boolean enableFittedCarpets = true;
 
+	public static boolean enableGlassDoor = true;
+
 
 
 	/**
@@ -78,6 +80,9 @@ public class Config {
 
 			// rope
 			enableRope = configFile.getBoolean("rope", "building", enableRope, "Enables rope, can be climbed like ladders and extended with additional rope");
+
+			// glass door
+			enableGlassDoor = configFile.getBoolean("glassDoor", "building", enableGlassDoor, "Enables glass doors and trapdoors. Basically doors, but made of glass. Not sure what you would expect.");
 		}
 
 		// utility
@@ -194,6 +199,7 @@ public class Config {
 				// building
 				case "bookshelf": return enableBookshelf;
 				case "colored_books": return enableColoredBooks;
+				case "glass_door": return enableGlassDoor;
 				case "rope": return enableRope;
 
 				// utility

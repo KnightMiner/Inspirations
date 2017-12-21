@@ -1,0 +1,28 @@
+{
+  "conditions": [
+    {
+      "type": "pulse_loaded",
+      "pulse": "InspirationsBuilding"
+    },
+    {
+      "type": "config",
+      "prop": "glass_door"
+    }
+  ],
+  "type": "forge:ore_shaped",
+  "pattern": [
+    "GGG",
+    "GGG"
+  ],
+  "key": {
+    "G": {
+      "type": "forge:ore_dict",
+      "ore": "blockGlassColorless"
+    }
+  },
+  "result": {
+    "item": "inspirations:glass_trapdoor",
+    "data": 0,
+    "count": 2
+  }
+}

@@ -1,0 +1,55 @@
+{
+    "ambientocclusion": false,
+    "textures": {
+        "particle": "#bottom"
+    },
+    "elements": [
+        {
+            "name": "Door",
+            "from": [ 0, 0, 0 ], 
+            "to": [ 3, 16, 16 ], 
+            "faces": {
+                "down":  { "uv": [ 13, 0, 16, 16 ], "texture": "#bottom", "cullface": "down" },
+                "north": { "uv": [  3, 0,  0, 16 ], "texture": "#bottom", "cullface": "north" },
+                "south": { "uv": [  0, 0,  3, 16 ], "texture": "#bottom", "cullface": "south" },
+                "west":  { "uv": [  0, 0, 16, 16 ], "texture": "#bottom", "cullface": "west" },
+                "east":  { "uv": [ 16, 0,  0, 16 ], "texture": "#bottom" }
+            }
+        },
+        {
+            "name": "InnerHandle",
+            "from": [ 4, 6, 11 ], 
+            "to": [ 5, 16, 12 ], 
+            "faces": {
+                "north": { "texture": "#top", "uv": [ 11, 9, 12, 10 ] },
+                "east":  { "texture": "#top", "uv": [ 11, 9, 12, 10 ] },
+                "south": { "texture": "#top", "uv": [ 11, 9, 12, 10 ] },
+                "west":  { "texture": "#top", "uv": [ 11, 9, 12, 10 ] },
+                "down":  { "texture": "#top", "uv": [ 11, 9, 12, 10 ] }
+            }
+        },
+        {
+            "name": "OuterHandle",
+            "from": [ -2, 6, 11 ], 
+            "to": [ -1, 16, 12 ], 
+            "faces": {
+                "north": { "texture": "#top", "uv": [ 11, 9, 12, 10 ] },
+                "east":  { "texture": "#top", "uv": [ 11, 9, 12, 10 ] },
+                "south": { "texture": "#top", "uv": [ 11, 9, 12, 10 ] },
+                "west":  { "texture": "#top", "uv": [ 11, 9, 12, 10 ] },
+                "down":  { "texture": "#top", "uv": [ 11, 9, 12, 10 ] }
+            }
+        },
+        {
+            "name": "Connection",
+            "from": [ -1, 8, 11 ], 
+            "to": [ 4, 9, 12 ], 
+            "faces": {
+                "north": { "texture": "#top", "uv": [ 11, 9, 12, 10 ] },
+                "south": { "texture": "#top", "uv": [ 11, 9, 12, 10 ] },
+                "up":    { "texture": "#top", "uv": [ 11, 9, 12, 10 ] },
+                "down":  { "texture": "#top", "uv": [ 11, 9, 12, 10 ] }
+            }
+        }
+    ]
+}

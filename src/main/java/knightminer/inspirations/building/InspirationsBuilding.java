@@ -3,6 +3,8 @@ package knightminer.inspirations.building;
 import com.google.common.eventbus.Subscribe;
 
 import knightminer.inspirations.building.block.BlockBookshelf;
+import knightminer.inspirations.building.block.BlockGlassDoor;
+import knightminer.inspirations.building.block.BlockGlassTrapdoor;
 import knightminer.inspirations.building.block.BlockRope;
 import knightminer.inspirations.building.tileentity.TileBookshelf;
 import knightminer.inspirations.common.CommonProxy;
@@ -13,6 +15,7 @@ import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemDoor;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -34,8 +37,11 @@ public class InspirationsBuilding extends PulseBase {
 	// blocks
 	public static Block bookshelf;
 	public static BlockRope rope;
+	public static Block glassDoor;
+	public static Block glassTrapdoor;
 
 	// items
+	public static Item glassDoorItem;
 	public static ItemMetaDynamic books;
 
 	// materials
@@ -57,6 +63,11 @@ public class InspirationsBuilding extends PulseBase {
 
 		if(Config.enableRope) {
 			rope = registerBlock(r, new BlockRope(), "rope");
+		}
+
+		if(Config.enableGlassDoor) {
+			glassDoor = registerBlock(r, new BlockGlassDoor(), "glass_door");
+			glassTrapdoor = registerBlock(r, new BlockGlassTrapdoor(), "glass_trapdoor");
 		}
 	}
 
@@ -81,6 +92,11 @@ public class InspirationsBuilding extends PulseBase {
 		}
 		if(rope != null) {
 			registerEnumItemBlock(r, rope);
+		}
+		if(Config.enableGlassDoor) {
+			glassDoorItem = registerItem(r, new ItemDoor(glassDoor), "glass_door");
+			glassDoorItem.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
+			registerItemBlock(r, glassTrapdoor);
 		}
 	}
 

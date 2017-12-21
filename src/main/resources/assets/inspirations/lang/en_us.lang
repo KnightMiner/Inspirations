@@ -10,6 +10,10 @@ tile.inspirations.rope.rope.name=Rope
 tile.inspirations.rope.chain.name=Chain
 tile.inspirations.rope.vine.name=Vine Rope
 
+tile.inspirations.glass_trapdoor.name=Glass Trapdoor
+tile.inspirations.glass_door.name=Glass Door
+item.inspirations.glass_door.name=Glass Door
+
 item.inspirations.books.white.name=White Book
 item.inspirations.books.orange.name=Orange Book
 item.inspirations.books.magenta.name=Magenta Book

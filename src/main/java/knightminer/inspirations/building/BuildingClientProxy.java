@@ -9,10 +9,12 @@ import knightminer.inspirations.building.tileentity.TileBookshelf;
 import knightminer.inspirations.common.ClientProxy;
 import knightminer.inspirations.library.client.ClientUtil;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockDoor;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.renderer.block.statemap.StateMap;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -36,11 +38,15 @@ public class BuildingClientProxy extends ClientProxy {
 
 	@SubscribeEvent
 	public void registerModels(ModelRegistryEvent event) {
+		setModelStateMapper(InspirationsBuilding.glassDoor, new StateMap.Builder().ignore(BlockDoor.POWERED).build());
+		
 		// items
 		registerItemMetaDynamic(InspirationsBuilding.books);
 
 		// blocks
 		registerItemModel(InspirationsBuilding.bookshelf);
+		registerItemModel(InspirationsBuilding.glassDoorItem);
+		registerItemModel(InspirationsBuilding.glassTrapdoor);
 		registerRopeModels(InspirationsBuilding.rope);
 	}
 
