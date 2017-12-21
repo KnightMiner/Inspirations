@@ -39,7 +39,7 @@ public class BuildingClientProxy extends ClientProxy {
 	@SubscribeEvent
 	public void registerModels(ModelRegistryEvent event) {
 		setModelStateMapper(InspirationsBuilding.glassDoor, new StateMap.Builder().ignore(BlockDoor.POWERED).build());
-		
+
 		// items
 		registerItemMetaDynamic(InspirationsBuilding.books);
 
@@ -48,6 +48,7 @@ public class BuildingClientProxy extends ClientProxy {
 		registerItemModel(InspirationsBuilding.glassDoorItem);
 		registerItemModel(InspirationsBuilding.glassTrapdoor);
 		registerRopeModels(InspirationsBuilding.rope);
+		registerItemBlockMeta(InspirationsBuilding.mulch);
 	}
 
 	private void registerRopeModels(Block rope) {

@@ -30,6 +30,8 @@ public class Config {
 
 	// building
 	public static boolean enableRope = true;
+	public static boolean enableGlassDoor = true;
+	public static boolean enableMulch = true;
 	public static boolean enableBookshelf = true;
 	public static boolean enableColoredBooks = true;
 	public static boolean showAllVariants = true;
@@ -49,9 +51,6 @@ public class Config {
 	// tweaks
 	public static boolean enablePigDesaddle = true;
 	public static boolean enableFittedCarpets = true;
-
-	public static boolean enableGlassDoor = true;
-
 
 
 	/**
@@ -83,6 +82,9 @@ public class Config {
 
 			// glass door
 			enableGlassDoor = configFile.getBoolean("glassDoor", "building", enableGlassDoor, "Enables glass doors and trapdoors. Basically doors, but made of glass. Not sure what you would expect.");
+
+			// glass door
+			enableMulch = configFile.getBoolean("mulch", "building", enableMulch, "Enables mulch, a craftable falling block which supports plants such as flowers");
 		}
 
 		// utility
@@ -96,7 +98,7 @@ public class Config {
 			enableRedstoneCharge = configFile.getBoolean("redstoneCharge", "utility", enableRedstoneCharge, "Enables the redstone charge, a quick pulse created with a flint and steel like item");
 
 			// lock
-			enableLock = configFile.getBoolean("lock", "utility", enableLock, "An item allowing you to lock a tile entity to only open for a special named item");
+			enableLock = configFile.getBoolean("lock", "utility", enableLock, "Enables locks and keys, an item allowing you to lock a tile entity to only open for a special named item");
 
 		}
 
@@ -200,6 +202,7 @@ public class Config {
 				case "bookshelf": return enableBookshelf;
 				case "colored_books": return enableColoredBooks;
 				case "glass_door": return enableGlassDoor;
+				case "mulch": return enableMulch;
 				case "rope": return enableRope;
 
 				// utility

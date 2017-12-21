@@ -5,6 +5,7 @@ import com.google.common.eventbus.Subscribe;
 import knightminer.inspirations.building.block.BlockBookshelf;
 import knightminer.inspirations.building.block.BlockGlassDoor;
 import knightminer.inspirations.building.block.BlockGlassTrapdoor;
+import knightminer.inspirations.building.block.BlockMulch;
 import knightminer.inspirations.building.block.BlockRope;
 import knightminer.inspirations.building.tileentity.TileBookshelf;
 import knightminer.inspirations.common.CommonProxy;
@@ -39,6 +40,7 @@ public class InspirationsBuilding extends PulseBase {
 	public static BlockRope rope;
 	public static Block glassDoor;
 	public static Block glassTrapdoor;
+	public static Block mulch;
 
 	// items
 	public static Item glassDoorItem;
@@ -69,6 +71,10 @@ public class InspirationsBuilding extends PulseBase {
 			glassDoor = registerBlock(r, new BlockGlassDoor(), "glass_door");
 			glassTrapdoor = registerBlock(r, new BlockGlassTrapdoor(), "glass_trapdoor");
 		}
+
+		if(Config.enableMulch) {
+			mulch = registerBlock(r, new BlockMulch(), "mulch");
+		}
 	}
 
 	@SubscribeEvent
@@ -92,6 +98,9 @@ public class InspirationsBuilding extends PulseBase {
 		}
 		if(rope != null) {
 			registerEnumItemBlock(r, rope);
+		}
+		if(mulch != null) {
+			registerItemBlock(r, mulch, BlockMulch.COLOR);
 		}
 		if(Config.enableGlassDoor) {
 			glassDoorItem = registerItem(r, new ItemDoor(glassDoor), "glass_door");

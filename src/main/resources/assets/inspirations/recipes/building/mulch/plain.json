@@ -1,0 +1,28 @@
+{
+  "conditions": [
+    {
+      "type": "pulse_loaded",
+      "pulse": "InspirationsBuilding"
+    },
+    {
+      "type": "config",
+      "prop": "mulch"
+    }
+  ],
+  "type": "forge:ore_shaped",
+  "pattern": [
+    "SS",
+    "SS"
+  ],
+  "key": {
+    "S": {
+      "type": "forge:ore_dict",
+      "ore": "stickWood"
+    }
+  },
+  "result": {
+    "item": "inspirations:mulch",
+    "data": 0,
+    "count": 2
+  }
+}
