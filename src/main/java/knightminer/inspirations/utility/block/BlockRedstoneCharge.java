@@ -122,6 +122,11 @@ public class BlockRedstoneCharge extends Block {
 		return state.getValue(FACING).getOpposite() == side ? 15 : 0;
 	}
 
+	@Override
+	public boolean canProvidePower(IBlockState state) {
+		return true;
+	}
+
 
 	/* Bounds */
 
