@@ -68,7 +68,7 @@ public class BlockBookshelf extends BlockInventory implements ITileEntityProvide
 	public BlockBookshelf() {
 		super(Material.WOOD);
 		this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
-		this.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
+		this.setCreativeTab(CreativeTabs.DECORATIONS);
 		this.setHardness(2.0F);
 		this.setResistance(5.0F);
 		this.setSoundType(SoundType.WOOD);

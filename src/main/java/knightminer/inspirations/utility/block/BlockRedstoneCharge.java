@@ -127,6 +127,11 @@ public class BlockRedstoneCharge extends Block {
 		return true;
 	}
 
+	@Override
+	public boolean canConnectRedstone(IBlockState state, IBlockAccess world, BlockPos pos, @Nullable EnumFacing side) {
+		return false;
+	}
+
 
 	/* Bounds */
 

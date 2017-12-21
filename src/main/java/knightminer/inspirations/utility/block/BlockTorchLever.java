@@ -9,6 +9,7 @@ import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.EnumFacing;
@@ -31,6 +32,7 @@ public class BlockTorchLever extends BlockTorch {
 				.withProperty(SIDE, EnumFacing.NORTH)
 				.withProperty(POWERED, false));
 		this.setLightLevel(0.9375f);
+		this.setCreativeTab(CreativeTabs.REDSTONE);
 	}
 
 	@Override
