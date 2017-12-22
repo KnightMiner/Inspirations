@@ -60,8 +60,8 @@ public class TweaksEvents {
 		BlockPos pos = event.getPos();
 		Block block = world.getBlockState(pos).getBlock();
 		boolean isMycelium = block == Blocks.MYCELIUM;
-		// block must be mycelium for mushrooms or clay/sand for dead bushes
-		if(!isMycelium && block != Blocks.SAND && block != Blocks.HARDENED_CLAY && block != Blocks.STAINED_HARDENED_CLAY) {
+		// block must be mycelium for mushrooms or sand for dead bushes
+		if(!isMycelium && block != Blocks.SAND) {
 			return;
 		}
 

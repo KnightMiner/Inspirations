@@ -115,9 +115,14 @@ public class Config {
 
 		// tweaks
 		{
+			// pig desaddle
 			enablePigDesaddle = configFile.getBoolean("desaddlePig", "tweaks", enablePigDesaddle, "Allows pigs to be desaddled by shift-right click with an empty hand");
+
+			// fitted carpets
 			enableFittedCarpets = configFile.getBoolean("fittedCarpets", "tweaks", enableFittedCarpets, "Carpets fit to stairs. Uses a block override, so disable if another mod replaces carpets");
-			enableExtraBonemeal = configFile.getBoolean("extraBonemeal", "tweaks", enableExtraBonemeal, "Bonemeal can be used on mycelium to produce mushrooms and on sand/hardened clay to produce dead bushes");
+
+			// bonemeal
+			enableExtraBonemeal = configFile.getBoolean("extraBonemeal", "tweaks", enableExtraBonemeal, "Bonemeal can be used on mycelium to produce mushrooms and on sand to produce dead bushes");
 		}
 
 		// saving
