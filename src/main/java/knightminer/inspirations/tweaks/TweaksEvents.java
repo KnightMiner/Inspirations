@@ -1,6 +1,5 @@
 package knightminer.inspirations.tweaks;
 
-import java.util.Iterator;
 import java.util.List;
 
 import knightminer.inspirations.common.Config;
@@ -129,19 +128,20 @@ public class TweaksEvents {
 		}
 
 		List<ItemStack> drops = event.getDrops();
-		Iterator<ItemStack> iterator = drops.iterator();
 		// find the first beetroot from the drops
 		iterator:
-			while(iterator.hasNext()) {
-				ItemStack stack = iterator.next();
+			for(ItemStack stack : drops) {
 				// as soon as we find one, chance to replace it
 				if(stack.getItem() == Items.BEETROOT) {
 					// for each roll, try to get the drop once
 					for(int i = 0; i < rolls; i++) {
 						if(event.getWorld().rand.nextInt(100) == 0) {
-							iterator.remove();
+							stack.shrink(1);
+							if(stack.isEmpty()) {
+								drops.remove(stack);
+							}
 							drops.add(InspirationsShared.heartbeet.copy());
-							// cap at one heartroot in case we get extras, plus its quicker to stop the iterator now
+							// cap at one heartroot in case we get extras, plus prevents concurrent modification
 							break iterator;
 						}
 					}
