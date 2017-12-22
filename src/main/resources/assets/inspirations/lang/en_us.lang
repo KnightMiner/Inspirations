@@ -51,11 +51,14 @@ gui.inspirations.bookshelf.name=Bookshelf
 # Utility
 tile.inspirations.torch_lever.name=Torch Lever
 
-item.inspirations.books.redstone.name=Trapped Book
 tile.inspirations.bricks_button.bricks.name=Bricks Button
 tile.inspirations.bricks_button.nether.name=Nether Brick Button
+
+tile.inspirations.redstone_charge.name=Redstone Charge
 item.inspirations.redstone_charger.name=Redstone Charger
 item.inspirations.arrow.charged.name=Charged Arrow
+
+item.inspirations.books.redstone.name=Trapped Book
 
 item.inspirations.materials.lock.name=Blank Lock
 item.inspirations.materials.lock.tooltip=Used to lock containers\nMust first be named in an anvil
