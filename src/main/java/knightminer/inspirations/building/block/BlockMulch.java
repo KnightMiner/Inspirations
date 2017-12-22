@@ -33,6 +33,7 @@ public class BlockMulch extends BlockFalling {
 		this.setHarvestLevel("shovel", -1);
 		this.setSoundType(SoundType.GROUND);
 		this.setHardness(0.6f);
+		this.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
 	}
 
 	/*
