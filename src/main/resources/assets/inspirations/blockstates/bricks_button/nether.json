@@ -1,7 +1,8 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "inspirations:button/nether_pressed"
+    "model": "inspirations:button/nether_pressed",
+    "uvlock": true
   },
   "variants": {
     "powered": {

@@ -1,7 +1,8 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "inspirations:button/bricks_pressed"
+    "model": "inspirations:button/bricks_pressed",
+    "uvlock": true
   },
   "variants": {
     "powered": {

@@ -108,6 +108,10 @@ public class BlockBricksButton extends EnumBlock<BlockBricksButton.BrickType> {
 		return state.withRotation(mirrorIn.toRotation(state.getValue(FACING)));
 	}
 
+	@Override
+	public int damageDropped(IBlockState state) {
+		return state.getValue(TYPE).getMeta();
+	}
 
 	/* Pressing the button */
 
