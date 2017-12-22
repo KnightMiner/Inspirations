@@ -10,6 +10,7 @@ import knightminer.inspirations.library.ItemMetaKey;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -84,5 +85,13 @@ public final class ClientUtil {
 			b = (int) Math.sqrt(b * b2);
 		}
 		return a << 24 | r << 16 | g << 8 | b;
+	}
+
+	/**
+	 * Called on resource reload to clear any resource based cache
+	 * @param manager
+	 */
+	public static void onResourceReload(IResourceManager manager) {
+		colorCache.clear();
 	}
 }
