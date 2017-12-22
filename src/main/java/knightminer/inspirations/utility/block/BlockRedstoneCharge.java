@@ -157,13 +157,13 @@ public class BlockRedstoneCharge extends Block {
 	 */
 	@Override
 	public boolean canPlaceBlockAt(World world, BlockPos pos) {
-		return world.getBlockState(pos).getBlock() == this || super.canPlaceBlockAt(world, pos);
+		return super.canPlaceBlockAt(world, pos) && !world.getBlockState(pos).getMaterial().isLiquid();
 	}
 
 	@Override
 	@Deprecated
 	public BlockFaceShape getBlockFaceShape(IBlockAccess world, IBlockState state, BlockPos pos, EnumFacing side) {
-		// allows placing stuff on the back
+		// no placey
 		return BlockFaceShape.UNDEFINED;
 	}
 
