@@ -38,7 +38,7 @@ public class BlockRope extends EnumBlock<BlockRope.RopeType> {
 	public static final PropertyEnum<RopeType> TYPE = PropertyEnum.create("type", RopeType.class);
 	public static final PropertyBool BOTTOM = PropertyBool.create("bottom");
 	public BlockRope() {
-		super(Material.CLOTH, TYPE, RopeType.class);
+		super(Material.CARPET, TYPE, RopeType.class);
 
 		this.setCreativeTab(CreativeTab.BUILDING_BLOCKS);
 		this.setHardness(0.5f);
