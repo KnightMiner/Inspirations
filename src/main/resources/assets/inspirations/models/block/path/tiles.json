@@ -1,0 +1,61 @@
+{
+    "parent": "block/thin_block",
+    "textures": {
+        "particle": "inspirations:blocks/stonebricks_tiles",
+        "texture": "inspirations:blocks/stonebricks_tiles"
+    },
+    "elements": [
+        {
+            "name": "Cube",
+            "from": [ 1, 0, 1 ], 
+            "to": [ 7, 1, 7 ], 
+            "faces": {
+                "north": { "texture": "#texture" },
+                "east": { "texture": "#texture" },
+                "south": { "texture": "#texture" },
+                "west": { "texture": "#texture" },
+                "up": { "texture": "#texture" },
+                "down": { "texture": "#texture", "cullface": "down" }
+            }
+        },
+        {
+            "name": "Cube",
+            "from": [ 9, 0, 1 ], 
+            "to": [ 15, 1, 7 ], 
+            "faces": {
+                "north": { "texture": "#texture" },
+                "east": { "texture": "#texture" },
+                "south": { "texture": "#texture" },
+                "west": { "texture": "#texture" },
+                "up": { "texture": "#texture" },
+                "down": { "texture": "#texture", "cullface": "down" }
+            }
+        },
+        {
+            "name": "Cube",
+            "from": [ 9, 0, 9 ], 
+            "to": [ 15, 1, 15 ], 
+            "faces": {
+                "north": { "texture": "#texture" },
+                "east": { "texture": "#texture" },
+                "south": { "texture": "#texture" },
+                "west": { "texture": "#texture" },
+                "up": { "texture": "#texture" },
+                "down": { "texture": "#texture", "cullface": "down" }
+            }
+        },
+        {
+            "name": "Cube",
+            "from": [ 1, 0, 9 ], 
+            "to": [ 7, 1, 15 ], 
+            "faces": {
+                "north": { "texture": "#texture" },
+                "east": { "texture": "#texture" },
+                "south": { "texture": "#texture" },
+                "west": { "texture": "#texture" },
+                "up": { "texture": "#texture" },
+                "down": { "texture": "#texture", "cullface": "down" }
+            }
+        }
+    ]
+}

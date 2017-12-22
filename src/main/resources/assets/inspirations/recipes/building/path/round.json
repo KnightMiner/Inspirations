@@ -1,0 +1,28 @@
+{
+  "conditions": [
+    {
+      "type": "pulse_loaded",
+      "pulse": "InspirationsBuilding"
+    },
+    {
+      "type": "config",
+      "prop": "path"
+    }
+  ],
+  "type": "forge:ore_shaped",
+  "group": "inspirations:path",
+  "pattern": [
+    "SS"
+  ],
+  "key": {
+    "S": {
+      "type": "forge:ore_dict",
+      "ore": "stone"
+    }
+  },
+  "result": {
+    "item": "inspirations:path",
+    "data": 1,
+    "count": 3
+  }
+}

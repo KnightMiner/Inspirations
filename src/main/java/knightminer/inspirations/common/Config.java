@@ -27,14 +27,17 @@ public class Config {
 
 	private static Configuration configFile;
 
+	// general
+	public static boolean showAllVariants = true;
 
 	// building
 	public static boolean enableRope = true;
 	public static boolean enableGlassDoor = true;
 	public static boolean enableMulch = true;
+	public static boolean enablePath = true;
+
 	public static boolean enableBookshelf = true;
 	public static boolean enableColoredBooks = true;
-	public static boolean showAllVariants = true;
 	private static String[] bookKeywords = {
 			"book",
 			"guide",
@@ -85,8 +88,11 @@ public class Config {
 			// glass door
 			enableGlassDoor = configFile.getBoolean("glassDoor", "building", enableGlassDoor, "Enables glass doors and trapdoors. Basically doors, but made of glass. Not sure what you would expect.");
 
-			// glass door
+			// mulch
 			enableMulch = configFile.getBoolean("mulch", "building", enableMulch, "Enables mulch, a craftable falling block which supports plants such as flowers");
+
+			// path
+			enablePath = configFile.getBoolean("path", "building", enablePath, "Enables stone paths: a carpet like decorative block for making decorative paths");
 		}
 
 		// utility
@@ -207,6 +213,7 @@ public class Config {
 				case "colored_books": return enableColoredBooks;
 				case "glass_door": return enableGlassDoor;
 				case "mulch": return enableMulch;
+				case "path": return enablePath;
 				case "rope": return enableRope;
 
 				// utility

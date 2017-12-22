@@ -23,6 +23,11 @@ tile.inspirations.glass_trapdoor.name=Glass Trapdoor
 tile.inspirations.glass_door.name=Glass Door
 item.inspirations.glass_door.name=Glass Door
 
+tile.inspirations.path.rocks.name=Cobble Path
+tile.inspirations.path.tiles.name=Path Tiles
+tile.inspirations.path.round.name=Round Path
+tile.inspirations.path.bricks.name=Bricks Path
+
 item.inspirations.books.white.name=White Book
 item.inspirations.books.orange.name=Orange Book
 item.inspirations.books.magenta.name=Magenta Book

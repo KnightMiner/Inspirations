@@ -49,6 +49,7 @@ public class BuildingClientProxy extends ClientProxy {
 		registerItemModel(InspirationsBuilding.glassTrapdoor);
 		registerRopeModels(InspirationsBuilding.rope);
 		registerItemBlockMeta(InspirationsBuilding.mulch);
+		registerItemBlockMeta(InspirationsBuilding.path);
 	}
 
 	private void registerRopeModels(Block rope) {

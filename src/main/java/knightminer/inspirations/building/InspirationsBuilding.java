@@ -6,6 +6,7 @@ import knightminer.inspirations.building.block.BlockBookshelf;
 import knightminer.inspirations.building.block.BlockGlassDoor;
 import knightminer.inspirations.building.block.BlockGlassTrapdoor;
 import knightminer.inspirations.building.block.BlockMulch;
+import knightminer.inspirations.building.block.BlockPath;
 import knightminer.inspirations.building.block.BlockRope;
 import knightminer.inspirations.building.tileentity.TileBookshelf;
 import knightminer.inspirations.common.CommonProxy;
@@ -41,6 +42,7 @@ public class InspirationsBuilding extends PulseBase {
 	public static Block glassDoor;
 	public static Block glassTrapdoor;
 	public static Block mulch;
+	public static BlockPath path;
 
 	// items
 	public static Item glassDoorItem;
@@ -75,6 +77,10 @@ public class InspirationsBuilding extends PulseBase {
 		if(Config.enableMulch) {
 			mulch = registerBlock(r, new BlockMulch(), "mulch");
 		}
+
+		if(Config.enablePath) {
+			path = registerBlock(r, new BlockPath(), "path");
+		}
 	}
 
 	@SubscribeEvent
@@ -102,6 +108,10 @@ public class InspirationsBuilding extends PulseBase {
 		if(mulch != null) {
 			registerItemBlock(r, mulch, BlockMulch.COLOR);
 		}
+		if(path != null) {
+			registerEnumItemBlock(r, path);
+		}
+
 		if(Config.enableGlassDoor) {
 			glassDoorItem = registerItem(r, new ItemDoor(glassDoor), "glass_door");
 			glassDoorItem.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
