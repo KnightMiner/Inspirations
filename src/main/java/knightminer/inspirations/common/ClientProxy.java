@@ -22,6 +22,7 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.Fluid;
 import slimeknights.mantle.item.ItemBlockMeta;
+import slimeknights.mantle.item.ItemEdible;
 import slimeknights.mantle.item.ItemMetaDynamic;
 
 public class ClientProxy extends CommonProxy {
@@ -100,6 +101,11 @@ public class ClientProxy extends CommonProxy {
 
 	/** Registers an itemblockmeta model for the blocks inventory variant. */
 	public static void registerItemMetaDynamic(ItemMetaDynamic item) {
+		if(item != null) {
+			item.registerItemModels();
+		}
+	}
+	public static void registerItemMetaDynamic(ItemEdible item) {
 		if(item != null) {
 			item.registerItemModels();
 		}

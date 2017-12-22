@@ -20,6 +20,7 @@ public class SharedClientProxy extends ClientProxy {
 	@SubscribeEvent
 	public void registerModels(ModelRegistryEvent event) {
 		registerItemMetaDynamic(InspirationsShared.materials);
+		registerItemMetaDynamic(InspirationsShared.edibles);
 
 		// items
 		for(ArrowType type : ArrowType.values()) {

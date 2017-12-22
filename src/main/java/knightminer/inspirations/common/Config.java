@@ -56,6 +56,8 @@ public class Config {
 	public static boolean enablePigDesaddle = true;
 	public static boolean enableFittedCarpets = true;
 	public static boolean enableExtraBonemeal = true;
+	public static boolean enableHeartbeet = true;
+	public static boolean brewHeartbeet = true;
 
 
 
@@ -123,6 +125,10 @@ public class Config {
 
 			// bonemeal
 			enableExtraBonemeal = configFile.getBoolean("extraBonemeal", "tweaks", enableExtraBonemeal, "Bonemeal can be used on mycelium to produce mushrooms and on sand to produce dead bushes");
+
+			// heartroot
+			enableHeartbeet = configFile.getBoolean("heartbeet", "tweaks", enableHeartbeet, "Enables heartbeets: a rare drop from beetroots which can be eaten to restore a bit of health");
+			brewHeartbeet = configFile.getBoolean("brewRegeneration", "tweaks.heartbeet", brewHeartbeet, "Allows heartbeets to be used as an alternative to ghast tears in making potions of regeneration") && enableHeartbeet;
 		}
 
 		// saving

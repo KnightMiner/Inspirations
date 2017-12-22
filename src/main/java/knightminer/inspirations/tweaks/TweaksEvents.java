@@ -1,6 +1,10 @@
 package knightminer.inspirations.tweaks;
 
+import java.util.Iterator;
+import java.util.List;
+
 import knightminer.inspirations.common.Config;
+import knightminer.inspirations.shared.InspirationsShared;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBush;
 import net.minecraft.block.state.IBlockState;
@@ -16,6 +20,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract;
+import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
 import net.minecraftforge.fml.common.eventhandler.Event.Result;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -108,5 +113,39 @@ public class TweaksEvents {
 		}
 
 		event.setResult(Result.ALLOW);
+	}
+
+	@SubscribeEvent
+	public static void dropHeartroot(HarvestDropsEvent event) {
+		if(!Config.enableHeartbeet || event.getState().getBlock() != Blocks.BEETROOTS) {
+			return;
+		}
+
+		// we get a base of two chances, and each fortune level adds one more
+		int rolls = event.getFortuneLevel() + 2;
+		// up to fortune 4 we will keep, any higher just ignore
+		if(rolls > 6) {
+			rolls = 6;
+		}
+
+		List<ItemStack> drops = event.getDrops();
+		Iterator<ItemStack> iterator = drops.iterator();
+		// find the first beetroot from the drops
+		iterator:
+			while(iterator.hasNext()) {
+				ItemStack stack = iterator.next();
+				// as soon as we find one, chance to replace it
+				if(stack.getItem() == Items.BEETROOT) {
+					// for each roll, try to get the drop once
+					for(int i = 0; i < rolls; i++) {
+						if(event.getWorld().rand.nextInt(100) == 0) {
+							iterator.remove();
+							drops.add(InspirationsShared.heartbeet.copy());
+							// cap at one heartroot in case we get extras, plus its quicker to stop the iterator now
+							break iterator;
+						}
+					}
+				}
+			}
 	}
 }

@@ -72,3 +72,6 @@ inspirations.lock.fail.blank=The lock is blank, it must be named in an anvil
 inspirations.unlock.success=Container unlocked
 inspirations.unlock.fail.no_match=This key does not fit the lock
 inspirations.unlock.fail.unlocked=The container is not locked
+
+# Tweaks
+item.inspirations.edibles.heartbeet.name=Heartbeet

@@ -5,10 +5,14 @@ import com.google.common.eventbus.Subscribe;
 import knightminer.inspirations.common.CommonProxy;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
+import knightminer.inspirations.shared.InspirationsShared;
 import knightminer.inspirations.tweaks.block.BlockFittedCarpet;
 import net.minecraft.block.Block;
+import net.minecraft.init.PotionTypes;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemCloth;
+import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.potion.PotionHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent.Register;
@@ -56,6 +60,13 @@ public class InspirationsTweaks extends PulseBase {
 	@Subscribe
 	public void init(FMLInitializationEvent event) {
 		proxy.init();
+
+		// brew heartroots into regen potions
+		if(Config.brewHeartbeet) {
+			Ingredient heartbeet = Ingredient.fromStacks(InspirationsShared.heartbeet);
+			PotionHelper.addMix(PotionTypes.WATER, heartbeet, PotionTypes.MUNDANE);
+			PotionHelper.addMix(PotionTypes.AWKWARD, heartbeet, PotionTypes.REGENERATION);
+		}
 	}
 
 	@Subscribe
