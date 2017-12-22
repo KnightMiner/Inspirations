@@ -5,6 +5,7 @@ import com.google.common.eventbus.Subscribe;
 import knightminer.inspirations.common.CommonProxy;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
+import knightminer.inspirations.utility.block.BlockBricksButton;
 import knightminer.inspirations.utility.block.BlockRedstoneCharge;
 import knightminer.inspirations.utility.block.BlockTorchLever;
 import knightminer.inspirations.utility.item.ItemRedstoneCharger;
@@ -37,6 +38,7 @@ public class InspirationsUtility extends PulseBase {
 	// blocks
 	public static Block redstoneCharge;
 	public static Block torchLever;
+	public static BlockBricksButton bricksButton;
 
 	// items
 	public static Item redstoneCharger;
@@ -56,6 +58,10 @@ public class InspirationsUtility extends PulseBase {
 		if(Config.enableRedstoneCharge) {
 			redstoneCharge = registerBlock(r, new BlockRedstoneCharge(), "redstone_charge");
 		}
+
+		if(Config.enableBricksButton) {
+			bricksButton = registerBlock(r, new BlockBricksButton(), "bricks_button");
+		}
 	}
 
 	@SubscribeEvent
@@ -69,6 +75,9 @@ public class InspirationsUtility extends PulseBase {
 		// itemblocks
 		if(torchLever != null) {
 			registerItemBlock(r, torchLever);
+		}
+		if(bricksButton != null) {
+			registerEnumItemBlock(r, bricksButton);
 		}
 	}
 

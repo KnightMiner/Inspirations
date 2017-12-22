@@ -1,0 +1,19 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "inspirations:button/nether_pressed"
+  },
+  "variants": {
+    "powered": {
+      "true": {},
+      "false": { "model": "inspirations:button/nether_unpressed" }
+    },
+    "facing": {
+      "south": {},
+      "west":  { "y":  90 },
+      "north": { "y": 180 },
+      "east":  { "y": 270 }
+    },
+    "inventory": [{}]
+  }
+}

@@ -1,0 +1,65 @@
+{
+    "textures": {
+        "particle": "blocks/brick",
+        "button":   "blocks/brick"
+    },
+    "elements": [
+        {
+            "name": "Main",
+            "from": [ 0, 0, 0 ], 
+            "to": [ 16, 16, 15.9 ], 
+            "faces": {
+                "north": { "texture": "#button", "cullface": "north" },
+                "east":  { "texture": "#button", "cullface": "east"  },
+                "south": { "texture": "#button", "cullface": "south" },
+                "west":  { "texture": "#button", "cullface": "west"  },
+                "up":    { "texture": "#button", "cullface": "up"    },
+                "down":  { "texture": "#button", "cullface": "down"  }
+            }
+        },
+        {
+            "name": "Bottom",
+            "from": [ 0, 0, 15.9 ], 
+            "to": [ 16, 5, 16], 
+            "faces": {
+                "east":  { "texture": "#button", "cullface": "east"  },
+                "south": { "texture": "#button", "cullface": "south" },
+                "west":  { "texture": "#button", "cullface": "west"  },
+                "up":    { "texture": "#button", "cullface": "south" },
+                "down":  { "texture": "#button", "cullface": "down"  }
+            }
+        },
+        {
+            "name": "Top",
+            "from": [ 0, 8, 15.9 ], 
+            "to": [ 16, 16, 16 ], 
+            "faces": {
+                "east":  { "texture": "#button", "cullface": "east"  },
+                "south": { "texture": "#button", "cullface": "south" },
+                "west":  { "texture": "#button", "cullface": "west"  },
+                "up":    { "texture": "#button", "cullface": "up"    },
+                "down":  { "texture": "#button", "cullface": "south" }
+            }
+        },
+        {
+            "name": "Left",
+            "from": [ 0, 5, 15.9 ], 
+            "to": [ 4, 8, 16 ], 
+            "faces": {
+                "east":  { "texture": "#button", "cullface": "south" },
+                "south": { "texture": "#button", "cullface": "south" },
+                "west":  { "texture": "#button", "cullface": "west"  }
+            }
+        },
+        {
+            "name": "Right",
+            "from": [ 11, 5, 15.9 ], 
+            "to": [ 16, 8, 16 ], 
+            "faces": {
+                "east":  { "texture": "#button", "cullface": "east"  },
+                "south": { "texture": "#button", "cullface": "south" },
+                "west":  { "texture": "#button", "cullface": "south" }
+            }
+        }
+    ]
+}

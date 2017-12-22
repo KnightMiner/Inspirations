@@ -29,15 +29,23 @@ public class PropertyStateMapper extends StateMapperBase {
 		this.ignore = ignore;
 	}
 
+	public PropertyStateMapper(PropertyEnum<?> prop, IProperty<?>... ignore) {
+		this(null, prop, ignore);
+	}
+
 	@Nonnull
 	@Override
 	protected ModelResourceLocation getModelResourceLocation(@Nonnull IBlockState state) {
+		ResourceLocation baseLoc = name;
+		if(baseLoc == null) {
+			baseLoc = state.getBlock().getRegistryName();
+		}
 		LinkedHashMap<IProperty<?>, Comparable<?>> map = Maps.newLinkedHashMap(state.getProperties());
 		map.remove(prop);
 		for(IProperty<?> ignored : ignore) {
 			map.remove(ignored);
 		}
-		ResourceLocation res = new ResourceLocation(name.getResourceDomain(), name.getResourcePath() + "/" + state.getValue(prop).getName());
+		ResourceLocation res = new ResourceLocation(baseLoc.getResourceDomain(), baseLoc.getResourcePath() + "/" + state.getValue(prop).getName());
 
 		return new ModelResourceLocation(res, this.getPropertyString(map));
 	}

@@ -47,10 +47,12 @@ public class Config {
 	public static boolean enableTorchLever = true;
 	public static boolean enableRedstoneBook = true;
 	public static boolean enableRedstoneCharge = true;
+	public static boolean enableBricksButton = true;
 
 	// tweaks
 	public static boolean enablePigDesaddle = true;
 	public static boolean enableFittedCarpets = true;
+
 
 
 	/**
@@ -100,6 +102,8 @@ public class Config {
 			// lock
 			enableLock = configFile.getBoolean("lock", "utility", enableLock, "Enables locks and keys, an item allowing you to lock a tile entity to only open for a special named item");
 
+			// lock
+			enableBricksButton = configFile.getBoolean("bricksButton", "utility", enableBricksButton, "Enables button blocks disguised as a full bricks or nether bricks block");
 		}
 
 		// tweaks
@@ -206,6 +210,7 @@ public class Config {
 				case "rope": return enableRope;
 
 				// utility
+				case "bricks_button": return enableBricksButton;
 				case "lock": return enableLock;
 				case "redstone_book": return enableRedstoneBook;
 				case "redstone_charge": return enableRedstoneCharge;

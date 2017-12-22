@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 
 import knightminer.inspirations.Inspirations;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.text.translation.I18n;
 
 @SuppressWarnings("deprecation")
@@ -42,5 +43,11 @@ public class Util {
 		String log = Inspirations.modID;
 
 		return LogManager.getLogger(log + "-" + type);
+	}
+
+	public static boolean clickedAABB(AxisAlignedBB aabb, float hitX, float hitY, float hitZ) {
+		return aabb.minX <= hitX && hitX <= aabb.maxX
+				&& aabb.minY <= hitY && hitY <= aabb.maxY
+				&& aabb.minZ <= hitZ && hitZ <= aabb.maxZ;
 	}
 }

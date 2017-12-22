@@ -7,6 +7,9 @@ import javax.annotation.Nonnull;
 import com.google.common.collect.Maps;
 
 import knightminer.inspirations.common.ClientProxy;
+import knightminer.inspirations.library.Util;
+import knightminer.inspirations.library.client.PropertyStateMapper;
+import knightminer.inspirations.utility.block.BlockBricksButton;
 import knightminer.inspirations.utility.block.BlockRedstoneCharge;
 import knightminer.inspirations.utility.block.BlockTorchLever;
 import net.minecraft.block.properties.IProperty;
@@ -25,12 +28,16 @@ public class UtilityClientProxy extends ClientProxy {
 	public void registerModels(ModelRegistryEvent event) {
 		setModelStateMapper(InspirationsUtility.torchLever, new TorchLeverStateMapper());
 		setModelStateMapper(InspirationsUtility.redstoneCharge, new StateMap.Builder().ignore(BlockRedstoneCharge.FACING, BlockRedstoneCharge.QUICK).build());
+		setModelStateMapper(InspirationsUtility.bricksButton, new PropertyStateMapper(BlockBricksButton.TYPE));
 
 		// items
 		registerItemModel(InspirationsUtility.redstoneCharger);
 
 		// blocks
 		registerItemModel(InspirationsUtility.torchLever);
+		// uses a property state mapper, so just redirect to the sub files for inventory
+		registerItemModel(InspirationsUtility.bricksButton, 0, Util.getResource("bricks_button/bricks"));
+		registerItemModel(InspirationsUtility.bricksButton, 1, Util.getResource("bricks_button/nether"));
 	}
 
 

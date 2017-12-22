@@ -75,11 +75,18 @@ public class ClientProxy extends CommonProxy {
 		}
 	}
 
+	/** Registers the given block/meta combination with the model at the given location, default inventory variant */
+	public static void registerItemModel(Block block, int meta, ResourceLocation location) {
+		if(block != null) {
+			registerItemModel(Item.getItemFromBlock(block), meta, location, "inventory");
+		}
+	}
+
 	/** Registers the given item/meta combination with the model at the given location, and the given variant */
 	public static void registerItemModel(Item item, int meta, ResourceLocation location, String variant) {
 		if(item != null && !StringUtils.isNullOrEmpty(variant)) {
 			//ModelLoader.registerItemVariants(item, location);
-			ModelLoader.setCustomModelResourceLocation(item, meta, new ModelResourceLocation(item.getRegistryName(), variant));
+			ModelLoader.setCustomModelResourceLocation(item, meta, new ModelResourceLocation(location, variant));
 		}
 	}
 
