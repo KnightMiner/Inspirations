@@ -13,8 +13,8 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBloc
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.items.ItemHandlerHelper;
 
+import static knightminer.inspirations.shared.InspirationsShared.materials;
 import static knightminer.inspirations.shared.InspirationsShared.lock;
-
 import static knightminer.inspirations.shared.InspirationsShared.key;
 
 public class UtilityEvents {
@@ -28,13 +28,12 @@ public class UtilityEvents {
 		// first, ensure we have a valid item to use
 		EntityPlayer player = event.getEntityPlayer();
 		ItemStack stack = player.getHeldItem(event.getHand());
-		if(stack.isEmpty()) {
+		if(stack.isEmpty() || stack.getItem() != materials) {
 			return;
 		}
-		ItemStack compare = stack.copy();
-		compare.setCount(1);
-		boolean isLock = lock.isItemEqual(compare);
-		if(isLock || key.isItemEqual(compare)) {
+		int meta = stack.getMetadata();
+		boolean isLock = meta == lock.getItemDamage();
+		if(isLock || meta == key.getItemDamage()) {
 			TileEntity te = event.getWorld().getTileEntity(event.getPos());
 			if(te instanceof ILockableContainer) {
 				ILockableContainer lockable = (ILockableContainer) te;
