@@ -10,6 +10,7 @@ import knightminer.inspirations.shared.InspirationsShared;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import slimeknights.mantle.common.GuiHandler;
@@ -44,9 +45,14 @@ public class Inspirations {
 
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
-		Config.load(event);
+		Config.preInit(event);
 		NetworkRegistry.INSTANCE.registerGuiHandler(instance, guiHandler);
 
 		InspirationsNetwork.instance.setup();
+	}
+
+	@Mod.EventHandler
+	public void init(FMLInitializationEvent event) {
+		Config.init(event);
 	}
 }

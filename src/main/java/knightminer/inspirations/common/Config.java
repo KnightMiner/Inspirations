@@ -15,6 +15,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.crafting.IConditionFactory;
 import net.minecraftforge.common.crafting.JsonContext;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
@@ -65,7 +66,7 @@ public class Config {
 	 * Loads the configuration file from the event
 	 * @param event  PreInit event from main mod class
 	 */
-	public static void load(FMLPreInitializationEvent event) {
+	public static void preInit(FMLPreInitializationEvent event) {
 		configFile = new Configuration(event.getSuggestedConfigurationFile(), "0.1", false);
 
 		showAllVariants = configFile.getBoolean("showAllVariants", "general", showAllVariants,
@@ -79,10 +80,6 @@ public class Config {
 			bookKeywords = configFile.getStringList("bookKeywords", "building.bookshelf", bookKeywords,
 					"List of keywords for valid books, used to determine valid books in the bookshelf");
 			InspirationsRegistry.setBookKeywords(bookKeywords);
-
-			bookOverrides = configFile.getStringList("bookOverrides", "building.bookshelf", bookOverrides,
-					"List of itemstacks to override book behavior. Format is modid:name[:meta[:isBook]]. Unset meta will default wildcard. Unset isBook will default true");
-			processBookOverrides(bookOverrides);
 
 
 			// rope
@@ -138,6 +135,22 @@ public class Config {
 	}
 
 	/**
+	 * Anything which we need access to block or item registries
+	 * @param event
+	 */
+	public static void init(FMLInitializationEvent event) {
+		// building
+		bookOverrides = configFile.getStringList("bookOverrides", "building.bookshelf", bookOverrides,
+				"List of itemstacks to override book behavior. Format is modid:name[:meta[:isBook]]. Unset meta will default wildcard. Unset isBook will default true");
+		processBookOverrides(bookOverrides);
+
+		// saving
+		if(configFile.hasChanged()) {
+			configFile.save();
+		}
+	}
+
+	/**
 	 * Parses the book overrides from the string array
 	 * @param overrides  Input string array
 	 */
@@ -182,7 +195,7 @@ public class Config {
 
 			// if the length and meta are valid, try finding the item
 			item = GameRegistry.findRegistry(Item.class).getValue(new ResourceLocation(parts[0], parts[1]));
-			if(item == null) {
+			if(item == Items.AIR) {
 				Inspirations.log.warn("Unable to find item {}:{} for {}", parts[0], parts[1], override);
 				continue;
 			}
