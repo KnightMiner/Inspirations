@@ -64,6 +64,7 @@ public class Config {
 	public static boolean enableHeartbeet = true;
 	public static boolean brewHeartbeet = true;
 	public static boolean enableAnvilSmashing = true;
+	public static boolean dispensersPlaceAnvils = true;
 	private static String[] anvilSmashing = {
 			"# Stone",
 			"minecraft:stone:0->minecraft:cobblestone",
@@ -183,8 +184,11 @@ public class Config {
 			enableHeartbeet = configFile.getBoolean("heartbeet", "tweaks", enableHeartbeet, "Enables heartbeets: a rare drop from beetroots which can be eaten to restore a bit of health");
 			brewHeartbeet = configFile.getBoolean("brewRegeneration", "tweaks.heartbeet", brewHeartbeet, "Allows heartbeets to be used as an alternative to ghast tears in making potions of regeneration") && enableHeartbeet;
 
-			// fitted carpets
+			// anvil smashing
 			enableAnvilSmashing = configFile.getBoolean("anvilSmashing", "tweaks", enableAnvilSmashing, "Anvils break glass blocks and transform blocks into other blocks on landing. Uses a block override, so disable if another mod replaces anvils");
+
+			// dispensers place anvils
+			dispensersPlaceAnvils = configFile.getBoolean("dispensersPlaceAnvils", "tweaks", dispensersPlaceAnvils, "Dispensers will place anvils instead of dropping them. Plays well with anvil smashing.");
 		}
 
 		// saving

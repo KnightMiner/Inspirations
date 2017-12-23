@@ -10,13 +10,21 @@ import knightminer.inspirations.shared.InspirationsShared;
 import knightminer.inspirations.tweaks.block.BlockFittedCarpet;
 import knightminer.inspirations.tweaks.block.BlockSmashingAnvil;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockAnvil;
+import net.minecraft.block.BlockDispenser;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.dispenser.IBehaviorDispenseItem;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.PotionTypes;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemCloth;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.potion.PotionHelper;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -74,12 +82,47 @@ public class InspirationsTweaks extends PulseBase {
 			PotionHelper.addMix(PotionTypes.WATER, heartbeet, PotionTypes.MUNDANE);
 			PotionHelper.addMix(PotionTypes.AWKWARD, heartbeet, PotionTypes.REGENERATION);
 		}
+
+		InspirationsRegistry.registerAnvilBreaking(Material.GLASS);
+		registerDispenserBehavior();
 	}
 
 	@Subscribe
 	public void postInit(FMLPostInitializationEvent event) {
 		proxy.postInit();
 		MinecraftForge.EVENT_BUS.register(TweaksEvents.class);
-		InspirationsRegistry.registerAnvilBreaking(Material.GLASS);
+	}
+
+	private void registerDispenserBehavior() {
+		if(Config.dispensersPlaceAnvils) {
+			registerDispenserBehavior(Blocks.ANVIL, (source, stack) -> {
+				// get basic data
+				EnumFacing facing = source.getBlockState().getValue(BlockDispenser.FACING);
+				World world = source.getWorld();
+				BlockPos pos = source.getBlockPos().offset(facing);
+
+				// if we cannot place it, toss the item
+				if(!Blocks.ANVIL.canPlaceBlockAt(world, pos)) {
+					return IBehaviorDispenseItem.DEFAULT_BEHAVIOR.dispense(source, stack);
+				}
+
+				// just in case
+				int meta = stack.getMetadata();
+				if(meta > 3 || meta < 0) {
+					meta = 3;
+				}
+
+				// determine the anvil to place
+				EnumFacing anvilFacing = facing.getAxis().isVertical() ? EnumFacing.NORTH : facing.rotateY();
+				IBlockState state = Blocks.ANVIL.getDefaultState()
+						.withProperty(BlockAnvil.DAMAGE, meta)
+						.withProperty(BlockAnvil.FACING, anvilFacing);
+
+				world.setBlockState(pos, state);
+				stack.shrink(1);
+				return stack;
+			});
+		}
+
 	}
 }

@@ -136,6 +136,11 @@ public class PulseBase {
 	}
 
 	/* Other */
+	protected static void registerDispenserBehavior(Block block, IBehaviorDispenseItem behavior) {
+		if(block != null) {
+			registerDispenserBehavior(Item.getItemFromBlock(block), behavior);
+		}
+	}
 	protected static void registerDispenserBehavior(Item item, IBehaviorDispenseItem behavior) {
 		if(item != null) {
 			BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(item, behavior);
