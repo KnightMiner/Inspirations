@@ -1,9 +1,13 @@
 package knightminer.inspirations.library;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -69,5 +73,92 @@ public class InspirationsRegistry {
 
 	public static void setBookKeywords(String[] keywords) {
 		bookKeywords = keywords;
+	}
+
+
+	/*
+	 * Anvil smashing
+	 */
+	private static Map<IBlockState, IBlockState> anvilSmashing = new HashMap<>();
+	private static Map<Block, IBlockState> anvilSmashingBlocks = new HashMap<>();
+	private static Set<Material> anvilBreaking = new HashSet<>();
+
+	/**
+	 * Registers an anvil smashing result for the given block state
+	 * @param input   Input state
+	 * @param result  Result state
+	 */
+	public static void registerAnvilSmashing(IBlockState input, IBlockState result) {
+		anvilSmashing.put(input, result);
+	}
+
+	/**
+	 * Registers an anvil smashing result for the given block state
+	 * @param input   Input state
+	 * @param result  Result block
+	 */
+	public static void registerAnvilSmashing(IBlockState input, Block result) {
+		registerAnvilSmashing(input, result.getDefaultState());
+	}
+
+	/**
+	 * Registers an anvil smashing result to break the given blockstate
+	 * @param input   Input block
+	 */
+	public static void registerAnvilBreaking(IBlockState input) {
+		registerAnvilSmashing(input, Blocks.AIR);
+	}
+
+	/**
+	 * Registers an anvil smashing result for the given block
+	 * @param input   Input block
+	 * @param result  Result state
+	 */
+	public static void registerAnvilSmashing(Block input, IBlockState result) {
+		anvilSmashingBlocks.put(input, result);
+	}
+
+	/**
+	 * Registers an anvil smashing result to break the given block
+	 * @param input   Input block
+	 * @param result  Result block
+	 */
+	public static void registerAnvilSmashing(Block input, Block result) {
+		registerAnvilSmashing(input, result.getDefaultState());
+	}
+
+	/**
+	 * Registers an anvil smashing result to break the given block
+	 * @param input   Input block
+	 */
+	public static void registerAnvilBreaking(Block input) {
+		registerAnvilSmashing(input, Blocks.AIR);
+	}
+
+	/**
+	 * Registers an anvil smashing result to break the given material
+	 * @param material  Input material
+	 */
+	public static void registerAnvilBreaking(Material material) {
+		anvilBreaking.add(material);
+	}
+
+	/**
+	 * Gets the result of an anvil landing on the given blockstate
+	 * @param state  Input blockstate
+	 * @return  BlockState result. Will be air if its breaking, or null if there is no behavior
+	 */
+	public static IBlockState getAnvilSmashResult(IBlockState state) {
+		if(anvilSmashing.containsKey(state)) {
+			return anvilSmashing.get(state);
+		}
+		Block block = state.getBlock();
+		if(anvilSmashingBlocks.containsKey(block)) {
+			return anvilSmashingBlocks.get(block);
+		}
+		if(anvilBreaking.contains(state.getMaterial())) {
+			return Blocks.AIR.getDefaultState();
+		}
+		return null;
 	}
 }

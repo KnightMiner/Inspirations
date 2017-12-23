@@ -7,6 +7,10 @@ import com.google.gson.JsonSyntaxException;
 
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.InspirationsRegistry;
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.JsonUtils;
@@ -59,7 +63,59 @@ public class Config {
 	public static boolean enableExtraBonemeal = true;
 	public static boolean enableHeartbeet = true;
 	public static boolean brewHeartbeet = true;
+	public static boolean enableAnvilSmashing = true;
+	private static String[] anvilSmashing = {
+			"# Stone",
+			"minecraft:stone:0->minecraft:cobblestone",
+			"minecraft:stonebrick->minecraft:cobblestone",
+			"minecraft:stonebrick:1->minecraft:mossy_cobblestone",
+			"minecraft:cobblestone->minecraft:gravel",
+			"minecraft:stone:2->minecraft:stone:1",
+			"minecraft:stone:4->minecraft:stone:3",
+			"minecraft:stone:6->minecraft:stone:5",
 
+			"# Sandstone",
+			"minecraft:sandstone->minecraft:sand:0",
+			"minecraft:red_sandstone->minecraft:sand:1",
+
+			"# Ice",
+			"minecraft:packed_ice->minecraft:ice",
+			"minecraft:ice",
+			"minecraft:frosted_ice",
+
+			"# Plants",
+			"minecraft:brown_mushroom_block",
+			"minecraft:red_mushroom_block",
+			"minecraft:leaves",
+			"minecraft:leaves2",
+			"minecraft:melon_block",
+			"minecraft:pumpkin",
+			"minecraft:lit_pumpkin",
+
+			"# Concrete",
+			"minecraft:concrete:0->minecraft:concrete_powder:0",
+			"minecraft:concrete:1->minecraft:concrete_powder:1",
+			"minecraft:concrete:2->minecraft:concrete_powder:2",
+			"minecraft:concrete:3->minecraft:concrete_powder:3",
+			"minecraft:concrete:4->minecraft:concrete_powder:4",
+			"minecraft:concrete:5->minecraft:concrete_powder:5",
+			"minecraft:concrete:6->minecraft:concrete_powder:6",
+			"minecraft:concrete:7->minecraft:concrete_powder:7",
+			"minecraft:concrete:8->minecraft:concrete_powder:8",
+			"minecraft:concrete:9->minecraft:concrete_powder:9",
+			"minecraft:concrete:10->minecraft:concrete_powder:10",
+			"minecraft:concrete:11->minecraft:concrete_powder:11",
+			"minecraft:concrete:12->minecraft:concrete_powder:12",
+			"minecraft:concrete:13->minecraft:concrete_powder:13",
+			"minecraft:concrete:14->minecraft:concrete_powder:14",
+			"minecraft:concrete:15->minecraft:concrete_powder:15",
+
+			"# Misc",
+			"minecraft:planks->inspirations:mulch:0",
+			"minecraft:prismarine:1->minecraft:prismarine:0",
+			"minecraft:end_bricks->minecraft:end_stone",
+			"minecraft:monster_egg"
+	};
 
 
 	/**
@@ -126,6 +182,9 @@ public class Config {
 			// heartroot
 			enableHeartbeet = configFile.getBoolean("heartbeet", "tweaks", enableHeartbeet, "Enables heartbeets: a rare drop from beetroots which can be eaten to restore a bit of health");
 			brewHeartbeet = configFile.getBoolean("brewRegeneration", "tweaks.heartbeet", brewHeartbeet, "Allows heartbeets to be used as an alternative to ghast tears in making potions of regeneration") && enableHeartbeet;
+
+			// fitted carpets
+			enableAnvilSmashing = configFile.getBoolean("anvilSmashing", "tweaks", enableAnvilSmashing, "Anvils break glass blocks and transform blocks into other blocks on landing. Uses a block override, so disable if another mod replaces anvils");
 		}
 
 		// saving
@@ -140,9 +199,15 @@ public class Config {
 	 */
 	public static void init(FMLInitializationEvent event) {
 		// building
-		bookOverrides = configFile.getStringList("bookOverrides", "building.bookshelf", bookOverrides,
-				"List of itemstacks to override book behavior. Format is modid:name[:meta[:isBook]]. Unset meta will default wildcard. Unset isBook will default true");
+		bookOverrides = configFile.get("building.bookshelf", "bookOverrides", bookOverrides,
+				"List of itemstacks to override book behavior. Format is modid:name[:meta[:isBook]]. Unset meta will default wildcard. Unset isBook will default true").getStringList();
 		processBookOverrides(bookOverrides);
+
+		// anvil smashing
+		// skip the helper method so the defaults are not put in the comment
+		anvilSmashing = configFile.get("tweaks.anvilSmashing", "smashing", anvilSmashing,
+				"List of blocks to add to anvil smashing. Format is modid:input[:meta][->modid:output[:meta]]. If the output is excluded, it will default to air (breaking the block). If the meta is excluded, it will check all states for input and use the default for output").getStringList();
+		processAnvilSmashing(anvilSmashing);
 
 		// saving
 		if(configFile.hasChanged()) {
@@ -163,7 +228,7 @@ public class Config {
 		// simply look through each entry
 		for(String override : overrides) {
 			// skip blank lines
-			if("".equals(override)) {
+			if("".equals(override) || override.startsWith("#")) {
 				continue;
 			}
 
@@ -215,6 +280,90 @@ public class Config {
 				InspirationsRegistry.registerBook(item, meta, isBook);
 			}
 		}
+	}
+
+	/**
+	 * Parses the anvil smashing array into the registry
+	 * @param transformations  Input array
+	 */
+	@SuppressWarnings("deprecation")
+	private static void processAnvilSmashing(String[] transformations) {
+		main:
+			for(String transformation : transformations) {
+				// skip blank lines
+				if("".equals(transformation) || transformation.startsWith("#")) {
+					continue;
+				}
+
+				// first, ensure we have the right number of inputs
+				// it should be 1 for plain old smashing or two for a transformation
+				String[] transformParts = transformation.split("->");
+				if(transformParts.length > 2 || transformParts.length < 1) {
+					Inspirations.log.error("Invalid anvil smashing {}: must be in the format of modid:input[:meta][->modid:output[:meta]]", transformation);
+					continue;
+				}
+
+				// find blockstates for the input and output
+				// loop so I am not doing this twice
+				Block[] blocks = new Block[2];
+				IBlockState[] states = new IBlockState[2];
+				int meta;
+				for(int i = 0; i < transformParts.length; i++) {
+					// split into parts
+					String transformPart = transformParts[i];
+					String[] parts = transformPart.split(":");
+
+					// should have name and ID with optional meta
+					if(parts.length > 3 || parts.length < 2) {
+						Inspirations.log.warn("Invalid anvil smashing {}: invalid parameter length for {}, expected modid:blockid[:meta]",
+								transformation, transformPart);
+						continue main;
+					}
+
+					// try parsing the metadata
+					meta = -1;
+					if(parts.length > 2) {
+						try {
+							meta = Integer.parseInt(parts[2]);
+						} catch(NumberFormatException e) {
+							meta = -1;
+						}
+						// handle invalid numbers and negatives here
+						if(meta < 0) {
+							Inspirations.log.error("Invalid anvil smashing {}: invalid metadata for {}", transformation, transformPart);
+							continue main;
+						}
+					}
+
+					// next, try finding the block
+					blocks[i] = GameRegistry.findRegistry(Block.class).getValue(new ResourceLocation(parts[0], parts[1]));
+					if(blocks[i] == Blocks.AIR) {
+						Inspirations.log.warn("Unable to find block {}:{} for transformation {}", parts[0], parts[1], transformation);
+						continue main;
+					}
+
+					// if we have meta, parse the blockstate
+					if(meta > -1) {
+						states[i] = blocks[i].getStateFromMeta(meta);
+					}
+				}
+				// if the length is 1, this is block breaking, so use air for the output
+				if(transformParts.length == 1) {
+					blocks[1] = Blocks.AIR;
+				}
+
+				// if no result state, just grab the default state. That is all the registry does anyways
+				if(states[1] == null) {
+					states[1] = blocks[1].getDefaultState();
+				}
+
+				// determine whether to use block or blockstate parameter
+				if(states[0] == null) {
+					InspirationsRegistry.registerAnvilSmashing(blocks[0], states[1]);
+				} else {
+					InspirationsRegistry.registerAnvilSmashing(states[0], states[1]);
+				}
+			}
 	}
 
 	public static class PulseLoaded implements IConditionFactory {

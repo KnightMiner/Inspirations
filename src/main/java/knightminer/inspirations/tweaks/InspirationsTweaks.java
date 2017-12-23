@@ -5,9 +5,12 @@ import com.google.common.eventbus.Subscribe;
 import knightminer.inspirations.common.CommonProxy;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
+import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.shared.InspirationsShared;
 import knightminer.inspirations.tweaks.block.BlockFittedCarpet;
+import knightminer.inspirations.tweaks.block.BlockSmashingAnvil;
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.init.PotionTypes;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemCloth;
@@ -33,6 +36,7 @@ public class InspirationsTweaks extends PulseBase {
 
 	// blocks
 	public static Block carpet;
+	public static Block anvil;
 
 	@Subscribe
 	public void preInit(FMLPreInitializationEvent event) {
@@ -45,6 +49,9 @@ public class InspirationsTweaks extends PulseBase {
 
 		if(Config.enableFittedCarpets) {
 			carpet = register(r, new BlockFittedCarpet(), new ResourceLocation("carpet"));
+		}
+		if(Config.enableAnvilSmashing) {
+			anvil = register(r, new BlockSmashingAnvil(), new ResourceLocation("anvil"));
 		}
 	}
 
@@ -73,5 +80,6 @@ public class InspirationsTweaks extends PulseBase {
 	public void postInit(FMLPostInitializationEvent event) {
 		proxy.postInit();
 		MinecraftForge.EVENT_BUS.register(TweaksEvents.class);
+		InspirationsRegistry.registerAnvilBreaking(Material.GLASS);
 	}
 }
