@@ -75,3 +75,8 @@ inspirations.unlock.fail.unlocked=The container is not locked
 
 # Tweaks
 item.inspirations.edibles.heartbeet.name=Heartbeet
+
+
+# JEI
+
+gui.jei.anvil_smashing.title=Anvil Smashing

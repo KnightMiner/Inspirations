@@ -6,6 +6,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import knightminer.inspirations.Inspirations;
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.text.translation.I18n;
@@ -49,5 +54,21 @@ public class Util {
 		return aabb.minX <= hitX && hitX <= aabb.maxX
 				&& aabb.minY <= hitY && hitY <= aabb.maxY
 				&& aabb.minZ <= hitZ && hitZ <= aabb.maxZ;
+	}
+
+	/**
+	 * Gets an item stack from a block state. Uses Item::getItemFromBlock and Block::damageDropped
+	 * @param state  Input state
+	 * @return  ItemStack for the state, or ItemStack.EMPTY if a valid item cannot be found
+	 */
+	public static ItemStack getStackFromState(IBlockState state) {
+		Block block = state.getBlock();
+		Item item = Item.getItemFromBlock(block);
+		if(item == Items.AIR) {
+			return ItemStack.EMPTY;
+		}
+
+		int meta = block.damageDropped(state);
+		return new ItemStack(item, 1, meta);
 	}
 }

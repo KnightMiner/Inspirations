@@ -2,8 +2,11 @@ package knightminer.inspirations.library;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import com.google.common.collect.ImmutableList;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -160,5 +163,30 @@ public class InspirationsRegistry {
 			return Blocks.AIR.getDefaultState();
 		}
 		return null;
+	}
+
+	/**
+	 * Checks if we have a state specific smashing result. Used for JEI to filter out the lists for blocks
+	 * @param state  State to check
+	 * @return  True if we haeve a state specific result
+	 */
+	public static boolean hasAnvilSmashStateResult(IBlockState state) {
+		return anvilSmashing.containsKey(state);
+	}
+
+	/**
+	 * Gets all smashing recipes in the form of blockstate to blockstate
+	 * @return  List of map entries for the recipes
+	 */
+	public static List<Map.Entry<IBlockState,IBlockState>> getAllAnvilStateSmashing() {
+		return ImmutableList.copyOf(anvilSmashing.entrySet());
+	}
+
+	/**
+	 * Gets all smashing recipes in the form of block to blockstate
+	 * @return  List of map entries for the recipes
+	 */
+	public static List<Map.Entry<Block,IBlockState>> getAllAnvilBlockSmashing() {
+		return ImmutableList.copyOf(anvilSmashingBlocks.entrySet());
 	}
 }
