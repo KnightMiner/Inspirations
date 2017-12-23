@@ -14,6 +14,7 @@ import net.minecraft.block.BlockAnvil;
 import net.minecraft.block.BlockDispenser;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.dispenser.BehaviorDefaultDispenseItem;
 import net.minecraft.dispenser.IBehaviorDispenseItem;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.PotionTypes;
@@ -93,6 +94,7 @@ public class InspirationsTweaks extends PulseBase {
 		MinecraftForge.EVENT_BUS.register(TweaksEvents.class);
 	}
 
+	private static final IBehaviorDispenseItem DEFAULT = new BehaviorDefaultDispenseItem();
 	private void registerDispenserBehavior() {
 		if(Config.dispensersPlaceAnvils) {
 			registerDispenserBehavior(Blocks.ANVIL, (source, stack) -> {
@@ -103,7 +105,7 @@ public class InspirationsTweaks extends PulseBase {
 
 				// if we cannot place it, toss the item
 				if(!Blocks.ANVIL.canPlaceBlockAt(world, pos)) {
-					return IBehaviorDispenseItem.DEFAULT_BEHAVIOR.dispense(source, stack);
+					return DEFAULT.dispense(source, stack);
 				}
 
 				// just in case
