@@ -65,7 +65,7 @@ public class InspirationsShared extends PulseBase {
 		materials.setCreativeTab(CreativeTabs.MATERIALS);
 
 		edibles = registerItem(r, new ItemEdible(), "edibles");
-		materials.setCreativeTab(CreativeTabs.FOOD);
+		edibles.setCreativeTab(CreativeTabs.FOOD);
 
 		// add items from modules
 		if(isUtilityLoaded() && Config.enableLock) {

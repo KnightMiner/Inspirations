@@ -20,7 +20,7 @@ import slimeknights.mantle.pulsar.control.PulseManager;
 		modid = Inspirations.modID,
 		name = Inspirations.modName,
 		version = Inspirations.modVersion,
-		dependencies = "required-after:forge;"
+		dependencies = "required-after:forge@[14.23.1.2571,];"
 				+ "required-after:mantle",
 				acceptedMinecraftVersions = "[1.12, 1.13)")
 public class Inspirations {
