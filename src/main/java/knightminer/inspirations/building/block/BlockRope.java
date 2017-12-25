@@ -58,7 +58,17 @@ public class BlockRope extends EnumBlock<BlockRope.RopeType> {
 	 */
 	@Override
 	public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
-		return state.withProperty(BOTTOM, world.getBlockState(pos.down()).getBlock() != this);
+		BlockPos down = pos.down();
+		return state.withProperty(BOTTOM, !canConnectTo(world.getBlockState(down), world, down));
+	}
+
+	private boolean canConnectTo(IBlockState state, IBlockAccess world, BlockPos pos) {
+		if(state.getBlock() == this) {
+			return true;
+		}
+
+		BlockFaceShape shape = state.getBlockFaceShape(world, pos, EnumFacing.UP);
+		return shape == BlockFaceShape.CENTER || shape == BlockFaceShape.CENTER_BIG || shape == BlockFaceShape.SOLID;
 	}
 
 	@Override
