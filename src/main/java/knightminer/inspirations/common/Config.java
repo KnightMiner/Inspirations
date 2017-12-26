@@ -44,11 +44,22 @@ public class Config {
 	public static boolean enableBookshelf = true;
 	public static boolean enableColoredBooks = true;
 	private static String[] bookKeywords = {
+			"atlas",
 			"book",
+			"catalogue",
 			"guide",
-			"manual"
+			"journal",
+			"lexicon",
+			"manual",
+			"tome"
 	};
-	private static String[] bookOverrides = new String[0];
+	private static String[] bookOverrides = {
+			"defiledlands:book_wyrm_raw:0:false",
+			"defiledlands:book_wyrm_cooked:0:false",
+			"defiledlands:book_wyrm_scale:0:false",
+			"defiledlands:book_wyrm_scale_golden:0:false",
+			"defiledlands:book_wyrm_analyzer:0:false"
+	};
 
 	// utility
 	public static boolean enableLock = true;
