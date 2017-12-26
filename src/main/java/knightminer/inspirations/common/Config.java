@@ -76,6 +76,8 @@ public class Config {
 	public static boolean brewHeartbeet = true;
 	public static boolean enableAnvilSmashing = true;
 	public static boolean dispensersPlaceAnvils = true;
+	public static boolean harvestHangingVines = true;
+
 	private static String[] anvilSmashing = {
 			"# Stone",
 			"minecraft:stone:0->minecraft:cobblestone",
@@ -200,6 +202,9 @@ public class Config {
 
 			// dispensers place anvils
 			dispensersPlaceAnvils = configFile.getBoolean("dispensersPlaceAnvils", "tweaks", dispensersPlaceAnvils, "Dispensers will place anvils instead of dropping them. Plays well with anvil smashing.");
+
+			// harvest hanging vines
+			harvestHangingVines = configFile.getBoolean("harvestHangingVines", "tweaks", harvestHangingVines, "When shearing vines, any supported vines will also be sheared instead of just broken");
 		}
 
 		// saving
@@ -275,7 +280,7 @@ public class Config {
 
 			// if the length and meta are valid, try finding the item
 			item = GameRegistry.findRegistry(Item.class).getValue(new ResourceLocation(parts[0], parts[1]));
-			if(item == Items.AIR) {
+			if(item == null || item == Items.AIR) {
 				Inspirations.log.warn("Unable to find item {}:{} for {}", parts[0], parts[1], override);
 				continue;
 			}
