@@ -1,5 +1,6 @@
 package knightminer.inspirations.library;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -8,12 +9,14 @@ import java.util.Set;
 
 import com.google.common.collect.ImmutableList;
 
+import knightminer.inspirations.library.recipe.CauldronRecipe;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import slimeknights.mantle.util.RecipeMatch;
 
 public class InspirationsRegistry {
 	/*
@@ -74,6 +77,10 @@ public class InspirationsRegistry {
 		books.put(new ItemMetaKey(item, meta), isBook);
 	}
 
+	/**
+	 * Internal function used to allow the config to set the list of book keywords. Should not need to be called outside of Inspirations
+	 * @param keywords Keyword list
+	 */
 	public static void setBookKeywords(String[] keywords) {
 		bookKeywords = keywords;
 	}
@@ -168,7 +175,7 @@ public class InspirationsRegistry {
 	/**
 	 * Checks if we have a state specific smashing result. Used for JEI to filter out the lists for blocks
 	 * @param state  State to check
-	 * @return  True if we haeve a state specific result
+	 * @return  True if we have a state specific result
 	 */
 	public static boolean hasAnvilSmashStateResult(IBlockState state) {
 		return anvilSmashing.containsKey(state);
@@ -188,5 +195,72 @@ public class InspirationsRegistry {
 	 */
 	public static List<Map.Entry<Block,IBlockState>> getAllAnvilBlockSmashing() {
 		return ImmutableList.copyOf(anvilSmashingBlocks.entrySet());
+	}
+
+
+	/*
+	 * Cauldron recipes
+	 */
+	private static List<CauldronRecipe> cauldronRecipes = new ArrayList<>();
+
+	/**
+	 * Gets the result of a cauldron recipe
+	 * @param input      ItemStack input
+	 * @param isBoiling  Whether the cauldron is boiling
+	 * @return  Result of the recipe
+	 */
+	public static ItemStack getCauldronResult(ItemStack input, boolean isBoiling) {
+		for(CauldronRecipe recipe : cauldronRecipes) {
+			if(recipe.matches(input, isBoiling)) {
+				return recipe.getResult(input, isBoiling);
+			}
+		}
+		return ItemStack.EMPTY;
+	}
+
+	/**
+	 * Adds a new cauldron recipe
+	 * @param recipe  Recipe to add
+	 */
+	public static void addCauldronRecipe(CauldronRecipe recipe) {
+		cauldronRecipes.add(recipe);
+	}
+
+	/**
+	 * Adds a new cauldron recipe
+	 * @param input      ItemStack to check for
+	 * @param output     Recipe output
+	 * @param boiling  Whether the cauldron must be boiling or not
+	 */
+	public static void addCauldronRecipe(ItemStack input, ItemStack output, boolean boiling) {
+		addCauldronRecipe(new CauldronRecipe(RecipeMatch.of(input), output, boiling));
+	}
+
+	/**
+	 * Adds a new cauldron recipe
+	 * @param input      oreDict name to check for
+	 * @param output     Recipe output
+	 * @param boiling  Whether the cauldron must be boiling or not
+	 */
+	public static void addCauldronRecipe(String input, ItemStack output, boolean boiling) {
+		addCauldronRecipe(new CauldronRecipe(RecipeMatch.of(input), output, boiling));
+	}
+
+	/**
+	 * Adds a new cauldron recipe
+	 * @param input      RecipeMatch to check for
+	 * @param output     Recipe output
+	 * @param boiling  Whether the cauldron must be boiling or not
+	 */
+	public static void addCauldronRecipe(RecipeMatch input, ItemStack output, boolean boiling) {
+		addCauldronRecipe(new CauldronRecipe(input, output, boiling));
+	}
+
+	/**
+	 * Gets all cauldron recipes
+	 * @return  A list of all cauldron recipes
+	 */
+	public static List<CauldronRecipe> getAllCauldronRecipes() {
+		return ImmutableList.copyOf(cauldronRecipes);
 	}
 }

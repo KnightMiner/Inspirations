@@ -7,11 +7,10 @@ import com.google.gson.JsonSyntaxException;
 
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.InspirationsRegistry;
+import knightminer.inspirations.library.util.RecipeUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.JsonUtils;
 import net.minecraft.util.NonNullList;
@@ -77,6 +76,7 @@ public class Config {
 	public static boolean enableAnvilSmashing = true;
 	public static boolean dispensersPlaceAnvils = true;
 	public static boolean harvestHangingVines = true;
+	public static boolean enableCauldronRecipes = true;
 
 	private static String[] anvilSmashing = {
 			"# Stone",
@@ -129,6 +129,10 @@ public class Config {
 			"minecraft:prismarine:1->minecraft:prismarine:0",
 			"minecraft:end_bricks->minecraft:end_stone",
 			"minecraft:monster_egg"
+	};
+	private static String[] cauldronRecipes = {
+			"minecraft:sticky_piston->minecraft:piston",
+			"minecraft:sponge:0->minecraft:sponge:1"
 	};
 
 
@@ -205,6 +209,9 @@ public class Config {
 
 			// harvest hanging vines
 			harvestHangingVines = configFile.getBoolean("harvestHangingVines", "tweaks", harvestHangingVines, "When shearing vines, any supported vines will also be sheared instead of just broken");
+
+			// more cauldron uses
+			enableCauldronRecipes = configFile.getBoolean("cauldronRecipes", "tweaks", enableCauldronRecipes, "Allows additional recipes to be added to the cauldron on right click");
 		}
 
 		// saving
@@ -229,6 +236,11 @@ public class Config {
 				"List of blocks to add to anvil smashing. Format is modid:input[:meta][->modid:output[:meta]]. If the output is excluded, it will default to air (breaking the block). If the meta is excluded, it will check all states for input and use the default for output").getStringList();
 		processAnvilSmashing(anvilSmashing);
 
+		// cauldron uses
+		cauldronRecipes = configFile.get("tweaks.cauldronRecipes", "recipes", cauldronRecipes,
+				"List of recipes to add to the cauldron on right click. Format is (modid:input:meta|oreString)->modid:output:meta[->isBoiling]. If isBoiling is excluded, it defaults to false.").getStringList();
+		processCauldronRecipes(cauldronRecipes);
+
 		// saving
 		if(configFile.hasChanged()) {
 			configFile.save();
@@ -242,8 +254,7 @@ public class Config {
 	private static void processBookOverrides(String[] overrides) {
 		NonNullList<ItemStack> stacks;
 		String[] parts;
-		Item item;
-		int meta;
+		ItemStack stack;
 		boolean isBook;
 		// simply look through each entry
 		for(String override : overrides) {
@@ -259,29 +270,17 @@ public class Config {
 				continue;
 			}
 
-			// next parse meta. If unset default wildcard
-			meta = OreDictionary.WILDCARD_VALUE;
+			String itemString = override;
 			if(parts.length > 2) {
-				// invalid numbers set -2 so we can handle negative too
-				try {
-					meta = Integer.parseInt(parts[2]);
-				} catch(NumberFormatException e) {
-					meta = -2;
-				}
-
-				// though -1 is wildcard, default behavior
-				if(meta == -1) {
-					meta = OreDictionary.WILDCARD_VALUE;
-				} else if(meta < -1) {
-					Inspirations.log.error("Invalid book override {}: invalid metadata", override);
-					continue;
-				}
+				itemString = itemString.substring(0, override.length() - parts[3].length() - 1);
 			}
-
-			// if the length and meta are valid, try finding the item
-			item = GameRegistry.findRegistry(Item.class).getValue(new ResourceLocation(parts[0], parts[1]));
-			if(item == null || item == Items.AIR) {
-				Inspirations.log.warn("Unable to find item {}:{} for {}", parts[0], parts[1], override);
+			if(!RecipeUtil.isValidItemStack(itemString, true)) {
+				Inspirations.log.error("Invalid book override {}: invalid item {}", override, itemString);
+				continue;
+			}
+			stack = RecipeUtil.getItemStackFromString(itemString, true);
+			if(stack.isEmpty()) {
+				Inspirations.log.warn("Unable to find item {} for override", itemString);
 				continue;
 			}
 
@@ -289,15 +288,15 @@ public class Config {
 			isBook = parts.length > 3 ? !"false".equals(parts[3]) : true;
 
 			// finally, add the entry
-			if(meta == OreDictionary.WILDCARD_VALUE) {
+			if(stack.getMetadata() == OreDictionary.WILDCARD_VALUE) {
 				// wildcard iterates through stacks
 				stacks = NonNullList.create();
-				item.getSubItems(CreativeTab.SEARCH, stacks);
-				for(ItemStack stack : stacks) {
-					InspirationsRegistry.registerBook(stack, isBook);
+				stack.getItem().getSubItems(CreativeTab.SEARCH, stacks);
+				for(ItemStack sub : stacks) {
+					InspirationsRegistry.registerBook(sub, isBook);
 				}
 			} else {
-				InspirationsRegistry.registerBook(item, meta, isBook);
+				InspirationsRegistry.registerBook(stack, isBook);
 			}
 		}
 	}
@@ -385,6 +384,61 @@ public class Config {
 				}
 			}
 	}
+
+	private static void processCauldronRecipes(String[] cauldronRecipes) {
+		for(String recipe : cauldronRecipes) {
+			// skip blank lines
+			if("".equals(recipe) || recipe.startsWith("#")) {
+				continue;
+			}
+
+			String[] parts = recipe.split("->");
+			if(parts.length < 2 || parts.length > 3) {
+				Inspirations.log.error("Invalid cauldron recipe {}: must be in format input->output[->isBoiling]", recipe);
+				continue;
+			}
+
+			// input
+			ItemStack input = null;
+			if(parts[0].contains(":")) {
+				if(!RecipeUtil.isValidItemStack(parts[0], true)) {
+					Inspirations.log.error("Invalid cauldron recipe {}: invalid input {}", recipe, parts[0]);
+					continue;
+				}
+
+				input = RecipeUtil.getItemStackFromString(parts[0], true);
+				if(input.isEmpty()) {
+					Inspirations.log.error("Unable to find item {} for recipe {}", parts[0], recipe);
+					continue;
+				}
+			}
+
+			// output
+			if(!RecipeUtil.isValidItemStack(parts[1], false)) {
+				Inspirations.log.error("Invalid cauldron recipe {}: invalid output {}", recipe, parts[1]);
+				continue;
+			}
+			ItemStack output = RecipeUtil.getItemStackFromString(parts[1], false);
+			if(output.isEmpty()) {
+				Inspirations.log.error("Unable to find item {} for recipe {}", parts[0], recipe);
+				continue;
+			}
+
+			// add recipe
+			boolean boiling = parts.length > 2 ? parts[2].equals("true") : false;
+			// if the input is empty, we are using an oreString
+			if(input == null) {
+				InspirationsRegistry.addCauldronRecipe(parts[0], output, boiling);
+			} else {
+				InspirationsRegistry.addCauldronRecipe(input, output, boiling);
+			}
+		}
+	}
+
+
+	/*
+	 * Factories for recipe conditions
+	 */
 
 	public static class PulseLoaded implements IConditionFactory {
 		@Override

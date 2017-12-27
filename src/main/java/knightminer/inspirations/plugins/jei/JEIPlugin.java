@@ -1,6 +1,7 @@
 package knightminer.inspirations.plugins.jei;
 
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import javax.annotation.Nonnull;
@@ -8,6 +9,8 @@ import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.library.recipe.TextureRecipe;
+import knightminer.inspirations.plugins.jei.cauldron.CauldronRecipeCategory;
+import knightminer.inspirations.plugins.jei.cauldron.CauldronRecipeChecker;
 import knightminer.inspirations.plugins.jei.smashing.SmashingRecipeCategory;
 import knightminer.inspirations.plugins.jei.smashing.SmashingRecipeChecker;
 import knightminer.inspirations.plugins.jei.texture.TextureRecipeHandler;
@@ -32,6 +35,7 @@ public class JEIPlugin implements IModPlugin {
 
 	public static ICraftingGridHelper craftingGridHelper;
 	public static IRecipeRegistry recipeRegistry;
+	public static CauldronRecipeCategory cauldron;
 
 	@Override
 	public void registerItemSubtypes(ISubtypeRegistry registry) {
@@ -48,9 +52,15 @@ public class JEIPlugin implements IModPlugin {
 	public void registerCategories(IRecipeCategoryRegistration registry) {
 		final IGuiHelper guiHelper = registry.getJeiHelpers().getGuiHelper();
 
-		// Smeltery
-		if(PulseBase.isTweaksLoaded() && Config.enableAnvilSmashing) {
-			registry.addRecipeCategories(new SmashingRecipeCategory(guiHelper));
+		if(PulseBase.isTweaksLoaded()) {
+			// Anvil
+			if(Config.enableAnvilSmashing) {
+				registry.addRecipeCategories(new SmashingRecipeCategory(guiHelper));
+			}
+			// cauldron
+			if(Config.enableCauldronRecipes) {
+				registry.addRecipeCategories(cauldron = new CauldronRecipeCategory(guiHelper));
+			}
 		}
 	}
 
@@ -63,10 +73,16 @@ public class JEIPlugin implements IModPlugin {
 		craftingGridHelper = guiHelper.createCraftingGridHelper(craftInputSlot1, craftOutputSlot);
 		registry.handleRecipes(TextureRecipe.class, new TextureRecipeHandler(), VanillaRecipeCategoryUid.CRAFTING);
 
-		// anvil smashing
-		if(PulseBase.isTweaksLoaded() && Config.enableAnvilSmashing) {
-			registry.addRecipes(SmashingRecipeChecker.getRecipes(), SmashingRecipeCategory.CATEGORY);
-			registry.addRecipeCatalyst(new ItemStack(Blocks.ANVIL), SmashingRecipeCategory.CATEGORY);
+		// tweaks
+		if(PulseBase.isTweaksLoaded()) {
+			if(Config.enableAnvilSmashing) {
+				registry.addRecipes(SmashingRecipeChecker.getRecipes(), SmashingRecipeCategory.CATEGORY);
+				registry.addRecipeCatalyst(new ItemStack(Blocks.ANVIL), SmashingRecipeCategory.CATEGORY);
+			}
+			if(Config.enableCauldronRecipes) {
+				registry.addRecipes(CauldronRecipeChecker.getRecipes(), CauldronRecipeCategory.CATEGORY);
+				registry.addRecipeCatalyst(new ItemStack(Items.CAULDRON), CauldronRecipeCategory.CATEGORY);
+			}
 		}
 	}
 

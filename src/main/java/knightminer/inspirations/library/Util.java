@@ -1,5 +1,6 @@
 package knightminer.inspirations.library;
 
+import java.util.Arrays;
 import java.util.Locale;
 
 import org.apache.logging.log4j.LogManager;
@@ -11,6 +12,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.text.translation.I18n;
@@ -70,5 +72,11 @@ public class Util {
 
 		int meta = block.damageDropped(state);
 		return new ItemStack(item, 1, meta);
+	}
+
+	public static <E> NonNullList<E> createNonNullList(E... elements) {
+		NonNullList<E> list = NonNullList.create();
+		list.addAll(Arrays.asList(elements));
+		return list;
 	}
 }
