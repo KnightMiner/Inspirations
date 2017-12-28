@@ -1,0 +1,35 @@
+{
+  "conditions": [
+    {
+      "type": "pulse_loaded",
+      "pulse": "InspirationsTweaks"
+    },
+    {
+      "type": "config",
+      "prop": "cauldron_brewing"
+    }
+  ],
+  "type": "forge:ore_shapeless",
+  "result": {
+    "item": "inspirations:materials",
+    "data": 3,
+    "count": 3
+  },
+  "ingredients": [
+    {
+      "item": "minecraft:dragon_breath"
+    },
+    {
+      "item": "inspirations:materials",
+      "data": 2
+    },
+    {
+      "item": "inspirations:materials",
+      "data": 2
+    },
+    {
+      "item": "inspirations:materials",
+      "data": 2
+    }
+  ]
+}

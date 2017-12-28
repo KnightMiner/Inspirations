@@ -6,6 +6,9 @@
     },
     "variants": {
         "lock": [{ "textures": { "layer0": "inspirations:items/lock" }}],
-        "key": [{ "textures": { "layer0": "inspirations:items/key" }}]
+        "key": [{ "textures": { "layer0": "inspirations:items/key" }}],
+        
+        "splash_bottle": [{ "textures": { "layer0": "items/potion_bottle_splash" }}],
+        "lingering_bottle": [{ "textures": { "layer0": "items/potion_bottle_lingering" }}]
     }
 }

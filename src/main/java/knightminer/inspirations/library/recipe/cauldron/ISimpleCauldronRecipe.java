@@ -29,16 +29,16 @@ public interface ISimpleCauldronRecipe extends ICauldronRecipe {
 	};
 
 	/**
-	 * Gets the result of this recipe for display in JEI
-	 * @return  Initial state
+	 * Gets the state result of this recipe for display in JEI
+	 * @return  Result state
 	 */
 	CauldronState getState();
 
 	/**
-	 * Gets the resulting state of this recipe
+	 * Gets the initial state of this recipe
 	 * @return  Result state
 	 */
-	default CauldronState getResultState() {
+	default CauldronState getInitialState() {
 		return getState();
 	};
 

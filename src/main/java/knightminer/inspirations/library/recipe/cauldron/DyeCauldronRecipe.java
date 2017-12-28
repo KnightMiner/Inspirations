@@ -15,7 +15,7 @@ public class DyeCauldronRecipe implements ISimpleCauldronRecipe {
 	public DyeCauldronRecipe(RecipeMatch input, EnumDyeColor color, ItemStack result) {
 		this.input = input;
 		this.result = result;
-		this.state = CauldronState.dye(color.getColorValue());
+		this.state = CauldronState.dye(color.colorValue);
 	}
 
 	public DyeCauldronRecipe(ItemStack input, EnumDyeColor color, ItemStack result) {

@@ -11,6 +11,7 @@ import com.google.common.collect.ImmutableList;
 
 import knightminer.inspirations.library.recipe.cauldron.CauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
+import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe.CauldronState;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -210,23 +211,13 @@ public class InspirationsRegistry {
 	 * @param isBoiling  Whether the cauldron is boiling
 	 * @return  Result of the recipe
 	 */
-	public static ICauldronRecipe getCauldronResult(ItemStack input, boolean boiling, int level, ICauldronRecipe.CauldronState state) {
+	public static ICauldronRecipe getCauldronResult(ItemStack input, boolean boiling, int level, CauldronState state) {
 		for(ICauldronRecipe recipe : cauldronRecipes) {
 			if(recipe.matches(input, boiling, level, state)) {
 				return recipe;
 			}
 		}
 		return null;
-	}
-
-	/**
-	 * Gets the result of a cauldron recipe
-	 * @param input      ItemStack input
-	 * @param isBoiling  Whether the cauldron is boiling
-	 * @return  Result of the recipe
-	 */
-	public static ICauldronRecipe getCauldronResult(ItemStack input, boolean boiling, int level) {
-		return getCauldronResult(input, boiling, level, ICauldronRecipe.CauldronState.WATER);
 	}
 
 	/**

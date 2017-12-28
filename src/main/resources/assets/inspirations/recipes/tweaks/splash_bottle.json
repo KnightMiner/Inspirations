@@ -1,0 +1,33 @@
+{
+  "conditions": [
+    {
+      "type": "pulse_loaded",
+      "pulse": "InspirationsTweaks"
+    },
+    {
+      "type": "config",
+      "prop": "cauldron_brewing"
+    }
+  ],
+  "type": "forge:ore_shapeless",
+  "result": {
+    "item": "inspirations:materials",
+    "data": 2,
+    "count": 3
+  },
+  "ingredients": [
+    {
+      "type": "forge:ore_dict",
+      "ore": "gunpowder"
+    },
+    {
+      "item": "minecraft:glass_bottle"
+    },
+    {
+      "item": "minecraft:glass_bottle"
+    },
+    {
+      "item": "minecraft:glass_bottle"
+    }
+  ]
+}

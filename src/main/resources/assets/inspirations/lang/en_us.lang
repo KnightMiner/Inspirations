@@ -77,6 +77,27 @@ inspirations.unlock.fail.unlocked=The container is not locked
 item.inspirations.edibles.heartbeet.name=Heartbeet
 
 
+item.inspirations.materials.splash_bottle.name=Splash Potion Bottle
+item.inspirations.materials.lingering_bottle.name=Lingering Potion Bottle
+
+item.inspirations.dyed_bottle.name=Dyed Water Bottle
+item.inspirations.dyed_bottle.white.name=White Dyed Water Bottle
+item.inspirations.dyed_bottle.orange.name=Orange Dyed Water Bottle
+item.inspirations.dyed_bottle.magenta.name=Magenta Dyed Water Bottle
+item.inspirations.dyed_bottle.light_blue.name=Light Blue Dyed Water Bottle
+item.inspirations.dyed_bottle.yellow.name=Yellow Dyed Water Bottle
+item.inspirations.dyed_bottle.lime.name=Lime Dyed Water Bottle
+item.inspirations.dyed_bottle.pink.name=Pink Dyed Water Bottle
+item.inspirations.dyed_bottle.gray.name=Gray Dyed Water Bottle
+item.inspirations.dyed_bottle.silver.name=Light Gray Dyed Water Bottle
+item.inspirations.dyed_bottle.cyan.name=Cyan Dyed Water Bottle
+item.inspirations.dyed_bottle.purple.name=Purple Dyed Water Bottle
+item.inspirations.dyed_bottle.blue.name=Blue Dyed Water Bottle
+item.inspirations.dyed_bottle.brown.name=Brown Dyed Water Bottle
+item.inspirations.dyed_bottle.green.name=Green Dyed Water Bottle
+item.inspirations.dyed_bottle.red.name=Red Dyed Water Bottle
+item.inspirations.dyed_bottle.black.name=Black Dyed Water Bottle
+
 # JEI
 
 gui.jei.anvil_smashing.title=Anvil Smashing

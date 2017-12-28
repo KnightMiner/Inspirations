@@ -71,13 +71,20 @@ public class Config {
 	public static boolean enablePigDesaddle = true;
 	public static boolean enableFittedCarpets = true;
 	public static boolean enableExtraBonemeal = true;
+	// heartbeet
 	public static boolean enableHeartbeet = true;
 	public static boolean brewHeartbeet = true;
+	// anvil
 	public static boolean enableAnvilSmashing = true;
 	public static boolean dispensersPlaceAnvils = true;
 	public static boolean harvestHangingVines = true;
+	// cauldron
 	public static boolean enableCauldronRecipes = true;
+	public static boolean enableExtendedCauldron = true;
+	public static boolean simpleCauldronRecipes = false;
 	public static boolean enableCauldronDyeing = true;
+	public static boolean enableCauldronBrewing = true;
+	public static boolean betterCauldronItem = true;
 
 	private static String[] anvilSmashing = {
 			"# Stone",
@@ -212,7 +219,13 @@ public class Config {
 			harvestHangingVines = configFile.getBoolean("harvestHangingVines", "tweaks", harvestHangingVines, "When shearing vines, any supported vines will also be sheared instead of just broken");
 
 			// more cauldron uses
-			enableCauldronRecipes = configFile.getBoolean("cauldronRecipes", "tweaks", enableCauldronRecipes, "Allows additional recipes to be added to the cauldron on right click");
+			String extendCauldron = configFile.getString("extendCauldron", "tweaks", "true", "Allows additional recipes to be performed in the cauldron. If true, requires a block substitution. If simple, functionality will be limited to water in cauldrons.", new String[]{ "false", "simple", "true" });
+			enableCauldronRecipes = !extendCauldron.equals("false");
+			simpleCauldronRecipes = extendCauldron.equals("simple");
+			enableExtendedCauldron = extendCauldron.equals("true");
+			enableCauldronBrewing = configFile.getBoolean("brewing", "tweaks.cauldron", enableCauldronBrewing, "Allows cauldrons to be filled with dyes and dye items using cauldrons") && enableExtendedCauldron;
+			enableCauldronDyeing = configFile.getBoolean("dyeing", "tweaks.cauldron", enableCauldronDyeing, "Allows cauldrons to be filled with potions and support brewing") && enableExtendedCauldron;
+			betterCauldronItem = configFile.getBoolean("betterItemModel", "tweaks.cauldron", betterCauldronItem, "Replaces the flat cauldron sprite with the 3D cauldron block model");
 		}
 
 		// saving
@@ -472,6 +485,10 @@ public class Config {
 				case "redstone_book": return enableRedstoneBook;
 				case "redstone_charge": return enableRedstoneCharge;
 				case "torch_lever": return enableTorchLever;
+
+				// tweaks
+				case "cauldron_brewing": return enableCauldronBrewing;
+				case "cauldron_dyeing": return enableCauldronDyeing;
 			}
 
 			throw new JsonSyntaxException("Invalid propertyname '" + property + "'");

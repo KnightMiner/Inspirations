@@ -35,27 +35,56 @@ public class ClientProxy extends CommonProxy {
 		MinecraftForge.EVENT_BUS.register(this);
 	}
 
+
+
 	/*
 	 * Model registering
 	 */
 
+	/* Items */
+
 	/** Registers the item of the given block with its registry name for all metadata values for the inventory variant */
-	public static ResourceLocation registerItemModel(Block block) {
+	protected static ResourceLocation registerItemModel(Block block) {
 		return registerItemModel(Item.getItemFromBlock(block));
 	}
 
 	/** Registers the given item with its registry name for all metadata values for the inventory variant */
-	public static ResourceLocation registerItemModel(Item item) {
+	protected static ResourceLocation registerItemModel(Item item) {
 		ResourceLocation itemLocation = null;
 		if(item != null) {
 			itemLocation = item.getRegistryName();
 		}
 		if(itemLocation != null) {
-			itemLocation = registerIt(item, itemLocation);
+			itemLocation = registerItemModel(item, itemLocation);
 		}
 
 		return itemLocation;
 	}
+
+	protected static ResourceLocation registerItemModel(Item item, final ResourceLocation location) {
+		if(item == null || location == null) {
+			return location;
+		}
+
+		// plop it in.
+		// This here is needed for the model to be found ingame when the game looks for a model to render an Itemstack
+		// we use an ItemMeshDefinition because it allows us to do it no matter what metadata we use
+		ModelLoader.setCustomMeshDefinition(item, new ItemMeshDefinition() {
+			@Nonnull
+			@Override
+			public ModelResourceLocation getModelLocation(@Nonnull ItemStack stack) {
+				return new ModelResourceLocation(location, VARIANT_INVENTORY);
+			}
+		});
+
+		// We have to readd the default variant if we have custom variants, since it wont be added otherwise and therefore not loaded
+		ModelLoader.registerItemVariants(item, location);
+
+		return location;
+	}
+
+
+	/* Item with meta */
 
 	/** Registers the item with the given metadata and its registry name for the inventory variant */
 	public static void registerItemModel(Item item, int meta) {
@@ -79,7 +108,14 @@ public class ClientProxy extends CommonProxy {
 	/** Registers the given block/meta combination with the model at the given location, default inventory variant */
 	public static void registerItemModel(Block block, int meta, ResourceLocation location) {
 		if(block != null) {
-			registerItemModel(Item.getItemFromBlock(block), meta, location, "inventory");
+			registerItemModel(Item.getItemFromBlock(block), meta, location);
+		}
+	}
+
+	/** Registers the given block/meta combination with the model at the given location, default inventory variant */
+	public static void registerItemModel(Item item, int meta, ResourceLocation location) {
+		if(item != null) {
+			registerItemModel(item, meta, location, VARIANT_INVENTORY);
 		}
 	}
 
@@ -90,6 +126,9 @@ public class ClientProxy extends CommonProxy {
 			ModelLoader.setCustomModelResourceLocation(item, meta, new ModelResourceLocation(location, variant));
 		}
 	}
+
+
+	/* Special */
 
 	/** Registers an itemblockmeta model for the blocks inventory variant. */
 	public static void registerItemBlockMeta(Block block) {
@@ -110,6 +149,9 @@ public class ClientProxy extends CommonProxy {
 			item.registerItemModels();
 		}
 	}
+
+
+	/* Fluids */
 
 	public static void registerFluidModels(Fluid fluid) {
 		if(fluid == null) {
@@ -136,6 +178,8 @@ public class ClientProxy extends CommonProxy {
 			ModelLoader.setCustomStateMapper(block, mapper);
 		}
 	}
+
+
 
 	/*
 	 * Item and block color handlers
@@ -165,24 +209,6 @@ public class ClientProxy extends CommonProxy {
 				itemColors.registerItemColorHandler(handler, item);
 			}
 		}
-	}
-
-	private static ResourceLocation registerIt(Item item, final ResourceLocation location) {
-		// plop it in.
-		// This here is needed for the model to be found ingame when the game looks for a model to render an Itemstack
-		// we use an ItemMeshDefinition because it allows us to do it no matter what metadata we use
-		ModelLoader.setCustomMeshDefinition(item, new ItemMeshDefinition() {
-			@Nonnull
-			@Override
-			public ModelResourceLocation getModelLocation(@Nonnull ItemStack stack) {
-				return new ModelResourceLocation(location, VARIANT_INVENTORY);
-			}
-		});
-
-		// We have to readd the default variant if we have custom variants, since it wont be added otherwise and therefore not loaded
-		ModelLoader.registerItemVariants(item, location);
-
-		return location;
 	}
 
 	private static class FluidStateMapper extends StateMapperBase implements ItemMeshDefinition {

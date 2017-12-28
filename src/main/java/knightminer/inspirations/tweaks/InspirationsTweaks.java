@@ -11,8 +11,15 @@ import knightminer.inspirations.shared.InspirationsShared;
 import knightminer.inspirations.tweaks.block.BlockEnhancedCauldron;
 import knightminer.inspirations.tweaks.block.BlockFittedCarpet;
 import knightminer.inspirations.tweaks.block.BlockSmashingAnvil;
+import knightminer.inspirations.tweaks.item.ItemDyedWaterBottle;
 import knightminer.inspirations.tweaks.recipe.ArmorDyeingCauldronRecipe;
-import knightminer.inspirations.tweaks.recipe.DyeWaterCauldronRecipe;
+import knightminer.inspirations.tweaks.recipe.DyeCauldronWater;
+import knightminer.inspirations.tweaks.recipe.FillCauldronFromDyedBottle;
+import knightminer.inspirations.tweaks.recipe.FillCauldronFromPotion;
+import knightminer.inspirations.tweaks.recipe.FillDyedBottleFromCauldron;
+import knightminer.inspirations.tweaks.recipe.FillPotionFromCauldron;
+import knightminer.inspirations.tweaks.recipe.PotionCauldronRecipe;
+import knightminer.inspirations.tweaks.recipe.TippedArrowCauldronRecipe;
 import knightminer.inspirations.tweaks.tileentity.TileCauldron;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAnvil;
@@ -22,6 +29,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.dispenser.BehaviorDefaultDispenseItem;
 import net.minecraft.dispenser.IBehaviorDispenseItem;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.init.PotionTypes;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
@@ -56,6 +64,9 @@ public class InspirationsTweaks extends PulseBase {
 	public static Block anvil;
 	public static Block cauldron;
 
+	// items
+	public static ItemDyedWaterBottle dyedWaterBottle;
+
 	@Subscribe
 	public void preInit(FMLPreInitializationEvent event) {
 		proxy.preInit();
@@ -71,7 +82,7 @@ public class InspirationsTweaks extends PulseBase {
 		if(Config.enableAnvilSmashing) {
 			anvil = register(r, new BlockSmashingAnvil(), new ResourceLocation("anvil"));
 		}
-		if(Config.enableCauldronDyeing) {
+		if(Config.enableExtendedCauldron) {
 			cauldron = register(r, new BlockEnhancedCauldron(), new ResourceLocation("cauldron"));
 			registerTE(TileCauldron.class, "cauldron");
 		}
@@ -80,6 +91,10 @@ public class InspirationsTweaks extends PulseBase {
 	@SubscribeEvent
 	public void registerItems(Register<Item> event) {
 		IForgeRegistry<Item> r = event.getRegistry();
+
+		if(Config.enableCauldronDyeing) {
+			dyedWaterBottle = registerItem(r, new ItemDyedWaterBottle(), "dyed_bottle");
+		}
 
 		if(carpet != null) {
 			registerItemBlock(r, new ItemCloth(carpet));
@@ -103,9 +118,15 @@ public class InspirationsTweaks extends PulseBase {
 	}
 
 	private void registerCauldronRecipes() {
+		if(!Config.enableExtendedCauldron) {
+			return;
+		}
+
 		if(Config.enableCauldronDyeing) {
+			InspirationsRegistry.addCauldronRecipe(FillDyedBottleFromCauldron.INSTANCE);
+			InspirationsRegistry.addCauldronRecipe(FillCauldronFromDyedBottle.INSTANCE);
+			InspirationsRegistry.addCauldronRecipe(DyeCauldronWater.INSTANCE);
 			InspirationsRegistry.addCauldronRecipe(ArmorDyeingCauldronRecipe.INSTANCE);
-			InspirationsRegistry.addCauldronRecipe(DyeWaterCauldronRecipe.INSTANCE);
 
 			for(EnumDyeColor color : EnumDyeColor.values()) {
 				InspirationsRegistry.addCauldronRecipe(new DyeCauldronRecipe(
@@ -121,6 +142,20 @@ public class InspirationsTweaks extends PulseBase {
 						));
 			}
 		}
+
+		if(Config.enableCauldronBrewing) {
+			addPotionBottle(Items.POTIONITEM, new ItemStack(Items.GLASS_BOTTLE));
+			addPotionBottle(Items.SPLASH_POTION, InspirationsShared.splashBottle);
+			addPotionBottle(Items.LINGERING_POTION, InspirationsShared.lingeringBottle);
+
+			InspirationsRegistry.addCauldronRecipe(PotionCauldronRecipe.INSTANCE);
+			InspirationsRegistry.addCauldronRecipe(TippedArrowCauldronRecipe.INSTANCE);
+		}
+	}
+
+	private static void addPotionBottle(Item potion, ItemStack bottle) {
+		InspirationsRegistry.addCauldronRecipe(new FillCauldronFromPotion(potion, bottle));
+		InspirationsRegistry.addCauldronRecipe(new FillPotionFromCauldron(potion, bottle));
 	}
 
 	@Subscribe

@@ -55,6 +55,16 @@ public class BlockEnhancedCauldron extends BlockCauldron implements ITileEntityP
 		return false;
 	}
 
+	@Override
+	public void fillWithRain(World world, BlockPos pos) {
+		TileEntity te = world.getTileEntity(pos);
+		// do not fill unless the current contents are water
+		if(te instanceof TileCauldron && ((TileCauldron) te).getContentType() != CauldronContents.WATER) {
+			return;
+		}
+		super.fillWithRain(world, pos);
+	}
+
 	/* Content texture */
 
 	@Override

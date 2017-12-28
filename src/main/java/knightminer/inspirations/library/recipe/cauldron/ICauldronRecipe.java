@@ -3,12 +3,14 @@ package knightminer.inspirations.library.recipe.cauldron;
 import java.util.Locale;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
+import net.minecraft.init.PotionTypes;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionType;
 import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.SoundEvent;
 
 public interface ICauldronRecipe {
 
@@ -35,14 +37,16 @@ public interface ICauldronRecipe {
 	}
 
 	/**
-	 * Gets the result stack for this recipe with a state of water
-	 * @param stack    Input stack
+	 * Transforms the input itemstack for the recipe. Default implementation shrinks the input stack by 1
+	 * @param stack    Input stack to transform
 	 * @param boiling  Whether the cauldron is above fire
 	 * @param level    Input level
-	 * @return ItemStack result
+	 * @param state    Input cauldron state
+	 * @return
 	 */
-	default ItemStack getResult(ItemStack stack, boolean boiling, int level) {
-		return getResult(stack, boiling, level, CauldronState.WATER);
+	default ItemStack transformInput(ItemStack stack, boolean boiling, int level, CauldronState state) {
+		stack.shrink(1);
+		return stack;
 	}
 
 	/**
@@ -62,6 +66,21 @@ public interface ICauldronRecipe {
 	 */
 	default CauldronState getState(ItemStack stack, boolean boiling, int level, CauldronState state) {
 		return state;
+	}
+
+	/**
+	 * Plays the sound for this recipe
+	 */
+	default SoundEvent getSound(ItemStack stack, boolean boiling, int level, CauldronState state) {
+		return SoundEvents.ENTITY_BOBBER_SPLASH;
+	}
+
+	/**
+	 * Volume to use when playing the sound
+	 * @return  Sound volume
+	 */
+	default float getVolume() {
+		return 0.3f;
 	}
 
 
@@ -102,7 +121,7 @@ public interface ICauldronRecipe {
 	public class CauldronState {
 		private CauldronContents type;
 		private int color;
-		private Potion potion;
+		private PotionType potion;
 
 		public static final CauldronState WATER = new CauldronState(CauldronContents.WATER);
 
@@ -132,7 +151,7 @@ public interface ICauldronRecipe {
 		 * Creates a new potion cauldron state
 		 * @param potion  Potion input
 		 */
-		public static CauldronState potion(Potion potion) {
+		public static CauldronState potion(PotionType potion) {
 			CauldronState state = new CauldronState(CauldronContents.POTION);
 			state.potion = potion;
 			return state;
@@ -155,7 +174,7 @@ public interface ICauldronRecipe {
 					break;
 				case POTION:
 					if(tags.hasKey(TAG_POTION)) {
-						state.potion = Potion.getPotionFromResourceLocation(tags.getString(TAG_POTION));
+						state.potion = PotionType.getPotionTypeForName(tags.getString(TAG_POTION));
 					}
 					break;
 			}
@@ -184,10 +203,12 @@ public interface ICauldronRecipe {
 
 		/**
 		 * Gets the potion for this state
-		 * @return  potion for the state, or null if the type is not potion
+		 * @return  potion for the state, or WATER if the potion is null
 		 */
-		@Nullable
-		public Potion getPotion() {
+		public PotionType getPotion() {
+			if(potion == null) {
+				return PotionTypes.WATER;
+			}
 			return potion;
 		}
 
@@ -240,7 +261,7 @@ public interface ICauldronRecipe {
 					break;
 				case POTION:
 					if(potion != null) {
-						tags.setString(TAG_POTION, potion.getName());
+						tags.setString(TAG_POTION, potion.getRegistryName().toString());
 					}
 					break;
 			}

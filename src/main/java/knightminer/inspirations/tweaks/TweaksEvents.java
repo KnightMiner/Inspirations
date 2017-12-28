@@ -5,6 +5,7 @@ import java.util.List;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
+import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe.CauldronState;
 import knightminer.inspirations.shared.InspirationsShared;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBush;
@@ -24,6 +25,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -227,7 +229,8 @@ public class TweaksEvents {
 
 	@SubscribeEvent
 	public static void clickCauldron(RightClickBlock event) {
-		if(!Config.enableCauldronRecipes || Config.enableCauldronDyeing) {
+		// full cauldron extension requires block substitution
+		if(!Config.simpleCauldronRecipes) {
 			return;
 		}
 
@@ -248,20 +251,28 @@ public class TweaksEvents {
 		}
 
 		boolean isBoiling = world.getBlockState(pos.down()).getBlock() instanceof BlockFire;
-		ICauldronRecipe recipe = InspirationsRegistry.getCauldronResult(stack, isBoiling, level);
-		if(recipe != null) {
+		ICauldronRecipe recipe = InspirationsRegistry.getCauldronResult(stack, isBoiling, level, CauldronState.WATER);
+
+		// ensure both we have a recipe and the recipe is valid for a non-te cauldron
+		if(recipe != null && recipe.getState(stack, isBoiling, level, CauldronState.WATER).equals(CauldronState.WATER)) {
 			if(!world.isRemote) {
+				// update block
 				int newLevel = MathHelper.clamp(recipe.getLevel(level), 0, 3);
 				if(newLevel != level) {
-					world.setBlockState(pos, Blocks.CAULDRON.getDefaultState().withProperty(BlockCauldron.LEVEL, newLevel));
-					world.updateComparatorOutputLevel(pos, Blocks.CAULDRON);
+					Blocks.CAULDRON.setWaterLevel(world, pos, state, newLevel);
 				}
-				world.playSound((EntityPlayer)null, pos, SoundEvents.ENTITY_BOBBER_SPLASH, SoundCategory.BLOCKS, 0.3F, 1.0F);
 
-				ItemStack result = recipe.getResult(stack, isBoiling, level);
-				stack.shrink(1);
+				// sound
+				SoundEvent sound = recipe.getSound(stack, isBoiling, level, CauldronState.WATER);
+				if(sound != null) {
+					world.playSound((EntityPlayer)null, pos, sound, SoundCategory.BLOCKS, recipe.getVolume(), 1.0F);
+				}
+
+				// result
+				ItemStack result = recipe.getResult(stack, isBoiling, level, CauldronState.WATER);
+				EntityPlayer player = event.getEntityPlayer();
+				player.setHeldItem(event.getHand(), recipe.transformInput(stack, isBoiling, level, CauldronState.WATER));
 				if(!result.isEmpty()) {
-					EntityPlayer player = event.getEntityPlayer();
 					ItemHandlerHelper.giveItemToPlayer(player, result, player.inventory.currentItem);
 				}
 			}

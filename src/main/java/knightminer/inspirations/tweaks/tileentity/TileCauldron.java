@@ -2,6 +2,7 @@ package knightminer.inspirations.tweaks.tileentity;
 
 import javax.annotation.Nonnull;
 
+import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe.CauldronContents;
@@ -12,12 +13,13 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.potion.PotionUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -45,7 +47,7 @@ public class TileCauldron extends TileEntity {
 			case DYE:
 				return state.getColor();
 			case POTION:
-				return state.getPotion().getLiquidColor();
+				return PotionUtils.getPotionColor(state.getPotion());
 		}
 
 		return -1;
@@ -65,6 +67,9 @@ public class TileCauldron extends TileEntity {
 
 			// state
 			CauldronState newState = recipe.getState(stack, boiling, level, state);
+			if(!isValid(newState)) {
+				return false;
+			}
 			if(!state.equals(newState)) {
 				this.state = newState;
 				if(world.isRemote) {
@@ -73,15 +78,20 @@ public class TileCauldron extends TileEntity {
 			}
 
 			// level
-			setLevel(level, recipe.getLevel(level));
+			setLevel(blockState, recipe.getLevel(level));
+
+			// sound
+			SoundEvent sound = recipe.getSound(stack, boiling, level, state);
+			if(sound != null) {
+				world.playSound((EntityPlayer)null, pos, sound, SoundCategory.BLOCKS, recipe.getVolume(), 1.0F);
+			}
 
 			// result
 			ItemStack result = recipe.getResult(stack, boiling, level, state);
-			// shrink the held item
-			stack.shrink(1);
+			// update held item
+			player.setHeldItem(hand, recipe.transformInput(stack, boiling, level, state));
 			// and give the new item to the player
 			if(!result.isEmpty()) {
-				world.playSound((EntityPlayer)null, pos, SoundEvents.ENTITY_BOBBER_SPLASH, SoundCategory.BLOCKS, 0.3F, 1.0F);
 				ItemHandlerHelper.giveItemToPlayer(player, result, player.inventory.currentItem);
 			}
 
@@ -91,14 +101,23 @@ public class TileCauldron extends TileEntity {
 		return false;
 	}
 
-	private void setLevel(int oldLevel, int level) {
+	private boolean isValid(CauldronState state) {
+		switch(state.getType()) {
+			case POTION:
+				return Config.enableCauldronBrewing;
+			case DYE:
+				return Config.enableCauldronDyeing;
+		}
+		return true;
+	}
+
+	private void setLevel(IBlockState state, int level) {
 		level = MathHelper.clamp(level, 0, 3);
-		if(oldLevel == level) {
+		if(state.getValue(BlockCauldron.LEVEL) == level) {
 			return;
 		}
 
-		world.setBlockState(this.pos, Blocks.CAULDRON.getDefaultState().withProperty(BlockCauldron.LEVEL, level));
-		world.updateComparatorOutputLevel(pos, Blocks.CAULDRON);
+		Blocks.CAULDRON.setWaterLevel(world, pos, state, level);
 		if(level == 0) {
 			this.state = CauldronState.WATER;
 		}
