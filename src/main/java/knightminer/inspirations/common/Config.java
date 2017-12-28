@@ -266,6 +266,10 @@ public class Config {
 	 * @param overrides  Input string array
 	 */
 	private static void processBookOverrides(String[] overrides) {
+		if(!enableBookshelf) {
+			return;
+		}
+
 		NonNullList<ItemStack> stacks;
 		String[] parts;
 		ItemStack stack;
@@ -321,6 +325,10 @@ public class Config {
 	 */
 	@SuppressWarnings("deprecation")
 	private static void processAnvilSmashing(String[] transformations) {
+		if(!enableAnvilSmashing) {
+			return;
+		}
+
 		main:
 			for(String transformation : transformations) {
 				// skip blank lines
@@ -400,6 +408,10 @@ public class Config {
 	}
 
 	private static void processCauldronRecipes(String[] cauldronRecipes) {
+		if(!enableCauldronRecipes) {
+			return;
+		}
+
 		for(String recipe : cauldronRecipes) {
 			// skip blank lines
 			if("".equals(recipe) || recipe.startsWith("#")) {
