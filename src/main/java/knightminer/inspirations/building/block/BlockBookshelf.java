@@ -358,9 +358,12 @@ public class BlockBookshelf extends BlockInventory implements ITileEntityProvide
 		ItemStack stack = new ItemStack(this, 1, this.damageDropped(state));
 		TileEntity te = world.getTileEntity(pos);
 		if(te instanceof TileBookshelf) {
-			NBTTagCompound tags = new NBTTagCompound();
-			stack.setTagCompound(tags);
-			tags.setTag(RecipeUtil.TAG_TEXTURE, ((TileBookshelf) te).getTextureBlock());
+			NBTTagCompound texture = ((TileBookshelf) te).getTextureBlock();
+			if(texture.getSize() > 0) {
+				NBTTagCompound tags = new NBTTagCompound();
+				tags.setTag(RecipeUtil.TAG_TEXTURE, texture);
+				stack.setTagCompound(tags);
+			}
 		}
 		return stack;
 	}

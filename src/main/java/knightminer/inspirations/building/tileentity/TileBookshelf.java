@@ -237,4 +237,17 @@ public class TileBookshelf extends TileInventory implements IInventoryGui {
 		readFromNBT(tag);
 	}
 
+	/* NBT */
+	@Override
+	public void readFromNBT(NBTTagCompound tags) {
+		super.readFromNBT(tags);
+
+		// pull the old texture string into the proper location if found
+		NBTTagCompound forgeData = tags.getCompoundTag("ForgeData");
+		if(forgeData.hasKey(RecipeUtil.TAG_TEXTURE, 8)) {
+			forgeData.setString(TAG_TEXTURE_PATH, forgeData.getString(RecipeUtil.TAG_TEXTURE));
+			forgeData.removeTag(RecipeUtil.TAG_TEXTURE);
+		}
+	}
+
 }
