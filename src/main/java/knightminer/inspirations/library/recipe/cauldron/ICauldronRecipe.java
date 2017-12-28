@@ -142,6 +142,10 @@ public interface ICauldronRecipe {
 		 * @param color  Color input
 		 */
 		public static CauldronState dye(int color) {
+			if(color == -1) {
+				return WATER;
+			}
+
 			CauldronState state = new CauldronState(CauldronContents.DYE);
 			state.color = color;
 			return state;
@@ -152,6 +156,10 @@ public interface ICauldronRecipe {
 		 * @param potion  Potion input
 		 */
 		public static CauldronState potion(PotionType potion) {
+			if(potion == PotionTypes.WATER) {
+				return WATER;
+			}
+
 			CauldronState state = new CauldronState(CauldronContents.POTION);
 			state.potion = potion;
 			return state;
@@ -235,11 +243,8 @@ public interface ICauldronRecipe {
 			if(state.color != this.color) {
 				return false;
 			}
-			if(state.potion == null || !state.potion.equals(this.potion)) {
-				return false;
-			}
 
-			return true;
+			return state.potion == this.potion;
 		}
 
 		/* NBT */
