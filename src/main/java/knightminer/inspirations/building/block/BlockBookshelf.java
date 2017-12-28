@@ -3,7 +3,6 @@ package knightminer.inspirations.building.block;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
 import javax.annotation.Nonnull;
 import com.google.common.collect.ImmutableMap;
 
@@ -327,6 +326,43 @@ public class BlockBookshelf extends BlockInventory implements ITileEntityProvide
 		for(BookshelfType type : BookshelfType.values()) {
 			RecipeUtil.addBlocksFromOredict("slabWood", this, type.getMeta(), list);
 		}
+	}
+
+	@Nonnull
+	@Override
+	public ItemStack getPickBlock(@Nonnull IBlockState state, RayTraceResult target, @Nonnull World world, @Nonnull BlockPos pos, EntityPlayer player) {
+		return getItemStack(world, pos, state);
+	}
+
+	@Override
+	public boolean removedByPlayer(@Nonnull IBlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull EntityPlayer player, boolean willHarvest) {
+		// we pull up a few calls to this point in time because we still have the TE here
+		// the execution otherwise is equivalent to vanilla order
+		this.onBlockDestroyedByPlayer(world, pos, state);
+		if(willHarvest) {
+			this.harvestBlock(world, player, pos, state, world.getTileEntity(pos), player.getHeldItemMainhand());
+		}
+
+		world.setBlockToAir(pos);
+		// return false to prevent the above called functions to be called again
+		// side effect of this is that no xp will be dropped. but it shoudln't anyway from a table :P
+		return false;
+	}
+
+	@Override
+	public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune){
+		drops.add(getItemStack(world, pos, state));
+	}
+
+	private ItemStack getItemStack(IBlockAccess world, BlockPos pos, IBlockState state) {
+		ItemStack stack = new ItemStack(this, 1, this.damageDropped(state));
+		TileEntity te = world.getTileEntity(pos);
+		if(te instanceof TileBookshelf) {
+			NBTTagCompound tags = new NBTTagCompound();
+			stack.setTagCompound(tags);
+			tags.setTag(RecipeUtil.TAG_TEXTURE, ((TileBookshelf) te).getTextureBlock());
+		}
+		return stack;
 	}
 
 	public static enum BookshelfType implements IStringSerializable {

@@ -36,6 +36,8 @@ import slimeknights.mantle.tileentity.TileInventory;
 
 public class TileBookshelf extends TileInventory implements IInventoryGui {
 
+	public static final String TAG_TEXTURE_PATH = "texture_path";
+
 	public TileBookshelf() {
 		super("gui.inspirations.bookshelf.name", 14, 1);
 	}
@@ -180,14 +182,14 @@ public class TileBookshelf extends TileInventory implements IInventoryGui {
 		}
 
 		// texture not loaded
-		String texture = getTileData().getString("texture");
+		String texture = getTileData().getString(TAG_TEXTURE_PATH);
 		if(texture.isEmpty()) {
 			// load it from saved block
 			ItemStack stack = new ItemStack(getTileData().getCompoundTag(RecipeUtil.TAG_TEXTURE));
 			if(!stack.isEmpty()) {
 				Block block = Block.getBlockFromItem(stack.getItem());
 				texture = ModelHelper.getTextureFromBlock(block, stack.getItemDamage()).getIconName();
-				getTileData().setString("texture", texture);
+				getTileData().setString(TAG_TEXTURE_PATH, texture);
 			}
 		}
 		if(!texture.isEmpty()) {
