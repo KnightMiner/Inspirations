@@ -254,8 +254,8 @@ public class TweaksEvents {
 		ICauldronRecipe recipe = InspirationsRegistry.getCauldronResult(stack, isBoiling, level, CauldronState.WATER);
 
 		// ensure both we have a recipe and the recipe is valid for a non-te cauldron
-		if(recipe != null && recipe.getState(stack, isBoiling, level, CauldronState.WATER).equals(CauldronState.WATER)) {
-			if(!world.isRemote) {
+		if(recipe != null) {
+			if(!world.isRemote && recipe.getState(stack, isBoiling, level, CauldronState.WATER).equals(CauldronState.WATER)) {
 				// update block
 				int newLevel = MathHelper.clamp(recipe.getLevel(level), 0, 3);
 				if(newLevel != level) {

@@ -14,6 +14,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -64,35 +66,34 @@ public class TileCauldron extends TileEntity {
 		ICauldronRecipe recipe = InspirationsRegistry.getCauldronResult(stack, boiling, level, state);
 		CauldronState state = this.state;
 		if(recipe != null) {
-
-			// state
-			CauldronState newState = recipe.getState(stack, boiling, level, state);
-			if(!isValid(newState)) {
-				return false;
-			}
-			if(!state.equals(newState)) {
-				this.state = newState;
-				if(world.isRemote) {
-					Minecraft.getMinecraft().renderGlobal.notifyBlockUpdate(null, pos, null, null, 0);
+			if(!world.isRemote) {
+				// state
+				CauldronState newState = recipe.getState(stack, boiling, level, state);
+				if(!isValid(newState)) {
+					return false;
 				}
-			}
 
-			// level
-			setLevel(blockState, recipe.getLevel(level));
+				if(!state.equals(newState)) {
+					this.state = newState;
+					world.notifyBlockUpdate(pos, blockState, blockState, 2);
+				}
+				// level
+				setLevel(blockState, recipe.getLevel(level));
 
-			// sound
-			SoundEvent sound = recipe.getSound(stack, boiling, level, state);
-			if(sound != null) {
-				world.playSound((EntityPlayer)null, pos, sound, SoundCategory.BLOCKS, recipe.getVolume(), 1.0F);
-			}
+				// sound
+				SoundEvent sound = recipe.getSound(stack, boiling, level, state);
+				if(sound != null) {
+					world.playSound((EntityPlayer)null, pos, sound, SoundCategory.BLOCKS, recipe.getVolume(), 1.0F);
+				}
 
-			// result
-			ItemStack result = recipe.getResult(stack, boiling, level, state);
-			// update held item
-			player.setHeldItem(hand, recipe.transformInput(stack, boiling, level, state));
-			// and give the new item to the player
-			if(!result.isEmpty()) {
-				ItemHandlerHelper.giveItemToPlayer(player, result, player.inventory.currentItem);
+				// result
+				ItemStack result = recipe.getResult(stack, boiling, level, state);
+				// update held item
+				player.setHeldItem(hand, recipe.transformInput(stack, boiling, level, state));
+				// and give the new item to the player
+				if(!result.isEmpty()) {
+					ItemHandlerHelper.giveItemToPlayer(player, result, player.inventory.currentItem);
+				}
 			}
 
 			return true;
@@ -116,15 +117,11 @@ public class TileCauldron extends TileEntity {
 		if(state.getValue(BlockCauldron.LEVEL) == level) {
 			return;
 		}
-
-		Blocks.CAULDRON.setWaterLevel(world, pos, state, level);
 		if(level == 0) {
 			this.state = CauldronState.WATER;
 		}
-	}
 
-	public void setColor(int color) {
-		this.state = CauldronState.dye(color);
+		Blocks.CAULDRON.setWaterLevel(world, pos, state, level);
 	}
 
 
@@ -156,5 +153,21 @@ public class TileCauldron extends TileEntity {
 		super.readFromNBT(tags);
 
 		this.state = CauldronState.fromNBT(tags.getCompoundTag(TAG_STATE));
+	}
+
+	@Override
+	public SPacketUpdateTileEntity getUpdatePacket() {
+		return new SPacketUpdateTileEntity(this.getPos(), this.getBlockMetadata(), state.writeToNBT());
+	}
+
+	@Override
+	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
+		CauldronState newState = CauldronState.fromNBT(pkt.getNbtCompound());
+		if(!this.state.equals(newState)) {
+			this.state = newState;
+			if(world.isRemote) {
+				Minecraft.getMinecraft().renderGlobal.notifyBlockUpdate(null, pos, null, null, 0);
+			}
+		}
 	}
 }
