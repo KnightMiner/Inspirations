@@ -9,7 +9,8 @@ import java.util.Set;
 
 import com.google.common.collect.ImmutableList;
 
-import knightminer.inspirations.library.recipe.CauldronRecipe;
+import knightminer.inspirations.library.recipe.cauldron.CauldronRecipe;
+import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -201,7 +202,7 @@ public class InspirationsRegistry {
 	/*
 	 * Cauldron recipes
 	 */
-	private static List<CauldronRecipe> cauldronRecipes = new ArrayList<>();
+	private static List<ICauldronRecipe> cauldronRecipes = new ArrayList<>();
 
 	/**
 	 * Gets the result of a cauldron recipe
@@ -209,20 +210,30 @@ public class InspirationsRegistry {
 	 * @param isBoiling  Whether the cauldron is boiling
 	 * @return  Result of the recipe
 	 */
-	public static ItemStack getCauldronResult(ItemStack input, boolean isBoiling) {
-		for(CauldronRecipe recipe : cauldronRecipes) {
-			if(recipe.matches(input, isBoiling)) {
-				return recipe.getResult(input, isBoiling);
+	public static ICauldronRecipe getCauldronResult(ItemStack input, boolean boiling, int level, ICauldronRecipe.CauldronState state) {
+		for(ICauldronRecipe recipe : cauldronRecipes) {
+			if(recipe.matches(input, boiling, level, state)) {
+				return recipe;
 			}
 		}
-		return ItemStack.EMPTY;
+		return null;
+	}
+
+	/**
+	 * Gets the result of a cauldron recipe
+	 * @param input      ItemStack input
+	 * @param isBoiling  Whether the cauldron is boiling
+	 * @return  Result of the recipe
+	 */
+	public static ICauldronRecipe getCauldronResult(ItemStack input, boolean boiling, int level) {
+		return getCauldronResult(input, boiling, level, ICauldronRecipe.CauldronState.WATER);
 	}
 
 	/**
 	 * Adds a new cauldron recipe
 	 * @param recipe  Recipe to add
 	 */
-	public static void addCauldronRecipe(CauldronRecipe recipe) {
+	public static void addCauldronRecipe(ICauldronRecipe recipe) {
 		cauldronRecipes.add(recipe);
 	}
 
@@ -260,7 +271,7 @@ public class InspirationsRegistry {
 	 * Gets all cauldron recipes
 	 * @return  A list of all cauldron recipes
 	 */
-	public static List<CauldronRecipe> getAllCauldronRecipes() {
+	public static List<ICauldronRecipe> getAllCauldronRecipes() {
 		return ImmutableList.copyOf(cauldronRecipes);
 	}
 }

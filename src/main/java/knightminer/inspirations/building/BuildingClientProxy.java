@@ -7,6 +7,7 @@ import knightminer.inspirations.building.block.BlockRope.RopeType;
 import knightminer.inspirations.building.client.BookshelfModel;
 import knightminer.inspirations.building.tileentity.TileBookshelf;
 import knightminer.inspirations.common.ClientProxy;
+import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.client.ClientUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDoor;
@@ -75,7 +76,7 @@ public class BuildingClientProxy extends ClientProxy {
 						int itemColors = mc.getItemColors().colorMultiplier(stack, 0);
 						if(itemColors > -1) {
 							// combine twice to make sure the item colors result is cominant
-							color = ClientUtil.combineColors(color, itemColors, 3);
+							color = Util.combineColors(color, itemColors, 3);
 						}
 						return color;
 					}

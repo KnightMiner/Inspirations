@@ -3,7 +3,8 @@ package knightminer.inspirations.plugins.jei.cauldron;
 import java.util.ArrayList;
 import java.util.List;
 import knightminer.inspirations.library.InspirationsRegistry;
-import knightminer.inspirations.library.recipe.CauldronRecipe;
+import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
+import knightminer.inspirations.library.recipe.cauldron.ISimpleCauldronRecipe;
 import net.minecraft.init.Items;import net.minecraft.init.PotionTypes;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemArmor;
@@ -25,9 +26,13 @@ public class CauldronRecipeChecker {
 		makeBannerRecipes(recipes);
 
 		// grab recipes from the registry
-		for(CauldronRecipe recipe : InspirationsRegistry.getAllCauldronRecipes()) {
-			if(recipe.getResult() != ItemStack.EMPTY && recipe.getInput() != null) {
-				recipes.add(new CauldronRecipeWrapper(recipe));
+		for(ICauldronRecipe recipe : InspirationsRegistry.getAllCauldronRecipes()) {
+			if(recipe instanceof ISimpleCauldronRecipe) {
+				ISimpleCauldronRecipe simpleRecipe = (ISimpleCauldronRecipe) recipe;
+				if(simpleRecipe.getResult() != ItemStack.EMPTY && simpleRecipe.getState() != null
+						&& simpleRecipe.getInput() != null && !simpleRecipe.getInput().isEmpty()) {
+					recipes.add(new CauldronRecipeWrapper(simpleRecipe));
+				}
 			}
 		}
 

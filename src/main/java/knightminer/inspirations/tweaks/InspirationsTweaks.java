@@ -6,9 +6,14 @@ import knightminer.inspirations.common.CommonProxy;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.library.InspirationsRegistry;
+import knightminer.inspirations.library.recipe.cauldron.DyeCauldronRecipe;
 import knightminer.inspirations.shared.InspirationsShared;
+import knightminer.inspirations.tweaks.block.BlockEnhancedCauldron;
 import knightminer.inspirations.tweaks.block.BlockFittedCarpet;
 import knightminer.inspirations.tweaks.block.BlockSmashingAnvil;
+import knightminer.inspirations.tweaks.recipe.ArmorDyeingCauldronRecipe;
+import knightminer.inspirations.tweaks.recipe.DyeWaterCauldronRecipe;
+import knightminer.inspirations.tweaks.tileentity.TileCauldron;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAnvil;
 import net.minecraft.block.BlockDispenser;
@@ -18,8 +23,10 @@ import net.minecraft.dispenser.BehaviorDefaultDispenseItem;
 import net.minecraft.dispenser.IBehaviorDispenseItem;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.PotionTypes;
+import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemCloth;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.potion.PotionHelper;
 import net.minecraft.util.EnumFacing;
@@ -33,6 +40,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.pulsar.pulse.Pulse;
 
@@ -46,6 +54,7 @@ public class InspirationsTweaks extends PulseBase {
 	// blocks
 	public static Block carpet;
 	public static Block anvil;
+	public static Block cauldron;
 
 	@Subscribe
 	public void preInit(FMLPreInitializationEvent event) {
@@ -61,6 +70,10 @@ public class InspirationsTweaks extends PulseBase {
 		}
 		if(Config.enableAnvilSmashing) {
 			anvil = register(r, new BlockSmashingAnvil(), new ResourceLocation("anvil"));
+		}
+		if(Config.enableCauldronDyeing) {
+			cauldron = register(r, new BlockEnhancedCauldron(), new ResourceLocation("cauldron"));
+			registerTE(TileCauldron.class, "cauldron");
 		}
 	}
 
@@ -86,6 +99,28 @@ public class InspirationsTweaks extends PulseBase {
 
 		InspirationsRegistry.registerAnvilBreaking(Material.GLASS);
 		registerDispenserBehavior();
+		registerCauldronRecipes();
+	}
+
+	private void registerCauldronRecipes() {
+		if(Config.enableCauldronDyeing) {
+			InspirationsRegistry.addCauldronRecipe(ArmorDyeingCauldronRecipe.INSTANCE);
+			InspirationsRegistry.addCauldronRecipe(DyeWaterCauldronRecipe.INSTANCE);
+
+			for(EnumDyeColor color : EnumDyeColor.values()) {
+				InspirationsRegistry.addCauldronRecipe(new DyeCauldronRecipe(
+						new ItemStack(Blocks.WOOL, 1, OreDictionary.WILDCARD_VALUE),
+						color,
+						new ItemStack(Blocks.WOOL, 1, color.getMetadata())
+						));
+
+				InspirationsRegistry.addCauldronRecipe(new DyeCauldronRecipe(
+						new ItemStack(Blocks.CARPET, 1, OreDictionary.WILDCARD_VALUE),
+						color,
+						new ItemStack(Blocks.CARPET, 1, color.getMetadata())
+						));
+			}
+		}
 	}
 
 	@Subscribe

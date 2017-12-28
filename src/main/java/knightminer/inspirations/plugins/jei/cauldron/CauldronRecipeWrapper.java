@@ -2,7 +2,7 @@ package knightminer.inspirations.plugins.jei.cauldron;
 
 import com.google.common.collect.ImmutableList;
 
-import knightminer.inspirations.library.recipe.CauldronRecipe;
+import knightminer.inspirations.library.recipe.cauldron.ISimpleCauldronRecipe;
 import knightminer.inspirations.plugins.jei.JEIPlugin;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
@@ -18,8 +18,8 @@ public class CauldronRecipeWrapper implements IRecipeWrapper {
 	protected final boolean boiling;
 
 
-	public CauldronRecipeWrapper(CauldronRecipe recipe) {
-		this.input = ImmutableList.of(recipe.getInput().getInputs());
+	public CauldronRecipeWrapper(ISimpleCauldronRecipe recipe) {
+		this.input = ImmutableList.of(recipe.getInput());
 		this.output = ImmutableList.of(recipe.getResult());
 		this.boiling = recipe.isBoiling();
 	}

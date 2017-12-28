@@ -4,6 +4,7 @@ import java.util.List;
 
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.InspirationsRegistry;
+import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
 import knightminer.inspirations.shared.InspirationsShared;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBush;
@@ -24,6 +25,7 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract;
@@ -225,6 +227,10 @@ public class TweaksEvents {
 
 	@SubscribeEvent
 	public static void clickCauldron(RightClickBlock event) {
+		if(!Config.enableCauldronRecipes || Config.enableCauldronDyeing) {
+			return;
+		}
+
 		World world = event.getWorld();
 		BlockPos pos = event.getPos();
 		IBlockState state = world.getBlockState(pos);
@@ -242,15 +248,22 @@ public class TweaksEvents {
 		}
 
 		boolean isBoiling = world.getBlockState(pos.down()).getBlock() instanceof BlockFire;
-		ItemStack result = InspirationsRegistry.getCauldronResult(stack, isBoiling);
-		if(!result.isEmpty()) {
+		ICauldronRecipe recipe = InspirationsRegistry.getCauldronResult(stack, isBoiling, level);
+		if(recipe != null) {
 			if(!world.isRemote) {
-				world.setBlockState(pos, Blocks.CAULDRON.getDefaultState().withProperty(BlockCauldron.LEVEL, level - 1));
+				int newLevel = MathHelper.clamp(recipe.getLevel(level), 0, 3);
+				if(newLevel != level) {
+					world.setBlockState(pos, Blocks.CAULDRON.getDefaultState().withProperty(BlockCauldron.LEVEL, newLevel));
+					world.updateComparatorOutputLevel(pos, Blocks.CAULDRON);
+				}
 				world.playSound((EntityPlayer)null, pos, SoundEvents.ENTITY_BOBBER_SPLASH, SoundCategory.BLOCKS, 0.3F, 1.0F);
 
+				ItemStack result = recipe.getResult(stack, isBoiling, level);
 				stack.shrink(1);
-				EntityPlayer player = event.getEntityPlayer();
-				ItemHandlerHelper.giveItemToPlayer(player, result, player.inventory.currentItem);
+				if(!result.isEmpty()) {
+					EntityPlayer player = event.getEntityPlayer();
+					ItemHandlerHelper.giveItemToPlayer(player, result, player.inventory.currentItem);
+				}
 			}
 
 			event.setCanceled(true);

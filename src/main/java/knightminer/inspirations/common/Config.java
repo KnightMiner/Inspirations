@@ -77,6 +77,7 @@ public class Config {
 	public static boolean dispensersPlaceAnvils = true;
 	public static boolean harvestHangingVines = true;
 	public static boolean enableCauldronRecipes = true;
+	public static boolean enableCauldronDyeing = true;
 
 	private static String[] anvilSmashing = {
 			"# Stone",
