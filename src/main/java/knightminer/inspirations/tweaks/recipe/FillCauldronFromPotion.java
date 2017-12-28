@@ -1,6 +1,7 @@
 package knightminer.inspirations.tweaks.recipe;
 
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
+import net.minecraft.init.PotionTypes;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -45,7 +46,7 @@ public class FillCauldronFromPotion implements ICauldronRecipe {
 		}
 		// if the types differ, it just turns black
 		if(state.getPotion() != inputType) {
-			return CauldronState.dye(0x111111);
+			return CauldronState.potion(PotionTypes.THICK);
 		}
 
 		return state;
