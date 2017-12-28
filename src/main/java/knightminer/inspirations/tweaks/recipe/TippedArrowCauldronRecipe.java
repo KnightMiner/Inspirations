@@ -17,13 +17,13 @@ public class TippedArrowCauldronRecipe implements ICauldronRecipe {
 
 	@Override
 	public ItemStack getResult(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		int size = Math.min(stack.getCount(), 16);
+		int size = Math.min(stack.getCount(), 8);
 		return PotionUtils.addPotionToItemStack(new ItemStack(Items.TIPPED_ARROW, size), state.getPotion());
 	}
 
 	@Override
 	public ItemStack transformInput(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		stack.shrink(Math.min(stack.getCount(), 16));
+		stack.shrink(Math.min(stack.getCount(), 8));
 		return stack;
 	}
 
