@@ -66,6 +66,7 @@ public class Config {
 	public static boolean enableRedstoneBook = true;
 	public static boolean enableRedstoneCharge = true;
 	public static boolean enableBricksButton = true;
+	public static boolean enableRedstoneBarrel = true;
 
 	// tweaks
 	public static boolean enablePigDesaddle = true;
@@ -192,6 +193,9 @@ public class Config {
 
 			// lock
 			enableBricksButton = configFile.getBoolean("bricksButton", "utility", enableBricksButton, "Enables button blocks disguised as a full bricks or nether bricks block");
+
+			// redstone barrel
+			enableRedstoneBarrel = configFile.getBoolean("redstoneBarrel", "utility", enableRedstoneBarrel, "Enables the redstone barrel: a block wth gives a configurable comparator output and can be pushed by pistons");
 		}
 
 		// tweaks
@@ -494,6 +498,7 @@ public class Config {
 				// utility
 				case "bricks_button": return enableBricksButton;
 				case "lock": return enableLock;
+				case "redstone_barrel": return enableRedstoneBarrel;
 				case "redstone_book": return enableRedstoneBook;
 				case "redstone_charge": return enableRedstoneCharge;
 				case "torch_lever": return enableTorchLever;

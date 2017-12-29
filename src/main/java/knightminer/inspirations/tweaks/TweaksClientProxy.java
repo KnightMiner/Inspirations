@@ -44,7 +44,7 @@ public class TweaksClientProxy extends ClientProxy {
 	public void registerBlockColors(ColorHandlerEvent.Block event) {
 		BlockColors blockColors = event.getBlockColors();
 
-		// coloring of books for normal bookshelf
+		// coloring of liquid inside, either for potions or dyes
 		registerBlockColors(blockColors, (state, world, pos, tintIndex) -> {
 			if(state.getValue(BlockEnhancedCauldron.CONTENTS) != ICauldronRecipe.CauldronContents.WATER && tintIndex == 1) {
 				TileEntity te = world.getTileEntity(pos);
