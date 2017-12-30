@@ -3,9 +3,10 @@ package knightminer.inspirations.library.recipe.cauldron;
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.FluidRegistry;
 
 /**
- * This is any cauldron recipe simple enough to be displayed in JEI
+ * This is any cauldron recipe using items and fluids simple enough to be displayed in JEI
  */
 public interface ISimpleCauldronRecipe extends ICauldronRecipe {
 	/**
@@ -18,35 +19,39 @@ public interface ISimpleCauldronRecipe extends ICauldronRecipe {
 	 * Gets the result of this recipe for display in JEI
 	 * @return  Recipe result
 	 */
-	ItemStack getResult();
+	default ItemStack getResult() {
+		return ItemStack.EMPTY;
+	}
 
 	/**
-	 * Gets whether this recipe is boiling
-	 * @return  True if the recipe is boiling
+	 * Gets whether this recipe requires the cauldron to be above fire
+	 * @return  True if the recipe requires fire
 	 */
 	default boolean isBoiling() {
 		return false;
-	};
+	}
 
 	/**
-	 * Gets the state result of this recipe for display in JEI
-	 * @return  Result state
+	 * Gets the input state of this recipe for display in JEI. In order for it to be used, it must be either a Fluid, EnumDyeColor, or PotionType
+	 * @return  Input state as a Fluid, EnumDyeColor, or PotionType
 	 */
-	CauldronState getState();
+	default Object getInputState() {
+		return FluidRegistry.WATER;
+	}
 
 	/**
-	 * Gets the initial state of this recipe
-	 * @return  Result state
+	 * Gets the result state of this recipe for display in JEI. In order for it to be used, it must be either a Fluid, EnumDyeColor, or PotionType
+	 * @return  Result state as a Fluid, EnumDyeColor, or PotionType
 	 */
-	default CauldronState getInitialState() {
-		return getState();
-	};
+	default Object getState() {
+		return getInputState();
+	}
 
 	/**
-	 * Gets the display starting level for display in JEI. The result will pass this into getLevel()
+	 * Gets the display starting level for display in JEI. The result level will be determined using {@link #getLevel(int)}
 	 * @return
 	 */
-	default int getStartLevel() {
+	default int getInputLevel() {
 		return 3;
 	}
 

@@ -18,7 +18,7 @@ public class CauldronRecipeChecker {
 	public static List<CauldronRecipeWrapper> getRecipes() {
 		List<CauldronRecipeWrapper> recipes = new ArrayList<>();
 		// add vanilla recipes
-		recipes.add(new CauldronRecipeWrapper(new ItemStack(Items.GLASS_BOTTLE), PotionUtils.addPotionToItemStack(new ItemStack(Items.POTIONITEM), PotionTypes.WATER), false));
+		recipes.add(new CauldronRecipeWrapper(new ItemStack(Items.GLASS_BOTTLE), PotionUtils.addPotionToItemStack(new ItemStack(Items.POTIONITEM), PotionTypes.WATER)));
 		recipes.add(makeArmorWashRecipe(Items.LEATHER_HELMET));
 		recipes.add(makeArmorWashRecipe(Items.LEATHER_CHESTPLATE));
 		recipes.add(makeArmorWashRecipe(Items.LEATHER_LEGGINGS));
@@ -29,7 +29,7 @@ public class CauldronRecipeChecker {
 		for(ICauldronRecipe recipe : InspirationsRegistry.getAllCauldronRecipes()) {
 			if(recipe instanceof ISimpleCauldronRecipe) {
 				ISimpleCauldronRecipe simpleRecipe = (ISimpleCauldronRecipe) recipe;
-				if(simpleRecipe.getResult() != ItemStack.EMPTY && simpleRecipe.getState() != null
+				if(simpleRecipe.getState() != null && simpleRecipe.getInputState() != null
 						&& simpleRecipe.getInput() != null && !simpleRecipe.getInput().isEmpty()) {
 					recipes.add(new CauldronRecipeWrapper(simpleRecipe));
 				}
@@ -47,7 +47,7 @@ public class CauldronRecipeChecker {
 			item.setColor(stack, color.getColorValue());
 			input.add(stack);
 		}
-		return new CauldronRecipeWrapper(input, output, false);
+		return new CauldronRecipeWrapper(input, output);
 	}
 
 	private static void makeBannerRecipes(List<CauldronRecipeWrapper> recipes) {
@@ -72,7 +72,7 @@ public class CauldronRecipeChecker {
 				inputs.add(stack);
 			}
 
-			recipes.add(new CauldronRecipeWrapper(inputs, output, false));
+			recipes.add(new CauldronRecipeWrapper(inputs, output));
 		}
 	}
 }

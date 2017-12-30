@@ -50,7 +50,9 @@ public interface ICauldronRecipe {
 	}
 
 	/**
-	 * Gets the result change in cauldron level as a result of this recipe
+	 * Gets the new cauldron level as a result of this recipe
+	 * @param level  Starting level
+	 * @return  New level
 	 */
 	default int getLevel(int level) {
 		return level;
@@ -69,7 +71,8 @@ public interface ICauldronRecipe {
 	}
 
 	/**
-	 * Plays the sound for this recipe
+	 * Gets the sound to play when performing this recipe
+	 * @return  Sound event
 	 */
 	default SoundEvent getSound(ItemStack stack, boolean boiling, int level, CauldronState state) {
 		return SoundEvents.ENTITY_BOBBER_SPLASH;
@@ -220,21 +223,10 @@ public interface ICauldronRecipe {
 			return potion;
 		}
 
-		@Override
-		public boolean equals(Object other) {
-			// basic checks
-			if(this == other) {
+		public boolean matches(CauldronState state) {
+			if(this == state) {
 				return true;
 			}
-			if(other == null) {
-				return false;
-			}
-			if(this.getClass() != other.getClass()) {
-				return false;
-			}
-
-			// state check
-			CauldronState state = (CauldronState) other;
 			if(state.type != this.type) {
 				return false;
 			}

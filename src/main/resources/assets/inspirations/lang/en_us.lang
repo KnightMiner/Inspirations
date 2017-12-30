@@ -102,3 +102,6 @@ item.inspirations.dyed_bottle.black.name=Black Dyed Water Bottle
 
 gui.jei.anvil_smashing.title=Anvil Smashing
 gui.jei.cauldron.title=Cauldron
+gui.jei.cauldron.level.empty=Empty
+gui.jei.cauldron.level.filled=%s mB
+gui.jei.cauldron.color=%s Dyed Water

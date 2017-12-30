@@ -5,10 +5,8 @@ import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemArmor.ArmorMaterial;
 import net.minecraft.item.ItemStack;
 
-public class ArmorDyeingCauldronRecipe implements ICauldronRecipe {
-
-	public static final ArmorDyeingCauldronRecipe INSTANCE = new ArmorDyeingCauldronRecipe();
-	private ArmorDyeingCauldronRecipe() {}
+public enum ArmorDyeingCauldronRecipe implements ICauldronRecipe {
+	INSTANCE;
 
 	@Override
 	public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {

@@ -1,5 +1,7 @@
 package knightminer.inspirations.shared;
 
+import javax.annotation.Nonnull;
+
 import com.google.common.eventbus.Subscribe;
 
 import knightminer.inspirations.building.InspirationsBuilding;
@@ -52,11 +54,14 @@ public class InspirationsOredict {
 
 	private static void registerBuilding() {
 		for(EnumDyeColor color : EnumDyeColor.values()) {
-			oredict(InspirationsTweaks.dyedWaterBottle, color.getDyeDamage(), "dye" + DYES[color.getMetadata()]);
+			oredict(InspirationsTweaks.dyedWaterBottle, color.getDyeDamage(), dyeNameFor(color));
 		}
 	}
 
 	/* Helper functions */
+	public static String dyeNameFor(@Nonnull EnumDyeColor color) {
+		return "dye" + DYES[color.getMetadata()];
+	}
 
 	public static void oredict(Item item, String... name) {
 		oredict(item, OreDictionary.WILDCARD_VALUE, name);

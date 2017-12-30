@@ -1,19 +1,27 @@
 package knightminer.inspirations.tweaks.recipe;
 
-import java.util.Optional;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import knightminer.inspirations.library.Util;
-import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
+import knightminer.inspirations.library.recipe.cauldron.ISimpleCauldronRecipe;
+import knightminer.inspirations.shared.InspirationsOredict;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.SoundEvent;
-import net.minecraftforge.oredict.DyeUtils;
+import net.minecraftforge.oredict.OreIngredient;
 
-public class DyeCauldronWater implements ICauldronRecipe {
+public class DyeCauldronWater implements ISimpleCauldronRecipe {
 
-	public static final DyeCauldronWater INSTANCE = new DyeCauldronWater();
-	private DyeCauldronWater() {}
+	private EnumDyeColor color;
+	private Ingredient dye;
+	public DyeCauldronWater(EnumDyeColor color) {
+		this.color = color;
+		this.dye = new OreIngredient(InspirationsOredict.dyeNameFor(color));
+	}
 
 	@Override
 	public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {
@@ -22,17 +30,24 @@ public class DyeCauldronWater implements ICauldronRecipe {
 			return false;
 		}
 
-		CauldronContents type = state.getType();
-		Optional<EnumDyeColor> color = DyeUtils.colorFromStack(stack);
 		// type must be water or dye
-		// input must be a dye with a different color
+		// input must not be the same color as the original dye
+		CauldronContents type = state.getType();
 		return (type == CauldronContents.WATER || type == CauldronContents.DYE)
-				&& color.isPresent() && color.get().getColorValue() != state.getColor();
+				&& dye.apply(stack) && color.colorValue != state.getColor();
+	}
+
+	@Override
+	public List<ItemStack> getInput() {
+		// we want to ignore the dyed water bottle as that has special behavior
+		return Arrays.stream(dye.getMatchingStacks())
+				.filter(stack->stack.getItem() != InspirationsTweaks.dyedWaterBottle)
+				.collect(Collectors.toList());
 	}
 
 	@Override
 	public CauldronState getState(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		int newColor = DyeUtils.colorFromStack(stack).get().getColorValue();
+		int newColor = color.colorValue;
 		int color = state.getColor();
 		if(color > -1) {
 			color = Util.combineColors(newColor, color, level);
@@ -41,6 +56,11 @@ public class DyeCauldronWater implements ICauldronRecipe {
 		}
 
 		return CauldronState.dye(color);
+	}
+
+	@Override
+	public Object getState() {
+		return color;
 	}
 
 	@Override

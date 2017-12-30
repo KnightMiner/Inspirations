@@ -6,6 +6,7 @@ import knightminer.inspirations.common.CommonProxy;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.library.InspirationsRegistry;
+import knightminer.inspirations.library.recipe.cauldron.CauldronBrewingRecipe;
 import knightminer.inspirations.library.recipe.cauldron.DyeCauldronRecipe;
 import knightminer.inspirations.shared.InspirationsShared;
 import knightminer.inspirations.tweaks.block.BlockEnhancedCauldron;
@@ -18,7 +19,6 @@ import knightminer.inspirations.tweaks.recipe.FillCauldronFromDyedBottle;
 import knightminer.inspirations.tweaks.recipe.FillCauldronFromPotion;
 import knightminer.inspirations.tweaks.recipe.FillDyedBottleFromCauldron;
 import knightminer.inspirations.tweaks.recipe.FillPotionFromCauldron;
-import knightminer.inspirations.tweaks.recipe.PotionCauldronRecipe;
 import knightminer.inspirations.tweaks.recipe.TippedArrowCauldronRecipe;
 import knightminer.inspirations.tweaks.tileentity.TileCauldron;
 import net.minecraft.block.Block;
@@ -37,6 +37,7 @@ import net.minecraft.item.ItemCloth;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.potion.PotionHelper;
+import net.minecraft.potion.PotionType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -117,6 +118,13 @@ public class InspirationsTweaks extends PulseBase {
 		registerCauldronRecipes();
 	}
 
+	@Subscribe
+	public void postInit(FMLPostInitializationEvent event) {
+		proxy.postInit();
+		MinecraftForge.EVENT_BUS.register(TweaksEvents.class);
+		registerCauldronBrewingRecipes();
+	}
+
 	private void registerCauldronRecipes() {
 		if(!Config.enableExtendedCauldron) {
 			return;
@@ -125,10 +133,10 @@ public class InspirationsTweaks extends PulseBase {
 		if(Config.enableCauldronDyeing) {
 			InspirationsRegistry.addCauldronRecipe(FillDyedBottleFromCauldron.INSTANCE);
 			InspirationsRegistry.addCauldronRecipe(FillCauldronFromDyedBottle.INSTANCE);
-			InspirationsRegistry.addCauldronRecipe(DyeCauldronWater.INSTANCE);
 			InspirationsRegistry.addCauldronRecipe(ArmorDyeingCauldronRecipe.INSTANCE);
 
 			for(EnumDyeColor color : EnumDyeColor.values()) {
+				InspirationsRegistry.addCauldronRecipe(new DyeCauldronWater(color));
 				InspirationsRegistry.addCauldronRecipe(new DyeCauldronRecipe(
 						new ItemStack(Blocks.WOOL, 1, OreDictionary.WILDCARD_VALUE),
 						color,
@@ -147,21 +155,21 @@ public class InspirationsTweaks extends PulseBase {
 			addPotionBottle(Items.POTIONITEM, new ItemStack(Items.GLASS_BOTTLE));
 			addPotionBottle(Items.SPLASH_POTION, InspirationsShared.splashBottle);
 			addPotionBottle(Items.LINGERING_POTION, InspirationsShared.lingeringBottle);
-
-			InspirationsRegistry.addCauldronRecipe(PotionCauldronRecipe.INSTANCE);
 			InspirationsRegistry.addCauldronRecipe(TippedArrowCauldronRecipe.INSTANCE);
+		}
+	}
+
+	private void registerCauldronBrewingRecipes() {
+		if(Config.enableCauldronBrewing) {
+			for(PotionHelper.MixPredicate<PotionType> recipe : PotionHelper.POTION_TYPE_CONVERSIONS) {
+				InspirationsRegistry.addCauldronRecipe(new CauldronBrewingRecipe(recipe.input, recipe.reagent, recipe.output));
+			}
 		}
 	}
 
 	private static void addPotionBottle(Item potion, ItemStack bottle) {
 		InspirationsRegistry.addCauldronRecipe(new FillCauldronFromPotion(potion, bottle));
 		InspirationsRegistry.addCauldronRecipe(new FillPotionFromCauldron(potion, bottle));
-	}
-
-	@Subscribe
-	public void postInit(FMLPostInitializationEvent event) {
-		proxy.postInit();
-		MinecraftForge.EVENT_BUS.register(TweaksEvents.class);
 	}
 
 	private static final IBehaviorDispenseItem DEFAULT = new BehaviorDefaultDispenseItem();

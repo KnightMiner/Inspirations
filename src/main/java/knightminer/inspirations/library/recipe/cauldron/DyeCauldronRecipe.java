@@ -11,11 +11,11 @@ public class DyeCauldronRecipe implements ISimpleCauldronRecipe {
 
 	private RecipeMatch input;
 	private ItemStack result;
-	private CauldronState state;
+	private EnumDyeColor color;
 	public DyeCauldronRecipe(RecipeMatch input, EnumDyeColor color, ItemStack result) {
 		this.input = input;
 		this.result = result;
-		this.state = CauldronState.dye(color.colorValue);
+		this.color = color;
 	}
 
 	public DyeCauldronRecipe(ItemStack input, EnumDyeColor color, ItemStack result) {
@@ -25,7 +25,7 @@ public class DyeCauldronRecipe implements ISimpleCauldronRecipe {
 	@Override
 	public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {
 		return state.getType() == CauldronContents.DYE
-				&& this.state.equals(state)
+				&& state.getColor() == color.colorValue
 				&& input.matches(Util.createNonNullList(stack)).isPresent();
 	}
 
@@ -45,7 +45,7 @@ public class DyeCauldronRecipe implements ISimpleCauldronRecipe {
 	}
 
 	@Override
-	public CauldronState getState() {
-		return state;
+	public Object getInputState() {
+		return color;
 	}
 }

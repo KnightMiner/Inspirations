@@ -223,7 +223,7 @@ public class Config {
 			harvestHangingVines = configFile.getBoolean("harvestHangingVines", "tweaks", harvestHangingVines, "When shearing vines, any supported vines will also be sheared instead of just broken");
 
 			// more cauldron uses
-			String extendCauldron = configFile.getString("extendCauldron", "tweaks", "true", "Allows additional recipes to be performed in the cauldron. If true, requires a block substitution. If simple, functionality will be limited to water in cauldrons.", new String[]{ "false", "simple", "true" });
+			String extendCauldron = configFile.getString("extendCauldron", "tweaks", "true", "Allows additional recipes to be performed in the cauldron. Can be 'true', 'false', or 'simple'. If true, requires a block substitution. If simple, functionality will be limited to water in cauldrons.", new String[]{ "false", "simple", "true" });
 			enableCauldronRecipes = !extendCauldron.equals("false");
 			simpleCauldronRecipes = extendCauldron.equals("simple");
 			enableExtendedCauldron = extendCauldron.equals("true");

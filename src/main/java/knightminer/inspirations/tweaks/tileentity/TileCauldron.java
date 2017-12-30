@@ -73,7 +73,7 @@ public class TileCauldron extends TileEntity {
 					return false;
 				}
 
-				if(!state.equals(newState)) {
+				if(!state.matches(newState)) {
 					this.state = newState;
 					world.notifyBlockUpdate(pos, blockState, blockState, 2);
 				}
@@ -163,7 +163,7 @@ public class TileCauldron extends TileEntity {
 	@Override
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
 		CauldronState newState = CauldronState.fromNBT(pkt.getNbtCompound());
-		if(!this.state.equals(newState)) {
+		if(!this.state.matches(newState)) {
 			this.state = newState;
 			if(world.isRemote) {
 				Minecraft.getMinecraft().renderGlobal.notifyBlockUpdate(null, pos, null, null, 0);

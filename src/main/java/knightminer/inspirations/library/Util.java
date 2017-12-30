@@ -1,6 +1,7 @@
 package knightminer.inspirations.library;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 import org.apache.logging.log4j.LogManager;
@@ -12,9 +13,13 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
+import net.minecraft.potion.PotionType;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.translation.I18n;
 
 @SuppressWarnings("deprecation")
@@ -74,12 +79,25 @@ public class Util {
 		return new ItemStack(item, 1, meta);
 	}
 
+	/**
+	 * Creates a NonNullList from the specified elements, using the class as the type
+	 * @param elements  Elements for the list
+	 * @return  New NonNullList
+	 */
 	@SafeVarargs
 	public static <E> NonNullList<E> createNonNullList(E... elements) {
 		NonNullList<E> list = NonNullList.create();
 		list.addAll(Arrays.asList(elements));
 		return list;
 	}
+
+	/**
+	 * Combines two colors
+	 * @param color1  First color
+	 * @param color2  Second color
+	 * @param scale  Determines how many times color2 is applied
+	 * @return  Combined color
+	 */
 	public static int combineColors(int color1, int color2, int scale) {
 		if(scale == 0) {
 			return color1;
@@ -92,7 +110,7 @@ public class Util {
 		int r2 = color2 >> 16 & 0xFF;
 		int g2 = color2 >> 8 & 0xFF;
 		int b2 = color2 & 0xFF;
-	
+
 		for(int i = 0; i < scale; i++) {
 			a = (int) Math.sqrt(a * a2);
 			r = (int) Math.sqrt(r * r2);
@@ -100,5 +118,45 @@ public class Util {
 			b = (int) Math.sqrt(b * b2);
 		}
 		return a << 24 | r << 16 | g << 8 | b;
+	}
+
+	/**
+	 * Splits a hex color integer into three float color components between 0 and 1
+	 * @param color  Input color
+	 * @return  Floats for the color
+	 */
+	public static float[] getColorComponents(int color) {
+		int i = (color & 0xFFFFFF) >> 16;
+		int j = (color & 0xFFFF) >> 8;
+		int k = (color & 0xFF);
+		return new float[] {i / 255.0f, j / 255.0f, k / 255.0f};
+	}
+
+	/**
+	 * Adds the tooltips for the potion type into the given string list
+	 * @param potionType  Potion type input
+	 * @param lores       List to add the tooltips into
+	 */
+	public static void addPotionTooltip(PotionType potionType, List<String> lores) {
+		List<PotionEffect> effects = potionType.getEffects();
+
+		if (effects.isEmpty()) {
+			String s = translate("effect.none").trim();
+			lores.add(TextFormatting.GRAY + s);
+			return;
+		}
+
+		for (PotionEffect effect : effects) {
+			String effectString = translate(effect.getEffectName()).trim();
+			Potion potion = effect.getPotion();
+
+			if (effect.getAmplifier() > 0) {
+				effectString += " " + translate("potion.potency." + effect.getAmplifier()).trim();
+			}
+			if (effect.getDuration() > 20) {
+				effectString += " (" + Potion.getPotionDurationString(effect, 1.0f) + ")";
+			}
+			lores.add((potion.isBadEffect() ? TextFormatting.RED : TextFormatting.BLUE) + effectString);
+		}
 	}
 }

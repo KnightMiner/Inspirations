@@ -82,10 +82,6 @@ public class JEIPlugin implements IModPlugin {
 			if(Config.enableCauldronRecipes) {
 				registry.addRecipes(CauldronRecipeChecker.getRecipes(), CauldronRecipeCategory.CATEGORY);
 				registry.addRecipeCatalyst(new ItemStack(Items.CAULDRON), CauldronRecipeCategory.CATEGORY);
-
-				if(Config.enableCauldronBrewing) {
-					registry.addRecipeCatalyst(new ItemStack(Items.CAULDRON), VanillaRecipeCategoryUid.BREWING);
-				}
 			}
 		}
 	}

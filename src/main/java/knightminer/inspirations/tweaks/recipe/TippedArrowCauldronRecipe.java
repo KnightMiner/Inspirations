@@ -5,10 +5,8 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionUtils;
 
-public class TippedArrowCauldronRecipe implements ICauldronRecipe {
-
-	public static final TippedArrowCauldronRecipe INSTANCE = new TippedArrowCauldronRecipe();
-	private TippedArrowCauldronRecipe() {}
+public enum TippedArrowCauldronRecipe implements ICauldronRecipe {
+	INSTANCE;
 
 	@Override
 	public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {

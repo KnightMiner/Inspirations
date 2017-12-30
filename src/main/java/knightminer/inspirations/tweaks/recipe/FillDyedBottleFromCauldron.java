@@ -7,10 +7,8 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundEvent;
 
-public class FillDyedBottleFromCauldron implements ICauldronRecipe {
-
-	public static final FillDyedBottleFromCauldron INSTANCE = new FillDyedBottleFromCauldron();
-	private FillDyedBottleFromCauldron() {}
+public enum FillDyedBottleFromCauldron implements ICauldronRecipe {
+	INSTANCE;
 
 	@Override
 	public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {

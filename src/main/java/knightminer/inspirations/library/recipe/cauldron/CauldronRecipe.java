@@ -20,7 +20,7 @@ public class CauldronRecipe implements ISimpleCauldronRecipe {
 	@Override
 	public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {
 		// if boiling is required, ensure it is set
-		if(state.equals(CauldronState.WATER) && this.boiling != null && boiling != this.boiling.booleanValue()) {
+		if(state.matches(CauldronState.WATER) && this.boiling != null && boiling != this.boiling.booleanValue()) {
 			return false;
 		}
 
@@ -45,10 +45,5 @@ public class CauldronRecipe implements ISimpleCauldronRecipe {
 	@Override
 	public boolean isBoiling() {
 		return boiling;
-	}
-
-	@Override
-	public CauldronState getState() {
-		return CauldronState.WATER;
 	}
 }
