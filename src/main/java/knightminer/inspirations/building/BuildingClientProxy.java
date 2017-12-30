@@ -126,6 +126,9 @@ public class BuildingClientProxy extends ClientProxy {
 	 */
 	@SubscribeEvent
 	public void onModelBake(ModelBakeEvent event) {
+		if(InspirationsBuilding.bookshelf == null) {
+			return;
+		}
 		ResourceLocation bookshelfLoc = InspirationsBuilding.bookshelf.getRegistryName();
 		for(BlockBookshelf.BookshelfType type : BlockBookshelf.BookshelfType.values()) {
 			for(EnumFacing facing : EnumFacing.HORIZONTALS) {
