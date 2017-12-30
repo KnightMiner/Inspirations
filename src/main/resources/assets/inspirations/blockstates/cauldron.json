@@ -11,7 +11,8 @@
     "contents": {
       "water": {},
       "dye": { "textures": { "water": "inspirations:blocks/water_dyed" }},
-      "potion": { "textures": { "water": "inspirations:blocks/fluid_potion" }}
+      "potion": { "textures": { "water": "inspirations:blocks/fluid_potion" }},
+      "fluid": {}
     },
     "inventory": [{}]
   }

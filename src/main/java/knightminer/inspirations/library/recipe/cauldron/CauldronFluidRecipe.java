@@ -4,23 +4,30 @@ import java.util.List;
 
 import knightminer.inspirations.library.Util;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
 import slimeknights.mantle.util.RecipeMatch;
 
-public class CauldronRecipe implements ISimpleCauldronRecipe {
+public class CauldronFluidRecipe implements ISimpleCauldronRecipe {
 	private RecipeMatch input;
 	private ItemStack result;
 	private Boolean boiling;
+	private Fluid fluid;
 
-	public CauldronRecipe(RecipeMatch input, ItemStack result, Boolean boiling) {
+	public CauldronFluidRecipe(RecipeMatch input, Fluid fluid, ItemStack result, Boolean boiling) {
 		this.input = input;
 		this.result = result;
 		this.boiling = boiling;
+		this.fluid = fluid;
+	}
+	public CauldronFluidRecipe(RecipeMatch input, ItemStack result, Boolean boiling) {
+		this(input, FluidRegistry.WATER, result, boiling);
 	}
 
 	@Override
 	public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {
 		// if boiling is required, ensure it is set
-		if(state.matches(CauldronState.WATER) && this.boiling != null && boiling != this.boiling.booleanValue()) {
+		if(level == 0 || state.getFluid() != fluid || (this.boiling != null && boiling != this.boiling.booleanValue())) {
 			return false;
 		}
 
@@ -44,6 +51,11 @@ public class CauldronRecipe implements ISimpleCauldronRecipe {
 
 	@Override
 	public boolean isBoiling() {
-		return boiling;
+		return boiling == Boolean.TRUE;
+	}
+
+	@Override
+	public Object getInputState() {
+		return fluid;
 	}
 }

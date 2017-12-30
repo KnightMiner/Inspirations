@@ -11,6 +11,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.PotionType;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.SoundEvent;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
 
 public interface ICauldronRecipe {
 
@@ -93,7 +95,8 @@ public interface ICauldronRecipe {
 	public enum CauldronContents implements IStringSerializable {
 		WATER,
 		DYE,
-		POTION;
+		POTION,
+		FLUID;
 
 		private int meta;
 		CauldronContents() {
@@ -122,9 +125,10 @@ public interface ICauldronRecipe {
 	 * Current cauldron state
 	 */
 	public class CauldronState {
-		private CauldronContents type;
+		private final CauldronContents type;
 		private int color;
 		private PotionType potion;
+		private Fluid fluid;
 
 		public static final CauldronState WATER = new CauldronState(CauldronContents.WATER);
 
@@ -135,13 +139,14 @@ public interface ICauldronRecipe {
 			this.type = type;
 			this.color = -1;
 			this.potion = null;
+			this.fluid = null;
 		}
 
 
 		/* Constructors */
 
 		/**
-		 * Creates a new cauldron color state
+		 * Gets a new cauldron color state
 		 * @param color  Color input
 		 */
 		public static CauldronState dye(int color) {
@@ -155,7 +160,7 @@ public interface ICauldronRecipe {
 		}
 
 		/**
-		 * Creates a new potion cauldron state
+		 * Gets a potion cauldron state
 		 * @param potion  Potion input
 		 */
 		public static CauldronState potion(PotionType potion) {
@@ -165,6 +170,20 @@ public interface ICauldronRecipe {
 
 			CauldronState state = new CauldronState(CauldronContents.POTION);
 			state.potion = potion;
+			return state;
+		}
+
+		/**
+		 * Gets a fluid cauldron state
+		 * @param fluid  Fluid input
+		 */
+		public static CauldronState fluid(Fluid fluid) {
+			if(fluid == FluidRegistry.WATER) {
+				return WATER;
+			}
+
+			CauldronState state = new CauldronState(CauldronContents.FLUID);
+			state.fluid = fluid;
 			return state;
 		}
 
@@ -186,6 +205,11 @@ public interface ICauldronRecipe {
 				case POTION:
 					if(tags.hasKey(TAG_POTION)) {
 						state.potion = PotionType.getPotionTypeForName(tags.getString(TAG_POTION));
+					}
+					break;
+				case FLUID:
+					if(tags.hasKey(TAG_FLUID)) {
+						state.fluid = FluidRegistry.getFluid(tags.getString(TAG_FLUID));
 					}
 					break;
 			}
@@ -214,35 +238,41 @@ public interface ICauldronRecipe {
 
 		/**
 		 * Gets the potion for this state
-		 * @return  potion for the state, or WATER if the potion is null
+		 * @return  potion for this state
 		 */
 		public PotionType getPotion() {
-			if(potion == null) {
+			if(this == WATER) {
 				return PotionTypes.WATER;
 			}
 			return potion;
+		}
+
+		/**
+		 * Gets the fluid for this state
+		 * @return  fluid for this state
+		 */
+		public Fluid getFluid() {
+			if(this == WATER) {
+				return FluidRegistry.WATER;
+			}
+			return fluid;
 		}
 
 		public boolean matches(CauldronState state) {
 			if(this == state) {
 				return true;
 			}
-			if(state.type != this.type) {
-				return false;
-			}
-
-			// value checks
-			if(state.color != this.color) {
-				return false;
-			}
-
-			return state.potion == this.potion;
+			return state.type == this.type
+					&& state.color == this.color
+					&& state.potion == this.potion
+					&& state.fluid == this.fluid;
 		}
 
 		/* NBT */
 		public static final String TAG_TYPE = "type";
 		public static final String TAG_COLOR = "color";
 		public static final String TAG_POTION = "potion";
+		public static final String TAG_FLUID = "fluid";
 
 		/**
 		 * Writes this state to NBT
@@ -259,6 +289,11 @@ public interface ICauldronRecipe {
 				case POTION:
 					if(potion != null) {
 						tags.setString(TAG_POTION, potion.getRegistryName().toString());
+					}
+					break;
+				case FLUID:
+					if(fluid != null) {
+						tags.setString(TAG_FLUID, fluid.getName());
 					}
 					break;
 			}

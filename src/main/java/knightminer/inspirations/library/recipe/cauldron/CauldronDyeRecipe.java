@@ -7,18 +7,18 @@ import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemStack;
 import slimeknights.mantle.util.RecipeMatch;
 
-public class DyeCauldronRecipe implements ISimpleCauldronRecipe {
+public class CauldronDyeRecipe implements ISimpleCauldronRecipe {
 
 	private RecipeMatch input;
 	private ItemStack result;
 	private EnumDyeColor color;
-	public DyeCauldronRecipe(RecipeMatch input, EnumDyeColor color, ItemStack result) {
+	public CauldronDyeRecipe(RecipeMatch input, EnumDyeColor color, ItemStack result) {
 		this.input = input;
 		this.result = result;
 		this.color = color;
 	}
 
-	public DyeCauldronRecipe(ItemStack input, EnumDyeColor color, ItemStack result) {
+	public CauldronDyeRecipe(ItemStack input, EnumDyeColor color, ItemStack result) {
 		this(RecipeMatch.of(input), color, result);
 	}
 

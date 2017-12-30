@@ -256,16 +256,16 @@ public class TweaksEvents {
 		// ensure both we have a recipe and the recipe is valid for a non-te cauldron
 		if(recipe != null) {
 			if(!world.isRemote && recipe.getState(stack, isBoiling, level, CauldronState.WATER).matches(CauldronState.WATER)) {
-				// update block
-				int newLevel = MathHelper.clamp(recipe.getLevel(level), 0, 3);
-				if(newLevel != level) {
-					Blocks.CAULDRON.setWaterLevel(world, pos, state, newLevel);
-				}
-
 				// sound
 				SoundEvent sound = recipe.getSound(stack, isBoiling, level, CauldronState.WATER);
 				if(sound != null) {
 					world.playSound((EntityPlayer)null, pos, sound, SoundCategory.BLOCKS, recipe.getVolume(), 1.0F);
+				}
+
+				// update block
+				int newLevel = MathHelper.clamp(recipe.getLevel(level), 0, 3);
+				if(newLevel != level) {
+					Blocks.CAULDRON.setWaterLevel(world, pos, state, newLevel);
 				}
 
 				// result

@@ -7,7 +7,7 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.recipe.cauldron.CauldronBrewingRecipe;
-import knightminer.inspirations.library.recipe.cauldron.DyeCauldronRecipe;
+import knightminer.inspirations.library.recipe.cauldron.CauldronDyeRecipe;
 import knightminer.inspirations.shared.InspirationsShared;
 import knightminer.inspirations.tweaks.block.BlockEnhancedCauldron;
 import knightminer.inspirations.tweaks.block.BlockFittedCarpet;
@@ -16,8 +16,10 @@ import knightminer.inspirations.tweaks.item.ItemDyedWaterBottle;
 import knightminer.inspirations.tweaks.recipe.ArmorDyeingCauldronRecipe;
 import knightminer.inspirations.tweaks.recipe.DyeCauldronWater;
 import knightminer.inspirations.tweaks.recipe.FillCauldronFromDyedBottle;
+import knightminer.inspirations.tweaks.recipe.FillCauldronFromFluidContainer;
 import knightminer.inspirations.tweaks.recipe.FillCauldronFromPotion;
 import knightminer.inspirations.tweaks.recipe.FillDyedBottleFromCauldron;
+import knightminer.inspirations.tweaks.recipe.FillFluidContainerFromCauldron;
 import knightminer.inspirations.tweaks.recipe.FillPotionFromCauldron;
 import knightminer.inspirations.tweaks.recipe.TippedArrowCauldronRecipe;
 import knightminer.inspirations.tweaks.tileentity.TileCauldron;
@@ -137,13 +139,13 @@ public class InspirationsTweaks extends PulseBase {
 
 			for(EnumDyeColor color : EnumDyeColor.values()) {
 				InspirationsRegistry.addCauldronRecipe(new DyeCauldronWater(color));
-				InspirationsRegistry.addCauldronRecipe(new DyeCauldronRecipe(
+				InspirationsRegistry.addCauldronRecipe(new CauldronDyeRecipe(
 						new ItemStack(Blocks.WOOL, 1, OreDictionary.WILDCARD_VALUE),
 						color,
 						new ItemStack(Blocks.WOOL, 1, color.getMetadata())
 						));
 
-				InspirationsRegistry.addCauldronRecipe(new DyeCauldronRecipe(
+				InspirationsRegistry.addCauldronRecipe(new CauldronDyeRecipe(
 						new ItemStack(Blocks.CARPET, 1, OreDictionary.WILDCARD_VALUE),
 						color,
 						new ItemStack(Blocks.CARPET, 1, color.getMetadata())
@@ -156,6 +158,11 @@ public class InspirationsTweaks extends PulseBase {
 			addPotionBottle(Items.SPLASH_POTION, InspirationsShared.splashBottle);
 			addPotionBottle(Items.LINGERING_POTION, InspirationsShared.lingeringBottle);
 			InspirationsRegistry.addCauldronRecipe(TippedArrowCauldronRecipe.INSTANCE);
+		}
+
+		if(Config.enableCauldronFluids) {
+			InspirationsRegistry.addCauldronRecipe(FillCauldronFromFluidContainer.INSTANCE);
+			InspirationsRegistry.addCauldronRecipe(FillFluidContainerFromCauldron.INSTANCE);
 		}
 	}
 

@@ -9,7 +9,7 @@ import java.util.Set;
 
 import com.google.common.collect.ImmutableList;
 
-import knightminer.inspirations.library.recipe.cauldron.CauldronRecipe;
+import knightminer.inspirations.library.recipe.cauldron.CauldronFluidRecipe;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe.CauldronState;
 import net.minecraft.block.Block;
@@ -235,7 +235,7 @@ public class InspirationsRegistry {
 	 * @param boiling  Whether the cauldron must be boiling or not
 	 */
 	public static void addCauldronRecipe(ItemStack input, ItemStack output, boolean boiling) {
-		addCauldronRecipe(new CauldronRecipe(RecipeMatch.of(input), output, boiling));
+		addCauldronRecipe(new CauldronFluidRecipe(RecipeMatch.of(input), output, boiling));
 	}
 
 	/**
@@ -245,7 +245,7 @@ public class InspirationsRegistry {
 	 * @param boiling  Whether the cauldron must be boiling or not
 	 */
 	public static void addCauldronRecipe(String input, ItemStack output, boolean boiling) {
-		addCauldronRecipe(new CauldronRecipe(RecipeMatch.of(input), output, boiling));
+		addCauldronRecipe(new CauldronFluidRecipe(RecipeMatch.of(input), output, boiling));
 	}
 
 	/**
@@ -255,7 +255,7 @@ public class InspirationsRegistry {
 	 * @param boiling  Whether the cauldron must be boiling or not
 	 */
 	public static void addCauldronRecipe(RecipeMatch input, ItemStack output, boolean boiling) {
-		addCauldronRecipe(new CauldronRecipe(input, output, boiling));
+		addCauldronRecipe(new CauldronFluidRecipe(input, output, boiling));
 	}
 
 	/**

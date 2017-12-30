@@ -7,6 +7,7 @@ import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe.CauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe.CauldronState;
+import knightminer.inspirations.tweaks.block.BlockEnhancedCauldron;
 import net.minecraft.block.BlockCauldron;
 import net.minecraft.block.BlockFire;
 import net.minecraft.block.state.IBlockState;
@@ -25,6 +26,7 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 public class TileCauldron extends TileEntity {
@@ -50,6 +52,8 @@ public class TileCauldron extends TileEntity {
 				return state.getColor();
 			case POTION:
 				return PotionUtils.getPotionColor(state.getPotion());
+			case FLUID:
+				return state.getFluid().getColor(world, pos);
 		}
 
 		return -1;
@@ -67,6 +71,12 @@ public class TileCauldron extends TileEntity {
 		CauldronState state = this.state;
 		if(recipe != null) {
 			if(!world.isRemote) {
+				// sound
+				SoundEvent sound = recipe.getSound(stack, boiling, level, state);
+				if(sound != null) {
+					world.playSound((EntityPlayer)null, pos, sound, SoundCategory.BLOCKS, recipe.getVolume(), 1.0F);
+				}
+
 				// state
 				CauldronState newState = recipe.getState(stack, boiling, level, state);
 				if(!isValid(newState)) {
@@ -79,12 +89,6 @@ public class TileCauldron extends TileEntity {
 				}
 				// level
 				setLevel(blockState, recipe.getLevel(level));
-
-				// sound
-				SoundEvent sound = recipe.getSound(stack, boiling, level, state);
-				if(sound != null) {
-					world.playSound((EntityPlayer)null, pos, sound, SoundCategory.BLOCKS, recipe.getVolume(), 1.0F);
-				}
 
 				// result
 				ItemStack result = recipe.getResult(stack, boiling, level, state);
@@ -124,8 +128,14 @@ public class TileCauldron extends TileEntity {
 		Blocks.CAULDRON.setWaterLevel(world, pos, state, level);
 	}
 
+	public IBlockState writeExtendedBlockState(IExtendedBlockState state) {
+		// just pull the texture right from the fluid
+		if(getContentType() == CauldronContents.FLUID) {
+			state = state.withProperty(BlockEnhancedCauldron.TEXTURE, this.state.getFluid().getStill().toString());
+		}
 
-	/* Networking */
+		return state;
+	}
 
 
 	/* NBT */

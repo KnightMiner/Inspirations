@@ -85,6 +85,7 @@ public class Config {
 	public static boolean simpleCauldronRecipes = false;
 	public static boolean enableCauldronDyeing = true;
 	public static boolean enableCauldronBrewing = true;
+	public static boolean enableCauldronFluids = true;
 	public static boolean betterCauldronItem = true;
 
 	private static String[] anvilSmashing = {
@@ -229,6 +230,7 @@ public class Config {
 			enableExtendedCauldron = extendCauldron.equals("true");
 			enableCauldronBrewing = configFile.getBoolean("brewing", "tweaks.cauldron", enableCauldronBrewing, "Allows cauldrons to be filled with dyes and dye items using cauldrons") && enableExtendedCauldron;
 			enableCauldronDyeing = configFile.getBoolean("dyeing", "tweaks.cauldron", enableCauldronDyeing, "Allows cauldrons to be filled with potions and support brewing") && enableExtendedCauldron;
+			enableCauldronFluids = configFile.getBoolean("fluids", "tweaks.cauldron", enableCauldronFluids, "Allows cauldrons to be filled with any fluid and use them in recipes") && enableExtendedCauldron;
 			betterCauldronItem = configFile.getBoolean("betterItemModel", "tweaks.cauldron", betterCauldronItem, "Replaces the flat cauldron sprite with the 3D cauldron block model");
 		}
 

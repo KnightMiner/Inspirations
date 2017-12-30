@@ -1,0 +1,42 @@
+package knightminer.inspirations.tweaks.client;
+
+import java.util.List;
+
+import com.google.common.collect.ImmutableMap;
+
+import knightminer.inspirations.tweaks.block.BlockEnhancedCauldron;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.client.renderer.vertex.VertexFormat;
+import net.minecraft.util.EnumFacing;
+import net.minecraftforge.client.model.BakedModelWrapper;
+import net.minecraftforge.client.model.IModel;
+import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.common.property.IExtendedBlockState;
+
+public class CauldronModel extends BakedModelWrapper<IBakedModel> {
+
+	private IModel model;
+	private final VertexFormat format;
+	public CauldronModel(IBakedModel originalModel, IModel model, VertexFormat format) {
+		super(originalModel);
+		this.model = model;
+		this.format = format;
+	}
+
+	@Override
+	public List<BakedQuad> getQuads(IBlockState state, EnumFacing side, long rand) {
+		IBakedModel bakedModel = this.originalModel;
+		if(state instanceof IExtendedBlockState) {
+			IExtendedBlockState extendedState = (IExtendedBlockState) state;
+
+			String texture = extendedState.getValue(BlockEnhancedCauldron.TEXTURE);
+			if(texture != null) {
+				IModel retextured = model.retexture(ImmutableMap.of("water", texture));
+				bakedModel = retextured.bake(retextured.getDefaultState(), format, ModelLoader.defaultTextureGetter());
+			}
+		}
+		return bakedModel.getQuads(state, side, rand);
+	}
+}

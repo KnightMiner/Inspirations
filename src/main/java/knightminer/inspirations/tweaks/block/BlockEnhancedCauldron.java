@@ -1,12 +1,14 @@
 package knightminer.inspirations.tweaks.block;
 
+import javax.annotation.Nonnull;
+
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe.CauldronContents;
 import knightminer.inspirations.tweaks.tileentity.TileCauldron;
 import net.minecraft.block.BlockCauldron;
 import net.minecraft.block.ITileEntityProvider;
+import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyEnum;
-import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
@@ -15,10 +17,15 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.property.ExtendedBlockState;
+import net.minecraftforge.common.property.IExtendedBlockState;
+import net.minecraftforge.common.property.IUnlistedProperty;
+import slimeknights.mantle.property.PropertyString;
 
 public class BlockEnhancedCauldron extends BlockCauldron implements ITileEntityProvider {
 
 	public static final PropertyEnum<CauldronContents> CONTENTS = PropertyEnum.create("contents", CauldronContents.class);
+	public static final PropertyString TEXTURE = new PropertyString("texture");
 
 	public BlockEnhancedCauldron() {
 		this.setDefaultState(this.blockState.getBaseState().withProperty(LEVEL, 0).withProperty(CONTENTS, ICauldronRecipe.CauldronContents.WATER));
@@ -68,8 +75,8 @@ public class BlockEnhancedCauldron extends BlockCauldron implements ITileEntityP
 	/* Content texture */
 
 	@Override
-	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, LEVEL, CONTENTS);
+	protected ExtendedBlockState createBlockState() {
+		return new ExtendedBlockState(this, new IProperty[]{LEVEL, CONTENTS}, new IUnlistedProperty[]{TEXTURE});
 	}
 
 	@Override
@@ -80,5 +87,18 @@ public class BlockEnhancedCauldron extends BlockCauldron implements ITileEntityP
 		}
 
 		return state;
+	}
+
+	@Nonnull
+	@Override
+	public IBlockState getExtendedState(@Nonnull IBlockState state, IBlockAccess world, BlockPos pos) {
+		IExtendedBlockState extendedState = (IExtendedBlockState) state;
+
+		TileEntity te = world.getTileEntity(pos);
+		if(te instanceof TileCauldron) {
+			return ((TileCauldron)te).writeExtendedBlockState(extendedState);
+		}
+
+		return super.getExtendedState(state, world, pos);
 	}
 }
