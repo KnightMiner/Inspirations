@@ -52,7 +52,7 @@ public class JEIPlugin implements IModPlugin {
 	public void registerCategories(IRecipeCategoryRegistration registry) {
 		final IGuiHelper guiHelper = registry.getJeiHelpers().getGuiHelper();
 
-		if(PulseBase.isTweaksLoaded()) {
+		if(PulseBase.isRecipesLoaded()) {
 			// Anvil
 			if(Config.enableAnvilSmashing) {
 				registry.addRecipeCategories(new SmashingRecipeCategory(guiHelper));
@@ -74,7 +74,7 @@ public class JEIPlugin implements IModPlugin {
 		registry.handleRecipes(TextureRecipe.class, new TextureRecipeHandler(), VanillaRecipeCategoryUid.CRAFTING);
 
 		// tweaks
-		if(PulseBase.isTweaksLoaded()) {
+		if(PulseBase.isRecipesLoaded()) {
 			if(Config.enableAnvilSmashing) {
 				registry.addRecipes(SmashingRecipeChecker.getRecipes(), SmashingRecipeCategory.CATEGORY);
 				registry.addRecipeCatalyst(new ItemStack(Blocks.ANVIL), SmashingRecipeCategory.CATEGORY);

@@ -5,7 +5,7 @@ import javax.annotation.Nonnull;
 import com.google.common.eventbus.Subscribe;
 
 import knightminer.inspirations.building.InspirationsBuilding;
-import knightminer.inspirations.tweaks.InspirationsTweaks;
+import knightminer.inspirations.recipes.InspirationsRecipes;
 import net.minecraft.block.Block;
 import net.minecraft.init.Items;
 import net.minecraft.item.EnumDyeColor;
@@ -41,20 +41,20 @@ public class InspirationsOredict {
 	public void doTheOredict(FMLInitializationEvent event) {
 		ensureVanilla();
 		registerBuilding();
-		registerTweaks();
+		registerRecipes();
 	}
 
 	private void ensureVanilla() {
 		oredict(Items.BOOK, "book");
 	}
 
-	private static void registerTweaks() {
+	private static void registerBuilding() {
 		oredict(InspirationsBuilding.books, "book");
 	}
 
-	private static void registerBuilding() {
+	private static void registerRecipes() {
 		for(EnumDyeColor color : EnumDyeColor.values()) {
-			oredict(InspirationsTweaks.dyedWaterBottle, color.getDyeDamage(), dyeNameFor(color));
+			oredict(InspirationsRecipes.dyedWaterBottle, color.getDyeDamage(), dyeNameFor(color));
 		}
 	}
 

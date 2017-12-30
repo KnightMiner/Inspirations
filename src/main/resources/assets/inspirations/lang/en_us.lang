@@ -1,6 +1,14 @@
+############
+#  Shared  #
+############
+
 entity.inspirations.arrow.name=Arrow
 
-# Building
+
+############
+# Building #
+############
+
 tile.inspirations.bookshelf.normal.name=Bookshelf
 tile.inspirations.bookshelf.rainbow.name=Rainbow Bookshelf
 tile.inspirations.bookshelf.ancient.name=Ancient Bookshelf
@@ -48,7 +56,10 @@ item.inspirations.books.black.name=Black Book
 gui.inspirations.bookshelf.name=Bookshelf
 
 
-# Utility
+#############
+#  Utility  #
+#############
+
 tile.inspirations.torch_lever.name=Torch Lever
 tile.inspirations.bricks_button.bricks.name=Bricks Button
 tile.inspirations.bricks_button.nether.name=Nether Brick Button
@@ -73,9 +84,10 @@ inspirations.unlock.success=Container unlocked
 inspirations.unlock.fail.no_match=This key does not fit the lock
 inspirations.unlock.fail.unlocked=The container is not locked
 
-# Tweaks
-item.inspirations.edibles.heartbeet.name=Heartbeet
 
+#############
+#  Recipes  #
+#############
 
 item.inspirations.materials.splash_bottle.name=Splash Potion Bottle
 item.inspirations.materials.lingering_bottle.name=Lingering Potion Bottle
@@ -99,9 +111,15 @@ item.inspirations.dyed_bottle.red.name=Red Dyed Water Bottle
 item.inspirations.dyed_bottle.black.name=Black Dyed Water Bottle
 
 # JEI
-
 gui.jei.anvil_smashing.title=Anvil Smashing
 gui.jei.cauldron.title=Cauldron
 gui.jei.cauldron.level.empty=Empty
 gui.jei.cauldron.level.filled=%s mB
 gui.jei.cauldron.color=%s Dyed Water
+
+
+############
+#  Tweaks  #
+############
+
+item.inspirations.edibles.heartbeet.name=Heartbeet

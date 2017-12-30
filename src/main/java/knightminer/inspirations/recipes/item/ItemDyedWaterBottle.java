@@ -1,4 +1,4 @@
-package knightminer.inspirations.tweaks.item;
+package knightminer.inspirations.recipes.item;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Items;

@@ -1,4 +1,4 @@
-package knightminer.inspirations.tweaks.recipe;
+package knightminer.inspirations.recipes.recipe;
 
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
 import net.minecraft.init.Items;

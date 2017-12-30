@@ -1,4 +1,4 @@
-package knightminer.inspirations.tweaks.tileentity;
+package knightminer.inspirations.recipes.tileentity;
 
 import javax.annotation.Nonnull;
 
@@ -7,7 +7,7 @@ import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe.CauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe.CauldronState;
-import knightminer.inspirations.tweaks.block.BlockEnhancedCauldron;
+import knightminer.inspirations.recipes.block.BlockEnhancedCauldron;
 import net.minecraft.block.BlockCauldron;
 import net.minecraft.block.BlockFire;
 import net.minecraft.block.state.IBlockState;

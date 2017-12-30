@@ -1,4 +1,4 @@
-package knightminer.inspirations.tweaks.recipe;
+package knightminer.inspirations.recipes.recipe;
 
 import java.util.Arrays;
 import java.util.List;
@@ -6,8 +6,8 @@ import java.util.stream.Collectors;
 
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.recipe.cauldron.ISimpleCauldronRecipe;
+import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.shared.InspirationsOredict;
-import knightminer.inspirations.tweaks.InspirationsTweaks;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
@@ -26,7 +26,7 @@ public class DyeCauldronWater implements ISimpleCauldronRecipe {
 	@Override
 	public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {
 		// special case water bottles
-		if(stack.getItem() == InspirationsTweaks.dyedWaterBottle) {
+		if(stack.getItem() == InspirationsRecipes.dyedWaterBottle) {
 			return false;
 		}
 
@@ -41,7 +41,7 @@ public class DyeCauldronWater implements ISimpleCauldronRecipe {
 	public List<ItemStack> getInput() {
 		// we want to ignore the dyed water bottle as that has special behavior
 		return Arrays.stream(dye.getMatchingStacks())
-				.filter(stack->stack.getItem() != InspirationsTweaks.dyedWaterBottle)
+				.filter(stack->stack.getItem() != InspirationsRecipes.dyedWaterBottle)
 				.collect(Collectors.toList());
 	}
 

@@ -199,6 +199,22 @@ public class Config {
 			enableRedstoneBarrel = configFile.getBoolean("redstoneBarrel", "utility", enableRedstoneBarrel, "Enables the redstone barrel: a block wth gives a configurable comparator output and can be pushed by pistons");
 		}
 
+		// recipes
+		{
+			// anvil smashing
+			configFile.moveProperty("tweaks", "anvilSmashing", "recipes");
+			enableAnvilSmashing = configFile.getBoolean("anvilSmashing", "recipes", enableAnvilSmashing, "Anvils break glass blocks and transform blocks into other blocks on landing. Uses a block override, so disable if another mod replaces anvils");
+
+			// more cauldron uses
+			String extendCauldron = configFile.getString("extendCauldron", "recipes", "true", "Allows additional recipes to be performed in the cauldron. Can be 'true', 'false', or 'simple'. If true, requires a block substitution. If simple, functionality will be limited to water in cauldrons.", new String[]{ "false", "simple", "true" });
+			enableCauldronRecipes = !extendCauldron.equals("false");
+			simpleCauldronRecipes = extendCauldron.equals("simple");
+			enableExtendedCauldron = extendCauldron.equals("true");
+			enableCauldronBrewing = configFile.getBoolean("brewing", "recipes.cauldron", enableCauldronBrewing, "Allows cauldrons to be filled with dyes and dye items using cauldrons") && enableExtendedCauldron;
+			enableCauldronDyeing = configFile.getBoolean("dyeing", "recipes.cauldron", enableCauldronDyeing, "Allows cauldrons to be filled with potions and support brewing") && enableExtendedCauldron;
+			enableCauldronFluids = configFile.getBoolean("fluids", "recipes.cauldron", enableCauldronFluids, "Allows cauldrons to be filled with any fluid and use them in recipes") && enableExtendedCauldron;
+		}
+
 		// tweaks
 		{
 			// pig desaddle
@@ -214,24 +230,14 @@ public class Config {
 			enableHeartbeet = configFile.getBoolean("heartbeet", "tweaks", enableHeartbeet, "Enables heartbeets: a rare drop from beetroots which can be eaten to restore a bit of health");
 			brewHeartbeet = configFile.getBoolean("brewRegeneration", "tweaks.heartbeet", brewHeartbeet, "Allows heartbeets to be used as an alternative to ghast tears in making potions of regeneration") && enableHeartbeet;
 
-			// anvil smashing
-			enableAnvilSmashing = configFile.getBoolean("anvilSmashing", "tweaks", enableAnvilSmashing, "Anvils break glass blocks and transform blocks into other blocks on landing. Uses a block override, so disable if another mod replaces anvils");
-
 			// dispensers place anvils
 			dispensersPlaceAnvils = configFile.getBoolean("dispensersPlaceAnvils", "tweaks", dispensersPlaceAnvils, "Dispensers will place anvils instead of dropping them. Plays well with anvil smashing.");
 
 			// harvest hanging vines
 			harvestHangingVines = configFile.getBoolean("harvestHangingVines", "tweaks", harvestHangingVines, "When shearing vines, any supported vines will also be sheared instead of just broken");
 
-			// more cauldron uses
-			String extendCauldron = configFile.getString("extendCauldron", "tweaks", "true", "Allows additional recipes to be performed in the cauldron. Can be 'true', 'false', or 'simple'. If true, requires a block substitution. If simple, functionality will be limited to water in cauldrons.", new String[]{ "false", "simple", "true" });
-			enableCauldronRecipes = !extendCauldron.equals("false");
-			simpleCauldronRecipes = extendCauldron.equals("simple");
-			enableExtendedCauldron = extendCauldron.equals("true");
-			enableCauldronBrewing = configFile.getBoolean("brewing", "tweaks.cauldron", enableCauldronBrewing, "Allows cauldrons to be filled with dyes and dye items using cauldrons") && enableExtendedCauldron;
-			enableCauldronDyeing = configFile.getBoolean("dyeing", "tweaks.cauldron", enableCauldronDyeing, "Allows cauldrons to be filled with potions and support brewing") && enableExtendedCauldron;
-			enableCauldronFluids = configFile.getBoolean("fluids", "tweaks.cauldron", enableCauldronFluids, "Allows cauldrons to be filled with any fluid and use them in recipes") && enableExtendedCauldron;
-			betterCauldronItem = configFile.getBoolean("betterItemModel", "tweaks.cauldron", betterCauldronItem, "Replaces the flat cauldron sprite with the 3D cauldron block model");
+			// better cauldron item
+			betterCauldronItem = configFile.getBoolean("betterCauldronItemModel", "tweaks", betterCauldronItem, "Replaces the flat cauldron sprite with the 3D cauldron block model");
 		}
 
 		// saving

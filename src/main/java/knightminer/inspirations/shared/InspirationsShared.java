@@ -51,6 +51,7 @@ public class InspirationsShared extends PulseBase {
 
 	// edibles
 	public static ItemStack heartbeet;
+	public static ItemStack boiledEgg;
 
 	@Subscribe
 	public void preInit(FMLPreInitializationEvent event) {
@@ -75,15 +76,14 @@ public class InspirationsShared extends PulseBase {
 			key = materials.addMeta(1, "key");
 		}
 
-		if(isTweaksLoaded()) {
-			if(Config.enableHeartbeet) {
-				heartbeet = edibles.addFood(0, 2, 2.4f, "heartbeet", new PotionEffect(MobEffects.REGENERATION, 100));
-			}
+		if(isTweaksLoaded() && Config.enableHeartbeet) {
+			heartbeet = edibles.addFood(0, 2, 2.4f, "heartbeet", new PotionEffect(MobEffects.REGENERATION, 100));
+		}
+		if(isRecipesLoaded()) {
 			if(Config.enableCauldronBrewing) {
 				splashBottle = materials.addMeta(2, "splash_bottle");
 				lingeringBottle = materials.addMeta(3, "lingering_bottle");
 			}
-
 		}
 	}
 

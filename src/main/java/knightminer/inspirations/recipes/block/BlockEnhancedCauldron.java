@@ -1,10 +1,10 @@
-package knightminer.inspirations.tweaks.block;
+package knightminer.inspirations.recipes.block;
 
 import javax.annotation.Nonnull;
 
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe.CauldronContents;
-import knightminer.inspirations.tweaks.tileentity.TileCauldron;
+import knightminer.inspirations.recipes.tileentity.TileCauldron;
 import net.minecraft.block.BlockCauldron;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.properties.IProperty;

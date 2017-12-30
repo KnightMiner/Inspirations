@@ -5,6 +5,7 @@ import java.util.Locale;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.library.Util;
+import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraft.block.Block;
@@ -39,6 +40,10 @@ public class PulseBase {
 
 	public static boolean isTweaksLoaded() {
 		return Inspirations.pulseManager.isPulseLoaded(InspirationsTweaks.pulseID);
+	}
+
+	public static boolean isRecipesLoaded() {
+		return Inspirations.pulseManager.isPulseLoaded(InspirationsRecipes.pulseID);
 	}
 
 

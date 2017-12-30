@@ -4,9 +4,11 @@ import java.util.List;
 
 import com.google.common.collect.ImmutableList;
 
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.potion.PotionType;
+import net.minecraft.util.SoundEvent;
 import net.minecraftforge.fluids.FluidRegistry;
 
 public class CauldronBrewingRecipe implements ISimpleCauldronRecipe {
@@ -49,4 +51,10 @@ public class CauldronBrewingRecipe implements ISimpleCauldronRecipe {
 	public boolean isBoiling() {
 		return true;
 	}
+
+	@Override
+	public SoundEvent getSound(ItemStack stack, boolean boiling, int level, CauldronState state) {
+		return SoundEvents.BLOCK_BREWING_STAND_BREW;
+	}
+
 }

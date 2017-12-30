@@ -1,4 +1,4 @@
-package knightminer.inspirations.tweaks.recipe;
+package knightminer.inspirations.recipes.recipe;
 
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
 import net.minecraft.init.PotionTypes;
@@ -20,7 +20,7 @@ public class FillCauldronFromPotion implements ICauldronRecipe {
 
 	@Override
 	public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		return level < 3 && (level == 0 || state.getType() == CauldronContents.POTION)
+		return level < 3 && (level == 0 || state.getPotion() != null)
 				&& stack.getItem() == potion;
 	}
 

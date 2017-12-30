@@ -1,10 +1,10 @@
-package knightminer.inspirations.tweaks.client;
+package knightminer.inspirations.recipes.client;
 
 import java.util.List;
 
 import com.google.common.collect.ImmutableMap;
 
-import knightminer.inspirations.tweaks.block.BlockEnhancedCauldron;
+import knightminer.inspirations.recipes.block.BlockEnhancedCauldron;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
