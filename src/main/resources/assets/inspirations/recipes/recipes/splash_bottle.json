@@ -2,7 +2,7 @@
   "conditions": [
     {
       "type": "pulse_loaded",
-      "pulse": "InspirationsTweaks"
+      "pulse": "InspirationsRecipes"
     },
     {
       "type": "config",
@@ -12,24 +12,22 @@
   "type": "forge:ore_shapeless",
   "result": {
     "item": "inspirations:materials",
-    "data": 3,
+    "data": 2,
     "count": 3
   },
   "ingredients": [
     {
-      "item": "minecraft:dragon_breath"
+      "type": "forge:ore_dict",
+      "ore": "gunpowder"
     },
     {
-      "item": "inspirations:materials",
-      "data": 2
+      "item": "minecraft:glass_bottle"
     },
     {
-      "item": "inspirations:materials",
-      "data": 2
+      "item": "minecraft:glass_bottle"
     },
     {
-      "item": "inspirations:materials",
-      "data": 2
+      "item": "minecraft:glass_bottle"
     }
   ]
 }

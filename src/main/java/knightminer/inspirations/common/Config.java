@@ -511,7 +511,7 @@ public class Config {
 				case "redstone_charge": return enableRedstoneCharge;
 				case "torch_lever": return enableTorchLever;
 
-				// tweaks
+				// recipes
 				case "cauldron_brewing": return enableCauldronBrewing;
 				case "cauldron_dyeing": return enableCauldronDyeing;
 			}
