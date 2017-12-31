@@ -121,8 +121,9 @@ fluid.inspirations.rabbit_stew=Rabbit Stew
 # JEI
 gui.jei.anvil_smashing.title=Anvil Smashing
 gui.jei.cauldron.title=Cauldron
+gui.jei.cauldron.level=%s bottles
+gui.jei.cauldron.level.singular=1 bottle
 gui.jei.cauldron.level.empty=Empty
-gui.jei.cauldron.level.filled=%s mB
 gui.jei.cauldron.color=%s Dyed Water
 gui.jei.cauldron.boiling=Cauldron must be placed above fire
 

@@ -2,18 +2,15 @@ package knightminer.inspirations.plugins.jei.cauldron;
 
 import com.google.common.collect.ImmutableList;
 
-import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.recipe.cauldron.ISimpleCauldronRecipe;
+import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe.CauldronContents;
 import knightminer.inspirations.plugins.jei.JEIPlugin;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionType;
-import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
@@ -21,13 +18,12 @@ import net.minecraftforge.fluids.FluidStack;
 import java.util.ArrayList;
 import java.util.List;
 
-import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IRecipeWrapper;
 
 public class CauldronRecipeWrapper implements IRecipeWrapper {
 
-	private static final FluidStack WATER_INPUT = getFluid(FluidRegistry.WATER, 1);
+	private static final FluidStack WATER_STACK = new FluidStack(FluidRegistry.WATER, 1);
 
 	protected final List<List<ItemStack>> input;
 	protected final FluidStack inputFluid;
@@ -51,16 +47,28 @@ public class CauldronRecipeWrapper implements IRecipeWrapper {
 		this.outputLevel = MathHelper.clamp(recipe.getLevel(inputLevel), 0, 3);
 
 		// input state
-		Object inputState = recipe.getInputState();
-		this.inputFluid = (inputState instanceof Fluid) ? getFluid((Fluid) inputState, inputLevel) : null;
-		this.inputColor = (inputState instanceof EnumDyeColor) ? (EnumDyeColor) inputState : null;
-		this.inputPotion = (inputState instanceof PotionType) ? (PotionType) inputState : null;
+		if(inputLevel == 0) {
+			this.inputFluid = null;
+			this.inputColor = null;
+			this.inputPotion = null;
+		} else {
+			Object inputState = recipe.getInputState();
+			this.inputFluid = (inputState instanceof Fluid) ? new FluidStack((Fluid) inputState, inputLevel) : null;
+			this.inputColor = (inputState instanceof EnumDyeColor) ? (EnumDyeColor) inputState : null;
+			this.inputPotion = (inputState instanceof PotionType) ? (PotionType) inputState : null;
+		}
 
 		// output state
-		Object outputState = recipe.getState();
-		this.outputFluid = (outputState instanceof Fluid) ? getFluid((Fluid) outputState, outputLevel) : null;
-		this.outputColor = (outputState instanceof EnumDyeColor) ? (EnumDyeColor) outputState : null;
-		this.outputPotion = (outputState instanceof PotionType) ? (PotionType) outputState : null;
+		if(outputLevel == 0) {
+			this.outputFluid = null;
+			this.outputColor = null;
+			this.outputPotion = null;
+		} else {
+			Object outputState = recipe.getState();
+			this.outputFluid = (outputState instanceof Fluid) ? new FluidStack((Fluid) outputState, outputLevel) : null;
+			this.outputColor = (outputState instanceof EnumDyeColor) ? (EnumDyeColor) outputState : null;
+			this.outputPotion = (outputState instanceof PotionType) ? (PotionType) outputState : null;
+		}
 	}
 
 	public CauldronRecipeWrapper(ItemStack input, ItemStack output) {
@@ -75,27 +83,61 @@ public class CauldronRecipeWrapper implements IRecipeWrapper {
 		this.outputLevel = 0;
 		this.boiling = false;
 
-		this.inputFluid = WATER_INPUT;
+		this.inputFluid = WATER_STACK;
 		this.outputFluid = null;
 		this.inputColor = this.outputColor = null;
 		this.inputPotion = this.outputPotion = null;
 	}
 
-	public boolean hasInputFluid() {
-		return this.inputFluid != null;
+	/* Getters used in the category */
+
+	public CauldronContents getInputType() {
+		return getType(inputLevel, inputFluid, inputColor, inputPotion);
 	}
 
-	public boolean hasOutputFluid() {
-		return this.outputFluid != null;
+	public CauldronContents getOutputType() {
+		return getType(outputLevel, outputFluid, outputColor, outputPotion);
 	}
+
+	public int getInputLevel() {
+		return inputLevel;
+	}
+
+	public int getOutputLevel() {
+		return outputLevel;
+	}
+
+	private static CauldronContents getType(int level, FluidStack fluid, EnumDyeColor color, PotionType potion) {
+		if(level == 0) {
+			return null;
+		}
+		if(fluid != null) {
+			return CauldronContents.FLUID;
+		}
+		if(color != null) {
+			return CauldronContents.DYE;
+		}
+		if(potion != null) {
+			return CauldronContents.POTION;
+		}
+
+		return null;
+	}
+
+
+	/* JEI methods */
 
 	@Override
 	public void getIngredients(IIngredients ingredients) {
 		ingredients.setInputLists(ItemStack.class, input);
-		ingredients.setOutputs(ItemStack.class, output);
-
 		ingredients.setInput(FluidStack.class, inputFluid);
+		ingredients.setInput(EnumDyeColor.class, inputColor);
+		ingredients.setInput(PotionType.class, inputPotion);
+
+		ingredients.setOutputs(ItemStack.class, output);
 		ingredients.setOutput(FluidStack.class, outputFluid);
+		ingredients.setOutput(EnumDyeColor.class, outputColor);
+		ingredients.setOutput(PotionType.class, outputPotion);
 	}
 
 	@Override
@@ -103,15 +145,13 @@ public class CauldronRecipeWrapper implements IRecipeWrapper {
 		if(boiling) {
 			JEIPlugin.cauldron.fire.draw(minecraft, 45, 36);
 		}
-		drawIngredient(minecraft, inputColor, inputPotion, inputLevel, 47, 19);
-		drawIngredient(minecraft, outputColor, outputPotion, outputLevel, 101, 19);
 	}
 
 	@Override
 	public List<String> getTooltipStrings(int mouseX, int mouseY) {
 		List<String> tooltip = new ArrayList<>();
-		addStringTooltip(tooltip, inputColor, inputPotion, inputLevel, 47, 19, mouseX, mouseY);
-		addStringTooltip(tooltip, outputColor, outputPotion, outputLevel, 101, 1, mouseX, mouseY);
+		addStringTooltip(tooltip, inputLevel, 47, 19, mouseX, mouseY);
+		addStringTooltip(tooltip, outputLevel, 101, 19, mouseX, mouseY);
 
 		if(boiling && mouseX > 45 && mouseX <= 58 && mouseY > 36 && mouseY <= 48) {
 			tooltip.add(Util.translate("gui.jei.cauldron.boiling"));
@@ -123,54 +163,12 @@ public class CauldronRecipeWrapper implements IRecipeWrapper {
 
 	/* Helpers */
 
-	private static FluidStack getFluid(Fluid fluid, int level) {
-		if(level == 0) {
-			return null;
-		}
-
-		return new FluidStack(fluid, padLevel(level));
-	}
-
-	private static int padLevel(int level) {
-		return level * 333 + (level > 1 ? 1 : 0);
-	}
-
-	private static void drawIngredient(Minecraft minecraft, EnumDyeColor color, PotionType potion, int level, int x, int y) {
-		if(color == null && potion == null || level == 0) {
-			return;
-		}
-
-		float[] colors;
-		if(color != null) {
-			colors = color.getColorComponentValues();
-		} else {
-			colors = Util.getColorComponents(PotionUtils.getPotionColor(potion));
-		}
-		GlStateManager.color(colors[0], colors[1], colors[2]);
-
-		getFluidIcon(color != null, level - 1).draw(minecraft, x, y + (3 * (3 - level)));
-		GlStateManager.color(1f, 1f, 1f);
-	}
-
-	private static IDrawable getFluidIcon(boolean dye, int index) {
-		return dye ? JEIPlugin.cauldron.dye[index] : JEIPlugin.cauldron.potion[index];
-	}
-
-	private static void addStringTooltip(List<String> tooltips, EnumDyeColor color, PotionType potion, int level, int x, int y, int mouseX, int mouseY) {
-		if(mouseX >= x && mouseX < x + 16 && mouseY >= y && mouseY < y + 16) {
-			if(level == 0) {
-				tooltips.add(Util.translateFormatted("gui.jei.cauldron.level.empty"));
-				return;
-			} else if(color != null) {
-				tooltips.add(Util.translateFormatted("gui.jei.cauldron.color", Util.translate("item.fireworksCharge.%s", color.getUnlocalizedName())));
-			} else if(potion != null) {
-				tooltips.add(Util.translate(potion.getNamePrefixed("potion.effect.")));
-				Util.addPotionTooltip(potion, tooltips);
-			} else {
-				return;
-			}
-			tooltips.add(TextFormatting.GRAY + Util.translateFormatted("gui.jei.cauldron.level.filled", padLevel(level)));
-			tooltips.add(TextFormatting.BLUE + "" + TextFormatting.ITALIC + Inspirations.modName);
+	/**
+	 * Adds the empty string for the input or output if relevant
+	 */
+	private static void addStringTooltip(List<String> tooltips, int level, int x, int y, int mouseX, int mouseY) {
+		if(level == 0 && mouseX >= x && mouseX < x + 10 && mouseY >= y && mouseY < y + 10) {
+			tooltips.add(Util.translateFormatted("gui.jei.cauldron.level.empty"));
 		}
 	}
 }

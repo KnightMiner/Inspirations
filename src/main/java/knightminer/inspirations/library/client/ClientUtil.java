@@ -5,13 +5,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.math.NumberUtils;
+import org.lwjgl.opengl.GL11;
 
 import knightminer.inspirations.library.ItemMetaKey;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -71,5 +77,40 @@ public final class ClientUtil {
 	 */
 	public static void onResourceReload(IResourceManager manager) {
 		colorCache.clear();
+	}
+
+	/**
+	 * Gets the sprite for the given texture location, or null if no sprite is found
+	 * @param location
+	 * @return
+	 */
+	public static TextureAtlasSprite getSprite(ResourceLocation location) {
+		TextureMap textureMapBlocks = mc.getTextureMapBlocks();
+		TextureAtlasSprite sprite = null;
+		if(location != null) {
+			sprite = textureMapBlocks.getTextureExtry(location.toString());
+		}
+		if (sprite == null) {
+			sprite = textureMapBlocks.getMissingSprite();
+		}
+		return sprite;
+	}
+
+	public static void renderFilledSprite(TextureAtlasSprite sprite, final int x, final int y, final int size, final int filled) {
+		double uMin = sprite.getMinU();
+		double uMax = sprite.getMaxU();
+		double vMin = sprite.getMinV();
+		double vMax = sprite.getMaxV();
+		uMax = uMax - (16 - size) / 16.0 * (uMax - uMin);
+		vMax = vMax - (16 - filled) / 16.0 * (vMax - vMin);
+
+		Tessellator tessellator = Tessellator.getInstance();
+		BufferBuilder bufferBuilder = tessellator.getBuffer();
+		bufferBuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+		bufferBuilder.pos(x, y + size, 100).tex(uMin, vMax).endVertex();
+		bufferBuilder.pos(x + size, y + size, 100).tex(uMax, vMax).endVertex();
+		bufferBuilder.pos(x + size, y + size - filled, 100).tex(uMax, vMin).endVertex();
+		bufferBuilder.pos(x, y + size - filled, 100).tex(uMin, vMin).endVertex();
+		tessellator.draw();
 	}
 }

@@ -2,13 +2,23 @@ package knightminer.inspirations.plugins.jei.cauldron;
 
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.Util;
+import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe.CauldronContents;
+import knightminer.inspirations.plugins.jei.cauldron.ingredient.DyeIngredientRenderer;
+import knightminer.inspirations.plugins.jei.cauldron.ingredient.PotionIngredientRenderer;
+import net.minecraft.item.EnumDyeColor;
+import net.minecraft.potion.PotionType;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fluids.FluidStack;
+
+import java.util.List;
 
 import javax.annotation.Nonnull;
 
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiFluidStackGroup;
+import mezz.jei.api.gui.IGuiIngredientGroup;
 import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
@@ -21,23 +31,11 @@ public class CauldronRecipeCategory implements IRecipeCategory<CauldronRecipeWra
 
 	private final IDrawable background;
 	public final IDrawable fire;
-	public final IDrawable[] dye;
-	public final IDrawable[] potion;
 
 	public CauldronRecipeCategory(IGuiHelper guiHelper) {
 		background = guiHelper.createDrawable(BACKGROUND_LOC, 0, 0, 160, 50, 0, 0, 0, 0);
 
 		fire = guiHelper.createDrawable(BACKGROUND_LOC, 160, 0, 14, 14);
-		dye = new IDrawable[]{
-				guiHelper.createDrawable(BACKGROUND_LOC, 160, 20, 10,  4),
-				guiHelper.createDrawable(BACKGROUND_LOC, 160, 17, 10,  7),
-				guiHelper.createDrawable(BACKGROUND_LOC, 160, 14, 10, 10)
-		};
-		potion = new IDrawable[]{
-				guiHelper.createDrawable(BACKGROUND_LOC, 160, 30, 10,  4),
-				guiHelper.createDrawable(BACKGROUND_LOC, 160, 27, 10,  7),
-				guiHelper.createDrawable(BACKGROUND_LOC, 160, 24, 10, 10)
-		};
 	}
 
 	@Nonnull
@@ -68,13 +66,52 @@ public class CauldronRecipeCategory implements IRecipeCategory<CauldronRecipeWra
 		items.set(ingredients);
 
 		IGuiFluidStackGroup fluids = recipeLayout.getFluidStacks();
-		if(recipe.hasInputFluid()) {
-			fluids.init(0, true, 47, 19, 10, 10, 1000, false, null);
-			fluids.set(ingredients);
+		fluids.addTooltipCallback(CauldronRecipeCategory::onFluidTooltip);
+		IGuiIngredientGroup<EnumDyeColor> dyes = recipeLayout.getIngredientsGroup(EnumDyeColor.class);
+		IGuiIngredientGroup<PotionType> potions = recipeLayout.getIngredientsGroup(PotionType.class);
+
+		init(fluids, dyes, potions, ingredients, true, 47, 19, recipe.getInputType(), recipe.getInputLevel());
+		init(fluids, dyes, potions, ingredients, false, 101, 19, recipe.getOutputType(), recipe.getOutputLevel());
+	}
+
+	/**
+	 * Helper method to call init on the relevant GUI group
+	 */
+	private static void init(IGuiFluidStackGroup fluids, IGuiIngredientGroup<EnumDyeColor> dyes, IGuiIngredientGroup<PotionType> potions,
+			IIngredients ingredients, boolean input, int x, int y, CauldronContents type, int level) {
+		if(type == null) {
+			return;
 		}
-		if(recipe.hasOutputFluid()) {
-			fluids.init(1, false, 101, 19, 10, 10, 1000, false, null);
-			fluids.set(ingredients);
+		int index = input ? 0 : 1;
+		switch(type) {
+			case FLUID:
+				fluids.init(index, input, x, y, 10, 10, 3, false, null);
+				fluids.set(ingredients);
+				break;
+			case DYE:
+				dyes.init(index, input, DyeIngredientRenderer.forLevel(level), x, y, 10, 10, 0, 0);
+				dyes.set(ingredients);
+				break;
+			case POTION:
+				potions.init(index, input, PotionIngredientRenderer.forLevel(level), x, y, 10, 10, 0, 0);
+				potions.set(ingredients);
+				break;
+		}
+	}
+
+	private static void onFluidTooltip(int slotIndex, boolean input, FluidStack ingredient, List<String> tooltip) {
+		String modName = tooltip.get(tooltip.size() - 1);
+		tooltip.clear();
+		tooltip.add(ingredient.getLocalizedName());
+		addLevelTooltip(ingredient.amount, tooltip);
+		tooltip.add(modName);
+	}
+
+	public static void addLevelTooltip(int level, List<String> tooltip) {
+		if(level == 1) {
+			tooltip.add(TextFormatting.GRAY + Util.translateFormatted("gui.jei.cauldron.level.singular"));
+		} else if(level > 1) {
+			tooltip.add(TextFormatting.GRAY + Util.translateFormatted("gui.jei.cauldron.level", level));
 		}
 	}
 

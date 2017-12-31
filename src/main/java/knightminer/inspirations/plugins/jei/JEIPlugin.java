@@ -2,15 +2,28 @@ package knightminer.inspirations.plugins.jei;
 
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.init.PotionTypes;
+import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.potion.PotionType;
+
+import java.util.Arrays;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
 import javax.annotation.Nonnull;
+
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.library.recipe.TextureRecipe;
 import knightminer.inspirations.plugins.jei.cauldron.CauldronRecipeCategory;
 import knightminer.inspirations.plugins.jei.cauldron.CauldronRecipeChecker;
+import knightminer.inspirations.plugins.jei.cauldron.ingredient.DyeIngredientHelper;
+import knightminer.inspirations.plugins.jei.cauldron.ingredient.DyeIngredientRenderer;
+import knightminer.inspirations.plugins.jei.cauldron.ingredient.PotionIngredientHelper;
+import knightminer.inspirations.plugins.jei.cauldron.ingredient.PotionIngredientRenderer;
 import knightminer.inspirations.plugins.jei.smashing.SmashingRecipeCategory;
 import knightminer.inspirations.plugins.jei.smashing.SmashingRecipeChecker;
 import knightminer.inspirations.plugins.jei.texture.TextureRecipeHandler;
@@ -23,6 +36,7 @@ import mezz.jei.api.IModRegistry;
 import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.ISubtypeRegistry;
 import mezz.jei.api.gui.ICraftingGridHelper;
+import mezz.jei.api.ingredients.IModIngredientRegistration;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 
@@ -82,6 +96,20 @@ public class JEIPlugin implements IModPlugin {
 			if(Config.enableCauldronRecipes) {
 				registry.addRecipes(CauldronRecipeChecker.getRecipes(), CauldronRecipeCategory.CATEGORY);
 				registry.addRecipeCatalyst(new ItemStack(Items.CAULDRON), CauldronRecipeCategory.CATEGORY);
+			}
+		}
+	}
+
+	@Override
+	public void registerIngredients(IModIngredientRegistration registry) {
+		if(PulseBase.isRecipesLoaded()) {
+			if(Config.enableCauldronDyeing) {
+				registry.register(EnumDyeColor.class, Arrays.asList(EnumDyeColor.values()), DyeIngredientHelper.INSTANCE, DyeIngredientRenderer.INVENTORY);
+			}
+			if(Config.enableCauldronBrewing) {
+				registry.register(PotionType.class, StreamSupport.stream(PotionType.REGISTRY.spliterator(), false)
+						.filter(type->type != PotionTypes.EMPTY && type != PotionTypes.WATER)
+						.collect(Collectors.toList()), PotionIngredientHelper.INSTANCE, PotionIngredientRenderer.INVENTORY);
 			}
 		}
 	}
