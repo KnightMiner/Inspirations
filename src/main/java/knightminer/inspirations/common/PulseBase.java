@@ -18,6 +18,8 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -141,6 +143,16 @@ public class PulseBase {
 	}
 
 	/* Other */
+	protected static Fluid registerColoredFluid(String name, int color) {
+		return registerFluid(new Fluid(name, Util.getResource("blocks/fluid_colorless"), Util.getResource("blocks/fluid_colorless_flow"), color));
+	}
+	protected static <T extends Fluid> T registerFluid(T fluid) {
+		fluid.setUnlocalizedName(Util.prefix(fluid.getName()));
+		FluidRegistry.registerFluid(fluid);
+
+		return fluid;
+	}
+
 	protected static void registerDispenserBehavior(Block block, IBehaviorDispenseItem behavior) {
 		if(block != null) {
 			registerDispenserBehavior(Item.getItemFromBlock(block), behavior);

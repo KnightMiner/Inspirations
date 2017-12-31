@@ -48,6 +48,8 @@ public class InspirationsShared extends PulseBase {
 	public static ItemStack key;
 	public static ItemStack splashBottle;
 	public static ItemStack lingeringBottle;
+	public static ItemStack mushrooms;
+	public static ItemStack rabbitStewMix;
 
 	// edibles
 	public static ItemStack heartbeet;
@@ -83,6 +85,10 @@ public class InspirationsShared extends PulseBase {
 			if(Config.enableCauldronBrewing) {
 				splashBottle = materials.addMeta(2, "splash_bottle");
 				lingeringBottle = materials.addMeta(3, "lingering_bottle");
+			}
+			if(Config.enableCauldronFluids) {
+				mushrooms = materials.addMeta(4, "mushrooms");
+				rabbitStewMix = materials.addMeta(5, "rabbit_stew_mix");
 			}
 		}
 	}

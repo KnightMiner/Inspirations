@@ -60,9 +60,4 @@ public class FillCauldronFromPotion implements ICauldronRecipe {
 
 		return SoundEvents.ITEM_BOTTLE_EMPTY;
 	}
-
-	@Override
-	public float getVolume() {
-		return 1.0f;
-	}
 }

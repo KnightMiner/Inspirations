@@ -54,7 +54,7 @@ public class RecipesEvents {
 				// sound
 				SoundEvent sound = recipe.getSound(stack, isBoiling, level, CauldronState.WATER);
 				if(sound != null) {
-					world.playSound((EntityPlayer)null, pos, sound, SoundCategory.BLOCKS, recipe.getVolume(), 1.0F);
+					world.playSound((EntityPlayer)null, pos, sound, SoundCategory.BLOCKS, recipe.getVolume(sound), 1.0F);
 				}
 
 				// update block

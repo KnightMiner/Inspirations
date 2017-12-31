@@ -514,6 +514,7 @@ public class Config {
 				// recipes
 				case "cauldron_brewing": return enableCauldronBrewing;
 				case "cauldron_dyeing": return enableCauldronDyeing;
+				case "cauldron_fluids": return enableCauldronFluids;
 			}
 
 			throw new JsonSyntaxException("Invalid propertyname '" + property + "'");

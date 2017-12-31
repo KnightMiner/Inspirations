@@ -41,9 +41,4 @@ public class FillPotionFromCauldron implements ICauldronRecipe {
 	public SoundEvent getSound(ItemStack stack, boolean boiling, int level, CauldronState state) {
 		return SoundEvents.ITEM_BOTTLE_FILL;
 	}
-
-	@Override
-	public float getVolume() {
-		return 1.0f;
-	}
 }

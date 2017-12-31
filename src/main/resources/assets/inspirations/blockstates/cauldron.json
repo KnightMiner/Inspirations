@@ -10,7 +10,7 @@
     },
     "contents": {
       "water": {},
-      "dye": { "textures": { "water": "inspirations:blocks/water_dyed" }},
+      "dye": { "textures": { "water": "inspirations:blocks/fluid_colorless" }},
       "potion": { "textures": { "water": "inspirations:blocks/fluid_potion" }},
       "fluid": {}
     },

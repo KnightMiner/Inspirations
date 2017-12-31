@@ -7,9 +7,20 @@ import slimeknights.mantle.util.RecipeMatch;
 public class CauldronFluidTransformRecipe extends CauldronFluidRecipe {
 
 	private CauldronState result;
+	private int maxLevel;
 	public CauldronFluidTransformRecipe(RecipeMatch input, Fluid fluid, Fluid result, Boolean boiling) {
+		this(input, fluid, result, boiling, 3);
+	}
+
+	public CauldronFluidTransformRecipe(RecipeMatch input, Fluid fluid, Fluid result, Boolean boiling, int maxLevel) {
 		super(input, fluid, ItemStack.EMPTY, boiling);
 		this.result = CauldronState.fluid(result);
+		this.maxLevel = maxLevel;
+	}
+
+	@Override
+	public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {
+		return level <= maxLevel && super.matches(stack, boiling, level, state);
 	}
 
 	@Override
@@ -25,5 +36,10 @@ public class CauldronFluidTransformRecipe extends CauldronFluidRecipe {
 	@Override
 	public Object getState() {
 		return result.getFluid();
+	}
+
+	@Override
+	public int getInputLevel() {
+		return maxLevel;
 	}
 }

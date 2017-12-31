@@ -74,7 +74,7 @@ public class TileCauldron extends TileEntity {
 				// sound
 				SoundEvent sound = recipe.getSound(stack, boiling, level, state);
 				if(sound != null) {
-					world.playSound((EntityPlayer)null, pos, sound, SoundCategory.BLOCKS, recipe.getVolume(), 1.0F);
+					world.playSound((EntityPlayer)null, pos, sound, SoundCategory.BLOCKS, recipe.getVolume(sound), 1.0F);
 				}
 
 				// state

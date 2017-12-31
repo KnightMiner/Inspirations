@@ -3,7 +3,9 @@ package knightminer.inspirations.library.recipe.cauldron;
 import java.util.List;
 
 import knightminer.inspirations.library.Util;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.SoundEvent;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import slimeknights.mantle.util.RecipeMatch;
@@ -13,13 +15,20 @@ public class CauldronFluidRecipe implements ISimpleCauldronRecipe {
 	private ItemStack result;
 	private Boolean boiling;
 	private Fluid fluid;
+	private SoundEvent sound;
 
-	public CauldronFluidRecipe(RecipeMatch input, Fluid fluid, ItemStack result, Boolean boiling) {
+	public CauldronFluidRecipe(RecipeMatch input, Fluid fluid, ItemStack result, Boolean boiling, SoundEvent sound) {
 		this.input = input;
 		this.result = result;
 		this.boiling = boiling;
 		this.fluid = fluid;
+		this.sound = sound;
 	}
+
+	public CauldronFluidRecipe(RecipeMatch input, Fluid fluid, ItemStack result, Boolean boiling) {
+		this(input, fluid, result, boiling, SoundEvents.ENTITY_BOBBER_SPLASH);
+	}
+
 	public CauldronFluidRecipe(RecipeMatch input, ItemStack result, Boolean boiling) {
 		this(input, FluidRegistry.WATER, result, boiling);
 	}
@@ -32,6 +41,12 @@ public class CauldronFluidRecipe implements ISimpleCauldronRecipe {
 		}
 
 		return this.input.matches(Util.createNonNullList(stack)).isPresent();
+	}
+
+	@Override
+	public ItemStack transformInput(ItemStack stack, boolean boiling, int level, CauldronState state) {
+		stack.shrink(input.amountNeeded);
+		return stack;
 	}
 
 	@Override
@@ -57,5 +72,14 @@ public class CauldronFluidRecipe implements ISimpleCauldronRecipe {
 	@Override
 	public Object getInputState() {
 		return fluid;
+	}
+
+	/**
+	 * Gets the sound to play when performing this recipe
+	 * @return  Sound event
+	 */
+	@Override
+	public SoundEvent getSound(ItemStack stack, boolean boiling, int level, CauldronState state) {
+		return sound;
 	}
 }

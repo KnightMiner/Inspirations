@@ -8,6 +8,9 @@ import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.recipe.cauldron.CauldronBrewingRecipe;
 import knightminer.inspirations.library.recipe.cauldron.CauldronDyeRecipe;
+import knightminer.inspirations.library.recipe.cauldron.CauldronFluidRecipe;
+import knightminer.inspirations.library.recipe.cauldron.CauldronFluidTransformRecipe;
+import knightminer.inspirations.library.recipe.cauldron.FillCauldronRecipe;
 import knightminer.inspirations.recipes.block.BlockEnhancedCauldron;
 import knightminer.inspirations.recipes.block.BlockSmashingAnvil;
 import knightminer.inspirations.recipes.item.ItemDyedWaterBottle;
@@ -26,6 +29,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -34,6 +38,8 @@ import net.minecraft.potion.PotionType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent.Register;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -42,6 +48,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.pulsar.pulse.Pulse;
+import slimeknights.mantle.util.RecipeMatch;
 
 @Pulse(id = InspirationsRecipes.pulseID, description = "Adds additional recipe types, including cauldrons and anvil smashing")
 public class InspirationsRecipes extends PulseBase {
@@ -57,10 +64,19 @@ public class InspirationsRecipes extends PulseBase {
 	// items
 	public static ItemDyedWaterBottle dyedWaterBottle;
 
+	// fluids
+	public static Fluid mushroomStew;
+	public static Fluid beetrootSoup;
+	public static Fluid rabbitStew;
+
 
 	@Subscribe
 	public void preInit(FMLPreInitializationEvent event) {
 		proxy.preInit();
+
+		mushroomStew = registerColoredFluid("mushroom_stew", 0xCD8C6F);
+		beetrootSoup = registerColoredFluid("beetroot_soup", 0xB82A30);
+		rabbitStew = registerColoredFluid("rabbit_stew", 0x984A2C);
 	}
 
 	@SubscribeEvent
@@ -136,6 +152,10 @@ public class InspirationsRecipes extends PulseBase {
 		if(Config.enableCauldronFluids) {
 			InspirationsRegistry.addCauldronRecipe(FillCauldronFromFluidContainer.INSTANCE);
 			InspirationsRegistry.addCauldronRecipe(FillFluidContainerFromCauldron.INSTANCE);
+
+			addStewRecipes(new ItemStack(Items.BEETROOT_SOUP), beetrootSoup, new ItemStack(Items.BEETROOT, 6));
+			addStewRecipes(new ItemStack(Items.MUSHROOM_STEW), mushroomStew, InspirationsShared.mushrooms.copy());
+			addStewRecipes(new ItemStack(Items.RABBIT_STEW), rabbitStew, InspirationsShared.rabbitStewMix.copy());
 		}
 	}
 
@@ -150,5 +170,18 @@ public class InspirationsRecipes extends PulseBase {
 	private static void addPotionBottle(Item potion, ItemStack bottle) {
 		InspirationsRegistry.addCauldronRecipe(new FillCauldronFromPotion(potion, bottle));
 		InspirationsRegistry.addCauldronRecipe(new FillPotionFromCauldron(potion, bottle));
+	}
+
+	private static void addStewRecipes(ItemStack stew, Fluid fluid, ItemStack ingredient) {
+		// cheaper recipe if we have just one layer of water
+		int count = ingredient.getCount();
+		InspirationsRegistry.addCauldronRecipe(new CauldronFluidTransformRecipe(RecipeMatch.of(ingredient, count, 1), FluidRegistry.WATER, fluid, true, 1));
+		// normal recipe
+		ingredient = ingredient.copy();
+		ingredient.setCount(count * 2);
+		InspirationsRegistry.addCauldronRecipe(new CauldronFluidTransformRecipe(RecipeMatch.of(ingredient, count * 2, 1), FluidRegistry.WATER, fluid, true));
+		// filling and emptying bowls
+		InspirationsRegistry.addCauldronRecipe(new CauldronFluidRecipe(RecipeMatch.of(Items.BOWL), fluid, stew, null, SoundEvents.ITEM_BOTTLE_FILL));
+		InspirationsRegistry.addCauldronRecipe(new FillCauldronRecipe(RecipeMatch.of(stew), fluid, 1, new ItemStack(Items.BOWL)));
 	}
 }

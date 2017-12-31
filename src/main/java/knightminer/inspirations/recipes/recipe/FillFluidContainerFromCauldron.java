@@ -39,9 +39,4 @@ public enum FillFluidContainerFromCauldron implements ICauldronRecipe {
 	public SoundEvent getSound(ItemStack stack, boolean boiling, int level, CauldronState state) {
 		return state.getFluid().getEmptySound();
 	}
-
-	@Override
-	public float getVolume() {
-		return 1f;
-	}
 }

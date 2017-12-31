@@ -84,8 +84,8 @@ public interface ICauldronRecipe {
 	 * Volume to use when playing the sound
 	 * @return  Sound volume
 	 */
-	default float getVolume() {
-		return 0.3f;
+	default float getVolume(SoundEvent sound) {
+		return sound == SoundEvents.ENTITY_BOBBER_SPLASH ? 0.3f : 1.0f;
 	}
 
 
