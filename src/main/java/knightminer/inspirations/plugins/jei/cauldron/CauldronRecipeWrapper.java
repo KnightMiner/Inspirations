@@ -112,6 +112,10 @@ public class CauldronRecipeWrapper implements IRecipeWrapper {
 		List<String> tooltip = new ArrayList<>();
 		addStringTooltip(tooltip, inputColor, inputPotion, inputLevel, 47, 25, mouseX, mouseY);
 		addStringTooltip(tooltip, outputColor, outputPotion, outputLevel, 101, 25, mouseX, mouseY);
+		if(boiling && mouseX > 45 && mouseX <= 58 && mouseY > 36 && mouseY <= 48) {
+			tooltip.add(Util.translate("gui.jei.cauldron.boiling"));
+		}
+
 		return tooltip;
 	}
 

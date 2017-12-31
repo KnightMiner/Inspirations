@@ -124,6 +124,7 @@ gui.jei.cauldron.title=Cauldron
 gui.jei.cauldron.level.empty=Empty
 gui.jei.cauldron.level.filled=%s mB
 gui.jei.cauldron.color=%s Dyed Water
+gui.jei.cauldron.boiling=Cauldron must be placed above fire
 
 
 ############
