@@ -25,7 +25,7 @@ public class SmashingRecipeCategory implements IRecipeCategory<SmashingRecipeWra
 	private final IDrawableAnimated arrow;
 
 	public SmashingRecipeCategory(IGuiHelper guiHelper) {
-		background = guiHelper.createDrawable(BACKGROUND_LOC, 0, 0, 160, 60, 0, 0, 0, 0);
+		background = guiHelper.createDrawable(BACKGROUND_LOC, 0, 0, 160, 33, 0, 4, 0, 0);
 
 		IDrawableStatic arrowDrawable = guiHelper.createDrawable(BACKGROUND_LOC, 160, 0, 24, 17);
 		arrow = guiHelper.createAnimatedDrawable(arrowDrawable, 200, IDrawableAnimated.StartDirection.LEFT, false);
@@ -51,17 +51,17 @@ public class SmashingRecipeCategory implements IRecipeCategory<SmashingRecipeWra
 
 	@Override
 	public void drawExtras(@Nonnull Minecraft minecraft) {
-		arrow.draw(minecraft, 67, 28);
+		arrow.draw(minecraft, 67, 16);
 	}
 
 	@Override
 	public void setRecipe(IRecipeLayout recipeLayout, SmashingRecipeWrapper recipeWrapper, IIngredients ingredients) {
 		IGuiItemStackGroup items = recipeLayout.getItemStacks();
 
-		items.init(0, true, 43, 29);
+		items.init(0, true, 43, 15);
 		items.set(ingredients);
 
-		items.init(1, false, 97, 29);
+		items.init(1, false, 97, 15);
 		items.set(ingredients);
 	}
 

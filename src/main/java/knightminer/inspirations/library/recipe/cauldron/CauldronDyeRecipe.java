@@ -48,4 +48,9 @@ public class CauldronDyeRecipe implements ISimpleCauldronRecipe {
 	public Object getInputState() {
 		return color;
 	}
+
+	@Override
+	public int getInputLevel() {
+		return 1;
+	}
 }

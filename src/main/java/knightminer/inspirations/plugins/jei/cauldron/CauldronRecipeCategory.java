@@ -25,7 +25,7 @@ public class CauldronRecipeCategory implements IRecipeCategory<CauldronRecipeWra
 	public final IDrawable[] potion;
 
 	public CauldronRecipeCategory(IGuiHelper guiHelper) {
-		background = guiHelper.createDrawable(BACKGROUND_LOC, 0, 0, 160, 60, 0, 0, 0, 0);
+		background = guiHelper.createDrawable(BACKGROUND_LOC, 0, 0, 160, 50, 0, 0, 0, 0);
 
 		fire = guiHelper.createDrawable(BACKGROUND_LOC, 160, 0, 14, 14);
 		dye = new IDrawable[]{
@@ -62,18 +62,18 @@ public class CauldronRecipeCategory implements IRecipeCategory<CauldronRecipeWra
 	public void setRecipe(IRecipeLayout recipeLayout, CauldronRecipeWrapper recipe, IIngredients ingredients) {
 		IGuiItemStackGroup items = recipeLayout.getItemStacks();
 
-		items.init(0, true, 43, 6);
+		items.init(0, true, 43, 0);
 		items.set(ingredients);
-		items.init(1, false, 97, 6);
+		items.init(1, false, 97, 0);
 		items.set(ingredients);
 
 		IGuiFluidStackGroup fluids = recipeLayout.getFluidStacks();
 		if(recipe.hasInputFluid()) {
-			fluids.init(0, true, 47, 25, 10, 10, 1000, false, null);
+			fluids.init(0, true, 47, 19, 10, 10, 1000, false, null);
 			fluids.set(ingredients);
 		}
 		if(recipe.hasOutputFluid()) {
-			fluids.init(1, false, 101, 25, 10, 10, 1000, false, null);
+			fluids.init(1, false, 101, 19, 10, 10, 1000, false, null);
 			fluids.set(ingredients);
 		}
 	}

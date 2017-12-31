@@ -12,6 +12,7 @@ import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
@@ -26,8 +27,7 @@ import mezz.jei.api.recipe.IRecipeWrapper;
 
 public class CauldronRecipeWrapper implements IRecipeWrapper {
 
-	private static final FluidStack WATER_INPUT = getFluid(FluidRegistry.WATER, 3);
-	private static final FluidStack WATER_OUTPUT = getFluid(FluidRegistry.WATER, 2);
+	private static final FluidStack WATER_INPUT = getFluid(FluidRegistry.WATER, 1);
 
 	protected final List<List<ItemStack>> input;
 	protected final FluidStack inputFluid;
@@ -44,11 +44,11 @@ public class CauldronRecipeWrapper implements IRecipeWrapper {
 
 	public CauldronRecipeWrapper(ISimpleCauldronRecipe recipe) {
 		this.input = ImmutableList.of(recipe.getInput());
-		this.inputLevel = recipe.getInputLevel();
+		this.inputLevel = MathHelper.clamp(recipe.getInputLevel(), 0, 3);
 		this.boiling = recipe.isBoiling();
 
 		this.output = ImmutableList.of(recipe.getResult());
-		this.outputLevel = recipe.getLevel(inputLevel);
+		this.outputLevel = MathHelper.clamp(recipe.getLevel(inputLevel), 0, 3);
 
 		// input state
 		Object inputState = recipe.getInputState();
@@ -71,12 +71,12 @@ public class CauldronRecipeWrapper implements IRecipeWrapper {
 		this.input = ImmutableList.of(input);
 		this.output = ImmutableList.of(output);
 
-		this.inputLevel = 3;
-		this.outputLevel = 2;
+		this.inputLevel = 1;
+		this.outputLevel = 0;
 		this.boiling = false;
 
 		this.inputFluid = WATER_INPUT;
-		this.outputFluid = WATER_OUTPUT;
+		this.outputFluid = null;
 		this.inputColor = this.outputColor = null;
 		this.inputPotion = this.outputPotion = null;
 	}
@@ -101,17 +101,18 @@ public class CauldronRecipeWrapper implements IRecipeWrapper {
 	@Override
 	public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
 		if(boiling) {
-			JEIPlugin.cauldron.fire.draw(minecraft, 45, 42);
+			JEIPlugin.cauldron.fire.draw(minecraft, 45, 36);
 		}
-		drawIngredient(minecraft, inputColor, inputPotion, inputLevel, 47, 25);
-		drawIngredient(minecraft, outputColor, outputPotion, outputLevel, 101, 25);
+		drawIngredient(minecraft, inputColor, inputPotion, inputLevel, 47, 19);
+		drawIngredient(minecraft, outputColor, outputPotion, outputLevel, 101, 19);
 	}
 
 	@Override
 	public List<String> getTooltipStrings(int mouseX, int mouseY) {
 		List<String> tooltip = new ArrayList<>();
-		addStringTooltip(tooltip, inputColor, inputPotion, inputLevel, 47, 25, mouseX, mouseY);
-		addStringTooltip(tooltip, outputColor, outputPotion, outputLevel, 101, 25, mouseX, mouseY);
+		addStringTooltip(tooltip, inputColor, inputPotion, inputLevel, 47, 19, mouseX, mouseY);
+		addStringTooltip(tooltip, outputColor, outputPotion, outputLevel, 101, 1, mouseX, mouseY);
+
 		if(boiling && mouseX > 45 && mouseX <= 58 && mouseY > 36 && mouseY <= 48) {
 			tooltip.add(Util.translate("gui.jei.cauldron.boiling"));
 		}
@@ -135,7 +136,7 @@ public class CauldronRecipeWrapper implements IRecipeWrapper {
 	}
 
 	private static void drawIngredient(Minecraft minecraft, EnumDyeColor color, PotionType potion, int level, int x, int y) {
-		if(color == null && potion == null) {
+		if(color == null && potion == null || level == 0) {
 			return;
 		}
 

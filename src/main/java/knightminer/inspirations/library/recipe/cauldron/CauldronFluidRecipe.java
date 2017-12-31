@@ -65,6 +65,11 @@ public class CauldronFluidRecipe implements ISimpleCauldronRecipe {
 	}
 
 	@Override
+	public int getInputLevel() {
+		return 1;
+	}
+
+	@Override
 	public boolean isBoiling() {
 		return boiling == Boolean.TRUE;
 	}
