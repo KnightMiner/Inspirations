@@ -39,6 +39,7 @@ public class Config {
 	public static boolean enableGlassDoor = true;
 	public static boolean enableMulch = true;
 	public static boolean enablePath = true;
+	public static boolean enableFlowers = true;
 
 	public static boolean enableBookshelf = true;
 	public static boolean enableColoredBooks = true;
@@ -177,6 +178,9 @@ public class Config {
 
 			// path
 			enablePath = configFile.getBoolean("path", "building", enablePath, "Enables stone paths: a carpet like decorative block for making decorative paths");
+
+			// flowers
+			enableFlowers = configFile.getBoolean("flowers", "building", enableFlowers, "Enables additional flower from breaking double flowers with shears.");
 		}
 
 		// utility
@@ -498,6 +502,7 @@ public class Config {
 				// building
 				case "bookshelf": return enableBookshelf;
 				case "colored_books": return enableColoredBooks;
+				case "flowers": return enableFlowers;
 				case "glass_door": return enableGlassDoor;
 				case "mulch": return enableMulch;
 				case "path": return enablePath;

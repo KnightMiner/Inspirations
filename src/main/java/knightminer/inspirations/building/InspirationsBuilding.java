@@ -3,22 +3,27 @@ package knightminer.inspirations.building;
 import com.google.common.eventbus.Subscribe;
 
 import knightminer.inspirations.building.block.BlockBookshelf;
+import knightminer.inspirations.building.block.BlockFlower;
 import knightminer.inspirations.building.block.BlockGlassDoor;
 import knightminer.inspirations.building.block.BlockGlassTrapdoor;
 import knightminer.inspirations.building.block.BlockMulch;
 import knightminer.inspirations.building.block.BlockPath;
 import knightminer.inspirations.building.block.BlockRope;
+import knightminer.inspirations.building.block.BlockFlower.FlowerType;
 import knightminer.inspirations.building.tileentity.TileBookshelf;
 import knightminer.inspirations.common.CommonProxy;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.common.item.ItemBlockTexture;
+import knightminer.inspirations.library.InspirationsRegistry;
+import knightminer.inspirations.library.recipe.cauldron.CauldronDyeRecipe;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemDoor;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -43,6 +48,7 @@ public class InspirationsBuilding extends PulseBase {
 	public static Block glassTrapdoor;
 	public static Block mulch;
 	public static BlockPath path;
+	public static Block flower;
 
 	// items
 	public static Item glassDoorItem;
@@ -81,6 +87,10 @@ public class InspirationsBuilding extends PulseBase {
 		if(Config.enablePath) {
 			path = registerBlock(r, new BlockPath(), "path");
 		}
+
+		if(Config.enableFlowers) {
+			flower = registerBlock(r, new BlockFlower(), "flower");
+		}
 	}
 
 	@SubscribeEvent
@@ -111,6 +121,9 @@ public class InspirationsBuilding extends PulseBase {
 		if(path != null) {
 			registerEnumItemBlock(r, path);
 		}
+		if(flower != null) {
+			registerItemBlock(r, flower, BlockFlower.TYPE);
+		}
 
 		if(Config.enableGlassDoor) {
 			glassDoorItem = registerItem(r, new ItemDoor(glassDoor), "glass_door");
@@ -122,10 +135,19 @@ public class InspirationsBuilding extends PulseBase {
 	@Subscribe
 	public void init(FMLInitializationEvent event) {
 		proxy.init();
+
+		if(Config.enableFlowers && Config.enableCauldronDyeing) {
+			InspirationsRegistry.addCauldronRecipe(new CauldronDyeRecipe(
+					new ItemStack(flower, 1, FlowerType.ROSE.getMeta()),
+					EnumDyeColor.CYAN,
+					new ItemStack(flower, 1, FlowerType.CYAN.getMeta())));
+		}
 	}
 
 	@Subscribe
 	public void postInit(FMLPostInitializationEvent event) {
 		proxy.postInit();
+
+		MinecraftForge.EVENT_BUS.register(BuildingEvents.class);
 	}
 }

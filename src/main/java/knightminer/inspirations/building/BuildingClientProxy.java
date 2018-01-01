@@ -2,12 +2,14 @@ package knightminer.inspirations.building;
 
 import knightminer.inspirations.building.block.BlockBookshelf;
 import knightminer.inspirations.building.block.BlockBookshelf.BookshelfType;
+import knightminer.inspirations.building.block.BlockFlower.FlowerType;
 import knightminer.inspirations.building.block.BlockRope;
 import knightminer.inspirations.building.block.BlockRope.RopeType;
 import knightminer.inspirations.building.client.BookshelfModel;
 import knightminer.inspirations.building.tileentity.TileBookshelf;
 import knightminer.inspirations.common.ClientProxy;
 import knightminer.inspirations.library.Util;
+import knightminer.inspirations.library.client.BlockItemStateMapper;
 import knightminer.inspirations.library.client.ClientUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDoor;
@@ -40,6 +42,7 @@ public class BuildingClientProxy extends ClientProxy {
 	@SubscribeEvent
 	public void registerModels(ModelRegistryEvent event) {
 		setModelStateMapper(InspirationsBuilding.glassDoor, new StateMap.Builder().ignore(BlockDoor.POWERED).build());
+		setModelStateMapper(InspirationsBuilding.flower, new BlockItemStateMapper());
 
 		// items
 		registerItemMetaDynamic(InspirationsBuilding.books);
@@ -51,12 +54,21 @@ public class BuildingClientProxy extends ClientProxy {
 		registerRopeModels(InspirationsBuilding.rope);
 		registerItemBlockMeta(InspirationsBuilding.mulch);
 		registerItemBlockMeta(InspirationsBuilding.path);
+		registerFlowerModels(InspirationsBuilding.flower);
 	}
 
 	private void registerRopeModels(Block rope) {
 		if(rope != null) {
 			for(RopeType type : RopeType.values()) {
 				registerItemModel(rope, type.getMeta(), "bottom=item,type=" + type.getName());
+			}
+		}
+	}
+
+	private void registerFlowerModels(Block flower) {
+		if(flower != null) {
+			for(FlowerType type : FlowerType.values()) {
+				registerItemModel(flower, type.getMeta(), "block=false,type=" + type.getName());
 			}
 		}
 	}
