@@ -12,7 +12,7 @@ public enum FillDyedBottleFromCauldron implements ICauldronRecipe {
 
 	@Override
 	public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		return level != 0 && state.getType() == CauldronContents.DYE && stack.getItem() == Items.GLASS_BOTTLE;
+		return level != 0 && state.getColor() > -1 && stack.getItem() == Items.GLASS_BOTTLE;
 	}
 
 	@Override

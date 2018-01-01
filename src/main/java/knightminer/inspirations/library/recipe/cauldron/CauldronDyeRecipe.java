@@ -24,8 +24,7 @@ public class CauldronDyeRecipe implements ISimpleCauldronRecipe {
 
 	@Override
 	public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		return state.getType() == CauldronContents.DYE
-				&& state.getColor() == color.colorValue
+		return state.getColor() == color.colorValue
 				&& input.matches(Util.createNonNullList(stack)).isPresent();
 	}
 

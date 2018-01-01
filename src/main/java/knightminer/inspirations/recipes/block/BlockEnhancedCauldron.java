@@ -1,19 +1,21 @@
 package knightminer.inspirations.recipes.block;
 
+import java.util.Locale;
+
 import javax.annotation.Nonnull;
 
-import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
-import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe.CauldronContents;
 import knightminer.inspirations.recipes.tileentity.TileCauldron;
 import net.minecraft.block.BlockCauldron;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -28,7 +30,7 @@ public class BlockEnhancedCauldron extends BlockCauldron implements ITileEntityP
 	public static final PropertyString TEXTURE = new PropertyString("texture");
 
 	public BlockEnhancedCauldron() {
-		this.setDefaultState(this.blockState.getBaseState().withProperty(LEVEL, 0).withProperty(CONTENTS, ICauldronRecipe.CauldronContents.WATER));
+		this.setDefaultState(this.blockState.getBaseState().withProperty(LEVEL, 0).withProperty(CONTENTS, CauldronContents.FLUID));
 		this.setHardness(2.0F);
 		this.setUnlocalizedName("cauldron");
 		this.hasTileEntity = true;
@@ -56,7 +58,7 @@ public class BlockEnhancedCauldron extends BlockCauldron implements ITileEntityP
 			return true;
 		}
 
-		if(cauldron.getContentType() == ICauldronRecipe.CauldronContents.WATER) {
+		if(cauldron.isWater()) {
 			return super.onBlockActivated(world, pos, state, player, hand, facing, hitX, hitY, hitZ);
 		}
 		return false;
@@ -66,10 +68,23 @@ public class BlockEnhancedCauldron extends BlockCauldron implements ITileEntityP
 	public void fillWithRain(World world, BlockPos pos) {
 		TileEntity te = world.getTileEntity(pos);
 		// do not fill unless the current contents are water
-		if(te instanceof TileCauldron && ((TileCauldron) te).getContentType() != CauldronContents.WATER) {
+		if(te instanceof TileCauldron && !((TileCauldron) te).isWater()) {
 			return;
 		}
 		super.fillWithRain(world, pos);
+	}
+
+	/**
+	 * Called When an Entity Collided with the Block
+	 */
+	@Override
+	public void onEntityCollidedWithBlock(World world, BlockPos pos, IBlockState state, Entity entity) {
+		TileEntity te = world.getTileEntity(pos);
+		// do not estinguish unless the current contents are water
+		if(te instanceof TileCauldron && !((TileCauldron) te).isWater()) {
+			return;
+		}
+		super.onEntityCollidedWithBlock(world, pos, state, entity);
 	}
 
 	/* Content texture */
@@ -100,5 +115,33 @@ public class BlockEnhancedCauldron extends BlockCauldron implements ITileEntityP
 		}
 
 		return super.getExtendedState(state, world, pos);
+	}
+
+	public static enum CauldronContents implements IStringSerializable {
+		FLUID,
+		DYE,
+		POTION;
+
+		private int meta;
+		CauldronContents() {
+			this.meta = ordinal();
+		}
+
+		@Override
+		public String getName() {
+			return name().toLowerCase(Locale.US);
+		}
+
+		public int getMeta() {
+			return meta;
+		}
+
+		public static CauldronContents fromMeta(int meta) {
+			if(meta > values().length) {
+				meta = 0;
+			}
+
+			return values()[meta];
+		}
 	}
 }

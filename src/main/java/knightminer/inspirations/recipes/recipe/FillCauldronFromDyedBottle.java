@@ -16,8 +16,7 @@ public enum FillCauldronFromDyedBottle implements ICauldronRecipe {
 			return false;
 		}
 
-		CauldronContents type = state.getType();
-		return (type == CauldronContents.WATER || type == CauldronContents.DYE)
+		return (state.isWater() || state.getColor() > -1)
 				&& stack.getItem() == InspirationsRecipes.dyedWaterBottle;
 	}
 

@@ -4,8 +4,6 @@ import knightminer.inspirations.common.ClientProxy;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.client.NameStateMapper;
-import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
-import knightminer.inspirations.recipes.block.BlockEnhancedCauldron;
 import knightminer.inspirations.recipes.client.CauldronModel;
 import knightminer.inspirations.recipes.tileentity.TileCauldron;
 import net.minecraft.client.renderer.block.model.IBakedModel;
@@ -41,7 +39,7 @@ public class RecipesClientProxy extends ClientProxy {
 
 		// coloring of liquid inside, either for potions or dyes
 		registerBlockColors(blockColors, (state, world, pos, tintIndex) -> {
-			if(state.getValue(BlockEnhancedCauldron.CONTENTS) != ICauldronRecipe.CauldronContents.WATER && tintIndex == 1) {
+			if(tintIndex == 1) {
 				TileEntity te = world.getTileEntity(pos);
 				if(te instanceof TileCauldron) {
 					return ((TileCauldron) te).getColor();

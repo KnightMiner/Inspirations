@@ -1,15 +1,13 @@
 package knightminer.inspirations.library.recipe.cauldron;
 
-import java.util.Locale;
-
 import javax.annotation.Nonnull;
 
+import knightminer.inspirations.library.InspirationsRegistry;
 import net.minecraft.init.PotionTypes;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.PotionType;
-import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
@@ -90,53 +88,20 @@ public interface ICauldronRecipe {
 
 
 	/**
-	 * Current contents type for a cauldron state
-	 */
-	public enum CauldronContents implements IStringSerializable {
-		WATER,
-		DYE,
-		POTION,
-		FLUID;
-
-		private int meta;
-		CauldronContents() {
-			this.meta = ordinal();
-		}
-
-		@Override
-		public String getName() {
-			return name().toLowerCase(Locale.US);
-		}
-
-		public int getMeta() {
-			return meta;
-		}
-
-		public static CauldronContents fromMeta(int meta) {
-			if(meta > values().length) {
-				meta = 0;
-			}
-
-			return values()[meta];
-		}
-	}
-
-	/**
 	 * Current cauldron state
 	 */
 	public class CauldronState {
-		private final CauldronContents type;
 		private int color;
 		private PotionType potion;
 		private Fluid fluid;
 
-		public static final CauldronState WATER = new CauldronState(CauldronContents.WATER);
+		/** Special constant for default cauldron state. Use this instead of setting the state to null */
+		public static final CauldronState WATER = new CauldronState();
 
 		/**
 		 * Creates a new water cauldron state
 		 */
-		private CauldronState(CauldronContents type) {
-			this.type = type;
+		private CauldronState() {
 			this.color = -1;
 			this.potion = null;
 			this.fluid = null;
@@ -154,7 +119,7 @@ public interface ICauldronRecipe {
 				return WATER;
 			}
 
-			CauldronState state = new CauldronState(CauldronContents.DYE);
+			CauldronState state = new CauldronState();
 			state.color = color;
 			return state;
 		}
@@ -168,7 +133,7 @@ public interface ICauldronRecipe {
 				return WATER;
 			}
 
-			CauldronState state = new CauldronState(CauldronContents.POTION);
+			CauldronState state = new CauldronState();
 			state.potion = potion;
 			return state;
 		}
@@ -182,38 +147,8 @@ public interface ICauldronRecipe {
 				return WATER;
 			}
 
-			CauldronState state = new CauldronState(CauldronContents.FLUID);
+			CauldronState state = new CauldronState();
 			state.fluid = fluid;
-			return state;
-		}
-
-		/**
-		 * Creates a new cauldron state from NBT
-		 * @param tags  NBT tags
-		 */
-		public static CauldronState fromNBT(NBTTagCompound tags) {
-			CauldronContents type = ICauldronRecipe.CauldronContents.fromMeta(tags.getInteger(TAG_TYPE));
-			if(type == CauldronContents.WATER) {
-				return WATER;
-			}
-
-			CauldronState state = new CauldronState(type);
-			switch(type) {
-				case DYE:
-					state.color = tags.getInteger(TAG_COLOR);
-					break;
-				case POTION:
-					if(tags.hasKey(TAG_POTION)) {
-						state.potion = PotionType.getPotionTypeForName(tags.getString(TAG_POTION));
-					}
-					break;
-				case FLUID:
-					if(tags.hasKey(TAG_FLUID)) {
-						state.fluid = FluidRegistry.getFluid(tags.getString(TAG_FLUID));
-					}
-					break;
-			}
-
 			return state;
 		}
 
@@ -221,11 +156,11 @@ public interface ICauldronRecipe {
 		/* Getters */
 
 		/**
-		 * Getst the type of this state
-		 * @return  contents type
+		 * Check if the state is treated as water. Use if the exact fluid/potion water is not required
+		 * @return true if the state is treated as water
 		 */
-		public CauldronContents getType() {
-			return type;
+		public boolean isWater() {
+			return this == WATER || InspirationsRegistry.isCauldronWater(fluid);
 		}
 
 		/**
@@ -262,17 +197,41 @@ public interface ICauldronRecipe {
 			if(this == state) {
 				return true;
 			}
-			return state.type == this.type
-					&& state.color == this.color
+			return state.color == this.color
 					&& state.potion == this.potion
 					&& state.fluid == this.fluid;
 		}
 
 		/* NBT */
-		public static final String TAG_TYPE = "type";
+		public static final String TAG_WATER = "water";
 		public static final String TAG_COLOR = "color";
 		public static final String TAG_POTION = "potion";
 		public static final String TAG_FLUID = "fluid";
+
+		/**
+		 * Creates a new cauldron state from NBT
+		 * @param tags  NBT tags
+		 */
+		public static CauldronState fromNBT(NBTTagCompound tags) {
+			// quick boolean for water
+			if(tags.getBoolean(TAG_WATER)) {
+				return WATER;
+			}
+
+			// the rest will set properties
+			CauldronState state = new CauldronState();
+			if(tags.hasKey(TAG_COLOR)) {
+				state.color = tags.getInteger(TAG_COLOR);
+			}
+			if(tags.hasKey(TAG_POTION)) {
+				state.potion = PotionType.getPotionTypeForName(tags.getString(TAG_POTION));
+			}
+			if(tags.hasKey(TAG_FLUID)) {
+				state.fluid = FluidRegistry.getFluid(tags.getString(TAG_FLUID));
+			}
+
+			return state;
+		}
 
 		/**
 		 * Writes this state to NBT
@@ -281,21 +240,21 @@ public interface ICauldronRecipe {
 		@Nonnull
 		public NBTTagCompound writeToNBT() {
 			NBTTagCompound tags = new NBTTagCompound();
-			tags.setInteger(TAG_TYPE, type.getMeta());
-			switch(type) {
-				case DYE:
-					tags.setInteger(TAG_COLOR, color);
-					break;
-				case POTION:
-					if(potion != null) {
-						tags.setString(TAG_POTION, potion.getRegistryName().toString());
-					}
-					break;
-				case FLUID:
-					if(fluid != null) {
-						tags.setString(TAG_FLUID, fluid.getName());
-					}
-					break;
+			// if water, just set a boolean so we have something
+			if(this == WATER) {
+				tags.setBoolean(TAG_WATER, true);
+				return tags;
+			}
+
+			// otherwise set each property we have
+			if(color > -1) {
+				tags.setInteger(TAG_COLOR, color);
+			}
+			if(potion != null) {
+				tags.setString(TAG_POTION, potion.getRegistryName().toString());
+			}
+			if(fluid != null) {
+				tags.setString(TAG_FLUID, fluid.getName());
 			}
 
 			return tags;

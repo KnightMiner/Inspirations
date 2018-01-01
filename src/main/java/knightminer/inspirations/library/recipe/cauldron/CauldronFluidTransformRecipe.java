@@ -20,7 +20,7 @@ public class CauldronFluidTransformRecipe extends CauldronFluidRecipe {
 
 	@Override
 	public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		return level <= maxLevel && super.matches(stack, boiling, level, state);
+		return level > 0 && level <= maxLevel && super.matches(stack, boiling, level, state);
 	}
 
 	@Override

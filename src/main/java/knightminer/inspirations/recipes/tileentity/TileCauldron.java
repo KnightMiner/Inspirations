@@ -2,12 +2,11 @@ package knightminer.inspirations.recipes.tileentity;
 
 import javax.annotation.Nonnull;
 
-import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
-import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe.CauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe.CauldronState;
 import knightminer.inspirations.recipes.block.BlockEnhancedCauldron;
+import knightminer.inspirations.recipes.block.BlockEnhancedCauldron.CauldronContents;
 import net.minecraft.block.BlockCauldron;
 import net.minecraft.block.BlockFire;
 import net.minecraft.block.state.IBlockState;
@@ -27,6 +26,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.property.IExtendedBlockState;
+import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 public class TileCauldron extends TileEntity {
@@ -43,17 +43,34 @@ public class TileCauldron extends TileEntity {
 
 	@Nonnull
 	public CauldronContents getContentType() {
-		return state.getType();
+		if(state.getFluid() != null) {
+			return CauldronContents.FLUID;
+		}
+		if(state.getColor() > -1) {
+			return CauldronContents.DYE;
+		}
+		if(state.getPotion() != null) {
+			return CauldronContents.POTION;
+		}
+
+		return CauldronContents.FLUID;
+	}
+
+	public boolean isWater() {
+		return state.isWater();
 	}
 
 	public int getColor() {
-		switch(state.getType()) {
+		switch(getContentType()) {
 			case DYE:
 				return state.getColor();
 			case POTION:
 				return PotionUtils.getPotionColor(state.getPotion());
-			case FLUID:
-				return state.getFluid().getColor(world, pos);
+		}
+
+		Fluid fluid = state.getFluid();
+		if(fluid != null) {
+			return state.getFluid().getColor();
 		}
 
 		return -1;
@@ -79,10 +96,6 @@ public class TileCauldron extends TileEntity {
 
 				// state
 				CauldronState newState = recipe.getState(stack, boiling, level, state);
-				if(!isValid(newState)) {
-					return false;
-				}
-
 				if(!state.matches(newState)) {
 					this.state = newState;
 					world.notifyBlockUpdate(pos, blockState, blockState, 2);
@@ -106,16 +119,6 @@ public class TileCauldron extends TileEntity {
 		return false;
 	}
 
-	private boolean isValid(CauldronState state) {
-		switch(state.getType()) {
-			case POTION:
-				return Config.enableCauldronBrewing;
-			case DYE:
-				return Config.enableCauldronDyeing;
-		}
-		return true;
-	}
-
 	private void setLevel(IBlockState state, int level) {
 		level = MathHelper.clamp(level, 0, 3);
 		if(state.getValue(BlockCauldron.LEVEL) == level) {
@@ -130,8 +133,11 @@ public class TileCauldron extends TileEntity {
 
 	public IBlockState writeExtendedBlockState(IExtendedBlockState state) {
 		// just pull the texture right from the fluid
-		if(getContentType() == CauldronContents.FLUID) {
-			state = state.withProperty(BlockEnhancedCauldron.TEXTURE, this.state.getFluid().getStill().toString());
+		if(this.state != CauldronState.WATER && getContentType() == CauldronContents.FLUID) {
+			Fluid fluid = this.state.getFluid();
+			if(fluid != null) {
+				state = state.withProperty(BlockEnhancedCauldron.TEXTURE, fluid.getStill().toString());
+			}
 		}
 
 		return state;

@@ -22,9 +22,7 @@ public class FillPotionFromCauldron implements ICauldronRecipe {
 		if(level == 0) {
 			return false;
 		}
-		CauldronContents type = state.getType();
-		return (type == CauldronContents.WATER || type == CauldronContents.POTION)
-				&& OreDictionary.itemMatches(stack, bottle, true);
+		return state.getPotion() != null && OreDictionary.itemMatches(stack, bottle, true);
 	}
 
 	@Override

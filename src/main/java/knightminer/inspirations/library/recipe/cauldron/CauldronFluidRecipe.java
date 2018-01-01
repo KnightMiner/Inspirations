@@ -30,17 +30,21 @@ public class CauldronFluidRecipe implements ISimpleCauldronRecipe {
 	}
 
 	public CauldronFluidRecipe(RecipeMatch input, ItemStack result, Boolean boiling) {
-		this(input, FluidRegistry.WATER, result, boiling);
+		this(input, null, result, boiling);
 	}
 
 	@Override
 	public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {
 		// if boiling is required, ensure it is set
-		if(level == 0 || state.getFluid() != fluid || (this.boiling != null && boiling != this.boiling.booleanValue())) {
+		if(level == 0 || !stateMatches(state) || (this.boiling != null && boiling != this.boiling.booleanValue())) {
 			return false;
 		}
 
 		return this.input.matches(Util.createNonNullList(stack)).isPresent();
+	}
+
+	private boolean stateMatches(CauldronState state) {
+		return fluid == null ? state.isWater() : fluid == state.getFluid();
 	}
 
 	@Override
@@ -76,7 +80,7 @@ public class CauldronFluidRecipe implements ISimpleCauldronRecipe {
 
 	@Override
 	public Object getInputState() {
-		return fluid;
+		return fluid == null ? FluidRegistry.WATER : fluid;
 	}
 
 	/**

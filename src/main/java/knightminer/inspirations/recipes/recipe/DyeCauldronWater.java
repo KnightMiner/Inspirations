@@ -26,14 +26,13 @@ public class DyeCauldronWater implements ISimpleCauldronRecipe {
 	@Override
 	public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {
 		// special case water bottles
-		if(stack.getItem() == InspirationsRecipes.dyedWaterBottle) {
+		if(level == 0 || stack.getItem() == InspirationsRecipes.dyedWaterBottle) {
 			return false;
 		}
 
 		// type must be water or dye
 		// input must not be the same color as the original dye
-		CauldronContents type = state.getType();
-		return (type == CauldronContents.WATER || type == CauldronContents.DYE)
+		return (state.isWater() || state.getColor() > -1)
 				&& dye.apply(stack) && color.colorValue != state.getColor();
 	}
 

@@ -18,6 +18,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.Fluid;
 import slimeknights.mantle.util.RecipeMatch;
 
 public class InspirationsRegistry {
@@ -204,6 +205,7 @@ public class InspirationsRegistry {
 	 * Cauldron recipes
 	 */
 	private static List<ICauldronRecipe> cauldronRecipes = new ArrayList<>();
+	private static Set<Fluid> cauldronWater = new HashSet<>();
 
 	/**
 	 * Gets the result of a cauldron recipe
@@ -264,5 +266,23 @@ public class InspirationsRegistry {
 	 */
 	public static List<ICauldronRecipe> getAllCauldronRecipes() {
 		return ImmutableList.copyOf(cauldronRecipes);
+	}
+
+	/**
+	 * Adds the given fluid as cauldron water. Used for rain and fire checks among a few other things
+	 * @param fluid  Fluid to add
+	 */
+	public static void addCauldronWater(Fluid fluid) {
+		cauldronWater.add(fluid);
+	}
+
+	/**
+	 * Checks if this fluid is considered water in the cauldron.
+	 * Used for rain checks along with some recipe transformations
+	 * @param fluid  Fluid to check
+	 * @return  True if the fluid is considered water
+	 */
+	public static boolean isCauldronWater(Fluid fluid) {
+		return fluid != null && cauldronWater.contains(fluid);
 	}
 }

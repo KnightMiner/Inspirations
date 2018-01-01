@@ -9,10 +9,9 @@
       "3": { "model": "inspirations:cauldron/level_3" }
     },
     "contents": {
-      "water": {},
+      "fluid": {},
       "dye": { "textures": { "water": "inspirations:blocks/fluid_colorless" }},
-      "potion": { "textures": { "water": "inspirations:blocks/fluid_potion" }},
-      "fluid": {}
+      "potion": { "textures": { "water": "inspirations:blocks/fluid_potion" }}
     },
     "inventory": [{}]
   }

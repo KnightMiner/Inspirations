@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.google.common.collect.ImmutableList;
 
+import net.minecraft.init.PotionTypes;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
@@ -39,12 +40,14 @@ public class CauldronBrewingRecipe implements ISimpleCauldronRecipe {
 
 	@Override
 	public Object getInputState() {
-		return input.getType() == CauldronContents.WATER ? FluidRegistry.WATER : input.getPotion();
+		PotionType potion = input.getPotion();
+		return potion == PotionTypes.WATER ? FluidRegistry.WATER : potion;
 	}
 
 	@Override
 	public Object getState() {
-		return output.getPotion();
+		PotionType potion = output.getPotion();
+		return potion == PotionTypes.WATER ? FluidRegistry.WATER : potion;
 	}
 
 	@Override

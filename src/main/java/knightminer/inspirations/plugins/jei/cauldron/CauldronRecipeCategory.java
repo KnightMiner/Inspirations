@@ -2,9 +2,9 @@ package knightminer.inspirations.plugins.jei.cauldron;
 
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.Util;
-import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe.CauldronContents;
 import knightminer.inspirations.plugins.jei.cauldron.ingredient.DyeIngredientRenderer;
 import knightminer.inspirations.plugins.jei.cauldron.ingredient.PotionIngredientRenderer;
+import knightminer.inspirations.recipes.block.BlockEnhancedCauldron.CauldronContents;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.potion.PotionType;
 import net.minecraft.util.ResourceLocation;

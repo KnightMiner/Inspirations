@@ -4,8 +4,8 @@ import com.google.common.collect.ImmutableList;
 
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.recipe.cauldron.ISimpleCauldronRecipe;
-import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe.CauldronContents;
 import knightminer.inspirations.plugins.jei.JEIPlugin;
+import knightminer.inspirations.recipes.block.BlockEnhancedCauldron.CauldronContents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemStack;
@@ -107,23 +107,6 @@ public class CauldronRecipeWrapper implements IRecipeWrapper {
 		return outputLevel;
 	}
 
-	private static CauldronContents getType(int level, FluidStack fluid, EnumDyeColor color, PotionType potion) {
-		if(level == 0) {
-			return null;
-		}
-		if(fluid != null) {
-			return CauldronContents.FLUID;
-		}
-		if(color != null) {
-			return CauldronContents.DYE;
-		}
-		if(potion != null) {
-			return CauldronContents.POTION;
-		}
-
-		return null;
-	}
-
 
 	/* JEI methods */
 
@@ -162,6 +145,26 @@ public class CauldronRecipeWrapper implements IRecipeWrapper {
 
 
 	/* Helpers */
+
+	/**
+	 * Quickly gets the type based on the given properties
+	 */
+	private static CauldronContents getType(int level, FluidStack fluid, EnumDyeColor color, PotionType potion) {
+		if(level == 0) {
+			return null;
+		}
+		if(fluid != null) {
+			return CauldronContents.FLUID;
+		}
+		if(color != null) {
+			return CauldronContents.DYE;
+		}
+		if(potion != null) {
+			return CauldronContents.POTION;
+		}
+
+		return null;
+	}
 
 	/**
 	 * Adds the empty string for the input or output if relevant

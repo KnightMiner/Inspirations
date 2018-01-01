@@ -10,7 +10,7 @@ public enum TippedArrowCauldronRecipe implements ICauldronRecipe {
 
 	@Override
 	public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		return state.getType() == CauldronContents.POTION && stack.getItem() == Items.ARROW;
+		return state.getPotion() != null && stack.getItem() == Items.ARROW;
 	}
 
 	@Override
