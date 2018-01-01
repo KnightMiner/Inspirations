@@ -7,3 +7,10 @@ Inspirations is a mod for Minecraft adding various smaller features to the game.
 * Tweaks
 
 For more information, see the wiki tab.
+
+
+
+### Credits
+
+- [/u/nox-cgt](https://www.reddit.com/user/nox-cgt): heartbeet idea and texture
+- [/u/TheTrone](https://www.reddit.com/user/TheTrone): syringa texture
