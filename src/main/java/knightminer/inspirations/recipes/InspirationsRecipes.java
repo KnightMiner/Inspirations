@@ -164,6 +164,7 @@ public class InspirationsRecipes extends PulseBase {
 			for(PotionHelper.MixPredicate<PotionType> recipe : PotionHelper.POTION_TYPE_CONVERSIONS) {
 				InspirationsRegistry.addCauldronRecipe(new CauldronBrewingRecipe(recipe.input, recipe.reagent, recipe.output));
 			}
+			findRecipesFromBrewingRegistry();
 		}
 	}
 
@@ -183,5 +184,22 @@ public class InspirationsRecipes extends PulseBase {
 		// filling and emptying bowls
 		InspirationsRegistry.addCauldronRecipe(new CauldronFluidRecipe(RecipeMatch.of(Items.BOWL), fluid, stew, null, SoundEvents.ITEM_BOTTLE_FILL));
 		InspirationsRegistry.addCauldronRecipe(new FillCauldronRecipe(RecipeMatch.of(stew), fluid, 1, new ItemStack(Items.BOWL)));
+	}
+
+	private void findRecipesFromBrewingRegistry() {
+		for(IBrewingRecipe irecipe : BrewingRecipeRegistry.getRecipes()) {
+			if(irecipe instanceof BrewingRecipe) {
+				BrewingRecipe recipe = (BrewingRecipe) irecipe;
+				ItemStack inputStack = recipe.getInput();
+				ItemStack outputStack = recipe.getOutput();
+				if(inputStack.getItem() == Items.POTIONITEM && outputStack.getItem() == Items.POTIONITEM) {
+					PotionType input = PotionUtils.getPotionFromItem(inputStack);
+					PotionType output = PotionUtils.getPotionFromItem(outputStack);
+					if(input != PotionTypes.EMPTY && output != PotionTypes.EMPTY) {
+						InspirationsRegistry.addCauldronRecipe(new CauldronBrewingRecipe(input, Ingredient.fromStacks(recipe.getIngredient()), output));
+					}
+				}
+			}
+		}
 	}
 }
