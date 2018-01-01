@@ -23,7 +23,7 @@ public enum FillCauldronFromFluidContainer implements ICauldronRecipe {
 		}
 
 		FluidStack fluidStack = fluidHandler.drain(1000, false);
-		return fluidStack != null && fluidStack.amount == 1000 && (level == 0 || fluidStack.getFluid() == state.getFluid());
+		return fluidStack != null && fluidStack.amount == 1000 && (level == 0 || fluidStack.getFluid() == state.getFluid()) && fluidStack.tag == null;
 	}
 
 	@Override
