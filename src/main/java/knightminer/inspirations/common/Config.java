@@ -64,6 +64,7 @@ public class Config {
 	// utility
 	public static boolean enableLock = true;
 	public static boolean enableTorchLever = true;
+	public static boolean enableRedstoneTorchLever = true;
 	public static boolean enableRedstoneBook = true;
 	public static boolean enableRedstoneCharge = true;
 	public static boolean enableBricksButton = true;
@@ -204,6 +205,9 @@ public class Config {
 
 			// redstone barrel
 			enableRedstoneBarrel = configFile.getBoolean("redstoneBarrel", "utility", enableRedstoneBarrel, "Enables the redstone barrel: a block wth gives a configurable comparator output and can be pushed by pistons");
+
+			// redstone torch lever
+			enableRedstoneTorchLever = configFile.getBoolean("redstoneTorchLever", "utility", enableRedstoneTorchLever, "Enables the redstone torch lever: a lever that toggles its state when the block it's on gets powered");
 		}
 
 		// recipes
@@ -523,6 +527,7 @@ public class Config {
 				case "redstone_barrel": return enableRedstoneBarrel;
 				case "redstone_book": return enableRedstoneBook;
 				case "redstone_charge": return enableRedstoneCharge;
+				case "redstone_torch_lever": return enableRedstoneTorchLever;
 				case "torch_lever": return enableTorchLever;
 
 				// recipes

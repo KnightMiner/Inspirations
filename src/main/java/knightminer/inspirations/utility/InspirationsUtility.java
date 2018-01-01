@@ -8,6 +8,7 @@ import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.utility.block.BlockBricksButton;
 import knightminer.inspirations.utility.block.BlockRedstoneBarrel;
 import knightminer.inspirations.utility.block.BlockRedstoneCharge;
+import knightminer.inspirations.utility.block.BlockRedstoneTorchLever;
 import knightminer.inspirations.utility.block.BlockTorchLever;
 import knightminer.inspirations.utility.item.ItemRedstoneCharger;
 import net.minecraft.block.Block;
@@ -41,6 +42,8 @@ public class InspirationsUtility extends PulseBase {
 	public static Block torchLever;
 	public static Block redstoneBarrel;
 	public static BlockBricksButton bricksButton;
+	public static Block redstoneTorchLever;
+	public static Block redstoneTorchLeverPowered;
 
 	// items
 	public static Item redstoneCharger;
@@ -67,6 +70,10 @@ public class InspirationsUtility extends PulseBase {
 		if(Config.enableRedstoneBarrel) {
 			redstoneBarrel = registerBlock(r, new BlockRedstoneBarrel(), "redstone_barrel");
 		}
+		if(Config.enableRedstoneTorchLever) {
+			redstoneTorchLever = registerBlock(r, new BlockRedstoneTorchLever(false), "redstone_torch_lever");
+			redstoneTorchLeverPowered = registerBlock(r, new BlockRedstoneTorchLever(true), "redstone_torch_lever_powered");
+		}
 	}
 
 	@SubscribeEvent
@@ -86,6 +93,9 @@ public class InspirationsUtility extends PulseBase {
 		}
 		if(redstoneBarrel != null) {
 			registerItemBlock(r, redstoneBarrel);
+		}
+		if(redstoneTorchLever != null) {
+			registerItemBlock(r, redstoneTorchLever);
 		}
 	}
 

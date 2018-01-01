@@ -13,6 +13,7 @@ import knightminer.inspirations.utility.block.BlockBricksButton;
 import knightminer.inspirations.utility.block.BlockRedstoneBarrel;
 import knightminer.inspirations.utility.block.BlockRedstoneCharge;
 import knightminer.inspirations.utility.block.BlockTorchLever;
+import net.minecraft.block.BlockLever;
 import net.minecraft.block.BlockRedstoneWire;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
@@ -31,6 +32,8 @@ public class UtilityClientProxy extends ClientProxy {
 	@SubscribeEvent
 	public void registerModels(ModelRegistryEvent event) {
 		setModelStateMapper(InspirationsUtility.torchLever, new TorchLeverStateMapper());
+		setModelStateMapper(InspirationsUtility.redstoneTorchLever, new RedstoneTorchLeverStateMapper(false));
+		setModelStateMapper(InspirationsUtility.redstoneTorchLeverPowered, new RedstoneTorchLeverStateMapper(true));
 		setModelStateMapper(InspirationsUtility.redstoneCharge, new StateMap.Builder().ignore(BlockRedstoneCharge.FACING, BlockRedstoneCharge.QUICK).build());
 		setModelStateMapper(InspirationsUtility.bricksButton, new PropertyStateMapper(BlockBricksButton.TYPE));
 
@@ -39,6 +42,7 @@ public class UtilityClientProxy extends ClientProxy {
 
 		// blocks
 		registerItemModel(InspirationsUtility.torchLever);
+		registerItemModel(InspirationsUtility.redstoneTorchLever);
 		registerItemModel(InspirationsUtility.redstoneBarrel);
 
 		// uses a property state mapper, so just redirect to the sub files for inventory
@@ -83,6 +87,26 @@ public class UtilityClientProxy extends ClientProxy {
 			}
 			ResourceLocation res = new ResourceLocation(base.getResourceDomain(), base.getResourcePath() + suffix);
 			return new ModelResourceLocation(res, this.getPropertyString(map));
+		}
+	}
+
+	/**
+	 * Mapper for redstone torch levers, to combine the two blocks as if its all one block
+	 */
+	private static class RedstoneTorchLeverStateMapper extends StateMapperBase {
+		private boolean powered;
+		public RedstoneTorchLeverStateMapper(boolean powered) {
+			this.powered = powered;
+		}
+
+		@Nonnull
+		@Override
+		protected ModelResourceLocation getModelResourceLocation(@Nonnull IBlockState state) {
+			ResourceLocation res = InspirationsUtility.redstoneTorchLever.getRegistryName();
+			LinkedHashMap<IProperty<?>, Comparable<?>> map = Maps.newLinkedHashMap(state.getProperties());
+			map.remove(BlockLever.POWERED);
+
+			return new ModelResourceLocation(res, this.getPropertyString(map) + String.format(",powered=%s", powered));
 		}
 	}
 }
