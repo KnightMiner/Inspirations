@@ -2,7 +2,6 @@ package knightminer.inspirations.plugins.jei.smashing;
 
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.Util;
-import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
@@ -20,12 +19,9 @@ public class SmashingRecipeCategory implements IRecipeCategory<SmashingRecipeWra
 	public static final ResourceLocation BACKGROUND_LOC = Util.getResource("textures/gui/jei/anvil_smashing.png");
 
 	private final IDrawable background;
-	private final IDrawable arrow;
 
 	public SmashingRecipeCategory(IGuiHelper guiHelper) {
 		background = guiHelper.createDrawable(BACKGROUND_LOC, 0, 0, 160, 33, 0, 4, 0, 0);
-
-		arrow = guiHelper.createDrawable(BACKGROUND_LOC, 160, 0, 24, 17);
 	}
 
 	@Nonnull
@@ -44,11 +40,6 @@ public class SmashingRecipeCategory implements IRecipeCategory<SmashingRecipeWra
 	@Override
 	public IDrawable getBackground() {
 		return background;
-	}
-
-	@Override
-	public void drawExtras(@Nonnull Minecraft minecraft) {
-		arrow.draw(minecraft, 67, 16);
 	}
 
 	@Override
