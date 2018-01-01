@@ -10,12 +10,15 @@ import java.util.Set;
 import com.google.common.collect.ImmutableList;
 
 import knightminer.inspirations.library.recipe.cauldron.CauldronFluidRecipe;
+import knightminer.inspirations.library.recipe.cauldron.CauldronFluidTransformRecipe;
+import knightminer.inspirations.library.recipe.cauldron.FillCauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe.CauldronState;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
@@ -248,6 +251,31 @@ public class InspirationsRegistry {
 	 */
 	public static void addCauldronRecipe(String input, ItemStack output, boolean boiling) {
 		addCauldronRecipe(new CauldronFluidRecipe(RecipeMatch.of(input), output, boiling));
+	}
+
+	/**
+	 * Adds a fluid transform cauldron recipe with a variant for one layer and for 3
+	 * @param stack      Input stack. Stack size will be checked, and doubled for a cauldron with more than one bottle
+	 * @param input      Input fluid
+	 * @param output     Output fluid
+	 * @param boiling  Whether the cauldron must be boiling or not. If null, the cauldron being boiling is ignored
+	 */
+	public static void addCauldronScaledTransformRecipe(ItemStack stack, Fluid input, Fluid output, Boolean boiling) {
+		addCauldronRecipe(new CauldronFluidTransformRecipe(RecipeMatch.of(stack, stack.getCount(), 1), input, output, boiling, 1));
+		stack = stack.copy();
+		stack.setCount(stack.getCount() * 2);
+		addCauldronRecipe(new CauldronFluidTransformRecipe(RecipeMatch.of(stack, stack.getCount(), 1), input, output, boiling, 3));
+	}
+
+	/**
+	 * Adds a item to empty into and fill from the cauldron
+	 * @param filled     Filled version of container
+	 * @param container  Empty version of container
+	 * @param fluid      Fluid contained
+	 */
+	public static void addCauldronFluidItem(ItemStack filled, ItemStack container, Fluid fluid) {
+		addCauldronRecipe(new FillCauldronRecipe(RecipeMatch.of(filled), fluid, 1, container.copy()));
+		addCauldronRecipe(new CauldronFluidRecipe(RecipeMatch.of(container), fluid, filled.copy(), null, SoundEvents.ITEM_BOTTLE_FILL));
 	}
 
 	/**

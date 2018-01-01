@@ -138,3 +138,23 @@ gui.jei.cauldron.boiling=Cauldron must be placed above fire
 ############
 
 item.inspirations.edibles.heartbeet.name=Heartbeet
+
+
+#############
+# TANPlugin #
+#############
+
+fluid.inspirations.dirty_water=Dirty Water
+fluid.inspirations.filtered_water=Filtered Water
+fluid.inspirations.sweetened_water=Sweetened Water
+
+fluid.inspirations.apple_juice=Apple Juice
+fluid.inspirations.beetroot_juice=Beetroot Juice
+fluid.inspirations.cactus_juice=Cactus Juice
+fluid.inspirations.carrot_juice=Carrot Juice
+fluid.inspirations.chorus_fruit_juice=Chorus Fruit Juice
+fluid.inspirations.glistering_melon_juice=Glistering Melon Juice
+fluid.inspirations.golden_apple_juice=Golden Apple Juice
+fluid.inspirations.golden_carrot_juice=Golden Carrot Juice
+fluid.inspirations.melon_juice=Melon Juice
+fluid.inspirations.pumpkin_juice=Pumpkin Juice

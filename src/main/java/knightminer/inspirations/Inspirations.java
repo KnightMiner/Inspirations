@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.network.InspirationsNetwork;
+import knightminer.inspirations.plugins.tan.ToughAsNailsPlugin;
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.shared.InspirationsOredict;
 import knightminer.inspirations.shared.InspirationsShared;
@@ -45,6 +46,7 @@ public class Inspirations {
 		pulseManager.registerPulse(new InspirationsRecipes());
 		pulseManager.registerPulse(new InspirationsTweaks());
 		pulseManager.registerPulse(new InspirationsOredict());
+		pulseManager.registerPulse(new ToughAsNailsPlugin());
 	}
 
 	@Mod.EventHandler

@@ -12,11 +12,17 @@ public class FillCauldronRecipe extends CauldronFluidRecipe {
 	private RecipeMatch input;
 	private CauldronState fluid;
 	private int amount;
-	public FillCauldronRecipe(RecipeMatch input, Fluid fluid, int amount, ItemStack container) {
+	private SoundEvent sound;
+	public FillCauldronRecipe(RecipeMatch input, Fluid fluid, int amount, ItemStack container, SoundEvent sound) {
 		super(input, fluid, container, null);
 		this.input = input;
 		this.fluid = CauldronState.fluid(fluid);
 		this.amount = amount;
+		this.sound = sound;
+	}
+
+	public FillCauldronRecipe(RecipeMatch input, Fluid fluid, int amount, ItemStack container) {
+		this(input, fluid, amount, container, SoundEvents.ITEM_BOTTLE_EMPTY);
 	}
 
 	public FillCauldronRecipe(RecipeMatch input, Fluid fluid, int amount) {
@@ -49,6 +55,6 @@ public class FillCauldronRecipe extends CauldronFluidRecipe {
 
 	@Override
 	public SoundEvent getSound(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		return SoundEvents.ITEM_BOTTLE_EMPTY;
+		return sound;
 	}
 }

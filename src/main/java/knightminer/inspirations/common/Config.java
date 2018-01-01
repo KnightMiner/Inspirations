@@ -146,6 +146,9 @@ public class Config {
 			"minecraft:sponge:0->minecraft:sponge:1"
 	};
 
+	// compatibility
+	public static boolean tanJuiceInCauldron = true;
+
 
 	/**
 	 * Loads the configuration file from the event
@@ -242,6 +245,12 @@ public class Config {
 
 			// better cauldron item
 			betterCauldronItem = configFile.getBoolean("betterCauldronItemModel", "tweaks", betterCauldronItem, "Replaces the flat cauldron sprite with the 3D cauldron block model");
+		}
+
+		// compatibility
+		{
+			// TAN Plugin: make juice in cauldron
+			tanJuiceInCauldron = configFile.getBoolean("tanJuiceInCauldron", "compatibility", tanJuiceInCauldron, "Enables making Tough as Nails juices in the cauldron. Requires enhanced cauldron") && enableCauldronFluids;
 		}
 
 		// saving
