@@ -2,11 +2,11 @@ package knightminer.inspirations.plugins.jei.cauldron;
 
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.Util;
+import knightminer.inspirations.plugins.jei.cauldron.ingredient.DyeIngredient;
 import knightminer.inspirations.plugins.jei.cauldron.ingredient.DyeIngredientRenderer;
+import knightminer.inspirations.plugins.jei.cauldron.ingredient.PotionIngredient;
 import knightminer.inspirations.plugins.jei.cauldron.ingredient.PotionIngredientRenderer;
 import knightminer.inspirations.recipes.block.BlockEnhancedCauldron.CauldronContents;
-import net.minecraft.item.EnumDyeColor;
-import net.minecraft.potion.PotionType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.FluidStack;
@@ -67,8 +67,8 @@ public class CauldronRecipeCategory implements IRecipeCategory<CauldronRecipeWra
 
 		IGuiFluidStackGroup fluids = recipeLayout.getFluidStacks();
 		fluids.addTooltipCallback(CauldronRecipeCategory::onFluidTooltip);
-		IGuiIngredientGroup<EnumDyeColor> dyes = recipeLayout.getIngredientsGroup(EnumDyeColor.class);
-		IGuiIngredientGroup<PotionType> potions = recipeLayout.getIngredientsGroup(PotionType.class);
+		IGuiIngredientGroup<DyeIngredient> dyes = recipeLayout.getIngredientsGroup(DyeIngredient.class);
+		IGuiIngredientGroup<PotionIngredient> potions = recipeLayout.getIngredientsGroup(PotionIngredient.class);
 
 		init(fluids, dyes, potions, ingredients, true, 47, 19, recipe.getInputType(), recipe.getInputLevel());
 		init(fluids, dyes, potions, ingredients, false, 101, 19, recipe.getOutputType(), recipe.getOutputLevel());
@@ -77,7 +77,7 @@ public class CauldronRecipeCategory implements IRecipeCategory<CauldronRecipeWra
 	/**
 	 * Helper method to call init on the relevant GUI group
 	 */
-	private static void init(IGuiFluidStackGroup fluids, IGuiIngredientGroup<EnumDyeColor> dyes, IGuiIngredientGroup<PotionType> potions,
+	private static void init(IGuiFluidStackGroup fluids, IGuiIngredientGroup<DyeIngredient> dyes, IGuiIngredientGroup<PotionIngredient> potions,
 			IIngredients ingredients, boolean input, int x, int y, CauldronContents type, int level) {
 		if(type == null) {
 			return;

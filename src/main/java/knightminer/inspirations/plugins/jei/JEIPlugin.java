@@ -20,8 +20,10 @@ import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.library.recipe.TextureRecipe;
 import knightminer.inspirations.plugins.jei.cauldron.CauldronRecipeCategory;
 import knightminer.inspirations.plugins.jei.cauldron.CauldronRecipeChecker;
+import knightminer.inspirations.plugins.jei.cauldron.ingredient.DyeIngredient;
 import knightminer.inspirations.plugins.jei.cauldron.ingredient.DyeIngredientHelper;
 import knightminer.inspirations.plugins.jei.cauldron.ingredient.DyeIngredientRenderer;
+import knightminer.inspirations.plugins.jei.cauldron.ingredient.PotionIngredient;
 import knightminer.inspirations.plugins.jei.cauldron.ingredient.PotionIngredientHelper;
 import knightminer.inspirations.plugins.jei.cauldron.ingredient.PotionIngredientRenderer;
 import knightminer.inspirations.plugins.jei.smashing.SmashingRecipeCategory;
@@ -104,11 +106,11 @@ public class JEIPlugin implements IModPlugin {
 	public void registerIngredients(IModIngredientRegistration registry) {
 		if(PulseBase.isRecipesLoaded()) {
 			if(Config.enableCauldronDyeing) {
-				registry.register(EnumDyeColor.class, Arrays.asList(EnumDyeColor.values()), DyeIngredientHelper.INSTANCE, DyeIngredientRenderer.INVENTORY);
+				registry.register(DyeIngredient.class, Arrays.stream(EnumDyeColor.values()).map(DyeIngredient::new).collect(Collectors.toList()), DyeIngredientHelper.INSTANCE, DyeIngredientRenderer.INVENTORY);
 			}
 			if(Config.enableCauldronBrewing) {
-				registry.register(PotionType.class, StreamSupport.stream(PotionType.REGISTRY.spliterator(), false)
-						.filter(type->type != PotionTypes.EMPTY && type != PotionTypes.WATER)
+				registry.register(PotionIngredient.class, StreamSupport.stream(PotionType.REGISTRY.spliterator(), false)
+						.filter(type->type != PotionTypes.EMPTY && type != PotionTypes.WATER).map(PotionIngredient::new)
 						.collect(Collectors.toList()), PotionIngredientHelper.INSTANCE, PotionIngredientRenderer.INVENTORY);
 			}
 		}

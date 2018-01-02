@@ -16,7 +16,7 @@ import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.ResourceLocation;
 
-public enum PotionIngredientRenderer implements IIngredientRenderer<PotionType> {
+public enum PotionIngredientRenderer implements IIngredientRenderer<PotionIngredient> {
 	INVENTORY,
 	LEVEL_1,
 	LEVEL_2,
@@ -39,13 +39,13 @@ public enum PotionIngredientRenderer implements IIngredientRenderer<PotionType> 
 	public static final ResourceLocation POTION_TEXTURE = Util.getResource("blocks/fluid_potion");
 
 	@Override
-	public void render(Minecraft minecraft, int x, int y, PotionType potion) {
+	public void render(Minecraft minecraft, int x, int y, PotionIngredient potion) {
 		if(potion == null || level == 4) {
 			return;
 		}
 		GlStateManager.enableBlend();
 		minecraft.renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-		float[] color = Util.getColorComponents(PotionUtils.getPotionColor(potion));
+		float[] color = Util.getColorComponents(PotionUtils.getPotionColor(potion.getPotion()));
 		GlStateManager.color(color[0], color[1], color[2]);
 		// 0 means JEI ingredient list
 		TextureAtlasSprite sprite = ClientUtil.getSprite(POTION_TEXTURE);
@@ -60,8 +60,9 @@ public enum PotionIngredientRenderer implements IIngredientRenderer<PotionType> 
 	}
 
 	@Override
-	public List<String> getTooltip(Minecraft minecraft, PotionType potion, ITooltipFlag tooltipFlag) {
+	public List<String> getTooltip(Minecraft minecraft, PotionIngredient ingredient, ITooltipFlag tooltipFlag) {
 		List<String> tooltip = new ArrayList<>();
+		PotionType potion = ingredient.getPotion();
 		tooltip.add(Util.translate(potion.getNamePrefixed("potion.effect.")));
 		Util.addPotionTooltip(potion, tooltip);
 		CauldronRecipeCategory.addLevelTooltip(level, tooltip);

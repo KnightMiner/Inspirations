@@ -12,10 +12,9 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.EnumDyeColor;
 import net.minecraft.util.ResourceLocation;
 
-public enum DyeIngredientRenderer implements IIngredientRenderer<EnumDyeColor> {
+public enum DyeIngredientRenderer implements IIngredientRenderer<DyeIngredient> {
 	INVENTORY,
 	LEVEL_1,
 	LEVEL_2,
@@ -38,14 +37,14 @@ public enum DyeIngredientRenderer implements IIngredientRenderer<EnumDyeColor> {
 	public static final ResourceLocation DYE_TEXTURE = Util.getResource("blocks/fluid_colorless");
 
 	@Override
-	public void render(Minecraft minecraft, int x, int y, EnumDyeColor dye) {
+	public void render(Minecraft minecraft, int x, int y, DyeIngredient dye) {
 		// level of 4 is the invalid state
 		if(dye == null || level == 4) {
 			return;
 		}
 		GlStateManager.enableBlend();
 		minecraft.renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-		float[] color = dye.getColorComponentValues();
+		float[] color = dye.getDye().getColorComponentValues();
 		GlStateManager.color(color[0], color[1], color[2]);
 		// 0 means JEI ingredient list
 		TextureAtlasSprite sprite = ClientUtil.getSprite(DYE_TEXTURE);
@@ -60,9 +59,9 @@ public enum DyeIngredientRenderer implements IIngredientRenderer<EnumDyeColor> {
 	}
 
 	@Override
-	public List<String> getTooltip(Minecraft minecraft, EnumDyeColor ingredient, ITooltipFlag tooltipFlag) {
+	public List<String> getTooltip(Minecraft minecraft, DyeIngredient ingredient, ITooltipFlag tooltipFlag) {
 		List<String> tooltip = new ArrayList<>();
-		tooltip.add(Util.translateFormatted("gui.jei.cauldron.color", Util.translate("item.fireworksCharge.%s", ingredient.getUnlocalizedName())));
+		tooltip.add(Util.translateFormatted("gui.jei.cauldron.color", Util.translate("item.fireworksCharge.%s", ingredient.getDye().getUnlocalizedName())));
 		CauldronRecipeCategory.addLevelTooltip(level, tooltip);
 		return tooltip;
 	}

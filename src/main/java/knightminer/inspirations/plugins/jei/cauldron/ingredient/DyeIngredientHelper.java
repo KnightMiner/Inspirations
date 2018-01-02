@@ -9,21 +9,20 @@ import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import mezz.jei.api.ingredients.IIngredientHelper;
-import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemStack;
 
-public enum DyeIngredientHelper implements IIngredientHelper<EnumDyeColor> {
+public enum DyeIngredientHelper implements IIngredientHelper<DyeIngredient> {
 	INSTANCE;
 
 	@Override
-	public List<EnumDyeColor> expandSubtypes(List<EnumDyeColor> ingredients) {
+	public List<DyeIngredient> expandSubtypes(List<DyeIngredient> ingredients) {
 		return ingredients;
 	}
 
 	@Override
-	public EnumDyeColor getMatch(Iterable<EnumDyeColor> ingredients, EnumDyeColor match) {
-		for(EnumDyeColor dye : ingredients) {
-			if(dye == match) {
+	public DyeIngredient getMatch(Iterable<DyeIngredient> ingredients, DyeIngredient match) {
+		for(DyeIngredient dye : ingredients) {
+			if(dye.getDye() == match.getDye()) {
 				return dye;
 			}
 		}
@@ -31,47 +30,47 @@ public enum DyeIngredientHelper implements IIngredientHelper<EnumDyeColor> {
 	}
 
 	@Override
-	public String getDisplayName(EnumDyeColor ingredient) {
-		return Util.translateFormatted("gui.jei.cauldron.color", Util.translate("item.fireworksCharge.%s", ingredient.getUnlocalizedName()));
+	public String getDisplayName(DyeIngredient ingredient) {
+		return Util.translateFormatted("gui.jei.cauldron.color", Util.translate("item.fireworksCharge.%s", ingredient.getDye().getUnlocalizedName()));
 	}
 
 	@Override
-	public String getUniqueId(EnumDyeColor ingredient) {
+	public String getUniqueId(DyeIngredient ingredient) {
 		return getResourceId(ingredient);
 	}
 
 	@Override
-	public String getWildcardId(EnumDyeColor ingredient) {
+	public String getWildcardId(DyeIngredient ingredient) {
 		return getUniqueId(ingredient);
 	}
 
 	@Override
-	public String getModId(EnumDyeColor ingredient) {
+	public String getModId(DyeIngredient ingredient) {
 		return Inspirations.modID;
 	}
 
 	@Override
-	public Iterable<Color> getColors(EnumDyeColor ingredient) {
-		return ImmutableList.of(new Color(ingredient.colorValue));
+	public Iterable<Color> getColors(DyeIngredient ingredient) {
+		return ImmutableList.of(new Color(ingredient.getDye().colorValue));
 	}
 
 	@Override
-	public String getResourceId(EnumDyeColor ingredient) {
-		return ingredient.getName();
+	public String getResourceId(DyeIngredient ingredient) {
+		return ingredient.getDye().getName();
 	}
 
 	@Override
-	public EnumDyeColor copyIngredient(EnumDyeColor ingredient) {
+	public DyeIngredient copyIngredient(DyeIngredient ingredient) {
 		return ingredient;
 	}
 
 	@Override
-	public String getErrorInfo(EnumDyeColor ingredient) {
-		return ingredient != null ? getResourceId(ingredient) : null;
+	public String getErrorInfo(DyeIngredient ingredient) {
+		return ingredient != null && ingredient.getDye() != null ? getResourceId(ingredient) : null;
 	}
 
 	@Override
-	public ItemStack getCheatItemStack(EnumDyeColor ingredient) {
-		return new ItemStack(InspirationsRecipes.dyedWaterBottle, 1, ingredient.getDyeDamage());
+	public ItemStack getCheatItemStack(DyeIngredient ingredient) {
+		return new ItemStack(InspirationsRecipes.dyedWaterBottle, 1, ingredient.getDye().getDyeDamage());
 	}
 }

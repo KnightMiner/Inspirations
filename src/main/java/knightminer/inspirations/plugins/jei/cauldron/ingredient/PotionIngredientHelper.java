@@ -9,21 +9,20 @@ import knightminer.inspirations.library.Util;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
 
-public enum PotionIngredientHelper implements IIngredientHelper<PotionType> {
+public enum PotionIngredientHelper implements IIngredientHelper<PotionIngredient> {
 	INSTANCE;
 
 	@Override
-	public List<PotionType> expandSubtypes(List<PotionType> ingredients) {
+	public List<PotionIngredient> expandSubtypes(List<PotionIngredient> ingredients) {
 		return ingredients;
 	}
 
 	@Override
-	public PotionType getMatch(Iterable<PotionType> ingredients, PotionType match) {
-		for(PotionType potion : ingredients) {
-			if(potion == match) {
+	public PotionIngredient getMatch(Iterable<PotionIngredient> ingredients, PotionIngredient match) {
+		for(PotionIngredient potion : ingredients) {
+			if(potion.getPotion() == match.getPotion()) {
 				return potion;
 			}
 		}
@@ -31,47 +30,47 @@ public enum PotionIngredientHelper implements IIngredientHelper<PotionType> {
 	}
 
 	@Override
-	public String getDisplayName(PotionType potion) {
-		return Util.translate(potion.getNamePrefixed("potion.effect."));
+	public String getDisplayName(PotionIngredient potion) {
+		return Util.translate(potion.getPotion().getNamePrefixed("potion.effect."));
 	}
 
 	@Override
-	public String getUniqueId(PotionType potion) {
-		return potion.getRegistryName().toString();
+	public String getUniqueId(PotionIngredient potion) {
+		return potion.getPotion().getRegistryName().toString();
 	}
 
 	@Override
-	public String getWildcardId(PotionType potion) {
+	public String getWildcardId(PotionIngredient potion) {
 		return getUniqueId(potion);
 	}
 
 	@Override
-	public String getModId(PotionType potion) {
-		return potion.getRegistryName().getResourceDomain();
+	public String getModId(PotionIngredient potion) {
+		return potion.getPotion().getRegistryName().getResourceDomain();
 	}
 
 	@Override
-	public Iterable<Color> getColors(PotionType potion) {
-		return ImmutableList.of(new Color(PotionUtils.getPotionColor(potion)));
+	public Iterable<Color> getColors(PotionIngredient potion) {
+		return ImmutableList.of(new Color(PotionUtils.getPotionColor(potion.getPotion())));
 	}
 
 	@Override
-	public String getResourceId(PotionType potion) {
-		return potion.getRegistryName().getResourcePath();
+	public String getResourceId(PotionIngredient potion) {
+		return potion.getPotion().getRegistryName().getResourcePath();
 	}
 
 	@Override
-	public PotionType copyIngredient(PotionType potion) {
+	public PotionIngredient copyIngredient(PotionIngredient potion) {
 		return potion;
 	}
 
 	@Override
-	public String getErrorInfo(PotionType potion) {
-		return potion == null ? null : getUniqueId(potion);
+	public String getErrorInfo(PotionIngredient potion) {
+		return potion == null || potion.getPotion() == null ? "null" : getUniqueId(potion);
 	}
 
 	@Override
-	public ItemStack getCheatItemStack(PotionType potion) {
-		return PotionUtils.addPotionToItemStack(new ItemStack(Items.POTIONITEM), potion);
+	public ItemStack getCheatItemStack(PotionIngredient potion) {
+		return PotionUtils.addPotionToItemStack(new ItemStack(Items.POTIONITEM), potion.getPotion());
 	}
 }

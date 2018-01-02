@@ -5,6 +5,8 @@ import com.google.common.collect.ImmutableList;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.recipe.cauldron.ISimpleCauldronRecipe;
 import knightminer.inspirations.plugins.jei.JEIPlugin;
+import knightminer.inspirations.plugins.jei.cauldron.ingredient.DyeIngredient;
+import knightminer.inspirations.plugins.jei.cauldron.ingredient.PotionIngredient;
 import knightminer.inspirations.recipes.block.BlockEnhancedCauldron.CauldronContents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.EnumDyeColor;
@@ -113,14 +115,26 @@ public class CauldronRecipeWrapper implements IRecipeWrapper {
 	@Override
 	public void getIngredients(IIngredients ingredients) {
 		ingredients.setInputLists(ItemStack.class, input);
-		ingredients.setInput(FluidStack.class, inputFluid);
-		ingredients.setInput(EnumDyeColor.class, inputColor);
-		ingredients.setInput(PotionType.class, inputPotion);
+		if(inputFluid != null) {
+			ingredients.setInput(FluidStack.class, inputFluid);
+		}
+		if(inputColor != null) {
+			ingredients.setInput(DyeIngredient.class, new DyeIngredient(inputColor));
+		}
+		if(inputPotion != null) {
+			ingredients.setInput(PotionIngredient.class, new PotionIngredient(inputPotion));
+		}
 
 		ingredients.setOutputs(ItemStack.class, output);
-		ingredients.setOutput(FluidStack.class, outputFluid);
-		ingredients.setOutput(EnumDyeColor.class, outputColor);
-		ingredients.setOutput(PotionType.class, outputPotion);
+		if(outputFluid != null) {
+			ingredients.setOutput(FluidStack.class, outputFluid);
+		}
+		if(outputColor != null) {
+			ingredients.setOutput(DyeIngredient.class, new DyeIngredient(outputColor));
+		}
+		if(outputPotion != null) {
+			ingredients.setOutput(PotionIngredient.class, new PotionIngredient(outputPotion));
+		}
 	}
 
 	@Override
