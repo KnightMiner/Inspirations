@@ -10,22 +10,17 @@ import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.client.PropertyStateMapper;
 import knightminer.inspirations.recipes.RecipesClientProxy;
-import knightminer.inspirations.shared.client.TextureModel;
 import knightminer.inspirations.tweaks.block.BlockBetterFlowerPot;
 import knightminer.inspirations.tweaks.block.BlockFittedCarpet;
 import net.minecraft.block.BlockCarpet;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.statemap.StateMapperBase;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.init.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.client.model.IModel;
-import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class TweaksClientProxy extends ClientProxy {
@@ -58,14 +53,9 @@ public class TweaksClientProxy extends ClientProxy {
 	 */
 	@SubscribeEvent
 	public void onModelBake(ModelBakeEvent event) {
-		if(InspirationsTweaks.flowerPot == null) {
-			return;
+		if(InspirationsTweaks.flowerPot != null) {
+			replaceTexturedModel(event, FLOWER_POT_MODEL, "plant", false);
 		}
-
-		IModel model = ModelLoaderRegistry.getModelOrLogError(FLOWER_POT_MODEL, "Error loading model for " + FLOWER_POT_MODEL);
-		IBakedModel standard = event.getModelRegistry().getObject(FLOWER_POT_MODEL);
-		IBakedModel finalModel = new TextureModel(standard, model, DefaultVertexFormats.BLOCK, "plant");
-		event.getModelRegistry().putObject(FLOWER_POT_MODEL, finalModel);
 	}
 
 	private static class FlowerPotStateMapper extends StateMapperBase {

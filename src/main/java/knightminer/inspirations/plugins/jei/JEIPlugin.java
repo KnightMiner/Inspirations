@@ -59,8 +59,15 @@ public class JEIPlugin implements IModPlugin {
 
 		// tools
 		if(PulseBase.isBuildingLoaded()) {
-			// tool tables
-			registry.registerSubtypeInterpreter(Item.getItemFromBlock(InspirationsBuilding.bookshelf), texture);
+			// bookshelves
+			if(InspirationsBuilding.bookshelf != null) {
+				registry.registerSubtypeInterpreter(Item.getItemFromBlock(InspirationsBuilding.bookshelf), texture);
+			}
+
+			// enlightened bush
+			if(InspirationsBuilding.enlightenedBush != null) {
+				registry.registerSubtypeInterpreter(Item.getItemFromBlock(InspirationsBuilding.enlightenedBush), texture);
+			}
 		}
 	}
 

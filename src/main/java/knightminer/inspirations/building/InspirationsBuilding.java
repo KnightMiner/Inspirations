@@ -3,6 +3,7 @@ package knightminer.inspirations.building;
 import com.google.common.eventbus.Subscribe;
 
 import knightminer.inspirations.building.block.BlockBookshelf;
+import knightminer.inspirations.building.block.BlockEnlightenedBush;
 import knightminer.inspirations.building.block.BlockFlower;
 import knightminer.inspirations.building.block.BlockGlassDoor;
 import knightminer.inspirations.building.block.BlockGlassTrapdoor;
@@ -11,6 +12,7 @@ import knightminer.inspirations.building.block.BlockPath;
 import knightminer.inspirations.building.block.BlockRope;
 import knightminer.inspirations.building.block.BlockFlower.FlowerType;
 import knightminer.inspirations.building.tileentity.TileBookshelf;
+import knightminer.inspirations.building.tileentity.TileEnlightenedBush;
 import knightminer.inspirations.common.CommonProxy;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
@@ -49,6 +51,7 @@ public class InspirationsBuilding extends PulseBase {
 	public static Block mulch;
 	public static BlockPath path;
 	public static Block flower;
+	public static BlockEnlightenedBush enlightenedBush;
 
 	// items
 	public static Item glassDoorItem;
@@ -91,6 +94,11 @@ public class InspirationsBuilding extends PulseBase {
 		if(Config.enableFlowers) {
 			flower = registerBlock(r, new BlockFlower(), "flower");
 		}
+
+		if(Config.enableEnlightenedBush) {
+			enlightenedBush = registerBlock(r, new BlockEnlightenedBush(), "enlightened_bush");
+			registerTE(TileEnlightenedBush.class, "enlightened_bush");
+		}
 	}
 
 	@SubscribeEvent
@@ -123,6 +131,9 @@ public class InspirationsBuilding extends PulseBase {
 		}
 		if(flower != null) {
 			registerItemBlock(r, flower, BlockFlower.TYPE);
+		}
+		if(enlightenedBush != null) {
+			registerItemBlock(r, new ItemBlockTexture(enlightenedBush), BlockEnlightenedBush.LIGHTS);
 		}
 
 		if(Config.enableGlassDoor) {

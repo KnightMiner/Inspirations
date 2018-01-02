@@ -41,6 +41,13 @@ tile.inspirations.flower.syringa.name=Syringa
 tile.inspirations.flower.paeonia.name=Paeonia
 tile.inspirations.flower.cyan.name=Cyan Flower
 
+tile.inspirations.enlightened_bush.white.name=White Enlightened Bush
+tile.inspirations.enlightened_bush.red.name=Red Enlightened Bush
+tile.inspirations.enlightened_bush.green.name=Green Enlightened Bush
+tile.inspirations.enlightened_bush.blue.name=Blue Enlightened Bush
+tile.inspirations.enlightened_bush.rainbow.name=Rainbow Enlightened Bush
+tile.inspirations.enlightened_bush.christmas.name=Christmas Enlightened Bush
+
 item.inspirations.books.white.name=White Book
 item.inspirations.books.orange.name=Orange Book
 item.inspirations.books.magenta.name=Magenta Book

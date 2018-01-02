@@ -1,7 +1,7 @@
 package knightminer.inspirations.plugins.jei.texture;
 
 import net.minecraft.item.ItemStack;
-import knightminer.inspirations.library.util.RecipeUtil;
+import knightminer.inspirations.library.util.TextureBlockUtil;
 import mezz.jei.api.ISubtypeRegistry.ISubtypeInterpreter;
 
 // Hanldes table and rack subtypes
@@ -12,7 +12,7 @@ public class TextureSubtypeInterpreter implements ISubtypeInterpreter {
 		String meta = stack.getMetadata() + ":";
 
 		// if the legs exist, return that for the identification key
-		ItemStack textureStack = RecipeUtil.getStackTexture(stack);
+		ItemStack textureStack = TextureBlockUtil.getStackTexture(stack);
 		if(!textureStack.isEmpty()) {
 			return meta + textureStack.getItem().getRegistryName() + ":" + textureStack.getMetadata();
 		}

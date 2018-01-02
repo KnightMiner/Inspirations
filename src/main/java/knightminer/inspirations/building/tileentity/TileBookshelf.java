@@ -9,8 +9,8 @@ import knightminer.inspirations.building.inventory.ContainerBookshelf;
 import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.common.network.InventorySlotSyncPacket;
 import knightminer.inspirations.library.InspirationsRegistry;
-import knightminer.inspirations.library.util.RecipeUtil;
-import net.minecraft.block.Block;
+import knightminer.inspirations.library.client.ClientUtil;
+import knightminer.inspirations.library.util.TextureBlockUtil;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -30,13 +30,10 @@ import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.ItemHandlerHelper;
-import slimeknights.mantle.client.ModelHelper;
 import slimeknights.mantle.common.IInventoryGui;
 import slimeknights.mantle.tileentity.TileInventory;
 
 public class TileBookshelf extends TileInventory implements IInventoryGui {
-
-	public static final String TAG_TEXTURE_PATH = "texture_path";
 
 	public TileBookshelf() {
 		super("gui.inspirations.bookshelf.name", 14, 1);
@@ -182,29 +179,12 @@ public class TileBookshelf extends TileInventory implements IInventoryGui {
 		}
 
 		// texture not loaded
-		String texture = getTileData().getString(TAG_TEXTURE_PATH);
-		if(texture.isEmpty()) {
-			// load it from saved block
-			ItemStack stack = new ItemStack(getTileData().getCompoundTag(RecipeUtil.TAG_TEXTURE));
-			if(!stack.isEmpty()) {
-				Block block = Block.getBlockFromItem(stack.getItem());
-				texture = ModelHelper.getTextureFromBlock(block, stack.getItemDamage()).getIconName();
-				getTileData().setString(TAG_TEXTURE_PATH, texture);
-			}
-		}
+		String texture = ClientUtil.getTexturePath(this);
 		if(!texture.isEmpty()) {
 			state = state.withProperty(BlockBookshelf.TEXTURE, texture);
 		}
 
 		return state;
-	}
-
-	public void updateTextureBlock(NBTTagCompound tag) {
-		getTileData().setTag(RecipeUtil.TAG_TEXTURE, tag);
-	}
-
-	public NBTTagCompound getTextureBlock() {
-		return getTileData().getCompoundTag(RecipeUtil.TAG_TEXTURE);
 	}
 
 
@@ -230,9 +210,9 @@ public class TileBookshelf extends TileInventory implements IInventoryGui {
 	@Override
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
 		NBTTagCompound tag = pkt.getNbtCompound();
-		NBTBase texture = tag.getTag(RecipeUtil.TAG_TEXTURE);
+		NBTBase texture = tag.getTag(TextureBlockUtil.TAG_TEXTURE);
 		if(texture != null) {
-			getTileData().setTag(RecipeUtil.TAG_TEXTURE, texture);
+			getTileData().setTag(TextureBlockUtil.TAG_TEXTURE, texture);
 		}
 		readFromNBT(tag);
 	}
@@ -244,9 +224,9 @@ public class TileBookshelf extends TileInventory implements IInventoryGui {
 
 		// pull the old texture string into the proper location if found
 		NBTTagCompound forgeData = tags.getCompoundTag("ForgeData");
-		if(forgeData.hasKey(RecipeUtil.TAG_TEXTURE, 8)) {
-			forgeData.setString(TAG_TEXTURE_PATH, forgeData.getString(RecipeUtil.TAG_TEXTURE));
-			forgeData.removeTag(RecipeUtil.TAG_TEXTURE);
+		if(forgeData.hasKey(TextureBlockUtil.TAG_TEXTURE, 8)) {
+			forgeData.setString("texture_path", forgeData.getString(TextureBlockUtil.TAG_TEXTURE));
+			forgeData.removeTag(TextureBlockUtil.TAG_TEXTURE);
 		}
 	}
 

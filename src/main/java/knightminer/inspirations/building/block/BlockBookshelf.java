@@ -9,9 +9,7 @@ import com.google.common.collect.ImmutableMap;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.building.tileentity.TileBookshelf;
-import knightminer.inspirations.library.util.RecipeUtil;
-import knightminer.inspirations.library.util.TagUtil;
-import knightminer.inspirations.shared.InspirationsShared;
+import knightminer.inspirations.library.util.TextureBlockUtil;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.SoundType;
@@ -26,7 +24,6 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
@@ -53,7 +50,7 @@ public class BlockBookshelf extends BlockInventory implements ITileEntityProvide
 
 	public static final PropertyEnum<BookshelfType> TYPE = PropertyEnum.create("type", BookshelfType.class);
 	public static final PropertyDirection FACING = BlockHorizontal.FACING;
-	public static final PropertyString TEXTURE = InspirationsShared.TEXTURE;
+	public static final PropertyString TEXTURE = TextureBlockUtil.TEXTURE_PROP;
 	public static final IUnlistedProperty<?>[] PROPS;
 	public static final IUnlistedProperty<Boolean>[] BOOKS;
 	static {
@@ -108,21 +105,9 @@ public class BlockBookshelf extends BlockInventory implements ITileEntityProvide
 	}
 
 	@Override
-	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer,
-			ItemStack stack) {
+	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
 		super.onBlockPlacedBy(world, pos, state, placer, stack);
-
-		NBTTagCompound tag = TagUtil.getTagSafe(stack);
-		TileEntity te = world.getTileEntity(pos);
-		if(te instanceof TileBookshelf) {
-			TileBookshelf table = (TileBookshelf) te;
-			NBTTagCompound textureTag = tag.getCompoundTag(RecipeUtil.TAG_TEXTURE);
-			if(textureTag == null) {
-				textureTag = new NBTTagCompound();
-			}
-
-			table.updateTextureBlock(textureTag);
-		}
+		TextureBlockUtil.placeTextureBlock(world, pos, stack);
 	}
 
 	@Override
@@ -325,14 +310,14 @@ public class BlockBookshelf extends BlockInventory implements ITileEntityProvide
 	@Override
 	public void getSubBlocks(CreativeTabs tab, NonNullList<ItemStack> list) {
 		for(BookshelfType type : BookshelfType.values()) {
-			RecipeUtil.addBlocksFromOredict("slabWood", this, type.getMeta(), list);
+			TextureBlockUtil.addBlocksFromOredict("slabWood", this, type.getMeta(), list);
 		}
 	}
 
 	@Nonnull
 	@Override
 	public ItemStack getPickBlock(@Nonnull IBlockState state, RayTraceResult target, @Nonnull World world, @Nonnull BlockPos pos, EntityPlayer player) {
-		return getItemStack(world, pos, state);
+		return TextureBlockUtil.getBlockItemStack(world, pos, state);
 	}
 
 	@Override
@@ -346,27 +331,13 @@ public class BlockBookshelf extends BlockInventory implements ITileEntityProvide
 
 		world.setBlockToAir(pos);
 		// return false to prevent the above called functions to be called again
-		// side effect of this is that no xp will be dropped. but it shoudln't anyway from a table :P
+		// side effect of this is that no xp will be dropped. but it shoudln't anyway from a bookshelf :P
 		return false;
 	}
 
 	@Override
 	public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune){
-		drops.add(getItemStack(world, pos, state));
-	}
-
-	private ItemStack getItemStack(IBlockAccess world, BlockPos pos, IBlockState state) {
-		ItemStack stack = new ItemStack(this, 1, this.damageDropped(state));
-		TileEntity te = world.getTileEntity(pos);
-		if(te instanceof TileBookshelf) {
-			NBTTagCompound texture = ((TileBookshelf) te).getTextureBlock();
-			if(texture.getSize() > 0) {
-				NBTTagCompound tags = new NBTTagCompound();
-				tags.setTag(RecipeUtil.TAG_TEXTURE, texture);
-				stack.setTagCompound(tags);
-			}
-		}
-		return stack;
+		drops.add(TextureBlockUtil.getBlockItemStack(world, pos, state));
 	}
 
 	public static enum BookshelfType implements IStringSerializable {

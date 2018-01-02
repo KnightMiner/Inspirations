@@ -22,5 +22,12 @@
         "data": 0
       }
     ]
+  },
+  {
+    "name": "LEAVES",
+    "ingredient": {
+      "type": "forge:ore_dict",
+      "ore": "treeLeaves"
+    }
   }
 ]

@@ -3,7 +3,7 @@ package knightminer.inspirations.tweaks.block;
 import javax.annotation.Nonnull;
 
 import knightminer.inspirations.library.InspirationsRegistry;
-import knightminer.inspirations.shared.InspirationsShared;
+import knightminer.inspirations.library.util.TextureBlockUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFlowerPot;
 import net.minecraft.block.SoundType;
@@ -31,7 +31,7 @@ import slimeknights.mantle.property.PropertyString;
 public class BlockBetterFlowerPot extends BlockFlowerPot {
 
 	public static final PropertyBool EXTRA = PropertyBool.create("extra");
-	public static final PropertyString TEXTURE = InspirationsShared.TEXTURE;
+	public static final PropertyString TEXTURE = TextureBlockUtil.TEXTURE_PROP;
 	public static final String TAG_TEXTURE_PATH = "texture_path";
 
 	public BlockBetterFlowerPot() {

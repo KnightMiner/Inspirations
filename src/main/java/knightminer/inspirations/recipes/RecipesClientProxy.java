@@ -5,19 +5,14 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.client.NameStateMapper;
 import knightminer.inspirations.recipes.tileentity.TileCauldron;
-import knightminer.inspirations.shared.client.TextureModel;
-import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.ItemColors;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.client.model.IModel;
-import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class RecipesClientProxy extends ClientProxy {
@@ -74,16 +69,7 @@ public class RecipesClientProxy extends ClientProxy {
 		}
 
 		for(int i = 1; i <= 3; i++) {
-			replaceCauldronModel(event, new ModelResourceLocation(CAULDRON_MODEL,
-					String.format("contents=fluid,level=%s", i)));
+			replaceTexturedModel(event, new ModelResourceLocation(CAULDRON_MODEL, String.format("contents=fluid,level=%s", i)), "water", false);
 		}
-	}
-
-	private static void replaceCauldronModel(ModelBakeEvent event, ModelResourceLocation location) {
-		IModel model = ModelLoaderRegistry.getModelOrLogError(location, "Error loading model for " + location);
-		IBakedModel standard = event.getModelRegistry().getObject(location);
-		IBakedModel finalModel = new TextureModel(standard, model, DefaultVertexFormats.BLOCK, "water");
-
-		event.getModelRegistry().putObject(location, finalModel);
 	}
 }

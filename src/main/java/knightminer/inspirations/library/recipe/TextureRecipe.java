@@ -4,8 +4,9 @@ import javax.annotation.Nonnull;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import knightminer.inspirations.library.util.RecipeUtil;
+
 import knightminer.inspirations.library.util.TagUtil;
+import knightminer.inspirations.library.util.TextureBlockUtil;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.InventoryCrafting;
@@ -38,7 +39,7 @@ public class TextureRecipe extends ShapedOreRecipe {
 				ItemStack stack = craftMatrix.getStackInSlot(i);
 				if(OreDictionary.itemMatches(ore, stack, false) && Block.getBlockFromItem(stack.getItem()) != Blocks.AIR) {
 					Block block = Block.getBlockFromItem(output.getItem());
-					return RecipeUtil.createTexturedStack(block, output.getItemDamage(), Block.getBlockFromItem(stack.getItem()), stack.getItemDamage());
+					return TextureBlockUtil.createTexturedStack(block, output.getItemDamage(), Block.getBlockFromItem(stack.getItem()), stack.getItemDamage());
 				}
 			}
 		}
@@ -58,7 +59,7 @@ public class TextureRecipe extends ShapedOreRecipe {
 				meta = 0;
 			}
 
-			return RecipeUtil.createTexturedStack(block, output.getItemDamage(), Block.getBlockFromItem(stack.getItem()), meta);
+			return TextureBlockUtil.createTexturedStack(block, output.getItemDamage(), Block.getBlockFromItem(stack.getItem()), meta);
 		}
 
 		return super.getRecipeOutput();

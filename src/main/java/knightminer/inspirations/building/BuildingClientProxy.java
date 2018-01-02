@@ -2,6 +2,8 @@ package knightminer.inspirations.building;
 
 import knightminer.inspirations.building.block.BlockBookshelf;
 import knightminer.inspirations.building.block.BlockBookshelf.BookshelfType;
+import knightminer.inspirations.building.block.BlockEnlightenedBush;
+import knightminer.inspirations.building.block.BlockEnlightenedBush.LightsType;
 import knightminer.inspirations.building.block.BlockFlower.FlowerType;
 import knightminer.inspirations.building.block.BlockRope;
 import knightminer.inspirations.building.block.BlockRope.RopeType;
@@ -11,9 +13,9 @@ import knightminer.inspirations.common.ClientProxy;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.client.BlockItemStateMapper;
 import knightminer.inspirations.library.client.ClientUtil;
+import knightminer.inspirations.library.util.TextureBlockUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDoor;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -22,7 +24,7 @@ import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.EnumDyeColor;
-import net.minecraft.item.ItemBlock;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -37,7 +39,7 @@ import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class BuildingClientProxy extends ClientProxy {
-	private static final Minecraft mc = Minecraft.getMinecraft();
+	public static final Minecraft mc = Minecraft.getMinecraft();
 
 	@SubscribeEvent
 	public void registerModels(ModelRegistryEvent event) {
@@ -54,6 +56,7 @@ public class BuildingClientProxy extends ClientProxy {
 		registerRopeModels(InspirationsBuilding.rope);
 		registerItemBlockMeta(InspirationsBuilding.mulch);
 		registerItemBlockMeta(InspirationsBuilding.path);
+		registerItemBlockMeta(InspirationsBuilding.enlightenedBush);
 		registerFlowerModels(InspirationsBuilding.flower);
 	}
 
@@ -109,11 +112,28 @@ public class BuildingClientProxy extends ClientProxy {
 
 			return -1;
 		}, InspirationsBuilding.rope);
+
+		// bush block coloring
+		registerBlockColors(blockColors, (state, world, pos, tintIndex) -> {
+			if(tintIndex != 0) {
+				return -1;
+			}
+			int color = state.getValue(BlockEnlightenedBush.LIGHTS).getColor();
+			if(color > -1) {
+				return color;
+			}
+
+			TileEntity te = world.getTileEntity(pos);
+			if(te != null) {
+				ItemStack stack = new ItemStack(TextureBlockUtil.getTextureBlock(te));
+				return ClientUtil.getStackBlockColorsSafe(stack, world, pos, 0);
+			}
+			return ColorizerFoliage.getFoliageColorBasic();
+		}, InspirationsBuilding.enlightenedBush);
 	}
 
 	@SubscribeEvent
 	public void registerItemColors(ColorHandlerEvent.Item event) {
-		BlockColors blockColors = event.getBlockColors();
 		ItemColors itemColors = event.getItemColors();
 
 		// book covers, too lazy to make 16 cover textures
@@ -125,12 +145,28 @@ public class BuildingClientProxy extends ClientProxy {
 			return -1;
 		}, InspirationsBuilding.books);
 
-		// vine coloring for rope vine
+		// bush block colors
 		registerItemColors(itemColors, (stack, tintIndex) -> {
-			@SuppressWarnings("deprecation")
-			IBlockState iblockstate = ((ItemBlock)stack.getItem()).getBlock().getStateFromMeta(stack.getMetadata());
-			return blockColors.colorMultiplier(iblockstate, null, null, tintIndex);
-		}, InspirationsBuilding.rope);
+			if(tintIndex != 0) {
+				return -1;
+			}
+
+			// if the type has it's own color, use that
+			int color = LightsType.fromMeta(stack.getMetadata()).getColor();
+			if(color > -1) {
+				return color;
+			}
+
+			ItemStack textureStack = TextureBlockUtil.getStackTexture(stack);
+			if(!textureStack.isEmpty() && textureStack.getItem() != Item.getItemFromBlock(InspirationsBuilding.enlightenedBush)) {
+				return itemColors.colorMultiplier(textureStack, 0);
+			}
+			return ColorizerFoliage.getFoliageColorBasic();
+		}, InspirationsBuilding.enlightenedBush);
+
+		// redirect to block colors
+		registerItemColors(itemColors, (stack, tintIndex) -> ClientUtil.getStackBlockColors(stack, null, null, tintIndex),
+				InspirationsBuilding.rope);
 	}
 
 	/**
@@ -138,17 +174,22 @@ public class BuildingClientProxy extends ClientProxy {
 	 */
 	@SubscribeEvent
 	public void onModelBake(ModelBakeEvent event) {
-		if(InspirationsBuilding.bookshelf == null) {
-			return;
+		if(InspirationsBuilding.bookshelf != null) {
+			ResourceLocation bookshelfLoc = InspirationsBuilding.bookshelf.getRegistryName();
+			for(BlockBookshelf.BookshelfType type : BlockBookshelf.BookshelfType.values()) {
+				for(EnumFacing facing : EnumFacing.HORIZONTALS) {
+					replaceBookshelfModel(event, new ModelResourceLocation(bookshelfLoc,
+							String.format("facing=%s,type=%s", facing.getName(), type.getName())));
+				}
+			}
+			replaceBookshelfModel(event, new ModelResourceLocation(bookshelfLoc, "inventory"));
 		}
-		ResourceLocation bookshelfLoc = InspirationsBuilding.bookshelf.getRegistryName();
-		for(BlockBookshelf.BookshelfType type : BlockBookshelf.BookshelfType.values()) {
-			for(EnumFacing facing : EnumFacing.HORIZONTALS) {
-				replaceBookshelfModel(event, new ModelResourceLocation(bookshelfLoc,
-						String.format("facing=%s,type=%s", facing.getName(), type.getName())));
+		if(InspirationsBuilding.enlightenedBush != null) {
+			ResourceLocation location = InspirationsBuilding.enlightenedBush.getRegistryName();
+			for(BlockEnlightenedBush.LightsType type : BlockEnlightenedBush.LightsType.values()) {
+				replaceTexturedModel(event, new ModelResourceLocation(location, String.format("lights=%s", type.getName())), "leaves", true);
 			}
 		}
-		replaceBookshelfModel(event, new ModelResourceLocation(bookshelfLoc, "inventory"));
 	}
 
 	private static void replaceBookshelfModel(ModelBakeEvent event, ModelResourceLocation location) {

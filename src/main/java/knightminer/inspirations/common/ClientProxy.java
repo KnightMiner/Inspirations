@@ -3,9 +3,11 @@ package knightminer.inspirations.common;
 import javax.annotation.Nonnull;
 
 import knightminer.inspirations.library.Util;
+import knightminer.inspirations.shared.client.TextureModel;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.ItemMeshDefinition;
+import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.statemap.IStateMapper;
 import net.minecraft.client.renderer.block.statemap.StateMapperBase;
@@ -13,12 +15,16 @@ import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.IBlockColor;
 import net.minecraft.client.renderer.color.IItemColor;
 import net.minecraft.client.renderer.color.ItemColors;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StringUtils;
+import net.minecraftforge.client.event.ModelBakeEvent;
+import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.Fluid;
 import slimeknights.mantle.item.ItemBlockMeta;
@@ -215,6 +221,15 @@ public class ClientProxy extends CommonProxy {
 				itemColors.registerItemColorHandler(handler, item);
 			}
 		}
+	}
+
+
+	protected static void replaceTexturedModel(ModelBakeEvent event, ModelResourceLocation location, String key, boolean item) {
+		IModel model = ModelLoaderRegistry.getModelOrLogError(location, "Error loading model for " + location);
+		IBakedModel standard = event.getModelRegistry().getObject(location);
+		IBakedModel finalModel = new TextureModel(standard, model, DefaultVertexFormats.BLOCK, key, item);
+
+		event.getModelRegistry().putObject(location, finalModel);
 	}
 
 	private static class FluidStateMapper extends StateMapperBase implements ItemMeshDefinition {

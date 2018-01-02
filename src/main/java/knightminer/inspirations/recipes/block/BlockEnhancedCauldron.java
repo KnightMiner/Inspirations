@@ -4,8 +4,8 @@ import java.util.Locale;
 
 import javax.annotation.Nonnull;
 
+import knightminer.inspirations.library.util.TextureBlockUtil;
 import knightminer.inspirations.recipes.tileentity.TileCauldron;
-import knightminer.inspirations.shared.InspirationsShared;
 import net.minecraft.block.BlockCauldron;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.properties.IProperty;
@@ -28,7 +28,7 @@ import slimeknights.mantle.property.PropertyString;
 public class BlockEnhancedCauldron extends BlockCauldron implements ITileEntityProvider {
 
 	public static final PropertyEnum<CauldronContents> CONTENTS = PropertyEnum.create("contents", CauldronContents.class);
-	public static final PropertyString TEXTURE = InspirationsShared.TEXTURE;
+	public static final PropertyString TEXTURE = TextureBlockUtil.TEXTURE_PROP;
 
 	public BlockEnhancedCauldron() {
 		this.setDefaultState(this.blockState.getBaseState().withProperty(LEVEL, 0).withProperty(CONTENTS, CauldronContents.FLUID));

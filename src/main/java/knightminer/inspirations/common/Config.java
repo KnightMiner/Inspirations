@@ -41,6 +41,7 @@ public class Config {
 	public static boolean enableMulch = true;
 	public static boolean enablePath = true;
 	public static boolean enableFlowers = true;
+	public static boolean enableEnlightenedBush = true;
 
 	public static boolean enableBookshelf = true;
 	public static boolean enableColoredBooks = true;
@@ -193,6 +194,9 @@ public class Config {
 
 			// flowers
 			enableFlowers = configFile.getBoolean("flowers", "building", enableFlowers, "Enables additional flower from breaking double flowers with shears.");
+
+			// enlightenedBush
+			enableEnlightenedBush = configFile.getBoolean("enlightenedBush", "building", enableEnlightenedBush, "Enables enlightned bushes: bushes with lights.");
 		}
 
 		// utility
@@ -538,6 +542,7 @@ public class Config {
 				// building
 				case "bookshelf": return enableBookshelf;
 				case "colored_books": return enableColoredBooks;
+				case "enlightened_bush": return enableEnlightenedBush;
 				case "flowers": return enableFlowers;
 				case "glass_door": return enableGlassDoor;
 				case "mulch": return enableMulch;
