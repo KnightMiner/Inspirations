@@ -71,17 +71,9 @@ public class Config {
 	public static boolean enableRedstoneBarrel = true;
 	public static boolean enableCarpetedTrapdoor = true;
 
-	// tweaks
-	public static boolean enablePigDesaddle = true;
-	public static boolean enableFittedCarpets = true;
-	public static boolean enableExtraBonemeal = true;
-	// heartbeet
-	public static boolean enableHeartbeet = true;
-	public static boolean brewHeartbeet = true;
-	// anvil
+	// recipes
 	public static boolean enableAnvilSmashing = true;
 	public static boolean dispensersPlaceAnvils = true;
-	public static boolean harvestHangingVines = true;
 	// cauldron
 	public static boolean enableCauldronRecipes = true;
 	public static boolean enableExtendedCauldron = true;
@@ -147,6 +139,17 @@ public class Config {
 			"minecraft:sticky_piston->minecraft:piston",
 			"minecraft:sponge:0->minecraft:sponge:1"
 	};
+
+
+	// tweaks
+	public static boolean enablePigDesaddle = true;
+	public static boolean enableFittedCarpets = true;
+	public static boolean enableExtraBonemeal = true;
+	public static boolean harvestHangingVines = true;
+	// heartbeet
+	public static boolean enableHeartbeet = true;
+	public static boolean brewHeartbeet = true;
+
 
 	// compatibility
 	public static boolean tanJuiceInCauldron = true;
@@ -279,12 +282,13 @@ public class Config {
 
 		// anvil smashing
 		// skip the helper method so the defaults are not put in the comment
-		anvilSmashing = configFile.get("tweaks.anvilSmashing", "smashing", anvilSmashing,
+		configFile.moveProperty("tweaks.anvilSmashing", "recipes.anvilSmashing", "smashing");
+		anvilSmashing = configFile.get("recipes.anvilSmashing", "smashing", anvilSmashing,
 				"List of blocks to add to anvil smashing. Format is modid:input[:meta][->modid:output[:meta]]. If the output is excluded, it will default to air (breaking the block). If the meta is excluded, it will check all states for input and use the default for output").getStringList();
 		processAnvilSmashing(anvilSmashing);
 
 		// cauldron uses
-		cauldronRecipes = configFile.get("tweaks.cauldronRecipes", "recipes", cauldronRecipes,
+		cauldronRecipes = configFile.get("recipes.cauldronRecipes", "recipes", cauldronRecipes,
 				"List of recipes to add to the cauldron on right click. Format is (modid:input:meta|oreString)->modid:output:meta[->isBoiling]. If isBoiling is excluded, it defaults to false.").getStringList();
 		processCauldronRecipes(cauldronRecipes);
 
