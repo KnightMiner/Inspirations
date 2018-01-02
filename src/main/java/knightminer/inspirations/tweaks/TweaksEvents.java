@@ -1,5 +1,6 @@
 package knightminer.inspirations.tweaks;
 
+import java.util.Iterator;
 import java.util.List;
 
 import knightminer.inspirations.common.Config;
@@ -216,5 +217,39 @@ public class TweaksEvents {
 		}
 
 		return false;
+	}
+
+	@SubscribeEvent
+	public static void dropMelon(HarvestDropsEvent event) {
+		if(!Config.shearsReclaimMelons || event.getState().getBlock() != Blocks.MELON_BLOCK) {
+			return;
+		}
+
+		EntityPlayer player = event.getHarvester();
+		if(player == null || player.capabilities.isCreativeMode) {
+			return;
+		}
+
+		ItemStack shears = player.getHeldItemMainhand();
+		Item item = shears.getItem();
+		if(!(item instanceof ItemShears || item.getToolClasses(shears).contains("shears"))) {
+			return;
+		}
+
+		// ensure we have 9 melons drop
+		List<ItemStack> drops = event.getDrops();
+		Iterator<ItemStack> iterator = drops.iterator();
+		boolean foundMelon = false;
+		while(iterator.hasNext()) {
+			ItemStack stack = iterator.next();
+			if(stack.getItem() == Items.MELON) {
+				if(!foundMelon) {
+					stack.setCount(9);
+					foundMelon = true;
+				} else {
+					iterator.remove();
+				}
+			}
+		}
 	}
 }

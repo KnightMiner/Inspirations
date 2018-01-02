@@ -146,6 +146,7 @@ public class Config {
 	public static boolean enableFittedCarpets = true;
 	public static boolean enableExtraBonemeal = true;
 	public static boolean harvestHangingVines = true;
+	public static boolean shearsReclaimMelons = true;
 	// heartbeet
 	public static boolean enableHeartbeet = true;
 	public static boolean brewHeartbeet = true;
@@ -256,6 +257,9 @@ public class Config {
 
 			// better cauldron item
 			betterCauldronItem = configFile.getBoolean("betterCauldronItemModel", "tweaks", betterCauldronItem, "Replaces the flat cauldron sprite with the 3D cauldron block model");
+
+			// shears reclaim melons
+			shearsReclaimMelons = configFile.getBoolean("shearsReclaimMelons", "tweaks", shearsReclaimMelons, "Breaking a melon block with shears will always return 9 slices");
 		}
 
 		// compatibility
