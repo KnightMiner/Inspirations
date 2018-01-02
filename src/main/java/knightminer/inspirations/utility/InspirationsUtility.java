@@ -6,6 +6,7 @@ import knightminer.inspirations.common.CommonProxy;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.utility.block.BlockBricksButton;
+import knightminer.inspirations.utility.block.BlockCarpetedTrapdoor;
 import knightminer.inspirations.utility.block.BlockRedstoneBarrel;
 import knightminer.inspirations.utility.block.BlockRedstoneCharge;
 import knightminer.inspirations.utility.block.BlockRedstoneTorchLever;
@@ -15,6 +16,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockDispenser;
 import net.minecraft.dispenser.IBlockSource;
 import net.minecraft.init.Bootstrap;
+import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
@@ -44,6 +46,7 @@ public class InspirationsUtility extends PulseBase {
 	public static BlockBricksButton bricksButton;
 	public static Block redstoneTorchLever;
 	public static Block redstoneTorchLeverPowered;
+	public static Block[] carpetedTrapdoors;
 
 	// items
 	public static Item redstoneCharger;
@@ -74,6 +77,12 @@ public class InspirationsUtility extends PulseBase {
 			redstoneTorchLever = registerBlock(r, new BlockRedstoneTorchLever(false), "redstone_torch_lever");
 			redstoneTorchLeverPowered = registerBlock(r, new BlockRedstoneTorchLever(true), "redstone_torch_lever_powered");
 		}
+		if(Config.enableCarpetedTrapdoor) {
+			carpetedTrapdoors = new Block[16];
+			for(EnumDyeColor color : EnumDyeColor.values()) {
+				carpetedTrapdoors[color.getMetadata()] = registerBlock(r, new BlockCarpetedTrapdoor(), "carpeted_trapdoor_" + color.getName());
+			}
+		}
 	}
 
 	@SubscribeEvent
@@ -96,6 +105,11 @@ public class InspirationsUtility extends PulseBase {
 		}
 		if(redstoneTorchLever != null) {
 			registerItemBlock(r, redstoneTorchLever);
+		}
+		if(carpetedTrapdoors != null) {
+			for(Block trapdoor : carpetedTrapdoors) {
+				registerItemBlock(r, trapdoor);
+			}
 		}
 	}
 

@@ -90,6 +90,22 @@ inspirations.unlock.success=Container unlocked
 inspirations.unlock.fail.no_match=This key does not fit the lock
 inspirations.unlock.fail.unlocked=The container is not locked
 
+tile.inspirations.carpeted_trapdoor_white.name=White Carpeted Trapdoor
+tile.inspirations.carpeted_trapdoor_orange.name=Orange Carpeted Trapdoor
+tile.inspirations.carpeted_trapdoor_magenta.name=Magenta Carpeted Trapdoor
+tile.inspirations.carpeted_trapdoor_light_blue.name=Light Blue Carpeted Trapdoor
+tile.inspirations.carpeted_trapdoor_yellow.name=Yellow Carpeted Trapdoor
+tile.inspirations.carpeted_trapdoor_lime.name=Lime Carpeted Trapdoor
+tile.inspirations.carpeted_trapdoor_pink.name=Pink Carpeted Trapdoor
+tile.inspirations.carpeted_trapdoor_gray.name=Gray Carpeted Trapdoor
+tile.inspirations.carpeted_trapdoor_silver.name=Light Gray Carpeted Trapdoor
+tile.inspirations.carpeted_trapdoor_cyan.name=Cyan Carpeted Trapdoor
+tile.inspirations.carpeted_trapdoor_purple.name=Purple Carpeted Trapdoor
+tile.inspirations.carpeted_trapdoor_blue.name=Blue Carpeted Trapdoor
+tile.inspirations.carpeted_trapdoor_brown.name=Brown Carpeted Trapdoor
+tile.inspirations.carpeted_trapdoor_green.name=Green Carpeted Trapdoor
+tile.inspirations.carpeted_trapdoor_red.name=Red Carpeted Trapdoor
+tile.inspirations.carpeted_trapdoor_black.name=Balck Carpeted Trapdoor
 
 #############
 #  Recipes  #

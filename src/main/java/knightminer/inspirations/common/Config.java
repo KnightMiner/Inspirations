@@ -69,6 +69,7 @@ public class Config {
 	public static boolean enableRedstoneCharge = true;
 	public static boolean enableBricksButton = true;
 	public static boolean enableRedstoneBarrel = true;
+	public static boolean enableCarpetedTrapdoor = true;
 
 	// tweaks
 	public static boolean enablePigDesaddle = true;
@@ -208,6 +209,9 @@ public class Config {
 
 			// redstone torch lever
 			enableRedstoneTorchLever = configFile.getBoolean("redstoneTorchLever", "utility", enableRedstoneTorchLever, "Enables the redstone torch lever: a lever that toggles its state when the block it's on gets powered");
+
+			// carpeted trapdoor
+			enableCarpetedTrapdoor = configFile.getBoolean("carpetedTrapdoor", "utility", enableCarpetedTrapdoor, "Enables carpeted trapdoors: a trapdoor which appears to be a carpet when closed");
 		}
 
 		// recipes
@@ -523,6 +527,7 @@ public class Config {
 
 				// utility
 				case "bricks_button": return enableBricksButton;
+				case "carpeted_trapdoor": return enableCarpetedTrapdoor;
 				case "lock": return enableLock;
 				case "redstone_barrel": return enableRedstoneBarrel;
 				case "redstone_book": return enableRedstoneBook;
