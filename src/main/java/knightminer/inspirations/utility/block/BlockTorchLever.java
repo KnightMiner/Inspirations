@@ -89,6 +89,8 @@ public class BlockTorchLever extends BlockTorch {
 
 		if(sideHit.getAxis().isVertical()) {
 			sideHit = playerIn.getHorizontalFacing();
+		} else {
+			sideHit = sideHit.getOpposite();
 		}
 
 		// update state

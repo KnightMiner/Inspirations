@@ -336,16 +336,6 @@ public class InspirationsRegistry {
 	}
 
 	/**
-	 * Adds a new cauldron recipe
-	 * @param input      RecipeMatch to check for
-	 * @param output     Recipe output
-	 * @param boiling  Whether the cauldron must be boiling or not
-	 */
-	public static void addCauldronRecipe(RecipeMatch input, ItemStack output, boolean boiling) {
-		addCauldronRecipe(new CauldronFluidRecipe(input, output, boiling));
-	}
-
-	/**
 	 * Gets all cauldron recipes
 	 * @return  A list of all cauldron recipes
 	 */
