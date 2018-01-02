@@ -175,12 +175,15 @@ public class BlockRedstoneTorchLever extends BlockLever {
 				continue;
 			}
 			BlockPos offset = pos.offset(side);
-			if(world.getRedstonePower(offset, side) > 0) {
-				return true;
-			}
 			IBlockState offsetState = world.getBlockState(offset);
-			if(offsetState.getBlock() == Blocks.REDSTONE_WIRE && offsetState.getValue(BlockRedstoneWire.POWER) > 0) {
-				return true;
+			if(offsetState.getBlock() == Blocks.REDSTONE_WIRE) {
+				if(offsetState.getValue(BlockRedstoneWire.POWER) > 0) {
+					return true;
+				}
+			} else {
+				if(world.getRedstonePower(offset, side) > 0) {
+					return true;
+				}
 			}
 		}
 
