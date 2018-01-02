@@ -29,6 +29,7 @@ import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.item.ItemEdible;
 import slimeknights.mantle.item.ItemMetaDynamic;
+import slimeknights.mantle.property.PropertyString;
 import slimeknights.mantle.pulsar.pulse.Pulse;
 
 @Pulse(id = InspirationsShared.pulseID, description = "Blocks and items used by all modules", forced = true)
@@ -37,6 +38,9 @@ public class InspirationsShared extends PulseBase {
 
 	@SidedProxy(clientSide = "knightminer.inspirations.shared.SharedClientProxy", serverSide = "knightminer.inspirations.common.CommonProxy")
 	public static CommonProxy proxy;
+
+	// common texture property used by several blocks
+	public static final PropertyString TEXTURE = new PropertyString("TEXTURE");
 
 	// items
 	public static ItemArrow arrow;

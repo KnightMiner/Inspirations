@@ -15,9 +15,15 @@ import knightminer.inspirations.library.recipe.cauldron.FillCauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe.CauldronState;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockBush;
+import net.minecraft.block.BlockCrops;
+import net.minecraft.block.BlockDoublePlant;
+import net.minecraft.block.BlockLilyPad;
+import net.minecraft.block.BlockTallGrass;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -89,6 +95,57 @@ public class InspirationsRegistry {
 	 */
 	public static void setBookKeywords(String[] keywords) {
 		bookKeywords = keywords;
+	}
+
+
+	/*
+	 * Flowers
+	 */
+	private static Map<ItemMetaKey,Boolean> flowers = new HashMap<>();
+
+	/**
+	 * Checks if the given item stack is a flower
+	 * @param stack  Input stack
+	 * @return  True if its a flower
+	 */
+	public static boolean isFlower(ItemStack stack) {
+		return flowers.computeIfAbsent(new ItemMetaKey(stack), InspirationsRegistry::isFlower);
+	}
+
+	/**
+	 * Helper function to check if a stack is a flower, basically to implement vanilla logic, but slightly extended
+	 * @param key  Item meta combination
+	 * @return  True if it is a flower
+	 */
+	private static boolean isFlower(ItemMetaKey key) {
+		Block block = Block.getBlockFromItem(key.getItem());
+		return block instanceof BlockBush
+				&& !(block instanceof BlockDoublePlant)
+				&& !(block instanceof BlockTallGrass)
+				&& !(block instanceof BlockCrops)
+				&& !(block instanceof BlockLilyPad);
+	}
+
+	/**
+	 * Registers an override to state a stack is definitely a flower or not a flower, primarily used by the config
+	 * @param stack     ItemStack which is a flower
+	 * @param isFlower  True if its a flower, false if its not a flower
+	 */
+	public static void registerFlower(ItemStack stack, boolean isFlower) {
+		flowers.put(new ItemMetaKey(stack), isFlower);
+	}
+
+	/**
+	 * Registers an override to state a stack is definitely a flower or not a flower, primarily used by the config
+	 * @param block      Block which is a flower
+	 * @param meta      Meta which is a flower
+	 * @param isFlower  True if its a flower, false if its not a flower
+	 */
+	public static void registerFlower(Block block, int meta, boolean isFlower) {
+		Item item = Item.getItemFromBlock(block);
+		if(item != Items.AIR) {
+			flowers.put(new ItemMetaKey(item, meta), isFlower);
+		}
 	}
 
 

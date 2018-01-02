@@ -1,0 +1,9 @@
+{
+  "forge_marker": 1,
+  "variants": {
+    "normal": {
+      "model": "flower_pot_cross",
+      "textures": { "plant": "inspirations:blocks/flower_missingno" }
+    }
+  }
+}

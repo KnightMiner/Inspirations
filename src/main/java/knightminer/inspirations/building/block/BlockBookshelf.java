@@ -11,6 +11,7 @@ import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.building.tileentity.TileBookshelf;
 import knightminer.inspirations.library.util.RecipeUtil;
 import knightminer.inspirations.library.util.TagUtil;
+import knightminer.inspirations.shared.InspirationsShared;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.SoundType;
@@ -52,7 +53,7 @@ public class BlockBookshelf extends BlockInventory implements ITileEntityProvide
 
 	public static final PropertyEnum<BookshelfType> TYPE = PropertyEnum.create("type", BookshelfType.class);
 	public static final PropertyDirection FACING = BlockHorizontal.FACING;
-	public static final PropertyString TEXTURE = new PropertyString("texture");
+	public static final PropertyString TEXTURE = InspirationsShared.TEXTURE;
 	public static final IUnlistedProperty<?>[] PROPS;
 	public static final IUnlistedProperty<Boolean>[] BOOKS;
 	static {

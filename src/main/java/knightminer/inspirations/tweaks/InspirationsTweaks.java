@@ -5,11 +5,14 @@ import com.google.common.eventbus.Subscribe;
 import knightminer.inspirations.common.CommonProxy;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
+import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.shared.InspirationsShared;
+import knightminer.inspirations.tweaks.block.BlockBetterFlowerPot;
 import knightminer.inspirations.tweaks.block.BlockFittedCarpet;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAnvil;
 import net.minecraft.block.BlockDispenser;
+import net.minecraft.block.BlockTallGrass;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.dispenser.BehaviorDefaultDispenseItem;
 import net.minecraft.dispenser.IBehaviorDispenseItem;
@@ -40,6 +43,7 @@ public class InspirationsTweaks extends PulseBase {
 
 	// blocks
 	public static Block carpet;
+	public static Block flowerPot;
 
 	@Subscribe
 	public void preInit(FMLPreInitializationEvent event) {
@@ -53,6 +57,9 @@ public class InspirationsTweaks extends PulseBase {
 		if(Config.enableFittedCarpets) {
 			carpet = register(r, new BlockFittedCarpet(), new ResourceLocation("carpet"));
 		}
+		if(Config.betterFlowerPot) {
+			flowerPot = register(r, new BlockBetterFlowerPot(), new ResourceLocation("flower_pot"));
+		}
 	}
 
 	@Subscribe
@@ -64,6 +71,11 @@ public class InspirationsTweaks extends PulseBase {
 			Ingredient heartbeet = Ingredient.fromStacks(InspirationsShared.heartbeet);
 			PotionHelper.addMix(PotionTypes.WATER, heartbeet, PotionTypes.MUNDANE);
 			PotionHelper.addMix(PotionTypes.AWKWARD, heartbeet, PotionTypes.REGENERATION);
+		}
+		if(Config.betterFlowerPot) {
+			// add vanilla plants which are not met by the instanceof checks
+			InspirationsRegistry.registerFlower(Blocks.CACTUS, 0, true);
+			InspirationsRegistry.registerFlower(Blocks.TALLGRASS, BlockTallGrass.EnumType.FERN.getMeta(), true);
 		}
 
 		registerDispenserBehavior();

@@ -4,8 +4,8 @@ import knightminer.inspirations.common.ClientProxy;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.client.NameStateMapper;
-import knightminer.inspirations.recipes.client.CauldronModel;
 import knightminer.inspirations.recipes.tileentity.TileCauldron;
+import knightminer.inspirations.shared.client.TextureModel;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.color.BlockColors;
@@ -82,7 +82,7 @@ public class RecipesClientProxy extends ClientProxy {
 	private static void replaceCauldronModel(ModelBakeEvent event, ModelResourceLocation location) {
 		IModel model = ModelLoaderRegistry.getModelOrLogError(location, "Error loading model for " + location);
 		IBakedModel standard = event.getModelRegistry().getObject(location);
-		IBakedModel finalModel = new CauldronModel(standard, model, DefaultVertexFormats.BLOCK);
+		IBakedModel finalModel = new TextureModel(standard, model, DefaultVertexFormats.BLOCK, "water");
 
 		event.getModelRegistry().putObject(location, finalModel);
 	}

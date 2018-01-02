@@ -1,5 +1,6 @@
 package knightminer.inspirations.common;
 
+import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
 
 import com.google.gson.JsonObject;
@@ -147,10 +148,12 @@ public class Config {
 	public static boolean enableExtraBonemeal = true;
 	public static boolean harvestHangingVines = true;
 	public static boolean shearsReclaimMelons = true;
+	public static boolean betterFlowerPot = true;
 	// heartbeet
 	public static boolean enableHeartbeet = true;
 	public static boolean brewHeartbeet = true;
 
+	public static String[] flowerOverrides = {};
 
 	// compatibility
 	public static boolean tanJuiceInCauldron = true;
@@ -260,6 +263,9 @@ public class Config {
 
 			// shears reclaim melons
 			shearsReclaimMelons = configFile.getBoolean("shearsReclaimMelons", "tweaks", shearsReclaimMelons, "Breaking a melon block with shears will always return 9 slices");
+
+			// shears reclaim melons
+			betterFlowerPot = configFile.getBoolean("betterFlowerPot", "tweaks", betterFlowerPot, "Flower pots can hold modded flowers");
 		}
 
 		// compatibility
@@ -282,7 +288,7 @@ public class Config {
 		// building
 		bookOverrides = configFile.get("building.bookshelf", "bookOverrides", bookOverrides,
 				"List of itemstacks to override book behavior. Format is modid:name[:meta[:isBook]]. Unset meta will default wildcard. Unset isBook will default true").getStringList();
-		processBookOverrides(bookOverrides);
+		processItemOverrides(enableBookshelf, bookOverrides, InspirationsRegistry::registerBook);
 
 		// anvil smashing
 		// skip the helper method so the defaults are not put in the comment
@@ -296,6 +302,11 @@ public class Config {
 				"List of recipes to add to the cauldron on right click. Format is (modid:input:meta|oreString)->modid:output:meta[->isBoiling]. If isBoiling is excluded, it defaults to false.").getStringList();
 		processCauldronRecipes(cauldronRecipes);
 
+		// flowers
+		flowerOverrides = configFile.get("tweaks.betterFlowerPot", "flowerOverrides", flowerOverrides,
+				"List of itemstacks to override flower behavior, which defaults to the block being BlockBush. Format is modid:name[:meta[:isFlower]]. Unset meta will default wildcard. Unset isFlower will default true").getStringList();
+		processItemOverrides(betterFlowerPot, flowerOverrides, InspirationsRegistry::registerFlower);
+
 		// saving
 		if(configFile.hasChanged()) {
 			configFile.save();
@@ -306,8 +317,8 @@ public class Config {
 	 * Parses the book overrides from the string array
 	 * @param overrides  Input string array
 	 */
-	private static void processBookOverrides(String[] overrides) {
-		if(!enableBookshelf) {
+	private static void processItemOverrides(boolean condition, String[] overrides, BiConsumer<ItemStack, Boolean> callback) {
+		if(!condition) {
 			return;
 		}
 
@@ -325,7 +336,7 @@ public class Config {
 			// split by semicolons, valid keys are length of 2, 3, or 4
 			parts = override.split(":");
 			if(parts.length < 2 || parts.length > 4) {
-				Inspirations.log.error("Invalid book override {}: must be in format modid:name[:meta[:isBook]]. ", override);
+				Inspirations.log.error("Invalid override {}: must be in format modid:name[:meta[:value]]. ", override);
 				continue;
 			}
 
@@ -334,7 +345,7 @@ public class Config {
 				itemString = itemString.substring(0, override.length() - parts[3].length() - 1);
 			}
 			if(!RecipeUtil.isValidItemStack(itemString, true)) {
-				Inspirations.log.error("Invalid book override {}: invalid item {}", override, itemString);
+				Inspirations.log.error("Invalid override {}: invalid item {}", override, itemString);
 				continue;
 			}
 			stack = RecipeUtil.getItemStackFromString(itemString, true);
@@ -352,10 +363,10 @@ public class Config {
 				stacks = NonNullList.create();
 				stack.getItem().getSubItems(CreativeTab.SEARCH, stacks);
 				for(ItemStack sub : stacks) {
-					InspirationsRegistry.registerBook(sub, isBook);
+					callback.accept(sub, isBook);
 				}
 			} else {
-				InspirationsRegistry.registerBook(stack, isBook);
+				callback.accept(stack, isBook);
 			}
 		}
 	}
