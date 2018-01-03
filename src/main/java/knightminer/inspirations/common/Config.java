@@ -150,6 +150,7 @@ public class Config {
 	public static boolean harvestHangingVines = true;
 	public static boolean shearsReclaimMelons = true;
 	public static boolean betterFlowerPot = true;
+	public static boolean flowerPotComparator = true;
 	// heartbeet
 	public static boolean enableHeartbeet = true;
 	public static boolean brewHeartbeet = true;
@@ -270,6 +271,7 @@ public class Config {
 
 			// shears reclaim melons
 			betterFlowerPot = configFile.getBoolean("betterFlowerPot", "tweaks", betterFlowerPot, "Flower pots can hold modded flowers");
+			flowerPotComparator = configFile.getBoolean("comparator", "tweaks.betterFlowerPot", flowerPotComparator, "Flower pots will emit a comparator signal if they have a flower");
 		}
 
 		// compatibility
