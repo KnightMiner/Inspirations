@@ -237,8 +237,8 @@ public class Config {
 			enableCauldronRecipes = !extendCauldron.equals("false");
 			simpleCauldronRecipes = extendCauldron.equals("simple");
 			enableExtendedCauldron = extendCauldron.equals("true");
-			enableCauldronBrewing = configFile.getBoolean("brewing", "recipes.cauldron", enableCauldronBrewing, "Allows cauldrons to be filled with dyes and dye items using cauldrons") && enableExtendedCauldron;
-			enableCauldronDyeing = configFile.getBoolean("dyeing", "recipes.cauldron", enableCauldronDyeing, "Allows cauldrons to be filled with potions and support brewing") && enableExtendedCauldron;
+			enableCauldronBrewing = configFile.getBoolean("brewing", "recipes.cauldron", enableCauldronBrewing, "Allows cauldrons to be filled with potions and support brewing") && enableExtendedCauldron;
+			enableCauldronDyeing = configFile.getBoolean("dyeing", "recipes.cauldron", enableCauldronDyeing, "Allows cauldrons to be filled with dyes and dye items using cauldrons") && enableExtendedCauldron;
 			enableCauldronFluids = configFile.getBoolean("fluids", "recipes.cauldron", enableCauldronFluids, "Allows cauldrons to be filled with any fluid and use them in recipes") && enableExtendedCauldron;
 		}
 
