@@ -14,7 +14,7 @@ public class ItemDyedWaterBottle extends Item {
 
 	public ItemDyedWaterBottle() {
 		this.setCreativeTab(CreativeTabs.MATERIALS);
-		this.setMaxStackSize(1);
+		this.setMaxStackSize(16);
 		this.setContainerItem(Items.GLASS_BOTTLE);
 		this.setHasSubtypes(true);
 	}

@@ -47,7 +47,7 @@ public enum FillCauldronFromDyedBottle implements ICauldronRecipe {
 	}
 
 	@Override
-	public ItemStack transformInput(ItemStack stack, boolean boiling, int level, CauldronState state) {
+	public ItemStack getResult(ItemStack stack, boolean boiling, int level, CauldronState state) {
 		return stack.getItem().getContainerItem(stack);
 	}
 
