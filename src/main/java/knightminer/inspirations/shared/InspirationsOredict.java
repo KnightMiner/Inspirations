@@ -6,6 +6,7 @@ import com.google.common.eventbus.Subscribe;
 
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.recipes.InspirationsRecipes;
+import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraft.block.Block;
 import net.minecraft.init.Items;
 import net.minecraft.item.EnumDyeColor;
@@ -42,6 +43,7 @@ public class InspirationsOredict {
 		ensureVanilla();
 		registerBuilding();
 		registerRecipes();
+		registerUtility();
 	}
 
 	private void ensureVanilla() {
@@ -55,6 +57,14 @@ public class InspirationsOredict {
 	private static void registerRecipes() {
 		for(EnumDyeColor color : EnumDyeColor.values()) {
 			oredict(InspirationsRecipes.dyedWaterBottle, color.getDyeDamage(), dyeNameFor(color));
+		}
+	}
+
+	private static void registerUtility() {
+		if(InspirationsUtility.carpetedTrapdoors != null) {
+			for(Block block : InspirationsUtility.carpetedTrapdoors) {
+				oredict(block, "trapdoorCarpeted");
+			}
 		}
 	}
 

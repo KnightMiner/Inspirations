@@ -24,6 +24,7 @@ import knightminer.inspirations.recipes.recipe.FillPotionFromCauldron;
 import knightminer.inspirations.recipes.recipe.TippedArrowCauldronRecipe;
 import knightminer.inspirations.recipes.tileentity.TileCauldron;
 import knightminer.inspirations.shared.InspirationsShared;
+import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
@@ -144,6 +145,15 @@ public class InspirationsRecipes extends PulseBase {
 						color,
 						new ItemStack(Blocks.CARPET, 1, color.getMetadata())
 						));
+			}
+			if(InspirationsUtility.carpetedTrapdoors != null) {
+				RecipeMatch anyTrapdoor = RecipeMatch.of("trapdoorCarpeted");
+				for(EnumDyeColor color : EnumDyeColor.values()) {
+					InspirationsRegistry.addCauldronRecipe(new CauldronDyeRecipe(
+							anyTrapdoor, color,
+							new ItemStack(InspirationsUtility.carpetedTrapdoors[color.getMetadata()])
+							));
+				}
 			}
 		}
 
