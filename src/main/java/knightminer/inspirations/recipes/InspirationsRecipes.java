@@ -2,6 +2,7 @@ package knightminer.inspirations.recipes;
 
 import com.google.common.eventbus.Subscribe;
 
+import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.CommonProxy;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
@@ -15,6 +16,7 @@ import knightminer.inspirations.recipes.block.BlockSmashingAnvil;
 import knightminer.inspirations.recipes.item.ItemDyedWaterBottle;
 import knightminer.inspirations.recipes.recipe.ArmorDyeingCauldronRecipe;
 import knightminer.inspirations.recipes.recipe.DyeCauldronWater;
+import knightminer.inspirations.recipes.recipe.DyeIngredientWrapper;
 import knightminer.inspirations.recipes.recipe.FillCauldronFromDyedBottle;
 import knightminer.inspirations.recipes.recipe.FillCauldronFromFluidContainer;
 import knightminer.inspirations.recipes.recipe.FillCauldronFromPotion;
@@ -34,10 +36,13 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraft.potion.PotionHelper;
 import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.brewing.BrewingRecipe;
@@ -104,6 +109,43 @@ public class InspirationsRecipes extends PulseBase {
 
 		if(Config.enableCauldronDyeing) {
 			InspirationsRecipes.dyedWaterBottle = registerItem(r, new ItemDyedWaterBottle(), "dyed_bottle");
+		}
+	}
+
+	@SubscribeEvent
+	public void registerRecipes(Register<IRecipe> event) {
+		if(!Config.patchVanillaDyeRecipes) {
+			return;
+		}
+		IForgeRegistry<IRecipe> r = event.getRegistry();
+		String[] recipes = {
+				"purple_dye",
+				"cyan_dye",
+				"light_gray_dye_from_ink_bonemeal",
+				"light_gray_dye_from_gray_bonemeal",
+				"gray_dye",
+				"pink_dye_from_red_bonemeal",
+				"lime_dye",
+				"light_blue_dye_from_lapis_bonemeal",
+				"magenta_dye_from_purple_and_pink",
+				"magenta_dye_from_lapis_red_pink",
+				"magenta_dye_from_lapis_ink_bonemeal",
+				"orange_dye_from_red_yellow"
+		};
+		for(String recipeName : recipes) {
+			IRecipe irecipe = r.getValue(new ResourceLocation(recipeName));
+			if(irecipe instanceof ShapelessRecipes) {
+				// simply find all current ingredients and wrap them in my class which removes bottles
+				ShapelessRecipes recipe = (ShapelessRecipes) irecipe;
+				NonNullList<Ingredient> newIngredients = NonNullList.create();
+				recipe.recipeItems.forEach(i->newIngredients.add(new DyeIngredientWrapper(i)));
+				recipe.recipeItems.clear();
+				recipe.recipeItems.addAll(newIngredients);
+			} else {
+				// another mod modified or removed recipe
+				String error = irecipe == null ? "recipe removed" : "recipe unexpected class " + irecipe.getClass();
+				Inspirations.log.warn("Error modifying dye recipe '{}', {}", recipeName, error);
+			}
 		}
 	}
 

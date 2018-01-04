@@ -1,0 +1,24 @@
+{
+  "conditions": [
+    {
+      "type": "pulse_loaded",
+      "pulse": "InspirationsRecipes"
+    },
+    {
+      "type": "config",
+      "prop": "patch_vanilla_dye_recipes"
+    }
+  ],
+  "type": "shapeless_no_container",
+  "group": "inspirations:dyed_bottle",
+  "result": {
+    "item": "inspirations:dyed_bottle",
+    "data": 7,
+    "count": 3
+  },
+  "ingredients": [
+    { "item": "inspirations:dyed_bottle", "data": 0 },
+    { "item": "inspirations:dyed_bottle", "data": 15 },
+    { "item": "inspirations:dyed_bottle", "data": 15 }
+  ]
+}

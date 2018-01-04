@@ -81,6 +81,8 @@ public class Config {
 	public static boolean enableExtendedCauldron = true;
 	public static boolean simpleCauldronRecipes = false;
 	public static boolean enableCauldronDyeing = true;
+	public static boolean patchVanillaDyeRecipes = true;
+	public static boolean extraBottleRecipes = true;
 	public static boolean enableCauldronBrewing = true;
 	public static boolean enableCauldronFluids = true;
 	public static boolean betterCauldronItem = true;
@@ -240,6 +242,9 @@ public class Config {
 			enableCauldronBrewing = configFile.getBoolean("brewing", "recipes.cauldron", enableCauldronBrewing, "Allows cauldrons to be filled with potions and support brewing") && enableExtendedCauldron;
 			enableCauldronDyeing = configFile.getBoolean("dyeing", "recipes.cauldron", enableCauldronDyeing, "Allows cauldrons to be filled with dyes and dye items using cauldrons") && enableExtendedCauldron;
 			enableCauldronFluids = configFile.getBoolean("fluids", "recipes.cauldron", enableCauldronFluids, "Allows cauldrons to be filled with any fluid and use them in recipes") && enableExtendedCauldron;
+
+			patchVanillaDyeRecipes = configFile.getBoolean("patchVanillaRecipes", "recipes.cauldron.dyeing", patchVanillaDyeRecipes, "Makes crafting two dyed water bottles together produce a dyed water bottle. Requires modifying vanilla recipes to prevent a conflict") && enableCauldronDyeing;
+			extraBottleRecipes = configFile.getBoolean("extraBottleRecipes", "recipes.cauldron.dyeing", extraBottleRecipes, "Adds extra dyed bottle recipes to craft green and brown") && enableCauldronDyeing;
 		}
 
 		// tweaks
@@ -565,6 +570,8 @@ public class Config {
 				case "cauldron_brewing": return enableCauldronBrewing;
 				case "cauldron_dyeing": return enableCauldronDyeing;
 				case "cauldron_fluids": return enableCauldronFluids;
+				case "extra_dyed_bottle_recipes": return extraBottleRecipes;
+				case "patch_vanilla_dye_recipes": return patchVanillaDyeRecipes;
 			}
 
 			throw new JsonSyntaxException("Invalid propertyname '" + property + "'");
