@@ -1,5 +1,6 @@
 package knightminer.inspirations.common;
 
+import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
 
 import com.google.gson.JsonObject;
@@ -7,11 +8,10 @@ import com.google.gson.JsonSyntaxException;
 
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.InspirationsRegistry;
+import knightminer.inspirations.library.util.RecipeUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.JsonUtils;
 import net.minecraft.util.NonNullList;
@@ -40,31 +40,53 @@ public class Config {
 	public static boolean enableGlassDoor = true;
 	public static boolean enableMulch = true;
 	public static boolean enablePath = true;
+	public static boolean enableFlowers = true;
+	public static boolean enableEnlightenedBush = true;
 
 	public static boolean enableBookshelf = true;
 	public static boolean enableColoredBooks = true;
 	private static String[] bookKeywords = {
+			"atlas",
 			"book",
+			"catalogue",
 			"guide",
-			"manual"
+			"journal",
+			"lexicon",
+			"manual",
+			"tome"
 	};
-	private static String[] bookOverrides = new String[0];
+	private static String[] bookOverrides = {
+			"defiledlands:book_wyrm_raw:0:false",
+			"defiledlands:book_wyrm_cooked:0:false",
+			"defiledlands:book_wyrm_scale:0:false",
+			"defiledlands:book_wyrm_scale_golden:0:false",
+			"defiledlands:book_wyrm_analyzer:0:false"
+	};
 
 	// utility
 	public static boolean enableLock = true;
 	public static boolean enableTorchLever = true;
+	public static boolean enableRedstoneTorchLever = true;
 	public static boolean enableRedstoneBook = true;
 	public static boolean enableRedstoneCharge = true;
 	public static boolean enableBricksButton = true;
+	public static boolean enableRedstoneBarrel = true;
+	public static boolean enableCarpetedTrapdoor = true;
 
-	// tweaks
-	public static boolean enablePigDesaddle = true;
-	public static boolean enableFittedCarpets = true;
-	public static boolean enableExtraBonemeal = true;
-	public static boolean enableHeartbeet = true;
-	public static boolean brewHeartbeet = true;
+	// recipes
 	public static boolean enableAnvilSmashing = true;
 	public static boolean dispensersPlaceAnvils = true;
+	// cauldron
+	public static boolean enableCauldronRecipes = true;
+	public static boolean enableExtendedCauldron = true;
+	public static boolean simpleCauldronRecipes = false;
+	public static boolean enableCauldronDyeing = true;
+	public static boolean patchVanillaDyeRecipes = true;
+	public static boolean extraBottleRecipes = true;
+	public static boolean enableCauldronBrewing = true;
+	public static boolean enableCauldronFluids = true;
+	public static boolean betterCauldronItem = true;
+
 	private static String[] anvilSmashing = {
 			"# Stone",
 			"minecraft:stone:0->minecraft:cobblestone",
@@ -117,6 +139,28 @@ public class Config {
 			"minecraft:end_bricks->minecraft:end_stone",
 			"minecraft:monster_egg"
 	};
+	private static String[] cauldronRecipes = {
+			"minecraft:sticky_piston->minecraft:piston",
+			"minecraft:sponge:0->minecraft:sponge:1"
+	};
+
+
+	// tweaks
+	public static boolean enablePigDesaddle = true;
+	public static boolean enableFittedCarpets = true;
+	public static boolean enableExtraBonemeal = true;
+	public static boolean harvestHangingVines = true;
+	public static boolean shearsReclaimMelons = true;
+	public static boolean betterFlowerPot = true;
+	public static boolean flowerPotComparator = true;
+	// heartbeet
+	public static boolean enableHeartbeet = true;
+	public static boolean brewHeartbeet = true;
+
+	public static String[] flowerOverrides = {};
+
+	// compatibility
+	public static boolean tanJuiceInCauldron = true;
 
 
 	/**
@@ -150,6 +194,12 @@ public class Config {
 
 			// path
 			enablePath = configFile.getBoolean("path", "building", enablePath, "Enables stone paths: a carpet like decorative block for making decorative paths");
+
+			// flowers
+			enableFlowers = configFile.getBoolean("flowers", "building", enableFlowers, "Enables additional flower from breaking double flowers with shears.");
+
+			// enlightenedBush
+			enableEnlightenedBush = configFile.getBoolean("enlightenedBush", "building", enableEnlightenedBush, "Enables enlightned bushes: bushes with lights.");
 		}
 
 		// utility
@@ -167,6 +217,34 @@ public class Config {
 
 			// lock
 			enableBricksButton = configFile.getBoolean("bricksButton", "utility", enableBricksButton, "Enables button blocks disguised as a full bricks or nether bricks block");
+
+			// redstone barrel
+			enableRedstoneBarrel = configFile.getBoolean("redstoneBarrel", "utility", enableRedstoneBarrel, "Enables the redstone barrel: a block wth gives a configurable comparator output and can be pushed by pistons");
+
+			// redstone torch lever
+			enableRedstoneTorchLever = configFile.getBoolean("redstoneTorchLever", "utility", enableRedstoneTorchLever, "Enables the redstone torch lever: a lever that toggles its state when the block it's on gets powered");
+
+			// carpeted trapdoor
+			enableCarpetedTrapdoor = configFile.getBoolean("carpetedTrapdoor", "utility", enableCarpetedTrapdoor, "Enables carpeted trapdoors: a trapdoor which appears to be a carpet when closed");
+		}
+
+		// recipes
+		{
+			// anvil smashing
+			configFile.moveProperty("tweaks", "anvilSmashing", "recipes");
+			enableAnvilSmashing = configFile.getBoolean("anvilSmashing", "recipes", enableAnvilSmashing, "Anvils break glass blocks and transform blocks into other blocks on landing. Uses a block override, so disable if another mod replaces anvils");
+
+			// more cauldron uses
+			String extendCauldron = configFile.getString("extendCauldron", "recipes", "true", "Allows additional recipes to be performed in the cauldron. Can be 'true', 'false', or 'simple'. If true, requires a block substitution. If simple, functionality will be limited to water in cauldrons.", new String[]{ "false", "simple", "true" });
+			enableCauldronRecipes = !extendCauldron.equals("false");
+			simpleCauldronRecipes = extendCauldron.equals("simple");
+			enableExtendedCauldron = extendCauldron.equals("true");
+			enableCauldronBrewing = configFile.getBoolean("brewing", "recipes.cauldron", enableCauldronBrewing, "Allows cauldrons to be filled with potions and support brewing") && enableExtendedCauldron;
+			enableCauldronDyeing = configFile.getBoolean("dyeing", "recipes.cauldron", enableCauldronDyeing, "Allows cauldrons to be filled with dyes and dye items using cauldrons") && enableExtendedCauldron;
+			enableCauldronFluids = configFile.getBoolean("fluids", "recipes.cauldron", enableCauldronFluids, "Allows cauldrons to be filled with any fluid and use them in recipes") && enableExtendedCauldron;
+
+			patchVanillaDyeRecipes = configFile.getBoolean("patchVanillaRecipes", "recipes.cauldron.dyeing", patchVanillaDyeRecipes, "Makes crafting two dyed water bottles together produce a dyed water bottle. Requires modifying vanilla recipes to prevent a conflict") && enableCauldronDyeing;
+			extraBottleRecipes = configFile.getBoolean("extraBottleRecipes", "recipes.cauldron.dyeing", extraBottleRecipes, "Adds extra dyed bottle recipes to craft green and brown") && enableCauldronDyeing;
 		}
 
 		// tweaks
@@ -184,11 +262,27 @@ public class Config {
 			enableHeartbeet = configFile.getBoolean("heartbeet", "tweaks", enableHeartbeet, "Enables heartbeets: a rare drop from beetroots which can be eaten to restore a bit of health");
 			brewHeartbeet = configFile.getBoolean("brewRegeneration", "tweaks.heartbeet", brewHeartbeet, "Allows heartbeets to be used as an alternative to ghast tears in making potions of regeneration") && enableHeartbeet;
 
-			// anvil smashing
-			enableAnvilSmashing = configFile.getBoolean("anvilSmashing", "tweaks", enableAnvilSmashing, "Anvils break glass blocks and transform blocks into other blocks on landing. Uses a block override, so disable if another mod replaces anvils");
-
 			// dispensers place anvils
 			dispensersPlaceAnvils = configFile.getBoolean("dispensersPlaceAnvils", "tweaks", dispensersPlaceAnvils, "Dispensers will place anvils instead of dropping them. Plays well with anvil smashing.");
+
+			// harvest hanging vines
+			harvestHangingVines = configFile.getBoolean("harvestHangingVines", "tweaks", harvestHangingVines, "When shearing vines, any supported vines will also be sheared instead of just broken");
+
+			// better cauldron item
+			betterCauldronItem = configFile.getBoolean("betterCauldronItemModel", "tweaks", betterCauldronItem, "Replaces the flat cauldron sprite with the 3D cauldron block model");
+
+			// shears reclaim melons
+			shearsReclaimMelons = configFile.getBoolean("shearsReclaimMelons", "tweaks", shearsReclaimMelons, "Breaking a melon block with shears will always return 9 slices");
+
+			// shears reclaim melons
+			betterFlowerPot = configFile.getBoolean("betterFlowerPot", "tweaks", betterFlowerPot, "Flower pots can hold modded flowers");
+			flowerPotComparator = configFile.getBoolean("comparator", "tweaks.betterFlowerPot", flowerPotComparator, "Flower pots will emit a comparator signal if they have a flower");
+		}
+
+		// compatibility
+		{
+			// TAN Plugin: make juice in cauldron
+			tanJuiceInCauldron = configFile.getBoolean("tanJuiceInCauldron", "compatibility", tanJuiceInCauldron, "Enables making Tough as Nails juices in the cauldron. Requires enhanced cauldron") && enableCauldronFluids;
 		}
 
 		// saving
@@ -205,13 +299,24 @@ public class Config {
 		// building
 		bookOverrides = configFile.get("building.bookshelf", "bookOverrides", bookOverrides,
 				"List of itemstacks to override book behavior. Format is modid:name[:meta[:isBook]]. Unset meta will default wildcard. Unset isBook will default true").getStringList();
-		processBookOverrides(bookOverrides);
+		processItemOverrides(enableBookshelf, bookOverrides, InspirationsRegistry::registerBook);
 
 		// anvil smashing
 		// skip the helper method so the defaults are not put in the comment
-		anvilSmashing = configFile.get("tweaks.anvilSmashing", "smashing", anvilSmashing,
+		configFile.moveProperty("tweaks.anvilSmashing", "recipes.anvilSmashing", "smashing");
+		anvilSmashing = configFile.get("recipes.anvilSmashing", "smashing", anvilSmashing,
 				"List of blocks to add to anvil smashing. Format is modid:input[:meta][->modid:output[:meta]]. If the output is excluded, it will default to air (breaking the block). If the meta is excluded, it will check all states for input and use the default for output").getStringList();
 		processAnvilSmashing(anvilSmashing);
+
+		// cauldron uses
+		cauldronRecipes = configFile.get("recipes.cauldronRecipes", "recipes", cauldronRecipes,
+				"List of recipes to add to the cauldron on right click. Format is (modid:input:meta|oreString)->modid:output:meta[->isBoiling]. If isBoiling is excluded, it defaults to false.").getStringList();
+		processCauldronRecipes(cauldronRecipes);
+
+		// flowers
+		flowerOverrides = configFile.get("tweaks.betterFlowerPot", "flowerOverrides", flowerOverrides,
+				"List of itemstacks to override flower behavior, which defaults to the block being BlockBush. Format is modid:name[:meta[:isFlower]]. Unset meta will default wildcard. Unset isFlower will default true").getStringList();
+		processItemOverrides(betterFlowerPot, flowerOverrides, InspirationsRegistry::registerFlower);
 
 		// saving
 		if(configFile.hasChanged()) {
@@ -223,11 +328,14 @@ public class Config {
 	 * Parses the book overrides from the string array
 	 * @param overrides  Input string array
 	 */
-	private static void processBookOverrides(String[] overrides) {
+	private static void processItemOverrides(boolean condition, String[] overrides, BiConsumer<ItemStack, Boolean> callback) {
+		if(!condition) {
+			return;
+		}
+
 		NonNullList<ItemStack> stacks;
 		String[] parts;
-		Item item;
-		int meta;
+		ItemStack stack;
 		boolean isBook;
 		// simply look through each entry
 		for(String override : overrides) {
@@ -239,33 +347,21 @@ public class Config {
 			// split by semicolons, valid keys are length of 2, 3, or 4
 			parts = override.split(":");
 			if(parts.length < 2 || parts.length > 4) {
-				Inspirations.log.error("Invalid book override {}: must be in format modid:name[:meta[:isBook]]. ", override);
+				Inspirations.log.error("Invalid override {}: must be in format modid:name[:meta[:value]]. ", override);
 				continue;
 			}
 
-			// next parse meta. If unset default wildcard
-			meta = OreDictionary.WILDCARD_VALUE;
+			String itemString = override;
 			if(parts.length > 2) {
-				// invalid numbers set -2 so we can handle negative too
-				try {
-					meta = Integer.parseInt(parts[2]);
-				} catch(NumberFormatException e) {
-					meta = -2;
-				}
-
-				// though -1 is wildcard, default behavior
-				if(meta == -1) {
-					meta = OreDictionary.WILDCARD_VALUE;
-				} else if(meta < -1) {
-					Inspirations.log.error("Invalid book override {}: invalid metadata", override);
-					continue;
-				}
+				itemString = itemString.substring(0, override.length() - parts[3].length() - 1);
 			}
-
-			// if the length and meta are valid, try finding the item
-			item = GameRegistry.findRegistry(Item.class).getValue(new ResourceLocation(parts[0], parts[1]));
-			if(item == Items.AIR) {
-				Inspirations.log.warn("Unable to find item {}:{} for {}", parts[0], parts[1], override);
+			if(!RecipeUtil.isValidItemStack(itemString, true)) {
+				Inspirations.log.error("Invalid override {}: invalid item {}", override, itemString);
+				continue;
+			}
+			stack = RecipeUtil.getItemStackFromString(itemString, true);
+			if(stack.isEmpty()) {
+				Inspirations.log.warn("Unable to find item {} for override", itemString);
 				continue;
 			}
 
@@ -273,15 +369,15 @@ public class Config {
 			isBook = parts.length > 3 ? !"false".equals(parts[3]) : true;
 
 			// finally, add the entry
-			if(meta == OreDictionary.WILDCARD_VALUE) {
+			if(stack.getMetadata() == OreDictionary.WILDCARD_VALUE) {
 				// wildcard iterates through stacks
 				stacks = NonNullList.create();
-				item.getSubItems(CreativeTab.SEARCH, stacks);
-				for(ItemStack stack : stacks) {
-					InspirationsRegistry.registerBook(stack, isBook);
+				stack.getItem().getSubItems(CreativeTab.SEARCH, stacks);
+				for(ItemStack sub : stacks) {
+					callback.accept(sub, isBook);
 				}
 			} else {
-				InspirationsRegistry.registerBook(item, meta, isBook);
+				callback.accept(stack, isBook);
 			}
 		}
 	}
@@ -292,6 +388,10 @@ public class Config {
 	 */
 	@SuppressWarnings("deprecation")
 	private static void processAnvilSmashing(String[] transformations) {
+		if(!enableAnvilSmashing) {
+			return;
+		}
+
 		main:
 			for(String transformation : transformations) {
 				// skip blank lines
@@ -370,6 +470,65 @@ public class Config {
 			}
 	}
 
+	private static void processCauldronRecipes(String[] cauldronRecipes) {
+		if(!enableCauldronRecipes) {
+			return;
+		}
+
+		for(String recipe : cauldronRecipes) {
+			// skip blank lines
+			if("".equals(recipe) || recipe.startsWith("#")) {
+				continue;
+			}
+
+			String[] parts = recipe.split("->");
+			if(parts.length < 2 || parts.length > 3) {
+				Inspirations.log.error("Invalid cauldron recipe {}: must be in format input->output[->isBoiling]", recipe);
+				continue;
+			}
+
+			// input
+			ItemStack input = null;
+			if(parts[0].contains(":")) {
+				if(!RecipeUtil.isValidItemStack(parts[0], true)) {
+					Inspirations.log.error("Invalid cauldron recipe {}: invalid input {}", recipe, parts[0]);
+					continue;
+				}
+
+				input = RecipeUtil.getItemStackFromString(parts[0], true);
+				if(input.isEmpty()) {
+					Inspirations.log.error("Unable to find item {} for recipe {}", parts[0], recipe);
+					continue;
+				}
+			}
+
+			// output
+			if(!RecipeUtil.isValidItemStack(parts[1], false)) {
+				Inspirations.log.error("Invalid cauldron recipe {}: invalid output {}", recipe, parts[1]);
+				continue;
+			}
+			ItemStack output = RecipeUtil.getItemStackFromString(parts[1], false);
+			if(output.isEmpty()) {
+				Inspirations.log.error("Unable to find item {} for recipe {}", parts[0], recipe);
+				continue;
+			}
+
+			// add recipe
+			boolean boiling = parts.length > 2 ? parts[2].equals("true") : false;
+			// if the input is empty, we are using an oreString
+			if(input == null) {
+				InspirationsRegistry.addCauldronRecipe(parts[0], output, boiling);
+			} else {
+				InspirationsRegistry.addCauldronRecipe(input, output, boiling);
+			}
+		}
+	}
+
+
+	/*
+	 * Factories for recipe conditions
+	 */
+
 	public static class PulseLoaded implements IConditionFactory {
 		@Override
 		public BooleanSupplier parse(JsonContext context, JsonObject json) {
@@ -390,6 +549,8 @@ public class Config {
 				// building
 				case "bookshelf": return enableBookshelf;
 				case "colored_books": return enableColoredBooks;
+				case "enlightened_bush": return enableEnlightenedBush;
+				case "flowers": return enableFlowers;
 				case "glass_door": return enableGlassDoor;
 				case "mulch": return enableMulch;
 				case "path": return enablePath;
@@ -397,10 +558,20 @@ public class Config {
 
 				// utility
 				case "bricks_button": return enableBricksButton;
+				case "carpeted_trapdoor": return enableCarpetedTrapdoor;
 				case "lock": return enableLock;
+				case "redstone_barrel": return enableRedstoneBarrel;
 				case "redstone_book": return enableRedstoneBook;
 				case "redstone_charge": return enableRedstoneCharge;
+				case "redstone_torch_lever": return enableRedstoneTorchLever;
 				case "torch_lever": return enableTorchLever;
+
+				// recipes
+				case "cauldron_brewing": return enableCauldronBrewing;
+				case "cauldron_dyeing": return enableCauldronDyeing;
+				case "cauldron_fluids": return enableCauldronFluids;
+				case "extra_dyed_bottle_recipes": return extraBottleRecipes;
+				case "patch_vanilla_dye_recipes": return patchVanillaDyeRecipes;
 			}
 
 			throw new JsonSyntaxException("Invalid propertyname '" + property + "'");

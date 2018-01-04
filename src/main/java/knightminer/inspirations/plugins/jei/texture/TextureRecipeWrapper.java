@@ -3,7 +3,7 @@ package knightminer.inspirations.plugins.jei.texture;
 import com.google.common.collect.ImmutableList;
 
 import knightminer.inspirations.library.recipe.TextureRecipe;
-import knightminer.inspirations.library.util.RecipeUtil;
+import knightminer.inspirations.library.util.TextureBlockUtil;
 import knightminer.inspirations.plugins.jei.JEIPlugin;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
@@ -49,11 +49,11 @@ public class TextureRecipeWrapper implements IRecipeWrapper, IShapedCraftingReci
 			Block textureBlock = Block.getBlockFromItem(stack.getItem());
 			if(stack.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
 				for(ItemStack sub : JEIPlugin.jeiHelpers.getStackHelper().getSubtypes(stack)) {
-					builder.add(RecipeUtil.createTexturedStack(block, recipe.getRecipeOutput().getItemDamage(), textureBlock, sub.getItemDamage()));
+					builder.add(TextureBlockUtil.createTexturedStack(block, recipe.getRecipeOutput().getItemDamage(), textureBlock, sub.getItemDamage()));
 				}
 			}
 			else {
-				builder.add(RecipeUtil.createTexturedStack(block, recipe.getRecipeOutput().getItemDamage(), textureBlock, stack.getItemDamage()));
+				builder.add(TextureBlockUtil.createTexturedStack(block, recipe.getRecipeOutput().getItemDamage(), textureBlock, stack.getItemDamage()));
 			}
 		}
 		outputs = ImmutableList.of(builder.build());
@@ -106,12 +106,9 @@ public class TextureRecipeWrapper implements IRecipeWrapper, IShapedCraftingReci
 
 		// determine the focused stack
 		IFocus<?> ifocus = recipeLayout.getFocus();
-		Object focusObj = ifocus.getValue();
-
-		// if the thing in focus is an itemstack
-		if(focusObj instanceof ItemStack) {
+		if(ifocus != null && ifocus.getValue() instanceof ItemStack) {
 			IGuiIngredientGroup<ItemStack> guiIngredients = recipeLayout.getIngredientsGroup(ItemStack.class);
-			ItemStack focus = (ItemStack) focusObj;
+			ItemStack focus = (ItemStack) ifocus.getValue();
 			IFocus.Mode mode = ifocus.getMode();
 
 			// input means we clicked on an ingredient, make sure it is one that affects the legs
@@ -121,7 +118,7 @@ public class TextureRecipeWrapper implements IRecipeWrapper, IShapedCraftingReci
 				Block block = Block.getBlockFromItem(output.getItem());
 
 				// then create a stack with the focus item (which we already validated above)
-				ItemStack outputFocus = RecipeUtil.createTexturedStack(block, output.getItemDamage(), Block.getBlockFromItem(focus.getItem()),
+				ItemStack outputFocus = TextureBlockUtil.createTexturedStack(block, output.getItemDamage(), Block.getBlockFromItem(focus.getItem()),
 						focus.getItemDamage());
 
 				// and finally, set the focus override for the recipe
@@ -131,7 +128,7 @@ public class TextureRecipeWrapper implements IRecipeWrapper, IShapedCraftingReci
 			// if we clicked the table, remove all items which affect the legs textures that are not the leg item
 			else if(mode == IFocus.Mode.OUTPUT) {
 				// so determine the legs
-				ItemStack legs = RecipeUtil.getStackTexture(focus);
+				ItemStack legs = TextureBlockUtil.getStackTexture(focus);
 				if(!legs.isEmpty()) {
 					// and loop through all slots removing leg affecting inputs which don't match
 					guiIngredients.setOverrideDisplayFocus(JEIPlugin.recipeRegistry.createFocus(IFocus.Mode.INPUT, legs));

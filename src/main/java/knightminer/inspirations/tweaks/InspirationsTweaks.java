@@ -7,19 +7,17 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.shared.InspirationsShared;
+import knightminer.inspirations.tweaks.block.BlockBetterFlowerPot;
 import knightminer.inspirations.tweaks.block.BlockFittedCarpet;
-import knightminer.inspirations.tweaks.block.BlockSmashingAnvil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAnvil;
 import net.minecraft.block.BlockDispenser;
-import net.minecraft.block.material.Material;
+import net.minecraft.block.BlockTallGrass;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.dispenser.BehaviorDefaultDispenseItem;
 import net.minecraft.dispenser.IBehaviorDispenseItem;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.PotionTypes;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemCloth;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.potion.PotionHelper;
 import net.minecraft.util.EnumFacing;
@@ -45,7 +43,7 @@ public class InspirationsTweaks extends PulseBase {
 
 	// blocks
 	public static Block carpet;
-	public static Block anvil;
+	public static Block flowerPot;
 
 	@Subscribe
 	public void preInit(FMLPreInitializationEvent event) {
@@ -59,17 +57,8 @@ public class InspirationsTweaks extends PulseBase {
 		if(Config.enableFittedCarpets) {
 			carpet = register(r, new BlockFittedCarpet(), new ResourceLocation("carpet"));
 		}
-		if(Config.enableAnvilSmashing) {
-			anvil = register(r, new BlockSmashingAnvil(), new ResourceLocation("anvil"));
-		}
-	}
-
-	@SubscribeEvent
-	public void registerItems(Register<Item> event) {
-		IForgeRegistry<Item> r = event.getRegistry();
-
-		if(carpet != null) {
-			registerItemBlock(r, new ItemCloth(carpet));
+		if(Config.betterFlowerPot) {
+			flowerPot = register(r, new BlockBetterFlowerPot(), new ResourceLocation("flower_pot"));
 		}
 	}
 
@@ -83,8 +72,12 @@ public class InspirationsTweaks extends PulseBase {
 			PotionHelper.addMix(PotionTypes.WATER, heartbeet, PotionTypes.MUNDANE);
 			PotionHelper.addMix(PotionTypes.AWKWARD, heartbeet, PotionTypes.REGENERATION);
 		}
+		if(Config.betterFlowerPot) {
+			// add vanilla plants which are not met by the instanceof checks
+			InspirationsRegistry.registerFlower(Blocks.CACTUS, 0, true);
+			InspirationsRegistry.registerFlower(Blocks.TALLGRASS, BlockTallGrass.EnumType.FERN.getMeta(), true);
+		}
 
-		InspirationsRegistry.registerAnvilBreaking(Material.GLASS);
 		registerDispenserBehavior();
 	}
 
@@ -93,6 +86,7 @@ public class InspirationsTweaks extends PulseBase {
 		proxy.postInit();
 		MinecraftForge.EVENT_BUS.register(TweaksEvents.class);
 	}
+
 
 	private static final IBehaviorDispenseItem DEFAULT = new BehaviorDefaultDispenseItem();
 	private void registerDispenserBehavior() {

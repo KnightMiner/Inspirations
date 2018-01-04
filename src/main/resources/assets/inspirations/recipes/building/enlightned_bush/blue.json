@@ -1,0 +1,30 @@
+{
+  "conditions": [
+    {
+      "type": "pulse_loaded",
+      "pulse": "InspirationsBuilding"
+    },
+    {
+      "type": "config",
+      "prop": "enlightened_bush"
+    }
+  ],
+  "type": "inspirations:texture_recipe",
+  "group": "inspirations:enlightened_bush",
+  "texture": {
+    "item": "#LEAVES"
+  },
+  "pattern": [
+    " D ",
+    "GLG"
+  ],
+  "key": {
+    "L": { "item": "#LEAVES" },
+    "G": { "type": "forge:ore_dict", "ore": "dustGlowstone" },
+    "D": { "type": "forge:ore_dict", "ore": "dyeBlue" }
+  },
+  "result": {
+    "item": "inspirations:enlightened_bush",
+    "data": 3
+  }
+}

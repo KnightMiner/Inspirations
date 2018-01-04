@@ -1,0 +1,24 @@
+{
+  "conditions": [
+    {
+      "type": "pulse_loaded",
+      "pulse": "InspirationsBuilding"
+    },
+    {
+      "type": "config",
+      "prop": "flowers"
+    }
+  ],
+  "type": "forge:ore_shapeless",
+  "group": "minecraft:magenta_dye",
+  "result": {
+    "item": "minecraft:dye",
+    "data": 13
+  },
+  "ingredients": [
+    {
+      "item": "inspirations:flower",
+      "data": 1
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "forge_marker": 1,
+  "defaults": { "model": "inspirations:cauldron/empty" },
+  "variants": {
+    "level": {
+      "0": {},
+      "1": { "model": "inspirations:cauldron/level_1" },
+      "2": { "model": "inspirations:cauldron/level_2" },
+      "3": { "model": "inspirations:cauldron/level_3" }
+    },
+    "contents": {
+      "fluid": {},
+      "dye": { "textures": { "water": "inspirations:blocks/fluid_colorless" }},
+      "potion": { "textures": { "water": "inspirations:blocks/fluid_potion" }}
+    },
+    "inventory": [{}]
+  }
+}

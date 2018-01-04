@@ -5,6 +5,7 @@ import java.util.Locale;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.library.Util;
+import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraft.block.Block;
@@ -17,6 +18,8 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -39,6 +42,10 @@ public class PulseBase {
 
 	public static boolean isTweaksLoaded() {
 		return Inspirations.pulseManager.isPulseLoaded(InspirationsTweaks.pulseID);
+	}
+
+	public static boolean isRecipesLoaded() {
+		return Inspirations.pulseManager.isPulseLoaded(InspirationsRecipes.pulseID);
 	}
 
 
@@ -136,6 +143,16 @@ public class PulseBase {
 	}
 
 	/* Other */
+	protected static Fluid registerColoredFluid(String name, int color) {
+		return registerFluid(new Fluid(name, Util.getResource("blocks/fluid_colorless"), Util.getResource("blocks/fluid_colorless_flow"), color));
+	}
+	protected static <T extends Fluid> T registerFluid(T fluid) {
+		fluid.setUnlocalizedName(Util.prefix(fluid.getName()));
+		FluidRegistry.registerFluid(fluid);
+
+		return fluid;
+	}
+
 	protected static void registerDispenserBehavior(Block block, IBehaviorDispenseItem behavior) {
 		if(block != null) {
 			registerDispenserBehavior(Item.getItemFromBlock(block), behavior);

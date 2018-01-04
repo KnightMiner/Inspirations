@@ -1,4 +1,4 @@
-package knightminer.inspirations.tweaks.block;
+package knightminer.inspirations.recipes.block;
 
 import knightminer.inspirations.library.InspirationsRegistry;
 import net.minecraft.block.Block;

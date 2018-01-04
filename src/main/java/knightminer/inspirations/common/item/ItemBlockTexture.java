@@ -5,7 +5,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import knightminer.inspirations.library.util.RecipeUtil;
+import knightminer.inspirations.library.util.TextureBlockUtil;
 import net.minecraft.block.Block;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
@@ -24,7 +24,7 @@ public class ItemBlockTexture extends ItemBlockMeta {
 			return;
 		}
 
-		ItemStack texture = RecipeUtil.getStackTexture(stack);
+		ItemStack texture = TextureBlockUtil.getStackTexture(stack);
 		if(!texture.isEmpty()) {
 			tooltip.add(texture.getDisplayName());
 		}

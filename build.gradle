@@ -36,6 +36,7 @@ minecraft {
     version = config.minecraft_version + "-" + config.forge_version
 	mappings = config.mappings
     runDir = "run"
+    replace '${version}', project.version
 }
 
 sourceCompatibility = targetCompatibility = "1.8" // Need this here so eclipse task generates correctly.
@@ -72,6 +73,15 @@ processResources {
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
     }
+}
+
+// Add Access Transformers Manifest
+jar {
+    manifest {
+        attributes 'FMLAT': 'inspirations_at.cfg'
+    }
+    
+    finalizedBy reobfJar
 }
 
 // because the normal output has been made to be obfuscated

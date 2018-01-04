@@ -1,6 +1,7 @@
 {
   "recipes": {
-    "texture_recipe": "knightminer.inspirations.library.recipe.TextureRecipe$Factory"
+    "texture_recipe": "knightminer.inspirations.library.recipe.TextureRecipe$Factory",
+    "shapeless_no_container": "knightminer.inspirations.library.recipe.ShapelessNoContainerRecipe$Factory"
   },
   "conditions": {
     "pulse_loaded": "knightminer.inspirations.common.Config$PulseLoaded",
