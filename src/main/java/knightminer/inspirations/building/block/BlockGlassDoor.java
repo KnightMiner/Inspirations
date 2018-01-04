@@ -12,6 +12,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
@@ -27,7 +28,7 @@ public class BlockGlassDoor extends BlockDoor {
 
 	@Override
 	public void onBlockHarvested(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player) {
-		// honestly have no idea what this code was doing, but it broke silk touching the door
+		// honestly have no idea what this code was doing, but it broke silk touching the door and it seems to work without it
 	}
 
 	/**
@@ -38,13 +39,11 @@ public class BlockGlassDoor extends BlockDoor {
 		return InspirationsBuilding.glassDoorItem;
 	}
 
-	/**
-	 * Determines if the player can harvest this block, obtaining it's drops when the block is destroyed.
-	 *
-	 * @param player The player damaging the block
-	 * @param pos The block's current position
-	 * @return True to spawn the drops
-	 */
+	@Override
+	public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player) {
+		return new ItemStack(InspirationsBuilding.glassDoorItem);
+	}
+
 	@Override
 	public boolean canHarvestBlock(IBlockAccess world, BlockPos pos, EntityPlayer player) {
 		return true;
