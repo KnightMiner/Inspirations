@@ -7,6 +7,7 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.EntityIds;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.shared.entity.EntityModArrow;
+import knightminer.inspirations.shared.item.ItemMaterials;
 import knightminer.inspirations.shared.item.ItemModArrow;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.dispenser.BehaviorProjectileDispense;
@@ -28,7 +29,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.item.ItemEdible;
-import slimeknights.mantle.item.ItemMetaDynamic;
 import slimeknights.mantle.pulsar.pulse.Pulse;
 
 @Pulse(id = InspirationsShared.pulseID, description = "Blocks and items used by all modules", forced = true)
@@ -40,7 +40,7 @@ public class InspirationsShared extends PulseBase {
 
 	// items
 	public static ItemArrow arrow;
-	public static ItemMetaDynamic materials;
+	public static ItemMaterials materials;
 	public static ItemEdible edibles;
 
 	// materials
@@ -66,7 +66,7 @@ public class InspirationsShared extends PulseBase {
 
 		arrow = registerItem(r, new ItemModArrow(), "arrow");
 
-		materials = registerItem(r, new ItemMetaDynamic(), "materials");
+		materials = registerItem(r, new ItemMaterials(), "materials");
 		materials.setCreativeTab(CreativeTabs.MATERIALS);
 
 		edibles = registerItem(r, new ItemEdible(), "edibles");
@@ -83,8 +83,8 @@ public class InspirationsShared extends PulseBase {
 		}
 		if(isRecipesLoaded()) {
 			if(Config.enableCauldronBrewing) {
-				splashBottle = materials.addMeta(2, "splash_bottle");
-				lingeringBottle = materials.addMeta(3, "lingering_bottle");
+				splashBottle = materials.addMeta(2, "splash_bottle", CreativeTabs.BREWING);
+				lingeringBottle = materials.addMeta(3, "lingering_bottle", CreativeTabs.BREWING);
 			}
 			if(Config.enableCauldronFluids) {
 				mushrooms = materials.addMeta(4, "mushrooms");

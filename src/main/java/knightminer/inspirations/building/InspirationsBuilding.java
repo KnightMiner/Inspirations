@@ -138,7 +138,6 @@ public class InspirationsBuilding extends PulseBase {
 
 		if(Config.enableGlassDoor) {
 			glassDoorItem = registerItem(r, new ItemDoor(glassDoor), "glass_door");
-			glassDoorItem.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
 			registerItemBlock(r, glassTrapdoor);
 		}
 	}

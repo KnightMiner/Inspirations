@@ -5,7 +5,6 @@ import java.util.Random;
 import net.minecraft.block.BlockTrapDoor;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.creativetab.CreativeTabs;
 
 public class BlockGlassTrapdoor extends BlockTrapDoor {
 
@@ -13,7 +12,6 @@ public class BlockGlassTrapdoor extends BlockTrapDoor {
 		super(Material.GLASS);
 		this.setHardness(0.3F);
 		this.setSoundType(SoundType.GLASS);
-		this.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
 		this.disableStats();
 	}
 

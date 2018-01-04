@@ -7,7 +7,6 @@ import net.minecraft.block.BlockDoor;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -22,7 +21,6 @@ public class BlockGlassDoor extends BlockDoor {
 		super(Material.GLASS);
 		this.setHardness(0.3F);
 		this.setSoundType(SoundType.GLASS);
-		this.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
 		this.disableStats();
 	}
 

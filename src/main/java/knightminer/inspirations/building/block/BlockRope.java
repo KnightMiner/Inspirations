@@ -40,7 +40,7 @@ public class BlockRope extends EnumBlock<BlockRope.RopeType> {
 	public BlockRope() {
 		super(Material.CARPET, TYPE, RopeType.class);
 
-		this.setCreativeTab(CreativeTab.BUILDING_BLOCKS);
+		this.setCreativeTab(CreativeTab.DECORATIONS);
 		this.setHardness(0.5f);
 		this.setHarvestLevel("pickaxe", 0, this.getDefaultState().withProperty(TYPE, RopeType.CHAIN));
 	}
