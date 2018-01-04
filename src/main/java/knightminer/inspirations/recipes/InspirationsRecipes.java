@@ -187,6 +187,12 @@ public class InspirationsRecipes extends PulseBase {
 						color,
 						new ItemStack(Blocks.CARPET, 1, color.getMetadata())
 						));
+
+				InspirationsRegistry.addCauldronRecipe(new CauldronDyeRecipe(
+						new ItemStack(Items.BED, 1, OreDictionary.WILDCARD_VALUE),
+						color,
+						new ItemStack(Items.BED, 1, color.getMetadata())
+						));
 			}
 			if(InspirationsUtility.carpetedTrapdoors != null) {
 				RecipeMatch anyTrapdoor = RecipeMatch.of("trapdoorCarpeted");
