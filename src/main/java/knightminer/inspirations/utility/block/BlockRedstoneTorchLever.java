@@ -33,6 +33,9 @@ public class BlockRedstoneTorchLever extends BlockLever {
 	public BlockRedstoneTorchLever(boolean powered) {
 		this.setTickRandomly(true);
 		this.powered = powered;
+		if(powered) {
+			this.setLightLevel(0.5F);
+		}
 	}
 
 	@Override
@@ -75,6 +78,17 @@ public class BlockRedstoneTorchLever extends BlockLever {
 		world.notifyNeighborsOfStateChange(pos, block, false);
 		world.notifyNeighborsOfStateChange(pos.offset(state.getValue(FACING).getFacing().getOpposite()), block, false);
 		return true;
+	}
+
+	@Override
+	public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
+		if (powered) {
+			worldIn.notifyNeighborsOfStateChange(pos, this, false);
+			EnumFacing enumfacing = state.getValue(FACING).getFacing();
+			worldIn.notifyNeighborsOfStateChange(pos.offset(enumfacing.getOpposite()), this, false);
+		}
+
+		super.breakBlock(worldIn, pos, state);
 	}
 
 
