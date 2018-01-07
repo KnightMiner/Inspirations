@@ -106,7 +106,9 @@ public class TileCauldron extends TileEntity {
 				// result
 				ItemStack result = recipe.getResult(stack, boiling, level, state);
 				// update held item
-				player.setHeldItem(hand, recipe.transformInput(stack, boiling, level, state));
+				if(!player.capabilities.isCreativeMode) {
+					player.setHeldItem(hand, recipe.transformInput(stack, boiling, level, state));
+				}
 				// and give the new item to the player
 				if(!result.isEmpty()) {
 					ItemHandlerHelper.giveItemToPlayer(player, result, player.inventory.currentItem);

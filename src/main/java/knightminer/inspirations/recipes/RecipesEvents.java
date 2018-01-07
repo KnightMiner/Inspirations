@@ -66,7 +66,9 @@ public class RecipesEvents {
 				// result
 				ItemStack result = recipe.getResult(stack, isBoiling, level, CauldronState.WATER);
 				EntityPlayer player = event.getEntityPlayer();
-				player.setHeldItem(event.getHand(), recipe.transformInput(stack, isBoiling, level, CauldronState.WATER));
+				if(!player.capabilities.isCreativeMode) {
+					player.setHeldItem(event.getHand(), recipe.transformInput(stack, isBoiling, level, CauldronState.WATER));
+				}
 				if(!result.isEmpty()) {
 					ItemHandlerHelper.giveItemToPlayer(player, result, player.inventory.currentItem);
 				}

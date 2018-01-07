@@ -25,7 +25,8 @@ public enum ArmorDyeingCauldronRecipe implements ICauldronRecipe {
 	}
 
 	@Override
-	public ItemStack transformInput(ItemStack stack, boolean boiling, int level, CauldronState state) {
+	public ItemStack getResult(ItemStack stack, boolean boiling, int level, CauldronState state) {
+		stack = stack.copy();
 		((ItemArmor) stack.getItem()).setColor(stack, state.getColor());
 		return stack;
 	}
