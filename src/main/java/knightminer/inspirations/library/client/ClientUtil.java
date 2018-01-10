@@ -142,7 +142,7 @@ public final class ClientUtil {
 			ItemStack stack = new ItemStack(te.getTileData().getCompoundTag(TextureBlockUtil.TAG_TEXTURE));
 			if(!stack.isEmpty()) {
 				Block block = Block.getBlockFromItem(stack.getItem());
-				texture = ModelHelper.getTextureFromBlock(block, stack.getItemDamage()).getIconName();
+				texture = ModelHelper.getTextureFromBlock(block, stack.getItem().getMetadata(stack)).getIconName();
 				te.getTileData().setString(TAG_TEXTURE_PATH, texture);
 			}
 		}
