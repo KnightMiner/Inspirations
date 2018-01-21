@@ -12,10 +12,7 @@ import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -42,27 +39,6 @@ public class BlockEnhancedCauldron extends BlockCauldron implements ITileEntityP
 	@Override
 	public TileEntity createNewTileEntity(World worldIn, int meta) {
 		return new TileCauldron();
-	}
-
-	/**
-	 * Called when the block is right clicked by a player.
-	 */
-	@Override
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-		TileEntity te = world.getTileEntity(pos);
-		if(!(te instanceof TileCauldron)) {
-			return super.onBlockActivated(world, pos, state, player, hand, facing, hitX, hitY, hitZ);
-		}
-
-		TileCauldron cauldron = (TileCauldron) te;
-		if(cauldron.interact(state, player, hand)) {
-			return true;
-		}
-
-		if(cauldron.isWater()) {
-			return super.onBlockActivated(world, pos, state, player, hand, facing, hitX, hitY, hitZ);
-		}
-		return false;
 	}
 
 	@Override

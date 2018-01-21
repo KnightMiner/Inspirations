@@ -31,7 +31,7 @@ public enum TANFillCauldronFromBucket implements ICauldronRecipe {
 		}
 
 		FluidStack fluidStack = fluidHandler.drain(1000, false);
-		return fluidStack != null && fluidStack.amount == 1000 && (level == 0 || fluidStack.getFluid() == FluidRegistry.WATER);
+		return fluidStack != null && fluidStack.amount == 1000 && fluidStack.getFluid() == FluidRegistry.WATER;
 	}
 
 	@Override

@@ -13,11 +13,9 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 import slimeknights.mantle.pulsar.pulse.Pulse;
@@ -126,12 +124,5 @@ public class ToughAsNailsPlugin extends PulseBase {
 	private static void addJuiceRecipe(Fluid fluid, int meta, Item ingredient) {
 		InspirationsRegistry.addCauldronScaledTransformRecipe(new ItemStack(ingredient), sweetenedWater, fluid, null);
 		InspirationsRegistry.addCauldronFluidItem(new ItemStack(fruitJuice, 1, meta), new ItemStack(Items.GLASS_BOTTLE), fluid);
-	}
-
-	@Subscribe
-	public void postInit(FMLPostInitializationEvent event) {
-		if(Config.enableExtendedCauldron) {
-			MinecraftForge.EVENT_BUS.register(TANEvents.class);
-		}
 	}
 }

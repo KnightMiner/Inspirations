@@ -13,7 +13,7 @@ public enum FillCauldronFromFluidContainer implements ICauldronRecipe {
 
 	@Override
 	public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		if(level == 3 || state.getFluid() == null) {
+		if(level == 3 || (level > 0 && state.getFluid() == null)) {
 			return false;
 		}
 
@@ -28,7 +28,9 @@ public enum FillCauldronFromFluidContainer implements ICauldronRecipe {
 
 	@Override
 	public ItemStack transformInput(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		return FluidUtil.getFluidHandler(stack).getContainer();
+		IFluidHandlerItem handler = FluidUtil.getFluidHandler(stack);
+		handler.drain(1000, true);
+		return handler.getContainer();
 	}
 
 	@Override
@@ -38,7 +40,7 @@ public enum FillCauldronFromFluidContainer implements ICauldronRecipe {
 
 	@Override
 	public CauldronState getState(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		Fluid fluid = FluidUtil.getFluidHandler(stack).drain(1000, true).getFluid();
+		Fluid fluid = FluidUtil.getFluidHandler(stack).drain(1000, false).getFluid();
 		if(fluid == state.getFluid()) {
 			return state;
 		}
