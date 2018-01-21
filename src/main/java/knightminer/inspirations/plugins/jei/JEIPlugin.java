@@ -9,6 +9,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionType;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -112,13 +114,15 @@ public class JEIPlugin implements IModPlugin {
 	@Override
 	public void registerIngredients(IModIngredientRegistration registry) {
 		if(PulseBase.isRecipesLoaded()) {
-			if(Config.enableCauldronDyeing) {
-				registry.register(DyeIngredient.class, Arrays.stream(EnumDyeColor.values()).map(DyeIngredient::new).collect(Collectors.toList()), DyeIngredientHelper.INSTANCE, DyeIngredientRenderer.INVENTORY);
-			}
-			if(Config.enableCauldronBrewing) {
-				registry.register(PotionIngredient.class, StreamSupport.stream(PotionType.REGISTRY.spliterator(), false)
+			if(Config.enableCauldronRecipes) {
+				// dye ingredients
+				Collection<DyeIngredient> dyes = Config.enableCauldronDyeing ? Arrays.stream(EnumDyeColor.values()).map(DyeIngredient::new).collect(Collectors.toList()) : Collections.emptyList();
+				registry.register(DyeIngredient.class, dyes, DyeIngredientHelper.INSTANCE, DyeIngredientRenderer.INVENTORY);
+				// potion ingredients
+				Collection<PotionIngredient> potions = Config.enableCauldronBrewing ? StreamSupport.stream(PotionType.REGISTRY.spliterator(), false)
 						.filter(type->type != PotionTypes.EMPTY && type != PotionTypes.WATER).map(PotionIngredient::new)
-						.collect(Collectors.toList()), PotionIngredientHelper.INSTANCE, PotionIngredientRenderer.INVENTORY);
+						.collect(Collectors.toList()) : Collections.emptyList();
+						registry.register(PotionIngredient.class, potions, PotionIngredientHelper.INSTANCE, PotionIngredientRenderer.INVENTORY);
 			}
 		}
 	}
