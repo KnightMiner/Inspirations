@@ -23,6 +23,7 @@ import knightminer.inspirations.recipes.recipe.FillCauldronFromPotion;
 import knightminer.inspirations.recipes.recipe.FillDyedBottleFromCauldron;
 import knightminer.inspirations.recipes.recipe.FillFluidContainerFromCauldron;
 import knightminer.inspirations.recipes.recipe.FillPotionFromCauldron;
+import knightminer.inspirations.recipes.recipe.SpongeEmptyCauldron;
 import knightminer.inspirations.recipes.recipe.TippedArrowCauldronRecipe;
 import knightminer.inspirations.recipes.tileentity.TileCauldron;
 import knightminer.inspirations.shared.InspirationsShared;
@@ -165,6 +166,10 @@ public class InspirationsRecipes extends PulseBase {
 	}
 
 	private void registerCauldronRecipes() {
+		if(Config.spongeEmptyCauldron) {
+			InspirationsRegistry.addCauldronRecipe(SpongeEmptyCauldron.INSTANCE);
+		}
+
 		if(!Config.enableExtendedCauldron) {
 			return;
 		}

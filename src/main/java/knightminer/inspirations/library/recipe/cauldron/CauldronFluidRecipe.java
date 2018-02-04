@@ -16,13 +16,23 @@ public class CauldronFluidRecipe implements ISimpleCauldronRecipe {
 	private Boolean boiling;
 	private Fluid fluid;
 	private SoundEvent sound;
+	private int levels;
 
-	public CauldronFluidRecipe(RecipeMatch input, Fluid fluid, ItemStack result, Boolean boiling, SoundEvent sound) {
+	public CauldronFluidRecipe(RecipeMatch input, Fluid fluid, ItemStack result, Boolean boiling, int levels, SoundEvent sound) {
 		this.input = input;
 		this.result = result;
 		this.boiling = boiling;
 		this.fluid = fluid;
 		this.sound = sound;
+		this.levels = levels;
+	}
+
+	public CauldronFluidRecipe(RecipeMatch input, Fluid fluid, ItemStack result, Boolean boiling, int levels) {
+		this(input, fluid, result, boiling, levels, SoundEvents.ENTITY_BOBBER_SPLASH);
+	}
+
+	public CauldronFluidRecipe(RecipeMatch input, Fluid fluid, ItemStack result, Boolean boiling, SoundEvent sound) {
+		this(input, fluid, result, boiling, 1, sound);
 	}
 
 	public CauldronFluidRecipe(RecipeMatch input, Fluid fluid, ItemStack result, Boolean boiling) {
@@ -36,14 +46,14 @@ public class CauldronFluidRecipe implements ISimpleCauldronRecipe {
 	@Override
 	public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {
 		// if boiling is required, ensure it is set
-		if(level == 0 || !stateMatches(state) || (this.boiling != null && boiling != this.boiling.booleanValue())) {
+		if(level < levels || !stateMatches(state) || (this.boiling != null && boiling != this.boiling.booleanValue())) {
 			return false;
 		}
 
 		return this.input.matches(Util.createNonNullList(stack)).isPresent();
 	}
 
-	private boolean stateMatches(CauldronState state) {
+	protected boolean stateMatches(CauldronState state) {
 		return fluid == null ? state.isWater() : fluid == state.getFluid();
 	}
 
@@ -65,12 +75,12 @@ public class CauldronFluidRecipe implements ISimpleCauldronRecipe {
 
 	@Override
 	public int getLevel(int level) {
-		return level - 1;
+		return level - levels;
 	}
 
 	@Override
 	public int getInputLevel() {
-		return 1;
+		return levels;
 	}
 
 	@Override

@@ -86,6 +86,8 @@ public class Config {
 	public static boolean enableCauldronPotions = true;
 	public static boolean enableCauldronBrewing = true;
 	public static boolean enableCauldronFluids = true;
+	public static boolean spongeEmptyCauldron = true;
+	public static boolean spongeCauldronFull = false;
 	public static boolean betterCauldronItem = true;
 
 	private static String[] anvilSmashing = {
@@ -141,8 +143,7 @@ public class Config {
 			"minecraft:monster_egg"
 	};
 	private static String[] cauldronRecipes = {
-			"minecraft:sticky_piston->minecraft:piston",
-			"minecraft:sponge:0->minecraft:sponge:1"
+			"minecraft:sticky_piston->minecraft:piston"
 	};
 
 
@@ -244,6 +245,9 @@ public class Config {
 			enableCauldronPotions = configFile.getBoolean("potions", "recipes.cauldron", enableCauldronPotions, "Allows cauldrons to be filled with potions and support brewing") && enableExtendedCauldron;
 			enableCauldronDyeing = configFile.getBoolean("dyeing", "recipes.cauldron", enableCauldronDyeing, "Allows cauldrons to be filled with dyes and dye items using cauldrons") && enableExtendedCauldron;
 			enableCauldronFluids = configFile.getBoolean("fluids", "recipes.cauldron", enableCauldronFluids, "Allows cauldrons to be filled with any fluid and use them in recipes") && enableExtendedCauldron;
+			String spongeEmptyString = configFile.getString("spongeEmpty", "recipes.cauldron", "true", "Allows sponges to be used to empty the cauldron of dye, water, or potions. Can be 'true', 'false', or 'full'. If set to 'full', requires the cauldron to be full, prevents duplicating water but is less useful for removing unwanted fluids.", new String[]{ "false", "full", "true" });
+			spongeEmptyCauldron = !spongeEmptyString.equals("false");
+			spongeCauldronFull = spongeEmptyString.equals("full");
 
 			patchVanillaDyeRecipes = configFile.getBoolean("patchVanillaRecipes", "recipes.cauldron.dyeing", patchVanillaDyeRecipes, "Makes crafting two dyed water bottles together produce a dyed water bottle. Requires modifying vanilla recipes to prevent a conflict") && enableCauldronDyeing;
 			extraBottleRecipes = configFile.getBoolean("extraBottleRecipes", "recipes.cauldron.dyeing", extraBottleRecipes, "Adds extra dyed bottle recipes to craft green and brown") && enableCauldronDyeing;
