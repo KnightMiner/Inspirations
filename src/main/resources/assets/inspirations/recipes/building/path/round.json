@@ -12,7 +12,9 @@
   "type": "forge:ore_shaped",
   "group": "inspirations:path",
   "pattern": [
-    "SS"
+    " S ",
+    "S S",
+    " S "
   ],
   "key": {
     "S": {
@@ -23,6 +25,6 @@
   "result": {
     "item": "inspirations:path",
     "data": 1,
-    "count": 3
+    "count": 6
   }
 }
