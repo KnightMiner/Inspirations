@@ -205,7 +205,7 @@ public class InspirationsRecipes extends PulseBase {
 			}
 		}
 
-		if(Config.enableCauldronBrewing) {
+		if(Config.enableCauldronPotions) {
 			addPotionBottle(Items.POTIONITEM, new ItemStack(Items.GLASS_BOTTLE));
 			addPotionBottle(Items.SPLASH_POTION, InspirationsShared.splashBottle);
 			addPotionBottle(Items.LINGERING_POTION, InspirationsShared.lingeringBottle);

@@ -119,7 +119,7 @@ public class JEIPlugin implements IModPlugin {
 				Collection<DyeIngredient> dyes = Config.enableCauldronDyeing ? Arrays.stream(EnumDyeColor.values()).map(DyeIngredient::new).collect(Collectors.toList()) : Collections.emptyList();
 				registry.register(DyeIngredient.class, dyes, DyeIngredientHelper.INSTANCE, DyeIngredientRenderer.INVENTORY);
 				// potion ingredients
-				Collection<PotionIngredient> potions = Config.enableCauldronBrewing ? StreamSupport.stream(PotionType.REGISTRY.spliterator(), false)
+				Collection<PotionIngredient> potions = Config.enableCauldronPotions ? StreamSupport.stream(PotionType.REGISTRY.spliterator(), false)
 						.filter(type->type != PotionTypes.EMPTY && type != PotionTypes.WATER).map(PotionIngredient::new)
 						.collect(Collectors.toList()) : Collections.emptyList();
 						registry.register(PotionIngredient.class, potions, PotionIngredientHelper.INSTANCE, PotionIngredientRenderer.INVENTORY);

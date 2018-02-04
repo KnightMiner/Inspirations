@@ -82,7 +82,7 @@ public class InspirationsShared extends PulseBase {
 			heartbeet = edibles.addFood(0, 2, 2.4f, "heartbeet", new PotionEffect(MobEffects.REGENERATION, 100));
 		}
 		if(isRecipesLoaded()) {
-			if(Config.enableCauldronBrewing) {
+			if(Config.enableCauldronPotions) {
 				splashBottle = materials.addMeta(2, "splash_bottle", CreativeTabs.BREWING);
 				lingeringBottle = materials.addMeta(3, "lingering_bottle", CreativeTabs.BREWING);
 			}

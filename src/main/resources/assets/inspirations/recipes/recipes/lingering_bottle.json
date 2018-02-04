@@ -6,7 +6,7 @@
     },
     {
       "type": "config",
-      "prop": "cauldron_brewing"
+      "prop": "cauldron_potions"
     }
   ],
   "type": "forge:ore_shapeless",
