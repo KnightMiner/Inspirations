@@ -155,6 +155,7 @@ public class Config {
 	public static boolean shearsReclaimMelons = true;
 	public static boolean betterFlowerPot = true;
 	public static boolean flowerPotComparator = true;
+	public static boolean coloredEnchantedRibbons = true;
 	// heartbeet
 	public static boolean enableHeartbeet = true;
 	public static boolean brewHeartbeet = true;
@@ -282,9 +283,11 @@ public class Config {
 			// shears reclaim melons
 			shearsReclaimMelons = configFile.getBoolean("shearsReclaimMelons", "tweaks", shearsReclaimMelons, "Breaking a melon block with shears will always return 9 slices");
 
-			// shears reclaim melons
+			// better flower pots
 			betterFlowerPot = configFile.getBoolean("betterFlowerPot", "tweaks", betterFlowerPot, "Flower pots can hold modded flowers");
 			flowerPotComparator = configFile.getBoolean("comparator", "tweaks.betterFlowerPot", flowerPotComparator, "Flower pots will emit a comparator signal if they have a flower");
+
+			coloredEnchantedRibbons = configFile.getBoolean("coloredEnchantedRibbons", "tweaks", coloredEnchantedRibbons, "The ribbon on enchanted books colors based on the enchantment rarity");
 		}
 
 		// compatibility

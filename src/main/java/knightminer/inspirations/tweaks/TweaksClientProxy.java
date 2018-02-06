@@ -17,8 +17,14 @@ import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.statemap.StateMapperBase;
+import net.minecraft.client.renderer.color.ItemColors;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.init.Items;
+import net.minecraft.item.ItemEnchantedBook;
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -27,6 +33,7 @@ public class TweaksClientProxy extends ClientProxy {
 
 	private static final ResourceLocation CARPET_MODEL = Util.getResource("carpet");
 	private static final ResourceLocation CAULDRON_ITEM_MODEL = Util.getResource("cauldron_item");
+	private static final ResourceLocation ENCHANTED_BOOK = Util.getResource("enchanted_book");
 	private static final ModelResourceLocation FLOWER_POT_MODEL = new ModelResourceLocation(Util.getResource("flower_pot"), "normal");
 
 	@SubscribeEvent
@@ -45,6 +52,46 @@ public class TweaksClientProxy extends ClientProxy {
 				model = RecipesClientProxy.CAULDRON_MODEL;
 			}
 			registerItemModel(Items.CAULDRON, 0, model);
+		}
+
+		if(Config.coloredEnchantedRibbons) {
+			registerItemModel(Items.ENCHANTED_BOOK, ENCHANTED_BOOK);
+		}
+	}
+
+	@SubscribeEvent
+	public void registerItemColors(ColorHandlerEvent.Item event) {
+		ItemColors itemColors = event.getItemColors();
+
+		// colored ribbons on enchanted books
+		if(Config.coloredEnchantedRibbons) {
+			registerItemColors(itemColors, (stack, tintIndex) -> {
+				if(tintIndex == 0) {
+					// find the rarest enchantment we have
+					Enchantment.Rarity rarity = Enchantment.Rarity.COMMON;
+					for(NBTBase tag : ItemEnchantedBook.getEnchantments(stack)) {
+						if(tag.getId() == 10) {
+							int id = ((NBTTagCompound) tag).getShort("id");
+							Enchantment enchantment = Enchantment.getEnchantmentByID(id);
+							if(enchantment != null) {
+								Enchantment.Rarity newRarity = enchantment.getRarity();
+								if(newRarity != null && newRarity.getWeight() < rarity.getWeight()) {
+									rarity = newRarity;
+								}
+							}
+						}
+					}
+
+					// color by that rarity
+					switch(rarity) {
+						case COMMON:    return 0xFF2151;
+						case UNCOMMON:  return 0xE5C62D;
+						case RARE:      return 0x00FF21;
+						case VERY_RARE: return 0x0094FF;
+					}
+				}
+				return -1;
+			}, Items.ENCHANTED_BOOK);
 		}
 	}
 
