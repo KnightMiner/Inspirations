@@ -127,26 +127,68 @@ public class BlockBookshelf extends BlockInventory implements ITileEntityProvide
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float clickX, float clickY, float clickZ) {
 		EnumFacing facing = state.getValue(FACING);
 
-		// just skip logic for non-front, we only interact with the front
+		// skip sides, we don't need them
 		if(facing != side) {
 			return false;
 		}
 
-		// if sneaking, open gui
-		if(player.isSneaking() && !world.isRemote) {
-			return openGui(player, world, pos);
+		// if sneaking, just do the GUI
+		if(player.isSneaking()) {
+			return world.isRemote || openGui(player, world, pos);
 		}
 
-		if(world.isRemote) {
-			return true;
+		// if we did not click a book, just do the GUI as well
+		int book = bookClicked(facing, clickX, clickY, clickZ);
+		if(book == -1) {
+			return world.isRemote || openGui(player, world, pos);
 		}
 
-		TileEntity te = world.getTileEntity(pos);
-		if(te instanceof TileBookshelf) {
-			return ((TileBookshelf) te).interact(player, hand, facing, clickX, clickY, clickZ);
+		if(!world.isRemote) {
+			TileEntity te = world.getTileEntity(pos);
+			if(te instanceof TileBookshelf) {
+				((TileBookshelf) te).interact(player, hand, book);
+			}
 		}
 
-		return false;
+		return true;
+	}
+
+	private static int bookClicked(EnumFacing facing, float clickX, float clickY, float clickZ) {
+		// if we did not click between the shelves, ignore
+		if(clickY < 0.0625 || clickY > 0.9375) {
+			return -1;
+		}
+		int shelf = 0;
+		// if we clicked below the middle shelf, add 7 to the book
+		if(clickY <= 0.4375) {
+			shelf = 7;
+			// if we clicked below the top shelf but not quite in the middle shelf, no book
+		} else if(clickY < 0.5625) {
+			return -1;
+		}
+
+		int offX = facing.getFrontOffsetX();
+		int offZ = facing.getFrontOffsetZ();
+		double x1 = offX == -1 ? 0.625 : 0.0625;
+		double z1 = offZ == -1 ? 0.625 : 0.0625;
+		double x2 = offX ==  1 ? 0.375 : 0.9375;
+		double z2 = offZ ==  1 ? 0.375 : 0.9375;
+		// ensure we clicked within a shelf, not outside one
+		if(clickX < x1 || clickX > x2 || clickZ < z1 || clickZ > z2) {
+			return -1;
+		}
+
+		// okay, so now we know we clicked in the book area, so just take the position clicked to determine where
+		EnumFacing dir = facing.rotateYCCW();
+		// subtract one pixel and multiply by our direction
+		double clicked = (dir.getFrontOffsetX() * clickX) + (dir.getFrontOffsetZ() * clickZ) - 0.0625;
+		// if negative, just add one to wrap back around
+		if(clicked < 0) {
+			clicked = 1 + clicked;
+		}
+
+		// multiply by 8 to account for extra 2 pixels
+		return shelf + Math.min((int)(clicked * 8), 7);
 	}
 
 	/*

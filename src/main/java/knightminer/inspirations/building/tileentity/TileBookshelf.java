@@ -21,7 +21,6 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -72,12 +71,7 @@ public class TileBookshelf extends TileInventory implements IInventoryGui {
 	 * Book logic
 	 */
 
-	public boolean interact(EntityPlayer player, EnumHand hand, EnumFacing facing, float clickX, float clickY, float clickZ) {
-		int bookClicked = bookClicked(facing, clickX, clickY, clickZ);
-		if(bookClicked == -1) {
-			return false;
-		}
-
+	public void interact(EntityPlayer player, EnumHand hand, int bookClicked) {
 		// if it contains a book, take the book out
 		if(isStackInSlot(bookClicked)) {
 			ItemHandlerHelper.giveItemToPlayer(player, getStackInSlot(bookClicked), player.inventory.currentItem);
@@ -86,53 +80,15 @@ public class TileBookshelf extends TileInventory implements IInventoryGui {
 			// otherwise try putting a book in
 			ItemStack stack = player.getHeldItemMainhand();
 			if(!InspirationsRegistry.isBook(stack)) {
-				return true;
+				return;
 			}
 
 			ItemStack book = player.inventory.decrStackSize(player.inventory.currentItem, stackSizeLimit);
 			setInventorySlotContents(bookClicked, book);
 		}
-		return true;
 	}
 
 
-	private static int bookClicked(EnumFacing facing, float clickX, float clickY, float clickZ) {
-		// if we did not click between the shelves, ignore
-		if(clickY < 0.0625 || clickY > 0.9375) {
-			return -1;
-		}
-		int shelf = 0;
-		// if we clicked below the middle shelf, add 7 to the book
-		if(clickY <= 0.4375) {
-			shelf = 7;
-			// if we clicked below the top shelf but not quite in the middle shelf, no book
-		} else if(clickY < 0.5625) {
-			return -1;
-		}
-
-		int offX = facing.getFrontOffsetX();
-		int offZ = facing.getFrontOffsetZ();
-		double x1 = offX == -1 ? 0.625 : 0.0625;
-		double z1 = offZ == -1 ? 0.625 : 0.0625;
-		double x2 = offX ==  1 ? 0.375 : 0.9375;
-		double z2 = offZ ==  1 ? 0.375 : 0.9375;
-		// ensure we clicked within a shelf, not outside one
-		if(clickX < x1 || clickX > x2 || clickZ < z1 || clickZ > z2) {
-			return -1;
-		}
-
-		// okay, so now we know we clicked in the book area, so just take the position clicked to determine where
-		EnumFacing dir = facing.rotateYCCW();
-		// subtract one pixel and multiply by our direction
-		double clicked = (dir.getFrontOffsetX() * clickX) + (dir.getFrontOffsetZ() * clickZ) - 0.0625;
-		// if negative, just add one to wrap back around
-		if(clicked < 0) {
-			clicked = 1 + clicked;
-		}
-
-		// multiply by 8 to account for extra 2 pixels
-		return shelf + Math.min((int)(clicked * 8), 7);
-	}
 
 
 	/*
