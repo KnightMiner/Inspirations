@@ -85,9 +85,9 @@ public class TweaksClientProxy extends ClientProxy {
 					// color by that rarity
 					switch(rarity) {
 						case COMMON:    return 0xFF2151;
-						case UNCOMMON:  return 0xE5C62D;
+						case UNCOMMON:  return 0xE2882D;
 						case RARE:      return 0x00FF21;
-						case VERY_RARE: return 0x0094FF;
+						case VERY_RARE: return 0x9F7FFF;
 					}
 				}
 				return -1;
