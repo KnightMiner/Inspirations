@@ -5,6 +5,7 @@ import com.google.common.eventbus.Subscribe;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.library.InspirationsRegistry;
+import knightminer.inspirations.library.recipe.cauldron.CauldronFluidTransformRecipe;
 import knightminer.inspirations.plugins.tan.recipe.TANFillBucketFromCauldron;
 import knightminer.inspirations.plugins.tan.recipe.TANFillCauldronFromBucket;
 import knightminer.inspirations.recipes.InspirationsRecipes;
@@ -19,6 +20,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 import slimeknights.mantle.pulsar.pulse.Pulse;
+import slimeknights.mantle.util.RecipeMatch;
 
 @Pulse(
 		id = InspirationsShared.pulseID,
@@ -94,6 +96,7 @@ public class ToughAsNailsPlugin extends PulseBase {
 		// filter water in a cauldron
 		if(charcoalFilter != null) {
 			InspirationsRegistry.addCauldronScaledTransformRecipe(new ItemStack(charcoalFilter), dirtyWater, filteredWater, null);
+			InspirationsRegistry.addCauldronRecipe(new CauldronFluidTransformRecipe(RecipeMatch.of(Items.BLAZE_POWDER), filteredWater, FluidRegistry.WATER, true));
 		}
 
 		// make juice in the cauldron
