@@ -43,11 +43,16 @@ public class InspirationsOredict {
 		ensureVanilla();
 		registerBuilding();
 		registerRecipes();
+		registerShared();
 		registerUtility();
 	}
 
 	private void ensureVanilla() {
 		oredict(Items.BOOK, "book");
+	}
+
+	private void registerShared() {
+		oredict(InspirationsShared.witherBone, "boneWithered");
 	}
 
 	private static void registerBuilding() {

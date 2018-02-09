@@ -50,6 +50,8 @@ public class InspirationsShared extends PulseBase {
 	public static ItemStack lingeringBottle;
 	public static ItemStack mushrooms;
 	public static ItemStack rabbitStewMix;
+	public static ItemStack silverfishPowder;
+	public static ItemStack witherBone;
 
 	// edibles
 	public static ItemStack heartbeet;
@@ -78,8 +80,14 @@ public class InspirationsShared extends PulseBase {
 			key = materials.addMeta(1, "key");
 		}
 
-		if(isTweaksLoaded() && Config.enableHeartbeet) {
-			heartbeet = edibles.addFood(0, 2, 2.4f, "heartbeet", new PotionEffect(MobEffects.REGENERATION, 100));
+		if(isTweaksLoaded()) {
+			if(Config.enableHeartbeet) {
+				heartbeet = edibles.addFood(0, 2, 2.4f, "heartbeet", new PotionEffect(MobEffects.REGENERATION, 100));
+			}
+			if(Config.brewMissingPotions) {
+				silverfishPowder = materials.addMeta(6, "silverfish_powder", CreativeTabs.BREWING);
+				witherBone = materials.addMeta(7, "wither_bone", CreativeTabs.BREWING);
+			}
 		}
 		if(isRecipesLoaded()) {
 			if(Config.enableCauldronPotions) {

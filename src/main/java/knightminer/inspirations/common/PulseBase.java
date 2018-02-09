@@ -18,6 +18,12 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.storage.loot.LootEntry;
+import net.minecraft.world.storage.loot.LootEntryTable;
+import net.minecraft.world.storage.loot.LootPool;
+import net.minecraft.world.storage.loot.RandomValueRange;
+import net.minecraft.world.storage.loot.conditions.LootCondition;
+import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
@@ -162,5 +168,21 @@ public class PulseBase {
 		if(item != null) {
 			BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(item, behavior);
 		}
+	}
+
+	/**
+	 * Adds entries from a loot table in the inspirations directory to a vanilla loot table
+	 * @param event  LootTableLoadEvent
+	 * @param name   Name of vanilla table and the inspirations table
+	 */
+	protected static void addToVanillaLoot(LootTableLoadEvent event, String name) {
+		ResourceLocation extra = Util.getResource(name);
+		event.getTable().addPool(new LootPool(
+				new LootEntry[]{new LootEntryTable(extra, 1, 0, new LootCondition[0], Inspirations.modID)},
+				new LootCondition[0],
+				new RandomValueRange(1.0f),
+				new RandomValueRange(0.0F),
+				Inspirations.modID
+				));
 	}
 }

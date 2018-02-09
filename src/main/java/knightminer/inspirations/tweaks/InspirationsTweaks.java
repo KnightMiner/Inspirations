@@ -1,5 +1,7 @@
 package knightminer.inspirations.tweaks;
 
+import java.util.Iterator;
+
 import com.google.common.eventbus.Subscribe;
 
 import knightminer.inspirations.common.CommonProxy;
@@ -17,20 +19,30 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.dispenser.BehaviorDefaultDispenseItem;
 import net.minecraft.dispenser.IBehaviorDispenseItem;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.init.MobEffects;
 import net.minecraft.init.PotionTypes;
+import net.minecraft.item.EnumDyeColor;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.potion.PotionHelper;
+import net.minecraft.potion.PotionHelper.MixPredicate;
+import net.minecraft.potion.PotionType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.RegistryEvent.Register;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.oredict.OreIngredient;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.pulsar.pulse.Pulse;
 
@@ -44,6 +56,26 @@ public class InspirationsTweaks extends PulseBase {
 	// blocks
 	public static Block carpet;
 	public static Block flowerPot;
+
+	// potions
+	public static PotionType haste;
+	public static PotionType strongHaste;
+	public static PotionType fatigue;
+	public static PotionType strongFatigue;
+
+	public static PotionType hunger;
+	public static PotionType strongHunger;
+
+	public static PotionType resistance;
+	public static PotionType longResistance;
+	public static PotionType levitation;
+	public static PotionType longLevitation;
+
+	public static PotionType blindness;
+	public static PotionType longBlindness;
+	public static PotionType decay;
+	public static PotionType strongDecay;
+	public static PotionType longHunger;
 
 	@Subscribe
 	public void preInit(FMLPreInitializationEvent event) {
@@ -62,6 +94,35 @@ public class InspirationsTweaks extends PulseBase {
 		}
 	}
 
+	@SubscribeEvent
+	public void registerPotionTypes(Register<PotionType> event) {
+		IForgeRegistry<PotionType> r = event.getRegistry();
+
+		if(Config.brewMissingPotions) {
+			haste = register(r, new PotionType(new PotionEffect(MobEffects.HASTE, 3600)), "haste");
+			strongHaste = register(r, new PotionType("haste", new PotionEffect(MobEffects.HASTE, 1800, 1)), "strong_haste");
+			fatigue = register(r, new PotionType(new PotionEffect(MobEffects.MINING_FATIGUE, 1200)), "fatigue");
+			strongFatigue = register(r, new PotionType("fatigue", new PotionEffect(MobEffects.MINING_FATIGUE, 600, 1)), "strong_fatigue");
+
+			hunger = register(r, new PotionType(new PotionEffect(MobEffects.HUNGER, 900)), "hunger");
+			longHunger = register(r, new PotionType("hunger", new PotionEffect(MobEffects.HUNGER, 1800)), "long_hunger");
+			strongHunger = register(r, new PotionType("hunger", new PotionEffect(MobEffects.HUNGER, 450, 1)), "strong_hunger");
+
+			resistance = register(r, new PotionType(new PotionEffect(MobEffects.RESISTANCE, 2400)), "resistance");
+			longResistance = register(r, new PotionType("resistance", new PotionEffect(MobEffects.RESISTANCE, 6000)), "long_resistance");
+
+			levitation = register(r, new PotionType(new PotionEffect(MobEffects.LEVITATION, 160)), "levitation");
+			longLevitation = register(r, new PotionType("levitation", new PotionEffect(MobEffects.LEVITATION, 300)), "long_levitation");
+
+			blindness = register(r, new PotionType(new PotionEffect(MobEffects.BLINDNESS, 600)), "blindness");
+			longBlindness = register(r, new PotionType("blindness", new PotionEffect(MobEffects.BLINDNESS, 1200)), "long_blindness");
+
+			decay = register(r, new PotionType(new PotionEffect(MobEffects.WITHER, 600)), "decay");
+			strongDecay = register(r, new PotionType("decay", new PotionEffect(MobEffects.WITHER, 300, 1)), "long_decay");
+
+		}
+	}
+
 	@Subscribe
 	public void init(FMLInitializationEvent event) {
 		proxy.init();
@@ -77,6 +138,62 @@ public class InspirationsTweaks extends PulseBase {
 			InspirationsRegistry.registerFlower(Blocks.CACTUS, 0, true);
 			InspirationsRegistry.registerFlower(Blocks.TALLGRASS, BlockTallGrass.EnumType.FERN.getMeta(), true);
 		}
+		if(Config.brewMissingPotions) {
+			// we need to start by removing a couple vanilla ones which we override
+			Iterator<MixPredicate<PotionType>> iterator = PotionHelper.POTION_TYPE_CONVERSIONS.iterator();
+			while(iterator.hasNext()) {
+				MixPredicate<PotionType> mix = iterator.next();
+				if(mix.input == PotionTypes.LEAPING || mix.input == PotionTypes.LONG_LEAPING) {
+					iterator.remove();
+				}
+			}
+
+			// then add the new recipes
+			Ingredient redstone = Ingredient.fromItem(Items.REDSTONE);
+			Ingredient glowstone = Ingredient.fromItem(Items.GLOWSTONE_DUST);
+			Ingredient spiderEye = Ingredient.fromItem(Items.FERMENTED_SPIDER_EYE);
+
+			// haste
+			Ingredient silverfishPowder = Ingredient.fromStacks(InspirationsShared.silverfishPowder);
+			PotionHelper.addMix(PotionTypes.WATER, silverfishPowder, PotionTypes.MUNDANE);
+			PotionHelper.addMix(PotionTypes.AWKWARD, silverfishPowder, haste);
+			PotionHelper.addMix(haste, glowstone, strongHaste);
+
+			// fatigue
+			PotionHelper.addMix(haste, spiderEye, fatigue);
+			PotionHelper.addMix(strongHaste, spiderEye, strongFatigue);
+			PotionHelper.addMix(fatigue, glowstone, strongFatigue);
+
+			// hunger
+			PotionHelper.addMix(PotionTypes.REGENERATION, spiderEye, hunger);
+			PotionHelper.addMix(PotionTypes.LONG_REGENERATION, spiderEye, longHunger);
+			PotionHelper.addMix(PotionTypes.STRONG_REGENERATION, spiderEye, strongHunger);
+			PotionHelper.addMix(hunger, redstone, longHunger);
+			PotionHelper.addMix(hunger, glowstone, strongHunger);
+
+			// resistance
+			Ingredient skulkerShell = Ingredient.fromItem(Items.SHULKER_SHELL);
+			PotionHelper.addMix(PotionTypes.WATER, skulkerShell, PotionTypes.MUNDANE);
+			PotionHelper.addMix(PotionTypes.AWKWARD, skulkerShell, resistance);
+			PotionHelper.addMix(resistance, redstone, longResistance);
+
+			// levitation
+			PotionHelper.addMix(PotionTypes.LEAPING, spiderEye, levitation);
+			PotionHelper.addMix(PotionTypes.LONG_LEAPING, spiderEye, longLevitation);
+			PotionHelper.addMix(levitation, redstone, longLevitation);
+
+			// blindness
+			Ingredient inkSac = Ingredient.fromStacks(new ItemStack(Items.DYE, 1, EnumDyeColor.BLACK.getDyeDamage()));
+			PotionHelper.addMix(PotionTypes.WATER, inkSac, PotionTypes.MUNDANE);
+			PotionHelper.addMix(PotionTypes.AWKWARD, inkSac, blindness);
+			PotionHelper.addMix(blindness, redstone, longBlindness);
+
+			// decay
+			Ingredient witherBone = new OreIngredient("boneWithered");
+			PotionHelper.addMix(PotionTypes.WATER, witherBone, PotionTypes.MUNDANE);
+			PotionHelper.addMix(PotionTypes.AWKWARD, witherBone, decay);
+			PotionHelper.addMix(decay, glowstone, strongDecay);
+		}
 
 		registerDispenserBehavior();
 	}
@@ -87,6 +204,22 @@ public class InspirationsTweaks extends PulseBase {
 		MinecraftForge.EVENT_BUS.register(TweaksEvents.class);
 	}
 
+	private static final ResourceLocation SILVERFISH_TABLE = new ResourceLocation("entities/silverfish");
+	private static final ResourceLocation WITHER_SKELETON_TABLE = new ResourceLocation("entities/wither_skeleton");
+	@SubscribeEvent
+	public void onLootTableLoad(LootTableLoadEvent event) {
+		if(!Config.brewMissingPotions) {
+			return;
+		}
+
+		ResourceLocation name = event.getName();
+		if(SILVERFISH_TABLE.equals(name)) {
+			addToVanillaLoot(event, "entities/silverfish");
+			// skip wither skeleton drop if TConstruct is loaded
+		} else if(WITHER_SKELETON_TABLE.equals(name) && !Loader.isModLoaded("tconstruct")) {
+			addToVanillaLoot(event, "entities/wither_skeleton");
+		}
+	}
 
 	private static final IBehaviorDispenseItem DEFAULT = new BehaviorDefaultDispenseItem();
 	private void registerDispenserBehavior() {

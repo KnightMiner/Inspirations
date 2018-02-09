@@ -156,6 +156,7 @@ public class Config {
 	public static boolean betterFlowerPot = true;
 	public static boolean flowerPotComparator = true;
 	public static boolean coloredEnchantedRibbons = true;
+	public static boolean brewMissingPotions = true;
 	// heartbeet
 	public static boolean enableHeartbeet = true;
 	public static boolean brewHeartbeet = true;
@@ -287,7 +288,11 @@ public class Config {
 			betterFlowerPot = configFile.getBoolean("betterFlowerPot", "tweaks", betterFlowerPot, "Flower pots can hold modded flowers");
 			flowerPotComparator = configFile.getBoolean("comparator", "tweaks.betterFlowerPot", flowerPotComparator, "Flower pots will emit a comparator signal if they have a flower");
 
+			// colored enchanted book ribbons
 			coloredEnchantedRibbons = configFile.getBoolean("coloredEnchantedRibbons", "tweaks", coloredEnchantedRibbons, "The ribbon on enchanted books colors based on the enchantment rarity");
+
+			// more potions
+			brewMissingPotions = configFile.getBoolean("brewMissingPotions", "tweaks", brewMissingPotions, "Adds brewing recipes for vanilla potions which are missing a recipe");
 		}
 
 		// compatibility
