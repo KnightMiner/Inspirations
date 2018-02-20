@@ -3,11 +3,11 @@
 Inspirations is a mod for Minecraft adding various smaller features to the game. The design is targeted towards vanilla, so instead of game changing features there are many smaller changes. The mod is fully configurable, and all features are divided into four main modules:
 
 * Building
-* Utility
 * Tweaks
 * Recipes
+* Utility
 
-For more information, see the wiki tab.
+For more information, see [the wiki tab](https://github.com/KnightMiner/Inspirations/wiki).
 
 
 
