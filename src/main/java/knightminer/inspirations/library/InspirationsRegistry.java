@@ -7,8 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.logging.log4j.Logger;
+
 import com.google.common.collect.ImmutableList;
 
+import knightminer.inspirations.library.event.RegisterEvent.RegisterCauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.CauldronFluidRecipe;
 import knightminer.inspirations.library.recipe.cauldron.CauldronFluidTransformRecipe;
 import knightminer.inspirations.library.recipe.cauldron.FillCauldronRecipe;
@@ -31,6 +34,8 @@ import net.minecraftforge.fluids.Fluid;
 import slimeknights.mantle.util.RecipeMatch;
 
 public class InspirationsRegistry {
+	public static final Logger log = Util.getLogger("api");
+
 	/*
 	 * Books
 	 */
@@ -287,7 +292,11 @@ public class InspirationsRegistry {
 	 * @param recipe  Recipe to add
 	 */
 	public static void addCauldronRecipe(ICauldronRecipe recipe) {
-		cauldronRecipes.add(recipe);
+		if(new RegisterCauldronRecipe(recipe).fire()) {
+			cauldronRecipes.add(recipe);
+		} else {
+			log.debug("Cauldron recipe '{}' canceled by event", recipe);
+		}
 	}
 
 	/**

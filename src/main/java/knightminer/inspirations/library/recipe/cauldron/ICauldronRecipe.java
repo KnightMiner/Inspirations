@@ -12,6 +12,11 @@ import net.minecraft.util.SoundEvent;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 
+/**
+ * Base interface for all cauldron recipes. Contains all methods required to determine new state, itemstack, and level based on the recipe
+ *
+ * Parameters are considered stateless and generally should not modify the input stack except in the case of transformInput()
+ */
 public interface ICauldronRecipe {
 
 	/**
