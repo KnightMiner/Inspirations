@@ -9,7 +9,6 @@ import knightminer.inspirations.library.recipe.cauldron.CauldronFluidTransformRe
 import knightminer.inspirations.plugins.tan.recipe.TANFillBucketFromCauldron;
 import knightminer.inspirations.plugins.tan.recipe.TANFillCauldronFromBucket;
 import knightminer.inspirations.recipes.InspirationsRecipes;
-import knightminer.inspirations.shared.InspirationsShared;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -23,7 +22,7 @@ import slimeknights.mantle.pulsar.pulse.Pulse;
 import slimeknights.mantle.util.RecipeMatch;
 
 @Pulse(
-		id = InspirationsShared.pulseID,
+		id = ToughAsNailsPlugin.pulseID,
 		description = "Adds support between TAN thirst and the cauldron overrides",
 		modsRequired = "toughasnails",
 		pulsesRequired = InspirationsRecipes.pulseID)
