@@ -11,6 +11,7 @@ import net.minecraft.potion.PotionType;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
 
 /**
  * Base interface for all cauldron recipes. Contains all methods required to determine new state, itemstack, and level based on the recipe
@@ -98,7 +99,7 @@ public interface ICauldronRecipe {
 	public class CauldronState {
 		private int color;
 		private PotionType potion;
-		private Fluid fluid;
+		private FluidStack fluid;
 
 		/** Special constant for default cauldron state. Use this instead of setting the state to null */
 		public static final CauldronState WATER = new CauldronState();
@@ -153,7 +154,7 @@ public interface ICauldronRecipe {
 			}
 
 			CauldronState state = new CauldronState();
-			state.fluid = fluid;
+			state.fluid = new FluidStack(fluid, 1);
 			return state;
 		}
 
@@ -165,7 +166,7 @@ public interface ICauldronRecipe {
 		 * @return true if the state is treated as water
 		 */
 		public boolean isWater() {
-			return this == WATER || InspirationsRegistry.isCauldronWater(fluid);
+			return this == WATER || (fluid != null && InspirationsRegistry.isCauldronWater(fluid.getFluid()));
 		}
 
 		/**
@@ -195,7 +196,7 @@ public interface ICauldronRecipe {
 			if(this == WATER) {
 				return FluidRegistry.WATER;
 			}
-			return fluid;
+			return fluid == null ? null : fluid.getFluid();
 		}
 
 		public boolean matches(CauldronState state) {
@@ -204,7 +205,7 @@ public interface ICauldronRecipe {
 			}
 			return state.color == this.color
 					&& state.potion == this.potion
-					&& state.fluid == this.fluid;
+					&& state.getFluid() == this.getFluid();
 		}
 
 		/* NBT */
@@ -232,7 +233,10 @@ public interface ICauldronRecipe {
 				state.potion = PotionType.getPotionTypeForName(tags.getString(TAG_POTION));
 			}
 			if(tags.hasKey(TAG_FLUID)) {
-				state.fluid = FluidRegistry.getFluid(tags.getString(TAG_FLUID));
+				Fluid fluid = FluidRegistry.getFluid(tags.getString(TAG_FLUID));
+				if(fluid != null) {
+					state.fluid = new FluidStack(fluid, 1);
+				}
 			}
 
 			return state;
@@ -259,7 +263,7 @@ public interface ICauldronRecipe {
 				tags.setString(TAG_POTION, potion.getRegistryName().toString());
 			}
 			if(fluid != null) {
-				tags.setString(TAG_FLUID, fluid.getName());
+				tags.setString(TAG_FLUID, fluid.getFluid().getName());
 			}
 
 			return tags;

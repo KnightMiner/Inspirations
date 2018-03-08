@@ -18,12 +18,12 @@ import slimeknights.mantle.util.RecipeMatch;
  */
 @ParametersAreNonnullByDefault
 public class CauldronFluidRecipe implements ISimpleCauldronRecipe {
-	private RecipeMatch input;
+	protected RecipeMatch input;
 	private ItemStack result;
 	@Nullable
 	private Boolean boiling;
 	@Nullable
-	protected Fluid fluid;
+	protected CauldronState fluid;
 	private SoundEvent sound;
 	private int levels;
 
@@ -40,7 +40,7 @@ public class CauldronFluidRecipe implements ISimpleCauldronRecipe {
 		this.input = input;
 		this.result = result;
 		this.boiling = boiling;
-		this.fluid = fluid;
+		this.fluid = fluid == null ? null : CauldronState.fluid(fluid);
 		this.sound = sound;
 		this.levels = levels;
 	}
@@ -101,7 +101,7 @@ public class CauldronFluidRecipe implements ISimpleCauldronRecipe {
 	}
 
 	protected boolean stateMatches(CauldronState state) {
-		return fluid == null ? state.isWater() : fluid == state.getFluid();
+		return fluid == null ? state.isWater() : fluid.getFluid() == state.getFluid();
 	}
 
 	@Override
@@ -127,7 +127,7 @@ public class CauldronFluidRecipe implements ISimpleCauldronRecipe {
 
 	@Override
 	public int getInputLevel() {
-		return levels;
+		return levels == 0 ? 1 : levels;
 	}
 
 	@Override
@@ -137,7 +137,7 @@ public class CauldronFluidRecipe implements ISimpleCauldronRecipe {
 
 	@Override
 	public Object getInputState() {
-		return fluid == null ? FluidRegistry.WATER : fluid;
+		return fluid == null ? FluidRegistry.WATER : fluid.getFluid();
 	}
 
 	/**
@@ -151,6 +151,6 @@ public class CauldronFluidRecipe implements ISimpleCauldronRecipe {
 
 	@Override
 	public String toString() {
-		return String.format("CauldronFluidRecipe: %s from %s", result.toString(), fluid == null ? "water" : fluid.getName());
+		return String.format("CauldronFluidRecipe: %s from %s", result.toString(), fluid == null ? "water" : fluid.getFluid().getName());
 	}
 }

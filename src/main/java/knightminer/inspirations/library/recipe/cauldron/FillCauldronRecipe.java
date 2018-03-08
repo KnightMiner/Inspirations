@@ -15,10 +15,7 @@ import slimeknights.mantle.util.RecipeMatch;
 @ParametersAreNonnullByDefault
 public class FillCauldronRecipe extends CauldronFluidRecipe {
 
-	private RecipeMatch input;
-	private CauldronState fluid;
 	private int amount;
-	private SoundEvent sound;
 
 	/**
 	 * Full constructor
@@ -29,11 +26,8 @@ public class FillCauldronRecipe extends CauldronFluidRecipe {
 	 * @param sound       Sound to play when filling
 	 */
 	public FillCauldronRecipe(RecipeMatch input, Fluid fluid, int amount, ItemStack container, SoundEvent sound) {
-		super(input, fluid, container, null);
-		this.input = input;
-		this.fluid = CauldronState.fluid(fluid);
+		super(input, fluid, container, null, 0, sound);
 		this.amount = amount;
-		this.sound = sound;
 	}
 
 	/**
@@ -79,11 +73,6 @@ public class FillCauldronRecipe extends CauldronFluidRecipe {
 	@Override
 	public int getInputLevel() {
 		return 0;
-	}
-
-	@Override
-	public SoundEvent getSound(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		return sound;
 	}
 
 	@Override

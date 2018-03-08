@@ -68,6 +68,6 @@ public class CauldronFluidTransformRecipe extends CauldronFluidRecipe {
 
 	@Override
 	public String toString() {
-		return String.format("CauldronFluidTransformRecipe: %s from %s", result.getFluid().getName(), fluid.getName());
+		return String.format("CauldronFluidTransformRecipe: %s from %s", result.getFluid().getName(), fluid == null ? "water" : fluid.getFluid().getName());
 	}
 }
