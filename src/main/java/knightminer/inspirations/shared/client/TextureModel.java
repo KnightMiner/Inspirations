@@ -16,6 +16,7 @@ import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemOverrideList;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
@@ -80,8 +81,9 @@ public class TextureModel extends BakedModelWrapper<IBakedModel> {
 				ItemStack blockStack = new ItemStack(TagUtil.getTagSafe(stack).getCompoundTag(TextureBlockUtil.TAG_TEXTURE));
 				if(!blockStack.isEmpty()) {
 					// get model from data
-					Block block = Block.getBlockFromItem(blockStack.getItem());
-					String texture = ModelHelper.getTextureFromBlock(block, blockStack.getItemDamage()).getIconName();
+					Item item = blockStack.getItem();
+					Block block = Block.getBlockFromItem(item);
+					String texture = ModelHelper.getTextureFromBlock(block, item.getMetadata(blockStack)).getIconName();
 					TextureModel textureModel = (TextureModel) originalModel;
 					return textureModel.getTexturedModel(ImmutableMap.of(textureModel.textureKey, texture));
 				}
