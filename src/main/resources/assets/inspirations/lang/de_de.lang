@@ -1,0 +1,217 @@
+############
+#  Shared  #
+############
+
+entity.inspirations.arrow.name=Pfeil
+
+
+############
+# Building #
+############
+
+tile.inspirations.bookshelf.normal.name=Bücherregal
+tile.inspirations.bookshelf.rainbow.name=Regenbogen-Bücherregal
+tile.inspirations.bookshelf.ancient.name=Antikes Bücherregal
+tile.inspirations.bookshelf.tomes.name=Wälzer-Bücherregal
+
+tile.inspirations.mulch.plain.name=Mulch
+tile.inspirations.mulch.brown.name=Brauner Mulch
+tile.inspirations.mulch.yellow.name=Gelber Mulch
+tile.inspirations.mulch.amber.name=Bernsteinfarbener Mulch
+tile.inspirations.mulch.ruby.name=Rubinfarbener Mulch
+tile.inspirations.mulch.red.name=Roter Mulch
+tile.inspirations.mulch.black.name=Schwarzer Mulch
+tile.inspirations.mulch.blue.name=Blauer Mulch
+
+tile.inspirations.rope.rope.name=Seil
+tile.inspirations.rope.chain.name=Kette
+tile.inspirations.rope.vine.name=Rankenseil
+
+tile.inspirations.glass_trapdoor.name=Glasfalltür
+tile.inspirations.glass_door.name=Glastür
+item.inspirations.glass_door.name=Glastür
+
+tile.inspirations.path.rocks.name=Pflasterpfad
+tile.inspirations.path.tiles.name=Pfadkacheln
+tile.inspirations.path.round.name=Runderpfad
+tile.inspirations.path.bricks.name=Ziegelpfad
+
+tile.inspirations.flower.rose.name=Rose
+tile.inspirations.flower.syringa.name=Flieder
+tile.inspirations.flower.paeonia.name=Pfingstrose
+tile.inspirations.flower.cyan.name=Türkise Blume
+
+tile.inspirations.enlightened_bush.white.name=Weißer erleuchteter Busch
+tile.inspirations.enlightened_bush.red.name=Roter erleuchteter Busch
+tile.inspirations.enlightened_bush.green.name=Grüner erleuchteter Busch
+tile.inspirations.enlightened_bush.blue.name=Blauer erleuchteter Busch
+tile.inspirations.enlightened_bush.rainbow.name=Regenbogenfarbener erleuchteter Busch
+tile.inspirations.enlightened_bush.christmas.name=Weihnachtlicher erleuchteter Busch
+
+item.inspirations.books.white.name=Weißes Buch
+item.inspirations.books.orange.name=Oranges Buch
+item.inspirations.books.magenta.name=Magenta Buch
+item.inspirations.books.light_blue.name=Hellblaues Buch
+item.inspirations.books.yellow.name=Gelbes Buch
+item.inspirations.books.lime.name=Hellgrünes Buch
+item.inspirations.books.pink.name=Rosa Buch
+item.inspirations.books.gray.name=Graues Buch
+item.inspirations.books.silver.name=Hellgraues Buch
+item.inspirations.books.cyan.name=Türkises Buch
+item.inspirations.books.purple.name=Violettes Buch
+item.inspirations.books.blue.name=Blaues Buch
+item.inspirations.books.brown.name=Braunes Buch
+item.inspirations.books.green.name=Grünes Buch
+item.inspirations.books.red.name=Rotes Buch
+item.inspirations.books.black.name=Schwarzes Buch
+
+gui.inspirations.bookshelf.name=Bücherregal
+
+
+#############
+#  Utility  #
+#############
+
+tile.inspirations.torch_lever.name=Fackelhebel
+tile.inspirations.bricks_button.bricks.name=Ziegelknopf
+tile.inspirations.bricks_button.nether.name=Netherziegelknopf
+tile.inspirations.redstone_barrel.name=Redstonefass
+tile.inspirations.redstone_torch_lever.name=Redstonefackelhebel
+
+tile.inspirations.redstone_charge.name=Redstone-Ladung
+item.inspirations.redstone_charger.name=Redstone-Ladegerät
+item.inspirations.arrow.charged.name=Aufgeladener Pfeil
+
+item.inspirations.books.redstone.name=Redstone-Buch
+
+item.inspirations.materials.lock.name=Blanko-Schloss
+item.inspirations.materials.lock.tooltip=Wird zum Sperren von Behältern verwendet\nMuss zuerst in einem Amboss umbenannt werden
+item.inspirations.materials.key.name=Blanko-Schlüssel
+item.inspirations.materials.key.tooltip=Wird zum Entfernen passender Schlösser verwendet
+
+inspirations.lock.success=Behälter abgeschlossen
+inspirations.lock.fail.locked=Dieser Behälter ist bereits abgeschlossen
+inspirations.lock.fail.blank=Dies ist ein Blanko-Schloss, es muss zuerst in einem Amboss umbenannt werden
+
+inspirations.unlock.success=Behälter aufgeschlossen
+inspirations.unlock.fail.no_match=Dieser Schlüssel passt nicht ins Schloss
+inspirations.unlock.fail.unlocked=Der Behälter ist nicht abgeschlossen
+
+tile.inspirations.carpeted_trapdoor_white.name=Weiße Teppich-Falltür
+tile.inspirations.carpeted_trapdoor_orange.name=Orange Teppich-Falltür
+tile.inspirations.carpeted_trapdoor_magenta.name=Magenta Teppich-Falltür
+tile.inspirations.carpeted_trapdoor_light_blue.name=Hellblaue Teppich-Falltür
+tile.inspirations.carpeted_trapdoor_yellow.name=Gelbe Teppich-Falltür
+tile.inspirations.carpeted_trapdoor_lime.name=Hellgrüne Teppich-Falltür
+tile.inspirations.carpeted_trapdoor_pink.name=Rosa Teppich-Falltür
+tile.inspirations.carpeted_trapdoor_gray.name=Graue Teppich-Falltür
+tile.inspirations.carpeted_trapdoor_silver.name=Hellgraue Teppich-Falltür
+tile.inspirations.carpeted_trapdoor_cyan.name=Türkise Teppich-Falltür
+tile.inspirations.carpeted_trapdoor_purple.name=Violette Teppich-Falltür
+tile.inspirations.carpeted_trapdoor_blue.name=Blaue Teppich-Falltür
+tile.inspirations.carpeted_trapdoor_brown.name=Braune Teppich-Falltür
+tile.inspirations.carpeted_trapdoor_green.name=Grüne Teppich-Falltür
+tile.inspirations.carpeted_trapdoor_red.name=Rote Teppich-Falltür
+tile.inspirations.carpeted_trapdoor_black.name=Schwarze Teppich-Falltür
+
+#############
+#  Recipes  #
+#############
+
+item.inspirations.materials.splash_bottle.name=Wurftrankflasche
+item.inspirations.materials.lingering_bottle.name=Verweiltrankflasche
+item.inspirations.materials.mushrooms.name=Pilze
+item.inspirations.materials.mushrooms.tooltip=Werden zum Zubereiten von Pilzsuppe verwendet
+item.inspirations.materials.rabbit_stew_mix.name=Kaninchenragout-Mischung
+item.inspirations.materials.rabbit_stew_mix.tooltip=Wird zum Zubereiten von Kaninchenragout verwendet
+
+item.inspirations.dyed_bottle.name=Gefärbte Wasserflasche
+item.inspirations.dyed_bottle.white.name=Weiß gefärbte Wasserflasche
+item.inspirations.dyed_bottle.orange.name=Orange gefärbte Wasserflasche
+item.inspirations.dyed_bottle.magenta.name=Magenta gefärbte Wasserflasche
+item.inspirations.dyed_bottle.light_blue.name=Hellblau gefärbte Wasserflasche
+item.inspirations.dyed_bottle.yellow.name=Gelb gefärbte Wasserflasche
+item.inspirations.dyed_bottle.lime.name=Hellgrün gefärbte Wasserflasche
+item.inspirations.dyed_bottle.pink.name=Rosa gefärbte Wasserflasche
+item.inspirations.dyed_bottle.gray.name=Grau gefärbte Wasserflasche
+item.inspirations.dyed_bottle.silver.name=Hellgrau gefärbte Wasserflasche
+item.inspirations.dyed_bottle.cyan.name=Türkis gefärbte Wasserflasche
+item.inspirations.dyed_bottle.purple.name=Violett gefärbte Wasserflasche
+item.inspirations.dyed_bottle.blue.name=Blau gefärbte Wasserflasche
+item.inspirations.dyed_bottle.brown.name=Braun gefärbte Wasserflasche
+item.inspirations.dyed_bottle.green.name=Grün gefärbte Wasserflasche
+item.inspirations.dyed_bottle.red.name=Rot gefärbte Wasserflasche
+item.inspirations.dyed_bottle.black.name=Schwarz gefärbte Wasserflasche
+
+fluid.inspirations.mushroom_stew=Pilzsuppe
+fluid.inspirations.beetroot_soup=Borschtsch
+fluid.inspirations.rabbit_stew=Kaninchenragout
+
+# JEI
+gui.jei.anvil_smashing.title=Amboss-Zerschlagung
+gui.jei.cauldron.title=Kessel
+gui.jei.cauldron.level=%s Flaschen
+gui.jei.cauldron.level.singular=1 Flasche
+gui.jei.cauldron.level.empty=Leer
+gui.jei.cauldron.color=%s gefärbtes Wasser
+gui.jei.cauldron.boiling=Kessel muss über Feuer platziert werden
+
+
+############
+#  Tweaks  #
+############
+
+item.inspirations.edibles.heartbeet.name=Heartbeet
+item.inspirations.materials.silverfish_powder.name=Silberfischstaub
+item.inspirations.materials.wither_bone.name=Verdorrter Knochen
+
+potion.effect.haste=Trank der Eile
+potion.effect.fatigue=Trank der Abbaulähmung
+potion.effect.hunger=Trank des Hungers
+potion.effect.resistance=Trank der Resistenz
+potion.effect.levitation=Trank der Schwebekraft
+potion.effect.blindness=Trank der Blindheit
+potion.effect.decay=Trank des Zerfalls
+
+splash_potion.effect.haste=Wurftrank der Eile
+splash_potion.effect.fatigue=Wurftrank der Abbaulähmung
+splash_potion.effect.hunger=Wurftrank des Hungers
+splash_potion.effect.resistance=Wurftrank der Resistenz
+splash_potion.effect.levitation=Wurftrank der Schwebekraft
+splash_potion.effect.blindness=Wurftrank der Blindheit
+splash_potion.effect.decay=Wurftrank des Zerfalls
+
+lingering_potion.effect.haste=Verweiltrank der Eile
+lingering_potion.effect.fatigue=Verweiltrank der Abbaulähmung
+lingering_potion.effect.hunger=Verweiltrank des Hungers
+lingering_potion.effect.resistance=Verweiltrank der Resistenz
+lingering_potion.effect.levitation=Verweiltrank der Schwebekraft
+lingering_potion.effect.blindness=Verweiltrank der Blindheit
+lingering_potion.effect.decay=Verweiltrank des Zerfalls
+
+tipped_arrow.effect.haste=Pfeil der Eile
+tipped_arrow.effect.fatigue=Pfeil der Abbaulähmung
+tipped_arrow.effect.hunger=Pfeil des Hungers
+tipped_arrow.effect.resistance=Pfeil der Resistenz
+tipped_arrow.effect.levitation=Pfeil der Schwebekraft
+tipped_arrow.effect.blindness=Pfeil der Blindheit
+tipped_arrow.effect.decay=Pfeil des Zerfalls
+
+#############
+# TANPlugin #
+#############
+
+fluid.inspirations.dirty_water=Schmutziges Wasser
+fluid.inspirations.filtered_water=Gefiltertes Wasser
+fluid.inspirations.sweetened_water=Gesüßtes Wasser
+
+fluid.inspirations.apple_juice=Apfelsaft
+fluid.inspirations.beetroot_juice=Rote-Beete-Saft
+fluid.inspirations.cactus_juice=Kaktussaft
+fluid.inspirations.carrot_juice=Karrotensaft
+fluid.inspirations.chorus_fruit_juice=Chorusfruchtsaft
+fluid.inspirations.glistering_melon_juice=Glitzernde-Melone-Saft
+fluid.inspirations.golden_apple_juice=Goldener-Apfel-Saft
+fluid.inspirations.golden_carrot_juice=Goldene-Karrote-Saft
+fluid.inspirations.melon_juice=Melonensaft
+fluid.inspirations.pumpkin_juice=Kürbissaft
