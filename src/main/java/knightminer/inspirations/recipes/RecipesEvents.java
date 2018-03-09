@@ -3,6 +3,7 @@ package knightminer.inspirations.recipes;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.recipes.tileentity.TileCauldron;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumActionResult;
@@ -25,6 +26,11 @@ public class RecipesEvents {
 			return;
 		}
 
+		EntityPlayer player = event.getEntityPlayer();
+		if(player.isSneaking()) {
+			return;
+		}
+
 		// basic properties
 		World world = event.getWorld();
 		BlockPos pos = event.getPos();
@@ -37,7 +43,7 @@ public class RecipesEvents {
 			return;
 		}
 
-		boolean result = TileCauldron.interact(world, pos, state, event.getEntityPlayer(), event.getHand());
+		boolean result = TileCauldron.interact(world, pos, state, player, event.getHand());
 		if(result) {
 			event.setCanceled(true);
 			event.setCancellationResult(EnumActionResult.SUCCESS);
