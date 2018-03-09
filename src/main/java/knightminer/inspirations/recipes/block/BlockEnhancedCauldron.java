@@ -1,17 +1,23 @@
 package knightminer.inspirations.recipes.block;
 
 import java.util.Locale;
+import java.util.Random;
 
 import javax.annotation.Nonnull;
 
 import knightminer.inspirations.library.util.TextureBlockUtil;
+import knightminer.inspirations.recipes.client.BoilingParticle;
 import knightminer.inspirations.recipes.tileentity.TileCauldron;
 import net.minecraft.block.BlockCauldron;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.entity.Entity;
+import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.BlockPos;
@@ -20,15 +26,21 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.property.ExtendedBlockState;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.common.property.IUnlistedProperty;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import slimeknights.mantle.property.PropertyString;
 
 public class BlockEnhancedCauldron extends BlockCauldron implements ITileEntityProvider {
 
 	public static final PropertyEnum<CauldronContents> CONTENTS = PropertyEnum.create("contents", CauldronContents.class);
+	public static final PropertyBool BOILING = PropertyBool.create("boiling");
 	public static final PropertyString TEXTURE = TextureBlockUtil.TEXTURE_PROP;
 
 	public BlockEnhancedCauldron() {
-		this.setDefaultState(this.blockState.getBaseState().withProperty(LEVEL, 0).withProperty(CONTENTS, CauldronContents.FLUID));
+		this.setDefaultState(this.blockState.getBaseState()
+				.withProperty(LEVEL, 0)
+				.withProperty(BOILING, false)
+				.withProperty(CONTENTS, CauldronContents.FLUID));
 		this.setHardness(2.0F);
 		this.setUnlocalizedName("cauldron");
 		this.hasTileEntity = true;
@@ -68,7 +80,7 @@ public class BlockEnhancedCauldron extends BlockCauldron implements ITileEntityP
 
 	@Override
 	protected ExtendedBlockState createBlockState() {
-		return new ExtendedBlockState(this, new IProperty[]{LEVEL, CONTENTS}, new IUnlistedProperty[]{TEXTURE});
+		return new ExtendedBlockState(this, new IProperty[]{LEVEL, CONTENTS, BOILING}, new IUnlistedProperty[]{TEXTURE});
 	}
 
 	@Override
@@ -78,7 +90,30 @@ public class BlockEnhancedCauldron extends BlockCauldron implements ITileEntityP
 			state = state.withProperty(CONTENTS, ((TileCauldron)te).getContentType());
 		}
 
+		// add boiling
+		state = state.withProperty(BOILING, world.getBlockState(pos.down()).getBlock() == Blocks.FIRE);
+
 		return state;
+	}
+
+	@SideOnly(Side.CLIENT)
+	@Override
+	public void randomDisplayTick(IBlockState state, World world, BlockPos pos, Random rand) {
+		if(!state.getActualState(world, pos).getValue(BOILING)) {
+			return;
+		}
+		int level = state.getValue(LEVEL);
+		if(level == 0) {
+			return;
+		}
+
+		ParticleManager manager = Minecraft.getMinecraft().effectRenderer;
+		for(int i = 0; i < 2; i++) {
+			double x = pos.getX() + 0.1875D + (rand.nextFloat() * 0.625D);
+			double y = pos.getY() + 0.375D + (level * 0.1875D);
+			double z = pos.getZ() + 0.1875D + (rand.nextFloat() * 0.625D);
+			manager.addEffect(new BoilingParticle(world, x, y, z, 0, 0, 0));
+		}
 	}
 
 	@Nonnull

@@ -68,8 +68,12 @@ public class RecipesClientProxy extends ClientProxy {
 			return;
 		}
 
-		for(int i = 1; i <= 3; i++) {
-			replaceTexturedModel(event, new ModelResourceLocation(CAULDRON_MODEL, String.format("contents=fluid,level=%s", i)), "water", false);
-		}
+		boolean boiling = false;
+		do {
+			for(int i = 1; i <= 3; i++) {
+				replaceTexturedModel(event, new ModelResourceLocation(CAULDRON_MODEL, String.format("boiling=%s,contents=fluid,level=%s", boiling, i)), "water", false);
+			}
+			boiling = !boiling;
+		} while(boiling);
 	}
 }

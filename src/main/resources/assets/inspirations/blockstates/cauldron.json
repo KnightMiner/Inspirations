@@ -13,6 +13,10 @@
       "dye": { "textures": { "water": "inspirations:blocks/fluid_colorless" }},
       "potion": { "textures": { "water": "inspirations:blocks/fluid_potion" }}
     },
+    "boiling": {
+      "true": {},
+      "false": {}
+    },
     "inventory": [{}]
   }
 }
