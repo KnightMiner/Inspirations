@@ -21,6 +21,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.IStringSerializable;
@@ -111,6 +112,11 @@ public class BlockBricksButton extends EnumBlock<BlockBricksButton.BrickType> {
 	@Override
 	public int damageDropped(IBlockState state) {
 		return state.getValue(TYPE).getMeta();
+	}
+
+	@Override
+	protected ItemStack getSilkTouchDrop(IBlockState state) {
+		return new ItemStack(this, 1, state.getValue(TYPE).getMeta());
 	}
 
 	/* Pressing the button */
