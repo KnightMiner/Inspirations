@@ -18,16 +18,22 @@ public class CauldronDyeRecipe implements ISimpleCauldronRecipe {
 	private RecipeMatch input;
 	private ItemStack result;
 	private EnumDyeColor color;
+	private int levels;
 
 	/**
 	 * @param input  Input recipe match entry
 	 * @param color  Color to test for in the cauldron
 	 * @param result Resulting item stack
 	 */
-	public CauldronDyeRecipe(RecipeMatch input, EnumDyeColor color, ItemStack result) {
+	public CauldronDyeRecipe(RecipeMatch input, EnumDyeColor color, ItemStack result, int levels) {
 		this.input = input;
 		this.result = result;
 		this.color = color;
+		this.levels = levels;
+	}
+
+	public CauldronDyeRecipe(RecipeMatch input, EnumDyeColor color, ItemStack result) {
+		this(input, color, result, 1);
 	}
 
 	/**
@@ -41,13 +47,19 @@ public class CauldronDyeRecipe implements ISimpleCauldronRecipe {
 
 	@Override
 	public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		return state.getColor() == color.colorValue
+		return level >= levels && state.getColor() == color.colorValue
 				&& input.matches(Util.createNonNullList(stack)).isPresent();
 	}
 
 	@Override
+	public ItemStack transformInput(ItemStack stack, boolean boiling, int level, CauldronState state) {
+		stack.shrink(input.amountNeeded);
+		return stack;
+	}
+
+	@Override
 	public int getLevel(int level) {
-		return level - 1;
+		return level - levels;
 	}
 
 	@Override
@@ -67,7 +79,7 @@ public class CauldronDyeRecipe implements ISimpleCauldronRecipe {
 
 	@Override
 	public int getInputLevel() {
-		return 1;
+		return levels == 0 ? 1 : levels;
 	}
 
 	@Override
