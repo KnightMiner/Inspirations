@@ -60,7 +60,8 @@ public class Config {
 			"defiledlands:book_wyrm_cooked:0:false",
 			"defiledlands:book_wyrm_scale:0:false",
 			"defiledlands:book_wyrm_scale_golden:0:false",
-			"defiledlands:book_wyrm_analyzer:0:false"
+			"defiledlands:book_wyrm_analyzer:0:false",
+			"theoneprobe:probenote:0:true"
 	};
 
 	// utility
