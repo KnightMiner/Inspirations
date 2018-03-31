@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 import knightminer.inspirations.Inspirations;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -21,6 +22,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.translation.I18n;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 @SuppressWarnings("deprecation")
 public class Util {
@@ -64,17 +66,35 @@ public class Util {
 	}
 
 	/**
-	 * Gets an item stack from a block state. Uses Item::getItemFromBlock and Block::damageDropped
+	 * Gets an item stack from a block state. Uses Block::getSilkTouchDrop
 	 * @param state  Input state
 	 * @return  ItemStack for the state, or ItemStack.EMPTY if a valid item cannot be found
 	 */
 	public static ItemStack getStackFromState(IBlockState state) {
 		Block block = state.getBlock();
+		// skip air
+		if(block == Blocks.AIR) {
+			return ItemStack.EMPTY;
+		}
+
+		// first try getSilkTouchDrop, which just has to be protected
+		try {
+			Object stack = ReflectionHelper.findMethod(Block.class, "getSilkTouchDrop", "func_180643_i", IBlockState.class).invoke(block, state);
+			if(stack instanceof ItemStack) {
+				return (ItemStack) stack;
+			}
+		} catch (Exception e) {
+			InspirationsRegistry.log.error(e);
+		}
+
+		// if it fails, do a fallback of damageDropped and item.getItemFromBlock
+		InspirationsRegistry.log.error("Failed to get silk touch drop for {}, using fallback", state);
+
+		// fallback, use item and damage dropped
 		Item item = Item.getItemFromBlock(block);
 		if(item == Items.AIR) {
 			return ItemStack.EMPTY;
 		}
-
 		int meta = block.damageDropped(state);
 		return new ItemStack(item, 1, meta);
 	}
