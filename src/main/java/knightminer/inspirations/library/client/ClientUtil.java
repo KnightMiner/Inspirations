@@ -61,7 +61,13 @@ public final class ClientUtil {
 	 */
 	private static Integer getStackColor(ItemMetaKey key) {
 		IBakedModel model = mc.getRenderItem().getItemModelWithOverrides(key.makeItemStack(), null, null);
+		if(model == null) {
+			return -1;
+		}
 		TextureAtlasSprite sprite = model.getParticleTexture();
+		if(sprite == null) {
+			return -1;
+		}
 		int[] pixels = sprite.getFrameTextureData(0)[0];
 		float r = 0, g = 0, b = 0, count = 0;
 		float[] hsb = new float[3];
