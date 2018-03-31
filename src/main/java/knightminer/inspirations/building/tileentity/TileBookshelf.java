@@ -16,6 +16,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -34,8 +35,12 @@ import slimeknights.mantle.tileentity.TileInventory;
 
 public class TileBookshelf extends TileInventory implements IInventoryGui {
 
+	/** Cached enchantment bonus, so we are not constantly digging the inventory */
+	private float enchantBonus;
+
 	public TileBookshelf() {
 		super("gui.inspirations.bookshelf.name", 14, 1);
+		enchantBonus = Float.NaN;
 	}
 
 	@Override
@@ -65,6 +70,9 @@ public class TileBookshelf extends TileInventory implements IInventoryGui {
 				}
 			}
 		}
+
+		// clear bonus to recalculate it
+		enchantBonus = Float.NaN;
 	}
 
 	/*
@@ -108,7 +116,7 @@ public class TileBookshelf extends TileInventory implements IInventoryGui {
 
 
 	/*
-	 * Redstone logic
+	 * Extra logic
 	 */
 
 	public int getPower() {
@@ -124,6 +132,27 @@ public class TileBookshelf extends TileInventory implements IInventoryGui {
 		return 0;
 	}
 
+	public float getEnchantPower() {
+		// if we have a cached value, use that
+		if(!Float.isNaN(enchantBonus)) {
+			return enchantBonus;
+		}
+		// simple sum of all books with the power of a full shelf
+		float books = 0;
+		for(int i = 0; i < this.getSizeInventory(); i++) {
+			if(isStackInSlot(i)) {
+				if(getStackInSlot(i).getItem() == Items.ENCHANTED_BOOK) {
+					books += 2.5;
+				} else {
+					books += 1.5;
+				}
+			}
+		}
+
+		// divide by 14 since that is the number of books in a shelf
+		enchantBonus = books / 14;
+		return enchantBonus;
+	}
 
 	/*
 	 * Rendering
@@ -185,5 +214,4 @@ public class TileBookshelf extends TileInventory implements IInventoryGui {
 			forgeData.removeTag(TextureBlockUtil.TAG_TEXTURE);
 		}
 	}
-
 }

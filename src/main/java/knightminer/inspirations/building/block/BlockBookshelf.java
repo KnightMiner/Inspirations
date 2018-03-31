@@ -382,6 +382,21 @@ public class BlockBookshelf extends BlockInventory implements ITileEntityProvide
 		drops.add(TextureBlockUtil.getBlockItemStack(world, pos, state));
 	}
 
+	/**
+	 * Determines the amount of enchanting power this block can provide to an enchanting table.
+	 * @param world The World
+	 * @param pos Block position in world
+	 * @return The amount of enchanting power this block produces.
+	 */
+	@Override
+	public float getEnchantPowerBonus(World world, BlockPos pos) {
+		TileEntity te = world.getTileEntity(pos);
+		if(te instanceof TileBookshelf) {
+			return ((TileBookshelf) te).getEnchantPower();
+		}
+		return 0;
+	}
+
 	public static enum BookshelfType implements IStringSerializable {
 		NORMAL,
 		RAINBOW,
