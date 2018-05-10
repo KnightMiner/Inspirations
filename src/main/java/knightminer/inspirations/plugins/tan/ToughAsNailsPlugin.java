@@ -5,9 +5,6 @@ import com.google.common.eventbus.Subscribe;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.library.InspirationsRegistry;
-import knightminer.inspirations.library.recipe.cauldron.CauldronFluidTransformRecipe;
-import knightminer.inspirations.plugins.tan.recipe.TANFillBucketFromCauldron;
-import knightminer.inspirations.plugins.tan.recipe.TANFillCauldronFromBucket;
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -19,7 +16,6 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 import slimeknights.mantle.pulsar.pulse.Pulse;
-import slimeknights.mantle.util.RecipeMatch;
 
 @Pulse(
 		id = ToughAsNailsPlugin.pulseID,
@@ -29,7 +25,7 @@ import slimeknights.mantle.util.RecipeMatch;
 public class ToughAsNailsPlugin extends PulseBase {
 	public static final String pulseID = "ToughAsNailsPlugin";
 
-	@ObjectHolder(value = "toughasnails:water_bottle")
+	@ObjectHolder(value = "toughasnails:purified_water_bottle")
 	public static final Item waterBottle = null;
 	@ObjectHolder(value = "toughasnails:charcoal_filter")
 	public static final Item charcoalFilter = null;
@@ -37,8 +33,6 @@ public class ToughAsNailsPlugin extends PulseBase {
 	public static final Item fruitJuice = null;
 
 	// fluids
-	public static Fluid dirtyWater;
-	public static Fluid filteredWater;
 	public static Fluid sweetenedWater;
 	public static Fluid[] juices;
 
@@ -48,10 +42,6 @@ public class ToughAsNailsPlugin extends PulseBase {
 		if(!Config.enableExtendedCauldron) {
 			return;
 		}
-
-		// dirty water states
-		dirtyWater = registerColoredFluid("dirty_water", 0x295856);
-		filteredWater = registerColoredFluid("filtered_water", 0x52618D);
 
 		// juice types
 		if(Config.tanJuiceInCauldron) {
@@ -78,49 +68,41 @@ public class ToughAsNailsPlugin extends PulseBase {
 			return;
 		}
 
-		// treat dirty and filtered water as water
-		InspirationsRegistry.addCauldronWater(dirtyWater);
-		InspirationsRegistry.addCauldronWater(filteredWater);
-
-		// makes water buckets always pour dirty water and grab any of the three water types
-		InspirationsRegistry.addCauldronRecipe(TANFillCauldronFromBucket.INSTANCE);
-		InspirationsRegistry.addCauldronRecipe(TANFillBucketFromCauldron.INSTANCE);
-
-		if(waterBottle != null) {
-			// allow the other bottle types to fill and empty cauldrons
-			addCauldronBottleRecipes(dirtyWater, 0);
-			addCauldronBottleRecipes(filteredWater, 1);
-		}
-
-		// filter water in a cauldron
-		if(charcoalFilter != null) {
-			InspirationsRegistry.addCauldronScaledTransformRecipe(new ItemStack(charcoalFilter), dirtyWater, filteredWater, null);
-			InspirationsRegistry.addCauldronRecipe(new CauldronFluidTransformRecipe(RecipeMatch.of(Items.BLAZE_POWDER), filteredWater, FluidRegistry.WATER, true));
-		}
-
-		// make juice in the cauldron
-		if(Config.tanJuiceInCauldron && fruitJuice != null) {
-			InspirationsRegistry.addCauldronScaledTransformRecipe(new ItemStack(Items.SUGAR), FluidRegistry.WATER, sweetenedWater, false);
-			Item[] items = {
-					Items.APPLE,
-					Items.BEETROOT,
-					Item.getItemFromBlock(Blocks.CACTUS),
-					Items.CARROT,
-					Items.CHORUS_FRUIT,
-					Items.SPECKLED_MELON,
-					Items.GOLDEN_APPLE,
-					Items.GOLDEN_CARROT,
-					Items.MELON,
-					Item.getItemFromBlock(Blocks.PUMPKIN)
-			};
-			for(int i = 0; i < items.length; i++) {
-				addJuiceRecipe(juices[i], i, items[i]);
+		// allow water to be purified in the cauldron, then used to make juices
+		Fluid purifiedWater = FluidRegistry.getFluid("purified_water");
+		if(purifiedWater != null) {
+			InspirationsRegistry.addCauldronWater(purifiedWater);
+			// add recipe to fill purified bottle
+			if(waterBottle != null) {
+				InspirationsRegistry.addCauldronFluidItem(new ItemStack(waterBottle, 1), new ItemStack(Items.GLASS_BOTTLE), purifiedWater);
 			}
-		}
-	}
 
-	private static void addCauldronBottleRecipes(Fluid fluid, int meta) {
-		InspirationsRegistry.addCauldronFluidItem(new ItemStack(waterBottle, 1, meta), new ItemStack(Items.GLASS_BOTTLE), fluid);
+			// filter water in a cauldron
+			if(charcoalFilter != null) {
+				InspirationsRegistry.addCauldronScaledTransformRecipe(new ItemStack(charcoalFilter), FluidRegistry.WATER, purifiedWater, null);
+			}
+
+			// make juice in the cauldron
+			if(Config.tanJuiceInCauldron && fruitJuice != null) {
+				InspirationsRegistry.addCauldronScaledTransformRecipe(new ItemStack(Items.SUGAR), purifiedWater, sweetenedWater, false);
+				Item[] items = {
+						Items.APPLE,
+						Items.BEETROOT,
+						Item.getItemFromBlock(Blocks.CACTUS),
+						Items.CARROT,
+						Items.CHORUS_FRUIT,
+						Items.SPECKLED_MELON,
+						Items.GOLDEN_APPLE,
+						Items.GOLDEN_CARROT,
+						Items.MELON,
+						Item.getItemFromBlock(Blocks.PUMPKIN)
+				};
+				for(int i = 0; i < items.length; i++) {
+					addJuiceRecipe(juices[i], i, items[i]);
+				}
+			}
+
+		}
 	}
 
 	private static void addJuiceRecipe(Fluid fluid, int meta, Item ingredient) {

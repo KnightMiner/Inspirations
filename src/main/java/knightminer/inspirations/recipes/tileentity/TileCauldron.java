@@ -14,10 +14,12 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.potion.PotionUtils;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumHand;
@@ -161,7 +163,13 @@ public class TileCauldron extends TileEntity {
 		}
 
 		// if we have water, allow default actions to run, otherwise block
-		return !state.isWater();
+		if(state.isWater()) {
+			// though skip default interactions for water bottles and water buckets if not pure water
+			Item item = stack.getItem();
+			return state != CauldronState.WATER && (item == Items.POTIONITEM || item == Items.WATER_BUCKET);
+		}
+
+		return true;
 	}
 
 	public IBlockState writeExtendedBlockState(IExtendedBlockState state) {
