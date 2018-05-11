@@ -2,6 +2,7 @@ package knightminer.inspirations.plugins.tan;
 
 import com.google.common.eventbus.Subscribe;
 
+import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.library.InspirationsRegistry;
@@ -101,7 +102,8 @@ public class ToughAsNailsPlugin extends PulseBase {
 					addJuiceRecipe(juices[i], i, items[i]);
 				}
 			}
-
+		} else {
+			Inspirations.log.error("Unable to find Tough as Nails purified water fluid, skipping recipes");
 		}
 	}
 

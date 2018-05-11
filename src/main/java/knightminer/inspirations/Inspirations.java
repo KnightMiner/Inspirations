@@ -24,7 +24,8 @@ import slimeknights.mantle.pulsar.control.PulseManager;
 		name = Inspirations.modName,
 		version = Inspirations.modVersion,
 		dependencies = "required-after:forge@[14.23.1.2571,];"
-				+ "required-after:mantle",
+				+ "required-after:mantle;"
+				+ "after:toughasnails@[3.1.0,]",
 				acceptedMinecraftVersions = "[1.12, 1.13)")
 public class Inspirations {
 	public static final String modID = "inspirations";
