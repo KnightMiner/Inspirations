@@ -85,7 +85,7 @@ public class ToughAsNailsPlugin extends PulseBase {
 
 			// make juice in the cauldron
 			if(Config.tanJuiceInCauldron && fruitJuice != null) {
-				InspirationsRegistry.addCauldronScaledTransformRecipe(new ItemStack(Items.SUGAR), purifiedWater, sweetenedWater, false);
+				InspirationsRegistry.addCauldronScaledTransformRecipe(new ItemStack(Items.SUGAR), purifiedWater, sweetenedWater, null);
 				Item[] items = {
 						Items.APPLE,
 						Items.BEETROOT,
