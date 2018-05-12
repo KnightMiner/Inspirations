@@ -17,13 +17,11 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.recipe.IRecipeWrapper;
 
-public class CauldronRecipeWrapper implements IRecipeWrapper {
+public class CauldronRecipeWrapper implements ICauldronRecipeWrapper {
 
 	private static final FluidStack WATER_STACK = new FluidStack(FluidRegistry.WATER, 1);
 
@@ -93,18 +91,22 @@ public class CauldronRecipeWrapper implements IRecipeWrapper {
 
 	/* Getters used in the category */
 
+	@Override
 	public CauldronContents getInputType() {
 		return getType(inputLevel, inputFluid, inputColor, inputPotion);
 	}
 
+	@Override
 	public CauldronContents getOutputType() {
 		return getType(outputLevel, outputFluid, outputColor, outputPotion);
 	}
 
+	@Override
 	public int getInputLevel() {
 		return inputLevel;
 	}
 
+	@Override
 	public int getOutputLevel() {
 		return outputLevel;
 	}
@@ -146,9 +148,7 @@ public class CauldronRecipeWrapper implements IRecipeWrapper {
 
 	@Override
 	public List<String> getTooltipStrings(int mouseX, int mouseY) {
-		List<String> tooltip = new ArrayList<>();
-		addStringTooltip(tooltip, inputLevel, 47, 19, mouseX, mouseY);
-		addStringTooltip(tooltip, outputLevel, 101, 19, mouseX, mouseY);
+		List<String> tooltip = ICauldronRecipeWrapper.super.getTooltipStrings(mouseX, mouseY);
 
 		if(boiling && mouseX > 45 && mouseX <= 58 && mouseY > 36 && mouseY <= 48) {
 			tooltip.add(Util.translate("gui.jei.cauldron.boiling"));
@@ -178,14 +178,5 @@ public class CauldronRecipeWrapper implements IRecipeWrapper {
 		}
 
 		return null;
-	}
-
-	/**
-	 * Adds the empty string for the input or output if relevant
-	 */
-	private static void addStringTooltip(List<String> tooltips, int level, int x, int y, int mouseX, int mouseY) {
-		if(level == 0 && mouseX >= x && mouseX < x + 10 && mouseY >= y && mouseY < y + 10) {
-			tooltips.add(Util.translateFormatted("gui.jei.cauldron.level.empty"));
-		}
 	}
 }

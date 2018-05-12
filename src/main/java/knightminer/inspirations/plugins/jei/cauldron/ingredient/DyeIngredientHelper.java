@@ -1,18 +1,29 @@
 package knightminer.inspirations.plugins.jei.cauldron.ingredient;
 
 import java.awt.Color;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-
+import java.util.stream.Collectors;
 import com.google.common.collect.ImmutableList;
 
 import knightminer.inspirations.Inspirations;
+import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import mezz.jei.api.ingredients.IIngredientHelper;
+import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemStack;
 
 public enum DyeIngredientHelper implements IIngredientHelper<DyeIngredient> {
 	INSTANCE;
+
+	public static final List<DyeIngredient> ALL_DYES;
+	static {
+		ALL_DYES = Config.enableCauldronDyeing ? Arrays.stream(EnumDyeColor.values())
+				.map(DyeIngredient::new)
+				.collect(Collectors.toList()) : Collections.emptyList();
+	}
 
 	@Override
 	public List<DyeIngredient> expandSubtypes(List<DyeIngredient> ingredients) {

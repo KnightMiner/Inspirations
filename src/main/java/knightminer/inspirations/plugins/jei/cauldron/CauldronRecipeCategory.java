@@ -2,11 +2,18 @@ package knightminer.inspirations.plugins.jei.cauldron;
 
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.Util;
+import knightminer.inspirations.plugins.jei.JEIPlugin;
 import knightminer.inspirations.plugins.jei.cauldron.ingredient.DyeIngredient;
 import knightminer.inspirations.plugins.jei.cauldron.ingredient.DyeIngredientRenderer;
 import knightminer.inspirations.plugins.jei.cauldron.ingredient.PotionIngredient;
 import knightminer.inspirations.plugins.jei.cauldron.ingredient.PotionIngredientRenderer;
+import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.recipes.block.BlockEnhancedCauldron.CauldronContents;
+import net.minecraft.init.PotionTypes;
+import net.minecraft.item.EnumDyeColor;
+import net.minecraft.item.ItemStack;
+import net.minecraft.potion.PotionType;
+import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.FluidStack;
@@ -22,9 +29,11 @@ import mezz.jei.api.gui.IGuiIngredientGroup;
 import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IFocus.Mode;
 import mezz.jei.api.recipe.IRecipeCategory;
 
-public class CauldronRecipeCategory implements IRecipeCategory<CauldronRecipeWrapper> {
+public class CauldronRecipeCategory implements IRecipeCategory<ICauldronRecipeWrapper> {
 
 	public static final String CATEGORY = Util.prefix("cauldron");
 	public static final ResourceLocation BACKGROUND_LOC = Util.getResource("textures/gui/jei/cauldron.png");
@@ -57,18 +66,52 @@ public class CauldronRecipeCategory implements IRecipeCategory<CauldronRecipeWra
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayout recipeLayout, CauldronRecipeWrapper recipe, IIngredients ingredients) {
+	public void setRecipe(IRecipeLayout recipeLayout, ICauldronRecipeWrapper recipe, IIngredients ingredients) {
 		IGuiItemStackGroup items = recipeLayout.getItemStacks();
-
-		items.init(0, true, 43, 0);
-		items.set(ingredients);
-		items.init(1, false, 97, 0);
-		items.set(ingredients);
 
 		IGuiFluidStackGroup fluids = recipeLayout.getFluidStacks();
 		fluids.addTooltipCallback(CauldronRecipeCategory::onFluidTooltip);
 		IGuiIngredientGroup<DyeIngredient> dyes = recipeLayout.getIngredientsGroup(DyeIngredient.class);
 		IGuiIngredientGroup<PotionIngredient> potions = recipeLayout.getIngredientsGroup(PotionIngredient.class);
+
+		// handle translating potions to potion items in focuses
+		IFocus<?> focus = recipeLayout.getFocus();
+		if(focus != null) {
+			Mode mode = focus.getMode() == Mode.INPUT ? Mode.OUTPUT : Mode.INPUT;
+			Object value = focus.getValue();
+			if(value instanceof ItemStack) {
+				ItemStack stack = (ItemStack) value;
+				// dyed waterbottle means the other focus should be a dye
+				if(stack.getItem() == InspirationsRecipes.dyedWaterBottle) {
+					int meta = stack.getMetadata();
+					if(meta < 16) {
+						dyes.setOverrideDisplayFocus(JEIPlugin.recipeRegistry.createFocus(mode, new DyeIngredient(EnumDyeColor.byDyeDamage(meta))));
+					}
+				} else {
+					// if the stack has a potion, add a potion focus
+					PotionType potion = PotionUtils.getPotionFromItem(stack);
+					if(potion != PotionTypes.EMPTY) {
+						potions.setOverrideDisplayFocus(JEIPlugin.recipeRegistry.createFocus(mode, new PotionIngredient(potion)));
+					}
+				}
+			} else if(value instanceof PotionIngredient) {
+				// potion ingredients focus on the potion matching the recipe type
+				ItemStack item = recipe.getPotionItem();
+				if(!item.isEmpty()) {
+					PotionType potion = ((PotionIngredient) value).getPotion();
+					items.setOverrideDisplayFocus(JEIPlugin.recipeRegistry.createFocus(mode, PotionUtils.addPotionToItemStack(item, potion)));
+				}
+			} else if(value instanceof DyeIngredient) {
+				// dye ingredients focus on the dyed water bottle of matching color
+				int meta = ((DyeIngredient)value).getDye().getDyeDamage();
+				items.setOverrideDisplayFocus(JEIPlugin.recipeRegistry.createFocus(mode, new ItemStack(InspirationsRecipes.dyedWaterBottle, 1, meta)));
+			}
+		}
+
+		items.init(0, true, 43, 0);
+		items.set(ingredients);
+		items.init(1, false, 97, 0);
+		items.set(ingredients);
 
 		init(fluids, dyes, potions, ingredients, true, 47, 19, recipe.getInputType(), recipe.getInputLevel());
 		init(fluids, dyes, potions, ingredients, false, 101, 19, recipe.getOutputType(), recipe.getOutputLevel());

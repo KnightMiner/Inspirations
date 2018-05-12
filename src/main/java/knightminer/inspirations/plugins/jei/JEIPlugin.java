@@ -2,18 +2,8 @@ package knightminer.inspirations.plugins.jei;
 
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
-import net.minecraft.init.PotionTypes;
-import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.potion.PotionType;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-
 import javax.annotation.Nonnull;
 
 import knightminer.inspirations.building.InspirationsBuilding;
@@ -116,13 +106,9 @@ public class JEIPlugin implements IModPlugin {
 		if(PulseBase.isRecipesLoaded()) {
 			if(Config.enableCauldronRecipes) {
 				// dye ingredients
-				Collection<DyeIngredient> dyes = Config.enableCauldronDyeing ? Arrays.stream(EnumDyeColor.values()).map(DyeIngredient::new).collect(Collectors.toList()) : Collections.emptyList();
-				registry.register(DyeIngredient.class, dyes, DyeIngredientHelper.INSTANCE, DyeIngredientRenderer.INVENTORY);
+				registry.register(DyeIngredient.class, DyeIngredientHelper.ALL_DYES, DyeIngredientHelper.INSTANCE, DyeIngredientRenderer.INVENTORY);
 				// potion ingredients
-				Collection<PotionIngredient> potions = Config.enableCauldronPotions ? StreamSupport.stream(PotionType.REGISTRY.spliterator(), false)
-						.filter(type->type != PotionTypes.EMPTY && type != PotionTypes.WATER).map(PotionIngredient::new)
-						.collect(Collectors.toList()) : Collections.emptyList();
-						registry.register(PotionIngredient.class, potions, PotionIngredientHelper.INSTANCE, PotionIngredientRenderer.INVENTORY);
+				registry.register(PotionIngredient.class, PotionIngredientHelper.ALL_POTIONS, PotionIngredientHelper.INSTANCE, PotionIngredientRenderer.INVENTORY);
 			}
 		}
 	}
