@@ -23,6 +23,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemEnchantedBook;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
@@ -34,6 +35,7 @@ public class TweaksClientProxy extends ClientProxy {
 	private static final ResourceLocation CARPET_MODEL = Util.getResource("carpet");
 	private static final ResourceLocation CAULDRON_ITEM_MODEL = Util.getResource("cauldron_item");
 	private static final ResourceLocation ENCHANTED_BOOK = Util.getResource("enchanted_book");
+	private static final ResourceLocation FIREWORKS = Util.getResource("fireworks");
 	private static final ModelResourceLocation FLOWER_POT_MODEL = new ModelResourceLocation(Util.getResource("flower_pot"), "normal");
 
 	@SubscribeEvent
@@ -56,6 +58,9 @@ public class TweaksClientProxy extends ClientProxy {
 
 		if(Config.coloredEnchantedRibbons) {
 			registerItemModel(Items.ENCHANTED_BOOK, ENCHANTED_BOOK);
+		}
+		if(Config.coloredFireworkItems) {
+			registerItemModel(Items.FIREWORKS, 0, FIREWORKS);
 		}
 	}
 
@@ -92,6 +97,55 @@ public class TweaksClientProxy extends ClientProxy {
 				}
 				return -1;
 			}, Items.ENCHANTED_BOOK);
+		}
+
+		if(Config.coloredFireworkItems) {
+			registerItemColors(itemColors, (stack, tintIndex) -> {
+				NBTTagCompound nbt = stack.getSubCompound("Fireworks");
+				// string is darker with more gunpowder
+				if(tintIndex == 2) {
+					if (nbt != null && nbt.hasKey("Flight", 99)) {
+						byte flight = nbt.getByte("Flight");
+						switch(flight) {
+							case 1:
+								return 0x808080;
+							case 2:
+								return 0x606060;
+							case 3:
+								return 0x303030;
+						}
+						if(flight > 3) {
+							return 0x000000;
+						}
+					}
+					return 0xA0A0A0;
+				}
+				// color the stripes and the top
+				if(tintIndex == 0 || tintIndex == 1) {
+					// no NBT?
+					int missing = tintIndex == 1 ? 0xCCA190 : 0xC0C0C0;
+					if(nbt == null) {
+						return missing;
+					}
+
+					NBTTagList stars = nbt.getTagList("Explosions", 10);
+					// not enough stars?
+					if(tintIndex >= stars.tagCount()) {
+						return missing;
+					}
+
+					// grab the proper star's first color
+					NBTTagCompound star = stars.getCompoundTagAt(tintIndex);
+					int[] colors = star.getIntArray("Colors");
+					if (colors.length > 0) {
+						return colors[0];
+					}
+
+					return missing;
+				}
+
+				return -1;
+			}, Items.FIREWORKS);
 		}
 	}
 

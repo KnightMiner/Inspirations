@@ -1,0 +1,9 @@
+{
+    "parent": "item/generated",
+    "textures": {
+        "layer0": "inspirations:items/fireworks_stripes",
+        "layer1": "inspirations:items/fireworks_top",
+        "layer2": "inspirations:items/fireworks_fuse",
+        "layer3": "inspirations:items/fireworks_base"
+    }
+}

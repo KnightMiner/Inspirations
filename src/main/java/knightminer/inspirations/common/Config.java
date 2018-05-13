@@ -158,6 +158,7 @@ public class Config {
 	public static boolean flowerPotComparator = true;
 	public static boolean coloredEnchantedRibbons = true;
 	public static boolean brewMissingPotions = true;
+	public static boolean coloredFireworkItems = true;
 	// heartbeet
 	public static boolean enableHeartbeet = true;
 	public static boolean brewHeartbeet = true;
@@ -294,6 +295,9 @@ public class Config {
 
 			// more potions
 			brewMissingPotions = configFile.getBoolean("brewMissingPotions", "tweaks", brewMissingPotions, "Adds brewing recipes for vanilla potions which are missing a recipe");
+
+			// more potions
+			coloredFireworkItems = configFile.getBoolean("coloredFireworkItems", "tweaks", coloredFireworkItems, "Colors the fireworks item based on the colors of the stars");
 		}
 
 		// compatibility
