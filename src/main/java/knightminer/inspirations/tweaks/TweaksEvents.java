@@ -10,6 +10,7 @@ import net.minecraft.block.BlockBush;
 import net.minecraft.block.BlockVine;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -21,7 +22,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
@@ -250,6 +253,75 @@ public class TweaksEvents {
 					iterator.remove();
 				}
 			}
+		}
+	}
+
+	@SubscribeEvent
+	public static void onFall(LivingFallEvent event) {
+		if(!Config.lilypadBreakFall) {
+			return;
+		}
+
+		// no fall damage
+		if(event.getDistance() < 4) {
+			return;
+		}
+
+		// ensure client world
+		EntityLivingBase entity = event.getEntityLiving();
+		World world = entity.getEntityWorld();
+		if(world.isRemote) {
+			return;
+		}
+		// actually hit the lily pad
+		Vec3d vec = entity.getPositionVector();
+		if(vec.y % 1 > 0.09375) {
+			return;
+		}
+
+		// build a list of lily pads we hit
+		BlockPos blockPos = entity.getPosition();
+		BlockPos[] posList = new BlockPos[4];
+		int i = 0;
+		posList[i++] = blockPos;
+		double x = vec.x % 1;
+		if(x < 0) {
+			x += 1;
+		}
+		double z = vec.z % 1;
+		if(z < 0) {
+			z += 1;
+		}
+		// about 0.3 out of the block is into another block
+		if(x > 0.7) {
+			posList[i++] = blockPos.east();
+		} else if(x < 0.3) {
+			posList[i++] = blockPos.west();
+		}
+		if(z > 0.7) {
+			posList[i++] = blockPos.south();
+			// make sure to get the corners
+			if(i == 3) {
+				posList[i++] = posList[1].south();
+			}
+		} else if(z < 0.3) {
+			posList[i++] = blockPos.north();
+			if(i == 3) {
+				posList[i++] = posList[1].north();
+			}
+		}
+
+		// loop through the position list and find any lily pads
+		boolean safe = false;
+		for(BlockPos pos : posList) {
+			if(pos != null && world.getBlockState(pos).getBlock() == Blocks.WATERLILY) {
+				world.destroyBlock(pos, true);
+				safe = true;
+			}
+		}
+		// if we got one, this fall is safe
+		if(safe) {
+			event.setDistance(0);
 		}
 	}
 }

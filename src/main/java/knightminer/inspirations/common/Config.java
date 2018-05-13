@@ -159,6 +159,7 @@ public class Config {
 	public static boolean coloredEnchantedRibbons = true;
 	public static boolean brewMissingPotions = true;
 	public static boolean coloredFireworkItems = true;
+	public static boolean lilypadBreakFall = true;
 	// heartbeet
 	public static boolean enableHeartbeet = true;
 	public static boolean brewHeartbeet = true;
@@ -296,8 +297,11 @@ public class Config {
 			// more potions
 			brewMissingPotions = configFile.getBoolean("brewMissingPotions", "tweaks", brewMissingPotions, "Adds brewing recipes for vanilla potions which are missing a recipe");
 
-			// more potions
+			// colored fireworks
 			coloredFireworkItems = configFile.getBoolean("coloredFireworkItems", "tweaks", coloredFireworkItems, "Colors the fireworks item based on the colors of the stars");
+
+			// lilypad fall breaking
+			lilypadBreakFall = configFile.getBoolean("lilypadBreakFall", "tweaks", lilypadBreakFall, "Lily pads prevent fall damage, but break in the process");
 		}
 
 		// compatibility
