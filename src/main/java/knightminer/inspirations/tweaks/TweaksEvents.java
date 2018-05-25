@@ -256,7 +256,7 @@ public class TweaksEvents {
 		}
 	}
 
-	@SubscribeEvent
+	@SubscribeEvent(priority = EventPriority.LOW)
 	public static void onFall(LivingFallEvent event) {
 		if(!Config.lilypadBreakFall) {
 			return;
