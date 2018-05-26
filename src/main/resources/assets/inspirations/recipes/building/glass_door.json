@@ -18,12 +18,12 @@
   "key": {
     "G": {
       "type": "forge:ore_dict",
-      "ore": "blockGlassColorless"
+      "ore": "paneGlassColorless"
     }
   },
   "result": {
     "item": "inspirations:glass_door",
     "data": 0,
-    "count": 3
+    "count": 1
   }
 }

@@ -17,7 +17,7 @@
   "key": {
     "G": {
       "type": "forge:ore_dict",
-      "ore": "blockGlassColorless"
+      "ore": "paneGlassColorless"
     }
   },
   "result": {
