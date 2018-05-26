@@ -356,6 +356,11 @@ public class BlockBookshelf extends BlockInventory implements ITileEntityProvide
 		}
 	}
 
+	@Override
+	public int damageDropped(IBlockState state) {
+		return state.getValue(TYPE).getMeta();
+	}
+
 	@Nonnull
 	@Override
 	public ItemStack getPickBlock(@Nonnull IBlockState state, RayTraceResult target, @Nonnull World world, @Nonnull BlockPos pos, EntityPlayer player) {
