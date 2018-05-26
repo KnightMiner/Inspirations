@@ -1,4 +1,5 @@
 {
+    "parent": "inspirations:block/bookshelf/base",
     "textures": {
         "particle": "#texture",
         "book0": "#books",

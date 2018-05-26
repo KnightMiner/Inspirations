@@ -50,7 +50,6 @@ public class BuildingClientProxy extends ClientProxy {
 		registerItemMetaDynamic(InspirationsBuilding.books);
 
 		// blocks
-		registerItemModel(InspirationsBuilding.bookshelf);
 		registerItemModel(InspirationsBuilding.glassDoorItem);
 		registerItemModel(InspirationsBuilding.glassTrapdoor);
 		registerRopeModels(InspirationsBuilding.rope);
@@ -58,6 +57,15 @@ public class BuildingClientProxy extends ClientProxy {
 		registerItemBlockMeta(InspirationsBuilding.path);
 		registerItemBlockMeta(InspirationsBuilding.enlightenedBush);
 		registerFlowerModels(InspirationsBuilding.flower);
+		registerBookshelfModels(InspirationsBuilding.bookshelf);
+	}
+
+	private void registerBookshelfModels(Block bookshelf) {
+		if(bookshelf != null) {
+			for(BookshelfType type : BookshelfType.values()) {
+				registerItemModel(bookshelf, type.getMeta(), "facing=south,type=" + type.getName());
+			}
+		}
 	}
 
 	private void registerRopeModels(Block rope) {
@@ -136,6 +144,15 @@ public class BuildingClientProxy extends ClientProxy {
 	public void registerItemColors(ColorHandlerEvent.Item event) {
 		ItemColors itemColors = event.getItemColors();
 
+		// coloring of books for normal bookshelf
+		registerItemColors(itemColors, (stack, tintIndex) -> {
+			if(BookshelfType.fromMeta(stack.getMetadata()) == BookshelfType.NORMAL && tintIndex > 0 && tintIndex <= 14) {
+				return 0x654B17;
+			}
+
+			return -1;
+		}, InspirationsBuilding.bookshelf);
+
 		// book covers, too lazy to make 16 cover textures
 		registerItemColors(itemColors, (stack, tintIndex) -> {
 			int meta = stack.getItemDamage();
@@ -182,7 +199,6 @@ public class BuildingClientProxy extends ClientProxy {
 							String.format("facing=%s,type=%s", facing.getName(), type.getName())));
 				}
 			}
-			replaceBookshelfModel(event, new ModelResourceLocation(bookshelfLoc, "inventory"));
 		}
 		if(InspirationsBuilding.enlightenedBush != null) {
 			ResourceLocation location = InspirationsBuilding.enlightenedBush.getRegistryName();
