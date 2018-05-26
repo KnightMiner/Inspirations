@@ -137,7 +137,12 @@ public class InspirationsBuilding extends PulseBase {
 		}
 
 		if(Config.enableGlassDoor) {
-			glassDoorItem = registerItem(r, new ItemDoor(glassDoor), "glass_door");
+			glassDoorItem = registerItem(r, new ItemDoor(glassDoor) {
+				@Override
+				public int getItemBurnTime(ItemStack stack) {
+					return 0;
+				}
+			}, "glass_door");
 			registerItemBlock(r, glassTrapdoor);
 		}
 	}
