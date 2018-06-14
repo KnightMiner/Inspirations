@@ -1,6 +1,7 @@
 package knightminer.inspirations.recipes;
 
 import knightminer.inspirations.common.Config;
+import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.recipes.tileentity.TileCauldron;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -44,7 +45,7 @@ public class RecipesEvents {
 		}
 
 		boolean result = TileCauldron.interact(world, pos, state, player, event.getHand());
-		if(result) {
+		if(result || InspirationsRegistry.isCauldronBlacklist(stack)) {
 			event.setCanceled(true);
 			event.setCancellationResult(EnumActionResult.SUCCESS);
 		}

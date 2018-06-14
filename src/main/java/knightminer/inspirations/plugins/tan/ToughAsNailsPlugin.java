@@ -6,6 +6,7 @@ import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.library.InspirationsRegistry;
+import knightminer.inspirations.plugins.tan.recipes.FillCanteenRecipe;
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -16,6 +17,7 @@ import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
+import net.minecraftforge.oredict.OreDictionary;
 import slimeknights.mantle.pulsar.pulse.Pulse;
 
 @Pulse(
@@ -32,6 +34,8 @@ public class ToughAsNailsPlugin extends PulseBase {
 	public static final Item charcoalFilter = null;
 	@ObjectHolder(value = "toughasnails:fruit_juice")
 	public static final Item fruitJuice = null;
+	@ObjectHolder(value = "toughasnails:canteen")
+	public static final Item canteen = null;
 
 	// fluids
 	public static Fluid sweetenedWater;
@@ -81,6 +85,17 @@ public class ToughAsNailsPlugin extends PulseBase {
 			// filter water in a cauldron
 			if(charcoalFilter != null) {
 				InspirationsRegistry.addCauldronScaledTransformRecipe(new ItemStack(charcoalFilter), FluidRegistry.WATER, purifiedWater, null);
+			}
+
+			// fill canteen from a cauldron
+			if(canteen != null) {
+				for(int i = 0; i < 3; i++) {
+					// normal water canteen starts at 1
+					InspirationsRegistry.addCauldronRecipe(new FillCanteenRecipe(canteen, i, 1, FluidRegistry.WATER));
+					// purified water starts at 2
+					InspirationsRegistry.addCauldronRecipe(new FillCanteenRecipe(canteen, i, 2, purifiedWater));
+				}
+				InspirationsRegistry.addCauldronBlacklist(canteen, OreDictionary.WILDCARD_VALUE);
 			}
 
 			// make juice in the cauldron

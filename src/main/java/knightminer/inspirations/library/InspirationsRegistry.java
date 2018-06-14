@@ -31,6 +31,7 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.oredict.OreDictionary;
 import slimeknights.mantle.util.RecipeMatch;
 
 public class InspirationsRegistry {
@@ -270,6 +271,7 @@ public class InspirationsRegistry {
 	 * Cauldron recipes
 	 */
 	private static List<ICauldronRecipe> cauldronRecipes = new ArrayList<>();
+	private static Set<ItemMetaKey> cauldronBlacklist = new HashSet<>();
 	private static Set<Fluid> cauldronWater = new HashSet<>();
 
 	/**
@@ -368,5 +370,25 @@ public class InspirationsRegistry {
 	 */
 	public static boolean isCauldronWater(Fluid fluid) {
 		return fluid != null && cauldronWater.contains(fluid);
+	}
+
+	/**
+	 * Adds an item to the cauldron blacklist, preventing its normal cauldron interaction
+	 * @param item  Item to add
+	 * @param meta  Metadata to use, supports wildcard
+	 */
+	public static void addCauldronBlacklist(Item item, int meta) {
+		cauldronBlacklist.add(new ItemMetaKey(item, meta));
+	}
+
+	/**
+	 * Checks if an item is blacklisted from its normal cauldron interaction
+	 * @param stack  ItemStack to check
+	 * @return  True if the item is blacklisted
+	 */
+	public static boolean isCauldronBlacklist(ItemStack stack) {
+		// check both the item with its current meta and with wildcard meta
+		return cauldronBlacklist.contains(new ItemMetaKey(stack))
+				|| cauldronBlacklist.contains(new ItemMetaKey(stack.getItem(), OreDictionary.WILDCARD_VALUE));
 	}
 }
