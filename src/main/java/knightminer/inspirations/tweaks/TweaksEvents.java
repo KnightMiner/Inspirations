@@ -145,7 +145,7 @@ public class TweaksEvents {
 				if(stack.getItem() == Items.BEETROOT) {
 					// for each roll, try to get the drop once
 					for(int i = 0; i < rolls; i++) {
-						if(event.getWorld().rand.nextInt(100) == 0) {
+						if(event.getWorld().rand.nextInt(Config.heartbeetChance) == 0) {
 							stack.shrink(1);
 							if(stack.isEmpty()) {
 								drops.remove(stack);

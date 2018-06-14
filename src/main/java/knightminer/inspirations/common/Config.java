@@ -163,6 +163,7 @@ public class Config {
 	// heartbeet
 	public static boolean enableHeartbeet = true;
 	public static boolean brewHeartbeet = true;
+	public static int heartbeetChance = 75;
 
 	public static String[] flowerOverrides = {};
 
@@ -274,6 +275,7 @@ public class Config {
 			// heartroot
 			enableHeartbeet = configFile.getBoolean("heartbeet", "tweaks", enableHeartbeet, "Enables heartbeets: a rare drop from beetroots which can be eaten to restore a bit of health");
 			brewHeartbeet = configFile.getBoolean("brewRegeneration", "tweaks.heartbeet", brewHeartbeet, "Allows heartbeets to be used as an alternative to ghast tears in making potions of regeneration") && enableHeartbeet;
+			heartbeetChance = configFile.getInt("chance", "tweaks.heartbeet", heartbeetChance, 10, 1000, "Chance of a heartbeet to drop instead of a normal drop. Formula is two 1 in [chance] chances for it to drop each harvest");
 
 			// dispensers place anvils
 			dispensersPlaceAnvils = configFile.getBoolean("dispensersPlaceAnvils", "tweaks", dispensersPlaceAnvils, "Dispensers will place anvils instead of dropping them. Plays well with anvil smashing.");
