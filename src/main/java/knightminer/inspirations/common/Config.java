@@ -73,6 +73,7 @@ public class Config {
 	public static boolean enableBricksButton = true;
 	public static boolean enableRedstoneBarrel = true;
 	public static boolean enableCarpetedTrapdoor = true;
+	public static boolean enableCarpetedPressurePlate = true;
 
 	// recipes
 	public static boolean enableAnvilSmashing = true;
@@ -234,6 +235,9 @@ public class Config {
 
 			// carpeted trapdoor
 			enableCarpetedTrapdoor = configFile.getBoolean("carpetedTrapdoor", "utility", enableCarpetedTrapdoor, "Enables carpeted trapdoors: a trapdoor which appears to be a carpet when closed");
+
+			// carpeted pressure plate
+			enableCarpetedPressurePlate = configFile.getBoolean("carpetedPressurePlate", "utility", enableCarpetedPressurePlate, "Allows placing a carpet on a stone pressure plate to hide it");
 		}
 
 		// recipes

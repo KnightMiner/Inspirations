@@ -6,6 +6,8 @@ import knightminer.inspirations.common.CommonProxy;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.utility.block.BlockBricksButton;
+import knightminer.inspirations.utility.block.BlockCarpetedPressurePlate;
+import knightminer.inspirations.utility.block.BlockCarpetedPressurePlate.BlockCarpetedPressurePlate2;
 import knightminer.inspirations.utility.block.BlockCarpetedTrapdoor;
 import knightminer.inspirations.utility.block.BlockRedstoneBarrel;
 import knightminer.inspirations.utility.block.BlockRedstoneCharge;
@@ -47,9 +49,12 @@ public class InspirationsUtility extends PulseBase {
 	public static Block redstoneTorchLever;
 	public static Block redstoneTorchLeverPowered;
 	public static Block[] carpetedTrapdoors;
+	public static Block carpetedPressurePlate1;
+	public static Block carpetedPressurePlate2;
 
 	// items
 	public static Item redstoneCharger;
+
 	@Subscribe
 	public void preInit(FMLPreInitializationEvent event) {
 		proxy.preInit();
@@ -82,6 +87,10 @@ public class InspirationsUtility extends PulseBase {
 			for(EnumDyeColor color : EnumDyeColor.values()) {
 				carpetedTrapdoors[color.getMetadata()] = registerBlock(r, new BlockCarpetedTrapdoor(), "carpeted_trapdoor_" + color.getName());
 			}
+		}
+		if(Config.enableCarpetedPressurePlate) {
+			carpetedPressurePlate1 = registerBlock(r, new BlockCarpetedPressurePlate(false), "carpeted_pressure_plate_1");
+			carpetedPressurePlate2 = registerBlock(r, new BlockCarpetedPressurePlate2(), "carpeted_pressure_plate_2");
 		}
 	}
 

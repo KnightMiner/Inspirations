@@ -1,0 +1,33 @@
+{
+	"ambientocclusion": false,
+  "textures": {
+    "particle": "#wool"
+  },
+	"elements": [
+		{
+			"name": "plate",
+			"from": [1, 1, 1],
+			"to": [15, 1.5, 15],
+			"faces": {
+				"north": {"texture": "#wool"},
+				"east":  {"texture": "#wool"},
+				"south": {"texture": "#wool"},
+				"west":  {"texture": "#wool"},
+				"up":    {"texture": "#wool"}
+			}
+		},
+		{
+			"name": "carpet",
+			"from": [0, 0, 0],
+			"to": [16, 1, 16],
+			"faces": {
+				"north": {"texture": "#wool", "cullface": "north"},
+				"east":  {"texture": "#wool", "cullface": "east"},
+				"south": {"texture": "#wool", "cullface": "south"},
+				"west":  {"texture": "#wool", "cullface": "west"},
+				"up":    {"texture": "#wool"},
+				"down":  {"texture": "#wool", "cullface": "down"}
+			}
+		}
+	]
+}
