@@ -8,6 +8,7 @@ import knightminer.inspirations.common.ClientProxy;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.library.Util;
+import knightminer.inspirations.library.client.ClientUtil;
 import knightminer.inspirations.library.client.PropertyStateMapper;
 import knightminer.inspirations.recipes.RecipesClientProxy;
 import knightminer.inspirations.tweaks.block.BlockBetterFlowerPot;
@@ -17,13 +18,18 @@ import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.statemap.StateMapperBase;
+import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemEnchantedBook;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityFlowerPot;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
@@ -61,6 +67,25 @@ public class TweaksClientProxy extends ClientProxy {
 		}
 		if(Config.coloredFireworkItems) {
 			registerItemModel(Items.FIREWORKS, 0, FIREWORKS);
+		}
+	}
+
+	@SubscribeEvent
+	public void registerBlockColors(ColorHandlerEvent.Block event) {
+		BlockColors colors = event.getBlockColors();
+
+		// the vanilla flower pot handler is pretty dumb, it only uses the item and not the specific stack with meta
+		if(Config.betterFlowerPot) {
+			registerBlockColors(colors, (state, world, pos, index) -> {
+				if (world != null && pos != null) {
+					TileEntity tileentity = world.getTileEntity(pos);
+					if (tileentity instanceof TileEntityFlowerPot) {
+						ItemStack stack = ((TileEntityFlowerPot)tileentity).getFlowerItemStack();
+						return ClientUtil.getStackBlockColorsSafe(stack, world, pos, 0);
+					}
+				}
+				return -1;
+			}, Blocks.FLOWER_POT);
 		}
 	}
 
