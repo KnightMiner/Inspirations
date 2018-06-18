@@ -50,18 +50,18 @@ public class ToughAsNailsPlugin extends PulseBase {
 
 		// juice types
 		if(Config.tanJuiceInCauldron) {
-			sweetenedWater = registerColoredFluid("sweetened_water", 0x35ACF2);//0xA0E2FF);
+			sweetenedWater = registerColoredFluid("sweetened_water", 0xFF35ACF2);//0xFFA0E2FF);
 			juices = new Fluid[] {
-					registerColoredFluid("apple_juice", 0xFBBA44),
-					registerColoredFluid("beetroot_juice", 0xAA1226),
-					registerColoredFluid("cactus_juice", 0x7FB33D),
-					registerColoredFluid("carrot_juice", 0xD5632C),
-					registerColoredFluid("chorus_fruit_juice", 0xA361B3),
-					registerColoredFluid("glistering_melon_juice", 0xFF4747),
-					registerColoredFluid("golden_apple_juice", 0xFF9D49),
-					registerColoredFluid("golden_carrot_juice", 0xFF6E56),
-					registerColoredFluid("melon_juice", 0xCD3833),
-					registerColoredFluid("pumpkin_juice", 0xCE8431)
+					registerColoredFluid("apple_juice", 0xFFFBBA44),
+					registerColoredFluid("beetroot_juice", 0xFFAA1226),
+					registerColoredFluid("cactus_juice", 0xFF7FB33D),
+					registerColoredFluid("carrot_juice", 0xFFD5632C),
+					registerColoredFluid("chorus_fruit_juice", 0xFFA361B3),
+					registerColoredFluid("glistering_melon_juice", 0xFFFF4747),
+					registerColoredFluid("golden_apple_juice", 0xFFFF9D49),
+					registerColoredFluid("golden_carrot_juice", 0xFFFF6E56),
+					registerColoredFluid("melon_juice", 0xFFCD3833),
+					registerColoredFluid("pumpkin_juice", 0xFFCE8431)
 			};
 		}
 	}

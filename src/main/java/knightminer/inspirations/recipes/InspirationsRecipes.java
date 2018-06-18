@@ -86,9 +86,9 @@ public class InspirationsRecipes extends PulseBase {
 	public void preInit(FMLPreInitializationEvent event) {
 		proxy.preInit();
 
-		mushroomStew = registerColoredFluid("mushroom_stew", 0xCD8C6F);
-		beetrootSoup = registerColoredFluid("beetroot_soup", 0xB82A30);
-		rabbitStew = registerColoredFluid("rabbit_stew", 0x984A2C);
+		mushroomStew = registerColoredFluid("mushroom_stew", 0xFFCD8C6F);
+		beetrootSoup = registerColoredFluid("beetroot_soup", 0xFFB82A30);
+		rabbitStew = registerColoredFluid("rabbit_stew", 0xFF984A2C);
 	}
 
 	@SubscribeEvent

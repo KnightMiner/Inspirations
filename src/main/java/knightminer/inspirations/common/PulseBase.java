@@ -150,7 +150,9 @@ public class PulseBase {
 
 	/* Other */
 	protected static Fluid registerColoredFluid(String name, int color) {
-		return registerFluid(new Fluid(name, Util.getResource("blocks/fluid_colorless"), Util.getResource("blocks/fluid_colorless_flow"), color));
+		Fluid fluid = registerFluid(new Fluid(name, Util.getResource("blocks/fluid_colorless"), Util.getResource("blocks/fluid_colorless_flow"), color));
+		FluidRegistry.addBucketForFluid(fluid);
+		return fluid;
 	}
 	protected static <T extends Fluid> T registerFluid(T fluid) {
 		fluid.setUnlocalizedName(Util.prefix(fluid.getName()));

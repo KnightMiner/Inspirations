@@ -12,6 +12,7 @@ import knightminer.inspirations.shared.InspirationsOredict;
 import knightminer.inspirations.shared.InspirationsShared;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import knightminer.inspirations.utility.InspirationsUtility;
+import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -48,6 +49,11 @@ public class Inspirations {
 		pulseManager.registerPulse(new InspirationsTweaks());
 		pulseManager.registerPulse(new InspirationsOredict());
 		pulseManager.registerPulse(new ToughAsNailsPlugin());
+
+		// needs to be done statically, but only the recipes module uses it
+		if(pulseManager.isPulseLoaded(InspirationsRecipes.pulseID) && Config.enableCauldronFluids) {
+			FluidRegistry.enableUniversalBucket();
+		}
 	}
 
 	@Mod.EventHandler
