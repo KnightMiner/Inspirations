@@ -160,6 +160,13 @@ item.inspirations.materials.lock.tooltip=用来锁定容器\n必须先在铁砧�
 item.inspirations.materials.key.name=空白钥匙
 item.inspirations.materials.key.tooltip=用来移除匹配的锁
 
+item.inspirations.materials.stone_rod.name=石棒
+item.inspirations.wooden_crook.name=木钩子
+item.inspirations.stone_crook.name=石头钩子
+item.inspirations.bone_crook.name=骨头钩子
+item.inspirations.blaze_crook.name=烈焰棒钩子
+item.inspirations.wither_crook.name=凋零骨头钩子
+
 ############
 #  Tweaks  #
 ############
