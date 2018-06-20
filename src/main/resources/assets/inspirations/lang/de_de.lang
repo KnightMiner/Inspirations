@@ -78,16 +78,7 @@ tile.inspirations.bricks_button.nether.name=Netherziegelknopf
 tile.inspirations.redstone_barrel.name=Redstonefass
 tile.inspirations.redstone_torch_lever.name=Redstonefackelhebel
 
-tile.inspirations.redstone_charge.name=Redstone-Ladung
-item.inspirations.redstone_charger.name=Redstone-Ladegerät
-item.inspirations.arrow.charged.name=Aufgeladener Pfeil
-
 item.inspirations.books.redstone.name=Redstone-Buch
-
-item.inspirations.materials.lock.name=Blanko-Schloss
-item.inspirations.materials.lock.tooltip=Wird zum Sperren von Behältern verwendet\nMuss zuerst in einem Amboss umbenannt werden
-item.inspirations.materials.key.name=Blanko-Schlüssel
-item.inspirations.materials.key.tooltip=Wird zum Entfernen passender Schlösser verwendet
 
 inspirations.lock.success=Behälter abgeschlossen
 inspirations.lock.fail.locked=Dieser Behälter ist bereits abgeschlossen
@@ -113,6 +104,19 @@ tile.inspirations.carpeted_trapdoor_brown.name=Braune Teppich-Falltür
 tile.inspirations.carpeted_trapdoor_green.name=Grüne Teppich-Falltür
 tile.inspirations.carpeted_trapdoor_red.name=Rote Teppich-Falltür
 tile.inspirations.carpeted_trapdoor_black.name=Schwarze Teppich-Falltür
+
+############
+#  Tools   #
+############
+
+tile.inspirations.redstone_charge.name=Redstone-Ladung
+item.inspirations.redstone_charger.name=Redstone-Ladegerät
+item.inspirations.arrow.charged.name=Aufgeladener Pfeil
+
+item.inspirations.materials.lock.name=Blanko-Schloss
+item.inspirations.materials.lock.tooltip=Wird zum Sperren von Behältern verwendet\nMuss zuerst in einem Amboss umbenannt werden
+item.inspirations.materials.key.name=Blanko-Schlüssel
+item.inspirations.materials.key.tooltip=Wird zum Entfernen passender Schlösser verwendet
 
 #############
 #  Recipes  #

@@ -1,6 +1,6 @@
-package knightminer.inspirations.utility.item;
+package knightminer.inspirations.tools.item;
 
-import static knightminer.inspirations.utility.InspirationsUtility.redstoneCharge;
+import static knightminer.inspirations.tools.InspirationsTools.redstoneCharge;
 
 import knightminer.inspirations.utility.block.BlockRedstoneCharge;
 import net.minecraft.advancements.CriteriaTriggers;

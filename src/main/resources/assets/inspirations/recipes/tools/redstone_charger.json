@@ -2,7 +2,7 @@
   "conditions": [
     {
       "type": "pulse_loaded",
-      "pulse": "InspirationsUtility"
+      "pulse": "InspirationsTools"
     },
     {
       "type": "config",

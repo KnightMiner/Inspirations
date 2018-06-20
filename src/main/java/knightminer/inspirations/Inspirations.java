@@ -10,6 +10,7 @@ import knightminer.inspirations.plugins.tan.ToughAsNailsPlugin;
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.shared.InspirationsOredict;
 import knightminer.inspirations.shared.InspirationsShared;
+import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraftforge.fluids.FluidRegistry;
@@ -45,6 +46,7 @@ public class Inspirations {
 		pulseManager.registerPulse(new InspirationsShared());
 		pulseManager.registerPulse(new InspirationsBuilding());
 		pulseManager.registerPulse(new InspirationsUtility());
+		pulseManager.registerPulse(new InspirationsTools());
 		pulseManager.registerPulse(new InspirationsRecipes());
 		pulseManager.registerPulse(new InspirationsTweaks());
 		pulseManager.registerPulse(new InspirationsOredict());

@@ -6,6 +6,7 @@ import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.recipes.InspirationsRecipes;
+import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraft.block.Block;
@@ -54,6 +55,9 @@ public class PulseBase {
 		return Inspirations.pulseManager.isPulseLoaded(InspirationsRecipes.pulseID);
 	}
 
+	public static boolean isToolsLoaded() {
+		return Inspirations.pulseManager.isPulseLoaded(InspirationsTools.pulseID);
+	}
 
 	/* Normal registration */
 	protected static <T extends Block> T registerBlock(IForgeRegistry<Block> registry, T block, String name) {

@@ -13,7 +13,6 @@ import knightminer.inspirations.library.client.NameStateMapper;
 import knightminer.inspirations.library.client.PropertyStateMapper;
 import knightminer.inspirations.utility.block.BlockBricksButton;
 import knightminer.inspirations.utility.block.BlockRedstoneBarrel;
-import knightminer.inspirations.utility.block.BlockRedstoneCharge;
 import knightminer.inspirations.utility.block.BlockTorchLever;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockColored;
@@ -26,7 +25,6 @@ import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.statemap.IStateMapper;
-import net.minecraft.client.renderer.block.statemap.StateMap;
 import net.minecraft.client.renderer.block.statemap.StateMapperBase;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.item.EnumDyeColor;
@@ -45,14 +43,10 @@ public class UtilityClientProxy extends ClientProxy {
 		setModelStateMapper(InspirationsUtility.torchLever, new TorchLeverStateMapper());
 		setModelStateMapper(InspirationsUtility.redstoneTorchLever, new RedstoneTorchLeverStateMapper(false));
 		setModelStateMapper(InspirationsUtility.redstoneTorchLeverPowered, new RedstoneTorchLeverStateMapper(true));
-		setModelStateMapper(InspirationsUtility.redstoneCharge, new StateMap.Builder().ignore(BlockRedstoneCharge.FACING, BlockRedstoneCharge.QUICK).build());
 		setModelStateMapper(InspirationsUtility.bricksButton, new PropertyStateMapper(BlockBricksButton.TYPE));
 		IStateMapper carpetedPressurePlate = new NameStateMapper(Util.getResource("carpeted_pressure_plate"));
 		setModelStateMapper(InspirationsUtility.carpetedPressurePlate1, carpetedPressurePlate);
 		setModelStateMapper(InspirationsUtility.carpetedPressurePlate2, carpetedPressurePlate);
-
-		// items
-		registerItemModel(InspirationsUtility.redstoneCharger);
 
 		// blocks
 		registerItemModel(InspirationsUtility.torchLever);

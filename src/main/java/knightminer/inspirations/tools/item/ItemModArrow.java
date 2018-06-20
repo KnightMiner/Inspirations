@@ -1,4 +1,4 @@
-package knightminer.inspirations.shared.item;
+package knightminer.inspirations.tools.item;
 
 import java.util.Locale;
 import java.util.function.BooleanSupplier;
@@ -6,7 +6,7 @@ import java.util.function.BooleanSupplier;
 import javax.annotation.Nonnull;
 
 import knightminer.inspirations.common.Config;
-import knightminer.inspirations.shared.entity.EntityModArrow;
+import knightminer.inspirations.tools.entity.EntityModArrow;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.projectile.EntityArrow;

@@ -1,8 +1,8 @@
-package knightminer.inspirations.shared.entity;
+package knightminer.inspirations.tools.entity;
 
-import static knightminer.inspirations.utility.InspirationsUtility.redstoneCharge;
+import static knightminer.inspirations.tools.InspirationsTools.redstoneCharge;
 
-import knightminer.inspirations.shared.InspirationsShared;
+import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.utility.block.BlockRedstoneCharge;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
@@ -39,7 +39,7 @@ public class EntityModArrow extends EntityArrow {
 
 	@Override
 	protected ItemStack getArrowStack() {
-		return new ItemStack(InspirationsShared.arrow, 1, meta);
+		return new ItemStack(InspirationsTools.arrow, 1, meta);
 	}
 
 	/**

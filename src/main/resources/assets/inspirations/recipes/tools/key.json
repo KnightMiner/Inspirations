@@ -2,7 +2,7 @@
   "conditions": [
     {
       "type": "pulse_loaded",
-      "pulse": "InspirationsUtility"
+      "pulse": "InspirationsTools"
     },
     {
       "type": "config",
@@ -11,12 +11,11 @@
   ],
   "result": {
     "item": "inspirations:materials",
-    "data": 0
+    "data": 1
   },
   "mirrored": true,
   "pattern": [
-    "N",
-    "I"
+    "IN"
   ],
   "type": "forge:ore_shaped",
   "key": {

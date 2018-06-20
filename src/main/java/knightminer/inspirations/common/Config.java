@@ -65,11 +65,9 @@ public class Config {
 	};
 
 	// utility
-	public static boolean enableLock = true;
 	public static boolean enableTorchLever = true;
 	public static boolean enableRedstoneTorchLever = true;
 	public static boolean enableRedstoneBook = true;
-	public static boolean enableRedstoneCharge = true;
 	public static boolean enableBricksButton = true;
 	public static boolean enableRedstoneBarrel = true;
 	public static boolean enableCarpetedTrapdoor = true;
@@ -149,12 +147,15 @@ public class Config {
 	};
 
 
+	// tools
+	public static boolean enableLock = true;
+	public static boolean enableRedstoneCharge = true;
+	public static boolean harvestHangingVines = true;
+	public static boolean shearsReclaimMelons = true;
 	// tweaks
 	public static boolean enablePigDesaddle = true;
 	public static boolean enableFittedCarpets = true;
 	public static boolean enableExtraBonemeal = true;
-	public static boolean harvestHangingVines = true;
-	public static boolean shearsReclaimMelons = true;
 	public static boolean betterFlowerPot = true;
 	public static boolean flowerPotComparator = true;
 	public static boolean coloredEnchantedRibbons = true;
@@ -218,12 +219,6 @@ public class Config {
 			// torch lever
 			enableTorchLever = configFile.getBoolean("torchLever", "utility", enableTorchLever, "Enables the torch lever. Basically a lever which looks like a torch");
 
-			// redstone charge
-			enableRedstoneCharge = configFile.getBoolean("redstoneCharge", "utility", enableRedstoneCharge, "Enables the redstone charge, a quick pulse created with a flint and steel like item");
-
-			// lock
-			enableLock = configFile.getBoolean("lock", "utility", enableLock, "Enables locks and keys, an item allowing you to lock a tile entity to only open for a special named item");
-
 			// lock
 			enableBricksButton = configFile.getBoolean("bricksButton", "utility", enableBricksButton, "Enables button blocks disguised as a full bricks or nether bricks block");
 
@@ -265,6 +260,26 @@ public class Config {
 
 		}
 
+		// tools
+		{
+			// redstone charge
+			configFile.moveProperty("utility", "redstoneCharge", "tools");
+			enableRedstoneCharge = configFile.getBoolean("redstoneCharge", "tools", enableRedstoneCharge, "Enables the redstone charge, a quick pulse created with a flint and steel like item");
+
+			// lock
+			configFile.moveProperty("utility", "lock", "tools");
+			enableLock = configFile.getBoolean("lock", "tools", enableLock, "Enables locks and keys, an item allowing you to lock a tile entity to only open for a special named item");
+
+			// harvest hanging vines
+			configFile.moveProperty("tweaks", "harvestHangingVines", "tools.shears");
+			harvestHangingVines = configFile.getBoolean("harvestHangingVines", "tools.shears", harvestHangingVines, "When shearing vines, any supported vines will also be sheared instead of just broken");
+
+			// shears reclaim melons
+			configFile.moveProperty("tweaks", "shearsReclaimMelons", "tools.shears");
+			configFile.renameProperty("tools.shears", "shearsReclaimMelons", "reclaimMelons");
+			shearsReclaimMelons = configFile.getBoolean("reclaimMelons", "tools.shears", shearsReclaimMelons, "Breaking a melon block with shears will always return 9 slices");
+		}
+
 		// tweaks
 		{
 			// pig desaddle
@@ -284,14 +299,8 @@ public class Config {
 			// dispensers place anvils
 			dispensersPlaceAnvils = configFile.getBoolean("dispensersPlaceAnvils", "tweaks", dispensersPlaceAnvils, "Dispensers will place anvils instead of dropping them. Plays well with anvil smashing.");
 
-			// harvest hanging vines
-			harvestHangingVines = configFile.getBoolean("harvestHangingVines", "tweaks", harvestHangingVines, "When shearing vines, any supported vines will also be sheared instead of just broken");
-
 			// better cauldron item
 			betterCauldronItem = configFile.getBoolean("betterCauldronItemModel", "tweaks", betterCauldronItem, "Replaces the flat cauldron sprite with the 3D cauldron block model");
-
-			// shears reclaim melons
-			shearsReclaimMelons = configFile.getBoolean("shearsReclaimMelons", "tweaks", shearsReclaimMelons, "Breaking a melon block with shears will always return 9 slices");
 
 			// better flower pots
 			betterFlowerPot = configFile.getBoolean("betterFlowerPot", "tweaks", betterFlowerPot, "Flower pots can hold modded flowers");
@@ -590,12 +599,14 @@ public class Config {
 				// utility
 				case "bricks_button": return enableBricksButton;
 				case "carpeted_trapdoor": return enableCarpetedTrapdoor;
-				case "lock": return enableLock;
 				case "redstone_barrel": return enableRedstoneBarrel;
 				case "redstone_book": return enableRedstoneBook;
-				case "redstone_charge": return enableRedstoneCharge;
 				case "redstone_torch_lever": return enableRedstoneTorchLever;
 				case "torch_lever": return enableTorchLever;
+
+				// tools
+				case "lock": return enableLock;
+				case "redstone_charge": return enableRedstoneCharge;
 
 				// recipes
 				case "cauldron_dyeing": return enableCauldronDyeing;
