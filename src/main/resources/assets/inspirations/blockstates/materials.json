@@ -15,6 +15,8 @@
         "rabbit_stew_mix": [{ "textures": { "layer0": "inspirations:items/rabbit_stew_mix" }}],
         
         "silverfish_powder": [{ "textures": { "layer0": "inspirations:items/silverfish_powder" }}],
-        "wither_bone": [{ "textures": { "layer0": "inspirations:items/wither_bone" }}]
+        "wither_bone": [{ "textures": { "layer0": "inspirations:items/wither_bone" }}],
+        
+        "stone_rod": [{ "textures": { "layer0": "inspirations:items/stone_rod" }}]
     }
 }

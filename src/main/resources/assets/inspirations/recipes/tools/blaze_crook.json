@@ -1,0 +1,26 @@
+{
+  "conditions": [
+    {
+      "type": "pulse_loaded",
+      "pulse": "InspirationsTools"
+    },
+    {
+      "type": "config",
+      "prop": "nether_crook"
+    }
+  ],
+  "result": {
+    "item": "inspirations:blaze_crook"
+  },
+  "pattern": [
+    "SS",
+    " S",
+    " S"
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "S": {
+      "item": "minecraft:blaze_rod"
+    }
+  }
+}

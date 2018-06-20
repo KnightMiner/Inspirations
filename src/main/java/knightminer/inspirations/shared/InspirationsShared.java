@@ -11,7 +11,10 @@ import net.minecraft.init.MobEffects;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.RegistryEvent.Register;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -41,10 +44,14 @@ public class InspirationsShared extends PulseBase {
 	public static ItemStack rabbitStewMix;
 	public static ItemStack silverfishPowder;
 	public static ItemStack witherBone;
+	public static ItemStack stoneRod;
 
 	// edibles
 	public static ItemStack heartbeet;
 	public static ItemStack boiledEgg;
+
+	// flags
+	private boolean enableWitherBones = false;
 
 	@Subscribe
 	public void preInit(FMLPreInitializationEvent event) {
@@ -73,9 +80,14 @@ public class InspirationsShared extends PulseBase {
 			}
 			if(Config.brewMissingPotions) {
 				silverfishPowder = materials.addMeta(6, "silverfish_powder", CreativeTabs.BREWING);
-				witherBone = materials.addMeta(7, "wither_bone", CreativeTabs.BREWING);
 			}
 		}
+		// used in both extended brewing and nether crooks
+		if((isTweaksLoaded() && Config.brewMissingPotions) || (isToolsLoaded() && Config.netherCrooks)) {
+			witherBone = materials.addMeta(7, "wither_bone", CreativeTabs.BREWING);
+			enableWitherBones = Loader.isModLoaded("tconstruct");
+		}
+
 		if(isRecipesLoaded()) {
 			if(Config.enableCauldronPotions) {
 				splashBottle = materials.addMeta(2, "splash_bottle", CreativeTabs.BREWING);
@@ -85,6 +97,9 @@ public class InspirationsShared extends PulseBase {
 				mushrooms = materials.addMeta(4, "mushrooms");
 				rabbitStewMix = materials.addMeta(5, "rabbit_stew_mix");
 			}
+		}
+		if(isToolsLoaded() && Config.separateCrook) {
+			stoneRod = materials.addMeta(8, "stone_rod", CreativeTabs.MATERIALS);
 		}
 	}
 
@@ -98,5 +113,11 @@ public class InspirationsShared extends PulseBase {
 		proxy.postInit();
 	}
 
+	private static final ResourceLocation WITHER_SKELETON_TABLE = new ResourceLocation("entities/wither_skeleton");
+	@SubscribeEvent
+	public void onLootTableLoad(LootTableLoadEvent event) {
+		if(enableWitherBones && WITHER_SKELETON_TABLE.equals(event.getName())) {
+			addToVanillaLoot(event, "entities/wither_skeleton");
+		}
 	}
 }

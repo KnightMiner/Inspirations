@@ -152,6 +152,13 @@ public class Config {
 	public static boolean enableRedstoneCharge = true;
 	public static boolean harvestHangingVines = true;
 	public static boolean shearsReclaimMelons = true;
+	// crook
+	public static boolean enableCrook = true;
+	public static boolean separateCrook = true;
+	public static boolean hoeCrook = false;
+	public static int crookChance = 10;
+	public static boolean netherCrooks = true;
+
 	// tweaks
 	public static boolean enablePigDesaddle = true;
 	public static boolean enableFittedCarpets = true;
@@ -269,6 +276,14 @@ public class Config {
 			// lock
 			configFile.moveProperty("utility", "lock", "tools");
 			enableLock = configFile.getBoolean("lock", "tools", enableLock, "Enables locks and keys, an item allowing you to lock a tile entity to only open for a special named item");
+
+			// crooks
+			String crookType = configFile.getString("crook", "tools", "true", "Enables the crook, a tool to break leaves faster and increase sapling chance. Can be 'true', 'false', or 'simple'. If true, adds a new tool. If simple, functionality will be added to hoes instead.", new String[]{ "false", "simple", "true" });
+			enableCrook = !crookType.equals("false");
+			separateCrook = crookType.equals("true");
+			hoeCrook = crookType.equals("simple");
+			crookChance = configFile.getInt("chance", "tools.crook", crookChance, 1, 100, "Chance of a sapling to drop when using the crook. Acts as 1 in [chance] if the initial sapling drop fails. Set to 1 to always drop saplings when using a crook.");
+			netherCrooks = configFile.getBoolean("netherCrooks", "tools.crook", netherCrooks, "Enables crooks crafted from blaze rods and wither bones. They have higher stats than other crooks and inflict fire and wither on the target respectively.") && separateCrook;
 
 			// harvest hanging vines
 			configFile.moveProperty("tweaks", "harvestHangingVines", "tools.shears");
@@ -605,7 +620,9 @@ public class Config {
 				case "torch_lever": return enableTorchLever;
 
 				// tools
+				case "crook": return separateCrook;
 				case "lock": return enableLock;
+				case "nether_crook": return netherCrooks;
 				case "redstone_charge": return enableRedstoneCharge;
 
 				// recipes

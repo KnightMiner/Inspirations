@@ -6,7 +6,10 @@ import knightminer.inspirations.common.CommonProxy;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.EntityIds;
 import knightminer.inspirations.common.PulseBase;
+import knightminer.inspirations.library.Util;
+import knightminer.inspirations.shared.InspirationsShared;
 import knightminer.inspirations.tools.entity.EntityModArrow;
+import knightminer.inspirations.tools.item.ItemCrook;
 import knightminer.inspirations.tools.item.ItemModArrow;
 import knightminer.inspirations.tools.item.ItemRedstoneCharger;
 import knightminer.inspirations.utility.block.BlockRedstoneCharge;
@@ -18,13 +21,16 @@ import net.minecraft.dispenser.IPosition;
 import net.minecraft.entity.IProjectile;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.Bootstrap;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.item.Item.ToolMaterial;
 import net.minecraft.item.ItemArrow;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -44,6 +50,16 @@ public class InspirationsTools extends PulseBase {
 
 	// items
 	public static Item redstoneCharger;
+	public static Item woodenCrook;
+	public static Item stoneCrook;
+	public static Item boneCrook;
+	public static Item blazeCrook;
+	public static Item witherCrook;
+
+	// tool materials
+	public static ToolMaterial bone;
+	public static ToolMaterial blaze;
+	public static ToolMaterial wither;
 
 	// blocks
 	public static Block redstoneCharge;
@@ -53,6 +69,14 @@ public class InspirationsTools extends PulseBase {
 	@Subscribe
 	public void preInit(FMLPreInitializationEvent event) {
 		proxy.preInit();
+
+		if(Config.separateCrook) {
+			bone = EnumHelper.addToolMaterial(Util.prefix("bone"), 1, 250, 4.0F, 1.5F, 10);
+			if(Config.netherCrooks) {
+				blaze = EnumHelper.addToolMaterial(Util.prefix("blaze"), 2, 400, 6.0F, 2.0F, 20);
+				wither = EnumHelper.addToolMaterial(Util.prefix("wither"), 2, 500, 6.0F, 1.5F, 10);
+			}
+		}
 	}
 
 	@SubscribeEvent
@@ -72,6 +96,15 @@ public class InspirationsTools extends PulseBase {
 		if(Config.enableRedstoneCharge) {
 			redstoneCharger = registerItem(r, new ItemRedstoneCharger(), "redstone_charger");
 		}
+		if(Config.separateCrook) {
+			woodenCrook = registerItem(r, new ItemCrook(ToolMaterial.WOOD), "wooden_crook");
+			stoneCrook = registerItem(r, new ItemCrook(ToolMaterial.STONE), "stone_crook");
+			boneCrook = registerItem(r, new ItemCrook(bone), "bone_crook");
+			if(Config.netherCrooks) {
+				blazeCrook = registerItem(r, new ItemCrook(blaze), "blaze_crook");
+				witherCrook = registerItem(r, new ItemCrook(wither), "wither_crook");
+			}
+		}
 	}
 
 	@SubscribeEvent
@@ -85,6 +118,14 @@ public class InspirationsTools extends PulseBase {
 	@Subscribe
 	public void init(FMLInitializationEvent event) {
 		proxy.init();
+
+		if(Config.separateCrook) {
+			bone.setRepairItem(new ItemStack(Items.BONE));
+			if(Config.netherCrooks) {
+				blaze.setRepairItem(new ItemStack(Items.BLAZE_ROD));
+				wither.setRepairItem(InspirationsShared.witherBone);
+			}
+		}
 
 		registerDispenserBehavior();
 	}

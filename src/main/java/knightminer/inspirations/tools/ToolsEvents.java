@@ -3,12 +3,14 @@ package knightminer.inspirations.tools;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.Util;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockLeaves;
 import net.minecraft.block.BlockVine;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemHoe;
 import net.minecraft.item.ItemShears;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -19,16 +21,21 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.ILockableContainer;
 import net.minecraft.world.LockCode;
 import net.minecraft.world.World;
+import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.oredict.OreDictionary;
+
 import static knightminer.inspirations.shared.InspirationsShared.materials;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
+
 import static knightminer.inspirations.shared.InspirationsShared.lock;
 import static knightminer.inspirations.shared.InspirationsShared.key;
 
@@ -191,5 +198,87 @@ public class ToolsEvents {
 				}
 			}
 		}
+	}
+
+	@SubscribeEvent
+	public static void dropExtraSapling(HarvestDropsEvent event) {
+		if(!Config.enableCrook) {
+			return;
+		}
+
+		// must be leaves
+		IBlockState state = event.getState();
+		Block block = state.getBlock();
+		if(!(block instanceof BlockLeaves)) {
+			return;
+		}
+
+		EntityPlayer player = event.getHarvester();
+		if(player == null || player.capabilities.isCreativeMode) {
+			return;
+		}
+
+		// must be a crook
+		ItemStack crook = player.getHeldItemMainhand();
+		Item item = crook.getItem();
+		// though if in hoe mode it must be a hoe
+		if(Config.hoeCrook) {
+			if(!(item instanceof ItemHoe || item.getToolClasses(crook).contains("hoe"))) {
+				return;
+			}
+		} else if(!item.getToolClasses(crook).contains("crook")) {
+			return;
+		}
+
+		// damage the hoe, breaking leaves does that now
+		World world = event.getWorld();
+		if(!world.isRemote && Config.hoeCrook) {
+			crook.damageItem(1, player);
+		}
+
+		// find the sapling
+		Random rand = world.rand;
+		ItemStack sapling = new ItemStack(
+				block.getItemDropped(state, rand, event.getFortuneLevel()),
+				1, block.damageDropped(state));
+
+		// ensure there is not already a sapling
+		List<ItemStack> drops = event.getDrops();
+		for(ItemStack stack : drops) {
+			// as soon as we find one, chance to replace it
+			if(OreDictionary.itemMatches(sapling, stack, false)) {
+				return;
+			}
+		}
+
+		// did not find it? add it with a chance
+		if(rand.nextInt(Config.crookChance) == 0) {
+			drops.add(sapling);
+		}
+	}
+
+	@SubscribeEvent
+	public static void breakLeavesFast(BreakSpeed event) {
+		// must be leaves
+		if(!Config.hoeCrook || !(event.getState().getBlock() instanceof BlockLeaves)) {
+			return;
+		}
+
+		EntityPlayer player = event.getEntityPlayer();
+		if(player == null || player.capabilities.isCreativeMode) {
+			return;
+		}
+
+		// must be a hoe
+		ItemStack stack = player.getHeldItemMainhand();
+		Item item = stack.getItem();
+		if(!(item instanceof ItemHoe || item.getToolClasses(stack).contains("hoe"))) {
+			return;
+		}
+
+		// set the speed based on the material
+		// hoes are dumb, no getter for the material and its protected so an AT could crash other mods
+		// so just use a constant speed of 3
+		event.setNewSpeed(2);
 	}
 }

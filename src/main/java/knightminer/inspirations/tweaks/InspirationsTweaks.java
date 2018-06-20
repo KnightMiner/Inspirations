@@ -36,7 +36,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.RegistryEvent.Register;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -205,19 +204,10 @@ public class InspirationsTweaks extends PulseBase {
 	}
 
 	private static final ResourceLocation SILVERFISH_TABLE = new ResourceLocation("entities/silverfish");
-	private static final ResourceLocation WITHER_SKELETON_TABLE = new ResourceLocation("entities/wither_skeleton");
 	@SubscribeEvent
 	public void onLootTableLoad(LootTableLoadEvent event) {
-		if(!Config.brewMissingPotions) {
-			return;
-		}
-
-		ResourceLocation name = event.getName();
-		if(SILVERFISH_TABLE.equals(name)) {
+		if(Config.brewMissingPotions && SILVERFISH_TABLE.equals(event.getName())) {
 			addToVanillaLoot(event, "entities/silverfish");
-			// skip wither skeleton drop if TConstruct is loaded
-		} else if(WITHER_SKELETON_TABLE.equals(name) && !Loader.isModLoaded("tconstruct")) {
-			addToVanillaLoot(event, "entities/wither_skeleton");
 		}
 	}
 

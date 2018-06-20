@@ -1,0 +1,27 @@
+{
+  "conditions": [
+    {
+      "type": "pulse_loaded",
+      "pulse": "InspirationsTools"
+    },
+    {
+      "type": "config",
+      "prop": "crook"
+    }
+  ],
+  "result": {
+    "item": "inspirations:materials",
+    "data": 8
+  },
+  "pattern": [
+    "C",
+    "C"
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "C": {
+      "type": "forge:ore_dict",
+      "ore": "cobblestone"
+    }
+  }
+}

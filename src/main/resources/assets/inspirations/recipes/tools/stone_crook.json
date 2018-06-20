@@ -1,0 +1,27 @@
+{
+  "conditions": [
+    {
+      "type": "pulse_loaded",
+      "pulse": "InspirationsTools"
+    },
+    {
+      "type": "config",
+      "prop": "crook"
+    }
+  ],
+  "result": {
+    "item": "inspirations:stone_crook"
+  },
+  "pattern": [
+    "SS",
+    " S",
+    " S"
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "S": {
+      "type": "forge:ore_dict",
+      "ore": "rodStone"
+    }
+  }
+}

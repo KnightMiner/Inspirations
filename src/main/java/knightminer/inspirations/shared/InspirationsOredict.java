@@ -53,6 +53,7 @@ public class InspirationsOredict {
 
 	private void registerShared() {
 		oredict(InspirationsShared.witherBone, "boneWithered");
+		oredict(InspirationsShared.stoneRod, "rodStone");
 	}
 
 	private static void registerBuilding() {
