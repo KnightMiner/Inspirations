@@ -175,7 +175,14 @@ public class Config {
 	public static boolean brewHeartbeet = true;
 	public static int heartbeetChance = 75;
 
-	public static String[] flowerOverrides = {};
+	public static String[] flowerOverrides = {
+			"biomesoplenty:flower_0:-1:true",
+			"biomesoplenty:flower_0:-1:true",
+			"biomesoplenty:mushroom:-1:true",
+			"biomesoplenty:sapling_0:-1:true",
+			"biomesoplenty:sapling_1:-1:true",
+			"biomesoplenty:sapling_2:-1:true"
+	};
 
 	// compatibility
 	public static boolean tanJuiceInCauldron = true;
