@@ -89,6 +89,7 @@ public class Config {
 	public static boolean spongeEmptyCauldron = true;
 	public static boolean spongeCauldronFull = false;
 	public static boolean betterCauldronItem = true;
+	public static boolean enableMilk = true;
 
 	private static String[] anvilSmashing = {
 			"# Stone",
@@ -260,6 +261,7 @@ public class Config {
 			String spongeEmptyString = configFile.getString("spongeEmpty", "recipes.cauldron", "true", "Allows sponges to be used to empty the cauldron of dye, water, or potions. Can be 'true', 'false', or 'full'. If set to 'full', requires the cauldron to be full, prevents duplicating water but is less useful for removing unwanted fluids.", new String[]{ "false", "full", "true" });
 			spongeEmptyCauldron = !spongeEmptyString.equals("false");
 			spongeCauldronFull = spongeEmptyString.equals("full");
+			enableMilk = configFile.getBoolean("milk", "recipes.cauldron", enableMilk, "Registers milk as a fluid so it can be used in cauldron recipes.") && enableCauldronFluids;
 
 			patchVanillaDyeRecipes = configFile.getBoolean("patchVanillaRecipes", "recipes.cauldron.dyeing", patchVanillaDyeRecipes, "Makes crafting two dyed water bottles together produce a dyed water bottle. Requires modifying vanilla recipes to prevent a conflict") && enableCauldronDyeing;
 			extraBottleRecipes = configFile.getBoolean("extraBottleRecipes", "recipes.cauldron.dyeing", extraBottleRecipes, "Adds extra dyed bottle recipes to craft green and brown") && enableCauldronDyeing;

@@ -15,6 +15,7 @@ import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.IBlockColor;
 import net.minecraft.client.renderer.color.IItemColor;
 import net.minecraft.client.renderer.color.ItemColors;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -182,6 +183,13 @@ public class ClientProxy extends CommonProxy {
 			}
 			// block-model
 			ModelLoader.setCustomStateMapper(block, mapper);
+		}
+	}
+
+	public static void registerFluidTexture(TextureMap map, Fluid fluid) {
+		if(fluid != null) {
+			map.registerSprite(fluid.getFlowing());
+			map.registerSprite(fluid.getStill());
 		}
 	}
 

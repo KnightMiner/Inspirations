@@ -137,6 +137,7 @@ item.inspirations.dyed_bottle.black.name=Black Dyed Water Bottle
 fluid.inspirations.mushroom_stew=Mushroom Stew
 fluid.inspirations.beetroot_soup=Beetroot Soup
 fluid.inspirations.rabbit_stew=Rabbit Stew
+fluid.inspirations.milk=Milk
 
 # JEI
 gui.jei.anvil_smashing.title=Anvil Smashing

@@ -7,6 +7,7 @@ import knightminer.inspirations.common.CommonProxy;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.library.InspirationsRegistry;
+import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.recipe.cauldron.CauldronBrewingRecipe;
 import knightminer.inspirations.library.recipe.cauldron.CauldronDyeRecipe;
 import knightminer.inspirations.library.recipe.cauldron.CauldronFluidRecipe;
@@ -80,15 +81,20 @@ public class InspirationsRecipes extends PulseBase {
 	public static Fluid mushroomStew;
 	public static Fluid beetrootSoup;
 	public static Fluid rabbitStew;
+	public static Fluid milk;
 
 
 	@Subscribe
 	public void preInit(FMLPreInitializationEvent event) {
 		proxy.preInit();
 
-		mushroomStew = registerColoredFluid("mushroom_stew", 0xFFCD8C6F);
-		beetrootSoup = registerColoredFluid("beetroot_soup", 0xFFB82A30);
-		rabbitStew = registerColoredFluid("rabbit_stew", 0xFF984A2C);
+		if(Config.enableCauldronFluids) {
+			mushroomStew = registerColoredFluid("mushroom_stew", 0xFFCD8C6F);
+			beetrootSoup = registerColoredFluid("beetroot_soup", 0xFFB82A30);
+			rabbitStew = registerColoredFluid("rabbit_stew", 0xFF984A2C);
+			if(Config.enableMilk) {
+				milk = registerFluid(new Fluid("milk", Util.getResource("blocks/milk"), Util.getResource("blocks/milk_flow")));			}
+		}
 	}
 
 	@SubscribeEvent
