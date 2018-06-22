@@ -23,11 +23,24 @@ public class FillCauldronRecipe extends CauldronFluidRecipe {
 	 * @param fluid       Fluid produced and required in the current cauldron
 	 * @param amount      Amount of fluid produced
 	 * @param container   Resulting container after filling the cauldron
+	 * @param boiling     If true, the cauldron must be placed above lava for this recipe
+	 * @param sound       Sound to play when filling
+	 */
+	public FillCauldronRecipe(RecipeMatch input, Fluid fluid, int amount, ItemStack container, Boolean boiling, SoundEvent sound) {
+		super(input, fluid, container, boiling, 0, sound);
+		this.amount = amount;
+	}
+
+	/**
+	 * Full constructor
+	 * @param input       Input container
+	 * @param fluid       Fluid produced and required in the current cauldron
+	 * @param amount      Amount of fluid produced
+	 * @param container   Resulting container after filling the cauldron
 	 * @param sound       Sound to play when filling
 	 */
 	public FillCauldronRecipe(RecipeMatch input, Fluid fluid, int amount, ItemStack container, SoundEvent sound) {
-		super(input, fluid, container, null, 0, sound);
-		this.amount = amount;
+		this(input, fluid, amount, container, null, sound);
 	}
 
 	/**
