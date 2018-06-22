@@ -15,7 +15,9 @@ import knightminer.inspirations.library.recipe.cauldron.FillCauldronRecipe;
 import knightminer.inspirations.recipes.block.BlockEnhancedCauldron;
 import knightminer.inspirations.recipes.block.BlockSmashingAnvil;
 import knightminer.inspirations.recipes.item.ItemDyedWaterBottle;
+import knightminer.inspirations.recipes.recipe.ArmorClearRecipe;
 import knightminer.inspirations.recipes.recipe.ArmorDyeingCauldronRecipe;
+import knightminer.inspirations.recipes.recipe.BannerClearRecipe;
 import knightminer.inspirations.recipes.recipe.DyeCauldronWater;
 import knightminer.inspirations.recipes.recipe.DyeIngredientWrapper;
 import knightminer.inspirations.recipes.recipe.FillCauldronFromDyedBottle;
@@ -72,7 +74,7 @@ public class InspirationsRecipes extends PulseBase {
 
 	// blocks
 	public static Block anvil;
-	public static Block cauldron;
+	public static BlockEnhancedCauldron cauldron;
 
 	// items
 	public static ItemDyedWaterBottle dyedWaterBottle;
@@ -180,6 +182,14 @@ public class InspirationsRecipes extends PulseBase {
 			return;
 		}
 
+		// reimplemented vanilla recipes
+		InspirationsRegistry.addCauldronRecipe(ArmorClearRecipe.INSTANCE);
+		InspirationsRegistry.addCauldronRecipe(BannerClearRecipe.INSTANCE);
+		// fill from water bottle, does not use the shortcut as we need NBT matching
+		ItemStack waterBottle = PotionUtils.addPotionToItemStack(new ItemStack(Items.POTIONITEM), PotionTypes.WATER);
+		InspirationsRegistry.addCauldronRecipe(new CauldronFluidRecipe(RecipeMatch.of(Items.GLASS_BOTTLE), FluidRegistry.WATER, waterBottle, null, SoundEvents.ITEM_BOTTLE_FILL));
+		InspirationsRegistry.addCauldronRecipe(new FillCauldronRecipe(RecipeMatch.ofNBT(waterBottle), FluidRegistry.WATER, 1, new ItemStack(Items.GLASS_BOTTLE)));
+
 		if(Config.enableCauldronDyeing) {
 			InspirationsRegistry.addCauldronRecipe(FillDyedBottleFromCauldron.INSTANCE);
 			InspirationsRegistry.addCauldronRecipe(FillCauldronFromDyedBottle.INSTANCE);
@@ -229,6 +239,9 @@ public class InspirationsRecipes extends PulseBase {
 			addStewRecipes(new ItemStack(Items.BEETROOT_SOUP), beetrootSoup, new ItemStack(Items.BEETROOT, 6));
 			addStewRecipes(new ItemStack(Items.MUSHROOM_STEW), mushroomStew, InspirationsShared.mushrooms.copy());
 			addStewRecipes(new ItemStack(Items.RABBIT_STEW), rabbitStew, InspirationsShared.rabbitStewMix.copy());
+		} else {
+			// above relied on for bucket filling cauldron
+			InspirationsRegistry.addCauldronFluidItem(new ItemStack(Items.WATER_BUCKET), new ItemStack(Items.BUCKET), FluidRegistry.WATER, 3);
 		}
 	}
 

@@ -2,6 +2,7 @@ package knightminer.inspirations.library.recipe.cauldron;
 
 import java.util.List;
 
+import knightminer.inspirations.library.InspirationsRegistry;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidRegistry;
 
@@ -52,7 +53,7 @@ public interface ISimpleCauldronRecipe extends ICauldronRecipe {
 	 * @return
 	 */
 	default int getInputLevel() {
-		return 3;
+		return InspirationsRegistry.getCauldronMax();
 	}
 
 	@Override

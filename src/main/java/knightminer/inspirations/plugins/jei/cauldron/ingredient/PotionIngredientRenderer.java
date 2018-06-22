@@ -3,6 +3,8 @@ package knightminer.inspirations.plugins.jei.cauldron.ingredient;
 import java.util.ArrayList;
 import java.util.List;
 
+import knightminer.inspirations.common.Config;
+import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.client.ClientUtil;
 import knightminer.inspirations.plugins.jei.cauldron.CauldronRecipeCategory;
@@ -21,6 +23,7 @@ public enum PotionIngredientRenderer implements IIngredientRenderer<PotionIngred
 	LEVEL_1,
 	LEVEL_2,
 	LEVEL_3,
+	LEVEL_4,
 	INVALID;
 
 	private int level;
@@ -29,8 +32,8 @@ public enum PotionIngredientRenderer implements IIngredientRenderer<PotionIngred
 	}
 
 	public static PotionIngredientRenderer forLevel(int level) {
-		if(level < 1 || level > 3) {
-			level = 4;
+		if(level < 1 || level > 4 || (level == 4 && !Config.enableBiggerCauldron)) {
+			level = 5;
 		}
 
 		return values()[level];
@@ -40,7 +43,7 @@ public enum PotionIngredientRenderer implements IIngredientRenderer<PotionIngred
 
 	@Override
 	public void render(Minecraft minecraft, int x, int y, PotionIngredient potion) {
-		if(potion == null || level == 4) {
+		if(potion == null || level == 5) {
 			return;
 		}
 		GlStateManager.enableBlend();
@@ -52,7 +55,7 @@ public enum PotionIngredientRenderer implements IIngredientRenderer<PotionIngred
 		if(level == 0) {
 			ClientUtil.renderFilledSprite(sprite, x, y, 16, 16);
 		} else {
-			int height = ((10 * level) / 3);
+			int height = ((10 * level) / InspirationsRegistry.getCauldronMax());
 			ClientUtil.renderFilledSprite(sprite, x, y, 10, height);
 		}
 		GlStateManager.color(1, 1, 1);

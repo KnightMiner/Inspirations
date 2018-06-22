@@ -79,9 +79,11 @@ public class Config {
 	// cauldron
 	public static boolean enableCauldronRecipes = true;
 	public static boolean enableExtendedCauldron = true;
+	public static boolean enableBiggerCauldron = false;
 	public static boolean simpleCauldronRecipes = false;
 	public static boolean enableCauldronDyeing = true;
 	public static boolean patchVanillaDyeRecipes = true;
+	public static boolean fasterCauldronRain = true;
 	public static boolean extraBottleRecipes = true;
 	public static boolean enableCauldronPotions = true;
 	public static boolean enableCauldronBrewing = true;
@@ -269,6 +271,9 @@ public class Config {
 			spongeEmptyCauldron = !spongeEmptyString.equals("false");
 			spongeCauldronFull = spongeEmptyString.equals("full");
 			enableMilk = configFile.getBoolean("milk", "recipes.cauldron", enableMilk, "Registers milk as a fluid so it can be used in cauldron recipes.") && enableCauldronFluids;
+			enableBiggerCauldron = configFile.getBoolean("bigger", "recipes.cauldron", enableBiggerCauldron, "Makes the cauldron hold 4 bottle per bucket instead of 3. Translates better to modded fluids.") && enableExtendedCauldron;
+			InspirationsRegistry.setCauldronBigger(enableBiggerCauldron);
+			fasterCauldronRain = configFile.getBoolean("fasterRain", "recipes.cauldron", fasterCauldronRain, "Cauldrons fill faster in the rain than vanilla painfully slow rate.") && enableExtendedCauldron;
 
 			patchVanillaDyeRecipes = configFile.getBoolean("patchVanillaRecipes", "recipes.cauldron.dyeing", patchVanillaDyeRecipes, "Makes crafting two dyed water bottles together produce a dyed water bottle. Requires modifying vanilla recipes to prevent a conflict") && enableCauldronDyeing;
 			extraBottleRecipes = configFile.getBoolean("extraBottleRecipes", "recipes.cauldron.dyeing", extraBottleRecipes, "Adds extra dyed bottle recipes to craft green and brown") && enableCauldronDyeing;

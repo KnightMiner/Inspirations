@@ -1,5 +1,6 @@
 package knightminer.inspirations.recipes.recipe;
 
+import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
 import knightminer.inspirations.recipes.InspirationsRecipes;
@@ -12,7 +13,7 @@ public enum FillCauldronFromDyedBottle implements ICauldronRecipe {
 
 	@Override
 	public boolean matches(ItemStack stack, boolean boiling, int level, ICauldronRecipe.CauldronState state) {
-		if(level == 3) {
+		if(level == InspirationsRegistry.getCauldronMax()) {
 			return false;
 		}
 

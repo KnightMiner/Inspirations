@@ -2,6 +2,7 @@ package knightminer.inspirations.plugins.jei.cauldron;
 
 import com.google.common.collect.ImmutableList;
 
+import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.recipe.cauldron.ISimpleCauldronRecipe;
 import knightminer.inspirations.plugins.jei.JEIPlugin;
@@ -40,11 +41,11 @@ public class CauldronRecipeWrapper implements ICauldronRecipeWrapper {
 
 	public CauldronRecipeWrapper(ISimpleCauldronRecipe recipe) {
 		this.input = ImmutableList.of(recipe.getInput());
-		this.inputLevel = MathHelper.clamp(recipe.getInputLevel(), 0, 3);
+		this.inputLevel = MathHelper.clamp(recipe.getInputLevel(), 0, InspirationsRegistry.getCauldronMax());
 		this.boiling = recipe.isBoiling();
 
 		this.output = ImmutableList.of(recipe.getResult());
-		this.outputLevel = MathHelper.clamp(recipe.getLevel(inputLevel), 0, 3);
+		this.outputLevel = MathHelper.clamp(recipe.getLevel(inputLevel), 0, InspirationsRegistry.getCauldronMax());
 
 		// input state
 		if(inputLevel == 0) {

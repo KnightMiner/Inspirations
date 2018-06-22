@@ -128,7 +128,7 @@ public class PulseBase {
 		return register(registry, thing, Util.getResource(name));
 	}
 
-	protected static <T extends IForgeRegistryEntry<T>> T register(IForgeRegistry<T> registry, T thing, ResourceLocation name) {
+	protected static <C extends T, T extends IForgeRegistryEntry<T>> C register(IForgeRegistry<T> registry, C thing, ResourceLocation name) {
 		thing.setRegistryName(name);
 		registry.register(thing);
 		return thing;

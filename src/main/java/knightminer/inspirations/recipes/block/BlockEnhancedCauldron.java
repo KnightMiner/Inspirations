@@ -5,6 +5,7 @@ import java.util.Random;
 
 import javax.annotation.Nonnull;
 
+import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.util.TextureBlockUtil;
 import knightminer.inspirations.recipes.client.BoilingParticle;
 import knightminer.inspirations.recipes.tileentity.TileCauldron;
@@ -13,14 +14,19 @@ import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyEnum;
+import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.property.ExtendedBlockState;
@@ -33,14 +39,20 @@ import slimeknights.mantle.property.PropertyString;
 public class BlockEnhancedCauldron extends BlockCauldron implements ITileEntityProvider {
 
 	public static final PropertyEnum<CauldronContents> CONTENTS = PropertyEnum.create("contents", CauldronContents.class);
+	public static final PropertyInteger LEVELS = PropertyInteger.create("levels", 0, 4);
 	public static final PropertyBool BOILING = PropertyBool.create("boiling");
 	public static final PropertyString TEXTURE = TextureBlockUtil.TEXTURE_PROP;
 
 	public BlockEnhancedCauldron() {
-		this.setDefaultState(this.blockState.getBaseState()
+		IBlockState state = this.blockState.getBaseState()
 				.withProperty(LEVEL, 0)
 				.withProperty(BOILING, false)
-				.withProperty(CONTENTS, CauldronContents.FLUID));
+				.withProperty(CONTENTS, CauldronContents.FLUID);
+		if(Config.enableBiggerCauldron) {
+			state = state.withProperty(LEVELS, 0);
+		}
+		this.setDefaultState(state);
+
 		this.setHardness(2.0F);
 		this.setUnlocalizedName("cauldron");
 		this.hasTileEntity = true;
@@ -60,7 +72,16 @@ public class BlockEnhancedCauldron extends BlockCauldron implements ITileEntityP
 		if(te instanceof TileCauldron && !((TileCauldron) te).isWater()) {
 			return;
 		}
-		super.fillWithRain(world, pos);
+
+		// allow disabling the random 1/20 chance
+		if((Config.fasterCauldronRain || world.rand.nextInt(20) == 0)
+				&& world.getBiomeProvider().getTemperatureAtHeight(world.getBiome(pos).getTemperature(pos), pos.getY()) >= 0.15F) {
+			IBlockState state = world.getBlockState(pos);
+			int level = state.getValue(levelsProp());
+			if(level < (Config.enableBiggerCauldron ? 4 : 3)) {
+				setWaterLevel(world, pos, state, level+1);
+			}
+		}
 	}
 
 	/**
@@ -73,13 +94,22 @@ public class BlockEnhancedCauldron extends BlockCauldron implements ITileEntityP
 		if(te instanceof TileCauldron && !((TileCauldron) te).isWater()) {
 			return;
 		}
-		super.onEntityCollidedWithBlock(world, pos, state, entity);
+
+		int i = state.getValue(levelsProp());
+		float f = pos.getY() + ((Config.enableBiggerCauldron ? 3.0F : 6.0F) + 3 * i) / 16.0F;
+		if (!world.isRemote && entity.isBurning() && i > 0 && entity.getEntityBoundingBox().minY <= f) {
+			entity.extinguish();
+			this.setWaterLevel(world, pos, state, i - 1);
+		}
 	}
 
 	/* Content texture */
 
 	@Override
 	protected ExtendedBlockState createBlockState() {
+		if(Config.enableBiggerCauldron) {
+			return new ExtendedBlockState(this, new IProperty[]{LEVEL, LEVELS, CONTENTS, BOILING}, new IUnlistedProperty[]{TEXTURE});
+		}
 		return new ExtendedBlockState(this, new IProperty[]{LEVEL, CONTENTS, BOILING}, new IUnlistedProperty[]{TEXTURE});
 	}
 
@@ -92,7 +122,6 @@ public class BlockEnhancedCauldron extends BlockCauldron implements ITileEntityP
 
 		// add boiling
 		state = state.withProperty(BOILING, world.getBlockState(pos.down()).getBlock() == Blocks.FIRE);
-
 		return state;
 	}
 
@@ -102,7 +131,8 @@ public class BlockEnhancedCauldron extends BlockCauldron implements ITileEntityP
 		if(!state.getActualState(world, pos).getValue(BOILING)) {
 			return;
 		}
-		int level = state.getValue(LEVEL);
+
+		int level = state.getValue(levelsProp());
 		if(level == 0) {
 			return;
 		}
@@ -110,7 +140,7 @@ public class BlockEnhancedCauldron extends BlockCauldron implements ITileEntityP
 		ParticleManager manager = Minecraft.getMinecraft().effectRenderer;
 		for(int i = 0; i < 2; i++) {
 			double x = pos.getX() + 0.1875D + (rand.nextFloat() * 0.625D);
-			double y = pos.getY() + 0.375D + (level * 0.1875D);
+			double y = pos.getY() + (Config.enableBiggerCauldron ? 0.1875 : 0.375D) + (level * 0.1875D);
 			double z = pos.getZ() + 0.1875D + (rand.nextFloat() * 0.625D);
 			manager.addEffect(new BoilingParticle(world, x, y, z, 0, 0, 0));
 		}
@@ -127,6 +157,52 @@ public class BlockEnhancedCauldron extends BlockCauldron implements ITileEntityP
 		}
 
 		return super.getExtendedState(state, world, pos);
+	}
+
+	@Override
+	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+		return true; // all moved to the cauldron registry
+	}
+
+	/* 4 bottle support */
+	public static PropertyInteger levelsProp() {
+		return Config.enableBiggerCauldron ? LEVELS : LEVEL;
+	}
+
+	@Override
+	public void setWaterLevel(World worldIn, BlockPos pos, IBlockState state, int level) {
+		// if 4, set 4 prop
+		if(Config.enableBiggerCauldron) {
+			state = state.withProperty(LEVELS, MathHelper.clamp(level, 0, 4));
+		}
+		worldIn.setBlockState(pos, state.withProperty(LEVEL, MathHelper.clamp(level, 0, 3)), 2);
+		worldIn.updateComparatorOutputLevel(pos, this);
+	}
+
+	@Override
+	public int getComparatorInputOverride(IBlockState blockState, World worldIn, BlockPos pos) {
+		return blockState.getValue(levelsProp());
+	}
+
+	/**
+	 * Convert the given metadata into a BlockState for this Block
+	 */
+	@Override
+	public IBlockState getStateFromMeta(int meta) {
+		IBlockState state = this.getDefaultState().withProperty(LEVEL, MathHelper.clamp(meta, 0, 3));
+		// if 4, set 4 prop
+		if(Config.enableBiggerCauldron) {
+			state = state.withProperty(LEVELS, MathHelper.clamp(meta, 0, 4));
+		}
+		return state;
+	}
+
+	/**
+	 * Convert the BlockState into the correct metadata value
+	 */
+	@Override
+	public int getMetaFromState(IBlockState state) {
+		return state.getValue(levelsProp());
 	}
 
 	public static enum CauldronContents implements IStringSerializable {

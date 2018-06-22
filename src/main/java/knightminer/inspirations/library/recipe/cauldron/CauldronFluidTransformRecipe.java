@@ -3,6 +3,7 @@ package knightminer.inspirations.library.recipe.cauldron;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
+import knightminer.inspirations.library.InspirationsRegistry;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
 import slimeknights.mantle.util.RecipeMatch;
@@ -24,7 +25,7 @@ public class CauldronFluidTransformRecipe extends CauldronFluidRecipe {
 	 * @param boiling   If true, cauldron must be above fire. If false, cauldron must not be above fire. Use null to ignore fire
 	 */
 	public CauldronFluidTransformRecipe(RecipeMatch input, @Nullable Fluid fluid, Fluid result, @Nullable Boolean boiling) {
-		this(input, fluid, result, boiling, 3);
+		this(input, fluid, result, boiling, InspirationsRegistry.getCauldronMax());
 	}
 
 	/**

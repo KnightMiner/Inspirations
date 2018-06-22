@@ -1,6 +1,7 @@
 package knightminer.inspirations.plugins.jei.cauldron;
 
 import knightminer.inspirations.Inspirations;
+import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.plugins.jei.JEIPlugin;
 import knightminer.inspirations.plugins.jei.cauldron.ingredient.DyeIngredient;
@@ -128,7 +129,7 @@ public class CauldronRecipeCategory implements IRecipeCategory<ICauldronRecipeWr
 		int index = input ? 0 : 1;
 		switch(type) {
 			case FLUID:
-				fluids.init(index, input, x, y, 10, 10, 3, false, null);
+				fluids.init(index, input, x, y, 10, 10, InspirationsRegistry.getCauldronMax(), false, null);
 				fluids.set(ingredients);
 				break;
 			case DYE:

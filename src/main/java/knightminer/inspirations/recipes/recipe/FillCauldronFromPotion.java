@@ -1,5 +1,6 @@
 package knightminer.inspirations.recipes.recipe;
 
+import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
 import net.minecraft.init.PotionTypes;
 import net.minecraft.init.SoundEvents;
@@ -20,7 +21,7 @@ public class FillCauldronFromPotion implements ICauldronRecipe {
 
 	@Override
 	public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		return level < 3 && (level == 0 || state.getPotion() != null)
+		return level < InspirationsRegistry.getCauldronMax() && (level == 0 || state.getPotion() != null)
 				&& stack.getItem() == potion;
 	}
 

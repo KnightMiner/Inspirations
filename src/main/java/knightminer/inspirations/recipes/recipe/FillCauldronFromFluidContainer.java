@@ -1,5 +1,6 @@
 package knightminer.inspirations.recipes.recipe;
 
+import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundEvent;
@@ -13,7 +14,7 @@ public enum FillCauldronFromFluidContainer implements ICauldronRecipe {
 
 	@Override
 	public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		if(level == 3 || (level > 0 && state.getFluid() == null)) {
+		if(level == InspirationsRegistry.getCauldronMax() || (level > 0 && state.getFluid() == null)) {
 			return false;
 		}
 
@@ -35,7 +36,7 @@ public enum FillCauldronFromFluidContainer implements ICauldronRecipe {
 
 	@Override
 	public int getLevel(int level) {
-		return 3;
+		return InspirationsRegistry.getCauldronMax();
 	}
 
 	@Override

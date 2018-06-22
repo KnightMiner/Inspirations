@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.google.common.collect.ImmutableList;
 
+import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.event.RegisterEvent.RegisterCauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.CauldronFluidRecipe;
 import knightminer.inspirations.library.recipe.cauldron.CauldronFluidTransformRecipe;
@@ -273,6 +274,14 @@ public class InspirationsRegistry {
 	private static List<ICauldronRecipe> cauldronRecipes = new ArrayList<>();
 	private static Set<ItemMetaKey> cauldronBlacklist = new HashSet<>();
 	private static Set<Fluid> cauldronWater = new HashSet<>();
+	private static boolean cauldronBigger = false;
+
+	public static void setCauldronBigger(boolean bigger) {
+		cauldronBigger = bigger;
+	}
+	public static int getCauldronMax() {
+		return cauldronBigger ? 4 : 3;
+	}
 
 	/**
 	 * Gets the result of a cauldron recipe
@@ -331,8 +340,26 @@ public class InspirationsRegistry {
 	public static void addCauldronScaledTransformRecipe(ItemStack stack, Fluid input, Fluid output, Boolean boiling) {
 		addCauldronRecipe(new CauldronFluidTransformRecipe(RecipeMatch.of(stack, stack.getCount(), 1), input, output, boiling, 1));
 		stack = stack.copy();
-		stack.setCount(stack.getCount() * 2);
-		addCauldronRecipe(new CauldronFluidTransformRecipe(RecipeMatch.of(stack, stack.getCount(), 1), input, output, boiling, 3));
+		int count = stack.getCount();
+		stack.setCount(count * 2);
+		if(Config.enableBiggerCauldron) {
+			addCauldronRecipe(new CauldronFluidTransformRecipe(RecipeMatch.of(stack, stack.getCount(), 1), input, output, boiling, 2));
+			stack = stack.copy();
+			stack.setCount(count * 3);
+		}
+		addCauldronRecipe(new CauldronFluidTransformRecipe(RecipeMatch.of(stack, stack.getCount(), 1), input, output, boiling, (Config.enableBiggerCauldron ? 4 : 3)));
+	}
+
+	/**
+	 * Adds a item to empty into and fill from the cauldron
+	 * @param filled     Filled version of container
+	 * @param container  Empty version of container
+	 * @param fluid      Fluid contained
+	 * @param amount     Amount this container counts for
+	 */
+	public static void addCauldronFluidItem(ItemStack filled, ItemStack container, Fluid fluid, int amount) {
+		addCauldronRecipe(new FillCauldronRecipe(RecipeMatch.of(filled), fluid, amount, container.copy()));
+		addCauldronRecipe(new CauldronFluidRecipe(RecipeMatch.of(container), fluid, filled.copy(), null, amount, SoundEvents.ITEM_BOTTLE_FILL));
 	}
 
 	/**
@@ -342,8 +369,7 @@ public class InspirationsRegistry {
 	 * @param fluid      Fluid contained
 	 */
 	public static void addCauldronFluidItem(ItemStack filled, ItemStack container, Fluid fluid) {
-		addCauldronRecipe(new FillCauldronRecipe(RecipeMatch.of(filled), fluid, 1, container.copy()));
-		addCauldronRecipe(new CauldronFluidRecipe(RecipeMatch.of(container), fluid, filled.copy(), null, SoundEvents.ITEM_BOTTLE_FILL));
+		addCauldronFluidItem(filled, container, fluid, 1);
 	}
 
 	/**

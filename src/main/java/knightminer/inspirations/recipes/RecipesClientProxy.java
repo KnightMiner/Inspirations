@@ -5,6 +5,7 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.client.NameStateMapper;
 import knightminer.inspirations.recipes.tileentity.TileCauldron;
+import net.minecraft.block.BlockCauldron;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.ItemColors;
@@ -20,10 +21,15 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public class RecipesClientProxy extends ClientProxy {
 	private static final ResourceLocation POTION_MODEL = new ResourceLocation("bottle_drinkable");
 	public static final ResourceLocation CAULDRON_MODEL = Util.getResource("cauldron");
+	public static final ResourceLocation CAULDRON_MODEL_BIGGER = Util.getResource("cauldron_bigger");
 
 	@SubscribeEvent
 	public void registerModels(ModelRegistryEvent event) {
-		setModelStateMapper(InspirationsRecipes.cauldron, new NameStateMapper(CAULDRON_MODEL));
+		if(Config.enableBiggerCauldron) {
+			setModelStateMapper(InspirationsRecipes.cauldron, new NameStateMapper(CAULDRON_MODEL_BIGGER, BlockCauldron.LEVEL));
+		} else {
+			setModelStateMapper(InspirationsRecipes.cauldron, new NameStateMapper(CAULDRON_MODEL));
+		}
 
 		if(Config.enableCauldronDyeing) {
 			registerItemModel(InspirationsRecipes.dyedWaterBottle, POTION_MODEL);
@@ -70,10 +76,23 @@ public class RecipesClientProxy extends ClientProxy {
 			return;
 		}
 
+		String level;
+		int max;
+		ResourceLocation base;
+		if(Config.enableBiggerCauldron) {
+			level = "levels";
+			max = 4;
+			base = CAULDRON_MODEL_BIGGER;
+		} else {
+			level = "level";
+			max = 3;
+			base = CAULDRON_MODEL;
+		}
+
 		boolean boiling = false;
 		do {
-			for(int i = 1; i <= 3; i++) {
-				replaceTexturedModel(event, new ModelResourceLocation(CAULDRON_MODEL, String.format("boiling=%s,contents=fluid,level=%s", boiling, i)), "water", false);
+			for(int i = 1; i <= max; i++) {
+				replaceTexturedModel(event, new ModelResourceLocation(base, String.format("boiling=%s,contents=fluid,%s=%s", boiling, level, i)), "water", false);
 			}
 			boiling = !boiling;
 		} while(boiling);

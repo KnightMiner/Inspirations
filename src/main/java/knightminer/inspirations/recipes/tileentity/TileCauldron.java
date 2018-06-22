@@ -6,14 +6,13 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe.CauldronState;
+import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.recipes.block.BlockEnhancedCauldron;
 import knightminer.inspirations.recipes.block.BlockEnhancedCauldron.CauldronContents;
-import net.minecraft.block.BlockCauldron;
 import net.minecraft.block.BlockFire;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -26,7 +25,6 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.fluids.Fluid;
@@ -111,7 +109,7 @@ public class TileCauldron extends TileEntity {
 
 		// other properties
 		boolean boiling = world.getBlockState(pos.down()).getBlock() instanceof BlockFire;
-		int level = blockState.getValue(BlockCauldron.LEVEL);
+		int level = blockState.getValue(BlockEnhancedCauldron.levelsProp());
 
 		// grab recipe
 		ICauldronRecipe recipe = InspirationsRegistry.getCauldronResult(stack, boiling, level, state);
@@ -133,9 +131,9 @@ public class TileCauldron extends TileEntity {
 				}
 
 				// update level
-				int newLevel = MathHelper.clamp(recipe.getLevel(level), 0, 3);
+				int newLevel = recipe.getLevel(level);
 				if(newLevel != level) {
-					Blocks.CAULDRON.setWaterLevel(world, pos, blockState, newLevel);
+					InspirationsRecipes.cauldron.setWaterLevel(world, pos, blockState, newLevel);
 					if(newLevel == 0) {
 						newState = CauldronState.WATER;
 					}
