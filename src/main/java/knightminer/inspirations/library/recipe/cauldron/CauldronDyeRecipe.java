@@ -7,6 +7,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import knightminer.inspirations.library.Util;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import slimeknights.mantle.util.RecipeMatch;
 
 /**
@@ -53,7 +54,8 @@ public class CauldronDyeRecipe implements ISimpleCauldronRecipe {
 
 	@Override
 	public ItemStack transformInput(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		stack.shrink(input.amountNeeded);
+		NonNullList<ItemStack> list = Util.createNonNullList(stack);
+		RecipeMatch.removeMatch(list, input.matches(list).get());
 		return stack;
 	}
 

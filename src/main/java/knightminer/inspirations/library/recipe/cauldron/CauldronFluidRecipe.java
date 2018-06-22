@@ -8,6 +8,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import knightminer.inspirations.library.Util;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
@@ -106,7 +107,8 @@ public class CauldronFluidRecipe implements ISimpleCauldronRecipe {
 
 	@Override
 	public ItemStack transformInput(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		stack.shrink(input.amountNeeded);
+		NonNullList<ItemStack> list = Util.createNonNullList(stack);
+		RecipeMatch.removeMatch(list, input.matches(list).get());
 		return stack;
 	}
 
