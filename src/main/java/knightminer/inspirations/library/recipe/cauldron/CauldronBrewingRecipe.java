@@ -37,7 +37,14 @@ public class CauldronBrewingRecipe implements ISimpleCauldronRecipe {
 
 	@Override
 	public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		return boiling && state.matches(input) && reagent.apply(stack);
+		// must have at least one level and be boiling. If 3 or more stack count must be bigger than 1
+		return level > 0 && (level < 3 || stack.getCount() > 1) && boiling && state.matches(input) && reagent.apply(stack);
+	}
+
+	@Override
+	public ItemStack transformInput(ItemStack stack, boolean boiling, int level, CauldronState state) {
+		stack.shrink(level > 2 ? 2 : 1);
+		return stack;
 	}
 
 	@Override
@@ -48,6 +55,11 @@ public class CauldronBrewingRecipe implements ISimpleCauldronRecipe {
 	@Override
 	public List<ItemStack> getInput() {
 		return ImmutableList.copyOf(reagent.getMatchingStacks());
+	}
+
+	@Override
+	public int getInputLevel() {
+		return 2;
 	}
 
 	@Override
