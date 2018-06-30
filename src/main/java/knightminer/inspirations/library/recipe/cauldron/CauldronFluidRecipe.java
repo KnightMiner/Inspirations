@@ -22,7 +22,7 @@ public class CauldronFluidRecipe implements ISimpleCauldronRecipe {
 	protected RecipeMatch input;
 	private ItemStack result;
 	@Nullable
-	private Boolean boiling;
+	protected Boolean boiling;
 	@Nullable
 	protected CauldronState fluid;
 	private SoundEvent sound;

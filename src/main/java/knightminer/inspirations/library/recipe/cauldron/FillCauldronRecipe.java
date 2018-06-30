@@ -67,7 +67,8 @@ public class FillCauldronRecipe extends CauldronFluidRecipe {
 
 	@Override
 	public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		if(level == InspirationsRegistry.getCauldronMax() || (level > 0 && !state.matches(fluid))) {
+		if(level == InspirationsRegistry.getCauldronMax() || (level > 0 && !state.matches(fluid))
+				|| (this.boiling != null && boiling != this.boiling.booleanValue())) {
 			return false;
 		}
 
