@@ -92,6 +92,9 @@ public class Config {
 	public static boolean spongeCauldronFull = false;
 	public static boolean betterCauldronItem = true;
 	public static boolean enableMilk = true;
+	private static String[] cauldronFire = {
+			"minecraft:fire"
+	};
 
 	private static String[] anvilSmashing = {
 			"# Stone",
@@ -378,7 +381,8 @@ public class Config {
 		processAnvilSmashing(anvilSmashing);
 
 		// cauldron uses
-		cauldronRecipes = configFile.get("recipes.cauldronRecipes", "recipes", cauldronRecipes,
+		configFile.moveProperty("recipes.cauldronRecipes", "recipes", "recipes.cauldron");
+		cauldronRecipes = configFile.get("recipes.cauldron", "recipes", cauldronRecipes,
 				"List of recipes to add to the cauldron on right click. Format is (modid:input:meta|oreString)->modid:output:meta[->isBoiling]. If isBoiling is excluded, it defaults to false.").getStringList();
 		processCauldronRecipes(cauldronRecipes);
 
@@ -386,6 +390,11 @@ public class Config {
 		flowerOverrides = configFile.get("tweaks.betterFlowerPot", "flowerOverrides", flowerOverrides,
 				"List of itemstacks to override flower behavior, which defaults to the block being BlockBush. Format is modid:name[:meta[:isFlower]]. Unset meta will default wildcard. Unset isFlower will default true").getStringList();
 		processItemOverrides(betterFlowerPot, flowerOverrides, InspirationsRegistry::registerFlower);
+
+		// cauldron fires
+		cauldronFire = configFile.get("recipes.cauldron", "fires", cauldronFire,
+				"List of blocks to act is fire below a cauldron. Format is modid:name[:meta]. If meta is excluded all states of the block will count as fire").getStringList();
+		processCauldronFire(cauldronFire);
 
 		// saving
 		if(configFile.hasChanged()) {
@@ -539,6 +548,10 @@ public class Config {
 			}
 	}
 
+	/**
+	 * Processes the simple cauldron recipes from the config
+	 * @param cauldronRecipes  List of recipe strings
+	 */
 	private static void processCauldronRecipes(String[] cauldronRecipes) {
 		if(!enableCauldronRecipes) {
 			return;
@@ -593,6 +606,58 @@ public class Config {
 		}
 	}
 
+
+	/**
+	 * Parses the cauldron fire list from the config
+	 * @param fires  List of fire blocks or block states
+	 */
+	@SuppressWarnings("deprecation")
+	private static void processCauldronFire(String[] fires) {
+		if(!enableCauldronRecipes) {
+			return;
+		}
+
+		for(String fire : fires) {
+			// skip blank lines and comments
+			if("".equals(fire) || fire.startsWith("#")) {
+				continue;
+			}
+
+			// split into parts
+			String[] parts = fire.split(":");
+
+			// should have name and domain with optional meta
+			if(parts.length > 3 || parts.length < 2) {
+				Inspirations.log.warn("Invalid cauldron fire {}: invalid parameter length, expected modid:blockid[:meta]", fire);
+				continue;
+			}
+
+			// find block
+			Block block = GameRegistry.findRegistry(Block.class).getValue(new ResourceLocation(parts[0], parts[1]));
+			if(block == null || block == Blocks.AIR) {
+				Inspirations.log.warn("Unable to find block {}:{} for cauldron fire {}", parts[0], parts[1], fire);
+				continue;
+			}
+
+			// if three parts, we have metadata
+			if(parts.length > 2) {
+				int meta;
+				try {
+					meta = Integer.parseInt(parts[2]);
+				} catch(NumberFormatException e) {
+					meta = -1;
+				}
+				// handle invalid numbers and negatives here
+				if(meta < 0 || meta > 15) {
+					Inspirations.log.error("Invalid cauldron fire {}: invalid metadata", fire);
+					continue;
+				}
+				InspirationsRegistry.registerCauldronFire(block.getStateFromMeta(meta));
+			} else {
+				InspirationsRegistry.registerCauldronFire(block);
+			}
+		}
+	}
 
 	/*
 	 * Factories for recipe conditions

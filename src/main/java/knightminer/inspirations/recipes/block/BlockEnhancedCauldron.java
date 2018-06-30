@@ -6,6 +6,7 @@ import java.util.Random;
 import javax.annotation.Nonnull;
 
 import knightminer.inspirations.common.Config;
+import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.util.TextureBlockUtil;
 import knightminer.inspirations.recipes.client.BoilingParticle;
 import knightminer.inspirations.recipes.tileentity.TileCauldron;
@@ -20,7 +21,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -130,7 +130,7 @@ public class BlockEnhancedCauldron extends BlockCauldron implements ITileEntityP
 		}
 
 		// add boiling
-		state = state.withProperty(BOILING, world.getBlockState(pos.down()).getBlock() == Blocks.FIRE);
+		state = state.withProperty(BOILING, InspirationsRegistry.isCauldronFire(world.getBlockState(pos.down())));
 		return state;
 	}
 

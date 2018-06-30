@@ -274,6 +274,8 @@ public class InspirationsRegistry {
 	private static List<ICauldronRecipe> cauldronRecipes = new ArrayList<>();
 	private static Set<ItemMetaKey> cauldronBlacklist = new HashSet<>();
 	private static Set<Fluid> cauldronWater = new HashSet<>();
+	private static Set<Block> cauldronFireBlocks = new HashSet<>();
+	private static Set<IBlockState> cauldronFireStates = new HashSet<>();
 	private static boolean cauldronBigger = false;
 
 	public static void setCauldronBigger(boolean bigger) {
@@ -416,5 +418,30 @@ public class InspirationsRegistry {
 		// check both the item with its current meta and with wildcard meta
 		return cauldronBlacklist.contains(new ItemMetaKey(stack))
 				|| cauldronBlacklist.contains(new ItemMetaKey(stack.getItem(), OreDictionary.WILDCARD_VALUE));
+	}
+
+	/**
+	 * Registers all variants of a block as acting as fire to heat a cauldron
+	 * @param block  Block to register
+	 */
+	public static void registerCauldronFire(Block block) {
+		cauldronFireBlocks.add(block);
+	}
+
+	/**
+	 * Registers a single block state to act as fire for a cauldron
+	 * @param block  Block state to register
+	 */
+	public static void registerCauldronFire(IBlockState block) {
+		cauldronFireStates.add(block);
+	}
+
+	/**
+	 * Checks if a state is considered fire in a cauldron
+	 * @param state  State to check
+	 * @return  True if the state is considered fire
+	 */
+	public static boolean isCauldronFire(IBlockState state) {
+		return cauldronFireBlocks.contains(state.getBlock()) || cauldronFireStates.contains(state);
 	}
 }

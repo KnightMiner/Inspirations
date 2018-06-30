@@ -11,13 +11,11 @@ import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe.Cauldron
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.recipes.block.BlockEnhancedCauldron;
 import knightminer.inspirations.recipes.block.BlockEnhancedCauldron.CauldronContents;
-import net.minecraft.block.BlockFire;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -117,7 +115,7 @@ public class TileCauldron extends TileEntity {
 		}
 
 		// other properties
-		boolean boiling = world.getBlockState(pos.down()).getBlock() instanceof BlockFire;
+		boolean boiling = InspirationsRegistry.isCauldronFire(world.getBlockState(pos.down()));
 		int level = InspirationsRecipes.cauldron.getLevel(blockState);
 
 		// grab recipe
@@ -201,7 +199,7 @@ public class TileCauldron extends TileEntity {
 				// continue for boiling
 			case DYE:
 				// if the cauldron is boiling, boiling the entity
-				if (world.getBlockState(pos.down()).getBlock() == Blocks.FIRE) {
+				if (InspirationsRegistry.isCauldronFire(world.getBlockState(pos.down()))) {
 					entity.attackEntityFrom(DAMAGE_BOIL, 2.0F);
 				}
 				break;
