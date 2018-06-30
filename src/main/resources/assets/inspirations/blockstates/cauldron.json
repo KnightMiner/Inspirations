@@ -3,7 +3,8 @@
   "defaults": { "model": "inspirations:cauldron/empty" },
   "variants": {
     "level": {
-      "0": {},
+      "empty": {},
+      "0": { "model": "inspirations:cauldron/level_0" },
       "1": { "model": "inspirations:cauldron/level_1" },
       "2": { "model": "inspirations:cauldron/level_2" },
       "3": { "model": "inspirations:cauldron/level_3" }
