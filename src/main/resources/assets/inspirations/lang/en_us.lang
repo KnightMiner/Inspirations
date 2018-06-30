@@ -139,6 +139,8 @@ fluid.inspirations.beetroot_soup=Beetroot Soup
 fluid.inspirations.rabbit_stew=Rabbit Stew
 fluid.inspirations.milk=Milk
 
+death.attack.inspirations.boiling=%s was boiled alive
+
 # JEI
 gui.jei.anvil_smashing.title=Anvil Smashing
 gui.jei.cauldron.title=Cauldron

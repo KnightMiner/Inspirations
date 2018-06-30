@@ -1,9 +1,11 @@
 package knightminer.inspirations.recipes.tileentity;
 
+import java.util.List;
 import javax.annotation.Nonnull;
 
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.InspirationsRegistry;
+import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe.CauldronState;
 import knightminer.inspirations.recipes.InspirationsRecipes;
@@ -12,15 +14,20 @@ import knightminer.inspirations.recipes.block.BlockEnhancedCauldron.CauldronCont
 import net.minecraft.block.BlockFire;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
@@ -31,6 +38,8 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 public class TileCauldron extends TileEntity {
+	public static final DamageSource DAMAGE_BOIL = new DamageSource(Util.prefix("boiling")).setDamageBypassesArmor();
+
 	private CauldronState state;
 
 	public TileCauldron() {
@@ -109,7 +118,7 @@ public class TileCauldron extends TileEntity {
 
 		// other properties
 		boolean boiling = world.getBlockState(pos.down()).getBlock() instanceof BlockFire;
-		int level = blockState.getValue(BlockEnhancedCauldron.levelsProp());
+		int level = InspirationsRecipes.cauldron.getLevel(blockState);
 
 		// grab recipe
 		ICauldronRecipe recipe = InspirationsRegistry.getCauldronResult(stack, boiling, level, state);
@@ -168,6 +177,54 @@ public class TileCauldron extends TileEntity {
 		}
 
 		return true;
+	}
+
+	public int onEntityCollide(Entity entity, int level) {
+		// whether a level should be consumed
+		switch(this.getContentType()) {
+			case FLUID:
+				// estinguish fire
+				if(this.isWater()) {
+					if(entity.isBurning()) {
+						entity.extinguish();
+						level = level - 1;
+					}
+				} else {
+					// set fire if the liquid is hot
+					Fluid fluid = state.getFluid();
+					if(fluid.getTemperature() > 450 && !entity.isImmuneToFire()) {
+						entity.attackEntityFrom(DamageSource.LAVA, 4.0F);
+						entity.setFire(15);
+						break;
+					}
+				}
+				// continue for boiling
+			case DYE:
+				// if the cauldron is boiling, boiling the entity
+				if (world.getBlockState(pos.down()).getBlock() == Blocks.FIRE) {
+					entity.attackEntityFrom(DAMAGE_BOIL, 2.0F);
+				}
+				break;
+			case POTION:
+				// apply potion effects
+				if(entity instanceof EntityLivingBase) {
+					EntityLivingBase living = (EntityLivingBase) entity;
+					List<PotionEffect> effects = state.getPotion().getEffects();
+					// if any of the effects are not currently on the player, apply it and lower the level
+					if(effects.stream().anyMatch(effect -> !living.isPotionActive(effect.getPotion()))) {
+						for(PotionEffect effect : effects) {
+							if (effect.getPotion().isInstant()) {
+								effect.getPotion().affectEntity(living, living, living, effect.getAmplifier(), 1.0D);
+							} else {
+								living.addPotionEffect(new PotionEffect(effect));
+							}
+						}
+						level = level - 1;
+					}
+				}
+				break;
+		}
+		return level;
 	}
 
 	public IBlockState writeExtendedBlockState(IExtendedBlockState state) {

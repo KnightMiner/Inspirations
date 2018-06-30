@@ -77,7 +77,7 @@ public class BlockEnhancedCauldron extends BlockCauldron implements ITileEntityP
 		if((Config.fasterCauldronRain || world.rand.nextInt(20) == 0)
 				&& world.getBiomeProvider().getTemperatureAtHeight(world.getBiome(pos).getTemperature(pos), pos.getY()) >= 0.15F) {
 			IBlockState state = world.getBlockState(pos);
-			int level = state.getValue(levelsProp());
+			int level = getLevel(state);
 			if(level < (Config.enableBiggerCauldron ? 4 : 3)) {
 				setWaterLevel(world, pos, state, level+1);
 			}
@@ -91,15 +91,24 @@ public class BlockEnhancedCauldron extends BlockCauldron implements ITileEntityP
 	public void onEntityCollidedWithBlock(World world, BlockPos pos, IBlockState state, Entity entity) {
 		TileEntity te = world.getTileEntity(pos);
 		// do not estinguish unless the current contents are water
-		if(te instanceof TileCauldron && !((TileCauldron) te).isWater()) {
+		if(!(te instanceof TileCauldron)) {
+			return;
+		}
+		if(world.isRemote) {
 			return;
 		}
 
-		int i = state.getValue(levelsProp());
-		float f = pos.getY() + ((Config.enableBiggerCauldron ? 3.0F : 6.0F) + 3 * i) / 16.0F;
-		if (!world.isRemote && entity.isBurning() && i > 0 && entity.getEntityBoundingBox().minY <= f) {
-			entity.extinguish();
-			this.setWaterLevel(world, pos, state, i - 1);
+		// ensure the entity is touching the fluid inside
+		int level = getLevel(state);
+		float f = pos.getY() + ((Config.enableBiggerCauldron ? 2.5F : 5.5F) + 3 * level) / 16.0F;
+		if (level > 0 && entity.getEntityBoundingBox().minY <= f) {
+			// if so, have the TE handle it
+			int newLevel = ((TileCauldron)te).onEntityCollide(entity, level);
+			// if the level changed, update it
+			if(level != newLevel) {
+				this.setWaterLevel(world, pos, state, newLevel);
+			}
+
 		}
 	}
 
@@ -132,7 +141,7 @@ public class BlockEnhancedCauldron extends BlockCauldron implements ITileEntityP
 			return;
 		}
 
-		int level = state.getValue(levelsProp());
+		int level = getLevel(state);
 		if(level == 0) {
 			return;
 		}
@@ -165,10 +174,6 @@ public class BlockEnhancedCauldron extends BlockCauldron implements ITileEntityP
 	}
 
 	/* 4 bottle support */
-	public static PropertyInteger levelsProp() {
-		return Config.enableBiggerCauldron ? LEVELS : LEVEL;
-	}
-
 	@Override
 	public void setWaterLevel(World worldIn, BlockPos pos, IBlockState state, int level) {
 		// if 4, set 4 prop
@@ -179,9 +184,16 @@ public class BlockEnhancedCauldron extends BlockCauldron implements ITileEntityP
 		worldIn.updateComparatorOutputLevel(pos, this);
 	}
 
+	public int getLevel(IBlockState state) {
+		if(Config.enableBiggerCauldron) {
+			return state.getValue(LEVELS);
+		}
+		return state.getValue(LEVEL);
+	}
+
 	@Override
-	public int getComparatorInputOverride(IBlockState blockState, World worldIn, BlockPos pos) {
-		return blockState.getValue(levelsProp());
+	public int getComparatorInputOverride(IBlockState state, World worldIn, BlockPos pos) {
+		return getLevel(state);
 	}
 
 	/**
@@ -202,7 +214,7 @@ public class BlockEnhancedCauldron extends BlockCauldron implements ITileEntityP
 	 */
 	@Override
 	public int getMetaFromState(IBlockState state) {
-		return state.getValue(levelsProp());
+		return getLevel(state);
 	}
 
 	public static enum CauldronContents implements IStringSerializable {
