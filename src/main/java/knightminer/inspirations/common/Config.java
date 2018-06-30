@@ -95,6 +95,7 @@ public class Config {
 	// cauldron - potions
 	public static boolean enableCauldronPotions = true;
 	public static boolean enableCauldronBrewing = true;
+	private static boolean expensiveCauldronBrewing = true;
 	// cauldron - recipes
 	private static String[] cauldronRecipes = {
 			"minecraft:sticky_piston->minecraft:piston"
@@ -203,6 +204,7 @@ public class Config {
 	 * Loads the configuration file from the event
 	 * @param event  PreInit event from main mod class
 	 */
+	@SuppressWarnings("deprecation")
 	public static void preInit(FMLPreInitializationEvent event) {
 		configFile = new Configuration(event.getSuggestedConfigurationFile(), "0.1", false);
 
@@ -281,7 +283,7 @@ public class Config {
 			enableExtendedCauldron = extendCauldron.equals("true");
 
 			enableBiggerCauldron = configFile.getBoolean("bigger", "recipes.cauldron", enableBiggerCauldron, "Makes the cauldron hold 4 bottle per bucket instead of 3. Translates better to modded fluids.") && enableExtendedCauldron;
-			InspirationsRegistry.setCauldronBigger(enableBiggerCauldron);
+			InspirationsRegistry.setConfig("biggerCauldron", enableBiggerCauldron);
 			fasterCauldronRain = configFile.getBoolean("fasterRain", "recipes.cauldron", fasterCauldronRain, "Cauldrons fill faster in the rain than vanilla painfully slow rate.") && enableExtendedCauldron;
 			dropCauldronContents = configFile.getBoolean("dropContents", "recipes.cauldron", dropCauldronContents, "Cauldrons will drop their contents when broken.") && enableExtendedCauldron;
 
@@ -299,6 +301,8 @@ public class Config {
 			configFile.renameProperty("recipes.cauldron", "brewing", "potions");
 			enableCauldronPotions = configFile.getBoolean("potions", "recipes.cauldron", enableCauldronPotions, "Allows cauldrons to be filled with potions and support brewing") && enableExtendedCauldron;
 			enableCauldronBrewing = configFile.getBoolean("brewing", "recipes.cauldron.potions", extraBottleRecipes, "Allows cauldrons to perform brewing recipes.") && enableCauldronBrewing;
+			expensiveCauldronBrewing = configFile.getBoolean("brewingExpensive", "recipes.cauldron.potions", expensiveCauldronBrewing, "Caps brewing at 2 potions per ingredient, requiring 2 ingredients for a full cauldron. Makes the brewing stand still useful and balances better against the bigger cauldron.") && enableCauldronBrewing;
+			InspirationsRegistry.setConfig("expensiveCauldronBrewing", expensiveCauldronBrewing);
 		}
 
 		// tools

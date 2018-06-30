@@ -37,6 +37,28 @@ import slimeknights.mantle.util.RecipeMatch;
 
 public class InspirationsRegistry {
 	public static final Logger log = Util.getLogger("api");
+	private static boolean cauldronBigger = false, expensiveCauldronBrewing = false;
+
+	/**
+	 * Sets a value from the Inspirations config into the registry. Used to keep the config out of the library
+	 * @param key    Key to set
+	 * @param value  Boolean value
+	 * @deprecated  For internal use only
+	 */
+	@Deprecated
+	public static void setConfig(String key, boolean value) {
+		switch(key) {
+			case "cauldronBigger":
+				cauldronBigger = value;
+				break;
+			case "expensiveCauldronBrewing":
+				expensiveCauldronBrewing = value;
+				break;
+			default:
+				// should never happen
+				throw new IllegalArgumentException("Unexpected config key");
+		}
+	}
 
 	/*
 	 * Books
@@ -276,13 +298,21 @@ public class InspirationsRegistry {
 	private static Set<Fluid> cauldronWater = new HashSet<>();
 	private static Set<Block> cauldronFireBlocks = new HashSet<>();
 	private static Set<IBlockState> cauldronFireStates = new HashSet<>();
-	private static boolean cauldronBigger = false;
 
-	public static void setCauldronBigger(boolean bigger) {
-		cauldronBigger = bigger;
-	}
+	/**
+	 * Returns the maximum size for the cauldron
+	 * @return  4 if bigger cauldron, 3 otherwise
+	 */
 	public static int getCauldronMax() {
 		return cauldronBigger ? 4 : 3;
+	}
+
+	/**
+	 * Returns if cauldron brewing is more expensive
+	 * @return  True if cauldron brewing is more expensive
+	 */
+	public static boolean expensiveCauldronBrewing() {
+		return expensiveCauldronBrewing;
 	}
 
 	/**

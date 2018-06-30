@@ -6,6 +6,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 import com.google.common.collect.ImmutableList;
 
+import knightminer.inspirations.library.InspirationsRegistry;
 import net.minecraft.init.PotionTypes;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
@@ -38,12 +39,15 @@ public class CauldronBrewingRecipe implements ISimpleCauldronRecipe {
 	@Override
 	public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {
 		// must have at least one level and be boiling. If 3 or more stack count must be bigger than 1
-		return level > 0 && (level < 3 || stack.getCount() > 1) && boiling && state.matches(input) && reagent.apply(stack);
+		return level > 0 && boiling
+				// if expensive brewing, level must be less than 3 or two inputs provided
+				&& (!InspirationsRegistry.expensiveCauldronBrewing() || level < 3 || stack.getCount() > 1)
+				&& state.matches(input) && reagent.apply(stack);
 	}
 
 	@Override
 	public ItemStack transformInput(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		stack.shrink(level > 2 ? 2 : 1);
+		stack.shrink(InspirationsRegistry.expensiveCauldronBrewing() && level > 2 ? 2 : 1);
 		return stack;
 	}
 
@@ -59,7 +63,7 @@ public class CauldronBrewingRecipe implements ISimpleCauldronRecipe {
 
 	@Override
 	public int getInputLevel() {
-		return 2;
+		return InspirationsRegistry.expensiveCauldronBrewing() ? 2 : InspirationsRegistry.getCauldronMax();
 	}
 
 	@Override
