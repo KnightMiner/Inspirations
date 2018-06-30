@@ -21,6 +21,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -110,6 +111,28 @@ public class BlockEnhancedCauldron extends BlockCauldron implements ITileEntityP
 			}
 
 		}
+	}
+
+	@Override
+	public void breakBlock(World world, BlockPos pos, IBlockState state) {
+		int level = getLevel(state);
+		if(!Config.dropCauldronContents || level == 0) {
+			return;
+		}
+
+		TileEntity te = world.getTileEntity(pos);
+		if(te instanceof TileCauldron) {
+			((TileCauldron)te).onBreak(pos, level);
+		}
+
+		super.breakBlock(world, pos, state);
+	}
+
+	@Override
+	public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest) {
+		this.onBlockHarvested(world, pos, state, player);
+		world.setBlockState(pos, Blocks.AIR.getDefaultState(), world.isRemote ? 11 : 3);
+		return world.getBlockState(pos).getBlock() != Blocks.CAULDRON;
 	}
 
 	/* Content texture */

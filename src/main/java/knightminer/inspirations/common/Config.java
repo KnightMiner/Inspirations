@@ -74,28 +74,36 @@ public class Config {
 	public static boolean enableCarpetedPressurePlate = true;
 
 	// recipes
-	public static boolean enableAnvilSmashing = true;
 	public static boolean dispensersPlaceAnvils = true;
-	// cauldron
+	// cauldron - extended
 	public static boolean enableCauldronRecipes = true;
 	public static boolean enableExtendedCauldron = true;
-	public static boolean enableBiggerCauldron = false;
 	public static boolean simpleCauldronRecipes = false;
-	public static boolean enableCauldronDyeing = true;
-	public static boolean patchVanillaDyeRecipes = true;
+	// cauldron - extended options
+	public static boolean enableBiggerCauldron = false;
 	public static boolean fasterCauldronRain = true;
-	public static boolean extraBottleRecipes = true;
-	public static boolean enableCauldronPotions = true;
-	public static boolean enableCauldronBrewing = true;
-	public static boolean enableCauldronFluids = true;
 	public static boolean spongeEmptyCauldron = true;
 	public static boolean spongeCauldronFull = false;
-	public static boolean betterCauldronItem = true;
+	public static boolean dropCauldronContents = false;
+	// cauldron - fluids
+	public static boolean enableCauldronFluids = true;
 	public static boolean enableMilk = true;
+	// cauldron - dyeing
+	public static boolean enableCauldronDyeing = true;
+	public static boolean patchVanillaDyeRecipes = true;
+	public static boolean extraBottleRecipes = true;
+	// cauldron - potions
+	public static boolean enableCauldronPotions = true;
+	public static boolean enableCauldronBrewing = true;
+	// cauldron - recipes
+	private static String[] cauldronRecipes = {
+			"minecraft:sticky_piston->minecraft:piston"
+	};
 	private static String[] cauldronFire = {
 			"minecraft:fire"
 	};
-
+	// anvil smashing
+	public static boolean enableAnvilSmashing = true;
 	private static String[] anvilSmashing = {
 			"# Stone",
 			"minecraft:stone:0->minecraft:cobblestone",
@@ -148,9 +156,6 @@ public class Config {
 			"minecraft:end_bricks->minecraft:end_stone",
 			"minecraft:monster_egg"
 	};
-	private static String[] cauldronRecipes = {
-			"minecraft:sticky_piston->minecraft:piston"
-	};
 
 
 	// tools
@@ -175,6 +180,7 @@ public class Config {
 	public static boolean brewMissingPotions = true;
 	public static boolean coloredFireworkItems = true;
 	public static boolean lilypadBreakFall = true;
+	public static boolean betterCauldronItem = true;
 	// heartbeet
 	public static boolean enableHeartbeet = true;
 	public static boolean brewHeartbeet = true;
@@ -261,27 +267,38 @@ public class Config {
 			configFile.moveProperty("tweaks", "anvilSmashing", "recipes");
 			enableAnvilSmashing = configFile.getBoolean("anvilSmashing", "recipes", enableAnvilSmashing, "Anvils break glass blocks and transform blocks into other blocks on landing. Uses a block override, so disable if another mod replaces anvils");
 
-			// more cauldron uses
+			// cauldron //
+
+			// basic config
+			String spongeEmptyString = configFile.getString("spongeEmpty", "recipes.cauldron", "true", "Allows sponges to be used to empty the cauldron of dye, water, or potions. Can be 'true', 'false', or 'full'. If set to 'full', requires the cauldron to be full, prevents duplicating water but is less useful for removing unwanted fluids.", new String[]{ "false", "full", "true" });
+			spongeEmptyCauldron = !spongeEmptyString.equals("false");
+			spongeCauldronFull = spongeEmptyString.equals("full");
+
+			// extended options
 			String extendCauldron = configFile.getString("extendCauldron", "recipes", "true", "Allows additional recipes to be performed in the cauldron. Can be 'true', 'false', or 'simple'. If true, requires a block substitution. If simple, functionality will be limited to water in cauldrons.", new String[]{ "false", "simple", "true" });
 			enableCauldronRecipes = !extendCauldron.equals("false");
 			simpleCauldronRecipes = extendCauldron.equals("simple");
 			enableExtendedCauldron = extendCauldron.equals("true");
-			configFile.renameProperty("recipes.cauldron", "brewing", "potions");
-			enableCauldronPotions = configFile.getBoolean("potions", "recipes.cauldron", enableCauldronPotions, "Allows cauldrons to be filled with potions and support brewing") && enableExtendedCauldron;
-			enableCauldronDyeing = configFile.getBoolean("dyeing", "recipes.cauldron", enableCauldronDyeing, "Allows cauldrons to be filled with dyes and dye items using cauldrons") && enableExtendedCauldron;
-			enableCauldronFluids = configFile.getBoolean("fluids", "recipes.cauldron", enableCauldronFluids, "Allows cauldrons to be filled with any fluid and use them in recipes") && enableExtendedCauldron;
-			String spongeEmptyString = configFile.getString("spongeEmpty", "recipes.cauldron", "true", "Allows sponges to be used to empty the cauldron of dye, water, or potions. Can be 'true', 'false', or 'full'. If set to 'full', requires the cauldron to be full, prevents duplicating water but is less useful for removing unwanted fluids.", new String[]{ "false", "full", "true" });
-			spongeEmptyCauldron = !spongeEmptyString.equals("false");
-			spongeCauldronFull = spongeEmptyString.equals("full");
-			enableMilk = configFile.getBoolean("milk", "recipes.cauldron", enableMilk, "Registers milk as a fluid so it can be used in cauldron recipes.") && enableCauldronFluids;
+
 			enableBiggerCauldron = configFile.getBoolean("bigger", "recipes.cauldron", enableBiggerCauldron, "Makes the cauldron hold 4 bottle per bucket instead of 3. Translates better to modded fluids.") && enableExtendedCauldron;
 			InspirationsRegistry.setCauldronBigger(enableBiggerCauldron);
 			fasterCauldronRain = configFile.getBoolean("fasterRain", "recipes.cauldron", fasterCauldronRain, "Cauldrons fill faster in the rain than vanilla painfully slow rate.") && enableExtendedCauldron;
+			dropCauldronContents = configFile.getBoolean("dropContents", "recipes.cauldron", dropCauldronContents, "Cauldrons will drop their contents when broken.") && enableExtendedCauldron;
 
+			// fluids
+			enableCauldronFluids = configFile.getBoolean("fluids", "recipes.cauldron", enableCauldronFluids, "Allows cauldrons to be filled with any fluid and use them in recipes") && enableExtendedCauldron;
+			configFile.moveProperty("recipes.cauldron", "milk", "recipes.cauldron.fluids");
+			enableMilk = configFile.getBoolean("milk", "recipes.cauldron.fluids", enableMilk, "Registers milk as a fluid so it can be used in cauldron recipes.") && enableCauldronFluids;
+
+			// dyeing
+			enableCauldronDyeing = configFile.getBoolean("dyeing", "recipes.cauldron", enableCauldronDyeing, "Allows cauldrons to be filled with dyes and dye items using cauldrons") && enableExtendedCauldron;
 			patchVanillaDyeRecipes = configFile.getBoolean("patchVanillaRecipes", "recipes.cauldron.dyeing", patchVanillaDyeRecipes, "Makes crafting two dyed water bottles together produce a dyed water bottle. Requires modifying vanilla recipes to prevent a conflict") && enableCauldronDyeing;
 			extraBottleRecipes = configFile.getBoolean("extraBottleRecipes", "recipes.cauldron.dyeing", extraBottleRecipes, "Adds extra dyed bottle recipes to craft green and brown") && enableCauldronDyeing;
-			enableCauldronBrewing = configFile.getBoolean("brewing", "recipes.cauldron.potions", extraBottleRecipes, "Allows cauldrons to perform brewing recipes.") && enableCauldronBrewing;
 
+			// potions
+			configFile.renameProperty("recipes.cauldron", "brewing", "potions");
+			enableCauldronPotions = configFile.getBoolean("potions", "recipes.cauldron", enableCauldronPotions, "Allows cauldrons to be filled with potions and support brewing") && enableExtendedCauldron;
+			enableCauldronBrewing = configFile.getBoolean("brewing", "recipes.cauldron.potions", extraBottleRecipes, "Allows cauldrons to perform brewing recipes.") && enableCauldronBrewing;
 		}
 
 		// tools

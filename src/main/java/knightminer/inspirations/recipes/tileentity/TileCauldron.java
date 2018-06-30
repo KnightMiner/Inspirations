@@ -11,16 +11,20 @@ import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe.Cauldron
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.recipes.block.BlockEnhancedCauldron;
 import knightminer.inspirations.recipes.block.BlockEnhancedCauldron.CauldronContents;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityAreaEffectCloud;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -177,6 +181,12 @@ public class TileCauldron extends TileEntity {
 		return true;
 	}
 
+	/**
+	 * Called when an entity collides with the cauldron
+	 * @param entity  Entity that collided
+	 * @param level   Cauldron level
+	 * @return  New cauldron level after the collision
+	 */
 	public int onEntityCollide(Entity entity, int level) {
 		// whether a level should be consumed
 		switch(this.getContentType()) {
@@ -223,6 +233,48 @@ public class TileCauldron extends TileEntity {
 				break;
 		}
 		return level;
+	}
+
+	/**
+	 * Called when the cauldron is broken
+	 * @param pos    Position of the cauldron
+	 * @param level  Cauldron level
+	 */
+	public void onBreak(BlockPos pos, int level) {
+		switch(getContentType()) {
+			case FLUID:
+				Block block = state.getFluid().getBlock();
+				if(block != null) {
+					// switch to flowing states
+					if(block == Blocks.WATER) {
+						block = Blocks.FLOWING_WATER;
+					} else if(block == Blocks.LAVA) {
+						block = Blocks.FLOWING_LAVA;
+					}
+
+					// height varies based on what is left. Will place a source if the cauldron is full
+					if(level == (Config.enableBiggerCauldron ? 4 : 3)) {
+						world.setBlockState(pos, block.getDefaultState());
+					}
+				}
+				break;
+			case POTION:
+				PotionType potion = state.getPotion();
+				EntityAreaEffectCloud cloud = new EntityAreaEffectCloud(this.world, pos.getX() + 0.5F, pos.getY() + 0.5F, pos.getZ() + 0.5F);
+				cloud.setRadius(0.5F * level + 0.5F);
+				cloud.setDuration(20*(level+1));
+				cloud.setRadiusOnUse(-0.5F);
+				cloud.setWaitTime(10);
+				cloud.setRadiusPerTick(-cloud.getRadius() / cloud.getDuration());
+				cloud.setPotion(potion);
+
+				for(PotionEffect effect : potion.getEffects()) {
+					cloud.addEffect(new PotionEffect(effect));
+				}
+
+				this.world.spawnEntity(cloud);
+				break;
+		}
 	}
 
 	public IBlockState writeExtendedBlockState(IExtendedBlockState state) {
