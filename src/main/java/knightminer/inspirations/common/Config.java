@@ -46,13 +46,19 @@ public class Config {
 	public static boolean enableBookshelf = true;
 	public static boolean enableColoredBooks = true;
 	private static String[] bookKeywords = {
+			"almanac",
 			"atlas",
 			"book",
 			"catalogue",
+			"concordance",
+			"dictionary",
+			"directory",
+			"encyclopedia",
 			"guide",
 			"journal",
 			"lexicon",
 			"manual",
+			"thesaurus",
 			"tome"
 	};
 	private static String[] bookOverrides = {
