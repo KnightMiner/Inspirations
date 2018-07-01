@@ -1,0 +1,24 @@
+{
+  "conditions": [
+    {
+      "type": "pulse_loaded",
+      "pulse": "InspirationsUtility"
+    },
+    {
+      "type": "config",
+      "prop": "pipe"
+    }
+  ],
+  "result": {
+    "item": "inspirations:pipe",
+    "data": 0,
+    "count": 4
+  },
+  "pattern": [
+    "III"
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "I": { "type": "forge:ore_dict", "ore": "ingotIron" }
+  }
+}

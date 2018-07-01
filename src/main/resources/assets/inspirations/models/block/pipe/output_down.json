@@ -1,0 +1,20 @@
+{
+	"textures": {
+		"particle": "blocks/hopper_outside",
+		"hopper": "blocks/hopper_outside",
+		"inside": "blocks/hopper_inside"
+	},
+	"elements": [
+		{
+			"from": [6, 0, 6],
+			"to": [10, 4, 10],
+			"faces": {
+				"north": {"texture": "#hopper"},
+				"east":  {"texture": "#hopper"},
+				"south": {"texture": "#hopper"},
+				"west":  {"texture": "#hopper"},
+				"down":  {"texture": "#inside", "cullface": "down"}
+			}
+		}
+	]
+}

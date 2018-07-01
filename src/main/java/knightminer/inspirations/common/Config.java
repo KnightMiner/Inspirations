@@ -73,6 +73,8 @@ public class Config {
 	public static boolean enableCarpetedTrapdoor = true;
 	public static boolean enableCarpetedPressurePlate = true;
 	public static boolean enableCollector = true;
+	public static boolean enablePipe = true;
+	public static boolean pipeUpwards = true;
 
 	// recipes
 	public static boolean dispensersPlaceAnvils = true;
@@ -265,6 +267,10 @@ public class Config {
 
 			// collector
 			enableCollector = configFile.getBoolean("collector", "utility", enableCollector, "Enables the collector: extracts items from inventories or the world similar to a hopper, but can face in all 6 directions and cannot place items in inventories");
+
+			// pipe
+			enablePipe = configFile.getBoolean("pipe", "utility", enablePipe, "EEnables pipes: a more economical hopper that only outputs items, does not pull from inventories. Both cheaper and better for performance.");
+			pipeUpwards = configFile.getBoolean("upwards", "utility.pipe", pipeUpwards, "Allows pipes to output upwards. This removes a limitation on not being able to pipe items up without dropper elevators, but should be balanced alongside modded pipes.");
 		}
 
 		// recipes
@@ -719,6 +725,7 @@ public class Config {
 				case "bricks_button": return enableBricksButton;
 				case "carpeted_trapdoor": return enableCarpetedTrapdoor;
 				case "collector": return enableCollector;
+				case "pipe": return enablePipe;
 				case "redstone_barrel": return enableRedstoneBarrel;
 				case "redstone_book": return enableRedstoneBook;
 				case "redstone_torch_lever": return enableRedstoneTorchLever;

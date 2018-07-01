@@ -4,6 +4,7 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.utility.block.BlockCarpetedPressurePlate;
 import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.block.BlockHopper;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -21,6 +22,7 @@ import net.minecraft.world.ILockableContainer;
 import net.minecraft.world.LockCode;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
+import net.minecraftforge.fml.common.eventhandler.Event.Result;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.items.ItemHandlerHelper;
 
@@ -150,5 +152,22 @@ public class UtilityEvents {
 		}
 		event.setCanceled(true);
 		event.setCancellationResult(EnumActionResult.SUCCESS);
+	}
+
+	/**
+	 * Makes clicking a hopper with a pipe place the pipe instead of opening the hopper's GUI
+	 */
+	@SubscribeEvent
+	public static void clickHopperWithPipe(RightClickBlock event) {
+		if(!Config.enablePipe || event.getItemStack().getItem() != InspirationsUtility.pipeItem) {
+			return;
+		}
+		World world = event.getWorld();
+		if(world.isRemote || !(world.getBlockState(event.getPos()).getBlock() instanceof BlockHopper)) {
+			return;
+		}
+
+		event.setUseBlock(Result.DENY);
+		event.setUseItem(Result.ALLOW);
 	}
 }

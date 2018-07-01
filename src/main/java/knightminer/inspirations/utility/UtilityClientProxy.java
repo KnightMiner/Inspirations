@@ -9,6 +9,7 @@ import com.google.common.collect.Maps;
 
 import knightminer.inspirations.common.ClientProxy;
 import knightminer.inspirations.library.Util;
+import knightminer.inspirations.library.client.IgnoreAllStateMapper;
 import knightminer.inspirations.library.client.NameStateMapper;
 import knightminer.inspirations.library.client.PropertyStateMapper;
 import knightminer.inspirations.utility.block.BlockBricksButton;
@@ -50,12 +51,15 @@ public class UtilityClientProxy extends ClientProxy {
 		setModelStateMapper(InspirationsUtility.carpetedPressurePlate1, carpetedPressurePlate);
 		setModelStateMapper(InspirationsUtility.carpetedPressurePlate2, carpetedPressurePlate);
 		setModelStateMapper(InspirationsUtility.collector, new StateMap.Builder().ignore(BlockCollector.TRIGGERED).build());
+		// using multipart, so ignore all states to save memory
+		setModelStateMapper(InspirationsUtility.pipe, new IgnoreAllStateMapper(InspirationsUtility.pipe));
 
 		// blocks
 		registerItemModel(InspirationsUtility.torchLever);
 		registerItemModel(InspirationsUtility.redstoneTorchLever);
 		registerItemModel(InspirationsUtility.redstoneBarrel);
 		registerItemModel(InspirationsUtility.collector);
+		registerItemModel(InspirationsUtility.pipe);
 
 		// uses a property state mapper, so just redirect to the sub files for inventory
 		registerItemModel(InspirationsUtility.bricksButton, 0, Util.getResource("bricks_button/bricks"));

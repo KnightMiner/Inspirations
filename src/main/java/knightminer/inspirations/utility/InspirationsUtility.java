@@ -9,8 +9,10 @@ import knightminer.inspirations.utility.block.BlockBricksButton;
 import knightminer.inspirations.utility.block.BlockCarpetedPressurePlate;
 import knightminer.inspirations.utility.block.BlockCarpetedPressurePlate.BlockCarpetedPressurePlate2;
 import knightminer.inspirations.utility.tileentity.TileCollector;
+import knightminer.inspirations.utility.tileentity.TilePipe;
 import knightminer.inspirations.utility.block.BlockCarpetedTrapdoor;
 import knightminer.inspirations.utility.block.BlockCollector;
+import knightminer.inspirations.utility.block.BlockPipe;
 import knightminer.inspirations.utility.block.BlockRedstoneBarrel;
 import knightminer.inspirations.utility.block.BlockRedstoneTorchLever;
 import knightminer.inspirations.utility.block.BlockTorchLever;
@@ -44,6 +46,8 @@ public class InspirationsUtility extends PulseBase {
 	public static Block carpetedPressurePlate1;
 	public static Block carpetedPressurePlate2;
 	public static Block collector;
+	public static Block pipe;
+	public static Item pipeItem;
 
 	@Subscribe
 	public void preInit(FMLPreInitializationEvent event) {
@@ -82,6 +86,10 @@ public class InspirationsUtility extends PulseBase {
 			collector = registerBlock(r, new BlockCollector(), "collector");
 			registerTE(TileCollector.class, "collector");
 		}
+		if(Config.enablePipe) {
+			pipe = registerBlock(r, new BlockPipe(), "pipe");
+			registerTE(TilePipe.class, "pipe");
+		}
 	}
 
 	@SubscribeEvent
@@ -108,6 +116,9 @@ public class InspirationsUtility extends PulseBase {
 		}
 		if(collector != null) {
 			registerItemBlock(r, collector);
+		}
+		if(pipe != null) {
+			pipeItem = registerItemBlock(r, pipe);
 		}
 	}
 
