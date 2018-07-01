@@ -29,7 +29,9 @@ import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.Mirror;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.Rotation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -350,6 +352,18 @@ public class BlockBookshelf extends BlockInventory implements ITileEntityProvide
 	}
 
 	@Override
+	public IBlockState withRotation(IBlockState state, Rotation rot) {
+		return state.withProperty(FACING, rot.rotate(state.getValue(FACING)));
+	}
+
+	@Override
+	public IBlockState withMirror(IBlockState state, Mirror mirror) {
+		return state.withRotation(mirror.toRotation(state.getValue(FACING)));
+	}
+
+	/* Drops */
+
+	@Override
 	public void getSubBlocks(CreativeTabs tab, NonNullList<ItemStack> list) {
 		for(BookshelfType type : BookshelfType.values()) {
 			TextureBlockUtil.addBlocksFromOredict("slabWood", this, type.getMeta(), list);
@@ -387,12 +401,6 @@ public class BlockBookshelf extends BlockInventory implements ITileEntityProvide
 		drops.add(TextureBlockUtil.getBlockItemStack(world, pos, state));
 	}
 
-	/**
-	 * Determines the amount of enchanting power this block can provide to an enchanting table.
-	 * @param world The World
-	 * @param pos Block position in world
-	 * @return The amount of enchanting power this block produces.
-	 */
 	@Override
 	public float getEnchantPowerBonus(World world, BlockPos pos) {
 		TileEntity te = world.getTileEntity(pos);

@@ -44,6 +44,11 @@ public class TileBookshelf extends TileInventory implements IInventoryGui {
 	}
 
 	@Override
+	public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate) {
+		return oldState.getBlock() != newSate.getBlock();
+	}
+
+	@Override
 	public void setInventorySlotContents(int slot, ItemStack itemstack) {
 		ItemStack oldStack = this.getStackInSlot(slot);
 
