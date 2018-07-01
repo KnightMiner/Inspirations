@@ -48,7 +48,7 @@ public class InspirationsRegistry {
 	@Deprecated
 	public static void setConfig(String key, boolean value) {
 		switch(key) {
-			case "cauldronBigger":
+			case "biggerCauldron":
 				cauldronBigger = value;
 				break;
 			case "expensiveCauldronBrewing":
@@ -56,7 +56,7 @@ public class InspirationsRegistry {
 				break;
 			default:
 				// should never happen
-				throw new IllegalArgumentException("Unexpected config key");
+				throw new IllegalArgumentException("Unexpected config key " + key);
 		}
 	}
 
