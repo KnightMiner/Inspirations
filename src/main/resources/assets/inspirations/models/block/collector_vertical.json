@@ -1,0 +1,7 @@
+{
+    "parent": "block/orientable_vertical",
+    "textures": {
+        "front": "inspirations:blocks/collector_front_vertical",
+        "side": "inspirations:blocks/collector_top"
+    }
+}

@@ -1,0 +1,8 @@
+{
+    "parent": "block/orientable",
+    "textures": {
+        "top": "inspirations:blocks/collector_top",
+        "front": "inspirations:blocks/collector_front",
+        "side": "inspirations:blocks/collector_side"
+    }
+}

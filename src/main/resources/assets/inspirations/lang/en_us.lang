@@ -105,6 +105,9 @@ tile.inspirations.carpeted_trapdoor_green.name=Green Carpeted Trapdoor
 tile.inspirations.carpeted_trapdoor_red.name=Red Carpeted Trapdoor
 tile.inspirations.carpeted_trapdoor_black.name=Black Carpeted Trapdoor
 
+tile.inspirations.collector.name=Collector
+gui.inspirations.collector.name=Collector
+
 #############
 #  Recipes  #
 #############

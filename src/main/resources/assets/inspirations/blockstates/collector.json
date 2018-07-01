@@ -1,0 +1,17 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "inspirations:collector"
+  },
+  "variants": {
+    "facing": {
+      "down":  {"model": "inspirations:collector_vertical", "x": 180},
+      "up":    {"model": "inspirations:collector_vertical"},
+      "north": {},
+      "south": {"y": 180},
+      "west":  {"y": 270},
+      "east":  {"y": 90 }
+    },
+    "inventory": [{}]
+  }
+}

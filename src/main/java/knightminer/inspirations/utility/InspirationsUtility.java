@@ -8,7 +8,9 @@ import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.utility.block.BlockBricksButton;
 import knightminer.inspirations.utility.block.BlockCarpetedPressurePlate;
 import knightminer.inspirations.utility.block.BlockCarpetedPressurePlate.BlockCarpetedPressurePlate2;
+import knightminer.inspirations.utility.tileentity.TileCollector;
 import knightminer.inspirations.utility.block.BlockCarpetedTrapdoor;
+import knightminer.inspirations.utility.block.BlockCollector;
 import knightminer.inspirations.utility.block.BlockRedstoneBarrel;
 import knightminer.inspirations.utility.block.BlockRedstoneTorchLever;
 import knightminer.inspirations.utility.block.BlockTorchLever;
@@ -41,6 +43,7 @@ public class InspirationsUtility extends PulseBase {
 	public static Block[] carpetedTrapdoors;
 	public static Block carpetedPressurePlate1;
 	public static Block carpetedPressurePlate2;
+	public static Block collector;
 
 	@Subscribe
 	public void preInit(FMLPreInitializationEvent event) {
@@ -75,6 +78,10 @@ public class InspirationsUtility extends PulseBase {
 			carpetedPressurePlate1 = registerBlock(r, new BlockCarpetedPressurePlate(false), "carpeted_pressure_plate_1");
 			carpetedPressurePlate2 = registerBlock(r, new BlockCarpetedPressurePlate2(), "carpeted_pressure_plate_2");
 		}
+		if(Config.enableCollector) {
+			collector = registerBlock(r, new BlockCollector(), "collector");
+			registerTE(TileCollector.class, "collector");
+		}
 	}
 
 	@SubscribeEvent
@@ -98,6 +105,9 @@ public class InspirationsUtility extends PulseBase {
 			for(Block trapdoor : carpetedTrapdoors) {
 				registerItemBlock(r, trapdoor);
 			}
+		}
+		if(collector != null) {
+			registerItemBlock(r, collector);
 		}
 	}
 

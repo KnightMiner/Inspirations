@@ -72,6 +72,7 @@ public class Config {
 	public static boolean enableRedstoneBarrel = true;
 	public static boolean enableCarpetedTrapdoor = true;
 	public static boolean enableCarpetedPressurePlate = true;
+	public static boolean enableCollector = true;
 
 	// recipes
 	public static boolean dispensersPlaceAnvils = true;
@@ -261,6 +262,9 @@ public class Config {
 
 			// carpeted pressure plate
 			enableCarpetedPressurePlate = configFile.getBoolean("carpetedPressurePlate", "utility", enableCarpetedPressurePlate, "Allows placing a carpet on a stone pressure plate to hide it");
+
+			// collector
+			enableCollector = configFile.getBoolean("collector", "utility", enableCollector, "Enables the collector: extracts items from inventories or the world similar to a hopper, but can face in all 6 directions and cannot place items in inventories");
 		}
 
 		// recipes
@@ -714,6 +718,7 @@ public class Config {
 				// utility
 				case "bricks_button": return enableBricksButton;
 				case "carpeted_trapdoor": return enableCarpetedTrapdoor;
+				case "collector": return enableCollector;
 				case "redstone_barrel": return enableRedstoneBarrel;
 				case "redstone_book": return enableRedstoneBook;
 				case "redstone_torch_lever": return enableRedstoneTorchLever;

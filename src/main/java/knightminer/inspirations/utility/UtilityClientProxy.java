@@ -12,6 +12,7 @@ import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.client.NameStateMapper;
 import knightminer.inspirations.library.client.PropertyStateMapper;
 import knightminer.inspirations.utility.block.BlockBricksButton;
+import knightminer.inspirations.utility.block.BlockCollector;
 import knightminer.inspirations.utility.block.BlockRedstoneBarrel;
 import knightminer.inspirations.utility.block.BlockTorchLever;
 import net.minecraft.block.Block;
@@ -25,6 +26,7 @@ import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.statemap.IStateMapper;
+import net.minecraft.client.renderer.block.statemap.StateMap;
 import net.minecraft.client.renderer.block.statemap.StateMapperBase;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.item.EnumDyeColor;
@@ -47,11 +49,13 @@ public class UtilityClientProxy extends ClientProxy {
 		IStateMapper carpetedPressurePlate = new NameStateMapper(Util.getResource("carpeted_pressure_plate"));
 		setModelStateMapper(InspirationsUtility.carpetedPressurePlate1, carpetedPressurePlate);
 		setModelStateMapper(InspirationsUtility.carpetedPressurePlate2, carpetedPressurePlate);
+		setModelStateMapper(InspirationsUtility.collector, new StateMap.Builder().ignore(BlockCollector.TRIGGERED).build());
 
 		// blocks
 		registerItemModel(InspirationsUtility.torchLever);
 		registerItemModel(InspirationsUtility.redstoneTorchLever);
 		registerItemModel(InspirationsUtility.redstoneBarrel);
+		registerItemModel(InspirationsUtility.collector);
 
 		// uses a property state mapper, so just redirect to the sub files for inventory
 		registerItemModel(InspirationsUtility.bricksButton, 0, Util.getResource("bricks_button/bricks"));
