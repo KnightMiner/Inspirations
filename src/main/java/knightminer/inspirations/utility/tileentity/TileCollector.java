@@ -61,12 +61,14 @@ public class TileCollector extends TileInventory implements IInventoryGui {
 
 		// collect items from world
 		AxisAlignedBB aabb = new AxisAlignedBB(offset.getX(), offset.getY(), offset.getZ(), offset.getX()+1, offset.getY()+1, offset.getZ()+1);
+		boolean collected = false;
 		for(EntityItem entity : world.getEntitiesWithinAABB(EntityItem.class, aabb)) {
 			ItemStack insert = entity.getItem();
 			// no need to simulate, if successful we have to modify the stack regardless
 			ItemStack remainder = ItemHandlerHelper.insertItemStacked(itemHandler, insert, false);
 			// if the stack changed, we were successful
 			if(remainder.getCount() < insert.getCount()) {
+				collected = true;
 				// empty means item is gone
 				if(remainder.isEmpty()) {
 					entity.setDead();
@@ -75,6 +77,8 @@ public class TileCollector extends TileInventory implements IInventoryGui {
 				}
 			}
 		}
+		// play sound. Plays dispenser dispense if success and dispenser fail if not
+		world.playEvent(collected ? 1000 : 1001, pos, 0);
 	}
 
 	/*
