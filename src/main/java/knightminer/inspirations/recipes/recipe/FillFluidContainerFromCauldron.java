@@ -17,6 +17,8 @@ public enum FillFluidContainerFromCauldron implements ICauldronRecipe {
 			return false;
 		}
 
+		stack = stack.copy();
+		stack.setCount(1); // stack size must be 1 or it fails
 		IFluidHandlerItem fluidHandler = FluidUtil.getFluidHandler(stack);
 		if(fluidHandler == null) {
 			return false;
@@ -26,7 +28,9 @@ public enum FillFluidContainerFromCauldron implements ICauldronRecipe {
 	}
 
 	@Override
-	public ItemStack transformInput(ItemStack stack, boolean boiling, int level, CauldronState state) {
+	public ItemStack getResult(ItemStack stack, boolean boiling, int level, CauldronState state) {
+		stack = stack.copy();
+		stack.setCount(1);
 		FluidUtil.getFluidHandler(stack).fill(new FluidStack(state.getFluid(), 1000), true);
 		return FluidUtil.getFluidHandler(stack).getContainer();
 	}
