@@ -17,6 +17,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAreaEffectCloud;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -110,16 +111,19 @@ public class TileCauldron extends TileEntity {
 		// grab the TE if extended
 		TileCauldron cauldron = null;
 		CauldronState state = CauldronState.WATER;
+		boolean boiling = false;
 		if(Config.enableExtendedCauldron) {
 			TileEntity te = world.getTileEntity(pos);
 			if(te instanceof TileCauldron) {
 				cauldron = (TileCauldron) te;
 				state = cauldron.state;
+				boiling = blockState.getValue(BlockEnhancedCauldron.BOILING);
 			}
+		} else {
+			boiling = InspirationsRegistry.isCauldronFire(world.getBlockState(pos.down()));
 		}
 
 		// other properties
-		boolean boiling = InspirationsRegistry.isCauldronFire(world.getBlockState(pos.down()));
 		int level = InspirationsRecipes.cauldron.getLevel(blockState);
 
 		// grab recipe
@@ -181,56 +185,109 @@ public class TileCauldron extends TileEntity {
 		return true;
 	}
 
+	private static final String TAG_CAULDRON_CRAFTED = "cauldron_crafted";
+
 	/**
 	 * Called when an entity collides with the cauldron
 	 * @param entity  Entity that collided
 	 * @param level   Cauldron level
 	 * @return  New cauldron level after the collision
 	 */
-	public int onEntityCollide(Entity entity, int level) {
-		// whether a level should be consumed
-		switch(this.getContentType()) {
-			case FLUID:
-				// estinguish fire
-				if(this.isWater()) {
-					if(entity.isBurning()) {
-						entity.extinguish();
-						level = level - 1;
-					}
+	public int onEntityCollide(Entity entity, int level, IBlockState currentState) {
+		// if an entity item, try crafting with it
+		if(entity instanceof EntityItem) {
+			// skip items that we have already processed
+			EntityItem entityItem = (EntityItem)entity;
+			ItemStack stack = entityItem.getItem();
+			NBTTagCompound entityTags = entity.getEntityData();
+			// if its the same size as the item we tagged before, skip
+			if(entityTags.getInteger(TAG_CAULDRON_CRAFTED) == stack.getCount()) {
+				return level;
+			}
+
+			// try and find a recipe
+			boolean boiling = currentState.getValue(BlockEnhancedCauldron.BOILING);
+			ICauldronRecipe recipe = InspirationsRegistry.getCauldronResult(stack, boiling, level, state);
+			if(recipe != null) {
+				// update properties based on the recipe
+				CauldronState newState = recipe.getState(stack, boiling, level, state);
+
+				// update level
+				level = recipe.getLevel(level);
+				if(level == 0) {
+					newState = CauldronState.WATER;
+				}
+
+				// spawn the new item in the world
+				ItemStack result = recipe.getResult(stack, boiling, level, state);
+				if(!result.isEmpty()) {
+					EntityItem resultEntity = new EntityItem(world, entityItem.posX, entityItem.posY, entityItem.posZ, result);
+					resultEntity.getEntityData().setInteger(TAG_CAULDRON_CRAFTED, result.getCount());
+					world.spawnEntity(resultEntity);
+				}
+				// and kill the old one, or update its item
+				ItemStack transform = recipe.transformInput(stack, boiling, level, state);
+				if(transform.isEmpty()) {
+					entityItem.setDead();
 				} else {
-					// set fire if the liquid is hot
-					Fluid fluid = state.getFluid();
-					if(fluid.getTemperature() > 450 && !entity.isImmuneToFire()) {
-						entity.attackEntityFrom(DamageSource.LAVA, 4.0F);
-						entity.setFire(15);
-						break;
-					}
+					entityItem.setItem(transform);
+					entityTags.setInteger(TAG_CAULDRON_CRAFTED, transform.getCount());
 				}
-				// continue for boiling
-			case DYE:
-				// if the cauldron is boiling, boiling the entity
-				if (InspirationsRegistry.isCauldronFire(world.getBlockState(pos.down()))) {
-					entity.attackEntityFrom(DAMAGE_BOIL, 2.0F);
+
+				// update the state
+				if(!state.matches(newState)) {
+					state = newState;
+					world.notifyBlockUpdate(pos, currentState, currentState, 2);
 				}
-				break;
-			case POTION:
-				// apply potion effects
-				if(entity instanceof EntityLivingBase) {
-					EntityLivingBase living = (EntityLivingBase) entity;
-					List<PotionEffect> effects = state.getPotion().getEffects();
-					// if any of the effects are not currently on the player, apply it and lower the level
-					if(effects.stream().anyMatch(effect -> !living.isPotionActive(effect.getPotion()))) {
-						for(PotionEffect effect : effects) {
-							if (effect.getPotion().isInstant()) {
-								effect.getPotion().affectEntity(living, living, living, effect.getAmplifier(), 1.0D);
-							} else {
-								living.addPotionEffect(new PotionEffect(effect));
-							}
+			} else {
+				entityTags.setInteger(TAG_CAULDRON_CRAFTED, stack.getCount());
+			}
+
+			// otherwise apply fluid special effects
+		} else if(level > 0) {
+			switch(this.getContentType()) {
+				case FLUID:
+					// water estinguishs fire
+					if(this.isWater()) {
+						if(entity.isBurning()) {
+							entity.extinguish();
+							level = level - 1;
 						}
-						level = level - 1;
+					} else {
+						// hot fluids set fire to the entity
+						Fluid fluid = state.getFluid();
+						if(fluid.getTemperature() > 450 && !entity.isImmuneToFire()) {
+							entity.attackEntityFrom(DamageSource.LAVA, 4.0F);
+							entity.setFire(15);
+							break;
+						}
 					}
-				}
-				break;
+					// continue for boiling
+				case DYE:
+					// if the cauldron is boiling, boiling the entity
+					if (InspirationsRegistry.isCauldronFire(world.getBlockState(pos.down()))) {
+						entity.attackEntityFrom(DAMAGE_BOIL, 2.0F);
+					}
+					break;
+				case POTION:
+					// potions apply potion effects
+					if(entity instanceof EntityLivingBase) {
+						EntityLivingBase living = (EntityLivingBase) entity;
+						List<PotionEffect> effects = state.getPotion().getEffects();
+						// if any of the effects are not currently on the player, apply it and lower the level
+						if(effects.stream().anyMatch(effect -> !living.isPotionActive(effect.getPotion()))) {
+							for(PotionEffect effect : effects) {
+								if (effect.getPotion().isInstant()) {
+									effect.getPotion().affectEntity(living, living, living, effect.getAmplifier(), 1.0D);
+								} else {
+									living.addPotionEffect(new PotionEffect(effect));
+								}
+							}
+							level = level - 1;
+						}
+					}
+					break;
+			}
 		}
 		return level;
 	}
