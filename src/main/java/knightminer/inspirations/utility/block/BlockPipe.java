@@ -99,7 +99,9 @@ public class BlockPipe extends BlockInventory {
 
 	@Override
 	public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
-		facing = facing.getOpposite();
+		if(placer.isSneaking()) {
+			facing = facing.getOpposite();
+		}
 		// only allow up if allowed in the config
 		if (!Config.pipeUpwards && facing == EnumFacing.UP) {
 			facing = EnumFacing.DOWN;

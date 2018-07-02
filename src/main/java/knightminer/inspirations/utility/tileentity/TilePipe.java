@@ -13,6 +13,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityHopper;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
@@ -70,18 +71,27 @@ public class TilePipe extends TileInventory implements IInventoryGui, ITickable 
 				copy.setCount(1);
 				// if we successfully place it in, shrink it here
 				if(ItemHandlerHelper.insertItemStacked(neighbor, copy, false).isEmpty()) {
-					cooldown = 8;
+					if(te instanceof TileEntityHopper) {
+						((TileEntityHopper)te).setTransferCooldown(7);
+					}
 
 					// remove the stack if empty
 					stack.shrink(1);
 					if(stack.isEmpty()) {
 						this.setInventorySlotContents(0, ItemStack.EMPTY);
 					}
+					cooldown = 8;
 
 					this.markDirty();
 				}
 			}
 		}
+	}
+
+	@Override
+	public void setInventorySlotContents(int slot, @Nonnull ItemStack itemstack) {
+		super.setInventorySlotContents(slot, itemstack);
+		cooldown = 7; // set the cooldown to prevent instant retransfer
 	}
 
 	private EnumFacing getFacing() {
