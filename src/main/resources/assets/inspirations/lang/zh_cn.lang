@@ -105,6 +105,12 @@ tile.inspirations.carpeted_trapdoor_green.name=绿色地毯活板门
 tile.inspirations.carpeted_trapdoor_red.name=红色地毯活板门
 tile.inspirations.carpeted_trapdoor_black.name=黑色地毯活板门
 
+tile.inspirations.collector.name=采集器
+gui.inspirations.collector.name=采集器
+
+tile.inspirations.pipe.name=管道
+gui.inspirations.pipe.name=管道
+
 #############
 #  Recipes  #
 #############
@@ -137,6 +143,9 @@ item.inspirations.dyed_bottle.black.name=黑色染色水瓶
 fluid.inspirations.mushroom_stew=蘑菇煲
 fluid.inspirations.beetroot_soup=甜菜汤
 fluid.inspirations.rabbit_stew=兔肉煲
+fluid.inspirations.milk=牛奶
+
+death.attack.inspirations.boiling=%s被活活烫死
 
 # JEI
 gui.jei.anvil_smashing.title=铁砧粉碎
