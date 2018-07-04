@@ -12,6 +12,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
@@ -178,5 +179,19 @@ public class Util {
 			}
 			lores.add((potion.isBadEffect() ? TextFormatting.RED : TextFormatting.BLUE) + effectString);
 		}
+	}
+
+	/**
+	 * Gets the dye color for the given color int
+	 * @param color  Dye color input
+	 * @return  EnumDyeColor matching, or null for no match
+	 */
+	public static EnumDyeColor getDyeForColor(int color) {
+		for(EnumDyeColor dyeColor : EnumDyeColor.values()) {
+			if(dyeColor.colorValue == color) {
+				return dyeColor;
+			}
+		}
+		return null;
 	}
 }

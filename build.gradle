@@ -45,15 +45,27 @@ compileJava {
 }
 
 repositories {
-    maven {
+    maven { // Mantle and JEI
         name 'DVS1 Maven FS'
         url 'http://dvs1.progwml6.com/files/maven'
+    }
+	maven { // TOP
+        name 'tterrag maven'
+        url "http://maven.tterrag.com/"
+    }
+	maven { // WAILA
+         name "Tehnut Maven FS"
+         url "http://tehnut.info/maven"
     }
 }
 
 dependencies {
     deobfCompile "mezz.jei:jei_${config.minecraft_version}:${config.jei_version}"
     deobfCompile "slimeknights.mantle:Mantle:${config.minecraft_base_version}-${config.mantle_version}"
+    deobfCompile "mcp.mobius.waila:Hwyla:${config.hwyla_version}"
+    deobfCompile("mcjty.theoneprobe:TheOneProbe-1.12:${config.probe_version}") {
+        exclude group: 'cofh' // don't grab redstone flux too, don't use it
+    }
 }
 
 processResources {
