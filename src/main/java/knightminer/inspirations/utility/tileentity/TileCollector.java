@@ -81,6 +81,12 @@ public class TileCollector extends TileInventory implements IInventoryGui {
 		world.playEvent(collected ? 1000 : 1001, pos, 0);
 	}
 
+	@Override
+	public boolean isItemValidForSlot(int slot, @Nonnull ItemStack itemstack) {
+		// mantle checks stack size which breaks some things when using stacks bigger than 1
+		return slot < getSizeInventory();
+	}
+
 	/*
 	 * GUI
 	 */

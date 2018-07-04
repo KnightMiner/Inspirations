@@ -63,7 +63,7 @@ public class CauldronProvider implements IWailaDataProvider {
 
 			// if we were given a color string, show it
 			if(colorString != null && accessor.getPlayer().isSneaking()) {
-				current.add(Util.translateFormatted("gui.waila.inspirations.cauldron.color", colorString));
+				current.add(Util.translateFormatted("gui.inspirations.cauldron.color", colorString));
 			}
 		}
 		return current;
