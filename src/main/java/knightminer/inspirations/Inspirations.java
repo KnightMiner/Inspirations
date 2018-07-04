@@ -7,6 +7,7 @@ import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.plugins.tan.ToughAsNailsPlugin;
+import knightminer.inspirations.plugins.top.TheOneProbePlugin;
 import knightminer.inspirations.plugins.waila.WailaPlugin;
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.shared.InspirationsOredict;
@@ -53,6 +54,7 @@ public class Inspirations {
 		pulseManager.registerPulse(new InspirationsOredict());
 		// plugins
 		pulseManager.registerPulse(new ToughAsNailsPlugin());
+		pulseManager.registerPulse(new TheOneProbePlugin());
 		pulseManager.registerPulse(new WailaPlugin());
 
 		// needs to be done statically, but only the recipes module uses it

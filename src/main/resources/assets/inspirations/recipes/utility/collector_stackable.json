@@ -1,0 +1,27 @@
+{
+  "conditions": [
+    {
+      "type": "pulse_loaded",
+      "pulse": "InspirationsUtility"
+    },
+    {
+      "type": "config",
+      "prop": "collector"
+    }
+  ],
+  "result": {
+    "item": "inspirations:collector",
+    "data": 0
+  },
+  "pattern": [
+    "  T",
+    " TS",
+    "TDS"
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "T": { "type": "forge:ore_dict", "ore": "stickWood" },
+    "S": { "type": "forge:ore_dict", "ore": "string" },
+    "D": { "item": "minecraft:dropper" }
+  }
+}

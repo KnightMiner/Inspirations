@@ -164,6 +164,9 @@ gui.jei.cauldron.boiling=Cauldron must be placed above fire
 options.inspirations.cauldron=Cauldron
 gui.waila.inspirations.cauldron.bottles=%s / %s bottles
 
+# TOP
+gui.top.inspirations.cauldron.bottles=bottles
+
 ############
 #  Tools   #
 ############
