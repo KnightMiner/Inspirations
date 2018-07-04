@@ -226,44 +226,44 @@ public class Config {
 		// building
 		{
 			// bookshelves
-			enableBookshelf = configFile.getBoolean("bookshelf", "building", enableBookshelf, "Enables the bookshelf, a decorative block to display books");
-			enableColoredBooks = configFile.getBoolean("coloredBooks", "building.bookshelf", enableColoredBooks, "Enables colored books, basically colored versions of the vanilla book to decorate bookshelves") && enableBookshelf;
+			enableBookshelf = configFile.getBoolean("bookshelf", "building", enableBookshelf, "Enables the bookshelf: a decorative block to display books");
+			enableColoredBooks = configFile.getBoolean("coloredBooks", "building.bookshelf", enableColoredBooks, "Enables colored books: basically colored versions of the vanilla book to decorate bookshelves") && enableBookshelf;
 			bookKeywords = configFile.getStringList("bookKeywords", "building.bookshelf", bookKeywords,
 					"List of keywords for valid books, used to determine valid books in the bookshelf");
 			InspirationsRegistry.setBookKeywords(bookKeywords);
 
 
 			// rope
-			enableRope = configFile.getBoolean("rope", "building", enableRope, "Enables rope, can be climbed like ladders and extended with additional rope");
+			enableRope = configFile.getBoolean("rope", "building", enableRope, "Enables rope: can be climbed like ladders and extended with additional rope");
 
 			// glass door
-			enableGlassDoor = configFile.getBoolean("glassDoor", "building", enableGlassDoor, "Enables glass doors and trapdoors. Basically doors, but made of glass. Not sure what you would expect.");
+			enableGlassDoor = configFile.getBoolean("glassDoor", "building", enableGlassDoor, "Enables glass doors and trapdoors: basically doors, but made of glass. Not sure what you would expect.");
 
 			// mulch
-			enableMulch = configFile.getBoolean("mulch", "building", enableMulch, "Enables mulch, a craftable falling block which supports plants such as flowers");
+			enableMulch = configFile.getBoolean("mulch", "building", enableMulch, "Enables mulch: a craftable falling block which supports plants such as flowers");
 
 			// path
 			enablePath = configFile.getBoolean("path", "building", enablePath, "Enables stone paths: a carpet like decorative block for making decorative paths");
 
 			// flowers
-			enableFlowers = configFile.getBoolean("flowers", "building", enableFlowers, "Enables additional flower from breaking double flowers with shears.");
+			enableFlowers = configFile.getBoolean("flowers", "building", enableFlowers, "Enables additional flowers from breaking double flowers with shears.");
 
 			// enlightenedBush
-			enableEnlightenedBush = configFile.getBoolean("enlightenedBush", "building", enableEnlightenedBush, "Enables enlightned bushes: bushes with lights.");
+			enableEnlightenedBush = configFile.getBoolean("enlightenedBush", "building", enableEnlightenedBush, "Enables enlightened bushes: bushes with lights.");
 		}
 
 		// utility
 		{
-			enableRedstoneBook = configFile.getBoolean("redstoneBook", "utility", enableRedstoneBook, "Enables the trapped book, which will emit redstone power when placed in a bookshelf. Requires bookshelf.") && enableBookshelf;
+			enableRedstoneBook = configFile.getBoolean("redstoneBook", "utility", enableRedstoneBook, "Enables the trapped book: will emit redstone power when placed in a bookshelf. Requires bookshelf.") && enableBookshelf;
 
 			// torch lever
-			enableTorchLever = configFile.getBoolean("torchLever", "utility", enableTorchLever, "Enables the torch lever. Basically a lever which looks like a torch");
+			enableTorchLever = configFile.getBoolean("torchLever", "utility", enableTorchLever, "Enables the torch lever: basically a lever which looks like a torch");
 
 			// lock
 			enableBricksButton = configFile.getBoolean("bricksButton", "utility", enableBricksButton, "Enables button blocks disguised as a full bricks or nether bricks block");
 
 			// redstone barrel
-			enableRedstoneBarrel = configFile.getBoolean("redstoneBarrel", "utility", enableRedstoneBarrel, "Enables the redstone barrel: a block wth gives a configurable comparator output and can be pushed by pistons");
+			enableRedstoneBarrel = configFile.getBoolean("redstoneBarrel", "utility", enableRedstoneBarrel, "Enables the redstone barrel: a block that gives a configurable comparator output and can be pushed by pistons");
 
 			// redstone torch lever
 			enableRedstoneTorchLever = configFile.getBoolean("redstoneTorchLever", "utility", enableRedstoneTorchLever, "Enables the redstone torch lever: a lever that toggles its state when the block it's on gets powered");
@@ -278,7 +278,7 @@ public class Config {
 			enableCollector = configFile.getBoolean("collector", "utility", enableCollector, "Enables the collector: extracts items from inventories or the world similar to a hopper, but can face in all 6 directions and cannot place items in inventories");
 
 			// pipe
-			enablePipe = configFile.getBoolean("pipe", "utility", enablePipe, "EEnables pipes: a more economical hopper that only outputs items, does not pull from inventories. Both cheaper and better for performance.");
+			enablePipe = configFile.getBoolean("pipe", "utility", enablePipe, "Enables pipes: a more economical hopper that only outputs items, does not pull from inventories. Both cheaper and better for performance.");
 			pipeUpwards = configFile.getBoolean("upwards", "utility.pipe", pipeUpwards, "Allows pipes to output upwards. This removes a limitation on not being able to pipe items up without dropper elevators, but should be balanced alongside modded pipes.");
 		}
 
@@ -328,14 +328,14 @@ public class Config {
 		{
 			// redstone charge
 			configFile.moveProperty("utility", "redstoneCharge", "tools");
-			enableRedstoneCharge = configFile.getBoolean("redstoneCharge", "tools", enableRedstoneCharge, "Enables the redstone charge, a quick pulse created with a flint and steel like item");
+			enableRedstoneCharge = configFile.getBoolean("redstoneCharge", "tools", enableRedstoneCharge, "Enables the redstone charge: a quick pulse created with a flint and steel like item");
 
 			// lock
 			configFile.moveProperty("utility", "lock", "tools");
-			enableLock = configFile.getBoolean("lock", "tools", enableLock, "Enables locks and keys, an item allowing you to lock a tile entity to only open for a special named item");
+			enableLock = configFile.getBoolean("lock", "tools", enableLock, "Enables locks and keys: an item allowing you to lock a tile entity to only open for a special named item");
 
 			// crooks
-			String crookType = configFile.getString("crook", "tools", "true", "Enables the crook, a tool to break leaves faster and increase sapling chance. Can be 'true', 'false', or 'simple'. If true, adds a new tool. If simple, functionality will be added to hoes instead.", new String[]{ "false", "simple", "true" });
+			String crookType = configFile.getString("crook", "tools", "true", "Enables the crook: a tool to break leaves faster and increase sapling chance. Can be 'true', 'false', or 'simple'. If true, adds a new tool. If simple, functionality will be added to hoes instead.", new String[]{ "false", "simple", "true" });
 			enableCrook = !crookType.equals("false");
 			separateCrook = crookType.equals("true");
 			hoeCrook = crookType.equals("simple");
