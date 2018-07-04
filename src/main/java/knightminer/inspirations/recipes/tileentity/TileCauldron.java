@@ -78,6 +78,14 @@ public class TileCauldron extends TileEntity {
 	}
 
 	/**
+	 * Gets the current cauldron state
+	 * @return  current state
+	 */
+	public CauldronState getState() {
+		return state;
+	}
+
+	/**
 	 * Returns the current color for tinting
 	 * @return  block colors color
 	 */

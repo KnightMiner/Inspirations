@@ -171,7 +171,7 @@ public interface ICauldronRecipe {
 
 		/**
 		 * Gets the color for this state
-		 * @return  color for the state, or -1 if the type is not DYE
+		 * @return  color for the state, or -1 if the type is not a dye
 		 */
 		public int getColor() {
 			return color;
@@ -179,7 +179,7 @@ public interface ICauldronRecipe {
 
 		/**
 		 * Gets the potion for this state
-		 * @return  potion for this state
+		 * @return  potion for this state, or null if it is not a potion
 		 */
 		public PotionType getPotion() {
 			if(this == WATER) {
@@ -190,7 +190,7 @@ public interface ICauldronRecipe {
 
 		/**
 		 * Gets the fluid for this state
-		 * @return  fluid for this state
+		 * @return  fluid for this state, or null if it is not a fluid
 		 */
 		public Fluid getFluid() {
 			if(this == WATER) {

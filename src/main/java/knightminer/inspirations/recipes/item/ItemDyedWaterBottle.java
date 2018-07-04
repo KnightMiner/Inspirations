@@ -1,5 +1,6 @@
 package knightminer.inspirations.recipes.item;
 
+import knightminer.inspirations.library.Util;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Items;
 import net.minecraft.item.EnumDyeColor;
@@ -42,10 +43,9 @@ public class ItemDyedWaterBottle extends Item {
 	}
 
 	public ItemStack getStackWithColor(int color) {
-		for(EnumDyeColor dyeColor : EnumDyeColor.values()) {
-			if(dyeColor.colorValue == color) {
-				return new ItemStack(this, 1, dyeColor.getDyeDamage());
-			}
+		EnumDyeColor dyeColor = Util.getDyeForColor(color);
+		if(dyeColor != null) {
+			return new ItemStack(this, 1, dyeColor.getDyeDamage());
 		}
 
 		ItemStack result = new ItemStack(this, 1, 16);

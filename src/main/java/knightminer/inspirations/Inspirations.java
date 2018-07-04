@@ -7,6 +7,7 @@ import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.plugins.tan.ToughAsNailsPlugin;
+import knightminer.inspirations.plugins.waila.WailaPlugin;
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.shared.InspirationsOredict;
 import knightminer.inspirations.shared.InspirationsShared;
@@ -50,7 +51,9 @@ public class Inspirations {
 		pulseManager.registerPulse(new InspirationsRecipes());
 		pulseManager.registerPulse(new InspirationsTweaks());
 		pulseManager.registerPulse(new InspirationsOredict());
+		// plugins
 		pulseManager.registerPulse(new ToughAsNailsPlugin());
+		pulseManager.registerPulse(new WailaPlugin());
 
 		// needs to be done statically, but only the recipes module uses it
 		if(pulseManager.isPulseLoaded(InspirationsRecipes.pulseID) && Config.enableCauldronFluids) {
