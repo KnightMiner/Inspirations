@@ -34,6 +34,7 @@ public class Config {
 
 	// general
 	public static boolean showAllVariants = true;
+	public static boolean witherBoneDrop = true;
 
 	// building
 	public static boolean enableRope = true;
@@ -219,6 +220,8 @@ public class Config {
 
 		showAllVariants = configFile.getBoolean("showAllVariants", "general", showAllVariants,
 				"Shows all variants for dynamically textured blocks, like bookshelves. If false just the first will be shown");
+		witherBoneDrop = configFile.getBoolean("witherBoneDrop", "general", witherBoneDrop,
+				"Enables the wither bone drop. Option here in case another mod adds this. Requires either nether crooks or extra potions to be enabled");
 
 		// building
 		{

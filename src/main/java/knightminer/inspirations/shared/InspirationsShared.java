@@ -14,7 +14,6 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.RegistryEvent.Register;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -51,7 +50,7 @@ public class InspirationsShared extends PulseBase {
 	public static ItemStack boiledEgg;
 
 	// flags
-	private boolean enableWitherBones = false;
+	private boolean witherBoneDrop = false;
 
 	@Subscribe
 	public void preInit(FMLPreInitializationEvent event) {
@@ -85,7 +84,7 @@ public class InspirationsShared extends PulseBase {
 		// used in both extended brewing and nether crooks
 		if((isTweaksLoaded() && Config.brewMissingPotions) || (isToolsLoaded() && Config.netherCrooks)) {
 			witherBone = materials.addMeta(7, "wither_bone", CreativeTabs.BREWING);
-			enableWitherBones = Loader.isModLoaded("tconstruct");
+			witherBoneDrop = Config.witherBoneDrop;
 		}
 
 		if(isRecipesLoaded()) {
@@ -116,7 +115,7 @@ public class InspirationsShared extends PulseBase {
 	private static final ResourceLocation WITHER_SKELETON_TABLE = new ResourceLocation("entities/wither_skeleton");
 	@SubscribeEvent
 	public void onLootTableLoad(LootTableLoadEvent event) {
-		if(enableWitherBones && WITHER_SKELETON_TABLE.equals(event.getName())) {
+		if(witherBoneDrop && WITHER_SKELETON_TABLE.equals(event.getName())) {
 			addToVanillaLoot(event, "entities/wither_skeleton");
 		}
 	}
