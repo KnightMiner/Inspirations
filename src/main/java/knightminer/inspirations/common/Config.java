@@ -636,7 +636,7 @@ public class Config {
 			}
 
 			// add recipe
-			boolean boiling = parts.length > 2 ? parts[2].equals("true") : false;
+			Boolean boiling = parts.length > 2 ? parts[2].equals("true") : null;
 			// if the input is empty, we are using an oreString
 			if(input == null) {
 				InspirationsRegistry.addCauldronRecipe(parts[0], output, boiling);

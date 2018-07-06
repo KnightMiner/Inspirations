@@ -348,7 +348,7 @@ public class InspirationsRegistry {
 	 * @param output     Recipe output
 	 * @param boiling  Whether the cauldron must be boiling or not
 	 */
-	public static void addCauldronRecipe(ItemStack input, ItemStack output, boolean boiling) {
+	public static void addCauldronRecipe(ItemStack input, ItemStack output, Boolean boiling) {
 		addCauldronRecipe(new CauldronFluidRecipe(RecipeMatch.of(input), output, boiling));
 	}
 
@@ -358,7 +358,7 @@ public class InspirationsRegistry {
 	 * @param output     Recipe output
 	 * @param boiling  Whether the cauldron must be boiling or not
 	 */
-	public static void addCauldronRecipe(String input, ItemStack output, boolean boiling) {
+	public static void addCauldronRecipe(String input, ItemStack output, Boolean boiling) {
 		addCauldronRecipe(new CauldronFluidRecipe(RecipeMatch.of(input), output, boiling));
 	}
 
