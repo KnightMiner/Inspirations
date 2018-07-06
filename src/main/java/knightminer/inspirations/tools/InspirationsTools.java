@@ -71,10 +71,10 @@ public class InspirationsTools extends PulseBase {
 		proxy.preInit();
 
 		if(Config.separateCrook) {
-			bone = EnumHelper.addToolMaterial(Util.prefix("bone"), 1, 250, 4.0F, 1.5F, 10);
+			bone = EnumHelper.addToolMaterial(Util.prefix("bone"), 1, 225, 4.0F, 1.5F, 10);
 			if(Config.netherCrooks) {
-				blaze = EnumHelper.addToolMaterial(Util.prefix("blaze"), 2, 400, 6.0F, 2.0F, 20);
-				wither = EnumHelper.addToolMaterial(Util.prefix("wither"), 2, 500, 6.0F, 1.5F, 10);
+				blaze = EnumHelper.addToolMaterial(Util.prefix("blaze"), 2, 300, 6.0F, 2.0F, 20);
+				wither = EnumHelper.addToolMaterial(Util.prefix("wither"), 2, 375, 6.0F, 1.5F, 10);
 			}
 		}
 	}
