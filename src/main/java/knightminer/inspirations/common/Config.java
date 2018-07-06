@@ -192,6 +192,7 @@ public class Config {
 	public static boolean coloredFireworkItems = true;
 	public static boolean lilypadBreakFall = true;
 	public static boolean betterCauldronItem = true;
+	public static boolean unstackableRecipeAlts = true;
 	// heartbeet
 	public static boolean enableHeartbeet = true;
 	public static boolean brewHeartbeet = true;
@@ -389,6 +390,9 @@ public class Config {
 
 			// lilypad fall breaking
 			lilypadBreakFall = configFile.getBoolean("lilypadBreakFall", "tweaks", lilypadBreakFall, "Lily pads prevent fall damage, but break in the process");
+
+			// stackable alternative recipes
+			unstackableRecipeAlts =  configFile.getBoolean("unstackableRecipeAlts", "tweaks", unstackableRecipeAlts, "Adds stackable recipes to some vanilla or Inspriations items that require unstackable items to craft");
 		}
 
 		// compatibility
@@ -745,6 +749,9 @@ public class Config {
 				case "lock": return enableLock;
 				case "nether_crook": return netherCrooks;
 				case "redstone_charge": return enableRedstoneCharge;
+
+				// tweaks
+				case "unstackable_alts": return unstackableRecipeAlts;
 
 				// recipes
 				case "cauldron_dyeing": return enableCauldronDyeing;

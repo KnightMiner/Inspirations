@@ -7,6 +7,14 @@
     {
       "type": "config",
       "prop": "collector"
+    },
+    {
+      "type": "pulse_loaded",
+      "pulse": "InspirationsTweaks"
+    },
+    {
+      "type": "config",
+      "prop": "unstackable_alts"
     }
   ],
   "result": {
