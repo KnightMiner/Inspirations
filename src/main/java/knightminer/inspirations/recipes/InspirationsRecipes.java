@@ -67,226 +67,225 @@ import slimeknights.mantle.util.RecipeMatch;
 
 @Pulse(id = InspirationsRecipes.pulseID, description = "Adds additional recipe types, including cauldrons and anvil smashing")
 public class InspirationsRecipes extends PulseBase {
-    public static final String pulseID = "InspirationsRecipes";
+	public static final String pulseID = "InspirationsRecipes";
 
-    @SidedProxy(clientSide = "knightminer.inspirations.recipes.RecipesClientProxy", serverSide = "knightminer.inspirations.common.CommonProxy")
-    public static CommonProxy proxy;
+	@SidedProxy(clientSide = "knightminer.inspirations.recipes.RecipesClientProxy", serverSide = "knightminer.inspirations.common.CommonProxy")
+	public static CommonProxy proxy;
 
-    // blocks
-    public static Block anvil;
-    public static BlockEnhancedCauldron cauldron;
+	// blocks
+	public static Block anvil;
+	public static BlockEnhancedCauldron cauldron;
 
-    // items
-    public static ItemDyedWaterBottle dyedWaterBottle;
+	// items
+	public static ItemDyedWaterBottle dyedWaterBottle;
 
-    // fluids
-    public static Fluid mushroomStew;
-    public static Fluid beetrootSoup;
-    public static Fluid rabbitStew;
-    public static Fluid milk;
+	// fluids
+	public static Fluid mushroomStew;
+	public static Fluid beetrootSoup;
+	public static Fluid rabbitStew;
+	public static Fluid milk;
 
 
-    @Subscribe
-    public void preInit(FMLPreInitializationEvent event) {
-        proxy.preInit();
+	@Subscribe
+	public void preInit(FMLPreInitializationEvent event) {
+		proxy.preInit();
 
-        if (Config.enableCauldronFluids) {
-            mushroomStew = registerColoredFluid("mushroom_stew", 0xFFCD8C6F);
-            beetrootSoup = registerColoredFluid("beetroot_soup", 0xFFB82A30);
-            rabbitStew = registerColoredFluid("rabbit_stew", 0xFF984A2C);
-            if (Config.enableMilk) {
-                milk = registerFluid(new Fluid("milk", Util.getResource("blocks/milk"), Util.getResource("blocks/milk_flow")));
-            }
-        }
-    }
+		if(Config.enableCauldronFluids) {
+			mushroomStew = registerColoredFluid("mushroom_stew", 0xFFCD8C6F);
+			beetrootSoup = registerColoredFluid("beetroot_soup", 0xFFB82A30);
+			rabbitStew = registerColoredFluid("rabbit_stew", 0xFF984A2C);
+			if(Config.enableMilk) {
+				milk = registerFluid(new Fluid("milk", Util.getResource("blocks/milk"), Util.getResource("blocks/milk_flow")));			}
+		}
+	}
 
-    @SubscribeEvent
-    public void registerBlocks(Register<Block> event) {
-        IForgeRegistry<Block> r = event.getRegistry();
+	@SubscribeEvent
+	public void registerBlocks(Register<Block> event) {
+		IForgeRegistry<Block> r = event.getRegistry();
 
-        if (Config.enableAnvilSmashing) {
-            anvil = register(r, new BlockSmashingAnvil(), new ResourceLocation("anvil"));
-        }
-        if (Config.enableExtendedCauldron) {
-            cauldron = register(r, new BlockEnhancedCauldron(), new ResourceLocation("cauldron"));
-            registerTE(TileCauldron.class, "cauldron");
-        }
-    }
+		if(Config.enableAnvilSmashing) {
+			anvil = register(r, new BlockSmashingAnvil(), new ResourceLocation("anvil"));
+		}
+		if(Config.enableExtendedCauldron) {
+			cauldron = register(r, new BlockEnhancedCauldron(), new ResourceLocation("cauldron"));
+			registerTE(TileCauldron.class, "cauldron");
+		}
+	}
 
-    @SubscribeEvent
-    public void registerItems(Register<Item> event) {
-        IForgeRegistry<Item> r = event.getRegistry();
+	@SubscribeEvent
+	public void registerItems(Register<Item> event) {
+		IForgeRegistry<Item> r = event.getRegistry();
 
-        if (Config.enableCauldronDyeing) {
-            InspirationsRecipes.dyedWaterBottle = registerItem(r, new ItemDyedWaterBottle(), "dyed_bottle");
-        }
-    }
+		if(Config.enableCauldronDyeing) {
+			InspirationsRecipes.dyedWaterBottle = registerItem(r, new ItemDyedWaterBottle(), "dyed_bottle");
+		}
+	}
 
-    @SubscribeEvent
-    public void registerRecipes(Register<IRecipe> event) {
-        if (!Config.patchVanillaDyeRecipes) {
-            return;
-        }
-        IForgeRegistry<IRecipe> r = event.getRegistry();
-        String[] recipes = {
-                "purple_dye",
-                "cyan_dye",
-                "light_gray_dye_from_ink_bonemeal",
-                "light_gray_dye_from_gray_bonemeal",
-                "gray_dye",
-                "pink_dye_from_red_bonemeal",
-                "lime_dye",
-                "light_blue_dye_from_lapis_bonemeal",
-                "magenta_dye_from_purple_and_pink",
-                "magenta_dye_from_lapis_red_pink",
-                "magenta_dye_from_lapis_ink_bonemeal",
-                "orange_dye_from_red_yellow"
-        };
-        for (String recipeName : recipes) {
-            IRecipe irecipe = r.getValue(new ResourceLocation(recipeName));
-            if (irecipe instanceof ShapelessRecipes) {
-                // simply find all current ingredients and wrap them in my class which removes bottles
-                ShapelessRecipes recipe = (ShapelessRecipes) irecipe;
-                NonNullList<Ingredient> newIngredients = NonNullList.create();
-                recipe.recipeItems.forEach(i -> newIngredients.add(new DyeIngredientWrapper(i)));
-                recipe.recipeItems.clear();
-                recipe.recipeItems.addAll(newIngredients);
-            } else {
-                // another mod modified or removed recipe
-                String error = irecipe == null ? "recipe removed" : "recipe unexpected class " + irecipe.getClass();
-                Inspirations.log.warn("Error modifying dye recipe '{}', {}", recipeName, error);
-            }
-        }
-    }
+	@SubscribeEvent
+	public void registerRecipes(Register<IRecipe> event) {
+		if(!Config.patchVanillaDyeRecipes) {
+			return;
+		}
+		IForgeRegistry<IRecipe> r = event.getRegistry();
+		String[] recipes = {
+				"purple_dye",
+				"cyan_dye",
+				"light_gray_dye_from_ink_bonemeal",
+				"light_gray_dye_from_gray_bonemeal",
+				"gray_dye",
+				"pink_dye_from_red_bonemeal",
+				"lime_dye",
+				"light_blue_dye_from_lapis_bonemeal",
+				"magenta_dye_from_purple_and_pink",
+				"magenta_dye_from_lapis_red_pink",
+				"magenta_dye_from_lapis_ink_bonemeal",
+				"orange_dye_from_red_yellow"
+		};
+		for(String recipeName : recipes) {
+			IRecipe irecipe = r.getValue(new ResourceLocation(recipeName));
+			if(irecipe instanceof ShapelessRecipes) {
+				// simply find all current ingredients and wrap them in my class which removes bottles
+				ShapelessRecipes recipe = (ShapelessRecipes) irecipe;
+				NonNullList<Ingredient> newIngredients = NonNullList.create();
+				recipe.recipeItems.forEach(i->newIngredients.add(new DyeIngredientWrapper(i)));
+				recipe.recipeItems.clear();
+				recipe.recipeItems.addAll(newIngredients);
+			} else {
+				// another mod modified or removed recipe
+				String error = irecipe == null ? "recipe removed" : "recipe unexpected class " + irecipe.getClass();
+				Inspirations.log.warn("Error modifying dye recipe '{}', {}", recipeName, error);
+			}
+		}
+	}
 
-    @Subscribe
-    public void init(FMLInitializationEvent event) {
-        proxy.init();
+	@Subscribe
+	public void init(FMLInitializationEvent event) {
+		proxy.init();
 
-        InspirationsRegistry.registerAnvilBreaking(Material.GLASS);
-        registerCauldronRecipes();
-    }
+		InspirationsRegistry.registerAnvilBreaking(Material.GLASS);
+		registerCauldronRecipes();
+	}
 
-    @Subscribe
-    public void postInit(FMLPostInitializationEvent event) {
-        proxy.postInit();
-        MinecraftForge.EVENT_BUS.register(RecipesEvents.class);
-        registerPostCauldronRecipes();
-    }
+	@Subscribe
+	public void postInit(FMLPostInitializationEvent event) {
+		proxy.postInit();
+		MinecraftForge.EVENT_BUS.register(RecipesEvents.class);
+		registerPostCauldronRecipes();
+	}
 
-    private void registerCauldronRecipes() {
-        if (Config.spongeEmptyCauldron) {
-            InspirationsRegistry.addCauldronRecipe(SpongeEmptyCauldron.INSTANCE);
-        }
+	private void registerCauldronRecipes() {
+		if(Config.spongeEmptyCauldron) {
+			InspirationsRegistry.addCauldronRecipe(SpongeEmptyCauldron.INSTANCE);
+		}
 
-        if (!Config.enableExtendedCauldron) {
-            return;
-        }
+		if(!Config.enableExtendedCauldron) {
+			return;
+		}
 
-        // reimplemented vanilla recipes
-        InspirationsRegistry.addCauldronRecipe(ArmorClearRecipe.INSTANCE);
-        InspirationsRegistry.addCauldronRecipe(BannerClearRecipe.INSTANCE);
-        // fill from water bottle, does not use the shortcut as we need NBT matching
-        ItemStack waterBottle = PotionUtils.addPotionToItemStack(new ItemStack(Items.POTIONITEM), PotionTypes.WATER);
-        InspirationsRegistry.addCauldronRecipe(new CauldronFluidRecipe(RecipeMatch.of(Items.GLASS_BOTTLE), FluidRegistry.WATER, waterBottle, null, SoundEvents.ITEM_BOTTLE_FILL));
-        InspirationsRegistry.addCauldronRecipe(new FillCauldronRecipe(RecipeMatch.ofNBT(waterBottle), FluidRegistry.WATER, 1, new ItemStack(Items.GLASS_BOTTLE)));
+		// reimplemented vanilla recipes
+		InspirationsRegistry.addCauldronRecipe(ArmorClearRecipe.INSTANCE);
+		InspirationsRegistry.addCauldronRecipe(BannerClearRecipe.INSTANCE);
+		// fill from water bottle, does not use the shortcut as we need NBT matching
+		ItemStack waterBottle = PotionUtils.addPotionToItemStack(new ItemStack(Items.POTIONITEM), PotionTypes.WATER);
+		InspirationsRegistry.addCauldronRecipe(new CauldronFluidRecipe(RecipeMatch.of(Items.GLASS_BOTTLE), FluidRegistry.WATER, waterBottle, null, SoundEvents.ITEM_BOTTLE_FILL));
+		InspirationsRegistry.addCauldronRecipe(new FillCauldronRecipe(RecipeMatch.ofNBT(waterBottle), FluidRegistry.WATER, 1, new ItemStack(Items.GLASS_BOTTLE)));
 
-        if (Config.enableCauldronDyeing) {
-            InspirationsRegistry.addCauldronRecipe(FillDyedBottleFromCauldron.INSTANCE);
-            InspirationsRegistry.addCauldronRecipe(FillCauldronFromDyedBottle.INSTANCE);
-            InspirationsRegistry.addCauldronRecipe(ArmorDyeingCauldronRecipe.INSTANCE);
+		if(Config.enableCauldronDyeing) {
+			InspirationsRegistry.addCauldronRecipe(FillDyedBottleFromCauldron.INSTANCE);
+			InspirationsRegistry.addCauldronRecipe(FillCauldronFromDyedBottle.INSTANCE);
+			InspirationsRegistry.addCauldronRecipe(ArmorDyeingCauldronRecipe.INSTANCE);
 
-            for (EnumDyeColor color : EnumDyeColor.values()) {
-                InspirationsRegistry.addCauldronRecipe(new DyeCauldronWater(color));
-                InspirationsRegistry.addCauldronRecipe(new CauldronDyeRecipe(
-                        new ItemStack(Blocks.WOOL, 1, OreDictionary.WILDCARD_VALUE),
-                        color,
-                        new ItemStack(Blocks.WOOL, 1, color.getMetadata())
-                ));
+			for(EnumDyeColor color : EnumDyeColor.values()) {
+				InspirationsRegistry.addCauldronRecipe(new DyeCauldronWater(color));
+				InspirationsRegistry.addCauldronRecipe(new CauldronDyeRecipe(
+						new ItemStack(Blocks.WOOL, 1, OreDictionary.WILDCARD_VALUE),
+						color,
+						new ItemStack(Blocks.WOOL, 1, color.getMetadata())
+						));
 
-                InspirationsRegistry.addCauldronRecipe(new CauldronDyeRecipe(
-                        new ItemStack(Blocks.CARPET, 1, OreDictionary.WILDCARD_VALUE),
-                        color,
-                        new ItemStack(Blocks.CARPET, 1, color.getMetadata())
-                ));
+				InspirationsRegistry.addCauldronRecipe(new CauldronDyeRecipe(
+						new ItemStack(Blocks.CARPET, 1, OreDictionary.WILDCARD_VALUE),
+						color,
+						new ItemStack(Blocks.CARPET, 1, color.getMetadata())
+						));
 
-                InspirationsRegistry.addCauldronRecipe(new CauldronDyeRecipe(
-                        new ItemStack(Items.BED, 1, OreDictionary.WILDCARD_VALUE),
-                        color,
-                        new ItemStack(Items.BED, 1, color.getMetadata())
-                ));
-            }
-            if (InspirationsUtility.carpetedTrapdoors != null) {
-                RecipeMatch anyTrapdoor = RecipeMatch.of("trapdoorCarpeted");
-                for (EnumDyeColor color : EnumDyeColor.values()) {
-                    InspirationsRegistry.addCauldronRecipe(new CauldronDyeRecipe(
-                            anyTrapdoor, color,
-                            new ItemStack(InspirationsUtility.carpetedTrapdoors[color.getMetadata()])
-                    ));
-                }
-            }
-        }
+				InspirationsRegistry.addCauldronRecipe(new CauldronDyeRecipe(
+						new ItemStack(Items.BED, 1, OreDictionary.WILDCARD_VALUE),
+						color,
+						new ItemStack(Items.BED, 1, color.getMetadata())
+						));
+			}
+			if(InspirationsUtility.carpetedTrapdoors != null) {
+				RecipeMatch anyTrapdoor = RecipeMatch.of("trapdoorCarpeted");
+				for(EnumDyeColor color : EnumDyeColor.values()) {
+					InspirationsRegistry.addCauldronRecipe(new CauldronDyeRecipe(
+							anyTrapdoor, color,
+							new ItemStack(InspirationsUtility.carpetedTrapdoors[color.getMetadata()])
+							));
+				}
+			}
+		}
 
-        if (Config.enableCauldronPotions) {
-            addPotionBottle(Items.POTIONITEM, new ItemStack(Items.GLASS_BOTTLE));
-            addPotionBottle(Items.SPLASH_POTION, InspirationsShared.splashBottle);
-            addPotionBottle(Items.LINGERING_POTION, InspirationsShared.lingeringBottle);
-            InspirationsRegistry.addCauldronRecipe(TippedArrowCauldronRecipe.INSTANCE);
-        }
+		if(Config.enableCauldronPotions) {
+			addPotionBottle(Items.POTIONITEM, new ItemStack(Items.GLASS_BOTTLE));
+			addPotionBottle(Items.SPLASH_POTION, InspirationsShared.splashBottle);
+			addPotionBottle(Items.LINGERING_POTION, InspirationsShared.lingeringBottle);
+			InspirationsRegistry.addCauldronRecipe(TippedArrowCauldronRecipe.INSTANCE);
+		}
 
-        if (Config.enableCauldronFluids) {
-            InspirationsRegistry.addCauldronRecipe(FillFluidContainerFromCauldron.INSTANCE);
+		if(Config.enableCauldronFluids) {
+			InspirationsRegistry.addCauldronRecipe(FillFluidContainerFromCauldron.INSTANCE);
 
-            addStewRecipes(new ItemStack(Items.BEETROOT_SOUP), beetrootSoup, new ItemStack(Items.BEETROOT, 6));
-            addStewRecipes(new ItemStack(Items.MUSHROOM_STEW), mushroomStew, InspirationsShared.mushrooms.copy());
-            addStewRecipes(new ItemStack(Items.RABBIT_STEW), rabbitStew, InspirationsShared.rabbitStewMix.copy());
-        } else {
-            // above relied on for bucket filling cauldron
-            InspirationsRegistry.addCauldronFluidItem(new ItemStack(Items.WATER_BUCKET), new ItemStack(Items.BUCKET), FluidRegistry.WATER, 3);
-        }
-    }
+			addStewRecipes(new ItemStack(Items.BEETROOT_SOUP), beetrootSoup, new ItemStack(Items.BEETROOT, 6));
+			addStewRecipes(new ItemStack(Items.MUSHROOM_STEW), mushroomStew, InspirationsShared.mushrooms.copy());
+			addStewRecipes(new ItemStack(Items.RABBIT_STEW), rabbitStew, InspirationsShared.rabbitStewMix.copy());
+		} else {
+			// above relied on for bucket filling cauldron
+			InspirationsRegistry.addCauldronFluidItem(new ItemStack(Items.WATER_BUCKET), new ItemStack(Items.BUCKET), FluidRegistry.WATER, 3);
+		}
+	}
 
-    /**
-     * These recipes need to be registered later to prevent from conflicts or missing recipes
-     */
-    private void registerPostCauldronRecipes() {
-        if (Config.enableCauldronBrewing) {
-            for (PotionHelper.MixPredicate<PotionType> recipe : PotionHelper.POTION_TYPE_CONVERSIONS) {
-                InspirationsRegistry.addCauldronRecipe(new CauldronBrewingRecipe(recipe.input, recipe.reagent, recipe.output));
-            }
-            findRecipesFromBrewingRegistry();
-        }
-        if (Config.enableCauldronFluids) {
-            InspirationsRegistry.addCauldronRecipe(FillCauldronFromFluidContainer.INSTANCE);
-        }
-    }
+	/**
+	 * These recipes need to be registered later to prevent from conflicts or missing recipes
+	 */
+	private void registerPostCauldronRecipes() {
+		if(Config.enableCauldronBrewing) {
+			for(PotionHelper.MixPredicate<PotionType> recipe : PotionHelper.POTION_TYPE_CONVERSIONS) {
+				InspirationsRegistry.addCauldronRecipe(new CauldronBrewingRecipe(recipe.input, recipe.reagent, recipe.output));
+			}
+			findRecipesFromBrewingRegistry();
+		}
+		if(Config.enableCauldronFluids) {
+			InspirationsRegistry.addCauldronRecipe(FillCauldronFromFluidContainer.INSTANCE);
+		}
+	}
 
-    private static void addPotionBottle(Item potion, ItemStack bottle) {
-        InspirationsRegistry.addCauldronRecipe(new FillCauldronFromPotion(potion, bottle));
-        InspirationsRegistry.addCauldronRecipe(new FillPotionFromCauldron(potion, bottle));
-    }
+	private static void addPotionBottle(Item potion, ItemStack bottle) {
+		InspirationsRegistry.addCauldronRecipe(new FillCauldronFromPotion(potion, bottle));
+		InspirationsRegistry.addCauldronRecipe(new FillPotionFromCauldron(potion, bottle));
+	}
 
-    private static void addStewRecipes(ItemStack stew, Fluid fluid, ItemStack ingredient) {
-        InspirationsRegistry.addCauldronScaledTransformRecipe(ingredient, FluidRegistry.WATER, fluid, true);
-        // filling and emptying bowls
-        InspirationsRegistry.addCauldronRecipe(new CauldronFluidRecipe(RecipeMatch.of(Items.BOWL), fluid, stew, null, SoundEvents.ITEM_BOTTLE_FILL));
-        InspirationsRegistry.addCauldronRecipe(new FillCauldronRecipe(RecipeMatch.of(stew), fluid, 1, new ItemStack(Items.BOWL)));
-    }
+	private static void addStewRecipes(ItemStack stew, Fluid fluid, ItemStack ingredient) {
+		InspirationsRegistry.addCauldronScaledTransformRecipe(ingredient, FluidRegistry.WATER, fluid, true);
+		// filling and emptying bowls
+		InspirationsRegistry.addCauldronRecipe(new CauldronFluidRecipe(RecipeMatch.of(Items.BOWL), fluid, stew, null, SoundEvents.ITEM_BOTTLE_FILL));
+		InspirationsRegistry.addCauldronRecipe(new FillCauldronRecipe(RecipeMatch.of(stew), fluid, 1, new ItemStack(Items.BOWL)));
+	}
 
-    private void findRecipesFromBrewingRegistry() {
-        for (IBrewingRecipe irecipe : BrewingRecipeRegistry.getRecipes()) {
-            if (irecipe instanceof BrewingRecipe) {
-                BrewingRecipe recipe = (BrewingRecipe) irecipe;
-                ItemStack inputStack = recipe.getInput();
-                ItemStack outputStack = recipe.getOutput();
-                if (inputStack.getItem() == Items.POTIONITEM && outputStack.getItem() == Items.POTIONITEM) {
-                    PotionType input = PotionUtils.getPotionFromItem(inputStack);
-                    PotionType output = PotionUtils.getPotionFromItem(outputStack);
-                    if (input != PotionTypes.EMPTY && output != PotionTypes.EMPTY) {
-                        InspirationsRegistry.addCauldronRecipe(new CauldronBrewingRecipe(input, Ingredient.fromStacks(recipe.getIngredient()), output));
-                    }
-                }
-            }
-        }
-    }
+	private void findRecipesFromBrewingRegistry() {
+		for(IBrewingRecipe irecipe : BrewingRecipeRegistry.getRecipes()) {
+			if(irecipe instanceof BrewingRecipe) {
+				BrewingRecipe recipe = (BrewingRecipe) irecipe;
+				ItemStack inputStack = recipe.getInput();
+				ItemStack outputStack = recipe.getOutput();
+				if(inputStack.getItem() == Items.POTIONITEM && outputStack.getItem() == Items.POTIONITEM) {
+					PotionType input = PotionUtils.getPotionFromItem(inputStack);
+					PotionType output = PotionUtils.getPotionFromItem(outputStack);
+					if(input != PotionTypes.EMPTY && output != PotionTypes.EMPTY) {
+						InspirationsRegistry.addCauldronRecipe(new CauldronBrewingRecipe(input, Ingredient.fromStacks(recipe.getIngredient()), output));
+					}
+				}
+			}
+		}
+	}
 }

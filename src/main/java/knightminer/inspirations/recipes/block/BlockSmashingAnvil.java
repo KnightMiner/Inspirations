@@ -20,27 +20,27 @@ import java.util.List;
 
 public class BlockSmashingAnvil extends BlockAnvil {
 
-  public BlockSmashingAnvil() {
-    this.setHardness(5.0F);
-    this.setSoundType(SoundType.ANVIL);
-    this.setResistance(2000.0F);
-    this.setUnlocalizedName("anvil");
-  }
+	public BlockSmashingAnvil() {
+		this.setHardness(5.0F);
+		this.setSoundType(SoundType.ANVIL);
+		this.setResistance(2000.0F);
+		this.setUnlocalizedName("anvil");
+	}
 
-  @Override
-  public void onEndFalling(World world, BlockPos pos, IBlockState anvil, IBlockState state) {
-    BlockPos down = pos.down();
-    IBlockState stateDown = world.getBlockState(down);
+	@Override
+	public void onEndFalling(World world, BlockPos pos, IBlockState anvil, IBlockState state) {
+		BlockPos down = pos.down();
+		IBlockState stateDown = world.getBlockState(down);
 
-    int fallHeight = getFallHeight(world, pos);
+		int fallHeight = getFallHeight(world, pos);
 
-    // try smashing any items before the normal block smashing
-    if (
-        !smashItems(world, pos, down, stateDown, fallHeight) &&
-            !smashBlock(world, down, stateDown)) {
-      super.onEndFalling(world, pos, anvil, state);
-    }
-  }
+		// try smashing any items before the normal block smashing
+		if (
+				!smashItems(world, pos, down, stateDown, fallHeight) &&
+						!smashBlock(world, down, stateDown)) {
+			super.onEndFalling(world, pos, anvil, state);
+		}
+	}
 
   /**
    * Since the fall height is not given to the onEndFalling method we have to try and find it for ourselves.
@@ -133,23 +133,23 @@ public class BlockSmashingAnvil extends BlockAnvil {
    * @param state the state of the block the anvil landed on
    * @return true if smashing happened
    */
-  public static boolean smashBlock(World world, BlockPos pos, IBlockState state) {
-    // if we started on air, just return true
-    if (state.getBlock() == Blocks.AIR) {
-      return true;
-    }
-    // if the block is unbreakable, leave it
-    if (state.getBlockHardness(world, pos) == -1) {
-      return false;
-    }
+	public static boolean smashBlock(World world, BlockPos pos, IBlockState state) {
+		// if we started on air, just return true
+		if(state.getBlock() == Blocks.AIR) {
+			return true;
+		}
+		// if the block is unbreakable, leave it
+		if(state.getBlockHardness(world, pos) == -1) {
+			return false;
+		}
 
-    IBlockState transformation = InspirationsRegistry.getAnvilSmashResult(state);
-    if (transformation == null) {
-      return false;
-    }
-    performSmashBlock(world, pos, state, transformation);
-    return true;
-  }
+		IBlockState transformation = InspirationsRegistry.getAnvilSmashResult(state);
+		if(transformation == null) {
+			return false;
+		}
+		performSmashBlock(world, pos, state, transformation);
+		return true;
+	}
 
   /**
    * Executes the smashing of a block in the world.
@@ -157,17 +157,17 @@ public class BlockSmashingAnvil extends BlockAnvil {
    * @param world  the world
    * @param pos    the position the block smash should be applied to
    * @param state  the block state of the block the anvil landed on
-   * @param result the block state that is the result of the transformation
+   * @param transformation the block state that is the result of the transformation
    */
   public static void performSmashBlock(World world, BlockPos pos, IBlockState state,
-      IBlockState result) {
-    // if the result is air, break the block
-    if (result.getBlock() == Blocks.AIR) {
-      world.destroyBlock(pos, true);
-    } else {
-      // breaking particles
-      world.playEvent(2001, pos, Block.getStateId(state));
-      world.setBlockState(pos, result);
-    }
-  }
+      IBlockState transformation) {
+		// if the result is air, break the block
+		if(transformation.getBlock() == Blocks.AIR) {
+			world.destroyBlock(pos, true);
+		} else {
+			// breaking particles
+			world.playEvent(2001, pos, Block.getStateId(state));
+			world.setBlockState(pos, transformation);
+		}
+	}
 }
