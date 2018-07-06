@@ -46,10 +46,17 @@ public class SmashingRecipeCategory implements IRecipeCategory<SmashingRecipeWra
 	public void setRecipe(IRecipeLayout recipeLayout, SmashingRecipeWrapper recipeWrapper, IIngredients ingredients) {
 		IGuiItemStackGroup items = recipeLayout.getItemStacks();
 
-		items.init(0, true, 43, 15);
+		int slotIndex = 0;
+		if (recipeWrapper.getInputCount() > 1) {
+			items.init(slotIndex++, true, 20, 15);
+		}
+		items.init(slotIndex++, true, 43, 15);
 		items.set(ingredients);
 
-		items.init(1, false, 97, 15);
+		items.init(slotIndex++, false, 97, 15);
+		if (recipeWrapper.getOutputCount() > 1) {
+			items.init(slotIndex, false, 120, 15);
+		}
 		items.set(ingredients);
 	}
 

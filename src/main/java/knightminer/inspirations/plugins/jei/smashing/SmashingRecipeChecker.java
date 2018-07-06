@@ -6,6 +6,7 @@ import java.util.Map;
 
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.Util;
+import knightminer.inspirations.recipes.recipe.anvil.AnvilSmashingItemRecipe;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -28,6 +29,11 @@ public class SmashingRecipeChecker {
 			if(entry.getKey() != Blocks.AIR && !output.isEmpty()) {
 				recipes.add(new SmashingRecipeWrapper(entry.getKey(), output));
 			}
+		}
+
+		// item stack
+		for (AnvilSmashingItemRecipe recipe : InspirationsRegistry.getAllAnvilSmashItemRecipes()) {
+			recipes.add(new SmashingRecipeWrapper(recipe));
 		}
 
 		return recipes;
