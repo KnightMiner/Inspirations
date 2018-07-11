@@ -52,7 +52,7 @@ public class UtilityClientProxy extends ClientProxy {
 		setModelStateMapper(InspirationsUtility.carpetedPressurePlate2, carpetedPressurePlate);
 		setModelStateMapper(InspirationsUtility.collector, new StateMap.Builder().ignore(BlockCollector.TRIGGERED).build());
 		// using multipart, so ignore all states to save memory
-		setModelStateMapper(InspirationsUtility.pipe, new IgnoreAllStateMapper(InspirationsUtility.pipe));
+		setModelStateMapper(InspirationsUtility.pipe, IgnoreAllStateMapper.INSTANCE);
 
 		// blocks
 		registerItemModel(InspirationsUtility.torchLever);
