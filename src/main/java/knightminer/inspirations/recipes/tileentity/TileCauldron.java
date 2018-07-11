@@ -302,7 +302,7 @@ public class TileCauldron extends TileEntity {
 					// continue for boiling
 				case DYE:
 					// if the cauldron is boiling, boiling the entity
-					if (InspirationsRegistry.isCauldronFire(world.getBlockState(pos.down()))) {
+					if (currentState.getValue(BlockEnhancedCauldron.BOILING)) {
 						entity.attackEntityFrom(DAMAGE_BOIL, 2.0F);
 					}
 					break;
