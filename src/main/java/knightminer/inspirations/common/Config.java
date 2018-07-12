@@ -1,8 +1,12 @@
 package knightminer.inspirations.common;
 
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.google.common.base.Splitter;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
@@ -168,6 +172,9 @@ public class Config {
 			"minecraft:monster_egg"
 	};
 
+	private static String[] anvilItemSmashing = {
+			"minecraft:bone->minecraft:dye:15*4"
+	};
 
 	// tools
 	public static boolean enableLock = true;
@@ -424,6 +431,10 @@ public class Config {
 				"List of blocks to add to anvil smashing. Format is modid:input[:meta][->modid:output[:meta]]. If the output is excluded, it will default to air (breaking the block). If the meta is excluded, it will check all states for input and use the default for output").getStringList();
 		processAnvilSmashing(anvilSmashing);
 
+		anvilItemSmashing = configFile.get("recipes.anvilItemSmashing", "itemSmashing", anvilItemSmashing,
+						"List of items to add to anvil smashing. Format is modid:input[:meta]->modid:output[:meta]").getStringList();
+		processAnvilItemSmashing(anvilItemSmashing);
+
 		// cauldron uses
 		configFile.moveProperty("recipes.cauldronRecipes", "recipes", "recipes.cauldron");
 		cauldronRecipes = configFile.get("recipes.cauldron", "recipes", cauldronRecipes,
@@ -590,6 +601,150 @@ public class Config {
 					InspirationsRegistry.registerAnvilSmashing(states[0], states[1]);
 				}
 			}
+	}
+
+	/**
+	 * Parses the anvil item smashing array into the registry
+	 * @param transformations  Input array
+	 */
+	@SuppressWarnings("deprecation")
+	private static void processAnvilItemSmashing(String[] transformations) {
+		if(!enableAnvilSmashing) {
+			return;
+		}
+
+		for(String transformation : transformations) {
+			// skip blank lines
+			if("".equals(transformation) || transformation.startsWith("#")) {
+				continue;
+			}
+
+			// require at least two parts
+			String[] transformParts = transformation.split("->");
+			if(transformParts.length < 2) {
+				Inspirations.log.error("Invalid anvil item smashing {}: must be in the format of modid:input[:meta][*countIn]->modid:output[:meta][*countOut][->[minheight][;modid:blockname[:meta]]]", transformation);
+				continue;
+			}
+
+			// input
+			ItemStack inputStack = parseItemStackWithCount(transformParts[0]);
+			if(inputStack.isEmpty()) {
+				Inspirations.log.error("Invalid anvil item smashing {}: unable to parse input item stack {}", transformation, transformParts[0]);
+				continue;
+			}
+
+			// output
+			ItemStack outputStack = parseItemStackWithCount(transformParts[1]);
+			if(outputStack.isEmpty()) {
+				Inspirations.log.error("Invalid anvil item smashing {}: unable to parse output item stack {}", transformation, transformParts[0]);
+				continue;
+			}
+
+			// conditions
+			Integer fallHeight = null;
+			IBlockState state = null;
+			if(transformParts.length == 3) {
+				List<String> requirementParts = Splitter.on(";").splitToList(transformParts[2]);
+				// Fall height
+				if(requirementParts.size() > 0) {
+					String heightString = requirementParts.get(0);
+					fallHeight = parseInteger(heightString);
+					if(fallHeight == null) {
+						Inspirations.log.error("Invalid anvil item smashing {}: unable to parse height requirement {}", transformation, heightString);
+						continue;
+					}
+				}
+				// block state
+				if(requirementParts.size() > 1) {
+					String stateString = requirementParts.get(1);
+					state = parseBlockstate(stateString);
+					if(state == null) {
+						Inspirations.log.error("Invalid anvil item smashing {}: unable to parse block state requirement {}", transformation, stateString);
+						continue;
+					}
+				}
+			}
+
+			// register
+			InspirationsRegistry.addAnvilItemSmashingRecipe(inputStack, outputStack, fallHeight, state);
+		}
+	}
+
+	/**
+	 * Parse a block state from a string with the format modid:name[:meta]
+	 * @param input input string
+	 * @return the block state or null if none could be found
+	 */
+	private static IBlockState parseBlockstate(String input) {
+		List<String> parts = Splitter.on(":").splitToList(input);
+		if(parts.size() < 2 || parts.size() > 3) {
+			return null;
+		}
+
+		// find block
+		String modId = parts.get(0);
+		String itemName = parts.get(1);
+		Block block = GameRegistry.findRegistry(Block.class).getValue(new ResourceLocation(modId, itemName));
+		if(block == null) {
+			return null;
+		}
+
+		// get actual state
+		if(parts.size() == 3) {
+			// parse meta
+			Integer meta = parseInteger(parts.get(2));
+			return meta != null && meta >= 0 ? block.getStateFromMeta(meta) : null;
+		} else {
+			// use default state
+			return block.getDefaultState();
+		}
+	}
+
+	/**
+	 * Transform a string with format mod:item[:meta][*count] into an item stack.
+	 * @param input input string
+	 * @return item stack, might be {@link ItemStack#EMPTY} if it cannot be parsed
+	 */
+	private static ItemStack parseItemStackWithCount(String input) {
+		// split off the item count
+		String[] parts = input.split("\\*");
+		if(parts.length == 0 || parts.length > 2) {
+			return ItemStack.EMPTY;
+		}
+
+		// transform the item stack part
+		ItemStack stack = RecipeUtil.getItemStackFromString(parts[0], true);
+		if(stack.isEmpty()) {
+			return ItemStack.EMPTY;
+		}
+
+		// if the item count was specified, set it for the item stack
+		if(parts.length > 1) {
+			Integer count = parseInteger(parts[1]);
+			if(count == null || count < 0) {
+				return ItemStack.EMPTY;
+			}
+			stack.setCount(count);
+		}
+		return stack;
+	}
+
+	/**
+	 * Parse a string to an integer.
+	 * @param value string
+	 * @return the integer or null if it cannot be parsed
+	 */
+	private static Integer parseInteger(String value) {
+		if(null == StringUtils.trimToNull(value)) {
+			return null;
+		}
+
+		try {
+			return Integer.valueOf(value);
+		}
+		catch (NumberFormatException e) {
+			return null;
+		}
 	}
 
 	/**

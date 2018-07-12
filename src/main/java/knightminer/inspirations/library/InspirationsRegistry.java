@@ -13,6 +13,8 @@ import com.google.common.collect.ImmutableList;
 
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.event.RegisterEvent.RegisterCauldronRecipe;
+import knightminer.inspirations.library.recipe.anvil.AnvilItemSmashingRecipe;
+import knightminer.inspirations.library.recipe.anvil.IAnvilRecipe;
 import knightminer.inspirations.library.recipe.cauldron.CauldronFluidRecipe;
 import knightminer.inspirations.library.recipe.cauldron.CauldronFluidTransformRecipe;
 import knightminer.inspirations.library.recipe.cauldron.FillCauldronRecipe;
@@ -184,6 +186,7 @@ public class InspirationsRegistry {
 	private static Map<IBlockState, IBlockState> anvilSmashing = new HashMap<>();
 	private static Map<Block, IBlockState> anvilSmashingBlocks = new HashMap<>();
 	private static Set<Material> anvilBreaking = new HashSet<>();
+	private static List<IAnvilRecipe> anvilItemSmashingRecipes = new ArrayList<>();
 
 	/**
 	 * Registers an anvil smashing result for the given block state
@@ -289,6 +292,78 @@ public class InspirationsRegistry {
 		return ImmutableList.copyOf(anvilSmashingBlocks.entrySet());
 	}
 
+	/**
+	 * Get the result of an anvil recipe
+	 * @param input      ItemStack input
+	 * @param fallHeight the height the anvil fell from
+	 * @param state      the state of the block the anvil landed on
+	 * @return the matching recipe
+	 */
+	public static IAnvilRecipe getAnvilItemSmashingRecipe(ItemStack input, int fallHeight, IBlockState state) {
+		for(IAnvilRecipe recipe : anvilItemSmashingRecipes) {
+			if(recipe.matches(input, fallHeight, state)) {
+				return recipe;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Add a new anvil recipe
+	 * @param recipe the recipe to register
+	 */
+	public static void addAnvilItemSmashingRecipe(IAnvilRecipe recipe) {
+		anvilItemSmashingRecipes.add(recipe);
+	}
+
+	/**
+	 * Retrieve all registered recipes for item smashing.
+	 * @return list of all recipes
+	 */
+	public static List<IAnvilRecipe> getAllAnvilItemSmashingRecipes() {
+		return ImmutableList.copyOf(anvilItemSmashingRecipes);
+	}
+
+	/**
+	 * Add a new item smashing recipe for the given input and output.
+	 * @param stack  input item stack
+	 * @param output output item stack
+	 */
+	public static void addAnvilItemSmashingRecipe(ItemStack stack, ItemStack output) {
+		addAnvilItemSmashingRecipe(stack, output, null, null);
+	}
+
+	/**
+	 * Add a new item smashing recipe for the given input and output.
+	 * @param stack      input item stack
+	 * @param output     output item stack
+	 * @param inputState required block state for the block the anvil lands on
+	 */
+	public static void addAnvilItemSmashingRecipe(ItemStack stack, ItemStack output, IBlockState inputState) {
+		addAnvilItemSmashingRecipe(stack, output, null, inputState);
+	}
+
+	/**
+	 * Add a new item smashing recipe for the given input and output.
+	 * @param stack      input item stack
+	 * @param output     output item stack
+	 * @param fallHeight required minimum fall height
+	 */
+	public static void addAnvilItemSmashingRecipe(ItemStack stack, ItemStack output, Integer fallHeight) {
+		addAnvilItemSmashingRecipe(stack, output, fallHeight, null);
+	}
+
+	/**
+	 * Add a new item smashing recipe for the given input and output.
+	 * @param stack      input item stack
+	 * @param output     output item stack
+	 * @param fallHeight required minimum fall height
+	 * @param inputState required block state for the block the anvil lands on
+	 */
+	public static void addAnvilItemSmashingRecipe(ItemStack stack, ItemStack output, Integer fallHeight,
+			IBlockState inputState) {
+		addAnvilItemSmashingRecipe(new AnvilItemSmashingRecipe(RecipeMatch.of(stack), output, inputState, fallHeight));
+	}
 
 	/*
 	 * Cauldron recipes
