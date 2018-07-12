@@ -1,16 +1,20 @@
 package knightminer.inspirations.plugins.jei.smashing;
 
+import java.awt.*;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 
 import knightminer.inspirations.library.InspirationsRegistry;
-import net.minecraft.block.Block;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
-
-import java.util.List;
-
+import knightminer.inspirations.library.Util;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IRecipeWrapper;
+import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import slimeknights.mantle.client.CreativeTab;
 
 public class SmashingRecipeWrapper implements IRecipeWrapper {
@@ -18,9 +22,17 @@ public class SmashingRecipeWrapper implements IRecipeWrapper {
 	protected final List<List<ItemStack>> input;
 	protected final List<ItemStack> output;
 
+	private String heightRequirementString;
+
 	public SmashingRecipeWrapper(ItemStack input, ItemStack output) {
 		this.input = ImmutableList.of(ImmutableList.of(input));
 		this.output = ImmutableList.of(output);
+	}
+
+	public SmashingRecipeWrapper(List<ItemStack> inputs, ItemStack output, Integer minFallHeight) {
+		this.input = inputs.stream().map(ImmutableList::of).collect(Collectors.toList());
+		this.output = ImmutableList.of(output);
+		this.heightRequirementString = Util.translateFormatted("gui.jei.anvil_smashing.height", minFallHeight);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -39,5 +51,27 @@ public class SmashingRecipeWrapper implements IRecipeWrapper {
 	public void getIngredients(IIngredients ingredients) {
 		ingredients.setInputLists(ItemStack.class, input);
 		ingredients.setOutputs(ItemStack.class, output);
+	}
+
+	@Override
+	public List<String> getTooltipStrings(int mouseX, int mouseY) {
+		List<String> tooltip = Lists.newArrayList();
+		if (mouseX >= 68 && mouseX <= 90 && mouseY >= 17 && mouseY <= 31) {
+			if (isNotEmpty(heightRequirementString)) {
+				tooltip.add(heightRequirementString);
+			}
+		}
+		return tooltip;
+	}
+
+	@Override
+	public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
+		if (isNotEmpty(heightRequirementString)) {
+			minecraft.fontRenderer.drawString("!", 76, 13, Color.gray.getRGB());
+		}
+	}
+
+	private boolean isNotEmpty(String string) {
+		return string != null && !string.isEmpty();
 	}
 }
