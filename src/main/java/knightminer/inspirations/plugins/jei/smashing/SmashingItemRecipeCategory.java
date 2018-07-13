@@ -13,7 +13,7 @@ import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
 
-public class SmashingItemRecipeCategory implements IRecipeCategory<SmashingRecipeWrapper> {
+public class SmashingItemRecipeCategory implements IRecipeCategory<SmashingItemRecipeWrapper> {
 
 	public static final String CATEGORY = Util.prefix("anvil_smashing_items");
 	public static final ResourceLocation BACKGROUND_LOC = Util.getResource("textures/gui/jei/anvil_smashing.png");
@@ -43,17 +43,24 @@ public class SmashingItemRecipeCategory implements IRecipeCategory<SmashingRecip
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayout recipeLayout, SmashingRecipeWrapper recipeWrapper, IIngredients ingredients) {
+	public void setRecipe(IRecipeLayout recipeLayout, SmashingItemRecipeWrapper recipeWrapper, IIngredients ingredients) {
 		IGuiItemStackGroup items = recipeLayout.getItemStacks();
 
-		items.init(0, true, 43, 15);
+		int slot = 0;
+
+		// Input
+		items.init(slot++, true, 43, 15);
+		int numAdditionalInputs = ingredients.getInputs(ItemStack.class).size() - 1;
+		for(int i = 0; i < Math.min(numAdditionalInputs, 3); i++) {
+			items.init(slot++, true, 43 - 20*(i+1), 15);
+		}
 		items.set(ingredients);
 
-		items.init(1, false, 97, 15);
-
+		// Output
+		items.init(slot++, false, 97, 15);
 		int numAdditionalOutputs = ingredients.getOutputs(ItemStack.class).size() - 1;
 		for(int i = 0; i < Math.min(numAdditionalOutputs, 3); i++) {
-			items.init(2 + i, false, 97 + 20*(i+1), 15);
+			items.init(slot++, false, 97 + 20*(i+1), 15);
 		}
 		items.set(ingredients);
 	}

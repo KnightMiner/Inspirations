@@ -16,7 +16,9 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class BlockSmashingAnvil extends BlockAnvil {
 
@@ -46,35 +48,49 @@ public class BlockSmashingAnvil extends BlockAnvil {
 	 */
 	public static boolean smashItem(World world, BlockPos pos, IBlockState state) {
 		// find item entities that can be smashed
-		EntityItem entityItem = getItemEntity(world, pos);
-		if (entityItem == null) {
+		List<EntityItem> entityItem = getItemEntity(world, pos);
+		if(entityItem.isEmpty()) {
 			return false;
 		}
-		ItemStack inputStack = entityItem.getItem();
+
+		NonNullList<ItemStack> inputs = NonNullList.create();
+		inputs.addAll(entityItem.stream().map(EntityItem::getItem).collect(Collectors.toList()));
 
 		int fallHeight = getFallHeight(world, pos);
 
-		// is there a recipe that matches?
-		IAnvilRecipe recipe = InspirationsRegistry
-				.getAnvilItemSmashingRecipe(inputStack, fallHeight, state);
-		if(recipe == null) {
-			return false;
+		// repeat as long as a recipe matches
+		List<ItemStack> results = new ArrayList<>();
+		boolean recipeApplied = false;
+		while(true) {
+			// find next match
+			IAnvilRecipe recipe = InspirationsRegistry.getAnvilItemSmashingRecipe(inputs, fallHeight, state);
+			if(recipe == null) {
+				// no more match
+				break;
+			}
+
+			// at least one recipe was applied
+			recipeApplied = true;
+
+			// apply the recipe once
+			List<ItemStack> itemStackRemaining = recipe.transformInput(inputs, fallHeight, state);
+			results.addAll(itemStackRemaining);
 		}
 
-		// apply the recipe
-		List<ItemStack> itemStackRemaining = recipe.transformInput(inputStack, fallHeight, state);
-		itemStackRemaining.forEach(itemStack -> {
+		// Output the result stacks
+		results.forEach(itemStack -> {
 			if(!itemStack.isEmpty()) {
 				spawnAsEntity(world, pos, itemStack);
 			}
 		});
 
-		// if the input stack is now empty, remove it from the world
-		if(inputStack.isEmpty()) {
-			entityItem.setDead();
-		}
-
-		return true;
+		// Remove all empty input stacks
+		entityItem.forEach(entity -> {
+			if(entity.getItem().isEmpty()) {
+				entity.setDead();
+			}
+		});
+		return recipeApplied;
 	}
 
 	/**
@@ -118,13 +134,10 @@ public class BlockSmashingAnvil extends BlockAnvil {
 	 *
 	 * @param world the world to look in
 	 * @param pos   the position to look in
-	 * @return the first item entity. Standard rules of entity access for minecraft applies, so no
-	 * guarantees what entity will be picked!
+	 * @return all item entities
 	 */
-	private static EntityItem getItemEntity(World world, BlockPos pos) {
-		List<EntityItem> entitiesWithinAABB = world
-				.getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(pos));
-		return Iterables.getFirst(entitiesWithinAABB, null);
+	private static List<EntityItem> getItemEntity(World world, BlockPos pos) {
+		return world.getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(pos));
 	}
 
 	public static boolean smashBlock(World world, BlockPos pos, IBlockState state) {

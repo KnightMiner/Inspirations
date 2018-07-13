@@ -36,14 +36,13 @@ public class SmashingRecipeChecker {
 		return recipes;
 	}
 
-	public static List<SmashingRecipeWrapper> getItemRecipes() {
-		List<SmashingRecipeWrapper> recipes = new ArrayList<>();
+	public static List<SmashingItemRecipeWrapper> getItemRecipes() {
+		List<SmashingItemRecipeWrapper> recipes = new ArrayList<>();
 		// item stacks
 		for(IAnvilRecipe recipe : InspirationsRegistry.getAllAnvilItemSmashingRecipes()) {
 			if(recipe instanceof ISimpleAnvilRecipe) {
 				ISimpleAnvilRecipe simpleRecipe = (ISimpleAnvilRecipe) recipe;
-				recipes.add(new SmashingRecipeWrapper(simpleRecipe.getInput(), simpleRecipe.getResult(),
-						simpleRecipe.getFallHeight()));
+				recipes.add(new SmashingItemRecipeWrapper(simpleRecipe));
 			}
 		}
 		return recipes;

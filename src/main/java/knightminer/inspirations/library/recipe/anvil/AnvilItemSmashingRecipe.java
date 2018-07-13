@@ -1,28 +1,26 @@
 package knightminer.inspirations.library.recipe.anvil;
 
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import knightminer.inspirations.library.Util;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
+import slimeknights.mantle.util.ItemStackList;
 import slimeknights.mantle.util.RecipeMatch;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 public class AnvilItemSmashingRecipe implements ISimpleAnvilRecipe {
 	protected RecipeMatch input;
-	private List<ItemStack> result;
+	private ItemStackList result;
 	@Nullable
 	protected IBlockState state;
 	@Nullable
 	private Integer fallHeight;
 
-	public AnvilItemSmashingRecipe(RecipeMatch input, List<ItemStack> result, @Nullable IBlockState state,
+	public AnvilItemSmashingRecipe(RecipeMatch input, ItemStackList result, @Nullable IBlockState state,
 			@Nullable Integer fallHeight) {
 		this.input = input;
 		this.result = result;
@@ -30,26 +28,26 @@ public class AnvilItemSmashingRecipe implements ISimpleAnvilRecipe {
 		this.fallHeight = fallHeight;
 	}
 
-	public AnvilItemSmashingRecipe(RecipeMatch input, List<ItemStack> result, @Nullable IBlockState state) {
+	public AnvilItemSmashingRecipe(RecipeMatch input, ItemStackList result, @Nullable IBlockState state) {
 		this(input, result, state, null);
 	}
 
-	public AnvilItemSmashingRecipe(RecipeMatch input, List<ItemStack> result, @Nullable Integer fallHeight) {
+	public AnvilItemSmashingRecipe(RecipeMatch input, ItemStackList result, @Nullable Integer fallHeight) {
 		this(input, result, null, fallHeight);
 	}
 
-	public AnvilItemSmashingRecipe(RecipeMatch input, List<ItemStack> result) {
+	public AnvilItemSmashingRecipe(RecipeMatch input, ItemStackList result) {
 		this(input, result, null, null);
 	}
 
 	@Override
-	public boolean matches(ItemStack stack, int height, IBlockState state) {
+	public boolean matches(NonNullList<ItemStack> stack, int height, IBlockState state) {
 		// match the conditions if they are set
 		if(!fallHeightMatches(height) || !stateMatches(state)) {
 			return false;
 		}
 
-		return this.input.matches(Util.createNonNullList(stack)).isPresent();
+		return this.input.matches(stack).isPresent();
 	}
 
 	/**
@@ -87,48 +85,20 @@ public class AnvilItemSmashingRecipe implements ISimpleAnvilRecipe {
 	}
 
 	@Override
-	public List<ItemStack> transformInput(ItemStack stack, int fallHeight, IBlockState state) {
-		// assume this recipe matches, otherwise this method shouldn't have been called
-		RecipeMatch.Match match = input.matches(Util.createNonNullList(stack)).get();
-
-		// calculate the number of times this recipe can be applied to the input item stack
-		int matchCount = stack.getCount() / match.amount;
-
-		// calculate the remainder of the input item stack that doesn't fit with the recipe
-		int remainder = stack.getCount() % match.amount;
-
-		// modify the input stack
-		stack.setCount(remainder);
-
-		// transform the output stack
-		return result.stream().flatMap(itemStack -> {
-			int totalCount = itemStack.getCount() * matchCount;
-			return getItemStacks(itemStack, totalCount);
-		}).collect(Collectors.toList());
+	public Object getInputState() {
+		return this.state;
 	}
 
-	/**
-	 * Creates item stacks from the template that sum up to the given total count and respect the max stack size for
-	 * the item.
-	 * @param template   the template item stack, is read only
-	 * @param totalCount the sum of all item stacks
-	 * @return a list of non empty item stacks whose counts sum up to the given total
-	 */
-	public static Stream<ItemStack> getItemStacks(@Nonnull ItemStack template, int totalCount) {
-		Stream.Builder<ItemStack> output = Stream.builder();
+	@Override
+	public NonNullList<ItemStack> transformInput(NonNullList<ItemStack> stack, int fallHeight, IBlockState state) {
+		// assume this recipe matches, otherwise this method shouldn't have been called
+		RecipeMatch.Match match = input.matches(stack).get();
 
-		// respect max stack size of the template
-		int maxStackSize = template.getMaxStackSize();
+		// remove the matching stacks
+		RecipeMatch.removeMatch(stack, match);
 
-		int remainingStackSize = totalCount;
-		while(remainingStackSize > 0) {
-			ItemStack out = template.copy();
-			int count = Math.min(maxStackSize, remainingStackSize);
-			out.setCount(count);
-			output.add(out);
-			remainingStackSize -= count;
-		}
-		return output.build();
+		// return the results
+		return result.deepCopy(true);
 	}
 
 	@Override

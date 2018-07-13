@@ -1,6 +1,7 @@
 package knightminer.inspirations.common;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
@@ -13,6 +14,8 @@ import com.google.gson.JsonSyntaxException;
 
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.InspirationsRegistry;
+import knightminer.inspirations.library.recipe.anvil.AnvilItemSmashingRecipe;
+import knightminer.inspirations.library.recipe.anvil.CompositeRecipeMatch;
 import knightminer.inspirations.library.util.RecipeUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -30,6 +33,8 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 import slimeknights.mantle.client.CreativeTab;
 import slimeknights.mantle.pulsar.config.ForgeCFG;
+import slimeknights.mantle.util.ItemStackList;
+import slimeknights.mantle.util.RecipeMatch;
 
 public class Config {
 
@@ -174,10 +179,16 @@ public class Config {
 	};
 
 	private static String[] anvilItemSmashing = {
+			// Single input -> Single Output with multiples
 			"minecraft:bone->minecraft:dye:15*4",
+			// Single input with multiples -> Single Output when fall height and block state matches
 			"minecraft:coal_block*64->minecraft:diamond->200",
+			// Single input -> Multiple outputs
 			"minecraft:ender_eye->minecraft:blaze_powder;minecraft:ender_pearl",
-			"sugarcane->minecraft:sugar*2"
+			// Single input from ore dict -> Single output with multiples
+			"sugarcane->minecraft:sugar*2",
+			// Multiple inputs with multiples and ore dict -> Single output when block state matches
+			"minecraft:coal*16;stone->minecraft:coal_ore->;minecraft:bedrock"
 	};
 
 	// tools
@@ -631,8 +642,17 @@ public class Config {
 			}
 
 			// input
-			ItemStack inputStack = transformParts[0].contains(":") ? parseItemStackWithCount(transformParts[0]) : null;
-			if(inputStack != null && inputStack.isEmpty()) {
+			List<RecipeMatch> inputStacks = Splitter.on(";").trimResults().splitToList(transformParts[0]).stream()
+					.map(inputString -> {
+						if (inputString.contains(":")) {
+							ItemStack itemStack = parseItemStackWithCount(inputString);
+							return itemStack != null ? RecipeMatch.of(itemStack) : null;
+						} else {
+							return RecipeMatch.of(inputString);
+						}
+					})
+					.collect(Collectors.toList());
+			if(inputStacks.isEmpty() || inputStacks.stream().anyMatch(Objects::isNull)) {
 				Inspirations.log.error("Invalid anvil item smashing {}: unable to parse input item stack {}", transformation, transformParts[0]);
 				continue;
 			}
@@ -651,14 +671,18 @@ public class Config {
 			Integer fallHeight = null;
 			IBlockState state = null;
 			if(transformParts.length == 3) {
-				List<String> requirementParts = Splitter.on(";").splitToList(transformParts[2]);
+				List<String> requirementParts = Splitter.on(";").trimResults().splitToList(transformParts[2]);
 				// Fall height
 				if(requirementParts.size() > 0) {
 					String heightString = requirementParts.get(0);
-					fallHeight = parseInteger(heightString);
-					if(fallHeight == null) {
-						Inspirations.log.error("Invalid anvil item smashing {}: unable to parse height requirement {}", transformation, heightString);
-						continue;
+					if(!heightString.isEmpty()) {
+						fallHeight = parseInteger(heightString);
+						if(fallHeight == null) {
+							Inspirations.log
+									.error("Invalid anvil item smashing {}: unable to parse height requirement {}",
+											transformation, heightString);
+							continue;
+						}
 					}
 				}
 				// block state
@@ -673,11 +697,7 @@ public class Config {
 			}
 
 			// register
-			if(inputStack != null) {
-				InspirationsRegistry.addAnvilItemSmashingRecipe(inputStack, outputStack, fallHeight, state);
-			} else {
-				InspirationsRegistry.addAnvilItemSmashingRecipe(transformParts[0], outputStack, fallHeight, state);
-			}
+			InspirationsRegistry.addAnvilItemSmashingRecipe(new AnvilItemSmashingRecipe(CompositeRecipeMatch.ofMatches(inputStacks), ItemStackList.of(outputStack), state, fallHeight));
 		}
 	}
 
