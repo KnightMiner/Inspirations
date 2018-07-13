@@ -27,18 +27,6 @@ public interface IAnvilRecipe {
 	boolean matches(ItemStack stack, int height, IBlockState state);
 
 	/**
-	 * Gets the result stack for this recipe
-	 *
-	 * @param stack  Input stack
-	 * @param height Fall height of the anvil
-	 * @param state  State of the block the anvil landed on
-	 * @return ItemStack result
-	 */
-	default ItemStack getResult(ItemStack stack, int height, IBlockState state) {
-		return ItemStack.EMPTY;
-	}
-
-	/**
 	 * Transforms the input itemstack for the recipe.
 	 *
 	 * @param stack  Input stack to transform
@@ -46,7 +34,7 @@ public interface IAnvilRecipe {
 	 * @param state  State of the block the anvil landed on
 	 * @return
 	 */
-	NonNullList<ItemStack> transformInput(ItemStack stack, int height, IBlockState state);
+	List<ItemStack> transformInput(ItemStack stack, int height, IBlockState state);
 
 	/**
 	 * Get the resulting block state for this recipe

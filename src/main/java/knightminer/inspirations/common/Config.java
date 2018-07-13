@@ -3,6 +3,7 @@ package knightminer.inspirations.common;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -173,7 +174,10 @@ public class Config {
 	};
 
 	private static String[] anvilItemSmashing = {
-			"minecraft:bone->minecraft:dye:15*4"
+			"minecraft:bone->minecraft:dye:15*4",
+			"minecraft:coal_block*64->minecraft:diamond->200",
+			"minecraft:ender_eye->minecraft:blaze_powder;minecraft:ender_pearl",
+			"sugarcane->minecraft:sugar*2"
 	};
 
 	// tools
@@ -622,21 +626,24 @@ public class Config {
 			// require at least two parts
 			String[] transformParts = transformation.split("->");
 			if(transformParts.length < 2) {
-				Inspirations.log.error("Invalid anvil item smashing {}: must be in the format of modid:input[:meta][*countIn]->modid:output[:meta][*countOut][->[minheight][;modid:blockname[:meta]]]", transformation);
+				Inspirations.log.error("Invalid anvil item smashing {}: must be in the format of modid:input[:meta][*countIn]->(modid:output[:meta][*countOut])+[->[minheight][;modid:blockname[:meta]]]", transformation);
 				continue;
 			}
 
 			// input
-			ItemStack inputStack = parseItemStackWithCount(transformParts[0]);
-			if(inputStack.isEmpty()) {
+			ItemStack inputStack = transformParts[0].contains(":") ? parseItemStackWithCount(transformParts[0]) : null;
+			if(inputStack != null && inputStack.isEmpty()) {
 				Inspirations.log.error("Invalid anvil item smashing {}: unable to parse input item stack {}", transformation, transformParts[0]);
 				continue;
 			}
 
 			// output
-			ItemStack outputStack = parseItemStackWithCount(transformParts[1]);
-			if(outputStack.isEmpty()) {
-				Inspirations.log.error("Invalid anvil item smashing {}: unable to parse output item stack {}", transformation, transformParts[0]);
+			List<ItemStack> outputStack = Splitter.on(";").trimResults().splitToList(transformParts[1]).stream()
+					.map(Config::parseItemStackWithCount).collect(Collectors.toList());
+			if(outputStack.isEmpty() || outputStack.stream().map(ItemStack::isEmpty).findAny().orElse(false)) {
+				Inspirations.log
+						.error("Invalid anvil item smashing {}: unable to parse output item stacks {}", transformation,
+								transformParts[0]);
 				continue;
 			}
 
@@ -666,7 +673,11 @@ public class Config {
 			}
 
 			// register
-			InspirationsRegistry.addAnvilItemSmashingRecipe(inputStack, outputStack, fallHeight, state);
+			if(inputStack != null) {
+				InspirationsRegistry.addAnvilItemSmashingRecipe(inputStack, outputStack, fallHeight, state);
+			} else {
+				InspirationsRegistry.addAnvilItemSmashingRecipe(transformParts[0], outputStack, fallHeight, state);
+			}
 		}
 	}
 
@@ -713,7 +724,7 @@ public class Config {
 		}
 
 		// transform the item stack part
-		ItemStack stack = RecipeUtil.getItemStackFromString(parts[0], true);
+		ItemStack stack = RecipeUtil.getItemStackFromString(parts[0], false);
 		if(stack.isEmpty()) {
 			return ItemStack.EMPTY;
 		}

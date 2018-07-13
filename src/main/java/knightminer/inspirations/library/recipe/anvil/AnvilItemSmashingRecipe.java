@@ -1,26 +1,28 @@
 package knightminer.inspirations.library.recipe.anvil;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import knightminer.inspirations.library.Util;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
 import slimeknights.mantle.util.RecipeMatch;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.List;
 
 @ParametersAreNonnullByDefault
 public class AnvilItemSmashingRecipe implements ISimpleAnvilRecipe {
 	protected RecipeMatch input;
-	private ItemStack result;
+	private List<ItemStack> result;
 	@Nullable
 	protected IBlockState state;
 	@Nullable
 	private Integer fallHeight;
 
-	public AnvilItemSmashingRecipe(RecipeMatch input, ItemStack result, @Nullable IBlockState state,
+	public AnvilItemSmashingRecipe(RecipeMatch input, List<ItemStack> result, @Nullable IBlockState state,
 			@Nullable Integer fallHeight) {
 		this.input = input;
 		this.result = result;
@@ -28,15 +30,15 @@ public class AnvilItemSmashingRecipe implements ISimpleAnvilRecipe {
 		this.fallHeight = fallHeight;
 	}
 
-	public AnvilItemSmashingRecipe(RecipeMatch input, ItemStack result, @Nullable IBlockState state) {
+	public AnvilItemSmashingRecipe(RecipeMatch input, List<ItemStack> result, @Nullable IBlockState state) {
 		this(input, result, state, null);
 	}
 
-	public AnvilItemSmashingRecipe(RecipeMatch input, ItemStack result, @Nullable Integer fallHeight) {
+	public AnvilItemSmashingRecipe(RecipeMatch input, List<ItemStack> result, @Nullable Integer fallHeight) {
 		this(input, result, null, fallHeight);
 	}
 
-	public AnvilItemSmashingRecipe(RecipeMatch input, ItemStack result) {
+	public AnvilItemSmashingRecipe(RecipeMatch input, List<ItemStack> result) {
 		this(input, result, null, null);
 	}
 
@@ -74,7 +76,7 @@ public class AnvilItemSmashingRecipe implements ISimpleAnvilRecipe {
 	}
 
 	@Override
-	public ItemStack getResult() {
+	public List<ItemStack> getResult() {
 		return result;
 	}
 
@@ -85,7 +87,7 @@ public class AnvilItemSmashingRecipe implements ISimpleAnvilRecipe {
 	}
 
 	@Override
-	public NonNullList<ItemStack> transformInput(ItemStack stack, int fallHeight, IBlockState state) {
+	public List<ItemStack> transformInput(ItemStack stack, int fallHeight, IBlockState state) {
 		// assume this recipe matches, otherwise this method shouldn't have been called
 		RecipeMatch.Match match = input.matches(Util.createNonNullList(stack)).get();
 
@@ -99,8 +101,10 @@ public class AnvilItemSmashingRecipe implements ISimpleAnvilRecipe {
 		stack.setCount(remainder);
 
 		// transform the output stack
-		int totalCount = result.getCount() * matchCount;
-		return getItemStacks(result, totalCount);
+		return result.stream().flatMap(itemStack -> {
+			int totalCount = itemStack.getCount() * matchCount;
+			return getItemStacks(itemStack, totalCount);
+		}).collect(Collectors.toList());
 	}
 
 	/**
@@ -110,8 +114,8 @@ public class AnvilItemSmashingRecipe implements ISimpleAnvilRecipe {
 	 * @param totalCount the sum of all item stacks
 	 * @return a list of non empty item stacks whose counts sum up to the given total
 	 */
-	public static NonNullList<ItemStack> getItemStacks(@Nonnull ItemStack template, int totalCount) {
-		NonNullList<ItemStack> outList = NonNullList.create();
+	public static Stream<ItemStack> getItemStacks(@Nonnull ItemStack template, int totalCount) {
+		Stream.Builder<ItemStack> output = Stream.builder();
 
 		// respect max stack size of the template
 		int maxStackSize = template.getMaxStackSize();
@@ -121,10 +125,10 @@ public class AnvilItemSmashingRecipe implements ISimpleAnvilRecipe {
 			ItemStack out = template.copy();
 			int count = Math.min(maxStackSize, remainingStackSize);
 			out.setCount(count);
-			outList.add(out);
+			output.add(out);
 			remainingStackSize -= count;
 		}
-		return outList;
+		return output.build();
 	}
 
 	@Override

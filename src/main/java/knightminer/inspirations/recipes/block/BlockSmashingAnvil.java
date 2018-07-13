@@ -62,7 +62,7 @@ public class BlockSmashingAnvil extends BlockAnvil {
 		}
 
 		// apply the recipe
-		NonNullList<ItemStack> itemStackRemaining = recipe.transformInput(inputStack, fallHeight, state);
+		List<ItemStack> itemStackRemaining = recipe.transformInput(inputStack, fallHeight, state);
 		itemStackRemaining.forEach(itemStack -> {
 			if(!itemStack.isEmpty()) {
 				spawnAsEntity(world, pos, itemStack);

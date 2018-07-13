@@ -29,10 +29,10 @@ public class SmashingRecipeWrapper implements IRecipeWrapper {
 		this.output = ImmutableList.of(output);
 	}
 
-	public SmashingRecipeWrapper(List<ItemStack> inputs, ItemStack output, Integer minFallHeight) {
+	public SmashingRecipeWrapper(List<ItemStack> inputs, List<ItemStack> output, Integer minFallHeight) {
 		this.input = inputs.stream().map(ImmutableList::of).collect(Collectors.toList());
-		this.output = ImmutableList.of(output);
-		this.heightRequirementString = Util.translateFormatted("gui.jei.anvil_smashing.height", minFallHeight);
+		this.output = ImmutableList.copyOf(output);
+		this.heightRequirementString = minFallHeight != null ? Util.translateFormatted("gui.jei.anvil_smashing.height", minFallHeight) : null;
 	}
 
 	@SuppressWarnings("deprecation")

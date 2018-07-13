@@ -18,6 +18,7 @@ import knightminer.inspirations.plugins.jei.cauldron.ingredient.DyeIngredientRen
 import knightminer.inspirations.plugins.jei.cauldron.ingredient.PotionIngredient;
 import knightminer.inspirations.plugins.jei.cauldron.ingredient.PotionIngredientHelper;
 import knightminer.inspirations.plugins.jei.cauldron.ingredient.PotionIngredientRenderer;
+import knightminer.inspirations.plugins.jei.smashing.SmashingItemRecipeCategory;
 import knightminer.inspirations.plugins.jei.smashing.SmashingRecipeCategory;
 import knightminer.inspirations.plugins.jei.smashing.SmashingRecipeChecker;
 import knightminer.inspirations.plugins.jei.texture.TextureRecipeHandler;
@@ -71,6 +72,7 @@ public class JEIPlugin implements IModPlugin {
 			// Anvil
 			if(Config.enableAnvilSmashing) {
 				registry.addRecipeCategories(new SmashingRecipeCategory(guiHelper));
+				registry.addRecipeCategories(new SmashingItemRecipeCategory(guiHelper));
 			}
 			// cauldron
 			if(Config.enableCauldronRecipes) {
@@ -93,6 +95,9 @@ public class JEIPlugin implements IModPlugin {
 			if(Config.enableAnvilSmashing) {
 				registry.addRecipes(SmashingRecipeChecker.getRecipes(), SmashingRecipeCategory.CATEGORY);
 				registry.addRecipeCatalyst(new ItemStack(Blocks.ANVIL), SmashingRecipeCategory.CATEGORY);
+
+				registry.addRecipes(SmashingRecipeChecker.getItemRecipes(), SmashingItemRecipeCategory.CATEGORY);
+				registry.addRecipeCatalyst(new ItemStack(Blocks.ANVIL), SmashingItemRecipeCategory.CATEGORY);
 			}
 			if(Config.enableCauldronRecipes) {
 				registry.addRecipes(CauldronRecipeChecker.getRecipes(), CauldronRecipeCategory.CATEGORY);

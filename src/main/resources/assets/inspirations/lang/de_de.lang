@@ -153,13 +153,14 @@ fluid.inspirations.rabbit_stew=Kaninchenragout
 
 # JEI
 gui.jei.anvil_smashing.title=Amboss-Zerschlagung
+gui.jei.anvil_smashing_items.title=Amboss-Zerschlagung: Gegenstände
 gui.jei.cauldron.title=Kessel
 gui.jei.cauldron.level=%s Flaschen
 gui.jei.cauldron.level.singular=1 Flasche
 gui.jei.cauldron.level.empty=Leer
 gui.jei.cauldron.color=%s gefärbtes Wasser
 gui.jei.cauldron.boiling=Kessel muss über Feuer platziert werden
-
+gui.jei.anvil_smashing.height=Minimale Fallhöhe: %s Blöcke
 
 ############
 #  Tweaks  #

@@ -32,6 +32,12 @@ public class SmashingRecipeChecker {
 			}
 		}
 
+
+		return recipes;
+	}
+
+	public static List<SmashingRecipeWrapper> getItemRecipes() {
+		List<SmashingRecipeWrapper> recipes = new ArrayList<>();
 		// item stacks
 		for(IAnvilRecipe recipe : InspirationsRegistry.getAllAnvilItemSmashingRecipes()) {
 			if(recipe instanceof ISimpleAnvilRecipe) {
@@ -40,7 +46,6 @@ public class SmashingRecipeChecker {
 						simpleRecipe.getFallHeight()));
 			}
 		}
-
 		return recipes;
 	}
 }

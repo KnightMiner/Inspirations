@@ -153,13 +153,14 @@ gui.inspirations.cauldron.color=Color: %s
 
 # JEI
 gui.jei.anvil_smashing.title=Anvil Smashing
+gui.jei.anvil_smashing_items.title=Anvil Smashing: Items
 gui.jei.cauldron.title=Cauldron
 gui.jei.cauldron.level=%s bottles
 gui.jei.cauldron.level.singular=1 bottle
 gui.jei.cauldron.level.empty=Empty
 gui.jei.cauldron.color=%s Dyed Water
 gui.jei.cauldron.boiling=Cauldron must be placed above fire
-gui.jei.anvil_smashing.height=Minimum Fall Height: %s
+gui.jei.anvil_smashing.height=Minimum Fall Height: %s blocks
 
 # WAILA
 options.inspirations.cauldron=Cauldron
