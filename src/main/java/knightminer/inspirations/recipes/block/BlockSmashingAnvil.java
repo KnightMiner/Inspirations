@@ -22,6 +22,8 @@ import java.util.stream.Collectors;
 
 public class BlockSmashingAnvil extends BlockAnvil {
 
+	private static final int MAX_RECIPE_APPLICATIONS = 64;
+
 	public BlockSmashingAnvil() {
 		this.setHardness(5.0F);
 		this.setSoundType(SoundType.ANVIL);
@@ -61,7 +63,8 @@ public class BlockSmashingAnvil extends BlockAnvil {
 		// repeat as long as a recipe matches
 		List<ItemStack> results = new ArrayList<>();
 		boolean recipeApplied = false;
-		while(true) {
+		int iterations = 0;
+		while(iterations++ < MAX_RECIPE_APPLICATIONS) {
 			// find next match
 			IAnvilRecipe recipe = InspirationsRegistry.getAnvilItemSmashingRecipe(inputs, fallHeight, state);
 			if(recipe == null) {
