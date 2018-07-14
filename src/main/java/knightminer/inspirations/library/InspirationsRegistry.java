@@ -364,7 +364,7 @@ public class InspirationsRegistry {
 	 */
 	public static void addAnvilItemSmashingRecipe(ItemStack stack, ItemStackList output, Integer fallHeight,
 			IBlockState inputState) {
-		addAnvilItemSmashingRecipe(new AnvilItemSmashingRecipe(RecipeMatch.of(stack), output, fallHeight, inputState));
+		addAnvilItemSmashingRecipe(new AnvilItemSmashingRecipe(RecipeMatch.of(stack, stack.getCount(), 1), output, fallHeight, inputState));
 	}
 
 	/**
@@ -373,7 +373,7 @@ public class InspirationsRegistry {
 	 * @param outputs      the output items
 	 */
 	public static void addAnvilItemSmashingRecipe(String oreDictInput, ItemStackList outputs) {
-		addAnvilItemSmashingRecipe(oreDictInput, outputs, null, null);
+		addAnvilItemSmashingRecipe(oreDictInput, 1, outputs, null, null);
 	}
 
 	/**
@@ -384,7 +384,7 @@ public class InspirationsRegistry {
 	 */
 	public static void addAnvilItemSmashingRecipe(String oreDictInput, ItemStackList outputs,
 			IBlockState inputState) {
-		addAnvilItemSmashingRecipe(oreDictInput, outputs, null, inputState);
+		addAnvilItemSmashingRecipe(oreDictInput, 1, outputs, null, inputState);
 	}
 
 	/**
@@ -394,20 +394,21 @@ public class InspirationsRegistry {
 	 * @param fallHeight   required minimum fall height
 	 */
 	public static void addAnvilItemSmashingRecipe(String oreDictInput, ItemStackList outputs, Integer fallHeight) {
-		addAnvilItemSmashingRecipe(oreDictInput, outputs, fallHeight, null);
+		addAnvilItemSmashingRecipe(oreDictInput, 1, outputs, fallHeight, null);
 	}
 
 	/**
 	 * Add a new item smashing recipe for the given ore dict input and output.
 	 * @param oreDictInput the ore dict name for the input
+	 * @param inputAmount   number of inputs required
 	 * @param outputs      the output items
 	 * @param fallHeight   required minimum fall height
 	 * @param inputState   required block state for the block the anvil lands on
 	 */
-	public static void addAnvilItemSmashingRecipe(String oreDictInput, ItemStackList outputs, Integer fallHeight,
+	public static void addAnvilItemSmashingRecipe(String oreDictInput, int inputAmount, ItemStackList outputs, Integer fallHeight,
 			IBlockState inputState) {
 		addAnvilItemSmashingRecipe(
-				new AnvilItemSmashingRecipe(RecipeMatch.of(oreDictInput), outputs, fallHeight, inputState));
+				new AnvilItemSmashingRecipe(RecipeMatch.of(oreDictInput, inputAmount, 1), outputs, fallHeight, inputState));
 	}
 
 	/*

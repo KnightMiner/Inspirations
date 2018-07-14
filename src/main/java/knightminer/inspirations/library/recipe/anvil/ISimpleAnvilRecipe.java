@@ -15,7 +15,7 @@ public interface ISimpleAnvilRecipe extends IAnvilRecipe {
 	 *
 	 * @return Recipe inputs
 	 */
-	List<ItemStack> getInput();
+	List<List<ItemStack>> getInput();
 
 	/**
 	 * Gets the result of this recipe for display in JEI

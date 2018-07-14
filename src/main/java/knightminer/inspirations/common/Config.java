@@ -1,5 +1,6 @@
 package knightminer.inspirations.common;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BiConsumer;
@@ -645,9 +646,12 @@ public class Config {
 					.map(inputString -> {
 						if (inputString.contains(":")) {
 							ItemStack itemStack = RecipeUtil.getItemStackWithCountFromString(inputString);
-							return itemStack != null ? RecipeMatch.of(itemStack) : null;
+							return itemStack != null ? RecipeMatch.of(itemStack, itemStack.getCount(), 1) : null;
 						} else {
-							return RecipeMatch.of(inputString);
+							Iterator<String> it = Splitter.on("*").trimResults().split(inputString).iterator();
+							String oreDict = it.next();
+							Integer parsedCount = it.hasNext() ? Util.getInteger(it.next()) : null;
+							return RecipeMatch.of(oreDict, parsedCount != null ? parsedCount : 1, 1);
 						}
 					})
 					.collect(Collectors.toList());

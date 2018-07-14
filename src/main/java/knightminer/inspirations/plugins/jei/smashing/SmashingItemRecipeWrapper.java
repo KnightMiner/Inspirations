@@ -3,21 +3,14 @@ package knightminer.inspirations.plugins.jei.smashing;
 import java.awt.*;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.function.IntPredicate;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.Validate;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.recipe.anvil.ISimpleAnvilRecipe;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IRecipeWrapper;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 
@@ -34,7 +27,7 @@ public class SmashingItemRecipeWrapper implements IRecipeWrapper {
 
 	public SmashingItemRecipeWrapper(ISimpleAnvilRecipe recipe) {
 		this.recipe = recipe;
-		this.input = this.recipe.getInput().stream().map(ImmutableList::of).collect(Collectors.toList());
+		this.input = recipe.getInput();
 		this.output = ImmutableList.copyOf(this.recipe.getResult());
 
 		Optional<Integer> minFallHeight = recipe.getFallHeight();

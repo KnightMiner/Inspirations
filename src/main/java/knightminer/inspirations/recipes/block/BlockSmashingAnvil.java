@@ -16,13 +16,10 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class BlockSmashingAnvil extends BlockAnvil {
-
-	private static final int MAX_RECIPE_APPLICATIONS = 64;
 
 	public BlockSmashingAnvil() {
 		this.setHardness(5.0F);
@@ -60,25 +57,15 @@ public class BlockSmashingAnvil extends BlockAnvil {
 
 		int fallHeight = getFallHeight(world, pos);
 
-		// repeat as long as a recipe matches
-		List<ItemStack> results = new ArrayList<>();
-		boolean recipeApplied = false;
-		int iterations = 0;
-		while(iterations++ < MAX_RECIPE_APPLICATIONS) {
-			// find next match
-			IAnvilRecipe recipe = InspirationsRegistry.getAnvilItemSmashingRecipe(inputs, fallHeight, state);
-			if(recipe == null) {
-				// no more match
-				break;
-			}
-
-			// at least one recipe was applied
-			recipeApplied = true;
-
-			// apply the recipe once
-			List<ItemStack> itemStackRemaining = recipe.getOutputs(inputs, fallHeight, state);
-			results.addAll(itemStackRemaining);
+		// find first match for the inputs
+		IAnvilRecipe recipe = InspirationsRegistry.getAnvilItemSmashingRecipe(inputs, fallHeight, state);
+		if(recipe == null) {
+			// no more match
+			return false;
 		}
+
+		// apply the recipe
+		List<ItemStack> results = recipe.getOutputs(inputs, fallHeight, state);
 
 		// Output the result stacks
 		results.forEach(itemStack -> {
@@ -93,7 +80,7 @@ public class BlockSmashingAnvil extends BlockAnvil {
 				entity.setDead();
 			}
 		});
-		return recipeApplied;
+		return true;
 	}
 
 	/**

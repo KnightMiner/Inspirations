@@ -33,6 +33,10 @@ public class CompositeRecipeMatch extends RecipeMatch {
 		return ImmutableList.copyOf(this.inputs);
 	}
 
+	public List<? extends RecipeMatch> getRecipeMatches() {
+		return recipeMatches;
+	}
+
 	@Override
 	public Optional<Match> matches(NonNullList<ItemStack> stacks) {
 		List<ItemStack> matchedStacks = Lists.newArrayList();

@@ -2,6 +2,8 @@ package knightminer.inspirations.library.recipe.anvil;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
@@ -92,8 +94,26 @@ public class AnvilItemSmashingRecipe implements ISimpleAnvilRecipe {
 	}
 
 	@Override
-	public List<ItemStack> getInput() {
-		return input.getInputs();
+	public List<List<ItemStack>> getInput() {
+		// if the recipe match is a composite all the composed ones must be checked
+		Stream<? extends RecipeMatch> matches = (this.input instanceof CompositeRecipeMatch) ?
+				((CompositeRecipeMatch) this.input).getRecipeMatches().stream() :
+				Stream.of(this.input);
+		return matches.map(match -> {
+			// ore dict will return a list of stacks of size 1, so transform those stacks into stacks with the
+			// actual required size so JEI can show them correctly
+			if(match instanceof RecipeMatch.Oredict) {
+				return match.getInputs().stream().map(itemStack -> {
+					ItemStack copy = itemStack.copy();
+					copy.setCount(match.amountNeeded);
+					return copy;
+				}).collect(Collectors.toList());
+			}
+			else {
+				// no special handling required
+				return match.getInputs();
+			}
+		}).collect(Collectors.toList());
 	}
 
 	@Override
@@ -113,14 +133,19 @@ public class AnvilItemSmashingRecipe implements ISimpleAnvilRecipe {
 
 	@Override
 	public NonNullList<ItemStack> getOutputs(NonNullList<ItemStack> stack, int fallHeight, IBlockState state) {
-		// assume this recipe matches, otherwise this method shouldn't have been called
-		RecipeMatch.Match match = input.matches(stack).get();
+		// collect all results
+		ItemStackList output = ItemStackList.create();
 
-		// remove the matching stacks
-		RecipeMatch.removeMatch(stack, match);
+		// since the recipe match does only apply once the easiest way is to loop until there is no more match found
+		Stream.generate(() -> input.matches(stack).map(match -> {
+			// remove the matching stacks
+			RecipeMatch.removeMatch(stack, match);
 
-		// return the results
-		return result.deepCopy(true);
+			// return the results
+			output.addAll(result.deepCopy(true));
+			return false;
+		}).orElse(true)).findAny();
+		return output;
 	}
 
 	@Override
