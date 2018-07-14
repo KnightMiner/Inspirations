@@ -64,6 +64,9 @@ public class InspirationsOredict {
 		for(EnumDyeColor color : EnumDyeColor.values()) {
 			oredict(InspirationsRecipes.dyedWaterBottle, color.getDyeDamage(), dyeNameFor(color));
 		}
+
+		oredict(InspirationsShared.splashBottle, "bottleSplash");
+		oredict(InspirationsShared.lingeringBottle, "bottleLingering");
 	}
 
 	private static void registerUtility() {

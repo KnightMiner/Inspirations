@@ -45,10 +45,10 @@ public class CauldronRecipeChecker {
 
 		// add visual recipes for filling and emptying potions
 		if(Config.enableCauldronPotions) {
-			makePotionFillRecipes(recipes, Items.POTIONITEM, new ItemStack(Items.GLASS_BOTTLE));
-			makePotionFillRecipes(recipes, Items.SPLASH_POTION, InspirationsShared.splashBottle);
-			makePotionFillRecipes(recipes, Items.LINGERING_POTION, InspirationsShared.lingeringBottle);
-			recipes.add(new PotionFillWrapper(new ItemStack(Items.TIPPED_ARROW, 8), new ItemStack(Items.ARROW, 8), true));
+			makePotionFillRecipes(recipes, Items.POTIONITEM, new ItemStack(Items.GLASS_BOTTLE), null);
+			makePotionFillRecipes(recipes, Items.SPLASH_POTION, InspirationsShared.splashBottle, "bottleSplash");
+			makePotionFillRecipes(recipes, Items.LINGERING_POTION, InspirationsShared.lingeringBottle, "bottleLingering");
+			recipes.add(new PotionWrapper.Fill(new ItemStack(Items.TIPPED_ARROW, 8), new ItemStack(Items.ARROW, 8)));
 		}
 
 		return recipes;
@@ -91,9 +91,13 @@ public class CauldronRecipeChecker {
 		}
 	}
 
-	public static void makePotionFillRecipes(List<ICauldronRecipeWrapper> recipes, Item potionItem, ItemStack bottle) {
+	public static void makePotionFillRecipes(List<ICauldronRecipeWrapper> recipes, Item potionItem, ItemStack bottle, String bottleOre) {
 		ItemStack potion = new ItemStack(potionItem);
-		recipes.add(new PotionFillWrapper(potion, bottle, true));
-		recipes.add(new PotionFillWrapper(potion, bottle, false));
+		if(bottleOre != null) {
+			recipes.add(new PotionWrapper.Fill(potion, bottleOre));
+		} else {
+			recipes.add(new PotionWrapper.Fill(potion, bottle));
+		}
+		recipes.add(new PotionWrapper.Empty(potion, bottle));
 	}
 }
