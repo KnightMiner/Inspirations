@@ -1,5 +1,12 @@
 package knightminer.inspirations.library.util;
 
+import java.util.List;
+
+import com.google.common.base.Splitter;
+
+import knightminer.inspirations.library.Util;
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -50,5 +57,64 @@ public final class RecipeUtil {
 		}
 
 		return new ItemStack(item, 1, meta);
+	}
+
+	/**
+	 * Parse a block state from a string with the format modid:name[:meta]
+	 * @param input input string
+	 * @return the block state or null if none could be found
+	 */
+	public static IBlockState getBlockstateFromString(String input) {
+		List<String> parts = Splitter.on(":").splitToList(input);
+		if(parts.size() < 2 || parts.size() > 3) {
+			return null;
+		}
+
+		// find block
+		String modId = parts.get(0);
+		String itemName = parts.get(1);
+		Block block = GameRegistry.findRegistry(Block.class).getValue(new ResourceLocation(modId, itemName));
+		if(block == null) {
+			return null;
+		}
+
+		// get actual state
+		if(parts.size() == 3) {
+			// parse meta
+			Integer meta = Util.getInteger(parts.get(2));
+			return meta != null && meta >= 0 ? block.getStateFromMeta(meta) : null;
+		} else {
+			// use default state
+			return block.getDefaultState();
+		}
+	}
+
+	/**
+	 * Transform a string with format mod:item[:meta][*count] into an item stack.
+	 * @param input input string
+	 * @return item stack, might be {@link ItemStack#EMPTY} if it cannot be parsed
+	 */
+	public static ItemStack getItemStackWithCountFromString(String input) {
+		// split off the item count
+		String[] parts = input.split("\\*");
+		if(parts.length == 0 || parts.length > 2) {
+			return ItemStack.EMPTY;
+		}
+
+		// transform the item stack part
+		ItemStack stack = RecipeUtil.getItemStackFromString(parts[0], false);
+		if(stack.isEmpty()) {
+			return ItemStack.EMPTY;
+		}
+
+		// if the item count was specified, set it for the item stack
+		if(parts.length > 1) {
+			Integer count = Util.getInteger(parts[1]);
+			if(count == null || count < 0) {
+				return ItemStack.EMPTY;
+			}
+			stack.setCount(count);
+		}
+		return stack;
 	}
 }

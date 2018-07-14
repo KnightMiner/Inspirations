@@ -1,6 +1,7 @@
 package knightminer.inspirations.library.recipe.anvil;
 
 import java.util.List;
+import java.util.Optional;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
@@ -13,29 +14,51 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 public class AnvilItemSmashingRecipe implements ISimpleAnvilRecipe {
-	protected RecipeMatch input;
+	private RecipeMatch input;
 	private ItemStackList result;
-	@Nullable
-	protected IBlockState state;
-	@Nullable
+	private IBlockState state;
 	private Integer fallHeight;
 
-	public AnvilItemSmashingRecipe(RecipeMatch input, ItemStackList result, @Nullable IBlockState state,
-			@Nullable Integer fallHeight) {
+	/**
+	 * Recipe for item smashing
+	 * @param input matcher for the inputs
+	 * @param result list of results
+	 * @param fallHeight required minimum fall height, can be null if there is no requirement
+	 * @param state required input block state, can be null if there is no requirement
+	 */
+	public AnvilItemSmashingRecipe(RecipeMatch input, ItemStackList result, @Nullable Integer fallHeight,
+			@Nullable IBlockState state) {
 		this.input = input;
 		this.result = result;
 		this.state = state;
 		this.fallHeight = fallHeight;
 	}
 
+	/**
+	 * Recipe for item smashing
+	 * @param input matcher for the inputs
+	 * @param result list of results
+	 * @param state required input block state, can be null if there is no requirement
+	 */
 	public AnvilItemSmashingRecipe(RecipeMatch input, ItemStackList result, @Nullable IBlockState state) {
-		this(input, result, state, null);
+		this(input, result, null, state);
 	}
 
+	/**
+	 * Recipe for item smashing
+	 * @param input matcher for the inputs
+	 * @param result list of results
+	 * @param fallHeight required minimum fall height, can be null if there is no requirement
+	 */
 	public AnvilItemSmashingRecipe(RecipeMatch input, ItemStackList result, @Nullable Integer fallHeight) {
-		this(input, result, null, fallHeight);
+		this(input, result, fallHeight, null);
 	}
 
+	/**
+	 * Recipe for item smashing
+	 * @param input matcher for the inputs
+	 * @param result list of results
+	 */
 	public AnvilItemSmashingRecipe(RecipeMatch input, ItemStackList result) {
 		this(input, result, null, null);
 	}
@@ -79,18 +102,17 @@ public class AnvilItemSmashingRecipe implements ISimpleAnvilRecipe {
 	}
 
 	@Override
-	@Nullable
-	public Integer getFallHeight() {
-		return fallHeight;
+	public Optional<Integer> getFallHeight() {
+		return Optional.ofNullable(fallHeight);
 	}
 
 	@Override
-	public Object getInputState() {
-		return this.state;
+	public Optional<IBlockState> getState() {
+		return Optional.ofNullable(this.state);
 	}
 
 	@Override
-	public NonNullList<ItemStack> transformInput(NonNullList<ItemStack> stack, int fallHeight, IBlockState state) {
+	public NonNullList<ItemStack> getOutputs(NonNullList<ItemStack> stack, int fallHeight, IBlockState state) {
 		// assume this recipe matches, otherwise this method shouldn't have been called
 		RecipeMatch.Match match = input.matches(stack).get();
 

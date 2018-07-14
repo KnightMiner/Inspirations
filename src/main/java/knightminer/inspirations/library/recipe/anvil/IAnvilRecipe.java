@@ -10,7 +10,7 @@ import net.minecraft.util.NonNullList;
  * based on the recipe
  * <p>
  * Parameters are considered stateless and generally should not modify the input stack except in the case of
- * transformInput()
+ * getOutputs()
  */
 public interface IAnvilRecipe {
 	/**
@@ -31,5 +31,5 @@ public interface IAnvilRecipe {
 	 * @param state  State of the block the anvil landed on
 	 * @return
 	 */
-	NonNullList<ItemStack> transformInput(NonNullList<ItemStack> stack, int height, IBlockState state);
+	NonNullList<ItemStack> getOutputs(NonNullList<ItemStack> stack, int height, IBlockState state);
 }

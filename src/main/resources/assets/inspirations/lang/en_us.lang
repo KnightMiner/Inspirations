@@ -160,8 +160,8 @@ gui.jei.cauldron.level.singular=1 bottle
 gui.jei.cauldron.level.empty=Empty
 gui.jei.cauldron.color=%s Dyed Water
 gui.jei.cauldron.boiling=Cauldron must be placed above fire
-gui.jei.anvil_smashing.height=Minimum Fall Height: %s blocks
-gui.jei.anvil_smashing.blockstate=Must land on block: %s
+gui.jei.anvil_smashing.height=≥%s
+gui.jei.anvil_smashing.height.text=Minimum fall height
 
 # WAILA
 options.inspirations.cauldron=Cauldron

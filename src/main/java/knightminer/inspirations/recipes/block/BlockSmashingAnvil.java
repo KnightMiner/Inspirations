@@ -76,7 +76,7 @@ public class BlockSmashingAnvil extends BlockAnvil {
 			recipeApplied = true;
 
 			// apply the recipe once
-			List<ItemStack> itemStackRemaining = recipe.transformInput(inputs, fallHeight, state);
+			List<ItemStack> itemStackRemaining = recipe.getOutputs(inputs, fallHeight, state);
 			results.addAll(itemStackRemaining);
 		}
 

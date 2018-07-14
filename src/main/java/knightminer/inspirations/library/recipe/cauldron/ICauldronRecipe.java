@@ -16,7 +16,7 @@ import net.minecraftforge.fluids.FluidStack;
 /**
  * Base interface for all cauldron recipes. Contains all methods required to determine new state, itemstack, and level based on the recipe
  *
- * Parameters are considered stateless and generally should not modify the input stack except in the case of transformInput()
+ * Parameters are considered stateless and generally should not modify the input stack except in the case of getOutputs()
  */
 public interface ICauldronRecipe {
 

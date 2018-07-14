@@ -6,14 +6,13 @@ import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.google.common.base.Splitter;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.InspirationsRegistry;
+import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.recipe.anvil.AnvilItemSmashingRecipe;
 import knightminer.inspirations.library.recipe.anvil.CompositeRecipeMatch;
 import knightminer.inspirations.library.util.RecipeUtil;
@@ -645,7 +644,7 @@ public class Config {
 			List<RecipeMatch> inputStacks = Splitter.on(";").trimResults().splitToList(transformParts[0]).stream()
 					.map(inputString -> {
 						if (inputString.contains(":")) {
-							ItemStack itemStack = parseItemStackWithCount(inputString);
+							ItemStack itemStack = RecipeUtil.getItemStackWithCountFromString(inputString);
 							return itemStack != null ? RecipeMatch.of(itemStack) : null;
 						} else {
 							return RecipeMatch.of(inputString);
@@ -659,7 +658,7 @@ public class Config {
 
 			// output
 			List<ItemStack> outputStack = Splitter.on(";").trimResults().splitToList(transformParts[1]).stream()
-					.map(Config::parseItemStackWithCount).collect(Collectors.toList());
+					.map(RecipeUtil::getItemStackWithCountFromString).collect(Collectors.toList());
 			if(outputStack.isEmpty() || outputStack.stream().map(ItemStack::isEmpty).findAny().orElse(false)) {
 				Inspirations.log
 						.error("Invalid anvil item smashing {}: unable to parse output item stacks {}", transformation,
@@ -676,7 +675,7 @@ public class Config {
 				if(requirementParts.size() > 0) {
 					String heightString = requirementParts.get(0);
 					if(!heightString.isEmpty()) {
-						fallHeight = parseInteger(heightString);
+						fallHeight = Util.getInteger(heightString);
 						if(fallHeight == null) {
 							Inspirations.log
 									.error("Invalid anvil item smashing {}: unable to parse height requirement {}",
@@ -688,7 +687,7 @@ public class Config {
 				// block state
 				if(requirementParts.size() > 1) {
 					String stateString = requirementParts.get(1);
-					state = parseBlockstate(stateString);
+					state = RecipeUtil.getBlockstateFromString(stateString);
 					if(state == null) {
 						Inspirations.log.error("Invalid anvil item smashing {}: unable to parse block state requirement {}", transformation, stateString);
 						continue;
@@ -697,84 +696,9 @@ public class Config {
 			}
 
 			// register
-			InspirationsRegistry.addAnvilItemSmashingRecipe(new AnvilItemSmashingRecipe(CompositeRecipeMatch.ofMatches(inputStacks), ItemStackList.of(outputStack), state, fallHeight));
-		}
-	}
+			InspirationsRegistry.addAnvilItemSmashingRecipe(new AnvilItemSmashingRecipe(CompositeRecipeMatch.ofMatches(inputStacks), ItemStackList.of(outputStack),
 
-	/**
-	 * Parse a block state from a string with the format modid:name[:meta]
-	 * @param input input string
-	 * @return the block state or null if none could be found
-	 */
-	private static IBlockState parseBlockstate(String input) {
-		List<String> parts = Splitter.on(":").splitToList(input);
-		if(parts.size() < 2 || parts.size() > 3) {
-			return null;
-		}
-
-		// find block
-		String modId = parts.get(0);
-		String itemName = parts.get(1);
-		Block block = GameRegistry.findRegistry(Block.class).getValue(new ResourceLocation(modId, itemName));
-		if(block == null) {
-			return null;
-		}
-
-		// get actual state
-		if(parts.size() == 3) {
-			// parse meta
-			Integer meta = parseInteger(parts.get(2));
-			return meta != null && meta >= 0 ? block.getStateFromMeta(meta) : null;
-		} else {
-			// use default state
-			return block.getDefaultState();
-		}
-	}
-
-	/**
-	 * Transform a string with format mod:item[:meta][*count] into an item stack.
-	 * @param input input string
-	 * @return item stack, might be {@link ItemStack#EMPTY} if it cannot be parsed
-	 */
-	private static ItemStack parseItemStackWithCount(String input) {
-		// split off the item count
-		String[] parts = input.split("\\*");
-		if(parts.length == 0 || parts.length > 2) {
-			return ItemStack.EMPTY;
-		}
-
-		// transform the item stack part
-		ItemStack stack = RecipeUtil.getItemStackFromString(parts[0], false);
-		if(stack.isEmpty()) {
-			return ItemStack.EMPTY;
-		}
-
-		// if the item count was specified, set it for the item stack
-		if(parts.length > 1) {
-			Integer count = parseInteger(parts[1]);
-			if(count == null || count < 0) {
-				return ItemStack.EMPTY;
-			}
-			stack.setCount(count);
-		}
-		return stack;
-	}
-
-	/**
-	 * Parse a string to an integer.
-	 * @param value string
-	 * @return the integer or null if it cannot be parsed
-	 */
-	private static Integer parseInteger(String value) {
-		if(null == StringUtils.trimToNull(value)) {
-			return null;
-		}
-
-		try {
-			return Integer.valueOf(value);
-		}
-		catch (NumberFormatException e) {
-			return null;
+					fallHeight, state));
 		}
 	}
 

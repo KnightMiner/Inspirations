@@ -364,7 +364,7 @@ public class InspirationsRegistry {
 	 */
 	public static void addAnvilItemSmashingRecipe(ItemStack stack, ItemStackList output, Integer fallHeight,
 			IBlockState inputState) {
-		addAnvilItemSmashingRecipe(new AnvilItemSmashingRecipe(RecipeMatch.of(stack), output, inputState, fallHeight));
+		addAnvilItemSmashingRecipe(new AnvilItemSmashingRecipe(RecipeMatch.of(stack), output, fallHeight, inputState));
 	}
 
 	/**
@@ -407,7 +407,7 @@ public class InspirationsRegistry {
 	public static void addAnvilItemSmashingRecipe(String oreDictInput, ItemStackList outputs, Integer fallHeight,
 			IBlockState inputState) {
 		addAnvilItemSmashingRecipe(
-				new AnvilItemSmashingRecipe(RecipeMatch.of(oreDictInput), outputs, inputState, fallHeight));
+				new AnvilItemSmashingRecipe(RecipeMatch.of(oreDictInput), outputs, fallHeight, inputState));
 	}
 
 	/*

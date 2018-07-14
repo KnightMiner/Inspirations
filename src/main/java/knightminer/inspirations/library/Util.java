@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -193,5 +194,24 @@ public class Util {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Safely get an integer from a string.
+	 * @param value string
+	 * @return the integer or null if it cannot be parsed
+	 */
+	public static Integer getInteger(String value) {
+		String trimmed = StringUtils.trimToNull(value);
+		if(null == trimmed) {
+			return null;
+		}
+
+		try {
+			return Integer.valueOf(trimmed);
+		}
+		catch (NumberFormatException e) {
+			return null;
+		}
 	}
 }

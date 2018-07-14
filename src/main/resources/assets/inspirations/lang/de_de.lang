@@ -160,8 +160,8 @@ gui.jei.cauldron.level.singular=1 Flasche
 gui.jei.cauldron.level.empty=Leer
 gui.jei.cauldron.color=%s gefärbtes Wasser
 gui.jei.cauldron.boiling=Kessel muss über Feuer platziert werden
-gui.jei.anvil_smashing.height=Minimale Fallhöhe: %s Blöcke
-gui.jei.anvil_smashing.blockstate=Landeblock: %s
+gui.jei.anvil_smashing.height=≥%s
+gui.jei.anvil_smashing.height.text=Minimale Fallhöhe
 
 ############
 #  Tweaks  #
