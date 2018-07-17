@@ -2,26 +2,44 @@
   {
     "name": "WOOD_SLAB",
     "ingredient": {
-      "type": "forge:ore_dict",
-      "ore": "slabWood"
+      "type": "mod_item_list",
+      "ingredients": [
+        {
+          "type": "forge:ore_dict",
+          "ore": "slabWood"
+        },
+        {
+          "modid": "tconstruct",
+          "ingredient": [
+            {
+              "item": "tconstruct:firewood_slab",
+              "data": 0
+            },
+            {
+              "item": "tconstruct:firewood_slab",
+              "data": 1
+            }
+          ]
+        },
+        {
+          "modid": "immersiveengineering",
+          "ingredient": [
+            {
+              "item": "immersiveengineering:treated_wood_slab",
+              "data": 0
+            },
+            {
+              "item": "immersiveengineering:treated_wood_slab",
+              "data": 1
+            },
+            {
+              "item": "immersiveengineering:treated_wood_slab",
+              "data": 2
+            }
+          ]
+        }
+      ]
     }
-  },
-  {
-    "conditions": [{
-      "type": "forge:mod_loaded",
-      "modid": "tconstruct"
-    }],
-    "name": "WOOD_SLAB",
-    "ingredient": [
-      {
-        "type": "forge:ore_dict",
-        "ore": "slabWood"
-      },
-      {
-        "item": "tconstruct:firewood_slab",
-        "data": 0
-      }
-    ]
   },
   {
     "name": "LEAVES",

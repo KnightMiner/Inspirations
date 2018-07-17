@@ -6,5 +6,8 @@
   "conditions": {
     "pulse_loaded": "knightminer.inspirations.common.Config$PulseLoaded",
     "config": "knightminer.inspirations.common.Config$ConfigProperty"
+  },
+  "ingredients": {
+    "mod_item_list": "knightminer.inspirations.library.recipe.ModItemList$Factory"
   }
 }
