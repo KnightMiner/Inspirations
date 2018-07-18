@@ -187,6 +187,9 @@ item.inspirations.bone_crook.name=Bone Crook
 item.inspirations.blaze_crook.name=Blaze Rod Crook
 item.inspirations.wither_crook.name=Withered Bone Crook
 
+item.inspirations.origin_compass.name=Origin Compass
+item.inspirations.north_compass.name=North Compass
+
 ############
 #  Tweaks  #
 ############

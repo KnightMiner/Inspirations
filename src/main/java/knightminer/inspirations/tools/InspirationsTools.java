@@ -8,6 +8,7 @@ import knightminer.inspirations.common.EntityIds;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.shared.InspirationsShared;
+import knightminer.inspirations.tools.client.NorthCompassGetter;
 import knightminer.inspirations.tools.entity.EntityModArrow;
 import knightminer.inspirations.tools.item.ItemCrook;
 import knightminer.inspirations.tools.item.ItemModArrow;
@@ -15,6 +16,7 @@ import knightminer.inspirations.tools.item.ItemRedstoneCharger;
 import knightminer.inspirations.utility.block.BlockRedstoneCharge;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDispenser;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.dispenser.BehaviorProjectileDispense;
 import net.minecraft.dispenser.IBlockSource;
 import net.minecraft.dispenser.IPosition;
@@ -27,6 +29,7 @@ import net.minecraft.item.Item.ToolMaterial;
 import net.minecraft.item.ItemArrow;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -55,6 +58,7 @@ public class InspirationsTools extends PulseBase {
 	public static Item boneCrook;
 	public static Item blazeCrook;
 	public static Item witherCrook;
+	public static Item northCompass;
 
 	// tool materials
 	public static ToolMaterial bone;
@@ -103,6 +107,14 @@ public class InspirationsTools extends PulseBase {
 			if(Config.netherCrooks) {
 				blazeCrook = registerItem(r, new ItemCrook(blaze), "blaze_crook");
 				witherCrook = registerItem(r, new ItemCrook(wither), "wither_crook");
+			}
+		}
+
+		if(Config.enableNorthCompass) {
+			northCompass = registerItem(r, new Item().setCreativeTab(CreativeTabs.TOOLS), "north_compass");
+			northCompass.addPropertyOverride(new ResourceLocation("angle"), new NorthCompassGetter());
+			if(Config.renameVanillaCompass) {
+				Items.COMPASS.setUnlocalizedName(Util.prefix("origin_compass"));
 			}
 		}
 	}

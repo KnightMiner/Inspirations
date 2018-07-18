@@ -174,6 +174,8 @@ public class Config {
 	public static boolean enableRedstoneCharge = true;
 	public static boolean harvestHangingVines = true;
 	public static boolean shearsReclaimMelons = true;
+	public static boolean enableNorthCompass = true;
+	public static boolean renameVanillaCompass = true;
 	// crook
 	public static boolean enableCrook = true;
 	public static boolean separateCrook = true;
@@ -351,6 +353,10 @@ public class Config {
 			configFile.moveProperty("tweaks", "shearsReclaimMelons", "tools.shears");
 			configFile.renameProperty("tools.shears", "shearsReclaimMelons", "reclaimMelons");
 			shearsReclaimMelons = configFile.getBoolean("reclaimMelons", "tools.shears", shearsReclaimMelons, "Breaking a melon block with shears will always return 9 slices");
+
+			// compass
+			enableNorthCompass = configFile.getBoolean("northCompass", "tools", enableNorthCompass, "Enables the north compass: a cheaper compass that always points north. Intended to either allow packs to replace the compass or as an alternative for F3 navigation");
+			renameVanillaCompass = configFile.getBoolean("renameVanilla", "tools.northCompass", renameVanillaCompass, "Renames the vanilla compass to 'origin compass' to help clarify the difference between the two compasses.");
 		}
 
 		// tweaks
@@ -748,6 +754,7 @@ public class Config {
 				case "crook": return separateCrook;
 				case "lock": return enableLock;
 				case "nether_crook": return netherCrooks;
+				case "north_compass": return enableNorthCompass;
 				case "redstone_charge": return enableRedstoneCharge;
 
 				// tweaks
