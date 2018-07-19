@@ -1,0 +1,29 @@
+{
+  "conditions": [
+    {
+      "type": "pulse_loaded",
+      "pulse": "InspirationsTools"
+    },
+    {
+      "type": "config",
+      "prop": "barometer"
+    }
+  ],
+  "result": {
+    "item": "inspirations:barometer"
+  },
+  "pattern": [
+    " W",
+    "BR"
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "W": {
+      "type": "minecraft:item_nbt",
+      "item": "minecraft:potion",
+      "nbt": {"Potion": "minecraft:water"}
+    },
+    "B": {"item": "minecraft:glass_bottle"},
+    "R": {"type": "forge:ore_dict", "ore": "dustRedstone"}
+  }
+}

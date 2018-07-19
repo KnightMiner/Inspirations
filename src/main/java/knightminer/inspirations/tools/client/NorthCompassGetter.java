@@ -36,10 +36,10 @@ public class NorthCompassGetter implements IItemPropertyGetter {
 			return 0;
 		}
 		if(world == null) {
-			world = entity.world;
 			if(entity.world == null) {
 				return 0;
 			}
+			world = entity.world;
 		}
 
 		double angle = MathHelper.positiveModulo(entity.rotationYaw/360, 1);
@@ -47,10 +47,10 @@ public class NorthCompassGetter implements IItemPropertyGetter {
 	}
 
 	@SideOnly(Side.CLIENT)
-	private double wobble(World world, double time) {
+	private double wobble(World world, double angle) {
 		if(world.getTotalWorldTime() != lastUpdateTick) {
 			lastUpdateTick = world.getTotalWorldTime();
-			double d0 = time - rotation;
+			double d0 = angle - rotation;
 			d0 = MathHelper.positiveModulo(d0 + 0.5D, 1.0D) - 0.5D;
 			rota += d0 * 0.1D;
 			rota *= 0.9D;

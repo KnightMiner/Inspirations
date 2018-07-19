@@ -8,6 +8,7 @@ import knightminer.inspirations.common.EntityIds;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.shared.InspirationsShared;
+import knightminer.inspirations.tools.client.BarometerGetter;
 import knightminer.inspirations.tools.client.NorthCompassGetter;
 import knightminer.inspirations.tools.entity.EntityModArrow;
 import knightminer.inspirations.tools.item.ItemCrook;
@@ -59,6 +60,7 @@ public class InspirationsTools extends PulseBase {
 	public static Item blazeCrook;
 	public static Item witherCrook;
 	public static Item northCompass;
+	public static Item barometer;
 
 	// tool materials
 	public static ToolMaterial bone;
@@ -116,6 +118,11 @@ public class InspirationsTools extends PulseBase {
 			if(Config.renameVanillaCompass) {
 				Items.COMPASS.setUnlocalizedName(Util.prefix("origin_compass"));
 			}
+		}
+
+		if(Config.enableBarometer) {
+			barometer = registerItem(r, new Item().setCreativeTab(CreativeTabs.TOOLS), "barometer");
+			barometer.addPropertyOverride(new ResourceLocation("height"), new BarometerGetter());
 		}
 	}
 

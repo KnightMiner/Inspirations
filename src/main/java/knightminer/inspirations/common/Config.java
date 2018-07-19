@@ -176,6 +176,7 @@ public class Config {
 	public static boolean shearsReclaimMelons = true;
 	public static boolean enableNorthCompass = true;
 	public static boolean renameVanillaCompass = true;
+	public static boolean enableBarometer = true;
 	// crook
 	public static boolean enableCrook = true;
 	public static boolean separateCrook = true;
@@ -357,6 +358,9 @@ public class Config {
 			// compass
 			enableNorthCompass = configFile.getBoolean("northCompass", "tools", enableNorthCompass, "Enables the north compass: a cheaper compass that always points north. Intended to either allow packs to replace the compass or as an alternative for F3 navigation");
 			renameVanillaCompass = configFile.getBoolean("renameVanilla", "tools.northCompass", renameVanillaCompass, "Renames the vanilla compass to 'origin compass' to help clarify the difference between the two compasses.");
+
+			// barometer
+			enableBarometer = configFile.getBoolean("barometer", "tools", enableBarometer, "Enables the barometer: a tool to measure the player's height in world.");
 		}
 
 		// tweaks
@@ -751,6 +755,7 @@ public class Config {
 				case "torch_lever": return enableTorchLever;
 
 				// tools
+				case "barometer": return enableBarometer;
 				case "crook": return separateCrook;
 				case "lock": return enableLock;
 				case "nether_crook": return netherCrooks;
