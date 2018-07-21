@@ -119,8 +119,15 @@ public class TweaksEvents {
 	}
 
 	@SubscribeEvent
-	public static void dropHeartroot(HarvestDropsEvent event) {
-		if(!Config.enableHeartbeet || event.getState().getBlock() != Blocks.BEETROOTS) {
+	public static void dropHeartbeet(HarvestDropsEvent event) {
+		if(!Config.enableHeartbeet) {
+			return;
+		}
+
+		// insure its fully grown beetroots
+		IBlockState state = event.getState();
+		Block block = state.getBlock();
+		if(block != Blocks.BEETROOTS || !(block instanceof BlockCrops) || !((BlockCrops)block).isMaxAge(state)) {
 			return;
 		}
 
