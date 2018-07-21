@@ -84,7 +84,6 @@ public class Config {
 	public static boolean pipeUpwards = true;
 
 	// recipes
-	public static boolean dispensersPlaceAnvils = true;
 	// cauldron - extended
 	public static boolean enableCauldronRecipes = true;
 	public static boolean enableExtendedCauldron = true;
@@ -196,10 +195,15 @@ public class Config {
 	public static boolean lilypadBreakFall = true;
 	public static boolean betterCauldronItem = true;
 	public static boolean unstackableRecipeAlts = true;
+	public static boolean dispensersPlaceAnvils = true;
 	// heartbeet
 	public static boolean enableHeartbeet = true;
 	public static boolean brewHeartbeet = true;
 	public static int heartbeetChance = 75;
+	// seeds
+	public static boolean enableMoreSeeds = true;
+	public static boolean addGrassDrops = true;
+	public static boolean nerfCarrotPotatoDrops = true;
 
 	public static String[] flowerOverrides = {
 			"biomesoplenty:flower_0:-1:true",
@@ -402,7 +406,12 @@ public class Config {
 			lilypadBreakFall = configFile.getBoolean("lilypadBreakFall", "tweaks", lilypadBreakFall, "Lily pads prevent fall damage, but break in the process");
 
 			// stackable alternative recipes
-			unstackableRecipeAlts =  configFile.getBoolean("unstackableRecipeAlts", "tweaks", unstackableRecipeAlts, "Adds stackable recipes to some vanilla or Inspriations items that require unstackable items to craft");
+			unstackableRecipeAlts = configFile.getBoolean("unstackableRecipeAlts", "tweaks", unstackableRecipeAlts, "Adds stackable recipes to some vanilla or Inspriations items that require unstackable items to craft");
+
+			// seeds
+			enableMoreSeeds = configFile.getBoolean("moreSeeds", "tweaks", enableMoreSeeds, "Adds seeds for additional vanilla plants, including cactus, sugar cane, carrots, and potatoes.");
+			addGrassDrops = configFile.getBoolean("grassDrops", "tweaks.moreSeeds", addGrassDrops, "Makes carrot and potato seeds drop from grass") && enableMoreSeeds;
+			nerfCarrotPotatoDrops = configFile.getBoolean("nerfCarrotPotatoDrops", "tweaks.moreSeeds", nerfCarrotPotatoDrops, "Makes carrots and potatoes drop their respective seed if not fully grown") && enableMoreSeeds;
 		}
 
 		// compatibility
@@ -763,6 +772,7 @@ public class Config {
 				case "redstone_charge": return enableRedstoneCharge;
 
 				// tweaks
+				case "more_seeds": return enableMoreSeeds;
 				case "unstackable_alts": return unstackableRecipeAlts;
 
 				// recipes

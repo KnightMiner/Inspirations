@@ -1,0 +1,21 @@
+{
+  "conditions": [
+    {
+      "type": "pulse_loaded",
+      "pulse": "InspirationsTweaks"
+    },
+    {
+      "type": "config",
+      "prop": "more_seeds"
+    }
+  ],
+  "type": "forge:ore_shapeless",
+  "result": {
+    "item": "inspirations:sugar_cane_seeds",
+    "count": 4
+  },
+  "ingredients": [
+    { "item": "minecraft:reeds" },
+    { "item": "minecraft:reeds" }
+  ]
+}

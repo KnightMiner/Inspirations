@@ -115,6 +115,11 @@ gui.inspirations.pipe.name=Pipe
 #  Recipes  #
 #############
 
+item.inspirations.cactus_seeds.name=Cactus Seeds
+item.inspirations.carrot_seeds.name=Carrot Seeds
+item.inspirations.potato_seeds.name=Potato Seeds
+item.inspirations.sugar_cane_seeds.name=Sugar Cane Seeds
+
 item.inspirations.materials.splash_bottle.name=Splash Potion Bottle
 item.inspirations.materials.lingering_bottle.name=Lingering Potion Bottle
 item.inspirations.materials.mushrooms.name=Mushrooms
