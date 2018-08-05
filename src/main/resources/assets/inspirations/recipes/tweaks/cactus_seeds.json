@@ -1,0 +1,20 @@
+{
+  "conditions": [
+    {
+      "type": "pulse_loaded",
+      "pulse": "InspirationsTweaks"
+    },
+    {
+      "type": "config",
+      "prop": "more_seeds"
+    }
+  ],
+  "type": "forge:ore_shapeless",
+  "result": {
+    "item": "inspirations:cactus_seeds",
+    "count": 3
+  },
+  "ingredients": [
+    { "item": "minecraft:cactus" }
+  ]
+}

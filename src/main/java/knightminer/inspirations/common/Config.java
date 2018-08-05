@@ -34,6 +34,7 @@ public class Config {
 
 	// general
 	public static boolean showAllVariants = true;
+	public static boolean witherBoneDrop = true;
 
 	// building
 	public static boolean enableRope = true;
@@ -83,7 +84,6 @@ public class Config {
 	public static boolean pipeUpwards = true;
 
 	// recipes
-	public static boolean dispensersPlaceAnvils = true;
 	// cauldron - extended
 	public static boolean enableCauldronRecipes = true;
 	public static boolean enableExtendedCauldron = true;
@@ -173,6 +173,9 @@ public class Config {
 	public static boolean enableRedstoneCharge = true;
 	public static boolean harvestHangingVines = true;
 	public static boolean shearsReclaimMelons = true;
+	public static boolean enableNorthCompass = true;
+	public static boolean renameVanillaCompass = true;
+	public static boolean enableBarometer = true;
 	// crook
 	public static boolean enableCrook = true;
 	public static boolean separateCrook = true;
@@ -191,10 +194,16 @@ public class Config {
 	public static boolean coloredFireworkItems = true;
 	public static boolean lilypadBreakFall = true;
 	public static boolean betterCauldronItem = true;
+	public static boolean unstackableRecipeAlts = true;
+	public static boolean dispensersPlaceAnvils = true;
 	// heartbeet
 	public static boolean enableHeartbeet = true;
 	public static boolean brewHeartbeet = true;
 	public static int heartbeetChance = 75;
+	// seeds
+	public static boolean enableMoreSeeds = true;
+	public static boolean addGrassDrops = true;
+	public static boolean nerfCarrotPotatoDrops = true;
 
 	public static String[] flowerOverrides = {
 			"biomesoplenty:flower_0:-1:true",
@@ -219,48 +228,50 @@ public class Config {
 
 		showAllVariants = configFile.getBoolean("showAllVariants", "general", showAllVariants,
 				"Shows all variants for dynamically textured blocks, like bookshelves. If false just the first will be shown");
+		witherBoneDrop = configFile.getBoolean("witherBoneDrop", "general", witherBoneDrop,
+				"Enables the wither bone drop. Option here in case another mod adds this. Requires either nether crooks or extra potions to be enabled");
 
 		// building
 		{
 			// bookshelves
-			enableBookshelf = configFile.getBoolean("bookshelf", "building", enableBookshelf, "Enables the bookshelf, a decorative block to display books");
-			enableColoredBooks = configFile.getBoolean("coloredBooks", "building.bookshelf", enableColoredBooks, "Enables colored books, basically colored versions of the vanilla book to decorate bookshelves") && enableBookshelf;
+			enableBookshelf = configFile.getBoolean("bookshelf", "building", enableBookshelf, "Enables the bookshelf: a decorative block to display books");
+			enableColoredBooks = configFile.getBoolean("coloredBooks", "building.bookshelf", enableColoredBooks, "Enables colored books: basically colored versions of the vanilla book to decorate bookshelves") && enableBookshelf;
 			bookKeywords = configFile.getStringList("bookKeywords", "building.bookshelf", bookKeywords,
 					"List of keywords for valid books, used to determine valid books in the bookshelf");
 			InspirationsRegistry.setBookKeywords(bookKeywords);
 
 
 			// rope
-			enableRope = configFile.getBoolean("rope", "building", enableRope, "Enables rope, can be climbed like ladders and extended with additional rope");
+			enableRope = configFile.getBoolean("rope", "building", enableRope, "Enables rope: can be climbed like ladders and extended with additional rope");
 
 			// glass door
-			enableGlassDoor = configFile.getBoolean("glassDoor", "building", enableGlassDoor, "Enables glass doors and trapdoors. Basically doors, but made of glass. Not sure what you would expect.");
+			enableGlassDoor = configFile.getBoolean("glassDoor", "building", enableGlassDoor, "Enables glass doors and trapdoors: basically doors, but made of glass. Not sure what you would expect.");
 
 			// mulch
-			enableMulch = configFile.getBoolean("mulch", "building", enableMulch, "Enables mulch, a craftable falling block which supports plants such as flowers");
+			enableMulch = configFile.getBoolean("mulch", "building", enableMulch, "Enables mulch: a craftable falling block which supports plants such as flowers");
 
 			// path
 			enablePath = configFile.getBoolean("path", "building", enablePath, "Enables stone paths: a carpet like decorative block for making decorative paths");
 
 			// flowers
-			enableFlowers = configFile.getBoolean("flowers", "building", enableFlowers, "Enables additional flower from breaking double flowers with shears.");
+			enableFlowers = configFile.getBoolean("flowers", "building", enableFlowers, "Enables additional flowers from breaking double flowers with shears.");
 
 			// enlightenedBush
-			enableEnlightenedBush = configFile.getBoolean("enlightenedBush", "building", enableEnlightenedBush, "Enables enlightned bushes: bushes with lights.");
+			enableEnlightenedBush = configFile.getBoolean("enlightenedBush", "building", enableEnlightenedBush, "Enables enlightened bushes: bushes with lights.");
 		}
 
 		// utility
 		{
-			enableRedstoneBook = configFile.getBoolean("redstoneBook", "utility", enableRedstoneBook, "Enables the trapped book, which will emit redstone power when placed in a bookshelf. Requires bookshelf.") && enableBookshelf;
+			enableRedstoneBook = configFile.getBoolean("redstoneBook", "utility", enableRedstoneBook, "Enables the trapped book: will emit redstone power when placed in a bookshelf. Requires bookshelf.") && enableBookshelf;
 
 			// torch lever
-			enableTorchLever = configFile.getBoolean("torchLever", "utility", enableTorchLever, "Enables the torch lever. Basically a lever which looks like a torch");
+			enableTorchLever = configFile.getBoolean("torchLever", "utility", enableTorchLever, "Enables the torch lever: basically a lever which looks like a torch");
 
 			// lock
 			enableBricksButton = configFile.getBoolean("bricksButton", "utility", enableBricksButton, "Enables button blocks disguised as a full bricks or nether bricks block");
 
 			// redstone barrel
-			enableRedstoneBarrel = configFile.getBoolean("redstoneBarrel", "utility", enableRedstoneBarrel, "Enables the redstone barrel: a block wth gives a configurable comparator output and can be pushed by pistons");
+			enableRedstoneBarrel = configFile.getBoolean("redstoneBarrel", "utility", enableRedstoneBarrel, "Enables the redstone barrel: a block that gives a configurable comparator output and can be pushed by pistons");
 
 			// redstone torch lever
 			enableRedstoneTorchLever = configFile.getBoolean("redstoneTorchLever", "utility", enableRedstoneTorchLever, "Enables the redstone torch lever: a lever that toggles its state when the block it's on gets powered");
@@ -275,7 +286,7 @@ public class Config {
 			enableCollector = configFile.getBoolean("collector", "utility", enableCollector, "Enables the collector: extracts items from inventories or the world similar to a hopper, but can face in all 6 directions and cannot place items in inventories");
 
 			// pipe
-			enablePipe = configFile.getBoolean("pipe", "utility", enablePipe, "EEnables pipes: a more economical hopper that only outputs items, does not pull from inventories. Both cheaper and better for performance.");
+			enablePipe = configFile.getBoolean("pipe", "utility", enablePipe, "Enables pipes: a more economical hopper that only outputs items, does not pull from inventories. Both cheaper and better for performance.");
 			pipeUpwards = configFile.getBoolean("upwards", "utility.pipe", pipeUpwards, "Allows pipes to output upwards. This removes a limitation on not being able to pipe items up without dropper elevators, but should be balanced alongside modded pipes.");
 		}
 
@@ -325,14 +336,14 @@ public class Config {
 		{
 			// redstone charge
 			configFile.moveProperty("utility", "redstoneCharge", "tools");
-			enableRedstoneCharge = configFile.getBoolean("redstoneCharge", "tools", enableRedstoneCharge, "Enables the redstone charge, a quick pulse created with a flint and steel like item");
+			enableRedstoneCharge = configFile.getBoolean("redstoneCharge", "tools", enableRedstoneCharge, "Enables the redstone charge: a quick pulse created with a flint and steel like item");
 
 			// lock
 			configFile.moveProperty("utility", "lock", "tools");
-			enableLock = configFile.getBoolean("lock", "tools", enableLock, "Enables locks and keys, an item allowing you to lock a tile entity to only open for a special named item");
+			enableLock = configFile.getBoolean("lock", "tools", enableLock, "Enables locks and keys: an item allowing you to lock a tile entity to only open for a special named item");
 
 			// crooks
-			String crookType = configFile.getString("crook", "tools", "true", "Enables the crook, a tool to break leaves faster and increase sapling chance. Can be 'true', 'false', or 'simple'. If true, adds a new tool. If simple, functionality will be added to hoes instead.", new String[]{ "false", "simple", "true" });
+			String crookType = configFile.getString("crook", "tools", "true", "Enables the crook: a tool to break leaves faster and increase sapling chance. Can be 'true', 'false', or 'simple'. If true, adds a new tool. If simple, functionality will be added to hoes instead.", new String[]{ "false", "simple", "true" });
 			enableCrook = !crookType.equals("false");
 			separateCrook = crookType.equals("true");
 			hoeCrook = crookType.equals("simple");
@@ -347,6 +358,13 @@ public class Config {
 			configFile.moveProperty("tweaks", "shearsReclaimMelons", "tools.shears");
 			configFile.renameProperty("tools.shears", "shearsReclaimMelons", "reclaimMelons");
 			shearsReclaimMelons = configFile.getBoolean("reclaimMelons", "tools.shears", shearsReclaimMelons, "Breaking a melon block with shears will always return 9 slices");
+
+			// compass
+			enableNorthCompass = configFile.getBoolean("northCompass", "tools", enableNorthCompass, "Enables the north compass: a cheaper compass that always points north. Intended to either allow packs to replace the compass or as an alternative for F3 navigation");
+			renameVanillaCompass = configFile.getBoolean("renameVanilla", "tools.northCompass", renameVanillaCompass, "Renames the vanilla compass to 'origin compass' to help clarify the difference between the two compasses.");
+
+			// barometer
+			enableBarometer = configFile.getBoolean("barometer", "tools", enableBarometer, "Enables the barometer: a tool to measure the player's height in world.");
 		}
 
 		// tweaks
@@ -386,6 +404,14 @@ public class Config {
 
 			// lilypad fall breaking
 			lilypadBreakFall = configFile.getBoolean("lilypadBreakFall", "tweaks", lilypadBreakFall, "Lily pads prevent fall damage, but break in the process");
+
+			// stackable alternative recipes
+			unstackableRecipeAlts = configFile.getBoolean("unstackableRecipeAlts", "tweaks", unstackableRecipeAlts, "Adds stackable recipes to some vanilla or Inspriations items that require unstackable items to craft");
+
+			// seeds
+			enableMoreSeeds = configFile.getBoolean("moreSeeds", "tweaks", enableMoreSeeds, "Adds seeds for additional vanilla plants, including cactus, sugar cane, carrots, and potatoes.");
+			addGrassDrops = configFile.getBoolean("grassDrops", "tweaks.moreSeeds", addGrassDrops, "Makes carrot and potato seeds drop from grass") && enableMoreSeeds;
+			nerfCarrotPotatoDrops = configFile.getBoolean("nerfCarrotPotatoDrops", "tweaks.moreSeeds", nerfCarrotPotatoDrops, "Makes carrots and potatoes drop their respective seed if not fully grown") && enableMoreSeeds;
 		}
 
 		// compatibility
@@ -633,7 +659,7 @@ public class Config {
 			}
 
 			// add recipe
-			boolean boiling = parts.length > 2 ? parts[2].equals("true") : false;
+			Boolean boiling = parts.length > 2 ? parts[2].equals("true") : null;
 			// if the input is empty, we are using an oreString
 			if(input == null) {
 				InspirationsRegistry.addCauldronRecipe(parts[0], output, boiling);
@@ -738,10 +764,16 @@ public class Config {
 				case "torch_lever": return enableTorchLever;
 
 				// tools
+				case "barometer": return enableBarometer;
 				case "crook": return separateCrook;
 				case "lock": return enableLock;
 				case "nether_crook": return netherCrooks;
+				case "north_compass": return enableNorthCompass;
 				case "redstone_charge": return enableRedstoneCharge;
+
+				// tweaks
+				case "more_seeds": return enableMoreSeeds;
+				case "unstackable_alts": return unstackableRecipeAlts;
 
 				// recipes
 				case "cauldron_dyeing": return enableCauldronDyeing;

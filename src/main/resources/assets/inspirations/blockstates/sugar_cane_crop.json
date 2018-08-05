@@ -1,0 +1,14 @@
+{
+  "forge_marker": 1,
+  "variants": {
+    "age": {
+      "0": { "model": "inspirations:sugar_cane/0" },
+      "1": { "model": "inspirations:sugar_cane/1" },
+      "2": { "model": "inspirations:sugar_cane/2" },
+      "3": { "model": "inspirations:sugar_cane/3" },
+      "4": { "model": "inspirations:sugar_cane/4" },
+      "5": { "model": "inspirations:sugar_cane/5" },
+      "6": { "model": "inspirations:sugar_cane/6" }
+    }
+  }
+}

@@ -3,6 +3,7 @@ package knightminer.inspirations.recipes.tileentity;
 import java.util.List;
 import javax.annotation.Nonnull;
 
+import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.Util;
@@ -194,6 +195,7 @@ public class TileCauldron extends TileEntity {
 	}
 
 	private static final String TAG_CAULDRON_CRAFTED = "cauldron_crafted";
+	private static final String TAG_CAULDRON_COOLDOWN = "cauldron_cooldown";
 
 	/**
 	 * Called when an entity collides with the cauldron
@@ -206,49 +208,76 @@ public class TileCauldron extends TileEntity {
 		if(entity instanceof EntityItem) {
 			// skip items that we have already processed
 			EntityItem entityItem = (EntityItem)entity;
-			ItemStack stack = entityItem.getItem();
 			NBTTagCompound entityTags = entity.getEntityData();
-			// if its the same size as the item we tagged before, skip
-			if(entityTags.getInteger(TAG_CAULDRON_CRAFTED) == stack.getCount()) {
+			// if it was tagged, skip it
+			if(entityTags.getBoolean(TAG_CAULDRON_CRAFTED)) {
 				return level;
+			} else {
+				// otherwise, if it has a cooldown, reduce the cooldown
+				int cooldown = entityTags.getInteger(TAG_CAULDRON_COOLDOWN);
+				if(cooldown > 0) {
+					entityTags.setInteger(TAG_CAULDRON_COOLDOWN, cooldown - 1);
+					return level;
+				}
 			}
 
 			// try and find a recipe
 			boolean boiling = currentState.getValue(BlockEnhancedCauldron.BOILING);
+			ItemStack stack = entityItem.getItem();
 			ICauldronRecipe recipe = InspirationsRegistry.getCauldronResult(stack, boiling, level, state);
 			if(recipe != null) {
-				// update properties based on the recipe
-				CauldronState newState = recipe.getState(stack, boiling, level, state);
+				CauldronState state = this.state;
+				int matches = 0;
+				do {
+					// update properties based on the recipe
+					CauldronState newState = recipe.getState(stack, boiling, level, state);
 
-				// update level
-				level = recipe.getLevel(level);
-				if(level == 0) {
-					newState = CauldronState.WATER;
+					// update level
+					level = recipe.getLevel(level);
+					if(level == 0) {
+						newState = CauldronState.WATER;
+					}
+
+					// spawn the new item in the world
+					ItemStack result = recipe.getResult(stack, boiling, level, state);
+					if(!result.isEmpty()) {
+						EntityItem resultEntity = new EntityItem(world, entityItem.posX, entityItem.posY, entityItem.posZ, result);
+						// tag the entity so it does not craft again
+						// prevents something like a water bottle from emptying and filling constantly
+						resultEntity.getEntityData().setBoolean(TAG_CAULDRON_CRAFTED, true);
+						world.spawnEntity(resultEntity);
+					}
+					// update the stack for later
+					stack = recipe.transformInput(stack, boiling, level, state);
+
+					// update the state for the next round
+					state = newState;
+					matches++;
+				} while(recipe.matches(stack, boiling, level, state) && matches < 10);
+
+				// safety check, recipes should never really match more than 4 times, but 10 just in case
+				// basically, they should either be lowering/raising the level (max 4 times), or changing the state (not repeatable)
+				if(matches == 10) {
+					Inspirations.log.warn("Recipe '{}' matched too many times in a single tick. Either the level or the state should change to make it no longer match.", recipe);
 				}
 
-				// spawn the new item in the world
-				ItemStack result = recipe.getResult(stack, boiling, level, state);
-				if(!result.isEmpty()) {
-					EntityItem resultEntity = new EntityItem(world, entityItem.posX, entityItem.posY, entityItem.posZ, result);
-					resultEntity.getEntityData().setInteger(TAG_CAULDRON_CRAFTED, result.getCount());
-					world.spawnEntity(resultEntity);
-				}
-				// and kill the old one, or update its item
-				ItemStack transform = recipe.transformInput(stack, boiling, level, state);
-				if(transform.isEmpty()) {
+				// kill the old item, or update its item
+				if(stack.isEmpty()) {
 					entityItem.setDead();
 				} else {
-					entityItem.setItem(transform);
-					entityTags.setInteger(TAG_CAULDRON_CRAFTED, transform.getCount());
+					entityItem.setItem(stack);
+					entityTags.setBoolean(TAG_CAULDRON_CRAFTED, true);
 				}
 
-				// update the state
-				if(!state.matches(newState)) {
-					state = newState;
+				// if the state changed, update that too
+				if(!state.matches(this.state)) {
+					this.state = state;
 					world.notifyBlockUpdate(pos, currentState, currentState, 2);
 				}
 			} else {
-				entityTags.setInteger(TAG_CAULDRON_CRAFTED, stack.getCount());
+				// set a cooldown to reduce lag, so we are not searching the registry every tick
+				// we do not just set crafted as that would prevent dropping in items one at a time where multiple are required
+				entityTags.setInteger(TAG_CAULDRON_COOLDOWN, 60);
 			}
 
 			// otherwise apply fluid special effects
@@ -273,7 +302,7 @@ public class TileCauldron extends TileEntity {
 					// continue for boiling
 				case DYE:
 					// if the cauldron is boiling, boiling the entity
-					if (InspirationsRegistry.isCauldronFire(world.getBlockState(pos.down()))) {
+					if (currentState.getValue(BlockEnhancedCauldron.BOILING)) {
 						entity.attackEntityFrom(DAMAGE_BOIL, 2.0F);
 					}
 					break;

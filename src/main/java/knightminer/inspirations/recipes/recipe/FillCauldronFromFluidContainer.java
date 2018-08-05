@@ -28,8 +28,8 @@ public enum FillCauldronFromFluidContainer implements ICauldronRecipe {
 	}
 
 	@Override
-	public ItemStack transformInput(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		IFluidHandlerItem handler = FluidUtil.getFluidHandler(stack);
+	public ItemStack getResult(ItemStack stack, boolean boiling, int level, CauldronState state) {
+		IFluidHandlerItem handler = FluidUtil.getFluidHandler(stack.copy());
 		handler.drain(1000, true);
 		return handler.getContainer();
 	}

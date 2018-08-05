@@ -1,0 +1,25 @@
+{
+	"credit": "Made with Blockbench, a free, modern block model editor by JannisX11",
+	"parent": "block/block",
+	"ambientocclusion": false,
+	"textures": {
+		"bottom": "blocks/cactus_bottom",
+		"top": "blocks/cactus_top",
+		"side": "blocks/cactus_side",
+		"particle": "blocks/cactus_side"
+	},
+	"elements": [
+		{
+			"from": [3, 0, 3],
+			"to": [13, 10, 13],
+			"faces": {
+				"north": {"uv": [3, 0, 13, 10], "texture": "#side"},
+				"east": {"uv": [3, 0, 13, 10], "texture": "#side"},
+				"south": {"uv": [3, 0, 13, 10], "texture": "#side"},
+				"west": {"uv": [3, 0, 13, 10], "texture": "#side"},
+				"up": {"uv": [3, 3, 13, 13], "texture": "#top"},
+				"down": {"uv": [3, 3, 13, 13], "texture": "#bottom"}
+			}
+		}
+	]
+}

@@ -21,7 +21,7 @@ public class ItemCrook extends ItemTool {
 	private static final Set<Block> EFFECTIVE_BLOCKS = Collections.emptySet();
 	public ItemCrook(ToolMaterial material) {
 		super(1.5F, -3.0F, material, EFFECTIVE_BLOCKS);
-		this.setMaxDamage((int)(material.getMaxUses() * 1.5));
+		this.setMaxDamage(material.getMaxUses() * 2);
 		this.setHarvestLevel("crook", material.getHarvestLevel());
 	}
 

@@ -227,9 +227,9 @@ public class InspirationsRecipes extends PulseBase {
 		}
 
 		if(Config.enableCauldronPotions) {
-			addPotionBottle(Items.POTIONITEM, new ItemStack(Items.GLASS_BOTTLE));
-			addPotionBottle(Items.SPLASH_POTION, InspirationsShared.splashBottle);
-			addPotionBottle(Items.LINGERING_POTION, InspirationsShared.lingeringBottle);
+			addPotionBottle(Items.POTIONITEM, new ItemStack(Items.GLASS_BOTTLE), null);
+			addPotionBottle(Items.SPLASH_POTION, InspirationsShared.splashBottle, "bottleSplash");
+			addPotionBottle(Items.LINGERING_POTION, InspirationsShared.lingeringBottle, "bottleLingering");
 			InspirationsRegistry.addCauldronRecipe(TippedArrowCauldronRecipe.INSTANCE);
 		}
 
@@ -260,9 +260,13 @@ public class InspirationsRecipes extends PulseBase {
 		}
 	}
 
-	private static void addPotionBottle(Item potion, ItemStack bottle) {
+	private static void addPotionBottle(Item potion, ItemStack bottle, String bottleOre) {
 		InspirationsRegistry.addCauldronRecipe(new FillCauldronFromPotion(potion, bottle));
-		InspirationsRegistry.addCauldronRecipe(new FillPotionFromCauldron(potion, bottle));
+		if(bottleOre != null) {
+			InspirationsRegistry.addCauldronRecipe(new FillPotionFromCauldron(potion, bottleOre));
+		} else {
+			InspirationsRegistry.addCauldronRecipe(new FillPotionFromCauldron(potion, bottle));
+		}
 	}
 
 	private static void addStewRecipes(ItemStack stew, Fluid fluid, ItemStack ingredient) {

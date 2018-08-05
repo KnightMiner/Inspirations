@@ -29,6 +29,8 @@ public class ToolsClientProxy extends ClientProxy {
 		registerItemModel(InspirationsTools.boneCrook);
 		registerItemModel(InspirationsTools.blazeCrook);
 		registerItemModel(InspirationsTools.witherCrook);
+		registerItemModel(InspirationsTools.northCompass);
+		registerItemModel(InspirationsTools.barometer);
 
 		// items
 		for(ArrowType type : ArrowType.values()) {

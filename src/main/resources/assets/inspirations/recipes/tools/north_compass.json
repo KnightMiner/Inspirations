@@ -1,0 +1,25 @@
+{
+  "conditions": [
+    {
+      "type": "pulse_loaded",
+      "pulse": "InspirationsTools"
+    },
+    {
+      "type": "config",
+      "prop": "north_compass"
+    }
+  ],
+  "result": {
+    "item": "inspirations:north_compass"
+  },
+  "pattern": [
+    " I ",
+    "INI",
+    " I "
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "I": {"type": "forge:ore_dict", "ore": "ingotIron"},
+    "N": {"type": "forge:ore_dict", "ore": "nuggetIron"}
+  }
+}

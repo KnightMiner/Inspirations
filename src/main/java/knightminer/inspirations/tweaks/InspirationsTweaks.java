@@ -10,9 +10,13 @@ import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.shared.InspirationsShared;
 import knightminer.inspirations.tweaks.block.BlockBetterFlowerPot;
+import knightminer.inspirations.tweaks.block.BlockCactusCrop;
 import knightminer.inspirations.tweaks.block.BlockFittedCarpet;
+import knightminer.inspirations.tweaks.block.BlockSugarCaneCrop;
+import knightminer.inspirations.tweaks.item.ItemSeed;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAnvil;
+import net.minecraft.block.BlockCrops;
 import net.minecraft.block.BlockDispenser;
 import net.minecraft.block.BlockTallGrass;
 import net.minecraft.block.state.IBlockState;
@@ -23,6 +27,8 @@ import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
 import net.minecraft.init.PotionTypes;
 import net.minecraft.item.EnumDyeColor;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemSeeds;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.potion.PotionEffect;
@@ -33,6 +39,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.EnumPlantType;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.RegistryEvent.Register;
@@ -55,6 +62,14 @@ public class InspirationsTweaks extends PulseBase {
 	// blocks
 	public static Block carpet;
 	public static Block flowerPot;
+	public static BlockCrops cactusCrop;
+	public static BlockCrops sugarCaneCrop;
+
+	// items
+	public static Item potatoSeeds;
+	public static Item carrotSeeds;
+	public static Item sugarCaneSeeds;
+	public static Item cactusSeeds;
 
 	// potions
 	public static PotionType haste;
@@ -91,6 +106,22 @@ public class InspirationsTweaks extends PulseBase {
 		if(Config.betterFlowerPot) {
 			flowerPot = register(r, new BlockBetterFlowerPot(), new ResourceLocation("flower_pot"));
 		}
+		if(Config.enableMoreSeeds) {
+			cactusCrop = register(r, new BlockCactusCrop(), "cactus_crop");
+			sugarCaneCrop = register(r, new BlockSugarCaneCrop(), "sugar_cane_crop");
+		}
+	}
+
+	@SubscribeEvent
+	public void registerItem(Register<Item> event) {
+		IForgeRegistry<Item> r = event.getRegistry();
+
+		if(Config.enableMoreSeeds) {
+			cactusSeeds = registerItem(r, new ItemSeed(InspirationsTweaks.cactusCrop, EnumPlantType.Desert), "cactus_seeds");
+			sugarCaneSeeds = registerItem(r, new ItemSeed(InspirationsTweaks.sugarCaneCrop, EnumPlantType.Beach), "sugar_cane_seeds");
+			carrotSeeds = registerItem(r, new ItemSeeds(Blocks.CARROTS, Blocks.FARMLAND), "carrot_seeds");
+			potatoSeeds = registerItem(r, new ItemSeeds(Blocks.POTATOES, Blocks.FARMLAND), "potato_seeds");
+		}
 	}
 
 	@SubscribeEvent
@@ -118,13 +149,17 @@ public class InspirationsTweaks extends PulseBase {
 
 			decay = register(r, new PotionType(new PotionEffect(MobEffects.WITHER, 600)), "decay");
 			strongDecay = register(r, new PotionType("decay", new PotionEffect(MobEffects.WITHER, 300, 1)), "long_decay");
-
 		}
 	}
 
 	@Subscribe
 	public void init(FMLInitializationEvent event) {
 		proxy.init();
+
+		if(Config.addGrassDrops) {
+			MinecraftForge.addGrassSeed(new ItemStack(InspirationsTweaks.carrotSeeds), 4);
+			MinecraftForge.addGrassSeed(new ItemStack(InspirationsTweaks.potatoSeeds), 3);
+		}
 
 		// brew heartroots into regen potions
 		if(Config.brewHeartbeet) {

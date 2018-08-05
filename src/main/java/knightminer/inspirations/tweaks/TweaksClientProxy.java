@@ -31,6 +31,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityFlowerPot;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.biome.BiomeColorHelper;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
@@ -51,6 +52,11 @@ public class TweaksClientProxy extends ClientProxy {
 				BlockFittedCarpet.NORTHWEST, BlockFittedCarpet.NORTHEAST, BlockFittedCarpet.SOUTHWEST, BlockFittedCarpet.SOUTHEAST
 				));
 		setModelStateMapper(InspirationsTweaks.flowerPot, new FlowerPotStateMapper());
+
+		registerItemModel(InspirationsTweaks.cactusSeeds);
+		registerItemModel(InspirationsTweaks.carrotSeeds);
+		registerItemModel(InspirationsTweaks.potatoSeeds);
+		registerItemModel(InspirationsTweaks.sugarCaneSeeds);
 
 		if(Config.betterCauldronItem) {
 			// if recipes is loaded, pull that model as there is a chance the two are different
@@ -87,6 +93,14 @@ public class TweaksClientProxy extends ClientProxy {
 				return -1;
 			}, Blocks.FLOWER_POT);
 		}
+
+		// coloring on sugar cane crop to match reeds
+		registerBlockColors(colors, (state, world, pos, index) -> {
+			if(world == null || pos == null) {
+				return -1;
+			}
+			return BiomeColorHelper.getGrassColorAtPos(world, pos);
+		}, InspirationsTweaks.sugarCaneCrop);
 	}
 
 	@SubscribeEvent

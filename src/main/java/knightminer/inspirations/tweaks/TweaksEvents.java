@@ -5,6 +5,7 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.shared.InspirationsShared;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBush;
+import net.minecraft.block.BlockCrops;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -118,8 +119,15 @@ public class TweaksEvents {
 	}
 
 	@SubscribeEvent
-	public static void dropHeartroot(HarvestDropsEvent event) {
-		if(!Config.enableHeartbeet || event.getState().getBlock() != Blocks.BEETROOTS) {
+	public static void dropHeartbeet(HarvestDropsEvent event) {
+		if(!Config.enableHeartbeet) {
+			return;
+		}
+
+		// insure its fully grown beetroots
+		IBlockState state = event.getState();
+		Block block = state.getBlock();
+		if(block != Blocks.BEETROOTS || !(block instanceof BlockCrops) || !((BlockCrops)block).isMaxAge(state)) {
 			return;
 		}
 
@@ -150,6 +158,24 @@ public class TweaksEvents {
 					}
 				}
 			}
+	}
+
+	@SubscribeEvent
+	public static void dropCarrotsPotatos(HarvestDropsEvent event) {
+		if(!Config.nerfCarrotPotatoDrops) {
+			return;
+		}
+
+		// validate block and ensure its not max age
+		IBlockState state = event.getState();
+		Block block = state.getBlock();
+		if((block != Blocks.CARROTS && block != Blocks.POTATOES) || !(block instanceof BlockCrops) || ((BlockCrops)block).isMaxAge(state)) {
+			return;
+		}
+
+		// replace the seed with our seed
+		event.getDrops().clear();
+		event.getDrops().add(new ItemStack(block == Blocks.CARROTS ? InspirationsTweaks.carrotSeeds : InspirationsTweaks.potatoSeeds));
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOW)
