@@ -163,7 +163,9 @@ public class InspirationsRecipes extends PulseBase {
 		proxy.init();
 
 		InspirationsRegistry.registerAnvilBreaking(Material.GLASS);
-		registerCauldronRecipes();
+		if(Config.enableCauldronRecipes) {
+			registerCauldronRecipes();
+		}
 	}
 
 	@Subscribe
@@ -174,6 +176,7 @@ public class InspirationsRecipes extends PulseBase {
 	}
 
 	private void registerCauldronRecipes() {
+		InspirationsRegistry.addCauldronRecipe(new FillCauldronRecipe(RecipeMatch.of(Blocks.ICE), FluidRegistry.WATER, InspirationsRegistry.getCauldronMax(), ItemStack.EMPTY, true, SoundEvents.ITEM_BUCKET_EMPTY_LAVA));
 		if(Config.spongeEmptyCauldron) {
 			InspirationsRegistry.addCauldronRecipe(SpongeEmptyCauldron.INSTANCE);
 		}
