@@ -78,6 +78,15 @@ public class Config {
 	public static boolean enableCollector = true;
 	public static boolean enablePipe = true;
 	public static boolean pipeUpwards = true;
+	public static boolean enableDispenserFluidTanks = true;
+	public static String[] fluidContainers = {
+			"ceramics:clay_bucket",
+			"forge:bucketfilled",
+			"minecraft:bucket",
+			"minecraft:water_bucket",
+			"minecraft:milk_bucket",
+			"minecraft:lava_bucket"
+	};
 
 	// recipes
 	// cauldron - extended
@@ -284,6 +293,11 @@ public class Config {
 			// pipe
 			enablePipe = configFile.getBoolean("pipe", "utility", enablePipe, "Enables pipes: a more economical hopper that only outputs items, does not pull from inventories. Both cheaper and better for performance.");
 			pipeUpwards = configFile.getBoolean("upwards", "utility.pipe", pipeUpwards, "Allows pipes to output upwards. This removes a limitation on not being able to pipe items up without dropper elevators, but should be balanced alongside modded pipes.");
+
+			// dispenser fluid containers
+			enableDispenserFluidTanks = configFile.getBoolean("dispenserFluidTanks", "utility", enableDispenserFluidTanks, "Allows dispensers to fill and empty fluid tanks using fluid containers");
+			fluidContainers = configFile.get("utility.dispenserFluidTanks", "containers", fluidContainers,
+					"List of itemstacks that can be used as fluid containers to fill or empty fluid tanks").getStringList();
 		}
 
 		// recipes

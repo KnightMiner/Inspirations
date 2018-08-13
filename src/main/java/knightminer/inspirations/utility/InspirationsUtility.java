@@ -16,9 +16,13 @@ import knightminer.inspirations.utility.block.BlockPipe;
 import knightminer.inspirations.utility.block.BlockRedstoneBarrel;
 import knightminer.inspirations.utility.block.BlockRedstoneTorchLever;
 import knightminer.inspirations.utility.block.BlockTorchLever;
+import knightminer.inspirations.utility.dispenser.DispenseFluidTank;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockDispenser;
+import net.minecraft.init.Items;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -26,6 +30,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.pulsar.pulse.Pulse;
 
@@ -125,11 +130,27 @@ public class InspirationsUtility extends PulseBase {
 	@Subscribe
 	public void init(FMLInitializationEvent event) {
 		proxy.init();
+		registerDispenserBehavior();
 	}
 
 	@Subscribe
 	public void postInit(FMLPostInitializationEvent event) {
 		proxy.postInit();
 		MinecraftForge.EVENT_BUS.register(UtilityEvents.class);
+	}
+
+	private void registerDispenserBehavior() {
+		if(Config.enableDispenserFluidTanks) {
+			for(String container : Config.fluidContainers) {
+				Item item = GameRegistry.findRegistry(Item.class).getValue(new ResourceLocation(container));
+				if(item != null && item != Items.AIR) {
+					registerDispenseTankLogic(item);
+				}
+			}
+		}
+	}
+
+	private static void registerDispenseTankLogic(Item item) {
+		registerDispenserBehavior(item, new DispenseFluidTank(BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.getObject(item)));
 	}
 }
