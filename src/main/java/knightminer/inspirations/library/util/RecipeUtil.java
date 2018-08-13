@@ -31,7 +31,7 @@ public final class RecipeUtil {
 	 */
 	public static boolean isValidItemStack(String string, boolean allowWildcard) {
 		String metaString = allowWildcard ? "(-1|[0-9]+)" : "[0-9]+";
-		return string.matches("^[a-z_.-]+:[a-z_.-]+(:" + metaString + ")?$");
+		return string.matches("^[a-z0-9_.-]+:[a-z0-9_.-]+(:" + metaString + ")?$");
 	}
 
 	/**
