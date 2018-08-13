@@ -219,7 +219,7 @@ public final class ClientUtil {
 			return -1;
 		}
 		ItemBlock item = (ItemBlock) stack.getItem();
-		IBlockState iblockstate = item.getBlock().getStateFromMeta(item.getDamage(stack));
+		IBlockState iblockstate = item.getBlock().getStateFromMeta(item.getMetadata(stack));
 		return mc.getBlockColors().colorMultiplier(iblockstate, world, pos, index);
 	}
 }

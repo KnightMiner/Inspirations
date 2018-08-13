@@ -123,13 +123,13 @@ public final class TextureBlockUtil {
 	public static void addBlocksFromOredict(String oredict, Block block, int meta, NonNullList<ItemStack> list) {
 		for(ItemStack stack : OreDictionary.getOres(oredict, false)) {
 			Block textureBlock = Block.getBlockFromItem(stack.getItem());
-			int textureMeta = stack.getItemDamage();
+			int textureMeta = stack.getMetadata();
 
 			if(textureMeta == OreDictionary.WILDCARD_VALUE) {
 				NonNullList<ItemStack> subBlocks = NonNullList.create();
 				textureBlock.getSubBlocks(CreativeTabs.SEARCH, subBlocks);
 				for(ItemStack subBlock : subBlocks) {
-					list.add(createTexturedStack(block, meta, Block.getBlockFromItem(subBlock.getItem()), subBlock.getItemDamage()));
+					list.add(createTexturedStack(block, meta, Block.getBlockFromItem(subBlock.getItem()), subBlock.getMetadata()));
 					if(!Config.showAllVariants) {
 						return;
 					}
