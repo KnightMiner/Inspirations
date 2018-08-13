@@ -2,6 +2,7 @@ package knightminer.inspirations.recipes.tileentity;
 
 import java.util.List;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.Config;
@@ -12,6 +13,7 @@ import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe.Cauldron
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.recipes.block.BlockEnhancedCauldron;
 import knightminer.inspirations.recipes.block.BlockEnhancedCauldron.CauldronContents;
+import knightminer.inspirations.recipes.tank.CauldronTank;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -32,22 +34,27 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 public class TileCauldron extends TileEntity {
 	public static final DamageSource DAMAGE_BOIL = new DamageSource(Util.prefix("boiling")).setDamageBypassesArmor();
 
 	private CauldronState state;
+	private CauldronTank tank;
 
 	public TileCauldron() {
 		this.state = CauldronState.WATER;
+		this.tank = new CauldronTank(this);
 	}
 
 	@Override
@@ -105,6 +112,21 @@ public class TileCauldron extends TileEntity {
 
 		return -1;
 	}
+
+	public IBlockState writeExtendedBlockState(IExtendedBlockState state) {
+		// just pull the texture right from the fluid
+		if(this.state != CauldronState.WATER && getContentType() == CauldronContents.FLUID) {
+			Fluid fluid = this.state.getFluid();
+			if(fluid != null) {
+				state = state.withProperty(BlockEnhancedCauldron.TEXTURE, fluid.getStill().toString());
+			}
+		}
+
+		return state;
+	}
+
+
+	/* behavior */
 
 	/**
 	 * Method to run cauldron interaction code. Used for both TileCauldron and simple cauldron
@@ -371,16 +393,56 @@ public class TileCauldron extends TileEntity {
 		}
 	}
 
-	public IBlockState writeExtendedBlockState(IExtendedBlockState state) {
-		// just pull the texture right from the fluid
-		if(this.state != CauldronState.WATER && getContentType() == CauldronContents.FLUID) {
-			Fluid fluid = this.state.getFluid();
-			if(fluid != null) {
-				state = state.withProperty(BlockEnhancedCauldron.TEXTURE, fluid.getStill().toString());
+
+	/* fluid tank stuff */
+
+	@Override
+	public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing) {
+		if(capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
+			return true;
+		}
+		return super.hasCapability(capability, facing);
+	}
+
+	@Nonnull
+	@Override
+	public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
+		if(capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
+			return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(tank);
+		}
+		return super.getCapability(capability, facing);
+	}
+
+	public int getFluidLevel() {
+		IBlockState state = world.getBlockState(pos);
+		Block block = state.getBlock();
+		if(block instanceof BlockEnhancedCauldron) {
+			return ((BlockEnhancedCauldron)block).getLevel(state);
+		}
+		return 0;
+	}
+
+	public void setFluidLevel(int levels) {
+		IBlockState state = world.getBlockState(pos);
+		Block block = state.getBlock();
+		if(block instanceof BlockEnhancedCauldron) {
+			if(levels == 0) {
+				this.state = CauldronState.WATER;
+			}
+			((BlockEnhancedCauldron)block).setWaterLevel(world, pos, state, levels);
+		}
+	}
+
+	public void setState(CauldronState newState, boolean doBlockUpdate) {
+		if(!state.matches(newState)) {
+			this.state = newState;
+			if(doBlockUpdate) {
+				IBlockState blockstate = world.getBlockState(pos);
+				world.notifyBlockUpdate(pos, blockstate, blockstate, 2);
+			} else {
+				this.markDirty();
 			}
 		}
-
-		return state;
 	}
 
 
