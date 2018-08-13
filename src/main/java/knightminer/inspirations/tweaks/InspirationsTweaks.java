@@ -169,8 +169,8 @@ public class InspirationsTweaks extends PulseBase {
 		}
 		if(Config.betterFlowerPot) {
 			// add vanilla plants which are not met by the instanceof checks
-			InspirationsRegistry.registerFlower(Blocks.CACTUS, 0, true);
-			InspirationsRegistry.registerFlower(Blocks.TALLGRASS, BlockTallGrass.EnumType.FERN.getMeta(), true);
+			InspirationsRegistry.registerFlower(Blocks.CACTUS, 0, 15);
+			InspirationsRegistry.registerFlower(Blocks.TALLGRASS, BlockTallGrass.EnumType.FERN.getMeta(), 4);
 		}
 		if(Config.brewMissingPotions) {
 			// we need to start by removing a couple vanilla ones which we override

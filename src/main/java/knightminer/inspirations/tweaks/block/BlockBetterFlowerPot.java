@@ -6,18 +6,13 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.util.TextureBlockUtil;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockDeadBush;
 import net.minecraft.block.BlockFlowerPot;
-import net.minecraft.block.BlockMushroom;
-import net.minecraft.block.BlockSapling;
-import net.minecraft.block.BlockTallGrass;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stats.StatList;
 import net.minecraft.tileentity.TileEntity;
@@ -164,24 +159,6 @@ public class BlockBetterFlowerPot extends BlockFlowerPot {
 			return 0;
 		}
 
-		if(stack.getItem() instanceof ItemBlock) {
-			Block block = ((ItemBlock)stack.getItem()).getBlock();
-			if(block == Blocks.CACTUS) {
-				return 15;
-			}
-			if(block instanceof BlockSapling) {
-				return 12;
-			}
-			if(block instanceof BlockDeadBush) {
-				return 10;
-			}
-			if(block instanceof BlockTallGrass) {
-				return 4;
-			}
-			if(block instanceof BlockMushroom) {
-				return 1;
-			}
-		}
-		return 7;
+		return InspirationsRegistry.getFlowerComparatorPower(stack);
 	}
 }

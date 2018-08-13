@@ -21,8 +21,11 @@ import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe.Cauldron
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBush;
 import net.minecraft.block.BlockCrops;
+import net.minecraft.block.BlockDeadBush;
 import net.minecraft.block.BlockDoublePlant;
 import net.minecraft.block.BlockLilyPad;
+import net.minecraft.block.BlockMushroom;
+import net.minecraft.block.BlockSapling;
 import net.minecraft.block.BlockTallGrass;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -130,7 +133,7 @@ public class InspirationsRegistry {
 	/*
 	 * Flowers
 	 */
-	private static Map<ItemMetaKey,Boolean> flowers = new HashMap<>();
+	private static Map<ItemMetaKey,Integer> flowers = new HashMap<>();
 
 	/**
 	 * Checks if the given item stack is a flower
@@ -138,30 +141,63 @@ public class InspirationsRegistry {
 	 * @return  True if its a flower
 	 */
 	public static boolean isFlower(ItemStack stack) {
-		return flowers.computeIfAbsent(new ItemMetaKey(stack), InspirationsRegistry::isFlower);
+		return getFlowerComparatorPower(stack) > 0;
 	}
 
 	/**
-	 * Helper function to check if a stack is a flower, basically to implement vanilla logic, but slightly extended
-	 * @param key  Item meta combination
-	 * @return  True if it is a flower
+	 * Gets the comparator level for a flower
+	 * @param stack  Input flower stack
+	 * @return  Comparator level
 	 */
-	private static boolean isFlower(ItemMetaKey key) {
-		Block block = Block.getBlockFromItem(key.getItem());
-		return block instanceof BlockBush
-				&& !(block instanceof BlockDoublePlant)
-				&& !(block instanceof BlockTallGrass)
-				&& !(block instanceof BlockCrops)
-				&& !(block instanceof BlockLilyPad);
+	public static int getFlowerComparatorPower(ItemStack stack) {
+		return flowers.computeIfAbsent(new ItemMetaKey(stack), (key) -> {
+			Block block = Block.getBlockFromItem(key.getItem());
+
+			// not a flower means 0 override
+			// this handles vanilla logic excluding cactuses and ferns, which are registered directly
+			if(!(block instanceof BlockBush)
+					|| block instanceof BlockDoublePlant
+					|| block instanceof BlockTallGrass
+					|| block instanceof BlockCrops
+					|| block instanceof BlockLilyPad) {
+				return 0;
+			}
+
+			// cactus: 15
+			if(block instanceof BlockSapling) {
+				return 12;
+			}
+			if(block instanceof BlockDeadBush) {
+				return 10;
+			}
+			// fern: 4
+			if(block instanceof BlockMushroom) {
+				return 1;
+			}
+
+			// flowers mostly
+			return 7;
+		});
 	}
 
 	/**
 	 * Registers an override to state a stack is definitely a flower or not a flower, primarily used by the config
 	 * @param stack     ItemStack which is a flower
 	 * @param isFlower  True if its a flower, false if its not a flower
+	 * @deprecated use {@link #registerFlower(ItemStack, int)}
 	 */
+	@Deprecated
 	public static void registerFlower(ItemStack stack, boolean isFlower) {
-		flowers.put(new ItemMetaKey(stack), isFlower);
+		registerFlower(stack, isFlower ? 7 : 0);
+	}
+
+	/**
+	 * Registers an override to state a stack is definitely a flower or not a flower, specifying the power
+	 * @param stack  ItemStack to override
+	 * @param power  Comparator power. Set to 0 blacklist this stack as a flower
+	 */
+	public static void registerFlower(ItemStack stack, int power) {
+		flowers.put(new ItemMetaKey(stack), power);
 	}
 
 	/**
@@ -170,10 +206,21 @@ public class InspirationsRegistry {
 	 * @param meta      Meta which is a flower
 	 * @param isFlower  True if its a flower, false if its not a flower
 	 */
+	@Deprecated
 	public static void registerFlower(Block block, int meta, boolean isFlower) {
+		registerFlower(block, meta, isFlower ? 7 : 0);
+	}
+
+	/**
+	 * Registers an override to state a stack is definitely a flower or not a flower, specifying the power
+	 * @param block  Block to override
+	 * @param meta   Meta to override
+	 * @param power  Comparator power. Set to 0 blacklist this stack as a flower
+	 */
+	public static void registerFlower(Block block, int meta, int power) {
 		Item item = Item.getItemFromBlock(block);
 		if(item != Items.AIR) {
-			flowers.put(new ItemMetaKey(item, meta), isFlower);
+			flowers.put(new ItemMetaKey(item, meta), power);
 		}
 	}
 

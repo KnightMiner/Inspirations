@@ -1,5 +1,6 @@
 package knightminer.inspirations.common;
 
+import java.util.Arrays;
 import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
 
@@ -9,21 +10,16 @@ import com.google.gson.JsonSyntaxException;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.util.RecipeUtil;
-import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.JsonUtils;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.common.config.Property;
 import net.minecraftforge.common.crafting.IConditionFactory;
 import net.minecraftforge.common.crafting.JsonContext;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.oredict.OreDictionary;
-import slimeknights.mantle.client.CreativeTab;
 import slimeknights.mantle.pulsar.config.ForgeCFG;
 
 public class Config {
@@ -206,12 +202,12 @@ public class Config {
 	public static boolean nerfCarrotPotatoDrops = true;
 
 	public static String[] flowerOverrides = {
-			"biomesoplenty:flower_0:-1:true",
-			"biomesoplenty:flower_0:-1:true",
-			"biomesoplenty:mushroom:-1:true",
-			"biomesoplenty:sapling_0:-1:true",
-			"biomesoplenty:sapling_1:-1:true",
-			"biomesoplenty:sapling_2:-1:true"
+			"biomesoplenty:flower_0->7",
+			"biomesoplenty:flower_0->7",
+			"biomesoplenty:mushroom->1",
+			"biomesoplenty:sapling_0->12",
+			"biomesoplenty:sapling_1->12",
+			"biomesoplenty:sapling_2->12"
 	};
 
 	// compatibility
@@ -224,7 +220,7 @@ public class Config {
 	 */
 	@SuppressWarnings("deprecation")
 	public static void preInit(FMLPreInitializationEvent event) {
-		configFile = new Configuration(event.getSuggestedConfigurationFile(), "0.1", false);
+		configFile = new Configuration(event.getSuggestedConfigurationFile(), "0.2", false);
 
 		showAllVariants = configFile.getBoolean("showAllVariants", "general", showAllVariants,
 				"Shows all variants for dynamically textured blocks, like bookshelves. If false just the first will be shown");
@@ -450,9 +446,41 @@ public class Config {
 		processCauldronRecipes(cauldronRecipes);
 
 		// flowers
-		flowerOverrides = configFile.get("tweaks.betterFlowerPot", "flowerOverrides", flowerOverrides,
-				"List of itemstacks to override flower behavior, which defaults to the block being BlockBush. Format is modid:name[:meta[:isFlower]]. Unset meta will default wildcard. Unset isFlower will default true").getStringList();
-		processItemOverrides(betterFlowerPot, flowerOverrides, InspirationsRegistry::registerFlower);
+		Property property = configFile.get("tweaks.betterFlowerPot", "flowerOverrides", flowerOverrides,
+				"List of itemstacks to override default flower behavior, default checks for BlockBush.\n"
+						+ "Format is 'modid:name[:meta]->power'. Unset meta will default wildcard. Power refers to comparator power, non-zero makes it valid for a flower pot. Specific values:\n"
+						+ "* 0 - not flower, blacklists from placing in a flower pot\n* 1 - mushroom\n* 4 - fern\n* 7 - flower\n* 10 - dead bush\n* 12 - sapling\n* 15 - cactus");
+		flowerOverrides = property.getStringList();
+		// if loaded in 0.1, update to 0.2 format
+		if(configFile.getLoadedConfigVersion().equals("0.1")) {
+			flowerOverrides = Arrays.stream(flowerOverrides).map(line -> {
+				String[] parts = line.split(":");
+				switch(parts.length) {
+					// 'modid:name' -> 'modid:name->7
+					case 2:
+						return line + "->7";
+						// 'modid:name:meta' -> 'modid:name:meta->7
+					case 3:
+						// if meta -1, remove as wildcard is just none now
+						if(parts[2].equals("-1")) {
+							return String.format("%s:%s->7", parts[0], parts[1]);
+						}
+						return line + "->7";
+					case 4:
+						// first, determine power
+						String power = "false".equals(parts[3]) ? "0" : "7";
+						// if meta -1, remove as wildcard is just none now
+						if(parts[2].equals("-1")) {
+							return String.format("%s:%s->%s", parts[0], parts[1], power);
+						}
+						return String.format("%s:%s:%s->%s", parts[0], parts[1], parts[2], power);
+				}
+
+				return line;
+			}).toArray(String[]::new);
+			property.set(flowerOverrides);
+		}
+		processFlowerOverrides(flowerOverrides);
 
 		// cauldron fires
 		cauldronFire = configFile.get("recipes.cauldron", "fires", cauldronFire,
@@ -474,10 +502,7 @@ public class Config {
 			return;
 		}
 
-		NonNullList<ItemStack> stacks;
 		String[] parts;
-		ItemStack stack;
-		boolean isBook;
 		// simply look through each entry
 		for(String override : overrides) {
 			// skip blank lines
@@ -496,30 +521,43 @@ public class Config {
 			if(parts.length > 2) {
 				itemString = itemString.substring(0, override.length() - parts[3].length() - 1);
 			}
-			if(!RecipeUtil.isValidItemStack(itemString, true)) {
-				Inspirations.log.error("Invalid override {}: invalid item {}", override, itemString);
-				continue;
-			}
-			stack = RecipeUtil.getItemStackFromString(itemString, true);
-			if(stack.isEmpty()) {
-				Inspirations.log.warn("Unable to find item {} for override", itemString);
-				continue;
-			}
 
 			// finally, parse the isBook boolean. Pretty lazy here, just check if its not the string false
-			isBook = parts.length > 3 ? !"false".equals(parts[3]) : true;
+			boolean isBook = parts.length > 3 ? !"false".equals(parts[3]) : true;
+			RecipeUtil.forStackInString(itemString, stack -> callback.accept(stack, isBook));
+		}
+	}
 
-			// finally, add the entry
-			if(stack.getMetadata() == OreDictionary.WILDCARD_VALUE) {
-				// wildcard iterates through stacks
-				stacks = NonNullList.create();
-				stack.getItem().getSubItems(CreativeTab.SEARCH, stacks);
-				for(ItemStack sub : stacks) {
-					callback.accept(sub, isBook);
-				}
-			} else {
-				callback.accept(stack, isBook);
+	/**
+	 * Processes the flower string array into the registry
+	 * @param overrides  Overrides to process
+	 */
+	private static void processFlowerOverrides(String[] overrides) {
+		if(!Config.betterFlowerPot) {
+			return;
+		}
+		for(String line : overrides) {
+			String[] split = line.split("->");
+			if(split.length != 2) {
+				Inspirations.log.error("Invalid flower pot override, expected format 'modid:name[:meta]->power'");
+				continue;
 			}
+
+			// parse comparator power
+			int power;
+			try {
+				power = Integer.parseInt(split[1]);
+			} catch(NumberFormatException e) {
+				Inspirations.log.error("Invalid flower pot power, must be a valid number");
+				continue;
+			}
+			if(power < 0 || power > 15) {
+				Inspirations.log.error("Invalid flower pot power, must between 0 to 15");
+				continue;
+			}
+
+			// find item
+			RecipeUtil.forStackInString(split[0], stack -> InspirationsRegistry.registerFlower(stack, power));
 		}
 	}
 
@@ -527,88 +565,37 @@ public class Config {
 	 * Parses the anvil smashing array into the registry
 	 * @param transformations  Input array
 	 */
-	@SuppressWarnings("deprecation")
 	private static void processAnvilSmashing(String[] transformations) {
 		if(!enableAnvilSmashing) {
 			return;
 		}
 
-		main:
-			for(String transformation : transformations) {
-				// skip blank lines
-				if("".equals(transformation) || transformation.startsWith("#")) {
-					continue;
-				}
-
-				// first, ensure we have the right number of inputs
-				// it should be 1 for plain old smashing or two for a transformation
-				String[] transformParts = transformation.split("->");
-				if(transformParts.length > 2 || transformParts.length < 1) {
-					Inspirations.log.error("Invalid anvil smashing {}: must be in the format of modid:input[:meta][->modid:output[:meta]]", transformation);
-					continue;
-				}
-
-				// find blockstates for the input and output
-				// loop so I am not doing this twice
-				Block[] blocks = new Block[2];
-				IBlockState[] states = new IBlockState[2];
-				int meta;
-				for(int i = 0; i < transformParts.length; i++) {
-					// split into parts
-					String transformPart = transformParts[i];
-					String[] parts = transformPart.split(":");
-
-					// should have name and ID with optional meta
-					if(parts.length > 3 || parts.length < 2) {
-						Inspirations.log.warn("Invalid anvil smashing {}: invalid parameter length for {}, expected modid:blockid[:meta]",
-								transformation, transformPart);
-						continue main;
-					}
-
-					// try parsing the metadata
-					meta = -1;
-					if(parts.length > 2) {
-						try {
-							meta = Integer.parseInt(parts[2]);
-						} catch(NumberFormatException e) {
-							meta = -1;
-						}
-						// handle invalid numbers and negatives here
-						if(meta < 0) {
-							Inspirations.log.error("Invalid anvil smashing {}: invalid metadata for {}", transformation, transformPart);
-							continue main;
-						}
-					}
-
-					// next, try finding the block
-					blocks[i] = GameRegistry.findRegistry(Block.class).getValue(new ResourceLocation(parts[0], parts[1]));
-					if(blocks[i] == Blocks.AIR) {
-						Inspirations.log.warn("Unable to find block {}:{} for transformation {}", parts[0], parts[1], transformation);
-						continue main;
-					}
-
-					// if we have meta, parse the blockstate
-					if(meta > -1) {
-						states[i] = blocks[i].getStateFromMeta(meta);
-					}
-				}
-				// if the length is 1, this is block breaking, so use air for the output
-				if(transformParts.length == 1) {
-					blocks[1] = Blocks.AIR;
-				}
-
-				// if no result state, just grab the default state. That is all the registry does anyways
-				if(states[1] == null) {
-					states[1] = blocks[1].getDefaultState();
-				}
-
-				// determine whether to use block or blockstate parameter
-				if(states[0] == null) {
-					InspirationsRegistry.registerAnvilSmashing(blocks[0], states[1]);
-				} else {
-					InspirationsRegistry.registerAnvilSmashing(states[0], states[1]);
-				}
+		for(String transformation : transformations) {
+			// skip blank lines
+			if("".equals(transformation) || transformation.startsWith("#")) {
+				continue;
 			}
+
+			// first, ensure we have the right number of inputs
+			// it should be 1 for plain old smashing or two for a transformation
+			String[] transformParts = transformation.split("->");
+			if(transformParts.length > 2 || transformParts.length < 1) {
+				Inspirations.log.error("Invalid anvil smashing {}: must be in the format of modid:input[:meta][->modid:output[:meta]]", transformation);
+				continue;
+			}
+
+			// if the length is 1, this is block breaking, so use air for the output
+			IBlockState output;
+			if(transformParts.length == 1) {
+				output = Blocks.AIR.getDefaultState();
+			} else {
+				output = RecipeUtil.getBlockStateFromString(transformParts[1]);
+			}
+
+			RecipeUtil.forBlockInString(transformParts[0],
+					state -> InspirationsRegistry.registerAnvilSmashing(state, output),
+					block -> InspirationsRegistry.registerAnvilSmashing(block, output));
+		}
 	}
 
 	/**
@@ -635,26 +622,15 @@ public class Config {
 			// input
 			ItemStack input = null;
 			if(parts[0].contains(":")) {
-				if(!RecipeUtil.isValidItemStack(parts[0], true)) {
-					Inspirations.log.error("Invalid cauldron recipe {}: invalid input {}", recipe, parts[0]);
-					continue;
-				}
-
 				input = RecipeUtil.getItemStackFromString(parts[0], true);
 				if(input.isEmpty()) {
-					Inspirations.log.error("Unable to find item {} for recipe {}", parts[0], recipe);
 					continue;
 				}
 			}
 
 			// output
-			if(!RecipeUtil.isValidItemStack(parts[1], false)) {
-				Inspirations.log.error("Invalid cauldron recipe {}: invalid output {}", recipe, parts[1]);
-				continue;
-			}
 			ItemStack output = RecipeUtil.getItemStackFromString(parts[1], false);
 			if(output.isEmpty()) {
-				Inspirations.log.error("Unable to find item {} for recipe {}", parts[0], recipe);
 				continue;
 			}
 
@@ -674,7 +650,6 @@ public class Config {
 	 * Parses the cauldron fire list from the config
 	 * @param fires  List of fire blocks or block states
 	 */
-	@SuppressWarnings("deprecation")
 	private static void processCauldronFire(String[] fires) {
 		if(!enableCauldronRecipes) {
 			return;
@@ -686,39 +661,7 @@ public class Config {
 				continue;
 			}
 
-			// split into parts
-			String[] parts = fire.split(":");
-
-			// should have name and domain with optional meta
-			if(parts.length > 3 || parts.length < 2) {
-				Inspirations.log.warn("Invalid cauldron fire {}: invalid parameter length, expected modid:blockid[:meta]", fire);
-				continue;
-			}
-
-			// find block
-			Block block = GameRegistry.findRegistry(Block.class).getValue(new ResourceLocation(parts[0], parts[1]));
-			if(block == null || block == Blocks.AIR) {
-				Inspirations.log.warn("Unable to find block {}:{} for cauldron fire {}", parts[0], parts[1], fire);
-				continue;
-			}
-
-			// if three parts, we have metadata
-			if(parts.length > 2) {
-				int meta;
-				try {
-					meta = Integer.parseInt(parts[2]);
-				} catch(NumberFormatException e) {
-					meta = -1;
-				}
-				// handle invalid numbers and negatives here
-				if(meta < 0 || meta > 15) {
-					Inspirations.log.error("Invalid cauldron fire {}: invalid metadata", fire);
-					continue;
-				}
-				InspirationsRegistry.registerCauldronFire(block.getStateFromMeta(meta));
-			} else {
-				InspirationsRegistry.registerCauldronFire(block);
-			}
+			RecipeUtil.forBlockInString(fire, InspirationsRegistry::registerCauldronFire, InspirationsRegistry::registerCauldronFire);
 		}
 	}
 
