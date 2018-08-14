@@ -1,9 +1,11 @@
 package knightminer.inspirations.recipes.block;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
 import javax.annotation.Nonnull;
+import com.google.common.collect.Lists;
 
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.InspirationsRegistry;
@@ -27,8 +29,11 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.property.ExtendedBlockState;
@@ -262,6 +267,44 @@ public class BlockEnhancedCauldron extends BlockCauldron implements ITileEntityP
 	@Override
 	public int getMetaFromState(IBlockState state) {
 		return getLevel(state) | (state.getValue(BOILING) ? 8 : 0);
+	}
+
+	/* bounds */
+	public static final AxisAlignedBB[] BOUNDS = {
+			new AxisAlignedBB(0, 0.1875, 0, 1, 1, 1),
+			new AxisAlignedBB(0,     0, 0,     0.25,  0.1875, 0.125),
+			new AxisAlignedBB(0,     0, 0.125, 0.125, 0.1875, 0.25 ),
+			new AxisAlignedBB(0.75,  0, 0,     1,     0.1875, 0.125),
+			new AxisAlignedBB(0.875, 0, 0.125, 1,     0.1875, 0.25 ),
+			new AxisAlignedBB(0,     0, 0.875, 0.25,  0.1875, 1    ),
+			new AxisAlignedBB(0,     0, 0.75,  0.125, 0.1875, 0.875),
+			new AxisAlignedBB(0.75,  0, 0.875, 1,     0.1875, 1    ),
+			new AxisAlignedBB(0.875, 0, 0.75,  1,     0.1875, 0.875)
+	};
+
+	@Deprecated
+	@Override
+	public RayTraceResult collisionRayTrace(IBlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull Vec3d start, @Nonnull Vec3d end) {
+		// basically the same BlockStairs does
+		// Raytrace through all AABBs (plate, legs) and return the nearest one
+		List<RayTraceResult> list = Lists.<RayTraceResult>newArrayList();
+		for(AxisAlignedBB axisalignedbb : BOUNDS) {
+			list.add(rayTrace(pos, start, end, axisalignedbb));
+		}
+
+		RayTraceResult closest = null;
+		double max = 0.0D;
+		for(RayTraceResult raytraceresult : list) {
+			if(raytraceresult != null) {
+				double distance = raytraceresult.hitVec.squareDistanceTo(end);
+				if(distance > max) {
+					closest = raytraceresult;
+					max = distance;
+				}
+			}
+		}
+
+		return closest;
 	}
 
 	public static enum CauldronContents implements IStringSerializable {
