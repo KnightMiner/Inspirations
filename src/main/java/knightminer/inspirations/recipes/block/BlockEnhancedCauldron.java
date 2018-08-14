@@ -222,6 +222,14 @@ public class BlockEnhancedCauldron extends BlockCauldron implements ITileEntityP
 		worldIn.updateComparatorOutputLevel(pos, this);
 	}
 
+	public static int getCauldronLevel(IBlockState state) {
+		Block block = state.getBlock();
+		if(state.getBlock() instanceof BlockEnhancedCauldron) {
+			return ((BlockEnhancedCauldron)block).getLevel(state);
+		}
+		return state.getValue(LEVEL);
+	}
+
 	public int getLevel(IBlockState state) {
 		if(Config.enableBiggerCauldron) {
 			return state.getValue(LEVELS);

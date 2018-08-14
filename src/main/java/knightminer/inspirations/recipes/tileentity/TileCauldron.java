@@ -10,11 +10,11 @@ import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe.CauldronState;
-import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.recipes.block.BlockEnhancedCauldron;
 import knightminer.inspirations.recipes.block.BlockEnhancedCauldron.CauldronContents;
 import knightminer.inspirations.recipes.tank.CauldronTank;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockCauldron;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -155,7 +155,7 @@ public class TileCauldron extends TileEntity {
 		}
 
 		// other properties
-		int level = InspirationsRecipes.cauldron.getLevel(blockState);
+		int level = BlockEnhancedCauldron.getCauldronLevel(blockState);
 
 		// grab recipe
 		ICauldronRecipe recipe = InspirationsRegistry.getCauldronResult(stack, boiling, level, state);
@@ -179,16 +179,15 @@ public class TileCauldron extends TileEntity {
 				// update level
 				int newLevel = recipe.getLevel(level);
 				if(newLevel != level) {
-					InspirationsRecipes.cauldron.setWaterLevel(world, pos, blockState, newLevel);
+					((BlockCauldron)blockState.getBlock()).setWaterLevel(world, pos, blockState, newLevel);
 					if(newLevel == 0) {
 						newState = CauldronState.WATER;
 					}
 				}
 
 				// update the state
-				if(cauldron != null && !state.matches(newState)) {
-					cauldron.state = newState;
-					world.notifyBlockUpdate(pos, blockState, blockState, 2);
+				if(cauldron != null) {
+					cauldron.setState(newState, true);
 				}
 
 				// result
@@ -249,6 +248,13 @@ public class TileCauldron extends TileEntity {
 			ICauldronRecipe recipe = InspirationsRegistry.getCauldronResult(stack, boiling, level, state);
 			if(recipe != null) {
 				CauldronState state = this.state;
+
+				// play sound first, so its not looped
+				SoundEvent sound = recipe.getSound(stack, boiling, level, state);
+				if(sound != null) {
+					world.playSound((EntityPlayer)null, pos, sound, SoundCategory.BLOCKS, recipe.getVolume(sound), 1.0F);
+				}
+
 				int matches = 0;
 				do {
 					// update properties based on the recipe
