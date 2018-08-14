@@ -117,6 +117,23 @@ public class Config {
 	private static String[] cauldronFire = {
 			"minecraft:fire"
 	};
+	// cauldron - fluid containers
+	public static boolean enableCauldronDispenser = true;
+	public static String[] cauldronDispenserRecipes = {
+			"inspirations:dyed_bottle",
+			"inspirations:materials:2",
+			"inspirations:materials:3",
+			"minecraft:beetroot_soup",
+			"minecraft:bowl",
+			"minecraft:glass_bottle",
+			"minecraft:lingering_potion",
+			"minecraft:mushroom_stew",
+			"minecraft:potion",
+			"minecraft:rabbit_stew",
+			"minecraft:splash_potion",
+			"toughasnails:fruit_juice",
+			"toughasnails:purified_water_bottle"
+	};
 	// anvil smashing
 	public static boolean enableAnvilSmashing = true;
 	private static String[] anvilSmashing = {
@@ -340,6 +357,11 @@ public class Config {
 			enableCauldronBrewing = configFile.getBoolean("brewing", "recipes.cauldron.potions", extraBottleRecipes, "Allows cauldrons to perform brewing recipes.") && enableCauldronBrewing;
 			expensiveCauldronBrewing = configFile.getBoolean("brewingExpensive", "recipes.cauldron.potions", expensiveCauldronBrewing, "Caps brewing at 2 potions per ingredient, requiring 2 ingredients for a full cauldron. Makes the brewing stand still useful and balances better against the bigger cauldron.") && enableCauldronBrewing;
 			InspirationsRegistry.setConfig("expensiveCauldronBrewing", expensiveCauldronBrewing);
+
+			// dispensers
+			enableCauldronDispenser = configFile.getBoolean("dispenser", "recipes.cauldron", enableCauldronDispenser, "Allows dispensers to perform some recipes in the cauldron. Intended to be used for recipes to fill and empty fluid containers as droppers can already be used for recipes") && enableCauldronRecipes;
+			cauldronDispenserRecipes = configFile.get("recipes.cauldron.dispenser", "items", cauldronDispenserRecipes,
+					"List of itemstacks that can be used as to perform cauldron recipes in a dispenser").getStringList();
 		}
 
 		// tools

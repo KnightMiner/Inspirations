@@ -1,5 +1,10 @@
 package knightminer.inspirations.recipes;
 
+import java.util.Collection;
+import java.util.Map;
+
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import com.google.common.eventbus.Subscribe;
 
 import knightminer.inspirations.Inspirations;
@@ -12,8 +17,10 @@ import knightminer.inspirations.library.recipe.cauldron.CauldronBrewingRecipe;
 import knightminer.inspirations.library.recipe.cauldron.CauldronDyeRecipe;
 import knightminer.inspirations.library.recipe.cauldron.CauldronFluidRecipe;
 import knightminer.inspirations.library.recipe.cauldron.FillCauldronRecipe;
+import knightminer.inspirations.library.util.RecipeUtil;
 import knightminer.inspirations.recipes.block.BlockEnhancedCauldron;
 import knightminer.inspirations.recipes.block.BlockSmashingAnvil;
+import knightminer.inspirations.recipes.dispenser.DispenseCauldronRecipe;
 import knightminer.inspirations.recipes.item.ItemDyedWaterBottle;
 import knightminer.inspirations.recipes.recipe.ArmorClearRecipe;
 import knightminer.inspirations.recipes.recipe.ArmorDyeingCauldronRecipe;
@@ -32,6 +39,7 @@ import knightminer.inspirations.recipes.tileentity.TileCauldron;
 import knightminer.inspirations.shared.InspirationsShared;
 import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockDispenser;
 import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -166,6 +174,7 @@ public class InspirationsRecipes extends PulseBase {
 		if(Config.enableCauldronRecipes) {
 			registerCauldronRecipes();
 		}
+		registerDispenserBehavior();
 	}
 
 	@Subscribe
@@ -294,5 +303,30 @@ public class InspirationsRecipes extends PulseBase {
 				}
 			}
 		}
+	}
+
+	private void registerDispenserBehavior() {
+		if(Config.enableCauldronDispenser) {
+			Multimap<Item,Integer> map = HashMultimap.create();
+			for(String line : Config.cauldronDispenserRecipes) {
+				ItemStack stack = RecipeUtil.getItemStackFromString(line, true);
+				map.put(stack.getItem(), stack.getMetadata());
+			}
+			for(Map.Entry<Item,Collection<Integer>> entry : map.asMap().entrySet()) {
+				registerDispenseCauldronLogic(entry.getKey(), toArray(entry.getValue()));
+			}
+		}
+	}
+
+	private static int[] toArray(Collection<Integer> list) {
+		// if there is a wildcard, return an empty list to signify all meta
+		if(list.contains(OreDictionary.WILDCARD_VALUE)) {
+			return new int[0];
+		}
+		return list.stream().mapToInt(i->i).toArray();
+	}
+
+	private static void registerDispenseCauldronLogic(Item item, int[] meta) {
+		registerDispenserBehavior(item, new DispenseCauldronRecipe(BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.getObject(item), meta));
 	}
 }
