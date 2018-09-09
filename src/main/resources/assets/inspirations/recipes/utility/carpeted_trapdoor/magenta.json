@@ -21,6 +21,6 @@
   ],
   "key": {
     "C": { "item": "minecraft:carpet", "data": 2 },
-    "T": { "item": "minecraft:trapdoor" }
+    "T": { "item": "#TRAPDOOR" }
   }
 }

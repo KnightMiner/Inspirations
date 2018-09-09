@@ -47,5 +47,12 @@
       "type": "forge:ore_dict",
       "ore": "treeLeaves"
     }
+  },
+  {
+    "name": "TRAPDOOR",
+    "ingredient": {
+      "type": "forge:ore_dict",
+      "ore": "trapdoorWood"
+    }
   }
 ]

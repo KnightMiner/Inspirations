@@ -8,6 +8,7 @@ import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
@@ -49,6 +50,7 @@ public class InspirationsOredict {
 
 	private void ensureVanilla() {
 		oredict(Items.BOOK, "book");
+		oredict(Blocks.TRAPDOOR, "trapdoorWood");
 	}
 
 	private void registerShared() {
