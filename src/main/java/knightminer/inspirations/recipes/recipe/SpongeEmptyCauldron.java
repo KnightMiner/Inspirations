@@ -19,7 +19,7 @@ public class SpongeEmptyCauldron extends CauldronFluidRecipe {
 	}
 
 	@Override
-	protected boolean stateMatches(CauldronState state) {
+	protected boolean matches(CauldronState state) {
 		// matches water, dye, or potions
 		return state.isWater() || state.getColor() > -1 || state.getPotion() != null;
 	}

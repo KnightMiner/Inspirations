@@ -3,7 +3,6 @@ package knightminer.inspirations.library.recipe.cauldron;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import knightminer.inspirations.library.InspirationsRegistry;
-import knightminer.inspirations.library.Util;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundEvent;
@@ -72,7 +71,7 @@ public class FillCauldronRecipe extends CauldronFluidRecipe {
 			return false;
 		}
 
-		return this.input.matches(Util.createNonNullList(stack)).isPresent();
+		return matches(stack);
 	}
 
 	@Override
