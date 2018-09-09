@@ -90,6 +90,11 @@ public class FillCauldronRecipe extends CauldronFluidRecipe {
 	}
 
 	@Override
+	public ItemStack getContainer(ItemStack stack) {
+		return ItemStack.EMPTY;
+	}
+
+	@Override
 	public String toString() {
 		return String.format("FillCauldronRecipe: filling with %s", fluid.getFluid().getName());
 	}

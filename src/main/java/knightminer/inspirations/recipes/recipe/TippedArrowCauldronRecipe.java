@@ -30,4 +30,8 @@ public enum TippedArrowCauldronRecipe implements ICauldronRecipe {
 		return level - 1;
 	}
 
+	@Override
+	public ItemStack getContainer(ItemStack stack) {
+		return ItemStack.EMPTY;
+	}
 }

@@ -22,7 +22,7 @@ public interface ICauldronRecipe {
 
 	/**
 	 * Checks if the recipe matches the given input
-	 * @param stack    Input stack
+	 * @param stack    Input stack, should not be modified
 	 * @param boiling  Whether the cauldron is above fire
 	 * @param level    Input level
 	 * @param state    Input cauldron state
@@ -32,7 +32,7 @@ public interface ICauldronRecipe {
 
 	/**
 	 * Gets the result stack for this recipe
-	 * @param stack    Input stack
+	 * @param stack    Input stack, should not be modified
 	 * @param boiling  Whether the cauldron is above fire
 	 * @param level    Input level
 	 * @param state    Input cauldron state
@@ -44,11 +44,11 @@ public interface ICauldronRecipe {
 
 	/**
 	 * Transforms the input itemstack for the recipe. Default implementation shrinks the input stack by 1
-	 * @param stack    Input stack to transform
+	 * @param stack    Input stack to transform, may be modified
 	 * @param boiling  Whether the cauldron is above fire
 	 * @param level    Input level
 	 * @param state    Input cauldron state
-	 * @return
+	 * @return  Resulting stack, does not need to be the input stack
 	 */
 	default ItemStack transformInput(ItemStack stack, boolean boiling, int level, CauldronState state) {
 		stack.shrink(1);
@@ -66,7 +66,7 @@ public interface ICauldronRecipe {
 
 	/**
 	 * Gets the resulting cauldron state for this recipe
-	 * @param stack    Input stack
+	 * @param stack    Input stack, should not be modified
 	 * @param boiling  Whether the cauldron is above fire
 	 * @param level    Input level
 	 * @param state    Input cauldron state
@@ -78,6 +78,10 @@ public interface ICauldronRecipe {
 
 	/**
 	 * Gets the sound to play when performing this recipe
+	 * @param stack    Input stack, should not be modified
+	 * @param boiling  Whether the cauldron is above fire
+	 * @param level    Input level
+	 * @param state    Input cauldron state
 	 * @return  Sound event
 	 */
 	default SoundEvent getSound(ItemStack stack, boolean boiling, int level, CauldronState state) {
@@ -90,6 +94,15 @@ public interface ICauldronRecipe {
 	 */
 	default float getVolume(SoundEvent sound) {
 		return sound == SoundEvents.ENTITY_BOBBER_SPLASH ? 0.3f : 1.0f;
+	}
+
+	/**
+	 * Returns the container item for this recipe. May be ItemStack.EMPTY if the container is handled elsewhere
+	 * @param stack  Input stack, should not be modified
+	 * @return  Container stack or empty for no container
+	 */
+	default ItemStack getContainer(ItemStack stack) {
+		return stack.getItem().getContainerItem(stack).copy();
 	}
 
 

@@ -61,4 +61,9 @@ public class FillCauldronFromPotion implements ICauldronRecipe {
 
 		return SoundEvents.ITEM_BOTTLE_EMPTY;
 	}
+
+	@Override
+	public ItemStack getContainer(ItemStack stack) {
+		return ItemStack.EMPTY;
+	}
 }

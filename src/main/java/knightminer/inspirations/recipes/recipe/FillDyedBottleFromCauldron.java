@@ -29,5 +29,10 @@ public enum FillDyedBottleFromCauldron implements ICauldronRecipe {
 	public SoundEvent getSound(ItemStack stack, boolean boiling, int level, CauldronState state) {
 		return SoundEvents.ITEM_BOTTLE_FILL;
 	}
+	
+	@Override
+	public ItemStack getContainer(ItemStack stack) {
+		return ItemStack.EMPTY;
+	}
 }
 

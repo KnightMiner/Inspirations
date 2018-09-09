@@ -28,4 +28,9 @@ public class SpongeEmptyCauldron extends CauldronFluidRecipe {
 	public int getLevel(int level) {
 		return 0;
 	}
+
+	@Override
+	public ItemStack getContainer(ItemStack stack) {
+		return ItemStack.EMPTY;
+	}
 }

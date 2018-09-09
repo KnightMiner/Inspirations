@@ -111,16 +111,36 @@ public class DispenseCauldronRecipe extends BehaviorDefaultDispenseItem {
 
 		// result
 		ItemStack result = recipe.getResult(stack, boiling, level, cauldronState);
-		ItemStack remainder = recipe.transformInput(stack, boiling, level, cauldronState);
+		ItemStack container = recipe.getContainer(stack);
+		int oldSize = stack.getCount();
+		ItemStack remainder = recipe.transformInput(stack.copy(), boiling, level, cauldronState);
 
+		// if there is no remainder, return will be different
 		if(remainder.isEmpty()) {
-			return result;
+			// no container means return is result
+			if(container.isEmpty()) {
+				return result;
+			}
+
+			// otherwise update the container and its our return
+			container.setCount(container.getCount() * oldSize);
+			dispenseItem(source, result);
+			return container;
 		}
 
-		if(((TileEntityDispenser)source.getBlockTileEntity()).addItemStack(result) < 0) {
-			DEFAULT.dispense(source, result);
+		// we at least have a remainder, so dispense the item and container
+		dispenseItem(source, result);
+		if(!container.isEmpty()) {
+			container.setCount(container.getCount() * (oldSize - remainder.getCount()));
+			dispenseItem(source, container);
 		}
 
 		return remainder;
+	}
+
+	private static void dispenseItem(IBlockSource source, ItemStack stack) {
+		if(((TileEntityDispenser)source.getBlockTileEntity()).addItemStack(stack) < 0) {
+			DEFAULT.dispense(source, stack);
+		}
 	}
 }

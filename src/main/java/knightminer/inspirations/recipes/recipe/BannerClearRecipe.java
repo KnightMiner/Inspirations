@@ -25,4 +25,9 @@ public enum BannerClearRecipe implements ICauldronRecipe {
 	public int getLevel(int level) {
 		return level - 1;
 	}
+
+	@Override
+	public ItemStack getContainer(ItemStack stack) {
+		return ItemStack.EMPTY;
+	}
 }

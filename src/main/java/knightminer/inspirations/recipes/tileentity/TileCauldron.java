@@ -194,7 +194,25 @@ public class TileCauldron extends TileEntity {
 				ItemStack result = recipe.getResult(stack, boiling, level, state);
 				// update held item
 				if(!player.capabilities.isCreativeMode) {
-					player.setHeldItem(hand, recipe.transformInput(stack, boiling, level, state));
+					ItemStack container = recipe.getContainer(stack);
+					int original = stack.getCount();
+
+					// transform input
+					ItemStack transform = recipe.transformInput(stack, boiling, level, state);
+					// if nothing left, set container to main hand
+					if(transform.isEmpty()) {
+						if(!container.isEmpty()) {
+							container.setCount(container.getCount() * original);
+							player.setHeldItem(hand, container);
+						}
+					} else {
+						// else give container to player
+						player.setHeldItem(hand, transform);
+						if(!container.isEmpty()) {
+							container.setCount(container.getCount() * (original - transform.getCount()));
+							ItemHandlerHelper.giveItemToPlayer(player, container, player.inventory.currentItem);
+						}
+					}
 				}
 				// and give the new item to the player
 				if(!result.isEmpty()) {
@@ -256,6 +274,7 @@ public class TileCauldron extends TileEntity {
 				}
 
 				int matches = 0;
+				int oldCount;
 				do {
 					// update properties based on the recipe
 					CauldronState newState = recipe.getState(stack, boiling, level, state);
@@ -269,14 +288,21 @@ public class TileCauldron extends TileEntity {
 					// spawn the new item in the world
 					ItemStack result = recipe.getResult(stack, boiling, level, state);
 					if(!result.isEmpty()) {
-						EntityItem resultEntity = new EntityItem(world, entityItem.posX, entityItem.posY, entityItem.posZ, result);
-						// tag the entity so it does not craft again
-						// prevents something like a water bottle from emptying and filling constantly
-						resultEntity.getEntityData().setBoolean(TAG_CAULDRON_CRAFTED, true);
-						world.spawnEntity(resultEntity);
+						spawnItem(result, entityItem);
 					}
+
+					// grab container data
+					ItemStack container = recipe.getContainer(stack);
+					oldCount = stack.getCount();
+
 					// update the stack for later
 					stack = recipe.transformInput(stack, boiling, level, state);
+
+					// add container
+					if (!container.isEmpty()) {
+						container.setCount(container.getCount() * (oldCount - stack.getCount()));
+						spawnItem(container, entityItem);
+					}
 
 					// update the state for the next round
 					state = newState;
@@ -355,6 +381,15 @@ public class TileCauldron extends TileEntity {
 			}
 		}
 		return level;
+	}
+
+	private void spawnItem(ItemStack stack, EntityItem base) {
+		EntityItem entityItem = new EntityItem(world, base.posX, base.posY, base.posZ, stack);
+
+		// tag the entity so it does not craft again
+		// prevents something like a water bottle from emptying and filling constantly
+		entityItem.getEntityData().setBoolean(TAG_CAULDRON_CRAFTED, true);
+		world.spawnEntity(entityItem);
 	}
 
 	/**
