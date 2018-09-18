@@ -33,7 +33,7 @@ item.inspirations.glass_door.name=Glastür
 
 tile.inspirations.path.rocks.name=Pflasterpfad
 tile.inspirations.path.tiles.name=Pfadkacheln
-tile.inspirations.path.round.name=Runderpfad
+tile.inspirations.path.round.name=Rundpfad
 tile.inspirations.path.bricks.name=Ziegelpfad
 
 tile.inspirations.flower.rose.name=Rose
@@ -88,22 +88,89 @@ inspirations.unlock.success=Behälter aufgeschlossen
 inspirations.unlock.fail.no_match=Dieser Schlüssel passt nicht ins Schloss
 inspirations.unlock.fail.unlocked=Der Behälter ist nicht abgeschlossen
 
-tile.inspirations.carpeted_trapdoor_white.name=Weiße Teppich-Falltür
-tile.inspirations.carpeted_trapdoor_orange.name=Orange Teppich-Falltür
-tile.inspirations.carpeted_trapdoor_magenta.name=Magenta Teppich-Falltür
-tile.inspirations.carpeted_trapdoor_light_blue.name=Hellblaue Teppich-Falltür
-tile.inspirations.carpeted_trapdoor_yellow.name=Gelbe Teppich-Falltür
-tile.inspirations.carpeted_trapdoor_lime.name=Hellgrüne Teppich-Falltür
-tile.inspirations.carpeted_trapdoor_pink.name=Rosa Teppich-Falltür
-tile.inspirations.carpeted_trapdoor_gray.name=Graue Teppich-Falltür
-tile.inspirations.carpeted_trapdoor_silver.name=Hellgraue Teppich-Falltür
-tile.inspirations.carpeted_trapdoor_cyan.name=Türkise Teppich-Falltür
-tile.inspirations.carpeted_trapdoor_purple.name=Violette Teppich-Falltür
-tile.inspirations.carpeted_trapdoor_blue.name=Blaue Teppich-Falltür
-tile.inspirations.carpeted_trapdoor_brown.name=Braune Teppich-Falltür
-tile.inspirations.carpeted_trapdoor_green.name=Grüne Teppich-Falltür
-tile.inspirations.carpeted_trapdoor_red.name=Rote Teppich-Falltür
-tile.inspirations.carpeted_trapdoor_black.name=Schwarze Teppich-Falltür
+tile.inspirations.carpeted_trapdoor_white.name=Weiße Teppichfalltür
+tile.inspirations.carpeted_trapdoor_orange.name=Orange Teppichfalltür
+tile.inspirations.carpeted_trapdoor_magenta.name=Magenta Teppichfalltür
+tile.inspirations.carpeted_trapdoor_light_blue.name=Hellblaue Teppichfalltür
+tile.inspirations.carpeted_trapdoor_yellow.name=Gelbe Teppichfalltür
+tile.inspirations.carpeted_trapdoor_lime.name=Hellgrüne Teppichfalltür
+tile.inspirations.carpeted_trapdoor_pink.name=Rosa Teppichfalltür
+tile.inspirations.carpeted_trapdoor_gray.name=Graue Teppichfalltür
+tile.inspirations.carpeted_trapdoor_silver.name=Hellgraue Teppichfalltür
+tile.inspirations.carpeted_trapdoor_cyan.name=Türkise Teppichfalltür
+tile.inspirations.carpeted_trapdoor_purple.name=Violette Teppichfalltür
+tile.inspirations.carpeted_trapdoor_blue.name=Blaue Teppichfalltür
+tile.inspirations.carpeted_trapdoor_brown.name=Braune Teppichfalltür
+tile.inspirations.carpeted_trapdoor_green.name=Grüne Teppichfalltür
+tile.inspirations.carpeted_trapdoor_red.name=Rote Teppichfalltür
+tile.inspirations.carpeted_trapdoor_black.name=Schwarze Teppichfalltür
+
+tile.inspirations.collector.name=Sammler
+gui.inspirations.collector.name=Sammler
+
+tile.inspirations.pipe.name=Röhre
+gui.inspirations.pipe.name=Röhre
+
+#############
+#  Recipes  #
+#############
+
+item.inspirations.cactus_seeds.name=Kaktussamen
+item.inspirations.carrot_seeds.name=Karottensamen
+item.inspirations.potato_seeds.name=Kartoffelsamen
+item.inspirations.sugar_cane_seeds.name=Zuckerrohrsamen
+
+item.inspirations.materials.splash_bottle.name=Wurftrankflasche
+item.inspirations.materials.lingering_bottle.name=Verweiltrankflasche
+item.inspirations.materials.mushrooms.name=Pilze
+item.inspirations.materials.mushrooms.tooltip=Werden zum Zubereiten von Pilzsuppe verwendet
+item.inspirations.materials.rabbit_stew_mix.name=Kaninchenragout-Mischung
+item.inspirations.materials.rabbit_stew_mix.tooltip=Wird zum Zubereiten von Kaninchenragout verwendet
+
+item.inspirations.dyed_bottle.name=Gefärbte Wasserflasche
+item.inspirations.dyed_bottle.white.name=Weiß-gefärbtes-Wasser-Flasche
+item.inspirations.dyed_bottle.orange.name=Orange-gefärbtes-Wasser-Flasche
+item.inspirations.dyed_bottle.magenta.name=Magenta-gefärbtes-Wasser-Flasche
+item.inspirations.dyed_bottle.light_blue.name=Hellblau-gefärbtes-Wasser-Flasche
+item.inspirations.dyed_bottle.yellow.name=Gelb-gefärbtes-Wasser-Flasche
+item.inspirations.dyed_bottle.lime.name=Hellgrün-gefärbtes-Wasser-Flasche
+item.inspirations.dyed_bottle.pink.name=Rosa-gefärbtes-Wasser-Flasche
+item.inspirations.dyed_bottle.gray.name=Grau-gefärbtes-Wasser-Flasche
+item.inspirations.dyed_bottle.silver.name=Hellgrau-gefärbtes-Wasser-Flasche
+item.inspirations.dyed_bottle.cyan.name=Türkis-gefärbtes-Wasser-Flasche
+item.inspirations.dyed_bottle.purple.name=Violett-gefärbtes-Wasser-Flasche
+item.inspirations.dyed_bottle.blue.name=Blau-gefärbtes-Wasser-Flasche
+item.inspirations.dyed_bottle.brown.name=Braun-gefärbtes-Wasser-Flasche
+item.inspirations.dyed_bottle.green.name=Grün-gefärbtes-Wasser-Flasche
+item.inspirations.dyed_bottle.red.name=Rot-gefärbtes-Wasser-Flasche
+item.inspirations.dyed_bottle.black.name=Schwarz-gefärbtes-Wasser-Flasche
+
+fluid.inspirations.mushroom_stew=Pilzsuppe
+fluid.inspirations.beetroot_soup=Borschtsch
+fluid.inspirations.rabbit_stew=Kaninchenragout
+fluid.inspirations.milk=Milch
+
+death.attack.inspirations.boiling=%s wurde bei lebendigem Leib gekocht
+
+# GUI
+gui.inspirations.cauldron.dye=Gefärbtes Wasser
+gui.inspirations.cauldron.color=Farbe: %s
+
+# JEI
+gui.jei.anvil_smashing.title=Ambossfall
+gui.jei.cauldron.title=Kessel
+gui.jei.cauldron.level=%s Flaschen
+gui.jei.cauldron.level.singular=1 Flasche
+gui.jei.cauldron.level.empty=Leer
+gui.jei.cauldron.color=%s gefärbtes Wasser
+gui.jei.cauldron.boiling=Kessel muss über Feuer platziert werden
+
+# WAILA
+options.inspirations.cauldron=Kessel
+gui.waila.inspirations.cauldron.bottles=%s / %s Flaschen
+
+# TOP
+gui.top.inspirations.cauldron.bottles=Flaschen
 
 ############
 #  Tools   #
@@ -118,54 +185,22 @@ item.inspirations.materials.lock.tooltip=Wird zum Sperren von Behältern verwend
 item.inspirations.materials.key.name=Blanko-Schlüssel
 item.inspirations.materials.key.tooltip=Wird zum Entfernen passender Schlösser verwendet
 
-#############
-#  Recipes  #
-#############
+item.inspirations.materials.stone_rod.name=Steinstab
+item.inspirations.wooden_crook.name=Holzhaken
+item.inspirations.stone_crook.name=Steinhaken
+item.inspirations.bone_crook.name=Knochenhaken
+item.inspirations.blaze_crook.name=Lohenrutenhaken
+item.inspirations.wither_crook.name=Verdorrter-Knochen-Haken
 
-item.inspirations.materials.splash_bottle.name=Wurftrankflasche
-item.inspirations.materials.lingering_bottle.name=Verweiltrankflasche
-item.inspirations.materials.mushrooms.name=Pilze
-item.inspirations.materials.mushrooms.tooltip=Werden zum Zubereiten von Pilzsuppe verwendet
-item.inspirations.materials.rabbit_stew_mix.name=Kaninchenragout-Mischung
-item.inspirations.materials.rabbit_stew_mix.tooltip=Wird zum Zubereiten von Kaninchenragout verwendet
-
-item.inspirations.dyed_bottle.name=Gefärbte Wasserflasche
-item.inspirations.dyed_bottle.white.name=Weiß gefärbte Wasserflasche
-item.inspirations.dyed_bottle.orange.name=Orange gefärbte Wasserflasche
-item.inspirations.dyed_bottle.magenta.name=Magenta gefärbte Wasserflasche
-item.inspirations.dyed_bottle.light_blue.name=Hellblau gefärbte Wasserflasche
-item.inspirations.dyed_bottle.yellow.name=Gelb gefärbte Wasserflasche
-item.inspirations.dyed_bottle.lime.name=Hellgrün gefärbte Wasserflasche
-item.inspirations.dyed_bottle.pink.name=Rosa gefärbte Wasserflasche
-item.inspirations.dyed_bottle.gray.name=Grau gefärbte Wasserflasche
-item.inspirations.dyed_bottle.silver.name=Hellgrau gefärbte Wasserflasche
-item.inspirations.dyed_bottle.cyan.name=Türkis gefärbte Wasserflasche
-item.inspirations.dyed_bottle.purple.name=Violett gefärbte Wasserflasche
-item.inspirations.dyed_bottle.blue.name=Blau gefärbte Wasserflasche
-item.inspirations.dyed_bottle.brown.name=Braun gefärbte Wasserflasche
-item.inspirations.dyed_bottle.green.name=Grün gefärbte Wasserflasche
-item.inspirations.dyed_bottle.red.name=Rot gefärbte Wasserflasche
-item.inspirations.dyed_bottle.black.name=Schwarz gefärbte Wasserflasche
-
-fluid.inspirations.mushroom_stew=Pilzsuppe
-fluid.inspirations.beetroot_soup=Borschtsch
-fluid.inspirations.rabbit_stew=Kaninchenragout
-
-# JEI
-gui.jei.anvil_smashing.title=Amboss-Zerschlagung
-gui.jei.cauldron.title=Kessel
-gui.jei.cauldron.level=%s Flaschen
-gui.jei.cauldron.level.singular=1 Flasche
-gui.jei.cauldron.level.empty=Leer
-gui.jei.cauldron.color=%s gefärbtes Wasser
-gui.jei.cauldron.boiling=Kessel muss über Feuer platziert werden
-
+item.inspirations.origin_compass.name=Ursprungskompass
+item.inspirations.north_compass.name=Nordkompass
+item.inspirations.barometer.name=Barometer
 
 ############
 #  Tweaks  #
 ############
 
-item.inspirations.edibles.heartbeet.name=Heartbeet
+item.inspirations.edibles.heartbeet.name=Herzbete
 item.inspirations.materials.silverfish_powder.name=Silberfischstaub
 item.inspirations.materials.wither_bone.name=Verdorrter Knochen
 
