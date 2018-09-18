@@ -16,3 +16,4 @@ For more information, see [the wiki tab](https://github.com/KnightMiner/Inspirat
 
 - [/u/nox-cgt](https://www.reddit.com/user/nox-cgt): heartbeet idea and texture
 - [/u/TheTrone](https://www.reddit.com/user/TheTrone): syringa texture
+- [TimGoll](https://github.com/TimGoll): carpeted trapdoor texture
