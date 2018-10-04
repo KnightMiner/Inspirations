@@ -18,6 +18,7 @@ import knightminer.inspirations.library.recipe.cauldron.CauldronDyeRecipe;
 import knightminer.inspirations.library.recipe.cauldron.CauldronFluidRecipe;
 import knightminer.inspirations.library.recipe.cauldron.FillCauldronRecipe;
 import knightminer.inspirations.library.util.RecipeUtil;
+import knightminer.inspirations.library.util.ReflectionUtil;
 import knightminer.inspirations.recipes.block.BlockEnhancedCauldron;
 import knightminer.inspirations.recipes.block.BlockSmashingAnvil;
 import knightminer.inspirations.recipes.dispenser.DispenseCauldronRecipe;
@@ -262,8 +263,10 @@ public class InspirationsRecipes extends PulseBase {
 	 */
 	private void registerPostCauldronRecipes() {
 		if(Config.enableCauldronBrewing) {
-			for(PotionHelper.MixPredicate<PotionType> recipe : PotionHelper.POTION_TYPE_CONVERSIONS) {
-				InspirationsRegistry.addCauldronRecipe(new CauldronBrewingRecipe(recipe.input, recipe.reagent, recipe.output));
+			for(Object recipe : PotionHelper.POTION_TYPE_CONVERSIONS) {
+				InspirationsRegistry.addCauldronRecipe(new CauldronBrewingRecipe(ReflectionUtil.getMixPredicateInput(recipe).get(),
+																				 ReflectionUtil.getMixPredicateReagent(recipe),
+																				 ReflectionUtil.getMixPredicateOutput(recipe).get()));
 			}
 			findRecipesFromBrewingRegistry();
 		}
