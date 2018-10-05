@@ -177,7 +177,7 @@ public class InspirationsTweaks extends PulseBase {
 			// we need to start by removing a couple vanilla ones which we override
 			Iterator<?> iterator = PotionHelper.POTION_TYPE_CONVERSIONS.iterator();
 			while(iterator.hasNext()) {
-				PotionType input = ReflectionUtil.getMixPredicateInput(iterator.next()).get();
+				PotionType input = ReflectionUtil.getMixPredicateInput(iterator.next());
 				if(input == PotionTypes.LEAPING || input == PotionTypes.LONG_LEAPING) {
 					iterator.remove();
 				}
