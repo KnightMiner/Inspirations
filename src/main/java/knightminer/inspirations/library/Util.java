@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
+import knightminer.inspirations.library.util.ReflectionUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -23,7 +24,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.translation.I18n;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 @SuppressWarnings("deprecation")
 public class Util {
@@ -80,10 +80,7 @@ public class Util {
 
 		// first try getSilkTouchDrop, which just has to be protected
 		try {
-			Object stack = ReflectionHelper.findMethod(Block.class, "getSilkTouchDrop", "func_180643_i", IBlockState.class).invoke(block, state);
-			if(stack instanceof ItemStack) {
-				return (ItemStack) stack;
-			}
+			return ReflectionUtil.invokeGetSilkTouchDrop(block, state);
 		} catch (Exception e) {
 			InspirationsRegistry.log.error(e);
 		}
