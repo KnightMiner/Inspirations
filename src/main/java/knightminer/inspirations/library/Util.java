@@ -79,10 +79,9 @@ public class Util {
 		}
 
 		// first try getSilkTouchDrop, which just has to be protected
-		try {
-			return ReflectionUtil.invokeGetSilkTouchDrop(block, state);
-		} catch (Exception e) {
-			InspirationsRegistry.log.error(e);
+		ItemStack drop = ReflectionUtil.invokeGetSilkTouchDrop(block, state);
+		if( drop != null ) { // stack is null if reflection fails
+			return drop;
 		}
 
 		// if it fails, do a fallback of damageDropped and item.getItemFromBlock

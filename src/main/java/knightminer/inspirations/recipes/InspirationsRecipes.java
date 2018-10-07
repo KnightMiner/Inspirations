@@ -264,9 +264,12 @@ public class InspirationsRecipes extends PulseBase {
 	private void registerPostCauldronRecipes() {
 		if(Config.enableCauldronBrewing) {
 			for(Object recipe : PotionHelper.POTION_TYPE_CONVERSIONS) {
-				InspirationsRegistry.addCauldronRecipe(new CauldronBrewingRecipe(ReflectionUtil.getMixPredicateInput(recipe),
-																				 ReflectionUtil.getMixPredicateReagent(recipe),
-																				 ReflectionUtil.getMixPredicateOutput(recipe)));
+				PotionType input = ReflectionUtil.getMixPredicateInput(recipe);
+				Ingredient reagent = ReflectionUtil.getMixPredicateReagent(recipe);
+				PotionType output = ReflectionUtil.getMixPredicateOutput(recipe);
+				if(input != null && reagent != null && output != null) {
+					InspirationsRegistry.addCauldronRecipe(new CauldronBrewingRecipe(input, reagent, output));
+				}
 			}
 			findRecipesFromBrewingRegistry();
 		}
