@@ -56,12 +56,7 @@ public final class ReflectionUtil {
 
 	@Nullable
 	public static ItemStack invokeGetSilkTouchDrop(@Nonnull Block block, IBlockState state) {
-		ItemStack stack = invokeMethod(Block.class, block, "getSilkTouchDrop", "func_180643_i", new Class[] {IBlockState.class}, state);
-		if(stack != null) {
-			return stack;
-		} else {
-			return ItemStack.EMPTY;
-		}
+		return invokeMethod(Block.class, block, "getSilkTouchDrop", "func_180643_i", new Class[] {IBlockState.class}, state);
 	}
 
 	/**
