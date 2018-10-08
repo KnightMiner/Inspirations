@@ -1,6 +1,5 @@
 package knightminer.inspirations.library.util;
 
-import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.InspirationsRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -68,7 +67,7 @@ public final class ReflectionUtil {
 	 */
 	public static Class getClass(String className) {
 		try {
-			return CLASS.computeIfAbsent(className, key -> ReflectionHelper.getClass(Inspirations.class.getClassLoader(), key));
+			return CLASS.computeIfAbsent(className, key -> ReflectionHelper.getClass(InspirationsRegistry.class.getClassLoader(), key));
 		} catch(UnableToFindClassException e) {
 			InspirationsRegistry.log.error(e);
 			CLASS.putIfAbsent(className, null); // set cache of class to null if it errors trying to find the class
