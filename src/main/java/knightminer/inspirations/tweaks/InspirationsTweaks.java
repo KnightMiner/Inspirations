@@ -1,5 +1,6 @@
 package knightminer.inspirations.tweaks;
 
+import java.lang.reflect.Field;
 import java.util.Iterator;
 
 import com.google.common.eventbus.Subscribe;
@@ -8,6 +9,7 @@ import knightminer.inspirations.common.CommonProxy;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.library.InspirationsRegistry;
+import knightminer.inspirations.library.util.ReflectionUtil;
 import knightminer.inspirations.shared.InspirationsShared;
 import knightminer.inspirations.tweaks.block.BlockBetterFlowerPot;
 import knightminer.inspirations.tweaks.block.BlockCactusCrop;
@@ -33,7 +35,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.potion.PotionHelper;
-import net.minecraft.potion.PotionHelper.MixPredicate;
 import net.minecraft.potion.PotionType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
@@ -174,10 +175,10 @@ public class InspirationsTweaks extends PulseBase {
 		}
 		if(Config.brewMissingPotions) {
 			// we need to start by removing a couple vanilla ones which we override
-			Iterator<MixPredicate<PotionType>> iterator = PotionHelper.POTION_TYPE_CONVERSIONS.iterator();
+			Iterator<?> iterator = PotionHelper.POTION_TYPE_CONVERSIONS.iterator();
 			while(iterator.hasNext()) {
-				MixPredicate<PotionType> mix = iterator.next();
-				if(mix.input == PotionTypes.LEAPING || mix.input == PotionTypes.LONG_LEAPING) {
+				PotionType input = ReflectionUtil.getMixPredicateInput(iterator.next());
+				if(input == PotionTypes.LEAPING || input == PotionTypes.LONG_LEAPING) {
 					iterator.remove();
 				}
 			}
