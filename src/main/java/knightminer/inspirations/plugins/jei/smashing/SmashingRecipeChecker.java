@@ -25,7 +25,8 @@ public class SmashingRecipeChecker {
 		// block to block state
 		for(Map.Entry<Block, IBlockState> entry : InspirationsRegistry.getAllAnvilBlockSmashing()) {
 			ItemStack output = Util.getStackFromState(entry.getValue());
-			if(entry.getKey() != Blocks.AIR && !output.isEmpty()) {
+			Block block = entry.getKey();
+			if(block != null && block != Blocks.AIR && !output.isEmpty()) {
 				recipes.add(new SmashingRecipeWrapper(entry.getKey(), output));
 			}
 		}

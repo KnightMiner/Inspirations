@@ -626,6 +626,10 @@ public class Config {
 				output = Blocks.AIR.getDefaultState();
 			} else {
 				output = RecipeUtil.getBlockStateFromString(transformParts[1]);
+				if (output == null) {
+					Inspirations.log.info("Skipping anvil smashing {}: unable to find output {}", transformation, transformParts[1]);
+					continue;
+				}
 			}
 
 			RecipeUtil.forBlockInString(transformParts[0],

@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
+import javax.annotation.Nullable;
+
 import knightminer.inspirations.library.util.ReflectionUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -71,7 +73,10 @@ public class Util {
 	 * @param state  Input state
 	 * @return  ItemStack for the state, or ItemStack.EMPTY if a valid item cannot be found
 	 */
-	public static ItemStack getStackFromState(IBlockState state) {
+	public static ItemStack getStackFromState(@Nullable IBlockState state) {
+		if (state == null) {
+			return ItemStack.EMPTY;
+		}
 		Block block = state.getBlock();
 		// skip air
 		if(block == Blocks.AIR) {
