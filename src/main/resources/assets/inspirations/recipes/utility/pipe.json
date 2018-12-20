@@ -15,10 +15,11 @@
     "count": 4
   },
   "pattern": [
-    "III"
+    "IPI"
   ],
   "type": "forge:ore_shaped",
   "key": {
-    "I": { "type": "forge:ore_dict", "ore": "ingotIron" }
+    "I": { "type": "forge:ore_dict", "ore": "ingotIron" },
+    "P": { "type": "forge:ore_dict", "ore": "plankWood" }
   }
 }
