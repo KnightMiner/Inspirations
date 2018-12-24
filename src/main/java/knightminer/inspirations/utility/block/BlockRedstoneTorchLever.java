@@ -128,6 +128,8 @@ public class BlockRedstoneTorchLever extends BlockLever {
 	public void updateTick(World world, BlockPos pos, IBlockState state, Random rand) {
 		IBlockState newState = togglePower(state).withProperty(POWERED, isBlockPowered(state, world, pos));
 		world.setBlockState(pos, newState);
+		EnumFacing enumfacing = state.getValue(FACING).getFacing();
+		world.notifyNeighborsOfStateChange(pos.offset(enumfacing.getOpposite()), this, false);
 		world.playSound(null, pos, SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.3F, newState.getBlock() == redstoneTorchLeverPowered ? 0.6F : 0.5F);
 	}
 
