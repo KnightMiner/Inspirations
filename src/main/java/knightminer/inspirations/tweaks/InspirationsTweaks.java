@@ -1,6 +1,5 @@
 package knightminer.inspirations.tweaks;
 
-import java.lang.reflect.Field;
 import java.util.Iterator;
 
 import com.google.common.eventbus.Subscribe;

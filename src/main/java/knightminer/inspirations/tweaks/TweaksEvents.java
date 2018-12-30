@@ -2,6 +2,9 @@ package knightminer.inspirations.tweaks;
 
 import java.util.List;
 import knightminer.inspirations.common.Config;
+import knightminer.inspirations.common.network.CowMilkablePacket;
+import knightminer.inspirations.common.network.InspirationsNetwork;
+import knightminer.inspirations.library.ItemMetaKey;
 import knightminer.inspirations.shared.InspirationsShared;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBush;
@@ -9,16 +12,20 @@ import net.minecraft.block.BlockCrops;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.passive.EntityCow;
 import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract;
@@ -244,6 +251,64 @@ public class TweaksEvents {
 		// if we got one, this fall is safe
 		if(safe) {
 			event.setDistance(0);
+		}
+	}
+
+	public static final String TAG_MILKCOOLDOWN = "milk_cooldown";
+
+	@SubscribeEvent
+	public static void milkCow(EntityInteract event) {
+		if(!Config.milkCooldown) {
+			return;
+		}
+
+		// only care about cows
+		Entity target = event.getTarget();
+		if(!(target instanceof EntityCow) || ((EntityCow)target).isChild()) {
+			return;
+		}
+
+		// must be holding a milk container
+		ItemStack stack = event.getEntityPlayer().getHeldItem(event.getHand());
+		if(Config.milkContainers.contains(new ItemMetaKey(stack))) {
+			// if has tag, cannot be milked
+			NBTTagCompound tags = target.getEntityData();
+			if (tags.getShort(TAG_MILKCOOLDOWN) > 0) {
+				event.setCancellationResult(EnumActionResult.PASS);
+				event.setCanceled(true);
+			} else {
+				// no tag means we add it as part of milking
+				tags.setShort(TAG_MILKCOOLDOWN, Config.milkCooldownTime);
+				if (!event.getWorld().isRemote) {
+					InspirationsNetwork.sendToClients(event.getWorld(), target.getPosition(), new MilkablePacket(target, false));
+				}
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public static void updateMilkCooldown(LivingUpdateEvent event) {
+		if(!Config.milkCooldown) {
+			return;
+		}
+
+		EntityLivingBase entity = event.getEntityLiving();
+		World world = entity.getEntityWorld();
+		// only run every 20 ticks on serverside adult cows
+		if (world.isRemote || (world.getTotalWorldTime() % 20) != 0 || !(entity instanceof EntityCow) || ((EntityCow)entity).isChild()) {
+			return;
+		}
+
+		// if not already cooled down, cool down
+		NBTTagCompound tags = entity.getEntityData();
+		short cooldown = tags.getShort(TAG_MILKCOOLDOWN);
+		if(cooldown > 0) {
+			tags.setShort(TAG_MILKCOOLDOWN, (short)(cooldown - 1));
+
+			// reached 0, send pack so client knows
+			if(cooldown == 1) {
+				InspirationsNetwork.sendToClients(world, entity.getPosition(), new CowMilkablePacket(entity, true));
+			}
 		}
 	}
 }

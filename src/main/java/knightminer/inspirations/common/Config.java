@@ -1,14 +1,18 @@
 package knightminer.inspirations.common;
 
 import java.util.Arrays;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.InspirationsRegistry;
+import knightminer.inspirations.library.ItemMetaKey;
 import knightminer.inspirations.library.util.RecipeUtil;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -218,6 +222,8 @@ public class Config {
 	public static boolean betterCauldronItem = true;
 	public static boolean unstackableRecipeAlts = true;
 	public static boolean dispensersPlaceAnvils = true;
+	public static boolean milkCooldown = false;
+	public static short milkCooldownTime = 600;
 	// heartbeet
 	public static boolean enableHeartbeet = true;
 	public static boolean brewHeartbeet = true;
@@ -235,6 +241,12 @@ public class Config {
 			"biomesoplenty:sapling_1->12",
 			"biomesoplenty:sapling_2->12"
 	};
+	private static String[] milkContainersDefault = {
+			"ceramics:clay_bucket",
+			"minecraft:bowl", // mushroom stew from mooshrooms
+			"minecraft:bucket"
+	};
+	public static Set<ItemMetaKey> milkContainers;
 
 	// compatibility
 	public static boolean tanJuiceInCauldron = true;
@@ -444,6 +456,11 @@ public class Config {
 			enableMoreSeeds = configFile.getBoolean("moreSeeds", "tweaks", enableMoreSeeds, "Adds seeds for additional vanilla plants, including cactus, sugar cane, carrots, and potatoes.");
 			addGrassDrops = configFile.getBoolean("grassDrops", "tweaks.moreSeeds", addGrassDrops, "Makes carrot and potato seeds drop from grass") && enableMoreSeeds;
 			nerfCarrotPotatoDrops = configFile.getBoolean("nerfCarrotPotatoDrops", "tweaks.moreSeeds", nerfCarrotPotatoDrops, "Makes carrots and potatoes drop their respective seed if not fully grown") && enableMoreSeeds;
+
+			// milk cooldown
+			milkCooldown = configFile.getBoolean("milkCooldown", "tweaks", milkCooldown, "Adds a cooldown to milking cows, prevents practically infinite milk in modded worlds where milk is more useful.");
+			milkCooldownTime = (short)configFile.getInt("time", "tweaks.milkCooldown", milkCooldownTime, 1, Short.MAX_VALUE, "Delay in seconds after milking a cow before it can be milked again.");
+
 		}
 
 		// compatibility
@@ -522,6 +539,11 @@ public class Config {
 		cauldronFire = configFile.get("recipes.cauldron", "fires", cauldronFire,
 				"List of blocks to act is fire below a cauldron. Format is modid:name[:meta]. If meta is excluded all states of the block will count as fire").getStringList();
 		processCauldronFire(cauldronFire);
+
+		// cauldron fires
+		milkContainersDefault = configFile.get("tweaks.milkCooldown", "containers", milkContainersDefault,
+				"List of containers which will milk a cow when interacting. Used to prevent milking and to apply the milked tag").getStringList();
+		processMilkContainers(milkContainersDefault);
 
 		// saving
 		if(configFile.hasChanged()) {
@@ -703,6 +725,25 @@ public class Config {
 
 			RecipeUtil.forBlockInString(fire, InspirationsRegistry::registerCauldronFire, InspirationsRegistry::registerCauldronFire);
 		}
+	}
+
+	/**
+	 * Parses the milk containers list into a ImmutableSet
+	 * @param containers
+	 */
+	private static void processMilkContainers(String[] containers) {
+		if(!milkCooldown) {
+			return;
+		}
+
+		ImmutableSet.Builder<ItemMetaKey> builder = ImmutableSet.builder();
+		Consumer<ItemStack> callback = (stack) -> {
+			builder.add(new ItemMetaKey(stack));
+		};
+		for(String container : containers) {
+			RecipeUtil.forStackInString(container, callback);
+		}
+		milkContainers = builder.build();
 	}
 
 	/*

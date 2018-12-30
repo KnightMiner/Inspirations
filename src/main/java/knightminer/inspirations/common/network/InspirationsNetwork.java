@@ -4,6 +4,7 @@ import knightminer.inspirations.Inspirations;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import slimeknights.mantle.network.AbstractPacket;
@@ -22,6 +23,9 @@ public class InspirationsNetwork extends NetworkWrapper {
 
 		// bookshelf
 		registerPacketClient(InventorySlotSyncPacket.class);
+
+		// milk cooldown
+		registerPacketClient(MilkablePacket.class);
 	}
 
 	public static void sendToAll(AbstractPacket packet) {
@@ -30,6 +34,12 @@ public class InspirationsNetwork extends NetworkWrapper {
 
 	public static void sendTo(AbstractPacket packet, EntityPlayerMP player) {
 		instance.network.sendTo(packet, player);
+	}
+
+	public static void sendToClients(World world, BlockPos pos, AbstractPacket packet) {
+		if(world instanceof WorldServer) {
+			sendToClients((WorldServer)world, pos, packet);
+		}
 	}
 
 	public static void sendToClients(WorldServer world, BlockPos pos, AbstractPacket packet) {
