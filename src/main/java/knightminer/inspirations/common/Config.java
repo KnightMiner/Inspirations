@@ -83,6 +83,8 @@ public class Config {
 	public static boolean enablePipe = true;
 	public static boolean pipeUpwards = true;
 	public static boolean enableDispenserFluidTanks = true;
+	public static boolean milkSquids = false;
+	public static short milkSquidCooldown = 300;
 	public static String[] fluidContainers = {
 			"ceramics:clay_bucket",
 			"forge:bucketfilled",
@@ -374,6 +376,11 @@ public class Config {
 			enableCauldronDispenser = configFile.getBoolean("dispenser", "recipes.cauldron", enableCauldronDispenser, "Allows dispensers to perform some recipes in the cauldron. Intended to be used for recipes to fill and empty fluid containers as droppers can already be used for recipes") && enableCauldronRecipes;
 			cauldronDispenserRecipes = configFile.get("recipes.cauldron.dispenser", "items", cauldronDispenserRecipes,
 					"List of itemstacks that can be used as to perform cauldron recipes in a dispenser").getStringList();
+
+			// milk squids
+			milkSquids = configFile.getBoolean("milkSquids", "tweaks", milkSquids, "Allows milking squids with a glass bottle to get black dyed water.");
+			milkSquidCooldown = (short)configFile.getInt("cooldown", "tweaks.milkSquids", milkSquidCooldown, 1, Short.MAX_VALUE, "Delay in seconds after milking a squid before it can be milked again.");
+
 		}
 
 		// tools

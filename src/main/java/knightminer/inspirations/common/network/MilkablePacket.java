@@ -1,7 +1,7 @@
 package knightminer.inspirations.common.network;
 
 import io.netty.buffer.ByteBuf;
-import knightminer.inspirations.tweaks.TweaksEvents;
+import knightminer.inspirations.shared.SharedEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.entity.Entity;
@@ -41,7 +41,7 @@ public class MilkablePacket extends AbstractPacketThreadsafe {
 
 		NBTTagCompound tags = entity.getEntityData();
 		// value for not milkable does not matter as long as its greater than 0
-		tags.setShort(TweaksEvents.TAG_MILKCOOLDOWN, (short)(milkable ? 0 : 100));
+		tags.setShort(SharedEvents.TAG_MILKCOOLDOWN, (short)(milkable ? 0 : 100));
 	}
 
 	@Override

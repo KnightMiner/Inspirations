@@ -12,6 +12,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -50,7 +51,9 @@ public class InspirationsShared extends PulseBase {
 	public static ItemStack boiledEgg;
 
 	// flags
-	private boolean witherBoneDrop = false;
+	private static boolean witherBoneDrop = false;
+	public static boolean milkCooldownCow = false;
+	public static boolean milkCooldownSquid = false;
 
 	@Subscribe
 	public void preInit(FMLPreInitializationEvent event) {
@@ -85,6 +88,7 @@ public class InspirationsShared extends PulseBase {
 		if((isTweaksLoaded() && Config.brewMissingPotions) || (isToolsLoaded() && Config.netherCrooks)) {
 			witherBone = materials.addMeta(7, "wither_bone", CreativeTabs.BREWING);
 			witherBoneDrop = Config.witherBoneDrop;
+			milkCooldownCow = Config.milkCooldown;
 		}
 
 		if(isRecipesLoaded()) {
@@ -96,6 +100,7 @@ public class InspirationsShared extends PulseBase {
 				mushrooms = materials.addMeta(4, "mushrooms");
 				rabbitStewMix = materials.addMeta(5, "rabbit_stew_mix");
 			}
+			milkCooldownSquid = Config.milkSquids;
 		}
 		if(isToolsLoaded() && Config.separateCrook) {
 			stoneRod = materials.addMeta(8, "stone_rod", CreativeTabs.MATERIALS);
@@ -110,6 +115,11 @@ public class InspirationsShared extends PulseBase {
 	@Subscribe
 	public void postInit(FMLPostInitializationEvent event) {
 		proxy.postInit();
+
+		// currently just used for milking
+		if(milkCooldownCow || milkCooldownSquid) {
+			MinecraftForge.EVENT_BUS.register(SharedEvents.class);
+		}
 	}
 
 	private static final ResourceLocation WITHER_SKELETON_TABLE = new ResourceLocation("entities/wither_skeleton");
