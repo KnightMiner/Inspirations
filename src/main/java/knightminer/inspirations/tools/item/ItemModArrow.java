@@ -48,7 +48,7 @@ public class ItemModArrow extends ItemArrow {
 	}
 
 	public static enum ArrowType {
-		CHARGED(() -> Config.enableRedstoneCharge);
+		CHARGED(() -> Config.enableChargedArrow);
 
 		private int meta;
 		private BooleanSupplier enabled;

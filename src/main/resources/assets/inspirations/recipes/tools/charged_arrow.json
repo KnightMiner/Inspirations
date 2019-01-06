@@ -6,7 +6,7 @@
     },
     {
       "type": "config",
-      "prop": "redstone_charge"
+      "prop": "charged_arrow"
     }
   ],
   "result": {

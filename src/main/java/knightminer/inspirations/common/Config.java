@@ -199,6 +199,7 @@ public class Config {
 	// tools
 	public static boolean enableLock = true;
 	public static boolean enableRedstoneCharge = true;
+	public static boolean enableChargedArrow = true;
 	public static boolean harvestHangingVines = true;
 	public static boolean shearsReclaimMelons = true;
 	public static boolean enableNorthCompass = true;
@@ -387,7 +388,8 @@ public class Config {
 		{
 			// redstone charge
 			configFile.moveProperty("utility", "redstoneCharge", "tools");
-			enableRedstoneCharge = configFile.getBoolean("redstoneCharge", "tools", enableRedstoneCharge, "Enables the redstone charge: a quick pulse created with a flint and steel like item");
+			enableRedstoneCharge = configFile.getBoolean("redstoneCharge", "tools", enableRedstoneCharge, "Enables the redstone charger: a quick pulse created with a flint and steel like item");
+			enableChargedArrow = configFile.getBoolean("chargedArrow", "tools", enableChargedArrow, "Enables the charged arrow: places a redstone pulse where it lands");
 
 			// lock
 			configFile.moveProperty("utility", "lock", "tools");
@@ -796,6 +798,7 @@ public class Config {
 
 				// tools
 				case "barometer": return enableBarometer;
+				case "charged_arrow": return enableChargedArrow;
 				case "crook": return separateCrook;
 				case "lock": return enableLock;
 				case "nether_crook": return netherCrooks;

@@ -89,7 +89,7 @@ public class InspirationsTools extends PulseBase {
 	public void registerBlocks(Register<Block> event) {
 		IForgeRegistry<Block> r = event.getRegistry();
 
-		if(Config.enableRedstoneCharge) {
+		if(Config.enableRedstoneCharge || Config.enableChargedArrow) {
 			redstoneCharge = registerBlock(r, new BlockRedstoneCharge(), "redstone_charge");
 		}
 	}
