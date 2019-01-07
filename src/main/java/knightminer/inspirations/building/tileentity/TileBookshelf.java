@@ -16,7 +16,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -146,10 +145,9 @@ public class TileBookshelf extends TileInventory implements IInventoryGui {
 		float books = 0;
 		for(int i = 0; i < this.getSizeInventory(); i++) {
 			if(isStackInSlot(i)) {
-				if(getStackInSlot(i).getItem() == Items.ENCHANTED_BOOK) {
-					books += 2.5;
-				} else {
-					books += 1.5;
+				float power = InspirationsRegistry.getBookEnchantingPower(getStackInSlot(i));
+				if (power >= 0) {
+					books += power;
 				}
 			}
 		}

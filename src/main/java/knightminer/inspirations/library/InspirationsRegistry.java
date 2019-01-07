@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
+
 import org.apache.logging.log4j.Logger;
 
 import com.google.common.collect.ImmutableList;
@@ -66,7 +68,7 @@ public class InspirationsRegistry {
 	/*
 	 * Books
 	 */
-	private static Map<ItemMetaKey,Boolean> books = new HashMap<>();
+	private static Map<ItemMetaKey,Float> books = new HashMap<>();
 	private static String[] bookKeywords = new String[0];
 
 	/**
@@ -75,7 +77,16 @@ public class InspirationsRegistry {
 	 * @return  True if its a book
 	 */
 	public static boolean isBook(ItemStack stack) {
-		return books.computeIfAbsent(new ItemMetaKey(stack), InspirationsRegistry::isBook);
+		return getBookEnchantingPower(stack) >= 0;
+	}
+
+	/**
+	 * Checks if the given item stack is a book
+	 * @param stack  Input stack
+	 * @return  True if its a book
+	 */
+	public static float getBookEnchantingPower(ItemStack book) {
+		return books.computeIfAbsent(new ItemMetaKey(book), InspirationsRegistry::isBook);
 	}
 
 	/**
@@ -83,11 +94,12 @@ public class InspirationsRegistry {
 	 * @param key  Item meta combination
 	 * @return  True if it is a book
 	 */
-	private static Boolean isBook(ItemMetaKey key) {
+	@Nonnull
+	private static Float isBook(ItemMetaKey key) {
 		Item item = key.getItem();
 		// blocks are not books, catches bookshelves
 		if(Block.getBlockFromItem(item) != Blocks.AIR) {
-			return false;
+			return -1f;
 		}
 
 		// look through every keyword from the config
@@ -96,19 +108,21 @@ public class InspirationsRegistry {
 			// if the unlocalized name or the registry name has the keyword, its a book
 			if(item.getRegistryName().getResourcePath().contains(keyword)
 					|| stack.getUnlocalizedName().contains(keyword)) {
-				return true;
+				return 1.5f; // default power
 			}
 		}
-		return false;
+		return -1f;
 	}
 
 	/**
 	 * Registers an override to state a stack is definately a book or not a book, primarily used by the config
 	 * @param stack   Itemstack which is a book
 	 * @param isBook  True if its a book, false if its not a book
+	 * @deprecated use {@link #registerBook(ItemStack, float)}
 	 */
+	@Deprecated
 	public static void registerBook(ItemStack stack, boolean isBook) {
-		books.put(new ItemMetaKey(stack), isBook);
+		registerBook(stack, isBook ? 1.5f : -1f);
 	}
 
 	/**
@@ -116,9 +130,21 @@ public class InspirationsRegistry {
 	 * @param item  Item which is a book
 	 * @param meta  Meta which is a book
 	 * @param isBook  True if its a book, false if its not a book
+	 * @deprecated use {@link #registerBook(ItemStack, float)}
 	 */
+	@Deprecated
 	public static void registerBook(Item item, int meta, boolean isBook) {
-		books.put(new ItemMetaKey(item, meta), isBook);
+		books.put(new ItemMetaKey(item, meta), isBook ? 1.5f : -1f);
+	}
+
+	/**
+	 * Registers an override to state a stack is a book with an enchanting power
+	 * @param item   Item which is a book
+	 * @param meta   Meta which is a book
+	 * @param power  Enchanting power, 1.5 is default, NaN is not a book. 0 is a valid power
+	 */
+	public static void registerBook(ItemStack stack, float power) {
+		books.put(new ItemMetaKey(stack), power);
 	}
 
 	/**

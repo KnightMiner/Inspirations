@@ -2,9 +2,9 @@ package knightminer.inspirations.common;
 
 import java.util.Arrays;
 import java.util.Set;
-import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonObject;
@@ -63,12 +63,14 @@ public class Config {
 			"tome"
 	};
 	private static String[] bookOverrides = {
-			"defiledlands:book_wyrm_raw:0:false",
-			"defiledlands:book_wyrm_cooked:0:false",
-			"defiledlands:book_wyrm_scale:0:false",
-			"defiledlands:book_wyrm_scale_golden:0:false",
-			"defiledlands:book_wyrm_analyzer:0:false",
-			"theoneprobe:probenote:0:true"
+			"defiledlands:book_wyrm_raw->false",
+			"defiledlands:book_wyrm_cooked->false",
+			"defiledlands:book_wyrm_scale->false",
+			"defiledlands:book_wyrm_scale_golden->false",
+			"defiledlands:book_wyrm_analyzer->false",
+			"minecraft:enchanted_book->2.5",
+			"quark:ancient_tome->3.0",
+			"theoneprobe:probenote->1.0"
 	};
 
 	// utility
@@ -261,7 +263,7 @@ public class Config {
 	 */
 	@SuppressWarnings("deprecation")
 	public static void preInit(FMLPreInitializationEvent event) {
-		configFile = new Configuration(event.getSuggestedConfigurationFile(), "0.2", false);
+		configFile = new Configuration(event.getSuggestedConfigurationFile(), "0.3", false);
 
 		showAllVariants = configFile.getBoolean("showAllVariants", "general", showAllVariants,
 				"Shows all variants for dynamically textured blocks, like bookshelves. If false just the first will be shown");
@@ -489,10 +491,18 @@ public class Config {
 	 * @param event
 	 */
 	public static void init(FMLInitializationEvent event) {
+		double version = getConfigVersion();
+
 		// building
-		bookOverrides = configFile.get("building.bookshelf", "bookOverrides", bookOverrides,
-				"List of itemstacks to override book behavior. Format is modid:name[:meta[:isBook]]. Unset meta will default wildcard. Unset isBook will default true").getStringList();
-		processItemOverrides(enableBookshelf, bookOverrides, InspirationsRegistry::registerBook);
+		Property property = configFile.get("building.bookshelf", "bookOverrides", bookOverrides,
+				"List of itemstacks to override book behavior. Format is modid:name[:meta]->enchantingPower.\nUnset meta will default wildcard.\nEnchanting power default is 1.5. Set to 'false' to mark something as not a book.");
+		bookOverrides = property.getStringList();
+		// if before config version 0.3, update to new format and add enchanted book in
+		if(version < 0.3) {
+			bookOverrides = Stream.concat(Arrays.stream(bookOverrides).map(line -> updateConfig(line, "1.5", "false")), Stream.of("minecraft:enchanted_book->2.5", "quark:ancient_tome->3.0")).toArray(String[]::new);
+			property.set(bookOverrides);
+		}
+		processBookOverrides(bookOverrides);
 
 		// anvil smashing
 		// skip the helper method so the defaults are not put in the comment
@@ -508,38 +518,14 @@ public class Config {
 		processCauldronRecipes(cauldronRecipes);
 
 		// flowers
-		Property property = configFile.get("tweaks.betterFlowerPot", "flowerOverrides", flowerOverrides,
+		property = configFile.get("tweaks.betterFlowerPot", "flowerOverrides", flowerOverrides,
 				"List of itemstacks to override default flower behavior, default checks for BlockBush.\n"
 						+ "Format is 'modid:name[:meta]->power'. Unset meta will default wildcard. Power refers to comparator power, non-zero makes it valid for a flower pot. Specific values:\n"
 						+ "* 0 - not flower, blacklists from placing in a flower pot\n* 1 - mushroom\n* 4 - fern\n* 7 - flower\n* 10 - dead bush\n* 12 - sapling\n* 15 - cactus");
 		flowerOverrides = property.getStringList();
 		// if loaded in 0.1, update to 0.2 format
-		if(configFile.getLoadedConfigVersion().equals("0.1")) {
-			flowerOverrides = Arrays.stream(flowerOverrides).map(line -> {
-				String[] parts = line.split(":");
-				switch(parts.length) {
-					// 'modid:name' -> 'modid:name->7
-					case 2:
-						return line + "->7";
-						// 'modid:name:meta' -> 'modid:name:meta->7
-					case 3:
-						// if meta -1, remove as wildcard is just none now
-						if(parts[2].equals("-1")) {
-							return String.format("%s:%s->7", parts[0], parts[1]);
-						}
-						return line + "->7";
-					case 4:
-						// first, determine power
-						String power = "false".equals(parts[3]) ? "0" : "7";
-						// if meta -1, remove as wildcard is just none now
-						if(parts[2].equals("-1")) {
-							return String.format("%s:%s->%s", parts[0], parts[1], power);
-						}
-						return String.format("%s:%s:%s->%s", parts[0], parts[1], parts[2], power);
-				}
-
-				return line;
-			}).toArray(String[]::new);
+		if(version < 0.2) {
+			flowerOverrides = Arrays.stream(flowerOverrides).map(line -> updateConfig(line, "7", "0")).toArray(String[]::new);
 			property.set(flowerOverrides);
 		}
 		processFlowerOverrides(flowerOverrides);
@@ -561,11 +547,56 @@ public class Config {
 	}
 
 	/**
+	 * Updates a config file from a bunch of colons to the new -> format
+	 * @param line  Old line
+	 * @param t  True string
+	 * @param f  False string
+	 * @return  New line
+	 */
+	private static String updateConfig(String line, String t, String f) {
+		String[] parts = line.split(":");
+		switch(parts.length) {
+			// 'modid:name' -> 'modid:name->1.5
+			case 2:
+				return line + "->" + t;
+				// 'modid:name:meta' -> 'modid:name:meta->7
+			case 3:
+				// if meta -1, remove as wildcard is just none now
+				if(parts[2].equals("-1")) {
+					return String.format("%s:%s->%s", parts[0], parts[1], t);
+				}
+				return line + "->" + t;
+			case 4:
+				// first, determine power
+				String power = "false".equals(parts[3]) ? f : t;
+				// if meta -1, remove as wildcard is just none now
+				if(parts[2].equals("-1")) {
+					return String.format("%s:%s->%s", parts[0], parts[1], power);
+				}
+				return String.format("%s:%s:%s->%s", parts[0], parts[1], parts[2], power);
+		}
+
+		return line;
+	}
+
+	/**
+	 * Safely gets the config version as a double
+	 * @return Config version
+	 */
+	private static double getConfigVersion() {
+		try {
+			return Double.parseDouble(configFile.getLoadedConfigVersion());
+		} catch (NumberFormatException e) {
+			return Double.NaN;
+		}
+	}
+
+	/**
 	 * Parses the book overrides from the string array
 	 * @param overrides  Input string array
 	 */
-	private static void processItemOverrides(boolean condition, String[] overrides, BiConsumer<ItemStack, Boolean> callback) {
-		if(!condition) {
+	private static void processBookOverrides(String[] overrides) {
+		if(!enableBookshelf) {
 			return;
 		}
 
@@ -577,21 +608,32 @@ public class Config {
 				continue;
 			}
 
-			// split by semicolons, valid keys are length of 2, 3, or 4
-			parts = override.split(":");
-			if(parts.length < 2 || parts.length > 4) {
-				Inspirations.log.error("Invalid override {}: must be in format modid:name[:meta[:value]]. ", override);
+			parts = override.split("->");
+			if(parts.length != 2) {
+				Inspirations.log.error("Invalid book override {}: must be in format modid:name[:meta]->power. ", override);
 				continue;
 			}
 
-			String itemString = override;
-			if(parts.length > 2) {
-				itemString = itemString.substring(0, override.length() - parts[3].length() - 1);
-			}
-
 			// finally, parse the isBook boolean. Pretty lazy here, just check if its not the string false
-			boolean isBook = parts.length > 3 ? !"false".equals(parts[3]) : true;
-			RecipeUtil.forStackInString(itemString, stack -> callback.accept(stack, isBook));
+			float power = 1.5f;
+			if (parts.length > 1) {
+				try {
+					power = Float.parseFloat(parts[1]);
+				} catch(NumberFormatException e) {
+					if (parts[1].equals("false")) {
+						power = -1;
+					} else {
+						Inspirations.log.error("Invalid book override {}: power must be a number. ", override);
+						continue;
+					}
+				}
+			}
+			// normalize not a book
+			if (power < 0) {
+				power = -1;
+			}
+			final float enchPower = power;
+			RecipeUtil.forStackInString(parts[0], stack -> InspirationsRegistry.registerBook(stack, enchPower));
 		}
 	}
 
@@ -750,6 +792,10 @@ public class Config {
 			builder.add(new ItemMetaKey(stack));
 		};
 		for(String container : containers) {
+			// skip blank lines and comments
+			if("".equals(container) || container.startsWith("#")) {
+				continue;
+			}
 			RecipeUtil.forStackInString(container, callback);
 		}
 		milkContainers = builder.build();
