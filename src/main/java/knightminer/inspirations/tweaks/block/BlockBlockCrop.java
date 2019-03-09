@@ -10,16 +10,17 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.EnumPlantType;
+import net.minecraftforge.registries.IRegistryDelegate;
 
 public abstract class BlockBlockCrop extends BlockCrops {
 
-	private Block block;
+	private IRegistryDelegate<Block> block;
 	private EnumPlantType type;
 	private final AxisAlignedBB[] bounds;
 	public static final PropertyInteger SMALL_AGE = PropertyInteger.create("age", 0, 6);
 	public BlockBlockCrop(Block block, EnumPlantType type, AxisAlignedBB[] bounds) {
 		super();
-		this.block = block;
+		this.block = block.delegate;
 		this.bounds = bounds;
 		this.type = type;
 	}
@@ -39,7 +40,7 @@ public abstract class BlockBlockCrop extends BlockCrops {
 	@Override
 	public IBlockState withAge(int age) {
 		if(age == getMaxAge()) {
-			return block.getDefaultState();
+			return block.get().getDefaultState();
 		}
 		return super.withAge(age);
 	}
@@ -63,7 +64,7 @@ public abstract class BlockBlockCrop extends BlockCrops {
 
 	@Override
 	protected Item getCrop() {
-		return Item.getItemFromBlock(block);
+		return Item.getItemFromBlock(block.get());
 	}
 
 	@Override
