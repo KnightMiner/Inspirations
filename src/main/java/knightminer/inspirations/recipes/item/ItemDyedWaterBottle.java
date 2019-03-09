@@ -2,12 +2,18 @@ package knightminer.inspirations.recipes.item;
 
 import knightminer.inspirations.library.Util;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.passive.EntitySheep;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
+import net.minecraftforge.items.ItemHandlerHelper;
 
 public class ItemDyedWaterBottle extends Item {
 
@@ -81,5 +87,30 @@ public class ItemDyedWaterBottle extends Item {
 				subItems.add(new ItemStack(this, 1, color.getDyeDamage()));
 			}
 		}
+	}
+
+	/** Dye sheep on right click with a bottle */
+	@Override
+	public boolean itemInteractionForEntity(ItemStack stack, EntityPlayer player, EntityLivingBase target, EnumHand hand) {
+		int meta = stack.getMetadata();
+		if (meta <= 15 && target instanceof EntitySheep) {
+			EntitySheep sheep = (EntitySheep)target;
+			EnumDyeColor color = EnumDyeColor.byDyeDamage(meta);
+			if (!sheep.getSheared() && sheep.getFleeceColor() != color) {
+				sheep.setFleeceColor(color);
+				player.playSound(SoundEvents.ITEM_BOTTLE_EMPTY, 1.0F, 1.0F);
+
+				// give back bottle;
+				ItemStack bottle = new ItemStack(getContainerItem());
+				if (stack.getCount() == 1) {
+					player.setHeldItem(hand, bottle);
+				} else {
+					stack.shrink(1);
+					ItemHandlerHelper.giveItemToPlayer(player, bottle);
+				}
+			}
+			return true;
+		}
+		return false;
 	}
 }
