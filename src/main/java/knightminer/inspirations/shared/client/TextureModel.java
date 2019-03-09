@@ -1,12 +1,12 @@
 package knightminer.inspirations.shared.client;
 
+import java.util.HashMap;
 import java.util.List;
-
+import java.util.Map;
 import javax.annotation.Nonnull;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-
 import knightminer.inspirations.library.util.TagUtil;
 import knightminer.inspirations.library.util.TextureBlockUtil;
 import net.minecraft.block.Block;
@@ -27,7 +27,7 @@ import net.minecraftforge.common.property.IExtendedBlockState;
 import slimeknights.mantle.client.ModelHelper;
 
 public class TextureModel extends BakedModelWrapper<IBakedModel> {
-
+	private final Map<String, IBakedModel> cache = new HashMap<>();
 	private IModel model;
 	private final VertexFormat format;
 	private final String textureKey;
@@ -48,7 +48,7 @@ public class TextureModel extends BakedModelWrapper<IBakedModel> {
 
 			String texture = extendedState.getValue(TextureBlockUtil.TEXTURE_PROP);
 			if(texture != null) {
-				bakedModel = getTexturedModel(ImmutableMap.of(textureKey, texture));
+				bakedModel = getCachedTextureModel(texture);
 			}
 		}
 		return bakedModel.getQuads(state, side, rand);
@@ -57,6 +57,10 @@ public class TextureModel extends BakedModelWrapper<IBakedModel> {
 	protected IBakedModel getTexturedModel(ImmutableMap<String, String> textures) {
 		IModel retextured = model.retexture(textures);
 		return retextured.bake(retextured.getDefaultState(), format, ModelLoader.defaultTextureGetter());
+	}
+
+	protected IBakedModel getCachedTextureModel(String texture) {
+		return cache.computeIfAbsent(texture, (tex) -> getTexturedModel(ImmutableMap.of(textureKey, tex)));
 	}
 
 	@Nonnull
@@ -85,7 +89,7 @@ public class TextureModel extends BakedModelWrapper<IBakedModel> {
 					Block block = Block.getBlockFromItem(item);
 					String texture = ModelHelper.getTextureFromBlock(block, item.getMetadata(blockStack)).getIconName();
 					TextureModel textureModel = (TextureModel) originalModel;
-					return textureModel.getTexturedModel(ImmutableMap.of(textureModel.textureKey, texture));
+					return textureModel.getCachedTextureModel(texture);
 				}
 			}
 

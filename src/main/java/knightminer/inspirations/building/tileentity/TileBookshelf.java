@@ -167,9 +167,14 @@ public class TileBookshelf extends TileInventory implements IInventoryGui {
 	 */
 
 	public IBlockState writeExtendedBlockState(IExtendedBlockState state) {
+		// pack books into integer
+		int books = 0;
 		for(int i = 0; i < 14; i++) {
-			state = state.withProperty(BlockBookshelf.BOOKS[i], isStackInSlot(i));
+			if (isStackInSlot(i)) {
+				books |= 1 << i;
+			}
 		}
+		state = state.withProperty(BlockBookshelf.BOOKS, books);
 
 		// texture not loaded
 		String texture = ClientUtil.getTexturePath(this);

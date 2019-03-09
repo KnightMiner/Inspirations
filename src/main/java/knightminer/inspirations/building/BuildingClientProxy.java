@@ -1,5 +1,6 @@
 package knightminer.inspirations.building;
 
+import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.block.BlockBookshelf;
 import knightminer.inspirations.building.block.BlockBookshelf.BookshelfType;
 import knightminer.inspirations.building.block.BlockEnlightenedBush;
@@ -10,6 +11,7 @@ import knightminer.inspirations.building.block.BlockRope.RopeType;
 import knightminer.inspirations.building.client.BookshelfModel;
 import knightminer.inspirations.building.tileentity.TileBookshelf;
 import knightminer.inspirations.common.ClientProxy;
+import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.client.BlockItemStateMapper;
 import knightminer.inspirations.library.client.ClientUtil;
@@ -23,6 +25,8 @@ import net.minecraft.client.renderer.block.statemap.StateMap;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.resources.IReloadableResourceManager;
+import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -40,6 +44,22 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class BuildingClientProxy extends ClientProxy {
 	public static final Minecraft mc = Minecraft.getMinecraft();
+
+	@Override
+	public void preInit() {
+		super.preInit();
+
+		if (Config.enableBookshelf) {
+			// listener to clear bookshelf model cache as its shared by all bookshelf model files
+			IResourceManager manager = Minecraft.getMinecraft().getResourceManager();
+			// should always be true, but just in case
+			if(manager instanceof IReloadableResourceManager) {
+				((IReloadableResourceManager) manager).registerReloadListener((l) -> BookshelfModel.BOOK_CACHE.invalidateAll());
+			} else {
+				Inspirations.log.error("Failed to register resource reload listener, expected instance of IReloadableResourceManager but got {}", manager.getClass());
+			}
+		}
+	}
 
 	@SubscribeEvent
 	public void registerModels(ModelRegistryEvent event) {

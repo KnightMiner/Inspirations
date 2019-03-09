@@ -115,7 +115,7 @@ public class TileCauldron extends TileEntity {
 
 	public IBlockState writeExtendedBlockState(IExtendedBlockState state) {
 		// just pull the texture right from the fluid
-		if(this.state != CauldronState.WATER && getContentType() == CauldronContents.FLUID) {
+		if(BlockEnhancedCauldron.getCauldronLevel(state) > 0 && this.state != CauldronState.WATER && getContentType() == CauldronContents.FLUID) {
 			Fluid fluid = this.state.getFluid();
 			if(fluid != null) {
 				state = state.withProperty(BlockEnhancedCauldron.TEXTURE, fluid.getStill().toString());

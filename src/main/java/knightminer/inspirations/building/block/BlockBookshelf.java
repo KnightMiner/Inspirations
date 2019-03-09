@@ -10,13 +10,13 @@ import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.building.tileentity.TileBookshelf;
 import knightminer.inspirations.library.InspirationsRegistry;
+import knightminer.inspirations.library.PropertyUnlistedInteger;
 import knightminer.inspirations.library.util.TextureBlockUtil;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockFaceShape;
@@ -42,28 +42,17 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.property.ExtendedBlockState;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.common.property.IUnlistedProperty;
-import net.minecraftforge.common.property.Properties;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import slimeknights.mantle.block.BlockInventory;
 import slimeknights.mantle.property.PropertyString;
 
-@SuppressWarnings("unchecked")
 public class BlockBookshelf extends BlockInventory implements ITileEntityProvider {
 
 	public static final PropertyEnum<BookshelfType> TYPE = PropertyEnum.create("type", BookshelfType.class);
 	public static final PropertyDirection FACING = BlockHorizontal.FACING;
 	public static final PropertyString TEXTURE = TextureBlockUtil.TEXTURE_PROP;
-	public static final IUnlistedProperty<?>[] PROPS;
-	public static final IUnlistedProperty<Boolean>[] BOOKS;
-	static {
-		PROPS = new IUnlistedProperty<?>[15];
-		BOOKS = (IUnlistedProperty<Boolean>[])new IUnlistedProperty<?>[14];
-		for(int i = 0; i < 14; i++) {
-			PROPS[i] = BOOKS[i] = Properties.toUnlisted(PropertyBool.create("book" + i));
-		}
-		PROPS[14] = TEXTURE;
-	}
+	public static final IUnlistedProperty<Integer> BOOKS = new PropertyUnlistedInteger("books");
 
 	public BlockBookshelf() {
 		super(Material.WOOD);
@@ -76,7 +65,7 @@ public class BlockBookshelf extends BlockInventory implements ITileEntityProvide
 
 	@Override
 	protected ExtendedBlockState createBlockState() {
-		return new ExtendedBlockState(this, new IProperty<?>[]{TYPE, FACING}, PROPS);
+		return new ExtendedBlockState(this, new IProperty<?>[]{TYPE, FACING}, new IUnlistedProperty[]{TEXTURE, BOOKS});
 	}
 
 	/**
