@@ -83,21 +83,26 @@ public class TileBookshelf extends TileInventory implements IInventoryGui {
 	 * Book logic
 	 */
 
-	public void interact(EntityPlayer player, EnumHand hand, int bookClicked) {
+	public boolean interact(EntityPlayer player, EnumHand hand, int bookClicked) {
 		// if it contains a book, take the book out
 		if(isStackInSlot(bookClicked)) {
-			ItemHandlerHelper.giveItemToPlayer(player, getStackInSlot(bookClicked), player.inventory.currentItem);
-			setInventorySlotContents(bookClicked, ItemStack.EMPTY);
-		} else {
-			// otherwise try putting a book in
-			ItemStack stack = player.getHeldItemMainhand();
-			if(!InspirationsRegistry.isBook(stack)) {
-				return;
+			if (!world.isRemote) {
+				ItemHandlerHelper.giveItemToPlayer(player, getStackInSlot(bookClicked), player.inventory.currentItem);
+				setInventorySlotContents(bookClicked, ItemStack.EMPTY);
 			}
-
-			ItemStack book = player.inventory.decrStackSize(player.inventory.currentItem, stackSizeLimit);
-			setInventorySlotContents(bookClicked, book);
+			return true;
 		}
+
+		// try adding book
+		ItemStack stack = player.getHeldItem(hand);
+		if(InspirationsRegistry.isBook(stack)) {
+			if (!world.isRemote) {
+				setInventorySlotContents(bookClicked, stack.splitStack(1));
+			}
+			return true;
+		}
+
+		return false;
 	}
 
 

@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableMap;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.building.tileentity.TileBookshelf;
+import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.util.TextureBlockUtil;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.ITileEntityProvider;
@@ -145,10 +146,16 @@ public class BlockBookshelf extends BlockInventory implements ITileEntityProvide
 			return world.isRemote || openGui(player, world, pos);
 		}
 
-		if(!world.isRemote) {
-			TileEntity te = world.getTileEntity(pos);
-			if(te instanceof TileBookshelf) {
-				((TileBookshelf) te).interact(player, hand, book);
+		TileEntity te = world.getTileEntity(pos);
+		if(te instanceof TileBookshelf) {
+			// try interacting
+			if (((TileBookshelf) te).interact(player, hand, book)) {
+				return true;
+			}
+
+			// if the offhand can interact, return false so we can process it later
+			if (InspirationsRegistry.isBook(player.getHeldItemOffhand())) {
+				return false;
 			}
 		}
 

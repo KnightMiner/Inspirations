@@ -77,7 +77,7 @@ public class InspirationsRegistry {
 	 * @return  True if its a book
 	 */
 	public static boolean isBook(ItemStack stack) {
-		return getBookEnchantingPower(stack) >= 0;
+		return !stack.isEmpty() && getBookEnchantingPower(stack) >= 0;
 	}
 
 	/**
@@ -86,6 +86,9 @@ public class InspirationsRegistry {
 	 * @return  True if its a book
 	 */
 	public static float getBookEnchantingPower(ItemStack book) {
+		if (book.isEmpty()) {
+			return 0;
+		}
 		return books.computeIfAbsent(new ItemMetaKey(book), InspirationsRegistry::isBook);
 	}
 
