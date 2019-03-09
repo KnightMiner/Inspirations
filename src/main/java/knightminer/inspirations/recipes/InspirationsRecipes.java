@@ -300,7 +300,9 @@ public class InspirationsRecipes extends PulseBase {
 				BrewingRecipe recipe = (BrewingRecipe) irecipe;
 				ItemStack inputStack = recipe.getInput();
 				ItemStack outputStack = recipe.getOutput();
-				if(inputStack.getItem() == Items.POTIONITEM && outputStack.getItem() == Items.POTIONITEM) {
+				// null checks because some dumb mod is returning null for the input or output
+				if(inputStack != null && inputStack.getItem() == Items.POTIONITEM
+						&& outputStack != null && outputStack.getItem() == Items.POTIONITEM) {
 					PotionType input = PotionUtils.getPotionFromItem(inputStack);
 					PotionType output = PotionUtils.getPotionFromItem(outputStack);
 					if(input != PotionTypes.EMPTY && output != PotionTypes.EMPTY) {
