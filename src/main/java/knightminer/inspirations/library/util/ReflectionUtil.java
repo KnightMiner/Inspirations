@@ -26,7 +26,7 @@ public final class ReflectionUtil {
 
 	private static final Map<String, Field> FIELDS = new HashMap<>();
 	private static final Map<String, Method> METHODS = new HashMap<>();
-	private static final Map<String, Class> CLASS = new HashMap<>();
+	private static final Map<String, Class<?>> CLASS = new HashMap<>();
 
 	@Nullable
 	public static PotionType getMixPredicateInput(@Nonnull Object mixPredicate) {
@@ -65,7 +65,7 @@ public final class ReflectionUtil {
 	 * @param className The class name to be searched for
 	 * @return The class found or <tt>null</tt>, if the class is unavailable
 	 */
-	public static Class getClass(String className) {
+	public static Class<?> getClass(String className) {
 		try {
 			return CLASS.computeIfAbsent(className, key -> ReflectionHelper.getClass(InspirationsRegistry.class.getClassLoader(), key));
 		} catch(UnableToFindClassException e) {
@@ -88,7 +88,7 @@ public final class ReflectionUtil {
 	 * @return The return value of the method or <tt>null</tt>, if it fails or the method is <tt>void</tt>
 	 */
 	@Nullable
-	private static <T> T invokeMethod(final Class classToSearch, final Object instance, final String mcpName, final String srgName, final Class[] paramTypes, final Object... params) {
+	private static <T> T invokeMethod(final Class<?> classToSearch, final Object instance, final String mcpName, final String srgName, final Class<?>[] paramTypes, final Object... params) {
 		try {
 			Method m = METHODS.computeIfAbsent(srgName, key -> ReflectionHelper.findMethod(classToSearch, mcpName, key, paramTypes));
 			return (T) m.invoke(instance, params);
@@ -112,7 +112,7 @@ public final class ReflectionUtil {
 	 * @return The value of the field or <tt>null</tt>, if it fails
 	 */
 	@Nullable
-	private static <T> T getFieldValue(final Class classToSearch, final Object instance, final String mcpName, final String srgName) {
+	private static <T> T getFieldValue(final Class<?> classToSearch, final Object instance, final String mcpName, final String srgName) {
 		try {
 			Field f = FIELDS.computeIfAbsent(srgName, key -> ReflectionHelper.findField(classToSearch, key, mcpName));
 			return f != null ? (T) f.get(instance) : null;
