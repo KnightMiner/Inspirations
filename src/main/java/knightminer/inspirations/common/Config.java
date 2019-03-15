@@ -249,7 +249,8 @@ public class Config {
 	private static String[] milkContainersDefault = {
 			"ceramics:clay_bucket",
 			"minecraft:bowl", // mushroom stew from mooshrooms
-			"minecraft:bucket"
+			"minecraft:bucket",
+			"simplytea:teapot"
 	};
 	public static Set<ItemMetaKey> milkContainers;
 
