@@ -1,5 +1,6 @@
 package knightminer.inspirations;
 
+import knightminer.inspirations.plugins.leatherworks.LeatherWorksPlugin;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -56,6 +57,7 @@ public class Inspirations {
 		pulseManager.registerPulse(new ToughAsNailsPlugin());
 		pulseManager.registerPulse(new TheOneProbePlugin());
 		pulseManager.registerPulse(new WailaPlugin());
+		pulseManager.registerPulse(new LeatherWorksPlugin());
 
 		// needs to be done statically, but only the recipes module uses it
 		if(pulseManager.isPulseLoaded(InspirationsRecipes.pulseID) && Config.enableCauldronFluids) {
