@@ -21,12 +21,11 @@ import slimeknights.mantle.util.RecipeMatch;
 
 @Pulse(
         id = LeatherWorksPlugin.pulseID,
-        description = "Adds recipes for Leather WOrks items",
+        description = "Adds recipes for Leather Works items",
         modsRequired = LeatherWorksPlugin.requiredModID,
         pulsesRequired = InspirationsRecipes.pulseID
 )
-public class LeatherWorksPlugin extends PulseBase
-{
+public class LeatherWorksPlugin extends PulseBase{
     public static final String pulseID = "LeatherWorks";
 
     public static final String requiredModID = "leatherworks";
@@ -42,28 +41,24 @@ public class LeatherWorksPlugin extends PulseBase
     public static final Item washedHide = null;
 
     @Subscribe
-    public void init(FMLInitializationEvent e)
-    {
+    public void init(FMLInitializationEvent e){
         // we need cauldron fluids for this to work
-        if(!Config.enableExtendedCauldron) {
+        if(!Config.enableExtendedCauldron){
             return;
         }
 
         // get tannin fluid
         Fluid tannin =  FluidRegistry.getFluid("leatherworks:tannin");
 
-        // register tannin and use it in recipes
-        if (tannin != null) {
-            InspirationsRegistry.addCauldronWater(tannin);
-
+        // register recipes
+        if (tannin != null){
             // tannin creation in cauldron using tannin ball
             if (tanninBall != null){
                 InspirationsRegistry.addCauldronRecipe(new CauldronFluidTransformRecipe(RecipeMatch.of(tanninBall),FluidRegistry.WATER,tannin,false));
             }
 
             // adds tannin bottle as fluid source
-            if (tanninBottle != null)
-            {
+            if (tanninBottle != null){
                 InspirationsRegistry.addCauldronFluidItem(new ItemStack(tanninBottle), new ItemStack(Items.GLASS_BOTTLE),tannin,1);
             }
 
