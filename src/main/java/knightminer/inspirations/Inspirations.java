@@ -1,6 +1,5 @@
 package knightminer.inspirations;
 
-import knightminer.inspirations.plugins.leatherworks.LeatherWorksPlugin;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -10,6 +9,7 @@ import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.plugins.tan.ToughAsNailsPlugin;
 import knightminer.inspirations.plugins.top.TheOneProbePlugin;
 import knightminer.inspirations.plugins.waila.WailaPlugin;
+import knightminer.inspirations.plugins.leatherworks.LeatherWorksPlugin;
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.shared.InspirationsOredict;
 import knightminer.inspirations.shared.InspirationsShared;

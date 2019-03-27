@@ -74,7 +74,7 @@ dependencies {
     deobfCompile("mcjty.theoneprobe:TheOneProbe-1.12:${config.probe_version}") {
         exclude group: 'cofh' // don't grab redstone flux too, don't use it
     }
-    deobfCompile "leather-works:LeatherWorks:1.12:1.76.0.40"
+    //deobfCompile "leather-works:LeatherWorks:1.12:1.76.0.40"
 }
 
 processResources {
