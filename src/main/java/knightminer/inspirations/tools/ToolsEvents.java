@@ -3,7 +3,6 @@ package knightminer.inspirations.tools;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.Util;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockLeaves;
 import net.minecraft.block.BlockVine;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -209,7 +208,8 @@ public class ToolsEvents {
 		// must be leaves
 		IBlockState state = event.getState();
 		Block block = state.getBlock();
-		if(!(block instanceof BlockLeaves)) {
+		World world = event.getWorld();
+		if(!block.isLeaves(state, world, event.getPos())) {
 			return;
 		}
 
@@ -231,7 +231,6 @@ public class ToolsEvents {
 		}
 
 		// damage the hoe, breaking leaves does that now
-		World world = event.getWorld();
 		if(!world.isRemote && Config.hoeCrook) {
 			crook.damageItem(1, player);
 		}
@@ -260,12 +259,17 @@ public class ToolsEvents {
 	@SubscribeEvent
 	public static void breakLeavesFast(BreakSpeed event) {
 		// must be leaves
-		if(!Config.hoeCrook || !(event.getState().getBlock() instanceof BlockLeaves)) {
+		if(!Config.hoeCrook) {
 			return;
 		}
 
 		EntityPlayer player = event.getEntityPlayer();
 		if(player == null || player.capabilities.isCreativeMode) {
+			return;
+		}
+
+		IBlockState state = event.getState();
+		if(!state.getBlock().isLeaves(state, player.getEntityWorld(), event.getPos())) {
 			return;
 		}
 
