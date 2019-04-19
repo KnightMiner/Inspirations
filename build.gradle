@@ -2,6 +2,10 @@ buildscript {
     repositories {
         jcenter()
         maven { url = "http://files.minecraftforge.net/maven" }
+        maven {
+            name = 'CurseForge'
+            url = 'https://minecraft.curseforge.com/api/maven/'
+        }
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
@@ -45,6 +49,10 @@ compileJava {
 }
 
 repositories {
+    maven {
+        name = 'CurseForge'
+        url = 'https://minecraft.curseforge.com/api/maven/'
+    }
     maven { // Mantle and JEI
         name 'DVS1 Maven FS'
         url 'http://dvs1.progwml6.com/files/maven'
@@ -66,6 +74,7 @@ dependencies {
     deobfCompile("mcjty.theoneprobe:TheOneProbe-1.12:${config.probe_version}") {
         exclude group: 'cofh' // don't grab redstone flux too, don't use it
     }
+    //deobfCompile "leather-works:LeatherWorks:1.12:1.76.0.40"
 }
 
 processResources {
