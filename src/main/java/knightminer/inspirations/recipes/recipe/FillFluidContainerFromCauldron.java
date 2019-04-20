@@ -31,8 +31,9 @@ public enum FillFluidContainerFromCauldron implements ICauldronRecipe {
 	public ItemStack getResult(ItemStack stack, boolean boiling, int level, CauldronState state) {
 		stack = stack.copy();
 		stack.setCount(1);
-		FluidUtil.getFluidHandler(stack).fill(new FluidStack(state.getFluid(), 1000), true);
-		return FluidUtil.getFluidHandler(stack).getContainer();
+		IFluidHandlerItem handler = FluidUtil.getFluidHandler(stack);
+		handler.fill(state.getFluidStack(), true);
+		return handler.getContainer();
 	}
 
 	@Override

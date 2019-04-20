@@ -105,6 +105,7 @@ public class Config {
 	public static boolean enableBiggerCauldron = false;
 	public static boolean fasterCauldronRain = true;
 	public static boolean spongeEmptyCauldron = true;
+	public static boolean cauldronObsidian = false;
 	public static boolean spongeCauldronFull = false;
 	public static boolean dropCauldronContents = false;
 	// cauldron - fluids
@@ -358,6 +359,8 @@ public class Config {
 			InspirationsRegistry.setConfig("biggerCauldron", enableBiggerCauldron);
 			fasterCauldronRain = configFile.getBoolean("fasterRain", "recipes.cauldron", fasterCauldronRain, "Cauldrons fill faster in the rain than vanilla painfully slow rate.") && enableExtendedCauldron;
 			dropCauldronContents = configFile.getBoolean("dropContents", "recipes.cauldron", dropCauldronContents, "Cauldrons will drop their contents when broken.") && enableExtendedCauldron;
+
+			cauldronObsidian = configFile.getBoolean("obsidian", "recipes.cauldron", cauldronObsidian, "Allows making obsidian in a cauldron by using a lava bucket on a water filled cauldron. Supports modded buckets. If cauldron fluids is enabled, you can also use a water bucket on a lava filled cauldron.");
 
 			// fluids
 			enableCauldronFluids = configFile.getBoolean("fluids", "recipes.cauldron", enableCauldronFluids, "Allows cauldrons to be filled with any fluid and use them in recipes") && enableExtendedCauldron;

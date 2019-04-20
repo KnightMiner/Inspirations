@@ -167,7 +167,7 @@ public interface ICauldronRecipe {
 			}
 
 			CauldronState state = new CauldronState();
-			state.fluid = new FluidStack(fluid, 1);
+			state.fluid = new FluidStack(fluid, Fluid.BUCKET_VOLUME);
 			return state;
 		}
 
@@ -212,13 +212,36 @@ public interface ICauldronRecipe {
 			return fluid == null ? null : fluid.getFluid();
 		}
 
-		public boolean matches(CauldronState state) {
-			if(this == state) {
-				return true;
+		/**
+		 * Gets the fluid stack for this state
+		 * @return  fluid stack for this state, or null if it is not a fluid
+		 */
+		public FluidStack getFluidStack() {
+			if(this == WATER) {
+				return new FluidStack(FluidRegistry.WATER, Fluid.BUCKET_VOLUME);
 			}
-			return state.color == this.color
+			return fluid == null ? null : fluid.copy();
+		}
+
+		/**
+		 * Checks if two cauldron states match
+		 * @param state  State to compare
+		 * @return  True if the states match, that is they are the same type (dye, potion, or fluid) and have the same contents
+		 */
+		public boolean matches(CauldronState state) {
+			return this == state
+					|| (state.color == this.color
 					&& state.potion == this.potion
-					&& state.getFluid() == this.getFluid();
+					&& state.getFluid() == this.getFluid());
+		}
+
+		/**
+		 * Checks if a fluid is valid for a cauldron state
+		 * @param fluid  Fluid to check
+		 * @return  True if the fluid is valid, that is its non null, bucket volume, and no NBT
+		 */
+		public static boolean fluidValid(FluidStack fluid) {
+			return fluid != null && fluid.amount == Fluid.BUCKET_VOLUME && fluid.tag == null;
 		}
 
 		/* NBT */
@@ -248,7 +271,7 @@ public interface ICauldronRecipe {
 			if(tags.hasKey(TAG_FLUID)) {
 				Fluid fluid = FluidRegistry.getFluid(tags.getString(TAG_FLUID));
 				if(fluid != null) {
-					state.fluid = new FluidStack(fluid, 1);
+					state.fluid = new FluidStack(fluid, Fluid.BUCKET_VOLUME);
 				}
 			}
 

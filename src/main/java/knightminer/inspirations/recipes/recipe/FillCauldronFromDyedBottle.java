@@ -12,7 +12,7 @@ public enum FillCauldronFromDyedBottle implements ICauldronRecipe {
 	INSTANCE;
 
 	@Override
-	public boolean matches(ItemStack stack, boolean boiling, int level, ICauldronRecipe.CauldronState state) {
+	public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {
 		if(level == InspirationsRegistry.getCauldronMax()) {
 			return false;
 		}
@@ -22,7 +22,7 @@ public enum FillCauldronFromDyedBottle implements ICauldronRecipe {
 	}
 
 	@Override
-	public CauldronState getState(ItemStack stack, boolean boiling, int level, ICauldronRecipe.CauldronState state) {
+	public CauldronState getState(ItemStack stack, boolean boiling, int level, CauldronState state) {
 		int newColor = InspirationsRecipes.dyedWaterBottle.getColor(stack);
 		if(level == 0) {
 			return CauldronState.dye(newColor);

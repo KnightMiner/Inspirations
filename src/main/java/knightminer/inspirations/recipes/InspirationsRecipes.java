@@ -16,7 +16,9 @@ import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.recipe.cauldron.CauldronBrewingRecipe;
 import knightminer.inspirations.library.recipe.cauldron.CauldronDyeRecipe;
 import knightminer.inspirations.library.recipe.cauldron.CauldronFluidRecipe;
+import knightminer.inspirations.library.recipe.cauldron.CauldronMixRecipe;
 import knightminer.inspirations.library.recipe.cauldron.FillCauldronRecipe;
+import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
 import knightminer.inspirations.library.util.RecipeUtil;
 import knightminer.inspirations.library.util.ReflectionUtil;
 import knightminer.inspirations.recipes.block.BlockEnhancedCauldron;
@@ -104,7 +106,8 @@ public class InspirationsRecipes extends PulseBase {
 			beetrootSoup = registerColoredFluid("beetroot_soup", 0xFFB82A30);
 			rabbitStew = registerColoredFluid("rabbit_stew", 0xFF984A2C);
 			if(Config.enableMilk) {
-				milk = registerFluid(new Fluid("milk", Util.getResource("blocks/milk"), Util.getResource("blocks/milk_flow")));			}
+				milk = registerFluid(new Fluid("milk", Util.getResource("blocks/milk"), Util.getResource("blocks/milk_flow")));
+			}
 		}
 	}
 
@@ -126,7 +129,7 @@ public class InspirationsRecipes extends PulseBase {
 		IForgeRegistry<Item> r = event.getRegistry();
 
 		if(Config.enableCauldronDyeing) {
-			InspirationsRecipes.dyedWaterBottle = registerItem(r, new ItemDyedWaterBottle(), "dyed_bottle");
+			dyedWaterBottle = registerItem(r, new ItemDyedWaterBottle(), "dyed_bottle");
 		}
 	}
 
@@ -189,6 +192,18 @@ public class InspirationsRecipes extends PulseBase {
 		InspirationsRegistry.addCauldronRecipe(new FillCauldronRecipe(RecipeMatch.of(Blocks.ICE), FluidRegistry.WATER, InspirationsRegistry.getCauldronMax(), ItemStack.EMPTY, true, SoundEvents.ITEM_BUCKET_EMPTY_LAVA));
 		if(Config.spongeEmptyCauldron) {
 			InspirationsRegistry.addCauldronRecipe(SpongeEmptyCauldron.INSTANCE);
+		}
+		if(Config.cauldronObsidian) {
+			ICauldronRecipe recipe;
+			// minor detail: if the cauldron can hold fluids, show the lava in the cauldron in JEI
+			// else show water in the cauldron as lava is not allowed
+			// in either case both are supporteds
+			if(Config.enableCauldronFluids) {
+				recipe = new CauldronMixRecipe(FluidRegistry.LAVA, FluidRegistry.WATER, new ItemStack(Blocks.OBSIDIAN));
+			} else {
+				recipe = new CauldronMixRecipe(FluidRegistry.WATER, FluidRegistry.LAVA, new ItemStack(Blocks.OBSIDIAN));
+			}
+			InspirationsRegistry.addCauldronRecipe(recipe);
 		}
 
 		if(!Config.enableExtendedCauldron) {
