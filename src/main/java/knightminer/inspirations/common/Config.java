@@ -208,6 +208,7 @@ public class Config {
 	public static boolean enableNorthCompass = true;
 	public static boolean renameVanillaCompass = true;
 	public static boolean enableBarometer = true;
+	public static boolean enablePhotometer = true;
 	// crook
 	public static boolean enableCrook = true;
 	public static boolean separateCrook = true;
@@ -424,6 +425,9 @@ public class Config {
 
 			// barometer
 			enableBarometer = configFile.getBoolean("barometer", "tools", enableBarometer, "Enables the barometer: a tool to measure the player's height in world.");
+
+			// photometer
+			enablePhotometer = configFile.getBoolean("photometer", "tools", enablePhotometer, "Enables the photometer: a tool to measure light in world. Can be pointed at a block to measure the light level of that block.");
 		}
 
 		// tweaks
@@ -853,6 +857,7 @@ public class Config {
 				case "lock": return enableLock;
 				case "nether_crook": return netherCrooks;
 				case "north_compass": return enableNorthCompass;
+				case "photometer": return enablePhotometer;
 				case "redstone_charge": return enableRedstoneCharge;
 
 				// tweaks

@@ -10,6 +10,7 @@ import knightminer.inspirations.library.Util;
 import knightminer.inspirations.shared.InspirationsShared;
 import knightminer.inspirations.tools.client.BarometerGetter;
 import knightminer.inspirations.tools.client.NorthCompassGetter;
+import knightminer.inspirations.tools.client.PhotometerGetter;
 import knightminer.inspirations.tools.entity.EntityModArrow;
 import knightminer.inspirations.tools.item.ItemCrook;
 import knightminer.inspirations.tools.item.ItemModArrow;
@@ -61,6 +62,7 @@ public class InspirationsTools extends PulseBase {
 	public static Item witherCrook;
 	public static Item northCompass;
 	public static Item barometer;
+	public static Item photometer;
 
 	// tool materials
 	public static ToolMaterial bone;
@@ -123,6 +125,11 @@ public class InspirationsTools extends PulseBase {
 		if(Config.enableBarometer) {
 			barometer = registerItem(r, new Item().setCreativeTab(CreativeTabs.TOOLS), "barometer");
 			barometer.addPropertyOverride(new ResourceLocation("height"), new BarometerGetter());
+		}
+
+		if(Config.enablePhotometer) {
+			photometer = registerItem(r, new Item().setCreativeTab(CreativeTabs.TOOLS), "photometer");
+			photometer.addPropertyOverride(new ResourceLocation("light"), new PhotometerGetter());
 		}
 	}
 
