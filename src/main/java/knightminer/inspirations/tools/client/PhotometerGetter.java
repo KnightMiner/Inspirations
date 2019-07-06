@@ -33,8 +33,8 @@ public class PhotometerGetter implements IItemPropertyGetter {
 
 		// if currently holding the item, use the block the player is looking at
 		BlockPos pos = null;
-		if (entity instanceof EntityPlayer) {
-			EntityPlayer player = (EntityPlayer)entity;
+		if (entity == Minecraft.getMinecraft().player) {
+			EntityPlayer player = Minecraft.getMinecraft().player;
 			if (player.getHeldItemMainhand() == stack || player.getHeldItemOffhand() == stack) {
 				RayTraceResult trace = Minecraft.getMinecraft().objectMouseOver;
 				if (trace != null && trace.typeOfHit == RayTraceResult.Type.BLOCK) {
@@ -47,7 +47,7 @@ public class PhotometerGetter implements IItemPropertyGetter {
 		}
 		// if any part failed, just use the entity position
 		if (pos == null) {
-			pos = new BlockPos(entity.posX, entity.posY, entity.posZ);
+			pos = new BlockPos(entity);
 		}
 
 		// only use block light, skylight is not too useful
