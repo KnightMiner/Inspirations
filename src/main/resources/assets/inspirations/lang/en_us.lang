@@ -196,6 +196,13 @@ item.inspirations.origin_compass.name=Origin Compass
 item.inspirations.north_compass.name=North Compass
 item.inspirations.barometer.name=Barometer
 item.inspirations.photometer.name=Photometer
+item.inspirations.waypoint_compass.name=Beacon Compass
+item.inspirations.waypoint_compass.blank.tooltip=Use on an active beacon to set target
+item.inspirations.waypoint_compass.pos.tooltip=%s at (%s, %s)
+
+dimension.overworld.name=Overworld
+dimension.the_nether.name=The Nether
+dimension.the_end.name=The End
 
 ############
 #  Tweaks  #

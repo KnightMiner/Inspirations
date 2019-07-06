@@ -1,7 +1,6 @@
 package knightminer.inspirations.tools;
 
 import com.google.common.eventbus.Subscribe;
-
 import knightminer.inspirations.common.CommonProxy;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.EntityIds;
@@ -15,6 +14,8 @@ import knightminer.inspirations.tools.entity.EntityModArrow;
 import knightminer.inspirations.tools.item.ItemCrook;
 import knightminer.inspirations.tools.item.ItemModArrow;
 import knightminer.inspirations.tools.item.ItemRedstoneCharger;
+import knightminer.inspirations.tools.item.ItemWaypointCompass;
+import knightminer.inspirations.tools.recipe.WaypointCompassCopyRecipe;
 import knightminer.inspirations.utility.block.BlockRedstoneCharge;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDispenser;
@@ -30,6 +31,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.Item.ToolMaterial;
 import net.minecraft.item.ItemArrow;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -63,6 +65,7 @@ public class InspirationsTools extends PulseBase {
 	public static Item northCompass;
 	public static Item barometer;
 	public static Item photometer;
+	public static Item waypointCompass;
 
 	// tool materials
 	public static ToolMaterial bone;
@@ -131,6 +134,10 @@ public class InspirationsTools extends PulseBase {
 			photometer = registerItem(r, new Item().setCreativeTab(CreativeTabs.TOOLS), "photometer");
 			photometer.addPropertyOverride(new ResourceLocation("light"), new PhotometerGetter());
 		}
+
+		if(Config.enableWaypointCompass) {
+			waypointCompass = registerItem(r, new ItemWaypointCompass(), "waypoint_compass");
+		}
 	}
 
 	@SubscribeEvent
@@ -139,6 +146,14 @@ public class InspirationsTools extends PulseBase {
 		r.register(getEntityBuilder(EntityModArrow.class, "arrow", EntityIds.ARROW)
 				.tracker(64, 1, false)
 				.build());
+	}
+
+	@SubscribeEvent
+	public void registerRecipes(Register<IRecipe> event) {
+		IForgeRegistry<IRecipe> r = event.getRegistry();
+		if(Config.enableWaypointCompass) {
+			register(r, new WaypointCompassCopyRecipe(), "waypoint_compass_copy");
+		}
 	}
 
 	@Subscribe

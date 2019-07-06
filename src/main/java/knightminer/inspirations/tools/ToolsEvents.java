@@ -2,6 +2,7 @@ package knightminer.inspirations.tools;
 
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.Util;
+import knightminer.inspirations.tools.item.ItemWaypointCompass;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockVine;
 import net.minecraft.block.state.IBlockState;
@@ -13,6 +14,7 @@ import net.minecraft.item.ItemHoe;
 import net.minecraft.item.ItemShears;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityBeacon;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -29,14 +31,13 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.oredict.OreDictionary;
 
-import static knightminer.inspirations.shared.InspirationsShared.materials;
-
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
-import static knightminer.inspirations.shared.InspirationsShared.lock;
 import static knightminer.inspirations.shared.InspirationsShared.key;
+import static knightminer.inspirations.shared.InspirationsShared.lock;
+import static knightminer.inspirations.shared.InspirationsShared.materials;
 
 public class ToolsEvents {
 
@@ -284,5 +285,38 @@ public class ToolsEvents {
 		// hoes are dumb, no getter for the material and its protected so an AT could crash other mods
 		// so just use a constant speed of 3
 		event.setNewSpeed(2);
+	}
+
+	@SubscribeEvent
+	public static void setWaypoint(RightClickBlock event) {
+		ItemStack stack = event.getItemStack();
+		Item item = stack.getItem();
+		if (item != InspirationsTools.waypointCompass && (Config.craftWaypointCompass || item != Items.COMPASS)) {
+			return;
+		}
+		World world = event.getWorld();
+		BlockPos pos = event.getPos();
+		TileEntity te = world.getTileEntity(pos);
+		if (te instanceof TileEntityBeacon && ((TileEntityBeacon)te).isComplete) {
+			if (!world.isRemote) {
+				// give the player the linked compass
+				ItemStack newStack = new ItemStack(InspirationsTools.waypointCompass, 1, stack.getMetadata());
+				ItemWaypointCompass.setNBT(newStack, world, pos);
+				if (stack.hasDisplayName()) {
+					newStack.setStackDisplayName(stack.getDisplayName());
+				}
+
+				// handle stacks of compasses
+				stack.shrink(1);
+				EntityPlayer player = event.getEntityPlayer();
+				if (stack.isEmpty()) {
+					player.setHeldItem(event.getHand(), newStack);
+				} else {
+					ItemHandlerHelper.giveItemToPlayer(player, newStack);
+				}
+			}
+			event.setCanceled(true);
+			event.setCancellationResult(EnumActionResult.SUCCESS);
+		}
 	}
 }

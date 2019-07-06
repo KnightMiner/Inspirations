@@ -1,15 +1,8 @@
 package knightminer.inspirations.common;
 
-import java.util.Arrays;
-import java.util.Set;
-import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
-import java.util.stream.Stream;
-
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
-
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.ItemMetaKey;
@@ -25,6 +18,12 @@ import net.minecraftforge.common.crafting.JsonContext;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import slimeknights.mantle.pulsar.config.ForgeCFG;
+
+import java.util.Arrays;
+import java.util.Set;
+import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 public class Config {
 
@@ -215,6 +214,12 @@ public class Config {
 	public static boolean hoeCrook = false;
 	public static int crookChance = 10;
 	public static boolean netherCrooks = true;
+	// waypoint compass
+	public static boolean enableWaypointCompass = true;
+	public static boolean dyeWaypointCompass = true;
+	public static boolean craftWaypointCompass = true;
+	public static boolean waypointCompassAdvTooltip = true;
+	public static boolean waypointCompassCrossDimension = true;
 
 	// tweaks
 	public static boolean enablePigDesaddle = true;
@@ -264,7 +269,6 @@ public class Config {
 	 * Loads the configuration file from the event
 	 * @param event  PreInit event from main mod class
 	 */
-	@SuppressWarnings("deprecation")
 	public static void preInit(FMLPreInitializationEvent event) {
 		configFile = new Configuration(event.getSuggestedConfigurationFile(), "0.3", false);
 
@@ -428,6 +432,13 @@ public class Config {
 
 			// photometer
 			enablePhotometer = configFile.getBoolean("photometer", "tools", enablePhotometer, "Enables the photometer: a tool to measure light in world. Can be pointed at a block to measure the light level of that block.");
+
+			// photometer
+			enableWaypointCompass = configFile.getBoolean("waypointCompass", "tools", enableWaypointCompass, "Enables the waypoint compass: a compass which points towards a full beacon.");
+			dyeWaypointCompass = configFile.getBoolean("dye", "tools.waypointCompass", dyeWaypointCompass, "If true, waypoint compasses can be dyed all vanilla colors") && enableWaypointCompass;
+			craftWaypointCompass = configFile.getBoolean("craft", "tools.waypointCompass", craftWaypointCompass, "If true, waypoint compasses can be crafted using iron and a blaze rod. If false, they are obtained by using a vanilla compass on a beacon.") && enableWaypointCompass;
+			waypointCompassAdvTooltip = configFile.getBoolean("advTooltip", "tools.waypointCompass", waypointCompassAdvTooltip, "If true, waypoint compasses show the position target in the advanced item tooltip. Disable for packs that disable coordinates.");
+			waypointCompassCrossDimension = configFile.getBoolean("crossDimension", "tools.waypointCompass", waypointCompassCrossDimension, "If true, waypoint compasses work across dimensions. The coordinates between the overworld and nether will be adjusted, allowing for portal syncing.");
 		}
 
 		// tweaks
@@ -853,7 +864,9 @@ public class Config {
 				// tools
 				case "barometer": return enableBarometer;
 				case "charged_arrow": return enableChargedArrow;
+				case "craft_waypoint_compass": return craftWaypointCompass;
 				case "crook": return separateCrook;
+				case "dye_waypoint_compass": return dyeWaypointCompass;
 				case "lock": return enableLock;
 				case "nether_crook": return netherCrooks;
 				case "north_compass": return enableNorthCompass;

@@ -54,5 +54,30 @@
       "type": "forge:ore_dict",
       "ore": "trapdoorWood"
     }
+  },
+  {
+    "conditions": [
+      {"type": "pulse_loaded", "pulse": "InspirationsTools"},
+      {"type": "config", "prop": "dye_waypoint_compass"}
+    ],
+    "name": "WAYPOINT_COMPASS",
+    "ingredient": [
+      {"item": "inspirations:waypoint_compass", "data":  0},
+      {"item": "inspirations:waypoint_compass", "data":  1},
+      {"item": "inspirations:waypoint_compass", "data":  2},
+      {"item": "inspirations:waypoint_compass", "data":  3},
+      {"item": "inspirations:waypoint_compass", "data":  4},
+      {"item": "inspirations:waypoint_compass", "data":  5},
+      {"item": "inspirations:waypoint_compass", "data":  6},
+      {"item": "inspirations:waypoint_compass", "data":  7},
+      {"item": "inspirations:waypoint_compass", "data":  8},
+      {"item": "inspirations:waypoint_compass", "data":  9},
+      {"item": "inspirations:waypoint_compass", "data": 10},
+      {"item": "inspirations:waypoint_compass", "data": 11},
+      {"item": "inspirations:waypoint_compass", "data": 12},
+      {"item": "inspirations:waypoint_compass", "data": 13},
+      {"item": "inspirations:waypoint_compass", "data": 14},
+      {"item": "inspirations:waypoint_compass", "data": 15}
+    ]
   }
 ]

@@ -56,6 +56,10 @@ public class Util {
 		return I18n.translateToLocal(I18n.translateToLocalFormatted(key, pars).trim()).trim();
 	}
 
+	public static boolean canTranslate(String key) {
+		return I18n.canTranslate(key);
+	}
+
 	public static Logger getLogger(String type) {
 		String log = Inspirations.modID;
 

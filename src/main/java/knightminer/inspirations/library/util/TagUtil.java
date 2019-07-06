@@ -6,6 +6,7 @@ import com.google.gson.JsonSyntaxException;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
 
 public final class TagUtil {
 	private TagUtil() {}
@@ -27,6 +28,35 @@ public final class TagUtil {
 		}
 
 		return tag.getCompoundTag(key);
+	}
+
+	/* BlockPos */
+
+	/**
+	 * Converts a block position to NBT
+	 * @param pos  Position
+	 * @return  NBT compound
+	 */
+	public static NBTTagCompound writePos(BlockPos pos) {
+		NBTTagCompound tag = new NBTTagCompound();
+		if(pos != null) {
+			tag.setInteger("X", pos.getX());
+			tag.setInteger("Y", pos.getY());
+			tag.setInteger("Z", pos.getZ());
+		}
+		return tag;
+	}
+
+	/**
+	 * Reads a block position from a given tag compound
+	 * @param tag  Tag to read
+	 * @return  BlockPos, or null if invalid
+	 */
+	public static BlockPos readPos(NBTTagCompound tag) {
+		if(tag != null && tag.hasKey("X", 99) && tag.hasKey("Y", 99) && tag.hasKey("Z", 99)) {
+			return new BlockPos(tag.getInteger("X"), tag.getInteger("Y"), tag.getInteger("Z"));
+		}
+		return null;
 	}
 
 	/* JSON */
