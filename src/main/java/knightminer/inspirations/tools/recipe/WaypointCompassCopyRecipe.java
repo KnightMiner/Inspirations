@@ -2,6 +2,7 @@ package knightminer.inspirations.tools.recipe;
 
 import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.tools.item.ItemWaypointCompass;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
@@ -22,7 +23,7 @@ public class WaypointCompassCopyRecipe extends IForgeRegistryEntry.Impl<IRecipe>
       if (stack.isEmpty()) {
         continue;
       }
-      if (stack.getItem() != InspirationsTools.waypointCompass) {
+      if (!ItemWaypointCompass.isWaypointCompass(stack)) {
         return false;
       }
 
@@ -58,7 +59,7 @@ public class WaypointCompassCopyRecipe extends IForgeRegistryEntry.Impl<IRecipe>
     // already validated that these are unique in matches
     for (int i = 0; i < inv.getSizeInventory(); i++) {
       ItemStack stack = inv.getStackInSlot(i);
-      if (stack.getItem() != InspirationsTools.waypointCompass) {
+      if (!ItemWaypointCompass.isWaypointCompass(stack)) {
         continue;
       }
 
@@ -72,7 +73,11 @@ public class WaypointCompassCopyRecipe extends IForgeRegistryEntry.Impl<IRecipe>
     }
 
     if (!result.isEmpty() && !waypoint.isEmpty()) {
-      result = result.copy();
+      if (result.getItem() == Items.COMPASS) {
+        result = new ItemStack(InspirationsTools.waypointCompass, 1, 0);
+      } else {
+        result = result.copy();
+      }
       result.setCount(count);
       ItemWaypointCompass.copyNBT(result, waypoint);
       return result;

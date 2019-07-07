@@ -291,7 +291,7 @@ public class ToolsEvents {
 	public static void setWaypoint(RightClickBlock event) {
 		ItemStack stack = event.getItemStack();
 		Item item = stack.getItem();
-		if (item != InspirationsTools.waypointCompass && (Config.craftWaypointCompass || item != Items.COMPASS)) {
+		if (!ItemWaypointCompass.isWaypointCompass(stack)) {
 			return;
 		}
 		World world = event.getWorld();

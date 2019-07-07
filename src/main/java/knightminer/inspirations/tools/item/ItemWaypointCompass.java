@@ -211,4 +211,14 @@ public class ItemWaypointCompass extends Item {
     }
     return -1;
   }
+
+  /**
+   * Checks if the given stack is a valid base as a waypoint compass
+   * @param stack  Stack to check
+   * @return  True if it can be used as a waypoint compass, false otherwise
+   */
+  public static boolean isWaypointCompass(ItemStack stack) {
+    Item item = stack.getItem();
+    return item == InspirationsTools.waypointCompass || (!Config.craftWaypointCompass && item == Items.COMPASS);
+  }
 }
