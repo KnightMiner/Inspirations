@@ -30,6 +30,7 @@ import org.apache.logging.log4j.Logger;
 import slimeknights.mantle.util.RecipeMatch;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -39,7 +40,6 @@ import java.util.Set;
 
 public class InspirationsRegistry {
 	public static final Logger log = Util.getLogger("api");
-	private static boolean cauldronBigger = false, expensiveCauldronBrewing = false;
 
 	/**
 	 * Sets a value from the Inspirations config into the registry. Used to keep the config out of the library
@@ -367,25 +367,6 @@ public class InspirationsRegistry {
 	 */
 	private static List<ICauldronRecipe> cauldronRecipes = new ArrayList<>();
 	private static Set<ItemMetaKey> cauldronBlacklist = new HashSet<>();
-	private static Set<Fluid> cauldronWater = new HashSet<>();
-	private static Set<Block> cauldronFireBlocks = new HashSet<>();
-	private static Set<IBlockState> cauldronFireStates = new HashSet<>();
-
-	/**
-	 * Returns the maximum size for the cauldron
-	 * @return  4 if bigger cauldron, 3 otherwise
-	 */
-	public static int getCauldronMax() {
-		return cauldronBigger ? 4 : 3;
-	}
-
-	/**
-	 * Returns if cauldron brewing is more expensive
-	 * @return  True if cauldron brewing is more expensive
-	 */
-	public static boolean expensiveCauldronBrewing() {
-		return expensiveCauldronBrewing;
-	}
 
 	/**
 	 * Gets the result of a cauldron recipe
@@ -485,24 +466,6 @@ public class InspirationsRegistry {
 	}
 
 	/**
-	 * Adds the given fluid as cauldron water. Used for rain and fire checks among a few other things
-	 * @param fluid  Fluid to add
-	 */
-	public static void addCauldronWater(Fluid fluid) {
-		cauldronWater.add(fluid);
-	}
-
-	/**
-	 * Checks if this fluid is considered water in the cauldron.
-	 * Used for rain checks along with some recipe transformations
-	 * @param fluid  Fluid to check
-	 * @return  True if the fluid is considered water
-	 */
-	public static boolean isCauldronWater(Fluid fluid) {
-		return fluid != null && cauldronWater.contains(fluid);
-	}
-
-	/**
 	 * Adds an item to the cauldron blacklist, preventing its normal cauldron interaction
 	 * @param item  Item to add
 	 * @param meta  Metadata to use, supports wildcard
@@ -519,7 +482,52 @@ public class InspirationsRegistry {
 	public static boolean isCauldronBlacklist(ItemStack stack) {
 		// check both the item with its current meta and with wildcard meta
 		return cauldronBlacklist.contains(new ItemMetaKey(stack))
-				|| cauldronBlacklist.contains(new ItemMetaKey(stack.getItem(), OreDictionary.WILDCARD_VALUE));
+					 || cauldronBlacklist.contains(new ItemMetaKey(stack.getItem(), OreDictionary.WILDCARD_VALUE));
+	}
+
+
+	/*
+	 * Cauldron properties
+	 */
+	private static boolean cauldronBigger = false, expensiveCauldronBrewing = false;
+	private static Set<Fluid> cauldronWater = new HashSet<>();
+	private static Set<Block> cauldronFireBlocks = new HashSet<>();
+	private static Set<IBlockState> cauldronFireStates = new HashSet<>();
+	private static Map<Block,CauldronState> cauldronBlockStates = new HashMap<>();
+	private static Map<CauldronState,IBlockState> cauldronFullStates = new HashMap<>();
+
+	/**
+	 * Returns the maximum size for the cauldron
+	 * @return  4 if bigger cauldron, 3 otherwise
+	 */
+	public static int getCauldronMax() {
+		return cauldronBigger ? 4 : 3;
+	}
+
+	/**
+	 * Returns if cauldron brewing is more expensive
+	 * @return  True if cauldron brewing is more expensive
+	 */
+	public static boolean expensiveCauldronBrewing() {
+		return expensiveCauldronBrewing;
+	}
+
+	/**
+	 * Adds the given fluid as cauldron water. Used for rain and fire checks among a few other things
+	 * @param fluid  Fluid to add
+	 */
+	public static void addCauldronWater(Fluid fluid) {
+		cauldronWater.add(fluid);
+	}
+
+	/**
+	 * Checks if this fluid is considered water in the cauldron.
+	 * Used for rain checks along with some recipe transformations
+	 * @param fluid  Fluid to check
+	 * @return  True if the fluid is considered water
+	 */
+	public static boolean isCauldronWater(Fluid fluid) {
+		return fluid != null && cauldronWater.contains(fluid);
 	}
 
 	/**
@@ -545,5 +553,61 @@ public class InspirationsRegistry {
 	 */
 	public static boolean isCauldronFire(IBlockState state) {
 		return cauldronFireBlocks.contains(state.getBlock()) || cauldronFireStates.contains(state);
+	}
+
+	/** Internal method to add the normal cauldron block, just needs to run after the substitution */
+	public static void registerDefaultCauldron() {
+		cauldronBlockStates.put(Blocks.CAULDRON, CauldronState.WATER);
+	}
+
+	/**
+	 * Links a block state to a full iron cauldron state, should not be used for items that are not an iron cauldron
+	 * @param state          Block state being registered
+	 * @param cauldronState  State the cauldron is filled with
+	 */
+	public static void registerFullCauldron(IBlockState state, CauldronState cauldronState) {
+		cauldronBlockStates.put(state.getBlock(), cauldronState);
+		cauldronFullStates.put(cauldronState, state);
+	}
+
+	/**
+	 * Checks if a block is a normal iron cauldron
+	 * @param state  State to check
+	 * @return  True if its a normal cauldron, false otherwise
+	 */
+	public static boolean isNormalCauldron(IBlockState state) {
+		return cauldronBlockStates.containsKey(state.getBlock());
+	}
+
+	/**
+	 * Gets the state for the given cauldron
+	 * @param state  Block state instance
+	 * @return  Cauldron state for the given block state
+	 */
+	public static CauldronState getCauldronState(IBlockState state) {
+		Block block = state.getBlock();
+		if (cauldronBlockStates.containsKey(block)) {
+			return cauldronBlockStates.get(block);
+		}
+		throw new IllegalArgumentException("Attempted to get state of a cauldron that is not registered");
+	}
+
+	/**
+	 * Checks if a given cauldron state has a full cauldron
+	 * @param state  Cauldron state to check
+	 * @return  True if it has a full cauldron
+	 */
+	public static boolean hasFullCauldron(CauldronState state) {
+		return cauldronFullStates.containsKey(state);
+	}
+
+	/**
+	 * Gets the full cauldron for a given state
+	 * @param state  Cauldron state to check
+	 * @return  Full cauldron block state
+	 */
+	@Nullable
+	public static IBlockState getFullCauldron(CauldronState state) {
+		return cauldronFullStates.get(state);
 	}
 }

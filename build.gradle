@@ -7,6 +7,9 @@ buildscript {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
     }
 }
+plugins {
+  id "com.wynprice.cursemaven" version "1.1.0"
+}
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'maven'
 apply plugin: 'maven-publish'
@@ -57,9 +60,8 @@ repositories {
         name "Tehnut Maven FS"
         url "https://tehnut.info/maven"
     }
-    maven {
-        name = 'CurseForge'
-        url = 'https://minecraft.curseforge.com/api/maven/'
+	maven { // LLibrary
+        url = "http://maven.mcmoddev.com"
     }
 }
 
@@ -70,8 +72,10 @@ dependencies {
     deobfCompile("mcjty.theoneprobe:TheOneProbe-1.12:${config.probe_version}") {
         exclude group: 'cofh' // don't grab redstone flux too, don't use it
     }
-    //deobfCompile "leather-works:LeatherWorks:1.12:1.76.0.40"
-    //deobfCompile "tough-as-nails:ToughAsNails-1.12.2:3.1.0.140:universal"
+    //deobfCompile curse.resolve("leather-works", "2695934")
+    //deobfCompile curse.resolve("tough-as-nails", "2644652")
+	//deobfCompile "net.ilexiconn:llibrary:1.7.9-1.12.2"
+    //deobfCompile curse.resolve("rats", "2732516")
 }
 
 processResources {

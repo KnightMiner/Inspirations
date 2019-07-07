@@ -10,7 +10,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.EntitySquid;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.EnumDyeColor;
@@ -47,7 +46,7 @@ public class RecipesEvents {
 		World world = event.getWorld();
 		BlockPos pos = event.getPos();
 		IBlockState state = world.getBlockState(pos);
-		if(state.getBlock() != Blocks.CAULDRON) {
+		if(!InspirationsRegistry.isNormalCauldron(state)) {
 			return;
 		}
 		ItemStack stack = event.getItemStack();

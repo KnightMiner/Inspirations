@@ -1,12 +1,8 @@
 package knightminer.inspirations.recipes;
 
-import java.util.Collection;
-import java.util.Map;
-
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.eventbus.Subscribe;
-
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.CommonProxy;
 import knightminer.inspirations.common.Config;
@@ -75,6 +71,9 @@ import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.pulsar.pulse.Pulse;
 import slimeknights.mantle.util.RecipeMatch;
+
+import java.util.Collection;
+import java.util.Map;
 
 @Pulse(id = InspirationsRecipes.pulseID, description = "Adds additional recipe types, including cauldrons and anvil smashing")
 public class InspirationsRecipes extends PulseBase {
@@ -189,6 +188,7 @@ public class InspirationsRecipes extends PulseBase {
 	}
 
 	private void registerCauldronRecipes() {
+		InspirationsRegistry.registerDefaultCauldron();
 		InspirationsRegistry.addCauldronRecipe(new FillCauldronRecipe(RecipeMatch.of(Blocks.ICE), FluidRegistry.WATER, InspirationsRegistry.getCauldronMax(), ItemStack.EMPTY, true, SoundEvents.ITEM_BUCKET_EMPTY_LAVA));
 		if(Config.spongeEmptyCauldron) {
 			InspirationsRegistry.addCauldronRecipe(SpongeEmptyCauldron.INSTANCE);
@@ -197,7 +197,7 @@ public class InspirationsRecipes extends PulseBase {
 			ICauldronRecipe recipe;
 			// minor detail: if the cauldron can hold fluids, show the lava in the cauldron in JEI
 			// else show water in the cauldron as lava is not allowed
-			// in either case both are supporteds
+			// in either case both are supported
 			if(Config.enableCauldronFluids) {
 				recipe = new CauldronMixRecipe(FluidRegistry.LAVA, FluidRegistry.WATER, new ItemStack(Blocks.OBSIDIAN));
 			} else {

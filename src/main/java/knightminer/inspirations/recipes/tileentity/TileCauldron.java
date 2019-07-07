@@ -1,9 +1,5 @@
 package knightminer.inspirations.recipes.tileentity;
 
-import java.util.List;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.InspirationsRegistry;
@@ -24,14 +20,14 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
@@ -45,6 +41,10 @@ import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.List;
 
 public class TileCauldron extends TileEntity {
 	public static final DamageSource DAMAGE_BOIL = new DamageSource(Util.prefix("boiling")).setDamageBypassesArmor();
@@ -143,7 +143,8 @@ public class TileCauldron extends TileEntity {
 		TileCauldron cauldron = null;
 		CauldronState state = CauldronState.WATER;
 		boolean boiling = false;
-		if(Config.enableExtendedCauldron) {
+		Block block = blockState.getBlock();
+		if(Config.enableExtendedCauldron && block instanceof BlockEnhancedCauldron) {
 			TileEntity te = world.getTileEntity(pos);
 			if(te instanceof TileCauldron) {
 				cauldron = (TileCauldron) te;
@@ -151,6 +152,7 @@ public class TileCauldron extends TileEntity {
 				boiling = blockState.getValue(BlockEnhancedCauldron.BOILING);
 			}
 		} else {
+			state = InspirationsRegistry.getCauldronState(blockState);
 			boiling = InspirationsRegistry.isCauldronFire(world.getBlockState(pos.down()));
 		}
 
@@ -166,7 +168,7 @@ public class TileCauldron extends TileEntity {
 				CauldronState newState = recipe.getState(stack, boiling, level, state);
 
 				// if its not a TE, stop right here and disallow any recipes which do not return water
-				if(cauldron == null && !CauldronState.WATER.matches(newState)) {
+				if(!Config.enableExtendedCauldron && !CauldronState.WATER.matches(newState)) {
 					return true;
 				}
 
@@ -178,10 +180,29 @@ public class TileCauldron extends TileEntity {
 
 				// update level
 				int newLevel = recipe.getLevel(level);
-				if(newLevel != level) {
-					((BlockCauldron)blockState.getBlock()).setWaterLevel(world, pos, blockState, newLevel);
-					if(newLevel == 0) {
-						newState = CauldronState.WATER;
+				if(newLevel != level || !state.matches(newState)) {
+					// overrides for full cauldrons, assuming we started with a "valid cauldron", in this context an iron one
+					if(newLevel == InspirationsRegistry.getCauldronMax() && InspirationsRegistry.isNormalCauldron(blockState) && InspirationsRegistry.hasFullCauldron(newState)) {
+						world.setBlockState(pos, InspirationsRegistry.getFullCauldron(newState));
+						cauldron = null;
+					} else {
+						// if it was not a cauldron before, replace it with a vanilla cauldron
+						if (!(block instanceof BlockCauldron)) {
+							Blocks.CAULDRON.setWaterLevel(world, pos, Blocks.CAULDRON.getDefaultState(), newLevel);
+
+							// missing the tile entity
+							if(Config.enableExtendedCauldron) {
+								TileEntity te = world.getTileEntity(pos);
+								if(te instanceof TileCauldron) {
+									cauldron = (TileCauldron)te;
+								}
+							}
+						} else {
+							((BlockCauldron)block).setWaterLevel(world, pos, blockState, newLevel);
+						}
+						if(newLevel == 0) {
+							newState = CauldronState.WATER;
+						}
 					}
 				}
 

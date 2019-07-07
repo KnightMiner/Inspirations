@@ -6,6 +6,7 @@ import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe.CauldronState;
 import knightminer.inspirations.recipes.block.BlockEnhancedCauldron;
 import knightminer.inspirations.recipes.tileentity.TileCauldron;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockCauldron;
 import net.minecraft.block.BlockDispenser;
 import net.minecraft.block.state.IBlockState;
@@ -13,6 +14,7 @@ import net.minecraft.dispenser.BehaviorDefaultDispenseItem;
 import net.minecraft.dispenser.IBehaviorDispenseItem;
 import net.minecraft.dispenser.IBlockSource;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityDispenser;
@@ -54,7 +56,7 @@ public class DispenseCauldronRecipe extends BehaviorDefaultDispenseItem {
 		BlockPos pos = source.getBlockPos().offset(side);
 		World world = source.getWorld();
 		IBlockState state = world.getBlockState(pos);
-		if(!(state.getBlock() instanceof BlockCauldron)) {
+		if(!InspirationsRegistry.isNormalCauldron(state)) {
 			return fallback.dispense(source, stack);
 		}
 
@@ -62,7 +64,8 @@ public class DispenseCauldronRecipe extends BehaviorDefaultDispenseItem {
 		TileCauldron cauldron = null;
 		CauldronState cauldronState = CauldronState.WATER;
 		boolean boiling = false;
-		if(Config.enableExtendedCauldron) {
+		Block block = state.getBlock();
+		if(Config.enableExtendedCauldron && block instanceof BlockEnhancedCauldron) {
 			TileEntity te = world.getTileEntity(pos);
 			if(te instanceof TileCauldron) {
 				cauldron = (TileCauldron) te;
@@ -70,6 +73,7 @@ public class DispenseCauldronRecipe extends BehaviorDefaultDispenseItem {
 				boiling = state.getValue(BlockEnhancedCauldron.BOILING);
 			}
 		} else {
+			cauldronState = InspirationsRegistry.getCauldronState(state);
 			boiling = InspirationsRegistry.isCauldronFire(world.getBlockState(pos.down()));
 		}
 
@@ -84,8 +88,8 @@ public class DispenseCauldronRecipe extends BehaviorDefaultDispenseItem {
 		// grab state first since we may need to back out
 		CauldronState newState = recipe.getState(stack, boiling, level, cauldronState);
 
-		// if its not a TE, stop right here and disallow any recipes which do not return water
-		if(cauldron == null && !CauldronState.WATER.matches(newState)) {
+		// if its not extended, stop right here and disallow any recipes which do not return water
+		if(!Config.enableExtendedCauldron && !CauldronState.WATER.matches(newState)) {
 			return DEFAULT.dispense(source, stack);
 		}
 
@@ -97,10 +101,28 @@ public class DispenseCauldronRecipe extends BehaviorDefaultDispenseItem {
 
 		// update level
 		int newLevel = recipe.getLevel(level);
-		if(newLevel != level) {
-			((BlockCauldron)state.getBlock()).setWaterLevel(world, pos, state, newLevel);
-			if(newLevel == 0) {
-				newState = CauldronState.WATER;
+		if(newLevel != level || !cauldronState.matches(newState)) {
+			// overrides for full cauldrons, assuming we started with a "valid cauldron", in this context an iron one
+			if(newLevel == InspirationsRegistry.getCauldronMax() && InspirationsRegistry.isNormalCauldron(state) && InspirationsRegistry.hasFullCauldron(newState)) {
+				world.setBlockState(pos, InspirationsRegistry.getFullCauldron(newState));
+				cauldron = null;
+			} else {
+				if(!(block instanceof BlockCauldron)) {
+					Blocks.CAULDRON.setWaterLevel(world, pos, Blocks.CAULDRON.getDefaultState(), newLevel);
+
+					// missing the tile entity
+					if(Config.enableExtendedCauldron) {
+						TileEntity te = world.getTileEntity(pos);
+						if(te instanceof TileCauldron) {
+							cauldron = (TileCauldron)te;
+						}
+					}
+				} else {
+					((BlockCauldron)block).setWaterLevel(world, pos, state, newLevel);
+				}
+				if(newLevel == 0) {
+					newState = CauldronState.WATER;
+				}
 			}
 		}
 

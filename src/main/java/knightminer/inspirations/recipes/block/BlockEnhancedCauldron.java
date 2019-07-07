@@ -1,12 +1,6 @@
 package knightminer.inspirations.recipes.block;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.Random;
-
-import javax.annotation.Nonnull;
 import com.google.common.collect.Lists;
-
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.util.TextureBlockUtil;
@@ -42,6 +36,11 @@ import net.minecraftforge.common.property.IUnlistedProperty;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import slimeknights.mantle.property.PropertyString;
+
+import javax.annotation.Nonnull;
+import java.util.List;
+import java.util.Locale;
+import java.util.Random;
 
 public class BlockEnhancedCauldron extends BlockCauldron implements ITileEntityProvider {
 
@@ -227,12 +226,20 @@ public class BlockEnhancedCauldron extends BlockCauldron implements ITileEntityP
 		worldIn.updateComparatorOutputLevel(pos, this);
 	}
 
+	/**
+	 * Gets the level of a cauldron from the given state
+	 * @param state  Block state
+	 * @return  Cauldron level
+	 */
 	public static int getCauldronLevel(IBlockState state) {
 		Block block = state.getBlock();
 		if(state.getBlock() instanceof BlockEnhancedCauldron) {
 			return ((BlockEnhancedCauldron)block).getLevel(state);
 		}
-		return state.getValue(LEVEL);
+		if(state.getPropertyKeys().contains(LEVEL)) {
+			return state.getValue(LEVEL);
+		}
+		return InspirationsRegistry.getCauldronMax();
 	}
 
 	public int getLevel(IBlockState state) {

@@ -1,15 +1,13 @@
 package knightminer.inspirations;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.network.InspirationsNetwork;
+import knightminer.inspirations.plugins.leatherworks.LeatherWorksPlugin;
+import knightminer.inspirations.plugins.rats.RatsPlugin;
 import knightminer.inspirations.plugins.tan.ToughAsNailsPlugin;
 import knightminer.inspirations.plugins.top.TheOneProbePlugin;
 import knightminer.inspirations.plugins.waila.WailaPlugin;
-import knightminer.inspirations.plugins.leatherworks.LeatherWorksPlugin;
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.shared.InspirationsOredict;
 import knightminer.inspirations.shared.InspirationsShared;
@@ -21,6 +19,8 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import slimeknights.mantle.common.GuiHandler;
 import slimeknights.mantle.pulsar.control.PulseManager;
 
@@ -58,6 +58,7 @@ public class Inspirations {
 		pulseManager.registerPulse(new TheOneProbePlugin());
 		pulseManager.registerPulse(new WailaPlugin());
 		pulseManager.registerPulse(new LeatherWorksPlugin());
+		pulseManager.registerPulse(new RatsPlugin());
 
 		// needs to be done statically, but only the recipes module uses it
 		if(pulseManager.isPulseLoaded(InspirationsRecipes.pulseID) && Config.enableCauldronFluids) {

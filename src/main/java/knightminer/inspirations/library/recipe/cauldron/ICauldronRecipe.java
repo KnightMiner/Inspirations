@@ -1,7 +1,5 @@
 package knightminer.inspirations.library.recipe.cauldron;
 
-import javax.annotation.Nonnull;
-
 import knightminer.inspirations.library.InspirationsRegistry;
 import net.minecraft.init.PotionTypes;
 import net.minecraft.init.SoundEvents;
@@ -12,6 +10,8 @@ import net.minecraft.util.SoundEvent;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
+
+import javax.annotation.Nonnull;
 
 /**
  * Base interface for all cauldron recipes. Contains all methods required to determine new state, itemstack, and level based on the recipe
@@ -303,6 +303,32 @@ public interface ICauldronRecipe {
 			}
 
 			return tags;
+		}
+
+		@Override
+		public boolean equals(Object other) {
+			if (this == other) {
+				return true;
+			}
+			if (other == null || this.getClass() != other.getClass()) {
+				return false;
+			}
+			return this.matches((CauldronState)other);
+		}
+
+		@Override
+		public int hashCode() {
+			int hashCode = 0;
+			if (color > -1) {
+				hashCode = color;
+			}
+			if (potion != null) {
+				hashCode = hashCode * 31 + potion.hashCode();
+			}
+			if (fluid != null) {
+				hashCode = hashCode * 31 + fluid.getFluid().getName().hashCode();
+			}
+			return hashCode;
 		}
 	}
 }
