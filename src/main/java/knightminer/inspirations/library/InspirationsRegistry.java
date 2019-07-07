@@ -1,18 +1,6 @@
 package knightminer.inspirations.library;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.annotation.Nonnull;
-
-import org.apache.logging.log4j.Logger;
-
 import com.google.common.collect.ImmutableList;
-
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.event.RegisterEvent.RegisterCauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.CauldronFluidRecipe;
@@ -38,7 +26,16 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.oredict.OreDictionary;
+import org.apache.logging.log4j.Logger;
 import slimeknights.mantle.util.RecipeMatch;
+
+import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class InspirationsRegistry {
 	public static final Logger log = Util.getLogger("api");
@@ -82,7 +79,7 @@ public class InspirationsRegistry {
 
 	/**
 	 * Checks if the given item stack is a book
-	 * @param stack  Input stack
+	 * @param book  Input stack
 	 * @return  True if its a book
 	 */
 	public static float getBookEnchantingPower(ItemStack book) {
@@ -111,7 +108,7 @@ public class InspirationsRegistry {
 			// if the unlocalized name or the registry name has the keyword, its a book
 			if(item.getRegistryName().getResourcePath().contains(keyword)
 					|| stack.getUnlocalizedName().contains(keyword)) {
-				return 1.5f; // default power
+				return Config.defaultEnchantingPower;
 			}
 		}
 		return -1f;
@@ -142,8 +139,7 @@ public class InspirationsRegistry {
 
 	/**
 	 * Registers an override to state a stack is a book with an enchanting power
-	 * @param item   Item which is a book
-	 * @param meta   Meta which is a book
+	 * @param stack   Item which is a book
 	 * @param power  Enchanting power, 1.5 is default, NaN is not a book. 0 is a valid power
 	 */
 	public static void registerBook(ItemStack stack, float power) {
@@ -393,8 +389,8 @@ public class InspirationsRegistry {
 
 	/**
 	 * Gets the result of a cauldron recipe
-	 * @param input      ItemStack input
-	 * @param isBoiling  Whether the cauldron is boiling
+	 * @param input    ItemStack input
+	 * @param boiling  Whether the cauldron is boiling
 	 * @return  Result of the recipe
 	 */
 	public static ICauldronRecipe getCauldronResult(ItemStack input, boolean boiling, int level, CauldronState state) {

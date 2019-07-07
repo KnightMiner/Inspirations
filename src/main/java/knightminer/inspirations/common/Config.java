@@ -45,6 +45,8 @@ public class Config {
 
 	public static boolean enableBookshelf = true;
 	public static boolean enableColoredBooks = true;
+	public static boolean bookshelvesBoostEnchanting = true;
+	public static float defaultEnchantingPower = 1.5f;
 	private static String[] bookKeywords = {
 			"almanac",
 			"atlas",
@@ -283,6 +285,8 @@ public class Config {
 			// bookshelves
 			enableBookshelf = configFile.getBoolean("bookshelf", "building", enableBookshelf, "Enables the bookshelf: a decorative block to display books");
 			enableColoredBooks = configFile.getBoolean("coloredBooks", "building.bookshelf", enableColoredBooks, "Enables colored books: basically colored versions of the vanilla book to decorate bookshelves") && enableBookshelf;
+			bookshelvesBoostEnchanting = configFile.getBoolean("boostEnchanting", "building.bookshelf", bookshelvesBoostEnchanting, "If true, bookshelves will increase enchanting table power.");
+			defaultEnchantingPower = configFile.getFloat("defaultEnchanting", "building.bookshelf", defaultEnchantingPower, 0.0f, 15.0f, "Default power for a book for enchanting, can be overridden in the book overrides.");
 			bookKeywords = configFile.getStringList("bookKeywords", "building.bookshelf", bookKeywords,
 					"List of keywords for valid books, used to determine valid books in the bookshelf");
 			InspirationsRegistry.setBookKeywords(bookKeywords);
@@ -516,7 +520,7 @@ public class Config {
 
 		// building
 		Property property = configFile.get("building.bookshelf", "bookOverrides", bookOverrides,
-				"List of itemstacks to override book behavior. Format is modid:name[:meta]->enchantingPower.\nUnset meta will default wildcard.\nEnchanting power default is 1.5. Set to 'false' to mark something as not a book.");
+				"List of itemstacks to override book behavior. Format is modid:name[:meta][->enchantingPower].\nUnset meta will default wildcard.\n0 is a valid enchanting power, if unset uses default. Set to 'false' to mark something as not a book.");
 		bookOverrides = property.getStringList();
 		// if before config version 0.3, update to new format and add enchanted book in
 		if(version < 0.3) {
@@ -630,13 +634,13 @@ public class Config {
 			}
 
 			parts = override.split("->");
-			if(parts.length != 2) {
-				Inspirations.log.error("Invalid book override {}: must be in format modid:name[:meta]->power. ", override);
+			if(parts.length > 2) {
+				Inspirations.log.error("Invalid book override {}: must be in format modid:name[:meta][->power]. ", override);
 				continue;
 			}
 
 			// finally, parse the isBook boolean. Pretty lazy here, just check if its not the string false
-			float power = 1.5f;
+			float power = defaultEnchantingPower;
 			if (parts.length > 1) {
 				try {
 					power = Float.parseFloat(parts[1]);

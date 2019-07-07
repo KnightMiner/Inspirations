@@ -1,14 +1,10 @@
 package knightminer.inspirations.building.block;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import javax.annotation.Nonnull;
 import com.google.common.collect.ImmutableMap;
-
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.building.tileentity.TileBookshelf;
+import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.PropertyUnlistedInteger;
 import knightminer.inspirations.library.util.TextureBlockUtil;
@@ -46,6 +42,11 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import slimeknights.mantle.block.BlockInventory;
 import slimeknights.mantle.property.PropertyString;
+
+import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 public class BlockBookshelf extends BlockInventory implements ITileEntityProvider {
 
@@ -399,6 +400,9 @@ public class BlockBookshelf extends BlockInventory implements ITileEntityProvide
 
 	@Override
 	public float getEnchantPowerBonus(World world, BlockPos pos) {
+		if (!Config.bookshelvesBoostEnchanting) {
+			return 0;
+		}
 		TileEntity te = world.getTileEntity(pos);
 		if(te instanceof TileBookshelf) {
 			return ((TileBookshelf) te).getEnchantPower();
