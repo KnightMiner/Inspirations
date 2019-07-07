@@ -151,7 +151,7 @@ public class InspirationsTools extends PulseBase {
 	@SubscribeEvent
 	public void registerRecipes(Register<IRecipe> event) {
 		IForgeRegistry<IRecipe> r = event.getRegistry();
-		if(Config.enableWaypointCompass) {
+		if(Config.copyWaypointCompass) {
 			register(r, new WaypointCompassCopyRecipe(), "waypoint_compass_copy");
 		}
 	}

@@ -218,6 +218,7 @@ public class Config {
 	public static boolean enableWaypointCompass = true;
 	public static boolean dyeWaypointCompass = true;
 	public static boolean craftWaypointCompass = true;
+	public static boolean copyWaypointCompass = true;
 	public static boolean waypointCompassAdvTooltip = true;
 	public static boolean waypointCompassCrossDimension = true;
 
@@ -439,6 +440,7 @@ public class Config {
 			craftWaypointCompass = configFile.getBoolean("craft", "tools.waypointCompass", craftWaypointCompass, "If true, waypoint compasses can be crafted using iron and a blaze rod. If false, they are obtained by using a vanilla compass on a beacon.") && enableWaypointCompass;
 			waypointCompassAdvTooltip = configFile.getBoolean("advTooltip", "tools.waypointCompass", waypointCompassAdvTooltip, "If true, waypoint compasses show the position target in the advanced item tooltip. Disable for packs that disable coordinates.");
 			waypointCompassCrossDimension = configFile.getBoolean("crossDimension", "tools.waypointCompass", waypointCompassCrossDimension, "If true, waypoint compasses work across dimensions. The coordinates between the overworld and nether will be adjusted, allowing for portal syncing.");
+			copyWaypointCompass = configFile.getBoolean("copy", "tools.waypointCompass", copyWaypointCompass, "If true, you can copy the position of one waypoint compass to another in a crafting table, similarly to maps or compasses") && enableWaypointCompass;
 		}
 
 		// tweaks
