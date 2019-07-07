@@ -9,7 +9,6 @@ import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.DimensionType;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -49,9 +48,9 @@ public class WaypointCompassGetter implements IItemPropertyGetter {
 
 	@SideOnly(Side.CLIENT)
 	private double getAngle(ItemStack stack, @Nullable World world, @Nullable Entity entity, boolean isHeld) {
-		DimensionType dimension = ItemWaypointCompass.getDimension(stack);
+		Integer dimension = ItemWaypointCompass.getDimension(stack);
 		if (dimension != null) {
-			BlockPos pos = ItemWaypointCompass.getPos(stack, dimension, world.provider.getDimensionType());
+			BlockPos pos = ItemWaypointCompass.getPos(stack, dimension, world.provider.getDimension());
 			if (pos != null) {
 				double entityAngle = isHeld ? (double)entity.rotationYaw : this.getFrameRotation((EntityItemFrame)entity);
 				entityAngle = MathHelper.positiveModulo(entityAngle / 360.0D, 1.0D);
