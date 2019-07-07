@@ -198,6 +198,7 @@ item.inspirations.barometer.name=Barometer
 item.inspirations.photometer.name=Photometer
 item.inspirations.waypoint_compass.name=Beacon Compass
 item.inspirations.waypoint_compass.blank.tooltip=Use on an active beacon to set target
+item.inspirations.waypoint_compass.vanilla.tooltip=Use a %s on an active beacon to obtain
 item.inspirations.waypoint_compass.pos.tooltip=%s at (%s, %s)
 
 dimension.overworld.name=Overworld

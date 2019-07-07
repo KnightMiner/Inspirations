@@ -100,8 +100,10 @@ public class ItemWaypointCompass extends Item {
         }
       }
       tooltip.add(dimensionTooltip);
-    } else {
+    } else if (Config.craftWaypointCompass) {
       tooltip.add(TextFormatting.ITALIC + Util.translate(getUnlocalizedName() + ".blank.tooltip"));
+    } else {
+      tooltip.add(TextFormatting.ITALIC + Util.translateFormatted(getUnlocalizedName() + ".vanilla.tooltip", Util.translate(Items.COMPASS.getUnlocalizedName() + ".name")));
     }
   }
 
