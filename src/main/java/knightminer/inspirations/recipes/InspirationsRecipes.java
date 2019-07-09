@@ -56,6 +56,8 @@ import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.brewing.AbstractBrewingRecipe;
+import net.minecraftforge.common.brewing.BrewingOreRecipe;
 import net.minecraftforge.common.brewing.BrewingRecipe;
 import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 import net.minecraftforge.common.brewing.IBrewingRecipe;
@@ -311,17 +313,25 @@ public class InspirationsRecipes extends PulseBase {
 
 	private void findRecipesFromBrewingRegistry() {
 		for(IBrewingRecipe irecipe : BrewingRecipeRegistry.getRecipes()) {
-			if(irecipe instanceof BrewingRecipe) {
-				BrewingRecipe recipe = (BrewingRecipe) irecipe;
+			if(irecipe instanceof AbstractBrewingRecipe) {
+
+				AbstractBrewingRecipe recipe = (AbstractBrewingRecipe) irecipe;
 				ItemStack inputStack = recipe.getInput();
 				ItemStack outputStack = recipe.getOutput();
+				Ingredient ingredient = null;
+				if (recipe instanceof BrewingRecipe) {
+					ingredient = Ingredient.fromStacks(((BrewingRecipe)recipe).getIngredient());
+				} else if (recipe instanceof BrewingOreRecipe) {
+					ingredient = Ingredient.fromStacks(((BrewingOreRecipe)recipe).getIngredient().stream().toArray(ItemStack[]::new));
+				}
+
 				// null checks because some dumb mod is returning null for the input or output
-				if(inputStack != null && inputStack.getItem() == Items.POTIONITEM
+				if(ingredient != null && inputStack != null && inputStack.getItem() == Items.POTIONITEM
 						&& outputStack != null && outputStack.getItem() == Items.POTIONITEM) {
 					PotionType input = PotionUtils.getPotionFromItem(inputStack);
 					PotionType output = PotionUtils.getPotionFromItem(outputStack);
 					if(input != PotionTypes.EMPTY && output != PotionTypes.EMPTY) {
-						InspirationsRegistry.addCauldronRecipe(new CauldronBrewingRecipe(input, Ingredient.fromStacks(recipe.getIngredient()), output));
+						InspirationsRegistry.addCauldronRecipe(new CauldronBrewingRecipe(input, ingredient, output));
 					}
 				}
 			}
