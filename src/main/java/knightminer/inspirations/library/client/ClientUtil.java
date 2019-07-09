@@ -1,23 +1,14 @@
 package knightminer.inspirations.library.client;
 
-import java.awt.Color;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import javax.annotation.Nullable;
-
-import org.apache.commons.lang3.math.NumberUtils;
-import org.lwjgl.opengl.GL11;
-
 import knightminer.inspirations.Inspirations;
+import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.ItemMetaKey;
 import knightminer.inspirations.library.util.TextureBlockUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -34,7 +25,16 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.lwjgl.opengl.GL11;
 import slimeknights.mantle.client.ModelHelper;
+
+import javax.annotation.Nullable;
+import java.awt.Color;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 @SideOnly(Side.CLIENT)
 public final class ClientUtil {
@@ -213,7 +213,6 @@ public final class ClientUtil {
 	 * @param index  Tint index
 	 * @return  color, or -1 for undefined
 	 */
-	@SuppressWarnings("deprecation")
 	public static int getStackBlockColors(ItemStack stack, @Nullable IBlockAccess world, @Nullable BlockPos pos, int index) {
 		if(stack.isEmpty() || !(stack.getItem() instanceof ItemBlock)) {
 			return -1;
@@ -221,5 +220,30 @@ public final class ClientUtil {
 		ItemBlock item = (ItemBlock) stack.getItem();
 		IBlockState iblockstate = item.getBlock().getStateFromMeta(item.getMetadata(stack));
 		return mc.getBlockColors().colorMultiplier(iblockstate, world, pos, index);
+	}
+
+	/**
+	 * Renders a colored sprite to display in JEI as cauldron contents
+	 * @param mc        Minecraft instance
+	 * @param x         Sprite X position
+	 * @param y         Sprite Y position
+	 * @param location  Sprite resource location
+	 * @param color     Sprite color
+	 * @param level     Cauldron level
+	 */
+	public static void renderJEICauldronFluid(Minecraft mc, int x, int y, ResourceLocation location, float[] color, int level) {
+		GlStateManager.enableBlend();
+		mc.renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+		GlStateManager.color(color[0], color[1], color[2]);
+		// 0 means JEI ingredient list
+		TextureAtlasSprite sprite = ClientUtil.getSprite(location);
+		if(level == 0) {
+			ClientUtil.renderFilledSprite(sprite, x, y, 16, 16);
+		} else {
+			int height = ((10 * level) / InspirationsRegistry.getCauldronMax());
+			ClientUtil.renderFilledSprite(sprite, x, y, 10, height);
+		}
+		GlStateManager.color(1, 1, 1);
+		GlStateManager.disableBlend();
 	}
 }
