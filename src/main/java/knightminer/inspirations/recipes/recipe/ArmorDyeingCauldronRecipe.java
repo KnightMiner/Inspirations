@@ -6,8 +6,12 @@ import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemArmor.ArmorMaterial;
 import net.minecraft.item.ItemStack;
 
-public enum ArmorDyeingCauldronRecipe implements ICauldronRecipe {
-	INSTANCE;
+public class ArmorDyeingCauldronRecipe implements ICauldronRecipe {
+
+	private final ArmorMaterial material;
+	public ArmorDyeingCauldronRecipe(ArmorMaterial material) {
+		this.material = material;
+	}
 
 	@Override
 	public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {
@@ -21,7 +25,7 @@ public enum ArmorDyeingCauldronRecipe implements ICauldronRecipe {
 
 		// only color leather, and ensure we are changing the color
 		ItemArmor armor = (ItemArmor) item;
-		return armor.getArmorMaterial() == ArmorMaterial.LEATHER && armor.getColor(stack) != state.getColor();
+		return armor.getArmorMaterial() == material && armor.getColor(stack) != state.getColor();
 	}
 
 	@Override

@@ -3,8 +3,9 @@ package knightminer.inspirations;
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.network.InspirationsNetwork;
-import knightminer.inspirations.plugins.leatherworks.LeatherWorksPlugin;
-import knightminer.inspirations.plugins.rats.RatsPlugin;
+import knightminer.inspirations.plugins.LeatherWorksPlugin;
+import knightminer.inspirations.plugins.RatsPlugin;
+import knightminer.inspirations.plugins.TwilightForestPlugin;
 import knightminer.inspirations.plugins.tan.ToughAsNailsPlugin;
 import knightminer.inspirations.plugins.top.TheOneProbePlugin;
 import knightminer.inspirations.plugins.waila.WailaPlugin;
@@ -59,6 +60,7 @@ public class Inspirations {
 		pulseManager.registerPulse(new WailaPlugin());
 		pulseManager.registerPulse(new LeatherWorksPlugin());
 		pulseManager.registerPulse(new RatsPlugin());
+		pulseManager.registerPulse(new TwilightForestPlugin());
 
 		// needs to be done statically, but only the recipes module uses it
 		if(pulseManager.isPulseLoaded(InspirationsRecipes.pulseID) && Config.enableCauldronFluids) {

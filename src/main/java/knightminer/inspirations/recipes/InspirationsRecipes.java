@@ -46,6 +46,7 @@ import net.minecraft.init.PotionTypes;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.Ingredient;
@@ -55,6 +56,7 @@ import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StringUtils;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.brewing.AbstractBrewingRecipe;
 import net.minecraftforge.common.brewing.BrewingOreRecipe;
@@ -213,7 +215,7 @@ public class InspirationsRecipes extends PulseBase {
 		}
 
 		// reimplemented vanilla recipes
-		InspirationsRegistry.addCauldronRecipe(ArmorClearRecipe.INSTANCE);
+		InspirationsRegistry.addCauldronRecipe(new ArmorClearRecipe(ItemArmor.ArmorMaterial.LEATHER));
 		InspirationsRegistry.addCauldronRecipe(BannerClearRecipe.INSTANCE);
 		// fill from water bottle, does not use the shortcut as we need NBT matching
 		ItemStack waterBottle = PotionUtils.addPotionToItemStack(new ItemStack(Items.POTIONITEM), PotionTypes.WATER);
@@ -223,7 +225,7 @@ public class InspirationsRecipes extends PulseBase {
 		if(Config.enableCauldronDyeing) {
 			InspirationsRegistry.addCauldronRecipe(FillDyedBottleFromCauldron.INSTANCE);
 			InspirationsRegistry.addCauldronRecipe(FillCauldronFromDyedBottle.INSTANCE);
-			InspirationsRegistry.addCauldronRecipe(ArmorDyeingCauldronRecipe.INSTANCE);
+			InspirationsRegistry.addCauldronRecipe(new ArmorDyeingCauldronRecipe(ItemArmor.ArmorMaterial.LEATHER));
 
 			for(EnumDyeColor color : EnumDyeColor.values()) {
 				InspirationsRegistry.addCauldronRecipe(new DyeCauldronWater(color));

@@ -3,11 +3,15 @@ package knightminer.inspirations.recipes.recipe;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
-import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemArmor.ArmorMaterial;
+import net.minecraft.item.ItemStack;
 
-public enum ArmorClearRecipe implements ICauldronRecipe {
-	INSTANCE;
+public class ArmorClearRecipe implements ICauldronRecipe {
+
+	private final ArmorMaterial material;
+	public ArmorClearRecipe(ArmorMaterial material) {
+		this.material = material;
+	}
 
 	@Override
 	public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {
@@ -21,7 +25,7 @@ public enum ArmorClearRecipe implements ICauldronRecipe {
 
 		// only color leather, and ensure we are changing the color
 		ItemArmor armor = (ItemArmor) item;
-		return armor.getArmorMaterial() == ArmorMaterial.LEATHER && armor.hasColor(stack);
+		return armor.getArmorMaterial() == material && armor.hasColor(stack);
 	}
 
 	@Override
