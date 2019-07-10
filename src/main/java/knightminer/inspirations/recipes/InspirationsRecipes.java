@@ -344,8 +344,10 @@ public class InspirationsRecipes extends PulseBase {
 		if(Config.enableCauldronDispenser) {
 			Multimap<Item,Integer> map = HashMultimap.create();
 			for(String line : Config.cauldronDispenserRecipes) {
-				ItemStack stack = RecipeUtil.getItemStackFromString(line, true);
-				map.put(stack.getItem(), stack.getMetadata());
+				if (!StringUtils.isNullOrEmpty(line)) {
+					ItemStack stack = RecipeUtil.getItemStackFromString(line, true);
+					map.put(stack.getItem(), stack.getMetadata());
+				}
 			}
 			for(Map.Entry<Item,Collection<Integer>> entry : map.asMap().entrySet()) {
 				registerDispenseCauldronLogic(entry.getKey(), toArray(entry.getValue()));
