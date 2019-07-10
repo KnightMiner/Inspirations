@@ -1,13 +1,12 @@
-package knightminer.inspirations.plugins.tan.recipes;
-
-import java.util.List;
+package knightminer.inspirations.plugins.tan;
 
 import com.google.common.collect.ImmutableList;
-
 import knightminer.inspirations.library.recipe.cauldron.ISimpleCauldronRecipe;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
+
+import java.util.List;
 
 public class FillCanteenRecipe implements ISimpleCauldronRecipe {
 

@@ -1,14 +1,12 @@
-package knightminer.inspirations.plugins.leatherworks;
+package knightminer.inspirations.plugins;
 
 import com.google.common.eventbus.Subscribe;
-
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.recipe.cauldron.CauldronFluidRecipe;
 import knightminer.inspirations.library.recipe.cauldron.CauldronFluidTransformRecipe;
 import knightminer.inspirations.recipes.InspirationsRecipes;
-
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;

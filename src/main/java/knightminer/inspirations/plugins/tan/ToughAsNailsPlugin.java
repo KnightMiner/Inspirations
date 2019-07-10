@@ -1,12 +1,10 @@
 package knightminer.inspirations.plugins.tan;
 
 import com.google.common.eventbus.Subscribe;
-
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.library.InspirationsRegistry;
-import knightminer.inspirations.plugins.tan.recipes.FillCanteenRecipe;
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;

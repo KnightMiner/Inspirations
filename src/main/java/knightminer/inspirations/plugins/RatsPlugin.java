@@ -1,4 +1,4 @@
-package knightminer.inspirations.plugins.rats;
+package knightminer.inspirations.plugins;
 
 import com.google.common.eventbus.Subscribe;
 import knightminer.inspirations.Inspirations;
