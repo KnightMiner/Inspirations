@@ -2,6 +2,7 @@ package knightminer.inspirations.plugins;
 
 import com.google.common.eventbus.Subscribe;
 import knightminer.inspirations.Inspirations;
+import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
@@ -29,6 +30,9 @@ public class RatsPlugin extends PulseBase{
 
     @Subscribe
     public void init(FMLInitializationEvent event) {
+        if (!Config.enableCauldronFluids) {
+            return;
+        }
         final Fluid milk = FluidRegistry.getFluid("milk");
         if (milkCauldron != null && milk != null) {
             InspirationsRegistry.registerFullCauldron(milkCauldron.getDefaultState(), ICauldronRecipe.CauldronState.fluid(milk));

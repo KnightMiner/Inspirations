@@ -41,7 +41,7 @@ public class LeatherWorksPlugin extends PulseBase{
     @Subscribe
     public void init(FMLInitializationEvent e){
         // we need cauldron fluids for this to work
-        if(!Config.enableExtendedCauldron){
+        if(!Config.enableCauldronFluids){
             return;
         }
 
