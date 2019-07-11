@@ -1,10 +1,5 @@
 package knightminer.inspirations.utility.block;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.utility.InspirationsUtility;
@@ -36,6 +31,11 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import slimeknights.mantle.block.BlockInventory;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BlockPipe extends BlockInventory {
 
@@ -141,7 +141,6 @@ public class BlockPipe extends BlockInventory {
 		Block block = state.getBlock();
 		EnumFacing opposite = side.getOpposite();
 		// if it is a known item output thingy and is facing us, connect
-		// TODO: would be nice to make this dynamic, but I dont think there is a "can push fluids" property to query
 		if((block instanceof BlockPipe || block instanceof BlockDropper) && state.getValue(FACING) == opposite) return true;
 		// hopper check, we can skip on down since hoppers cannot face up
 		return side != EnumFacing.DOWN && block instanceof BlockHopper && state.getValue(BlockHopper.FACING) == opposite;

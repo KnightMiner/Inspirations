@@ -521,8 +521,7 @@ public class InspirationsRegistry {
 	}
 
 	/**
-	 * Checks if this fluid is considered water in the cauldron.
-	 * Used for rain checks along with some recipe transformations
+	 * Checks if this fluid is considered water in the cauldron. Means it is a valid base for some recipes
 	 * @param fluid  Fluid to check
 	 * @return  True if the fluid is considered water
 	 */
