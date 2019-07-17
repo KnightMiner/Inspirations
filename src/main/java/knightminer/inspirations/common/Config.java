@@ -390,7 +390,7 @@ public class Config {
 			// potions
 			configFile.renameProperty("recipes.cauldron", "brewing", "potions");
 			enableCauldronPotions = configFile.getBoolean("potions", "recipes.cauldron", enableCauldronPotions, "Allows cauldrons to be filled with potions and support brewing") && enableExtendedCauldron;
-			enableCauldronBrewing = configFile.getBoolean("brewing", "recipes.cauldron.potions", extraBottleRecipes, "Allows cauldrons to perform brewing recipes.") && enableCauldronBrewing;
+			enableCauldronBrewing = configFile.getBoolean("brewing", "recipes.cauldron.potions", enableCauldronBrewing, "Allows cauldrons to perform brewing recipes.") && enableCauldronPotions;
 			expensiveCauldronBrewing = configFile.getBoolean("brewingExpensive", "recipes.cauldron.potions", expensiveCauldronBrewing, "Caps brewing at 2 potions per ingredient, requiring 2 ingredients for a full cauldron. Makes the brewing stand still useful and balances better against the bigger cauldron.") && enableCauldronBrewing;
 			InspirationsRegistry.setConfig("expensiveCauldronBrewing", expensiveCauldronBrewing);
 
