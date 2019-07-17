@@ -202,8 +202,11 @@ item.inspirations.waypoint_compass.vanilla.tooltip=Use a %s on an active beacon 
 item.inspirations.waypoint_compass.pos.tooltip=%s at (%s, %s)
 
 dimension.overworld.name=Overworld
-dimension.the_nether.name=The Nether
-dimension.the_end.name=The End
+dimension.the_nether.name=Nether
+dimension.the_end.name=End
+dimension.lostcities.name=Lost Cities
+dimension.hunting_dim.name=Hunting Dimension
+dimension.aetheri.name=Aether
 
 ############
 #  Tweaks  #

@@ -2,9 +2,11 @@ package knightminer.inspirations.tools.item;
 
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.Util;
+import knightminer.inspirations.library.client.ClientUtil;
 import knightminer.inspirations.library.util.TagUtil;
 import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.tools.client.WaypointCompassGetter;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
@@ -27,6 +29,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Locale;
 
 public class ItemWaypointCompass extends Item {
 
@@ -87,19 +90,23 @@ public class ItemWaypointCompass extends Item {
   public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flag) {
     DimensionType type = getDimensionType(stack);
     if (type != null) {
-      String dimension = type.getName();
-      String key = "dimension." + dimension + ".name";
+      String dimension = type.getName().toLowerCase(Locale.US);
+      String key = "dimension." + dimension.replace(' ', '_') + ".name";
       if (Util.canTranslate(key)) {
         dimension = Util.translate(key);
+      } else {
+        dimension = ClientUtil.normalizeName(dimension);
       }
-      String dimensionTooltip = dimension;
-      if (Config.waypointCompassAdvTooltip && flag == ITooltipFlag.TooltipFlags.ADVANCED) {
-        BlockPos pos = getPos(stack);
-        if (pos != null) {
-          dimensionTooltip = Util.translateFormatted(getUnlocalizedName() + ".pos.tooltip", dimension, pos.getX(), pos.getZ());
+      if (flag == ITooltipFlag.TooltipFlags.ADVANCED) {
+        dimension += String.format(" (%d)", getDimension(stack));
+        if (Config.waypointCompassAdvTooltip && !Minecraft.getMinecraft().isReducedDebug()) {
+          BlockPos pos = getPos(stack);
+          if (pos != null) {
+            dimension = Util.translateFormatted(getUnlocalizedName() + ".pos.tooltip", dimension, pos.getX(), pos.getZ());
+          }
         }
       }
-      tooltip.add(dimensionTooltip);
+      tooltip.add(dimension);
     } else if (Config.craftWaypointCompass) {
       tooltip.add(TextFormatting.ITALIC + Util.translate(getUnlocalizedName() + ".blank.tooltip"));
     } else {
