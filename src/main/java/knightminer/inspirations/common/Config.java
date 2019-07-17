@@ -223,6 +223,9 @@ public class Config {
 	public static boolean copyWaypointCompass = true;
 	public static boolean waypointCompassAdvTooltip = true;
 	public static boolean waypointCompassCrossDimension = true;
+	// enchantments
+	public static boolean moreShieldEnchantments = true;
+	public static boolean shieldEnchantmentTable = true;
 
 	// tweaks
 	public static boolean enablePigDesaddle = true;
@@ -445,6 +448,10 @@ public class Config {
 			waypointCompassAdvTooltip = configFile.getBoolean("advTooltip", "tools.waypointCompass", waypointCompassAdvTooltip, "If true, waypoint compasses show the position target in the advanced item tooltip. Disable for packs that disable coordinates.");
 			waypointCompassCrossDimension = configFile.getBoolean("crossDimension", "tools.waypointCompass", waypointCompassCrossDimension, "If true, waypoint compasses work across dimensions. The coordinates between the overworld and nether will be adjusted, allowing for portal syncing.");
 			copyWaypointCompass = configFile.getBoolean("copy", "tools.waypointCompass", copyWaypointCompass, "If true, you can copy the position of one waypoint compass to another in a crafting table, similarly to maps or compasses") && enableWaypointCompass;
+
+			// enchantments
+			moreShieldEnchantments = configFile.getBoolean("moreShield", "tools.enchantments", moreShieldEnchantments, "If true, shields can now be enchanted with more enchantments, including protection, fire aspect, knockback, and thorns");
+			shieldEnchantmentTable = configFile.getBoolean("shieldTable", "tools.enchantments", shieldEnchantmentTable, "If true, shields can be enchanted in an enchantment table. Does not support modded shields as it requires a registry substitution") && moreShieldEnchantments;
 		}
 
 		// tweaks

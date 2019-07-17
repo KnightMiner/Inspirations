@@ -6,8 +6,13 @@ import knightminer.inspirations.tools.item.ItemWaypointCompass;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockVine;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.EnchantmentThorns;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Enchantments;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemHoe;
@@ -15,13 +20,16 @@ import net.minecraft.item.ItemShears;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityBeacon;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.ILockableContainer;
 import net.minecraft.world.LockCode;
 import net.minecraft.world.World;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
@@ -317,6 +325,43 @@ public class ToolsEvents {
 			}
 			event.setCanceled(true);
 			event.setCancellationResult(EnumActionResult.SUCCESS);
+		}
+	}
+
+	@SubscribeEvent
+	public static void onShieldHit(LivingAttackEvent event) {
+		if (!Config.moreShieldEnchantments) {
+			return;
+		}
+		EntityLivingBase target = event.getEntityLiving();
+		if (target.world.isRemote || !target.isActiveItemStackBlocking()) {
+			return;
+		}
+		ItemStack stack = target.getActiveItemStack();
+		int thorns = EnchantmentHelper.getEnchantmentLevel(Enchantments.THORNS, stack);
+		int fire = EnchantmentHelper.getEnchantmentLevel(Enchantments.FIRE_ASPECT, stack);
+		int knockback = EnchantmentHelper.getEnchantmentLevel(Enchantments.KNOCKBACK, stack);
+		if (thorns == 0 && fire == 0 && knockback == 0) {
+			return;
+		}
+
+		DamageSource source = event.getSource();
+		Entity attacker = source.getImmediateSource();
+		if (attacker != null && !target.isEntityInvulnerable(source) && target.canBlockDamageSource(source)) {
+			if (thorns > 0 && EnchantmentThorns.shouldHit(thorns, target.world.rand)) {
+				attacker.attackEntityFrom(DamageSource.causeThornsDamage(target), EnchantmentThorns.getDamage(thorns, target.world.rand));
+				stack.damageItem(1, target);
+			}
+			if (fire > 0) {
+				attacker.setFire(fire * 4);
+			}
+			if (knockback > 0) {
+				if (attacker instanceof EntityLivingBase) {
+					((EntityLivingBase)attacker).knockBack(target, knockback * 0.5F, MathHelper.sin(target.rotationYaw * 0.017453292F), -MathHelper.cos(target.rotationYaw * 0.017453292F));
+				} else {
+					attacker.addVelocity(-MathHelper.sin(target.rotationYaw * 0.017453292F) * knockback * 0.5f, 0.1D, MathHelper.cos(target.rotationYaw * 0.017453292F) * knockback * 0.5f);
+				}
+			}
 		}
 	}
 }

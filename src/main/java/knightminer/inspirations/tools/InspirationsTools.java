@@ -10,8 +10,13 @@ import knightminer.inspirations.shared.InspirationsShared;
 import knightminer.inspirations.tools.client.BarometerGetter;
 import knightminer.inspirations.tools.client.NorthCompassGetter;
 import knightminer.inspirations.tools.client.PhotometerGetter;
+import knightminer.inspirations.tools.enchantment.EnchantmentShieldFire;
+import knightminer.inspirations.tools.enchantment.EnchantmentShieldKnockback;
+import knightminer.inspirations.tools.enchantment.EnchantmentShieldProtection;
+import knightminer.inspirations.tools.enchantment.EnchantmentShieldThorns;
 import knightminer.inspirations.tools.entity.EntityModArrow;
 import knightminer.inspirations.tools.item.ItemCrook;
+import knightminer.inspirations.tools.item.ItemEnchantableShield;
 import knightminer.inspirations.tools.item.ItemModArrow;
 import knightminer.inspirations.tools.item.ItemRedstoneCharger;
 import knightminer.inspirations.tools.item.ItemWaypointCompass;
@@ -23,10 +28,13 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.dispenser.BehaviorProjectileDispense;
 import net.minecraft.dispenser.IBlockSource;
 import net.minecraft.dispenser.IPosition;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentProtection;
 import net.minecraft.entity.IProjectile;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.Bootstrap;
 import net.minecraft.init.Items;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.Item.ToolMaterial;
 import net.minecraft.item.ItemArrow;
@@ -138,6 +146,10 @@ public class InspirationsTools extends PulseBase {
 		if(Config.enableWaypointCompass) {
 			waypointCompass = registerItem(r, new ItemWaypointCompass(), "waypoint_compass");
 		}
+
+		if(Config.shieldEnchantmentTable) {
+			register(r, new ItemEnchantableShield(), new ResourceLocation("shield"));
+		}
 	}
 
 	@SubscribeEvent
@@ -153,6 +165,24 @@ public class InspirationsTools extends PulseBase {
 		IForgeRegistry<IRecipe> r = event.getRegistry();
 		if(Config.copyWaypointCompass) {
 			register(r, new WaypointCompassCopyRecipe(), "waypoint_compass_copy");
+		}
+	}
+
+	@SubscribeEvent
+	public void registerEnchantments(Register<Enchantment> event) {
+		IForgeRegistry<Enchantment> r = event.getRegistry();
+
+		if(Config.moreShieldEnchantments) {
+			EntityEquipmentSlot[] slots = new EntityEquipmentSlot[] {EntityEquipmentSlot.HEAD, EntityEquipmentSlot.CHEST, EntityEquipmentSlot.LEGS, EntityEquipmentSlot.FEET};
+			register(r, new EnchantmentShieldProtection(Enchantment.Rarity.COMMON, EnchantmentProtection.Type.ALL, slots), new ResourceLocation("protection"));
+			register(r, new EnchantmentShieldProtection(Enchantment.Rarity.UNCOMMON, EnchantmentProtection.Type.FIRE, slots), new ResourceLocation("fire_protection"));
+			register(r, new EnchantmentShieldProtection(Enchantment.Rarity.UNCOMMON, EnchantmentProtection.Type.PROJECTILE, slots), new ResourceLocation("projectile_protection"));
+			register(r, new EnchantmentShieldProtection(Enchantment.Rarity.RARE, EnchantmentProtection.Type.EXPLOSION, slots), new ResourceLocation("blast_protection"));
+			register(r, new EnchantmentShieldThorns(Enchantment.Rarity.VERY_RARE, slots), new ResourceLocation("thorns"));
+
+			slots = new EntityEquipmentSlot[] {EntityEquipmentSlot.MAINHAND};
+			register(r, new EnchantmentShieldKnockback(Enchantment.Rarity.UNCOMMON, slots), new ResourceLocation("knockback"));
+			register(r, new EnchantmentShieldFire(Enchantment.Rarity.RARE, slots), new ResourceLocation("fire_aspect"));
 		}
 	}
 
