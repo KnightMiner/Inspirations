@@ -244,6 +244,8 @@ public class Config {
 	public static boolean dispensersPlaceAnvils = true;
 	public static boolean milkCooldown = false;
 	public static short milkCooldownTime = 600;
+	public static boolean caveSpiderDrops = true;
+	public static boolean skeletonSkull = true;
 	// heartbeet
 	public static boolean enableHeartbeet = true;
 	public static boolean brewHeartbeet = true;
@@ -409,6 +411,9 @@ public class Config {
 			milkSquids = configFile.getBoolean("milkSquids", "tweaks", milkSquids, "Allows milking squids with a glass bottle to get black dyed water.");
 			milkSquidCooldown = (short)configFile.getInt("cooldown", "tweaks.milkSquids", milkSquidCooldown, 1, Short.MAX_VALUE, "Delay in seconds after milking a squid before it can be milked again.");
 
+			// drops
+			caveSpiderDrops = configFile.getBoolean("caveSpiderWeb", "tweaks", caveSpiderDrops, "If true, cave spiders will rarely drop webs, giving them an advantage to farm over regular spiders");
+			skeletonSkull = configFile.getBoolean("skeletonSkull", "tweaks", skeletonSkull, "If true, skeletons will rarely drop their skull for consistency with wither skeletons. Does not affect creeper or zombie heads.");
 		}
 
 		// tools

@@ -1,9 +1,6 @@
 package knightminer.inspirations.tweaks;
 
-import java.util.Iterator;
-
 import com.google.common.eventbus.Subscribe;
-
 import knightminer.inspirations.common.CommonProxy;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
@@ -51,6 +48,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.oredict.OreIngredient;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.pulsar.pulse.Pulse;
+
+import java.util.Iterator;
 
 @Pulse(id = InspirationsTweaks.pulseID, description = "Various vanilla tweaks")
 public class InspirationsTweaks extends PulseBase {
@@ -239,10 +238,18 @@ public class InspirationsTweaks extends PulseBase {
 	}
 
 	private static final ResourceLocation SILVERFISH_TABLE = new ResourceLocation("entities/silverfish");
+	private static final ResourceLocation CAVE_SPIDER_TABLE = new ResourceLocation("entities/cave_spider");
+	private static final ResourceLocation SKELETON_TABLE = new ResourceLocation("entities/skeleton");
 	@SubscribeEvent
 	public void onLootTableLoad(LootTableLoadEvent event) {
 		if(Config.brewMissingPotions && SILVERFISH_TABLE.equals(event.getName())) {
-			addToVanillaLoot(event, "entities/silverfish");
+			addToVanillaLoot(event, SILVERFISH_TABLE.getResourcePath());
+		}
+		else if(Config.caveSpiderDrops && CAVE_SPIDER_TABLE.equals(event.getName())) {
+			addToVanillaLoot(event, CAVE_SPIDER_TABLE.getResourcePath());
+		}
+		else if(Config.skeletonSkull && SKELETON_TABLE.equals(event.getName())) {
+			addToVanillaLoot(event, SKELETON_TABLE.getResourcePath());
 		}
 	}
 
