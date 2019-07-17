@@ -1,15 +1,15 @@
 package knightminer.inspirations.tweaks;
 
-import java.util.List;
 import knightminer.inspirations.common.Config;
-import knightminer.inspirations.common.network.MilkablePacket;
 import knightminer.inspirations.common.network.InspirationsNetwork;
+import knightminer.inspirations.common.network.MilkablePacket;
 import knightminer.inspirations.library.ItemMetaKey;
 import knightminer.inspirations.shared.InspirationsShared;
 import knightminer.inspirations.shared.SharedEvents;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBush;
 import net.minecraft.block.BlockCrops;
+import net.minecraft.block.BlockDirt;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -22,6 +22,7 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -34,6 +35,8 @@ import net.minecraftforge.fml.common.eventhandler.Event.Result;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.items.ItemHandlerHelper;
+
+import java.util.List;
 
 public class TweaksEvents {
 
@@ -62,7 +65,7 @@ public class TweaksEvents {
 
 	@SubscribeEvent
 	public static void extraBonemeal(BonemealEvent event) {
-		if(!Config.enableExtraBonemeal) {
+		if(!Config.bonemealMushrooms && !Config.bonemealDeadBush && !Config.bonemealGrassSpread && !Config.bonemealMyceliumSpread) {
 			return;
 		}
 
@@ -73,19 +76,30 @@ public class TweaksEvents {
 		}
 
 		BlockPos pos = event.getPos();
-		Block block = world.getBlockState(pos).getBlock();
-		boolean isMycelium = block == Blocks.MYCELIUM;
+		IBlockState state = world.getBlockState(pos);
+		Block block = state.getBlock();
 		// block must be mycelium for mushrooms or sand for dead bushes
-		if(!isMycelium && block != Blocks.SAND) {
-			return;
+		if((Config.bonemealMushrooms && block == Blocks.MYCELIUM) || (Config.bonemealDeadBush && block == Blocks.SAND)) {
+			bonemealPlants(block, world, pos);
+			event.setResult(Result.ALLOW);
 		}
+		// block must be dirt for grass/mycelium spread
+		else if((Config.bonemealGrassSpread || Config.bonemealMyceliumSpread) && block == Blocks.DIRT && state.getValue(BlockDirt.VARIANT) == BlockDirt.DirtType.DIRT) {
+			if (bonemealDirt(world, pos)) {
+				event.setResult(Result.ALLOW);
+			}
+		}
+	}
 
+	/** Called when using bonemeal on mycelium or sand to produce a plant */
+	private static void bonemealPlants(Block base, World world, BlockPos pos) {
 		// this is mostly copied from grass block code, so its a bit weird
 		BlockPos up = pos.up();
 		BlockBush bush = Blocks.DEADBUSH;
 		IBlockState state = bush.getDefaultState();
 
 		// 128 chances, this affects how far blocks are spread
+		boolean isMycelium = base == Blocks.MYCELIUM;
 		for (int i = 0; i < 128; ++i) {
 			BlockPos next = up;
 			int j = 0;
@@ -114,15 +128,61 @@ public class TweaksEvents {
 				next = next.add(world.rand.nextInt(3) - 1, (world.rand.nextInt(3) - 1) * world.rand.nextInt(3) / 2, world.rand.nextInt(3) - 1);
 
 				// if the new position is invalid, this cycle is done
-				if (world.getBlockState(next.down()).getBlock() != block|| world.getBlockState(next).isNormalCube()) {
+				if (world.getBlockState(next.down()).getBlock() != base || world.getBlockState(next).isNormalCube()) {
 					break;
 				}
 
 				++j;
 			}
 		}
+	}
 
-		event.setResult(Result.ALLOW);
+	/** Called when using bonemeal on a dirt block to spread grass */
+	private static boolean bonemealDirt(World world, BlockPos pos) {
+		if(world.getLightFromNeighbors(pos.up()) < 9) {
+			return false;
+		}
+
+		// first, get a count of grass and mycelium on all sides
+		int grass = 0;
+		int mycelium = 0;
+		for (EnumFacing side : EnumFacing.HORIZONTALS) {
+			BlockPos offset = pos.offset(side);
+			IBlockState state = world.getBlockState(offset);
+			Block block = state.getBlock();
+
+			// hill logic: go up for dirt, down for air
+			if (block.isAir(state, world, pos)) {
+				state = world.getBlockState(offset.down());
+				block = state.getBlock();
+			}
+			else if (block != Blocks.GRASS && block != Blocks.MYCELIUM) {
+				state = world.getBlockState(offset.up());
+				block = state.getBlock();
+			}
+
+			// increment if the state is grass/mycelium
+			if (Config.bonemealGrassSpread && block == Blocks.GRASS) {
+				grass++;
+			}
+			else if (Config.bonemealMyceliumSpread && block == Blocks.MYCELIUM) {
+				mycelium++;
+			}
+		}
+
+		// no results? exit
+		if (grass == 0 && mycelium == 0) {
+			return false;
+		}
+
+		// chance gets higher the more blocks of the type surround
+		if (world.rand.nextInt(5) > (Math.max(grass, mycelium) - 1)) {
+			return true;
+		}
+
+		// place block based on which has more, grass wins ties
+		world.setBlockState(pos, grass >= mycelium ? Blocks.GRASS.getDefaultState() : Blocks.MYCELIUM.getDefaultState());
+		return true;
 	}
 
 	@SubscribeEvent
