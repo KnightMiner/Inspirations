@@ -233,7 +233,6 @@ public class Config {
 	// tweaks
 	public static boolean enablePigDesaddle = true;
 	public static boolean enableFittedCarpets = true;
-	public static boolean enableExtraBonemeal = true;
 	public static boolean betterFlowerPot = true;
 	public static boolean flowerPotComparator = true;
 	public static boolean coloredEnchantedRibbons = true;
@@ -253,6 +252,11 @@ public class Config {
 	public static boolean enableMoreSeeds = true;
 	public static boolean addGrassDrops = true;
 	public static boolean nerfCarrotPotatoDrops = true;
+	// bonemeal
+	public static boolean bonemealMushrooms = true;
+	public static boolean bonemealDeadBush = true;
+	public static boolean bonemealGrassSpread = true;
+	public static boolean bonemealMyceliumSpread = true;
 
 	public static String[] flowerOverrides = {
 			"biomesoplenty:flower_0->7",
@@ -279,7 +283,7 @@ public class Config {
 	 * @param event  PreInit event from main mod class
 	 */
 	public static void preInit(FMLPreInitializationEvent event) {
-		configFile = new Configuration(event.getSuggestedConfigurationFile(), "0.3", false);
+		configFile = new Configuration(event.getSuggestedConfigurationFile(), "0.4", false);
 
 		showAllVariants = configFile.getBoolean("showAllVariants", "general", showAllVariants,
 				"Shows all variants for dynamically textured blocks, like bookshelves. If false just the first will be shown");
@@ -469,7 +473,15 @@ public class Config {
 			enableFittedCarpets = configFile.getBoolean("fittedCarpets", "tweaks", enableFittedCarpets, "Carpets fit to stairs. Uses a block override, so disable if another mod replaces carpets");
 
 			// bonemeal
-			enableExtraBonemeal = configFile.getBoolean("extraBonemeal", "tweaks", enableExtraBonemeal, "Bonemeal can be used on mycelium to produce mushrooms and on sand to produce dead bushes");
+			if (getConfigVersion() < 0.4) {
+				boolean oldValue = configFile.get("tweaks", "extraBonemeal", true).getBoolean();
+				bonemealMushrooms = oldValue;
+				bonemealDeadBush = oldValue;
+			}
+			bonemealMushrooms = configFile.getBoolean("mushrooms", "tweaks.bonemeal", bonemealMushrooms, "Bonemeal can be used on mycelium to produce mushrooms");
+			bonemealDeadBush = configFile.getBoolean("deadBush", "tweaks.bonemeal", bonemealDeadBush, "Bonemeal can be used on sand to produce dead bushes");
+			bonemealGrassSpread = configFile.getBoolean("grassSpread", "tweaks.bonemeal", bonemealGrassSpread, "Bonemeal can be used on dirt to produce grass if adjecent to grass");
+			bonemealMyceliumSpread = configFile.getBoolean("myceliumSpread", "tweaks.bonemeal", bonemealMyceliumSpread, "Bonemeal can be used on dirt to produce mycelium if adjecent to mycelium");
 
 			// heartroot
 			enableHeartbeet = configFile.getBoolean("heartbeet", "tweaks", enableHeartbeet, "Enables heartbeets: a rare drop from beetroots which can be eaten to restore a bit of health");
