@@ -226,6 +226,8 @@ public class Config {
 	// enchantments
 	public static boolean moreShieldEnchantments = true;
 	public static boolean shieldEnchantmentTable = true;
+	public static boolean axeWeaponEnchants = true;
+	public static boolean axeEnchantmentTable = true;
 
 	// tweaks
 	public static boolean enablePigDesaddle = true;
@@ -450,8 +452,10 @@ public class Config {
 			copyWaypointCompass = configFile.getBoolean("copy", "tools.waypointCompass", copyWaypointCompass, "If true, you can copy the position of one waypoint compass to another in a crafting table, similarly to maps or compasses") && enableWaypointCompass;
 
 			// enchantments
-			moreShieldEnchantments = configFile.getBoolean("moreShield", "tools.enchantments", moreShieldEnchantments, "If true, shields can now be enchanted with more enchantments, including protection, fire aspect, knockback, and thorns");
+			moreShieldEnchantments = configFile.getBoolean("moreShield", "tools.enchantments", moreShieldEnchantments, "If true, shields can now be enchanted with enchantments such as protection, fire aspect, knockback, and thorns");
 			shieldEnchantmentTable = configFile.getBoolean("shieldTable", "tools.enchantments", shieldEnchantmentTable, "If true, shields can be enchanted in an enchantment table. Does not support modded shields as it requires a registry substitution") && moreShieldEnchantments;
+			axeWeaponEnchants = configFile.getBoolean("axeWeapon", "tools.enchantments", axeWeaponEnchants, "If true, axes will be able to be enchanted with weapon enchants such as looting, fire aspect, and knockback");
+			axeEnchantmentTable = configFile.getBoolean("axeTable", "tools.enchantments", axeEnchantmentTable, "If true, axes can receive available weapon enchantments at the enchantment table");
 		}
 
 		// tweaks
