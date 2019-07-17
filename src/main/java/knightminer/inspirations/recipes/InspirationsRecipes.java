@@ -262,7 +262,9 @@ public class InspirationsRecipes extends PulseBase {
 			addPotionBottle(Items.POTIONITEM, new ItemStack(Items.GLASS_BOTTLE), null);
 			addPotionBottle(Items.SPLASH_POTION, InspirationsShared.splashBottle, "bottleSplash");
 			addPotionBottle(Items.LINGERING_POTION, InspirationsShared.lingeringBottle, "bottleLingering");
-			InspirationsRegistry.addCauldronRecipe(TippedArrowCauldronRecipe.INSTANCE);
+			if (Config.cauldronTipArrows) {
+				InspirationsRegistry.addCauldronRecipe(TippedArrowCauldronRecipe.INSTANCE);
+			}
 		}
 
 		if(Config.enableCauldronFluids) {

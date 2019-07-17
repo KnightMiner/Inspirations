@@ -120,6 +120,7 @@ public class Config {
 	public static boolean enableCauldronPotions = true;
 	public static boolean enableCauldronBrewing = true;
 	private static boolean expensiveCauldronBrewing = true;
+	public static boolean cauldronTipArrows = true;
 	// cauldron - recipes
 	private static String[] cauldronRecipes = {
 			"minecraft:sticky_piston->minecraft:piston"
@@ -392,6 +393,7 @@ public class Config {
 			enableCauldronPotions = configFile.getBoolean("potions", "recipes.cauldron", enableCauldronPotions, "Allows cauldrons to be filled with potions and support brewing") && enableExtendedCauldron;
 			enableCauldronBrewing = configFile.getBoolean("brewing", "recipes.cauldron.potions", enableCauldronBrewing, "Allows cauldrons to perform brewing recipes.") && enableCauldronPotions;
 			expensiveCauldronBrewing = configFile.getBoolean("brewingExpensive", "recipes.cauldron.potions", expensiveCauldronBrewing, "Caps brewing at 2 potions per ingredient, requiring 2 ingredients for a full cauldron. Makes the brewing stand still useful and balances better against the bigger cauldron.") && enableCauldronBrewing;
+			cauldronTipArrows = configFile.getBoolean("tippedArrow", "recipes.cauldron.potions", cauldronTipArrows, "Allows cauldrons to tip arrows with potions.") && enableCauldronPotions;
 			InspirationsRegistry.setConfig("expensiveCauldronBrewing", expensiveCauldronBrewing);
 
 			// dispensers
