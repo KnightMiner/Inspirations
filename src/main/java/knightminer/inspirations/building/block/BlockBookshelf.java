@@ -7,6 +7,7 @@ import knightminer.inspirations.building.tileentity.TileBookshelf;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.PropertyUnlistedInteger;
+import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.util.TextureBlockUtil;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.ITileEntityProvider;
@@ -238,20 +239,7 @@ public class BlockBookshelf extends BlockInventory implements ITileEntityProvide
 			list.add(rayTrace(pos, start, end, bound));
 		}
 
-		// compare results
-		RayTraceResult result = null;
-		double max = 0.0D;
-		for(RayTraceResult raytraceresult : list) {
-			if(raytraceresult != null) {
-				double distance = raytraceresult.hitVec.squareDistanceTo(end);
-				if(distance > max) {
-					result = raytraceresult;
-					max = distance;
-				}
-			}
-		}
-
-		return result;
+		return Util.closestResult(list, end);
 	}
 
 	/*

@@ -2,6 +2,7 @@ package knightminer.inspirations.utility.block;
 
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.Config;
+import knightminer.inspirations.library.Util;
 import knightminer.inspirations.utility.InspirationsUtility;
 import knightminer.inspirations.utility.tileentity.TilePipe;
 import net.minecraft.block.Block;
@@ -274,19 +275,6 @@ public class BlockPipe extends BlockInventory {
 			list.add(rayTrace(pos, start, end, BOUNDS_EAST_CONNECT));
 		}
 
-		// compare results
-		RayTraceResult result = null;
-		double max = 0.0D;
-		for(RayTraceResult raytraceresult : list) {
-			if(raytraceresult != null) {
-				double distance = raytraceresult.hitVec.squareDistanceTo(end);
-				if(distance > max) {
-					result = raytraceresult;
-					max = distance;
-				}
-			}
-		}
-
-		return result;
+		return Util.closestResult(list, end);
 	}
 }

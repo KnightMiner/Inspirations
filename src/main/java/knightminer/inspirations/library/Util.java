@@ -1,16 +1,7 @@
 package knightminer.inspirations.library;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-
-import javax.annotation.Nullable;
-
-import knightminer.inspirations.library.util.ReflectionUtil;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import knightminer.inspirations.Inspirations;
+import knightminer.inspirations.library.util.ReflectionUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -24,10 +15,18 @@ import net.minecraft.potion.PotionType;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.translation.I18n;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-@SuppressWarnings("deprecation")
+import javax.annotation.Nullable;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+
 public class Util {
 	public static String resource(String name) {
 		return String.format("%s:%s", Inspirations.modID, name.toLowerCase(Locale.US));
@@ -198,5 +197,27 @@ public class Util {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Returns the closest raytrace result from a list
+	 * @param list  List of ray traces
+	 * @param end   Ending vector of the trace
+	 * @return  Cloest result
+	 */
+	public static RayTraceResult closestResult(List<RayTraceResult> list, Vec3d end) {
+		RayTraceResult closest = null;
+		double max = 0.0D;
+		for(RayTraceResult raytraceresult : list) {
+			if(raytraceresult != null) {
+				double distance = raytraceresult.hitVec.squareDistanceTo(end);
+				if(distance > max) {
+					closest = raytraceresult;
+					max = distance;
+				}
+			}
+		}
+
+		return closest;
 	}
 }

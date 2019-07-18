@@ -1,20 +1,26 @@
 package knightminer.inspirations.tweaks.block;
 
-import javax.annotation.Nullable;
-
-import net.minecraft.block.Block;
+import knightminer.inspirations.library.Util;
 import net.minecraft.block.BlockCarpet;
 import net.minecraft.block.BlockStairs;
-import net.minecraft.block.SoundType;
 import net.minecraft.block.BlockStairs.EnumHalf;
 import net.minecraft.block.BlockStairs.EnumShape;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BlockFittedCarpet extends BlockCarpet {
 
@@ -48,23 +54,99 @@ public class BlockFittedCarpet extends BlockCarpet {
 	 */
 	@Override
 	public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
-		BlockPos down = pos.down();
-		IBlockState below = world.getBlockState(down);
-		Block block = below.getBlock();
-		//if(block instanceof BlockSlab && !((BlockSlab)block).isDouble() && below.getValue(BlockSlab.HALF) == EnumBlockHalf.BOTTOM) {
-		//	state = setProperties(state, 0b1111);
-		//} else
-		if(block instanceof BlockStairs && below.getValue(BlockStairs.HALF) == EnumHalf.BOTTOM) {
-			below = below.getActualState(world, down);
-			state = setProperties(state, getStairShape(below));
-		}
-		return state;
+		return setProperties(state, getStairShape(world, pos.down()));
 	}
 
-	private int getStairShape(IBlockState stairs) {
-		EnumShape shape = stairs.getValue(BlockStairs.SHAPE);
+	@Override
+	@Deprecated
+	@Nullable
+	public AxisAlignedBB getCollisionBoundingBox(IBlockState state, IBlockAccess world, BlockPos pos) {
+		// if any of the parts are lowered, no collision box
+		if(getStairShape(world, pos) > 0) {
+			return NULL_AABB;
+		}
+		return super.getCollisionBoundingBox(state, world, pos);
+	}
+
+	private static final AxisAlignedBB[] BOUNDS;
+	private static final AxisAlignedBB BOUNDS_NW = new AxisAlignedBB(0.0,    0.0, 0.0,    0.5625, 0.0625, 0.5625);
+	private static final AxisAlignedBB BOUNDS_NE = new AxisAlignedBB(0.4375, 0.0, 0.0,    1.0,    0.0625, 0.5625);
+	private static final AxisAlignedBB BOUNDS_SW = new AxisAlignedBB(0.0,    0.0, 0.4375, 0.5625, 0.0625, 1.0);
+	private static final AxisAlignedBB BOUNDS_SE = new AxisAlignedBB(0.4375, 0.0, 0.4375, 1.0,    0.0625, 1.0);
+	static {
+		// bits are NW NE SW SE
+		BOUNDS = new AxisAlignedBB[]{
+				CARPET_AABB, // 0000
+				CARPET_AABB, // SE: 0001
+				CARPET_AABB, // SW: 0010
+				new AxisAlignedBB(0.0, 0.0, 0.0, 1.0,    0.0625, 0.5625), // 0011, NORTH
+				CARPET_AABB, // NE: 0100
+				new AxisAlignedBB(0.0, 0.0, 0.0, 0.5625, 0.0625, 1.0), // 0101, WEST
+				CARPET_AABB, // 0110
+				BOUNDS_NW,   // 0111
+				CARPET_AABB, // 1000
+				CARPET_AABB, // 1001
+				new AxisAlignedBB(0.4375, 0.0, 0.0,    1.0, 0.0625, 1.0), // 1010, EAST
+				BOUNDS_NE, // 1011
+				new AxisAlignedBB(0.0,    0.0, 0.4375, 1.0, 0.0625, 1.0), // 1100, SOUTH
+				BOUNDS_SW, // 1101
+				BOUNDS_SE, // 1110
+				CARPET_AABB, // 1111
+		};
+	}
+	@Override
+	@Deprecated
+	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+		return BOUNDS[getStairShape(source, pos.down())];
+	}
+
+	@Deprecated
+	@Override
+	public RayTraceResult collisionRayTrace(IBlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull Vec3d start, @Nonnull Vec3d end) {
+		int shape = getStairShape(world, pos.down());
+		// if three corners up or checkerboard, run on just up
+		switch(shape) {
+			case 0b0001:
+			case 0b0010:
+			case 0b0100:
+			case 0b0110:
+			case 0b1000:
+			case 0b1001:
+				break;
+			default:
+				return super.collisionRayTrace(state, world, pos, start, end);
+		}
+
+		// basically the same BlockStairs does
+		// Raytrace through all AABBs (plate, legs) and return the nearest one
+		List<RayTraceResult> list = new ArrayList<>();
+		if ((shape & 0b1000) == 0) list.add(rayTrace(pos, start, end, BOUNDS_NW));
+		if ((shape & 0b0100) == 0) list.add(rayTrace(pos, start, end, BOUNDS_NE));
+		if ((shape & 0b0010) == 0) list.add(rayTrace(pos, start, end, BOUNDS_SW));
+		if ((shape & 0b0001) == 0) list.add(rayTrace(pos, start, end, BOUNDS_SE));
+
+		return Util.closestResult(list, end);
+	}
+
+
+	/* Utils */
+
+	/**
+	 * Gets the shape for the carpet from the given stairs
+	 * @param world  World access
+	 * @param pos    Stairs position
+	 * @return  4 bit integer with bits in order NW, NE, SW, SE. If the bit is set, the carpet is down
+	 */
+	private int getStairShape(IBlockAccess world, BlockPos pos) {
+		IBlockState stairs = world.getBlockState(pos);
+		if (!(stairs.getBlock() instanceof BlockStairs) || stairs.getValue(BlockStairs.HALF) == EnumHalf.TOP) {
+			return 0b0000;
+		}
+
 		// seemed like the simplest way, convert each shape to four bits
 		// bits are NW NE SW SE
+		stairs = stairs.getActualState(world, pos);
+		EnumShape shape = stairs.getValue(BlockStairs.SHAPE);
 		switch(stairs.getValue(BlockStairs.FACING)) {
 			case NORTH:
 				switch(shape) {
@@ -99,26 +181,20 @@ public class BlockFittedCarpet extends BlockCarpet {
 					case OUTER_RIGHT: return 0b1110;
 				}
 		}
-		return 0;
+		return 0b0000;
 	}
 
+	/**
+	 * Sets the state properties based on the given shape
+	 * @param state  Carpet block state
+	 * @param i Shape integer from {@link #getStairShape(IBlockAccess, BlockPos)}
+	 * @return  New stairs shape
+	 */
 	private IBlockState setProperties(IBlockState state, int i) {
 		return state
 				.withProperty(NORTHWEST, (i & 8) > 0)
 				.withProperty(NORTHEAST, (i & 4) > 0)
 				.withProperty(SOUTHWEST, (i & 2) > 0)
 				.withProperty(SOUTHEAST, (i & 1) > 0);
-	}
-
-	@Override
-	@Deprecated
-	@Nullable
-	public AxisAlignedBB getCollisionBoundingBox(IBlockState state, IBlockAccess world, BlockPos pos) {
-		// if any of the parts are lowered, no collision box
-		state = state.getActualState(world, pos);
-		if(state.getValue(NORTHWEST) || state.getValue(NORTHEAST) || state.getValue(SOUTHWEST) || state.getValue(SOUTHEAST)) {
-			return NULL_AABB;
-		}
-		return super.getCollisionBoundingBox(state, world, pos);
 	}
 }

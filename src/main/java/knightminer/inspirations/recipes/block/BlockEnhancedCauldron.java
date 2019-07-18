@@ -3,6 +3,7 @@ package knightminer.inspirations.recipes.block;
 import com.google.common.collect.Lists;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.InspirationsRegistry;
+import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.util.TextureBlockUtil;
 import knightminer.inspirations.recipes.client.BoilingParticle;
 import knightminer.inspirations.recipes.tileentity.TileCauldron;
@@ -299,19 +300,7 @@ public class BlockEnhancedCauldron extends BlockCauldron implements ITileEntityP
 			list.add(rayTrace(pos, start, end, axisalignedbb));
 		}
 
-		RayTraceResult closest = null;
-		double max = 0.0D;
-		for(RayTraceResult raytraceresult : list) {
-			if(raytraceresult != null) {
-				double distance = raytraceresult.hitVec.squareDistanceTo(end);
-				if(distance > max) {
-					closest = raytraceresult;
-					max = distance;
-				}
-			}
-		}
-
-		return closest;
+		return Util.closestResult(list, end);
 	}
 
 	public static enum CauldronContents implements IStringSerializable {
