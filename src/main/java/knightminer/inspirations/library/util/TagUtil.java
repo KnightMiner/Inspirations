@@ -5,29 +5,29 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
 
 public final class TagUtil {
 	private TagUtil() {}
 
 	/* Generic Tag Operations */
-	public static NBTTagCompound getTagSafe(ItemStack stack) {
+	public static CompoundNBT getTagSafe(ItemStack stack) {
 		// yes, the null checks aren't needed anymore, but they don't hurt either.
 		// After all the whole purpose of this function is safety/processing possibly invalid input ;)
-		if(stack == null || stack.getItem() == null || !stack.hasTagCompound()) {
-			return new NBTTagCompound();
+		if(stack == null || stack.getItem() == null || !stack.hasTag()) {
+			return new CompoundNBT();
 		}
 
-		return stack.getTagCompound();
+		return stack.getTag();
 	}
 
-	public static NBTTagCompound getTagSafe(NBTTagCompound tag, String key) {
+	public static CompoundNBT getTagSafe(CompoundNBT tag, String key) {
 		if(tag == null) {
-			return new NBTTagCompound();
+			return new CompoundNBT();
 		}
 
-		return tag.getCompoundTag(key);
+		return tag.getCompound(key);
 	}
 
 	/* BlockPos */
@@ -37,12 +37,12 @@ public final class TagUtil {
 	 * @param pos  Position
 	 * @return  NBT compound
 	 */
-	public static NBTTagCompound writePos(BlockPos pos) {
-		NBTTagCompound tag = new NBTTagCompound();
+	public static CompoundNBT writePos(BlockPos pos) {
+		CompoundNBT tag = new CompoundNBT();
 		if(pos != null) {
-			tag.setInteger("X", pos.getX());
-			tag.setInteger("Y", pos.getY());
-			tag.setInteger("Z", pos.getZ());
+			tag.putInt("X", pos.getX());
+			tag.putInt("Y", pos.getY());
+			tag.putInt("Z", pos.getZ());
 		}
 		return tag;
 	}
@@ -52,9 +52,9 @@ public final class TagUtil {
 	 * @param tag  Tag to read
 	 * @return  BlockPos, or null if invalid
 	 */
-	public static BlockPos readPos(NBTTagCompound tag) {
-		if(tag != null && tag.hasKey("X", 99) && tag.hasKey("Y", 99) && tag.hasKey("Z", 99)) {
-			return new BlockPos(tag.getInteger("X"), tag.getInteger("Y"), tag.getInteger("Z"));
+	public static BlockPos readPos(CompoundNBT tag) {
+		if(tag != null && tag.contains("X", 99) && tag.contains("Y", 99) && tag.contains("Z", 99)) {
+			return new BlockPos(tag.getInt("X"), tag.getInt("Y"), tag.getInt("Z"));
 		}
 		return null;
 	}
