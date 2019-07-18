@@ -1,0 +1,7 @@
+{
+  "forge_marker": 1,
+  "variants": {
+    "bottom=false": { "model": "inspirations:chain" },
+    "bottom=true":  { "model": "inspirations:chain_bottom" }
+  }
+}

@@ -78,7 +78,23 @@ public class InspirationsBuilding extends PulseBase {
 		}
 
 		if(Config.enableRope) {
-			rope = registerBlock(r, new BlockRope(), "rope");
+			rope = registerBlock(r, new BlockRope(
+				Block.Properties.create(Material.CARPET)
+					.sound(SoundType.CLOTH)
+					.hardnessAndResistance(0.5F)
+			), "rope");
+			vine = registerBlock(r, new BlockRope(
+				Block.Properties.create(Material.CARPET)
+					.sound(SoundType.PLANT)
+					.hardnessAndResistance(0.5F)
+			), "vine");
+			chain = registerBlock(r, new BlockRope(
+					Block.Properties.create(Material.IRON)
+					.sound(SoundType.METAL)
+					.hardnessAndResistance(5.0F)
+					.harvestTool(ToolType.PICKAXE)
+					.harvestLevel(0)
+			), "chain");
 		}
 
 		if(Config.enableGlassDoor) {
@@ -128,7 +144,9 @@ public class InspirationsBuilding extends PulseBase {
 			registerItemBlock(r, new ItemBlockTexture(bookshelf), BlockBookshelf.TYPE);
 		}
 		if(rope != null) {
-			registerEnumItemBlock(r, rope);
+			registerItemBlock(r, rope, ItemGroup.DECORATIONS);
+			registerItemBlock(r, vine, ItemGroup.DECORATIONS);
+			registerItemBlock(r, chain, ItemGroup.DECORATIONS);
 		}
 		for (Block mulchBlock: mulch.values()) {
 			registerItemBlock(r, mulchBlock, ItemGroup.BUILDING_BLOCKS);
