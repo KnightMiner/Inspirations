@@ -36,6 +36,9 @@ import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.item.ItemMetaDynamic;
 import slimeknights.mantle.pulsar.pulse.Pulse;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Pulse(id = InspirationsBuilding.pulseID, description = "A collection of features to improve building")
 public class InspirationsBuilding extends PulseBase {
 	public static final String pulseID = "InspirationsBuilding";
@@ -48,7 +51,7 @@ public class InspirationsBuilding extends PulseBase {
 	public static BlockRope rope;
 	public static Block glassDoor;
 	public static Block glassTrapdoor;
-	public static Block mulch;
+	public static Map<BlockMulch.MulchColor, Block> mulch=new HashMap<>();
 	public static BlockPath path;
 	public static Block flower;
 	public static BlockEnlightenedBush enlightenedBush;
@@ -84,7 +87,11 @@ public class InspirationsBuilding extends PulseBase {
 		}
 
 		if(Config.enableMulch) {
-			mulch = registerBlock(r, new BlockMulch(), "mulch");
+			for (BlockMulch.MulchColor mulch_color: BlockMulch.MulchColor.values()) {
+				mulch.put(mulch_color,
+					registerBlock(r, new BlockMulch(mulch_color),
+						mulch_color.getName() + "_mulch"));
+			}
 		}
 
 		if(Config.enablePath) {
@@ -123,8 +130,8 @@ public class InspirationsBuilding extends PulseBase {
 		if(rope != null) {
 			registerEnumItemBlock(r, rope);
 		}
-		if(mulch != null) {
-			registerItemBlock(r, mulch, BlockMulch.COLOR);
+		for (Block mulchBlock: mulch.values()) {
+			registerItemBlock(r, mulchBlock, ItemGroup.BUILDING_BLOCKS);
 		}
 		if(path != null) {
 			registerEnumItemBlock(r, path);
