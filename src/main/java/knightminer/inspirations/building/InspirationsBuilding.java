@@ -52,16 +52,21 @@ public class InspirationsBuilding extends PulseBase {
 
 	// blocks
 	public static Block bookshelf;
+
 	public static BlockRope rope;
+	public static BlockRope vine;
+	public static BlockRope chain;
+
 	public static Block glassDoor;
 	public static Block glassTrapdoor;
 	public static Map<BlockMulch.MulchColor, Block> mulch=new HashMap<>();
 	public static BlockPath path;
 
-	public static Block flower_rose;
+	public static Block flower_cyan;
 	public static Block flower_lilac;
 	public static Block flower_peony;
-	public static Block flower_cyan;
+	public static Block flower_rose;
+
 	public static BlockEnlightenedBush enlightenedBush;
 
 	// items
@@ -154,7 +159,8 @@ public class InspirationsBuilding extends PulseBase {
 		if(bookshelf != null) {
 			registerItemBlock(r, new ItemBlockTexture(bookshelf), BlockBookshelf.TYPE);
 		}
-		if(rope != null) {
+
+		if (rope != null) {
 			registerItemBlock(r, rope, ItemGroup.DECORATIONS);
 			registerItemBlock(r, vine, ItemGroup.DECORATIONS);
 			registerItemBlock(r, chain, ItemGroup.DECORATIONS);
@@ -195,7 +201,7 @@ public class InspirationsBuilding extends PulseBase {
 		if(Config.enableFlowers && Config.enableCauldronDyeing) {
 			InspirationsRegistry.addCauldronRecipe(new CauldronDyeRecipe(
 					new ItemStack(flower, 1, FlowerType.ROSE.getMeta()),
-					EnumDyeColor.CYAN,
+					DyeColor.CYAN,
 					new ItemStack(flower, 1, FlowerType.CYAN.getMeta())));
 		}
 	}

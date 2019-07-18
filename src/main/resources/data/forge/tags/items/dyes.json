@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "optional": [
+    "inspirations:white_dyed_water_bottle",
+    "inspirations:orange_dyed_water_bottle",
+    "inspirations:magenta_dyed_water_bottle",
+    "inspirations:light_blue_dyed_water_bottle",
+    "inspirations:yellow_dyed_water_bottle",
+    "inspirations:lime_dyed_water_bottle",
+    "inspirations:pink_dyed_water_bottle",
+    "inspirations:gray_dyed_water_bottle",
+    "inspirations:light_gray_dyed_water_bottle",
+    "inspirations:cyan_dyed_water_bottle",
+    "inspirations:purple_dyed_water_bottle",
+    "inspirations:blue_dyed_water_bottle",
+    "inspirations:brown_dyed_water_bottle",
+    "inspirations:green_dyed_water_bottle",
+    "inspirations:red_dyed_water_bottle",
+    "inspirations:black_dyed_water_bottle"
+  ]
+}
