@@ -180,7 +180,13 @@ public class TweaksEvents {
 			return true;
 		}
 
-		// place block based on which has more, grass wins ties
+		// place block based on which has more
+		// if there is a tie, randomly choose
+		if (grass == mycelium) {
+			if(world.rand.nextBoolean()) {
+				mycelium++;
+			}
+		}
 		world.setBlockState(pos, grass >= mycelium ? Blocks.GRASS.getDefaultState() : Blocks.MYCELIUM.getDefaultState());
 		return true;
 	}
