@@ -20,8 +20,12 @@ import knightminer.inspirations.common.item.ItemBlockTexture;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.recipe.cauldron.CauldronDyeRecipe;
 import net.minecraft.block.Block;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.DoublePlantBlock;
+import net.minecraft.block.SoundType;
+import net.minecraft.block.material.Material;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemDoor;
 import net.minecraft.item.ItemStack;
@@ -53,7 +57,11 @@ public class InspirationsBuilding extends PulseBase {
 	public static Block glassTrapdoor;
 	public static Map<BlockMulch.MulchColor, Block> mulch=new HashMap<>();
 	public static BlockPath path;
-	public static Block flower;
+
+	public static Block flower_rose;
+	public static Block flower_lilac;
+	public static Block flower_peony;
+	public static Block flower_cyan;
 	public static BlockEnlightenedBush enlightenedBush;
 
 	// items
@@ -115,7 +123,10 @@ public class InspirationsBuilding extends PulseBase {
 		}
 
 		if(Config.enableFlowers) {
-			flower = registerBlock(r, new BlockFlower(), "flower");
+			flower_cyan = registerBlock(r, new BlockFlower(null), "cyan_flower");
+			flower_lilac = registerBlock(r, new BlockFlower((DoublePlantBlock) Blocks.LILAC), "lilac");
+			flower_peony = registerBlock(r, new BlockFlower((DoublePlantBlock) Blocks.PEONY), "peony");
+			flower_rose = registerBlock(r, new BlockFlower((DoublePlantBlock) Blocks.ROSE_BUSH), "rose");
 		}
 
 		if(Config.enableEnlightenedBush) {
@@ -154,9 +165,14 @@ public class InspirationsBuilding extends PulseBase {
 		if(path != null) {
 			registerEnumItemBlock(r, path);
 		}
-		if(flower != null) {
-			registerItemBlock(r, flower, BlockFlower.TYPE);
+
+		if (flower_cyan != null) {
+			registerItemBlock(r, flower_cyan, ItemGroup.DECORATIONS);
+			registerItemBlock(r, flower_lilac, ItemGroup.DECORATIONS);
+			registerItemBlock(r, flower_peony, ItemGroup.DECORATIONS);
+			registerItemBlock(r, flower_rose, ItemGroup.DECORATIONS);
 		}
+
 		if(enlightenedBush != null) {
 			registerItemBlock(r, new ItemBlockTexture(enlightenedBush), BlockEnlightenedBush.LIGHTS);
 		}
