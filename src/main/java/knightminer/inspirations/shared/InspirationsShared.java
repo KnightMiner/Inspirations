@@ -1,62 +1,55 @@
 package knightminer.inspirations.shared;
 
-import com.google.common.eventbus.Subscribe;
-
 import knightminer.inspirations.common.CommonProxy;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
-import knightminer.inspirations.shared.item.ItemMaterials;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.init.MobEffects;
+import net.minecraft.item.Food;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.PotionEffect;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.RegistryEvent.Register;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
+import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.registries.IForgeRegistry;
-import slimeknights.mantle.item.ItemEdible;
 import slimeknights.mantle.pulsar.pulse.Pulse;
+
 
 @Pulse(id = InspirationsShared.pulseID, description = "Blocks and items used by all modules", forced = true)
 public class InspirationsShared extends PulseBase {
 	public static final String pulseID = "InspirationsShared";
 
-	@SidedProxy(clientSide = "knightminer.inspirations.shared.SharedClientProxy", serverSide = "knightminer.inspirations.common.CommonProxy")
-	public static CommonProxy proxy;
-
-	// items
-	public static ItemMaterials materials;
-	public static ItemEdible edibles;
+	@SuppressWarnings("Convert2MethodRef")
+	public static CommonProxy proxy = DistExecutor.runForDist(() -> () -> new SharedClientProxy(), () -> () -> new CommonProxy());
 
 	// materials
-	public static ItemStack lock;
-	public static ItemStack key;
-	public static ItemStack splashBottle;
-	public static ItemStack lingeringBottle;
-	public static ItemStack mushrooms;
-	public static ItemStack rabbitStewMix;
-	public static ItemStack silverfishPowder;
-	public static ItemStack witherBone;
-	public static ItemStack stoneRod;
+	public static Item lock;
+	public static Item key;
+	public static Item splashBottle;
+	public static Item lingeringBottle;
+	public static Item mushrooms;
+	public static Item rabbitStewMix;
+	public static Item silverfishPowder;
+	public static Item witherBone;
+	public static Item stoneRod;
 
 	// edibles
-	public static ItemStack heartbeet;
-	public static ItemStack boiledEgg;
+	public static Item heartbeet;
+	public static Item boiledEgg;
 
 	// flags
 	private static boolean witherBoneDrop = false;
 	public static boolean milkCooldownCow = false;
 	public static boolean milkCooldownSquid = false;
 
-	@Subscribe
-	public void preInit(FMLPreInitializationEvent event) {
+	@SubscribeEvent
+	public void preInit(FMLCommonSetupEvent event) {
 		proxy.preInit();
 	}
 
@@ -64,56 +57,52 @@ public class InspirationsShared extends PulseBase {
 	public void registerItems(Register<Item> event) {
 		IForgeRegistry<Item> r = event.getRegistry();
 
-		materials = registerItem(r, new ItemMaterials(), "materials");
-		materials.setCreativeTab(CreativeTabs.MATERIALS);
-
-		edibles = registerItem(r, new ItemEdible(), "edibles");
-		edibles.setCreativeTab(CreativeTabs.FOOD);
-
 		// add items from modules
 		if(isToolsLoaded() && Config.enableLock) {
-			lock = materials.addMeta(0, "lock");
-			key = materials.addMeta(1, "key");
+			lock = registerItem(r, new Item(new Item.Properties().group(ItemGroup.MATERIALS)), "lock");
+			key = registerItem(r, new Item(new Item.Properties().group(ItemGroup.MATERIALS)),  "key");
 		}
 
 		if(isTweaksLoaded()) {
 			if(Config.enableHeartbeet) {
-				heartbeet = edibles.addFood(0, 2, 2.4f, "heartbeet", new PotionEffect(MobEffects.REGENERATION, 100));
+				heartbeet = registerItem(r, new Item(new Item.Properties().group(ItemGroup.FOOD).food(
+						new Food.Builder().hunger(2).saturation(2.4f).effect(new EffectInstance(Effects.REGENERATION, 100), 1).build()
+				)), "heartbeet");
 			}
 			if(Config.brewMissingPotions) {
-				silverfishPowder = materials.addMeta(6, "silverfish_powder", CreativeTabs.BREWING);
+				silverfishPowder = registerItem(r, new Item(new Item.Properties().group(ItemGroup.BREWING)),  "silverfish_powder");
 			}
 		}
 		// used in both extended brewing and nether crooks
 		if((isTweaksLoaded() && Config.brewMissingPotions) || (isToolsLoaded() && Config.netherCrooks)) {
-			witherBone = materials.addMeta(7, "wither_bone", CreativeTabs.BREWING);
+			witherBone = registerItem(r, new Item(new Item.Properties().group(ItemGroup.BREWING)), "wither_bone");
 			witherBoneDrop = Config.witherBoneDrop;
 			milkCooldownCow = Config.milkCooldown;
 		}
 
 		if(isRecipesLoaded()) {
 			if(Config.enableCauldronPotions) {
-				splashBottle = materials.addMeta(2, "splash_bottle", CreativeTabs.BREWING);
-				lingeringBottle = materials.addMeta(3, "lingering_bottle", CreativeTabs.BREWING);
+				splashBottle =  registerItem(r, new Item(new Item.Properties().group(ItemGroup.BREWING)), "splash_bottle");
+				lingeringBottle =  registerItem(r, new Item(new Item.Properties().group(ItemGroup.BREWING)), "lingering_bottle");
 			}
 			if(Config.enableCauldronFluids) {
-				mushrooms = materials.addMeta(4, "mushrooms");
-				rabbitStewMix = materials.addMeta(5, "rabbit_stew_mix");
+				mushrooms =  registerItem(r, new Item(new Item.Properties().group(ItemGroup.MATERIALS)), "mushrooms");
+				rabbitStewMix =  registerItem(r, new Item(new Item.Properties().group(ItemGroup.MATERIALS)), "rabbit_stew_mix");
 			}
 			milkCooldownSquid = Config.milkSquids;
 		}
 		if(isToolsLoaded() && Config.separateCrook) {
-			stoneRod = materials.addMeta(8, "stone_rod", CreativeTabs.MATERIALS);
+			stoneRod = registerItem(r, new Item(new Item.Properties().group(ItemGroup.MATERIALS)), "stone_rod");
 		}
 	}
 
-	@Subscribe
-	public void init(FMLInitializationEvent event) {
+	@SubscribeEvent
+	public void init(InterModEnqueueEvent event) {
 		proxy.init();
 	}
 
-	@Subscribe
-	public void postInit(FMLPostInitializationEvent event) {
+	@SubscribeEvent
+	public void postInit(InterModProcessEvent event) {
 		proxy.postInit();
 
 		// currently just used for milking
