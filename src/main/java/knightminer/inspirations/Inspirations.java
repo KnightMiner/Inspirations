@@ -25,14 +25,7 @@ import org.apache.logging.log4j.Logger;
 import slimeknights.mantle.common.GuiHandler;
 import slimeknights.mantle.pulsar.control.PulseManager;
 
-@Mod(
-		modid = Inspirations.modID,
-		name = Inspirations.modName,
-		version = Inspirations.modVersion,
-		dependencies = "required-after:forge@[14.23.1.2571,];"
-				+ "required-after:mantle;"
-				+ "after:toughasnails@[3.1.0,]",
-				acceptedMinecraftVersions = "[1.12, 1.13)")
+@Mod(Inspirations.modID)
 public class Inspirations {
 	public static final String modID = "inspirations";
 	public static final String modVersion = "${version}";
