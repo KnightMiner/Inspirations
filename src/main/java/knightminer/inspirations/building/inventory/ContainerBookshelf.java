@@ -1,21 +1,25 @@
 package knightminer.inspirations.building.inventory;
 
+import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.building.tileentity.TileBookshelf;
 import knightminer.inspirations.library.InspirationsRegistry;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Slot;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.Slot;
+import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.ItemStack;
-import slimeknights.mantle.inventory.ContainerMultiModule;
+import slimeknights.mantle.inventory.MultiModuleContainer;
 
-public class ContainerBookshelf extends ContainerMultiModule<TileBookshelf> {
+public class ContainerBookshelf extends MultiModuleContainer<TileBookshelf> {
 
-	public ContainerBookshelf(InventoryPlayer inventoryPlayer, TileBookshelf tile) {
-		super(tile);
+	public ContainerBookshelf(int winId, PlayerInventory inventoryPlayer) {
+		super(InspirationsBuilding.contBookshelf, winId, null);
 		for(int i = 0; i < 7; i++) {
-			this.addSlotToContainer(new SlotBookshelf(tile, i, 26 + (i*18), 18));
+			this.addSlot(new SlotBookshelf(tile, i, 26 + (i*18), 18));
 		}
 		for(int i = 0; i < 7; i++) {
-			this.addSlotToContainer(new SlotBookshelf(tile, i+7, 26 + (i*18), 44));
+			this.addSlot(new SlotBookshelf(tile, i+7, 26 + (i*18), 44));
 		}
 
 		addPlayerInventory(inventoryPlayer, 8, 74);

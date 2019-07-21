@@ -1,8 +1,10 @@
 package knightminer.inspirations.building.client;
 
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.google.common.cache.Cache;
@@ -12,60 +14,59 @@ import com.google.common.collect.ImmutableMap;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.block.BlockBookshelf;
 import knightminer.inspirations.shared.client.TextureModel;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.block.BlockState;
+import net.minecraft.client.renderer.model.BakedQuad;
+import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexFormat;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraftforge.client.model.IModel;
-import net.minecraftforge.common.property.IExtendedBlockState;
+import net.minecraftforge.client.model.data.IModelData;
 
 public class BookshelfModel extends TextureModel {
 
 	/** Book model cache, for internal use only */
 	public static final Cache<BookshelfCacheKey, IBakedModel> BOOK_CACHE = CacheBuilder.newBuilder().maximumSize(30).build();
-	public BookshelfModel(IBakedModel standard, IModel model, VertexFormat format) {
-		super(standard, model, format, "texture", true);
+	public BookshelfModel(IBakedModel standard, IModel model) {
+		super(standard, model, DefaultVertexFormats.BLOCK, "texture", true);
 	}
 
+	@Nonnull
 	@Override
-	public List<BakedQuad> getQuads(IBlockState state, EnumFacing side, long rand) {
+	public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
 		IBakedModel bakedModel = this.originalModel;
-		if(state instanceof IExtendedBlockState) {
-			IExtendedBlockState extendedState = (IExtendedBlockState) state;
-			String texture = extendedState.getValue(BlockBookshelf.TEXTURE);
-			Integer booksValue = extendedState.getValue(BlockBookshelf.BOOKS);
-			int books = booksValue != null ? booksValue : 0;
-			try {
-				// grab the model from cache if present
-				bakedModel = BOOK_CACHE.get(new BookshelfCacheKey(extendedState.getClean(), texture, books), () -> {
-					// have books
-					ImmutableMap.Builder<String, String> builder = ImmutableMap.builder();
-					if(texture != null) {
-						builder.put("texture", texture);
+		String texture = extraData.getData(BlockBookshelf.TEXTURE);
+		Integer booksValue = extraData.getData(BlockBookshelf.BOOKS);
+		int books = booksValue != null ? booksValue : 0;
+		try {
+			// grab the model from cache if present
+			bakedModel = BOOK_CACHE.get(new BookshelfCacheKey(extendedState.getClean(), texture, books), () -> {
+				// have books
+				ImmutableMap.Builder<String, String> builder = ImmutableMap.builder();
+				if(texture != null) {
+					builder.put("texture", texture);
+				}
+				for(int i = 0; i < 14; i++) {
+					// if there is no book in the slot, remove the texture so the quad is removed
+					if((books & (1 << i)) == 0) {
+						builder.put("#book" + i, "");
+						builder.put("#bookLabel" + i, "");
 					}
-					for(int i = 0; i < 14; i++) {
-						// if there is no book in the slot, remove the texture so the quad is removed
-						if((books & (1 << i)) == 0) {
-							builder.put("#book" + i, "");
-							builder.put("#bookLabel" + i, "");
-						}
-					}
-					return getTexturedModel(builder.build());
-				});
-			} catch(ExecutionException e) {
-				Inspirations.log.error(e);
-			}
+				}
+				return getTexturedModel(builder.build());
+			});
+		} catch(ExecutionException e) {
+			Inspirations.log.error(e);
 		}
 		return bakedModel.getQuads(state, side, rand);
 	}
 
 	private static class BookshelfCacheKey {
-		private IBlockState state;
+		private BlockState state;
 		@Nullable
 		private String texture;
 		private int books;
-		public BookshelfCacheKey(IBlockState state, @Nullable String texture, int books) {
+		public BookshelfCacheKey(BlockState state, @Nullable String texture, int books) {
 			this.state = state;
 			this.texture = texture;
 			this.books = books;

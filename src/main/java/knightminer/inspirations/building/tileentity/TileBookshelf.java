@@ -1,50 +1,47 @@
 package knightminer.inspirations.building.tileentity;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.building.block.BlockBookshelf;
-import knightminer.inspirations.building.client.GuiBookshelf;
 import knightminer.inspirations.building.inventory.ContainerBookshelf;
 import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.common.network.InventorySlotSyncPacket;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.client.ClientUtil;
 import knightminer.inspirations.library.util.TextureBlockUtil;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.INBT;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
-import net.minecraft.util.EnumHand;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.ServerWorld;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
-import net.minecraftforge.common.property.IExtendedBlockState;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.client.model.ModelDataManager;
+import net.minecraftforge.client.model.data.IModelData;
+import net.minecraftforge.client.model.data.ModelDataMap;
 import net.minecraftforge.items.ItemHandlerHelper;
-import slimeknights.mantle.common.IInventoryGui;
-import slimeknights.mantle.tileentity.TileInventory;
+import slimeknights.mantle.tileentity.InventoryTileEntity;
 
-public class TileBookshelf extends TileInventory implements IInventoryGui {
+public class TileBookshelf extends InventoryTileEntity {
 
 	/** Cached enchantment bonus, so we are not constantly digging the inventory */
 	private float enchantBonus;
 
-	public TileBookshelf() {
-		super("gui.inspirations.bookshelf.name", 14, 1);
-		enchantBonus = Float.NaN;
-	}
+	public static ITextComponent TITLE = new TranslationTextComponent("gui.inspirations.bookshelf.name");
 
-	@Override
-	public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate) {
-		return oldState.getBlock() != newSate.getBlock();
+	public TileBookshelf() {
+		super(InspirationsBuilding.tileBookshelf, TITLE, 14, 1);
+		enchantBonus = Float.NaN;
 	}
 
 	@Override
@@ -52,26 +49,24 @@ public class TileBookshelf extends TileInventory implements IInventoryGui {
 		ItemStack oldStack = this.getStackInSlot(slot);
 
 		// we sync slot changes to all clients around
-		if(getWorld() != null && getWorld() instanceof WorldServer && !getWorld().isRemote && !ItemStack.areItemStacksEqual(itemstack, getStackInSlot(slot))) {
-			InspirationsNetwork.sendToClients((WorldServer) getWorld(), this.pos, new InventorySlotSyncPacket(itemstack, slot, pos));
+		if(getWorld() != null && getWorld() instanceof ServerWorld && !getWorld().isRemote && !ItemStack.areItemStacksEqual(itemstack, getStackInSlot(slot))) {
+			InspirationsNetwork.sendToClients((ServerWorld) getWorld(), this.pos, new InventorySlotSyncPacket(itemstack, slot, pos));
 		}
 		super.setInventorySlotContents(slot, itemstack);
 
 		if(getWorld() != null) {
 			// update for rendering
 			if(getWorld().isRemote) {
-				Minecraft.getMinecraft().renderGlobal.notifyBlockUpdate(null, pos, null, null, 0);
+				ModelDataManager.requestModelDataRefresh(this);
+				getWorld().markForRerender(getPos());
 			}
 
 			// if we have redstone books and either the old stack or the new one is a book, update
 			if(InspirationsBuilding.redstoneBook != null
-					&& (InspirationsBuilding.redstoneBook.isItemEqual(oldStack) ^ InspirationsBuilding.redstoneBook.isItemEqual(itemstack))) {
-
-				world.notifyNeighborsOfStateChange(pos, this.getBlockType(), false);
-				IBlockState state = world.getBlockState(pos);
-				if(state.getBlock() == this.getBlockType()) {
-					world.notifyNeighborsOfStateChange(pos.offset(state.getValue(BlockBookshelf.FACING).getOpposite()), this.getBlockType(), false);
-				}
+					&& (oldStack.getItem() == InspirationsBuilding.redstoneBook ^ itemstack.getItem() == InspirationsBuilding.redstoneBook)) {
+				BlockState state = world.getBlockState(pos);
+				world.notifyNeighbors(pos, state.getBlock());
+				world.notifyNeighbors(pos.offset(state.get(BlockBookshelf.FACING).getOpposite()), state.getBlock());
 			}
 		}
 
@@ -83,7 +78,7 @@ public class TileBookshelf extends TileInventory implements IInventoryGui {
 	 * Book logic
 	 */
 
-	public boolean interact(EntityPlayer player, EnumHand hand, int bookClicked) {
+	public boolean interact(PlayerEntity player, Hand hand, int bookClicked) {
 		// if it contains a book, take the book out
 		if(isStackInSlot(bookClicked)) {
 			if (!world.isRemote) {
@@ -97,7 +92,7 @@ public class TileBookshelf extends TileInventory implements IInventoryGui {
 		ItemStack stack = player.getHeldItem(hand);
 		if(InspirationsRegistry.isBook(stack)) {
 			if (!world.isRemote) {
-				setInventorySlotContents(bookClicked, stack.splitStack(1));
+				setInventorySlotContents(bookClicked, stack.split(1));
 			}
 			return true;
 		}
@@ -112,17 +107,12 @@ public class TileBookshelf extends TileInventory implements IInventoryGui {
 	 * GUI
 	 */
 
-	@Override
-	public ContainerBookshelf createContainer(InventoryPlayer inventoryplayer, World world, BlockPos pos) {
-		return new ContainerBookshelf(inventoryplayer, this);
-	}
 
+	@Nullable
 	@Override
-	@SideOnly(Side.CLIENT)
-	public GuiContainer createGui(InventoryPlayer inventoryplayer, World world, BlockPos pos) {
-		return new GuiBookshelf(createContainer(inventoryplayer, world, pos));
+	public Container createMenu(int winId, PlayerInventory playerInv, PlayerEntity player) {
+		return new ContainerBookshelf(winId, playerInv, this);
 	}
-
 
 	/*
 	 * Extra logic
@@ -133,7 +123,7 @@ public class TileBookshelf extends TileInventory implements IInventoryGui {
 			return 0;
 		}
 		for(int i = 0; i < 14; i++) {
-			if(InspirationsBuilding.redstoneBook.isItemEqual(getStackInSlot(i))) {
+			if(getStackInSlot(i).getItem() == InspirationsBuilding.redstoneBook) {
 				// we do plus two so a book in slot 13 (last one) gives 15
 				return i + 2;
 			}
@@ -165,8 +155,9 @@ public class TileBookshelf extends TileInventory implements IInventoryGui {
 	/*
 	 * Rendering
 	 */
-
-	public IBlockState writeExtendedBlockState(IExtendedBlockState state) {
+	@Nonnull
+	@Override
+	public IModelData getModelData() {
 		// pack books into integer
 		int books = 0;
 		for(int i = 0; i < 14; i++) {
@@ -174,15 +165,13 @@ public class TileBookshelf extends TileInventory implements IInventoryGui {
 				books |= 1 << i;
 			}
 		}
-		state = state.withProperty(BlockBookshelf.BOOKS, books);
-
+		ModelDataMap.Builder data = new ModelDataMap.Builder().withInitial(BlockBookshelf.BOOKS, books);
 		// texture not loaded
 		String texture = ClientUtil.getTexturePath(this);
 		if(!texture.isEmpty()) {
-			state = state.withProperty(BlockBookshelf.TEXTURE, texture);
+			data = data.withInitial(BlockBookshelf.TEXTURE, texture);
 		}
-
-		return state;
+		return data.build();
 	}
 
 
@@ -192,39 +181,41 @@ public class TileBookshelf extends TileInventory implements IInventoryGui {
 
 	@Nonnull
 	@Override
-	public NBTTagCompound getUpdateTag() {
+	public CompoundNBT getUpdateTag() {
 		// new tag instead of super since default implementation calls the super of writeToNBT
-		return writeToNBT(new NBTTagCompound());
+		return write(new CompoundNBT());
 	}
 
 	@Override
-	public SPacketUpdateTileEntity getUpdatePacket() {
+	public SUpdateTileEntityPacket getUpdatePacket() {
 		// note that this sends all of the tile data. you should change this if you use additional tile data
-		NBTTagCompound tag = getTileData().copy();
-		writeToNBT(tag);
-		return new SPacketUpdateTileEntity(this.getPos(), this.getBlockMetadata(), tag);
+		CompoundNBT tag = getTileData().copy();
+		write(tag);
+		// Tile entity type here is used for Vanilla only.
+		return new SUpdateTileEntityPacket(this.getPos(), 0, tag);
 	}
 
 	@Override
-	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
-		NBTTagCompound tag = pkt.getNbtCompound();
-		NBTBase texture = tag.getTag(TextureBlockUtil.TAG_TEXTURE);
+	public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
+		CompoundNBT tag = pkt.getNbtCompound();
+		INBT texture = tag.get(TextureBlockUtil.TAG_TEXTURE);
 		if(texture != null) {
-			getTileData().setTag(TextureBlockUtil.TAG_TEXTURE, texture);
+			getTileData().put(TextureBlockUtil.TAG_TEXTURE, texture);
 		}
-		readFromNBT(tag);
+		read(tag);
 	}
 
 	/* NBT */
+
 	@Override
-	public void readFromNBT(NBTTagCompound tags) {
-		super.readFromNBT(tags);
+	public void read(CompoundNBT tags) {
+		super.read(tags);
 
 		// pull the old texture string into the proper location if found
-		NBTTagCompound forgeData = tags.getCompoundTag("ForgeData");
-		if(forgeData.hasKey(TextureBlockUtil.TAG_TEXTURE, 8)) {
-			forgeData.setString("texture_path", forgeData.getString(TextureBlockUtil.TAG_TEXTURE));
-			forgeData.removeTag(TextureBlockUtil.TAG_TEXTURE);
+		CompoundNBT forgeData = tags.getCompound("ForgeData");
+		if(forgeData.contains(TextureBlockUtil.TAG_TEXTURE, 8)) {
+			forgeData.putString("texture_path", forgeData.getString(TextureBlockUtil.TAG_TEXTURE));
+			forgeData.remove(TextureBlockUtil.TAG_TEXTURE);
 		}
 	}
 }
