@@ -45,7 +45,9 @@ public class BlockRope extends Block {
 		if(state.getBlock() == this) {
 			return true;
 		}
-		return !state.isIn(BlockTags.LEAVES) && !VoxelShapes.compare(state.getCollisionShape(world, pos).project(Direction.UP), BOUNDS, IBooleanFunction.ONLY_SECOND);
+		// See Block.func_220055_a
+		// .project(.ONLY_SECOND)
+		return !state.isIn(BlockTags.LEAVES) && !VoxelShapes.compare(state.getCollisionShape(world, pos).func_212434_a(Direction.UP), BOUNDS, IBooleanFunction.field_223232_c_);
 	}
 
 	/* Ropey logic */
