@@ -5,106 +5,82 @@ import java.util.Random;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockDirectional;
+import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.properties.PropertyDirection;
-import net.minecraft.block.state.BlockFaceShape;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.SoundEvents;
-import net.minecraft.util.EnumBlockRenderType;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.item.BlockItemUseContext;
+import net.minecraft.particles.RedstoneParticleData;
+import net.minecraft.state.BooleanProperty;
+import net.minecraft.state.DirectionProperty;
+import net.minecraft.state.StateContainer;
+import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorld;
+import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class BlockRedstoneCharge extends Block {
 
-	public static final PropertyBool QUICK = PropertyBool.create("quick");
-	public static final PropertyDirection FACING = BlockDirectional.FACING;
-	public BlockRedstoneCharge() {
-		super(Material.CIRCUITS);
-		this.setHardness(0);
-		this.setLightLevel(0.5F);
+	public static final BooleanProperty QUICK = BooleanProperty.create("quick");
+	public static final DirectionProperty FACING = DirectionalBlock.FACING;
 
-		this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.DOWN).withProperty(QUICK, false));
+	public BlockRedstoneCharge() {
+		super(Block.Properties.create(Material.MISCELLANEOUS)
+				.hardnessAndResistance(0)
+				.lightValue(2)
+		);
+
+		this.setDefaultState(this.getStateContainer().getBaseState().with(FACING, Direction.DOWN).with(QUICK, false));
 	}
 
 
 	/* Blockstate */
 
 	@Override
-	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, FACING, QUICK);
+	protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+		builder.add(FACING, QUICK);
 	}
-
-	/**
-	 * Convert the given metadata into a BlockState for this Block
-	 */
-	@Override
-	public IBlockState getStateFromMeta(int meta) {
-		return this.getDefaultState()
-				.withProperty(QUICK, (meta & 8) > 0)
-				.withProperty(FACING, EnumFacing.getFront(meta & 7));
-	}
-
-	/**
-	 * Convert the BlockState into the correct metadata value
-	 */
-	@Override
-	public int getMetaFromState(IBlockState state) {
-		return state.getValue(FACING).getIndex() | (state.getValue(QUICK) ? 8 : 0);
-	}
-
 
 	/* Fading */
 	/**
 	 * How many world ticks before ticking
 	 */
 	@Override
-	public int tickRate(World world) {
+	public int tickRate(IWorldReader world) {
 		return 20;
 	}
 
-	/**
-	 * Called after the block is set in the Chunk data, but before the Tile Entity is set
-	 */
+	@Nonnull
 	@Override
-	public void onBlockAdded(World world, BlockPos pos, IBlockState state) {
-		if (!world.isRemote) {
-			world.notifyNeighborsOfStateChange(pos.offset(state.getValue(FACING)), this, false);
-			world.scheduleUpdate(pos, this, state.getValue(QUICK) ? 2 : 20);
+	public BlockState updatePostPlacement(@Nonnull BlockState state, Direction facing, BlockState facingState, IWorld world, BlockPos pos, BlockPos facingPos) {
+		if (!world.isRemote()) {
+			world.notifyNeighbors(pos.offset(state.get(FACING)), this);
+			world.getPendingBlockTicks().scheduleTick(pos, this, state.get(QUICK) ? 2 : 20);
 		}
+		return super.updatePostPlacement(state, facing, facingState, world, pos, facingPos);
 	}
 
-	/**
-	 * Called serverside after this block is replaced with another in Chunk, but before the Tile Entity is updated
-	 */
 	@Override
-	public void breakBlock(World world, BlockPos pos, IBlockState state) {
-		world.notifyNeighborsOfStateChange(pos, this, false);
-		world.notifyNeighborsOfStateChange(pos.offset(state.getValue(FACING)), this, false);
-
-		super.breakBlock(world, pos, state);
+	public void onReplaced(BlockState state, @Nonnull World worldIn, @Nonnull BlockPos pos, @Nonnull BlockState newState, boolean isMoving) {
+		if (!isMoving && state.getBlock() != newState.getBlock()) {
+         super.onReplaced(state, worldIn, pos, newState, isMoving);
+         worldIn.notifyNeighbors(pos, this);
+         worldIn.notifyNeighbors(pos.offset(state.get(FACING)), this);
+      }
 	}
 
-	/**
-	 * Called randomly when setTickRandomly is set to true (used by e.g. crops to grow, etc.)
-	 */
-	@Override
-	public void randomTick(World worldIn, BlockPos pos, IBlockState state, Random random) {}
 
 	@Override
-	public void updateTick(World world, BlockPos pos, IBlockState state, Random rand) {
+	public void tick(BlockState state, World world, BlockPos pos, Random random) {
 		if (!world.isRemote) {
-			world.setBlockToAir(pos);
+			world.removeBlock(pos, false);
 			world.playSound(null, pos, SoundEvents.BLOCK_REDSTONE_TORCH_BURNOUT, SoundCategory.BLOCKS, 0.5F, 2.6F + (world.rand.nextFloat() - world.rand.nextFloat()) * 0.8F);
 		}
 	}
@@ -113,90 +89,77 @@ public class BlockRedstoneCharge extends Block {
 	/* Powering */
 
 	@Override
-	public int getWeakPower(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
+	public int getWeakPower(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
 		return 15;
 	}
 
 	@Override
-	public int getStrongPower(IBlockState state, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
-		return state.getValue(FACING).getOpposite() == side ? 15 : 0;
+	public int getStrongPower(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
+		return state.get(FACING).getOpposite() == side ? 15 : 0;
 	}
 
 	@Override
-	public boolean canProvidePower(IBlockState state) {
+	public boolean canProvidePower(BlockState state) {
 		return true;
 	}
 
 	@Override
-	public boolean canConnectRedstone(IBlockState state, IBlockAccess world, BlockPos pos, @Nullable EnumFacing side) {
+	public boolean canConnectRedstone(BlockState state, IBlockReader world, BlockPos pos, @Nullable Direction side) {
 		return false;
 	}
 
 
 	/* Bounds */
 
-	protected static final AxisAlignedBB BOUNDS = new AxisAlignedBB(0.375, 0.375, 0.375, 0.625, 0.625, 0.625);
+	protected static final VoxelShape BOUNDS = Block.makeCuboidShape(6, 6, 6, 10, 10, 10);
+
+
 	@Nonnull
 	@Override
-	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+	public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
 		return BOUNDS;
 	}
 
+	@Nonnull
 	@Override
-	@Deprecated
-	@Nullable
-	public AxisAlignedBB getCollisionBoundingBox(IBlockState state, IBlockAccess world, BlockPos pos) {
-		return NULL_AABB;
+	public VoxelShape getCollisionShape(@Nonnull BlockState state, @Nonnull IBlockReader world, @Nonnull BlockPos pos, ISelectionContext context) {
+		return VoxelShapes.empty();
 	}
 
 
 	/* Properties */
 
-	/**
-	 * Checks if this block can be placed exactly at the given position.
-	 */
 	@Override
-	public boolean canPlaceBlockAt(World world, BlockPos pos) {
-		return super.canPlaceBlockAt(world, pos) && !world.getBlockState(pos).getMaterial().isLiquid();
+	public boolean isValidPosition(BlockState state, IWorldReader world, BlockPos pos) {
+		return !world.getBlockState(pos).getFluidState().isEmpty();
+	}
+
+	@Nullable
+	@Override
+	public BlockState getStateForPlacement(BlockItemUseContext context) {
+		return isValidPosition(getDefaultState(), context.getWorld(), context.getPos()) ? getDefaultState() : Blocks.AIR.getDefaultState();
 	}
 
 	@Override
-	@Deprecated
-	public BlockFaceShape getBlockFaceShape(IBlockAccess world, IBlockState state, BlockPos pos, EnumFacing side) {
-		// no placey
-		return BlockFaceShape.UNDEFINED;
-	}
+    @OnlyIn(Dist.CLIENT)
+	public void animateTick(BlockState stateIn, World worldIn, BlockPos pos, Random rand) {
+		Direction facing = stateIn.get(FACING);
 
-	@Override
-	public boolean isFullCube(IBlockState state) {
-		return false;
-	}
-
-	@Override
-	public boolean isOpaqueCube(IBlockState state) {
-		return false;
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void randomDisplayTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand) {
-		EnumFacing facing = stateIn.getValue(FACING);
-
-		int offX = facing.getFrontOffsetX();
-		int offY = facing.getFrontOffsetY();
-		int offZ = facing.getFrontOffsetZ();
+		int offX = facing.getXOffset();
+		int offY = facing.getYOffset();
+		int offZ = facing.getZOffset();
 
 		double x = pos.getX() + 0.5;
 		double y = pos.getY() + 0.5;
 		double z = pos.getZ() + 0.5;
 		for(double i = 0; i <= 0.25; i += 0.05) {
-			worldIn.spawnParticle(EnumParticleTypes.REDSTONE, x + offX * i, y + offY * i, z + offZ * i, 0, 0, 0);
+			worldIn.addParticle(RedstoneParticleData.REDSTONE_DUST, x + offX * i, y + offY * i, z + offZ * i, 0, 0, 0);
 		}
 	}
 
 	@Nonnull
 	@Override
-	public EnumBlockRenderType getRenderType(IBlockState state) {
-		return EnumBlockRenderType.INVISIBLE;
+	public BlockRenderType getRenderType(BlockState state) {
+		return BlockRenderType.INVISIBLE;
 	}
 }

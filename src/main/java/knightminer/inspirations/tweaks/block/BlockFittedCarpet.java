@@ -1,71 +1,66 @@
 package knightminer.inspirations.tweaks.block;
 
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockCarpet;
-import net.minecraft.block.BlockStairs;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.BlockStairs.EnumHalf;
-import net.minecraft.block.BlockStairs.EnumShape;
-import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.item.EnumDyeColor;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.block.*;
+import net.minecraft.item.DyeColor;
+import net.minecraft.state.BooleanProperty;
+import net.minecraft.state.StateContainer;
+import net.minecraft.state.properties.Half;
+import net.minecraft.state.properties.StairsShape;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorld;
 
-public class BlockFittedCarpet extends BlockCarpet {
+public class BlockFittedCarpet extends CarpetBlock {
 
-	public static final PropertyBool NORTHWEST = PropertyBool.create("northwest");
-	public static final PropertyBool NORTHEAST = PropertyBool.create("northeast");
-	public static final PropertyBool SOUTHWEST = PropertyBool.create("southwest");
-	public static final PropertyBool SOUTHEAST = PropertyBool.create("southeast");
+	public static final BooleanProperty NORTHWEST = BooleanProperty.create("northwest");
+	public static final BooleanProperty NORTHEAST = BooleanProperty.create("northeast");
+	public static final BooleanProperty SOUTHWEST = BooleanProperty.create("southwest");
+	public static final BooleanProperty SOUTHEAST = BooleanProperty.create("southeast");
 
-	public BlockFittedCarpet() {
-		super();
-		this.setHardness(0.1F);
-		this.setSoundType(SoundType.CLOTH);
-		this.setUnlocalizedName("woolCarpet");
-		this.setLightOpacity(0);
+	public BlockFittedCarpet(DyeColor color, Block original) {
+		super(color, Block.Properties.from(original)
+				.hardnessAndResistance(0.1F)
+		);
+		this.setRegistryName(original.getRegistryName());
 
-		this.setDefaultState(this.getDefaultState().withProperty(COLOR, EnumDyeColor.WHITE)
-				.withProperty(NORTHWEST, false)
-				.withProperty(NORTHEAST, false)
-				.withProperty(SOUTHWEST, false)
-				.withProperty(SOUTHEAST, false));
+		this.setDefaultState(this.getDefaultState()
+				.with(NORTHWEST, false)
+				.with(NORTHEAST, false)
+				.with(SOUTHWEST, false)
+				.with(SOUTHEAST, false));
 	}
 
 	@Override
-	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, COLOR, NORTHWEST, NORTHEAST, SOUTHWEST, SOUTHEAST);
+	protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+		builder.add(NORTHWEST, NORTHEAST, SOUTHWEST, SOUTHEAST);
 	}
 
-	/**
-	 * Get the actual Block state of this Block at the given position. This applies properties not visible in the
-	 * metadata, such as fence connections.
-	 */
+	@Nonnull
 	@Override
-	public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
+	public BlockState updatePostPlacement(BlockState state, Direction facing, BlockState facingState, IWorld world, BlockPos pos, BlockPos facingPos) {
 		BlockPos down = pos.down();
-		IBlockState below = world.getBlockState(down);
+		BlockState below = world.getBlockState(down);
 		Block block = below.getBlock();
 		//if(block instanceof BlockSlab && !((BlockSlab)block).isDouble() && below.getValue(BlockSlab.HALF) == EnumBlockHalf.BOTTOM) {
 		//	state = setProperties(state, 0b1111);
 		//} else
-		if(block instanceof BlockStairs && below.getValue(BlockStairs.HALF) == EnumHalf.BOTTOM) {
-			below = below.getActualState(world, down);
+		if(block instanceof StairsBlock && below.get(StairsBlock.HALF) == Half.BOTTOM) {
 			state = setProperties(state, getStairShape(below));
 		}
 		return state;
 	}
 
-	private int getStairShape(IBlockState stairs) {
-		EnumShape shape = stairs.getValue(BlockStairs.SHAPE);
+	private int getStairShape(BlockState stairs) {
+		StairsShape shape = stairs.get(StairsBlock.SHAPE);
 		// seemed like the simplest way, convert each shape to four bits
 		// bits are NW NE SW SE
-		switch(stairs.getValue(BlockStairs.FACING)) {
+		switch(stairs.get(StairsBlock.FACING)) {
 			case NORTH:
 				switch(shape) {
 					case STRAIGHT:    return 0b0011;
@@ -102,23 +97,21 @@ public class BlockFittedCarpet extends BlockCarpet {
 		return 0;
 	}
 
-	private IBlockState setProperties(IBlockState state, int i) {
+	private BlockState setProperties(BlockState state, int i) {
 		return state
-				.withProperty(NORTHWEST, (i & 8) > 0)
-				.withProperty(NORTHEAST, (i & 4) > 0)
-				.withProperty(SOUTHWEST, (i & 2) > 0)
-				.withProperty(SOUTHEAST, (i & 1) > 0);
+				.with(NORTHWEST, (i & 8) > 0)
+				.with(NORTHEAST, (i & 4) > 0)
+				.with(SOUTHWEST, (i & 2) > 0)
+				.with(SOUTHEAST, (i & 1) > 0);
 	}
 
+	@Nonnull
 	@Override
-	@Deprecated
-	@Nullable
-	public AxisAlignedBB getCollisionBoundingBox(IBlockState state, IBlockAccess world, BlockPos pos) {
+	public VoxelShape getCollisionShape(BlockState state, @Nonnull IBlockReader world, @Nonnull BlockPos pos, ISelectionContext context) {
 		// if any of the parts are lowered, no collision box
-		state = state.getActualState(world, pos);
-		if(state.getValue(NORTHWEST) || state.getValue(NORTHEAST) || state.getValue(SOUTHWEST) || state.getValue(SOUTHEAST)) {
-			return NULL_AABB;
+		if(state.get(NORTHWEST) || state.get(NORTHEAST) || state.get(SOUTHWEST) || state.get(SOUTHEAST)) {
+			return VoxelShapes.empty();
 		}
-		return super.getCollisionBoundingBox(state, world, pos);
+		return super.getCollisionShape(state, world, pos, context);
 	}
 }
