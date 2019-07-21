@@ -17,33 +17,35 @@ import knightminer.inspirations.library.client.BlockItemStateMapper;
 import knightminer.inspirations.library.client.ClientUtil;
 import knightminer.inspirations.library.util.TextureBlockUtil;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockDoor;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.block.model.IBakedModel;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.client.renderer.block.statemap.StateMap;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.ItemColors;
+import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.resources.IReloadableResourceManager;
-import net.minecraft.client.resources.IResourceManager;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.DyeColor;
+import net.minecraft.resources.IReloadableResourceManager;
+import net.minecraft.resources.IResourceManager;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.ColorizerFoliage;
-import net.minecraft.world.biome.BiomeColorHelper;
+import net.minecraft.world.FoliageColors;
+import net.minecraft.world.biome.BiomeColors;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 public class BuildingClientProxy extends ClientProxy {
-	public static final Minecraft mc = Minecraft.getMinecraft();
+	public static final Minecraft mc = Minecraft.getInstance();
 
 	@Override
 	public void preInit() {
@@ -51,10 +53,10 @@ public class BuildingClientProxy extends ClientProxy {
 
 		if (Config.enableBookshelf) {
 			// listener to clear bookshelf model cache as its shared by all bookshelf model files
-			IResourceManager manager = Minecraft.getMinecraft().getResourceManager();
+			IResourceManager manager = Minecraft.getInstance().getResourceManager();
 			// should always be true, but just in case
 			if(manager instanceof IReloadableResourceManager) {
-				((IReloadableResourceManager) manager).registerReloadListener((l) -> BookshelfModel.BOOK_CACHE.invalidateAll());
+				((IReloadableResourceManager) manager).addReloadListener((a,b,c,d,e,f) -> CompletableFuture.runAsync(BookshelfModel.BOOK_CACHE::invalidateAll));
 			} else {
 				Inspirations.log.error("Failed to register resource reload listener, expected instance of IReloadableResourceManager but got {}", manager.getClass());
 			}
@@ -109,14 +111,14 @@ public class BuildingClientProxy extends ClientProxy {
 		BlockColors blockColors = event.getBlockColors();
 
 		// coloring of books for normal bookshelf
-		registerBlockColors(blockColors, (state, world, pos, tintIndex) -> {
-			if(state.getValue(BlockBookshelf.TYPE) == BookshelfType.NORMAL && tintIndex > 0 && tintIndex <= 14) {
+		blockColors.register((state, world, pos, tintIndex) -> {
+			if(tintIndex > 0 && tintIndex <= 14 && world != null && pos != null) {
 				TileEntity te = world.getTileEntity(pos);
 				if(te instanceof TileBookshelf) {
 					ItemStack stack = ((TileBookshelf) te).getStackInSlot(tintIndex - 1);
 					if(!stack.isEmpty()) {
 						int color = ClientUtil.getStackColor(stack);
-						int itemColors = mc.getItemColors().colorMultiplier(stack, 0);
+						int itemColors = mc.getItemColors().getColor(stack, 0);
 						if(itemColors > -1) {
 							// combine twice to make sure the item colors result is cominant
 							color = Util.combineColors(color, itemColors, 3);
@@ -127,36 +129,32 @@ public class BuildingClientProxy extends ClientProxy {
 			}
 
 			return -1;
-		}, InspirationsBuilding.bookshelf);
+		}, InspirationsBuilding.shelf_normal);
 
 		// rope vine coloring
-		registerBlockColors(blockColors, (state, world, pos, tintIndex) -> {
-			if(state.getValue(BlockRope.TYPE) == RopeType.VINE) {
-				if(world != null && pos != null) {
-					return BiomeColorHelper.getFoliageColorAtPos(world, pos);
-				}
-				return ColorizerFoliage.getFoliageColorBasic();
+		blockColors.register((state, world, pos, tintIndex) -> {
+			if(world != null && pos != null) {
+				return BiomeColors.getFoliageColor(world, pos);
 			}
-
-			return -1;
-		}, InspirationsBuilding.rope);
+			return FoliageColors.getDefault();
+		}, InspirationsBuilding.vine);
 
 		// bush block coloring
-		registerBlockColors(blockColors, (state, world, pos, tintIndex) -> {
-			if(tintIndex != 0) {
+		blockColors.register((state, world, pos, tintIndex) -> {
+			if(tintIndex != 0 || world == null || pos == null) {
 				return -1;
 			}
-			int color = state.getValue(BlockEnlightenedBush.LIGHTS).getColor();
+			int color = state.get(BlockEnlightenedBush.LIGHTS).getColor();
 			if(color > -1) {
 				return color;
 			}
 
 			TileEntity te = world.getTileEntity(pos);
 			if(te != null) {
-				ItemStack stack = new ItemStack(TextureBlockUtil.getTextureBlock(te));
+				ItemStack stack = ItemStack.read(TextureBlockUtil.getTextureBlock(te));
 				return ClientUtil.getStackBlockColorsSafe(stack, world, pos, 0);
 			}
-			return ColorizerFoliage.getFoliageColorBasic();
+			return FoliageColors.getDefault();
 		}, InspirationsBuilding.enlightenedBush);
 	}
 
@@ -165,22 +163,19 @@ public class BuildingClientProxy extends ClientProxy {
 		ItemColors itemColors = event.getItemColors();
 
 		// coloring of books for normal bookshelf
-		registerItemColors(itemColors, (stack, tintIndex) -> {
-			if(BookshelfType.fromMeta(stack.getMetadata()) == BookshelfType.NORMAL && tintIndex > 0 && tintIndex <= 14) {
+		itemColors.register((stack, tintIndex) -> {
+			if(tintIndex > 0 && tintIndex <= 14) {
 				return 0x654B17;
 			}
-
 			return -1;
-		}, InspirationsBuilding.bookshelf);
+		}, InspirationsBuilding.shelf_normal);
 
 		// book covers, too lazy to make 16 cover textures
-		registerItemColors(itemColors, (stack, tintIndex) -> {
-			int meta = stack.getItemDamage();
-			if(tintIndex == 0 && meta < 16) {
-				return EnumDyeColor.byMetadata(meta).getColorValue();
-			}
-			return -1;
-		}, InspirationsBuilding.books);
+		for (Map.Entry<DyeColor, Item> book_entry: InspirationsBuilding.book_colors.entrySet()) {
+			float rgb[] = book_entry.getKey().getColorComponentValues();
+			int color = 0xFF000000 | (int) rgb[0] << 16 | (int) rgb[1] << 8 | (int) rgb[2];
+			itemColors.register((stack, tintIndex) -> (tintIndex == 0) ? color : -1, book_entry.getValue());
+		}
 
 		// bush block colors
 		registerItemColors(itemColors, (stack, tintIndex) -> {
@@ -189,16 +184,16 @@ public class BuildingClientProxy extends ClientProxy {
 			}
 
 			// if the type has it's own color, use that
-			int color = LightsType.fromMeta(stack.getMetadata()).getColor();
+			int color = ((BlockEnlightenedBush)((BlockItem)stack.getItem()).getBlock()).getColor();
 			if(color > -1) {
 				return color;
 			}
 
 			ItemStack textureStack = TextureBlockUtil.getStackTexture(stack);
 			if(!textureStack.isEmpty() && textureStack.getItem() != Item.getItemFromBlock(InspirationsBuilding.enlightenedBush)) {
-				return itemColors.colorMultiplier(textureStack, 0);
+				return itemColors.getColor(textureStack, 0);
 			}
-			return ColorizerFoliage.getFoliageColorBasic();
+			return FoliageColors.getDefault();
 		}, InspirationsBuilding.enlightenedBush);
 
 		// redirect to block colors
@@ -211,28 +206,25 @@ public class BuildingClientProxy extends ClientProxy {
 	 */
 	@SubscribeEvent
 	public void onModelBake(ModelBakeEvent event) {
-		if(InspirationsBuilding.bookshelf != null) {
-			ResourceLocation bookshelfLoc = InspirationsBuilding.bookshelf.getRegistryName();
-			for(BlockBookshelf.BookshelfType type : BlockBookshelf.BookshelfType.values()) {
-				for(EnumFacing facing : EnumFacing.HORIZONTALS) {
-					replaceBookshelfModel(event, new ModelResourceLocation(bookshelfLoc,
-							String.format("facing=%s,type=%s", facing.getName(), type.getName())));
-				}
-			}
-		}
+		replaceBookshelfModel(event, InspirationsBuilding.shelf_normal);
+		replaceBookshelfModel(event, InspirationsBuilding.shelf_ancient);
+		replaceBookshelfModel(event, InspirationsBuilding.shelf_rainbow);
+		replaceBookshelfModel(event, InspirationsBuilding.shelf_tomes);
+
 		if(InspirationsBuilding.enlightenedBush != null) {
 			ResourceLocation location = InspirationsBuilding.enlightenedBush.getRegistryName();
-			for(BlockEnlightenedBush.LightsType type : BlockEnlightenedBush.LightsType.values()) {
-				replaceTexturedModel(event, new ModelResourceLocation(location, String.format("lights=%s", type.getName())), "leaves", true);
-			}
+			replaceTexturedModel(event, new ModelResourceLocation(location, ""), "leaves", true);
 		}
 	}
 
-	private static void replaceBookshelfModel(ModelBakeEvent event, ModelResourceLocation location) {
-		IModel model = ModelLoaderRegistry.getModelOrLogError(location, "Error loading model for " + location);
-		IBakedModel standard = event.getModelRegistry().getObject(location);
-		IBakedModel finalModel = new BookshelfModel(standard, model, DefaultVertexFormats.BLOCK);
+	private static void replaceBookshelfModel(ModelBakeEvent event, BlockBookshelf shelf) {
+		for(Direction facing : Direction.Plane.HORIZONTAL){
+			ModelResourceLocation location = new ModelResourceLocation(shelf.getRegistryName(), String.format("facing=%s", facing.getName()));
+			IModel model=ModelLoaderRegistry.getModelOrLogError(location,"Error loading model for " + location);
+			IBakedModel standard = event.getModelRegistry().get(location);
+			IBakedModel finalModel = new BookshelfModel(standard, model);
 
-		event.getModelRegistry().putObject(location, finalModel);
+			event.getModelRegistry().put(location, finalModel);
+		}
 	}
 }
