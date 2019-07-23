@@ -7,47 +7,44 @@ import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.ItemMetaKey;
 import knightminer.inspirations.library.util.RecipeUtil;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
+import net.minecraft.block.Blocks;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.JsonUtils;
-import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.common.config.Property;
-import net.minecraftforge.common.crafting.IConditionFactory;
-import net.minecraftforge.common.crafting.JsonContext;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import slimeknights.mantle.pulsar.config.ForgeCFG;
+import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.fml.loading.FMLConfig;
+import slimeknights.mantle.pulsar.config.PulsarConfig;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public class Config {
+import static net.minecraftforge.common.ForgeConfigSpec.*;
 
-	public static ForgeCFG pulseConfig = new ForgeCFG("inspirationsModules", "Modules");
+public static class Config {
 
-	private static Configuration configFile;
+	public static PulsarConfig pulseConfig = new PulsarConfig("inspirationsModules", "Modules");
 
 	// general
-	public static boolean showAllVariants = true;
-	public static boolean witherBoneDrop = true;
+	public BooleanValue showAllVariants;
+	public BooleanValue witherBoneDrop;
 
 	// building
-	public static boolean enableRope = true;
-	public static boolean enableGlassDoor = true;
-	public static boolean enableMulch = true;
-	public static boolean enablePath = true;
-	public static boolean enableFlowers = true;
-	public static boolean enableEnlightenedBush = true;
+	public BooleanValue enableRope;
+	public BooleanValue enableGlassDoor;
+	public BooleanValue enableMulch;
+	public BooleanValue enablePath;
+	public BooleanValue enableFlowers;
+	public BooleanValue enableEnlightenedBush;
 
-	public static boolean enableBookshelf = true;
-	public static boolean enableColoredBooks = true;
-	public static boolean bookshelvesBoostEnchanting = true;
-	public static float defaultEnchantingPower = 1.5f;
-	private static String[] bookKeywords = {
+	public BooleanValue enableBookshelf;
+	public BooleanValue enableColoredBooks;
+	public BooleanValue bookshelvesBoostEnchanting;
+	public DoubleValue defaultEnchantingPower;
+
+	public ConfigValue<List<String>> bookKeywords;
+	private static List<String> bookKeywordsDefault = Arrays.asList(
 			"almanac",
 			"atlas",
 			"book",
@@ -62,8 +59,9 @@ public class Config {
 			"manual",
 			"thesaurus",
 			"tome"
-	};
-	private static String[] bookOverrides = {
+	);
+	public ConfigValue<List<String>> bookOverrides;
+	private static List<String> bookOverridesDefault = Arrays.asList(
 			"defiledlands:book_wyrm_raw->false",
 			"defiledlands:book_wyrm_cooked->false",
 			"defiledlands:book_wyrm_scale->false",
@@ -72,22 +70,22 @@ public class Config {
 			"minecraft:enchanted_book->2.5",
 			"quark:ancient_tome->3.0",
 			"theoneprobe:probenote->1.0"
-	};
+	);
 
 	// utility
-	public static boolean enableTorchLever = true;
-	public static boolean enableRedstoneTorchLever = true;
-	public static boolean enableRedstoneBook = true;
-	public static boolean enableBricksButton = true;
-	public static boolean enableRedstoneBarrel = true;
-	public static boolean enableCarpetedTrapdoor = true;
-	public static boolean enableCarpetedPressurePlate = true;
-	public static boolean enableCollector = true;
-	public static boolean enablePipe = true;
-	public static boolean pipeUpwards = true;
-	public static boolean enableDispenserFluidTanks = true;
-	public static boolean milkSquids = false;
-	public static short milkSquidCooldown = 300;
+	public BooleanValue enableTorchLever;
+	public BooleanValue enableRedstoneTorchLever;
+	public BooleanValue enableRedstoneBook;
+	public BooleanValue enableBricksButton;
+	public BooleanValue enableRedstoneBarrel;
+	public BooleanValue enableCarpetedTrapdoor;
+	public BooleanValue enableCarpetedPressurePlate;
+	public BooleanValue enableCollector;
+	public BooleanValue enablePipe;
+	public BooleanValue pipeUpwards;
+	public BooleanValue enableDispenserFluidTanks;
+	public BooleanValue milkSquids;
+	public IntValue milkSquidCooldown;
 	public static String[] fluidContainers = {
 			"ceramics:clay_bucket",
 			"forge:bucketfilled",
@@ -99,26 +97,26 @@ public class Config {
 
 	// recipes
 	// cauldron - extended
-	public static boolean enableCauldronRecipes = true;
-	public static boolean enableExtendedCauldron = true;
-	public static boolean simpleCauldronRecipes = false;
+	public BooleanValue enableCauldronRecipes;
+	public BooleanValue enableExtendedCauldron;
+	public BooleanValue simpleCauldronRecipes;
 	// cauldron - extended options
-	public static boolean enableBiggerCauldron = false;
-	public static boolean fasterCauldronRain = true;
-	public static boolean spongeEmptyCauldron = true;
-	public static boolean cauldronObsidian = false;
-	public static boolean spongeCauldronFull = false;
-	public static boolean dropCauldronContents = false;
+	public BooleanValue enableBiggerCauldron;
+	public BooleanValue fasterCauldronRain;
+	public BooleanValue spongeEmptyCauldron;
+	public BooleanValue cauldronObsidian;
+	public BooleanValue spongeCauldronFull;
+	public BooleanValue dropCauldronContents;
 	// cauldron - fluids
-	public static boolean enableCauldronFluids = true;
-	public static boolean enableMilk = true;
+	public BooleanValue enableCauldronFluids;
+	public BooleanValue enableMilk;
 	// cauldron - dyeing
-	public static boolean enableCauldronDyeing = true;
-	public static boolean patchVanillaDyeRecipes = true;
-	public static boolean extraBottleRecipes = true;
+	public BooleanValue enableCauldronDyeing;
+	public BooleanValue patchVanillaDyeRecipes;
+	public BooleanValue extraBottleRecipes;
 	// cauldron - potions
-	public static boolean enableCauldronPotions = true;
-	public static boolean enableCauldronBrewing = true;
+	public BooleanValue enableCauldronPotions;
+	public BooleanValue enableCauldronBrewing;
 	private static boolean expensiveCauldronBrewing = true;
 	public static boolean cauldronTipArrows = true;
 	// cauldron - recipes
@@ -278,50 +276,73 @@ public class Config {
 	public static boolean tanJuiceInCauldron = true;
 
 
-	/**
-	 * Loads the configuration file from the event
-	 * @param event  PreInit event from main mod class
-	 */
-	public static void preInit(FMLPreInitializationEvent event) {
-		configFile = new Configuration(event.getSuggestedConfigurationFile(), "0.4", false);
+	public Config() {
+		Builder builder = new Builder();
 
-		showAllVariants = configFile.getBoolean("showAllVariants", "general", showAllVariants,
-				"Shows all variants for dynamically textured blocks, like bookshelves. If false just the first will be shown");
-		witherBoneDrop = configFile.getBoolean("witherBoneDrop", "general", witherBoneDrop,
-				"Enables the wither bone drop. Option here in case another mod adds this. Requires either nether crooks or extra potions to be enabled");
+		showAllVariants = builder
+				.comment("Shows all variants for dynamically textured blocks, like bookshelves. If false just the first will be shown")
+				.define("general.showAllVariants", true);
 
-		// building
+		witherBoneDrop = builder
+				.comment("Enables the wither bone drop. Option here in case another mod adds this. Requires either nether crooks or extra potions to be enabled")
+				.define("general.witherBoneDrop", true);
+
+
+		builder.push("building");
 		{
 			// bookshelves
-			enableBookshelf = configFile.getBoolean("bookshelf", "building", enableBookshelf, "Enables the bookshelf: a decorative block to display books");
-			enableColoredBooks = configFile.getBoolean("coloredBooks", "building.bookshelf", enableColoredBooks, "Enables colored books: basically colored versions of the vanilla book to decorate bookshelves") && enableBookshelf;
-			bookshelvesBoostEnchanting = configFile.getBoolean("boostEnchanting", "building.bookshelf", bookshelvesBoostEnchanting, "If true, bookshelves will increase enchanting table power.");
-			defaultEnchantingPower = configFile.getFloat("defaultEnchanting", "building.bookshelf", defaultEnchantingPower, 0.0f, 15.0f, "Default power for a book for enchanting, can be overridden in the book overrides.");
-			bookKeywords = configFile.getStringList("bookKeywords", "building.bookshelf", bookKeywords,
-					"List of keywords for valid books, used to determine valid books in the bookshelf");
-			InspirationsRegistry.setBookKeywords(bookKeywords);
+			enableBookshelf = builder
+					.comment("Enables the bookshelf: a decorative block to display books")
+					.define("bookshelf", true);
+			enableColoredBooks = builder
+					.comment("Enables colored books: basically colored versions of the vanilla book to decorate bookshelves")
+					.define("bookshelf.coloredBooks", true );
+			// Todo: force colored books when shelf is disabled.
+
+			bookshelvesBoostEnchanting = builder
+					.comment( "If true, bookshelves will increase enchanting table power.")
+					.define("bookshelf.boostEnchanting", true);
+			defaultEnchantingPower = builder
+					.comment("Default power for a book for enchanting, can be overridden in the book overrides.")
+					.defineInRange("bookshelf.defaultEnchanting", 1.5f, 0.0f, 15.0f);
+			bookKeywords = builder
+					.comment("List of keywords for valid books, used to determine valid books in the bookshelf")
+					.defineList("bookshelf.bookKeywords",  bookKeywordsDefault, (Object x) -> true);
 
 
 			// rope
-			enableRope = configFile.getBoolean("rope", "building", enableRope, "Enables rope: can be climbed like ladders and extended with additional rope");
+			enableRope = builder
+					.comment("Enables rope: can be climbed like ladders and extended with additional rope")
+					.define("rope", true);
 
 			// glass door
-			enableGlassDoor = configFile.getBoolean("glassDoor", "building", enableGlassDoor, "Enables glass doors and trapdoors: basically doors, but made of glass. Not sure what you would expect.");
+			enableGlassDoor = builder
+					.comment("Enables glass doors and trapdoors: basically doors, but made of glass. Not sure what you would expect.")
+					.define("glassDoor", true);
 
 			// mulch
-			enableMulch = configFile.getBoolean("mulch", "building", enableMulch, "Enables mulch: a craftable falling block which supports plants such as flowers");
+			enableMulch = builder
+					.comment("Enables mulch: a craftable falling block which supports plants such as flowers")
+					.define("mulch", true);
 
 			// path
-			enablePath = configFile.getBoolean("path", "building", enablePath, "Enables stone paths: a carpet like decorative block for making decorative paths");
+			enablePath = builder
+					.comment("Enables stone paths: a carpet like decorative block for making decorative paths")
+					.define("path", true);
 
 			// flowers
-			enableFlowers = configFile.getBoolean("flowers", "building", enableFlowers, "Enables additional flowers from breaking double flowers with shears.");
+			enableFlowers = builder
+					.comment("Enables additional flowers from breaking double flowers with shears.")
+					.define("flowers", true);
 
 			// enlightenedBush
-			enableEnlightenedBush = configFile.getBoolean("enlightenedBush", "building", enableEnlightenedBush, "Enables enlightened bushes: bushes with lights.");
+			enableEnlightenedBush = builder
+					.comment( "Enables enlightened bushes: bushes with lights.")
+					.define("enlightenedBush", true);
 		}
+		builder.pop();
 
-		// utility
+		builder.push("utility");
 		{
 			enableRedstoneBook = configFile.getBoolean("redstoneBook", "utility", enableRedstoneBook, "Enables the trapped book: will emit redstone power when placed in a bookshelf. Requires bookshelf.") && enableBookshelf;
 
@@ -355,12 +376,16 @@ public class Config {
 			fluidContainers = configFile.get("utility.dispenserFluidTanks", "containers", fluidContainers,
 					"List of itemstacks that can be used as fluid containers to fill or empty fluid tanks").getStringList();
 		}
+		builder.pop();
 
 		// recipes
+		builder.push("recipies");
 		{
 			// anvil smashing
-			configFile.moveProperty("tweaks", "anvilSmashing", "recipes");
-			enableAnvilSmashing = configFile.getBoolean("anvilSmashing", "recipes", enableAnvilSmashing, "Anvils break glass blocks and transform blocks into other blocks on landing. Uses a block override, so disable if another mod replaces anvils");
+			// configFile.moveProperty("tweaks", "anvilSmashing", "recipes");
+			enableAnvilSmashing = builder
+					.comment("Anvils break glass blocks and transform blocks into other blocks on landing. Uses a block override, so disable if another mod replaces anvils")
+					.define("anvilSmashing", true);
 
 			// cauldron //
 
@@ -410,6 +435,7 @@ public class Config {
 			milkSquidCooldown = (short)configFile.getInt("cooldown", "tweaks.milkSquids", milkSquidCooldown, 1, Short.MAX_VALUE, "Delay in seconds after milking a squid before it can be milked again.");
 
 		}
+		builder.pop();
 
 		// tools
 		{
