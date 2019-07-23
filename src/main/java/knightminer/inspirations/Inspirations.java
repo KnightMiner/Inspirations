@@ -22,7 +22,6 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import slimeknights.mantle.common.GuiHandler;
 import slimeknights.mantle.pulsar.control.PulseManager;
 
 @Mod(Inspirations.modID)
@@ -33,11 +32,7 @@ public class Inspirations {
 
 	public static final Logger log = LogManager.getLogger(modID);
 
-	@Mod.Instance(modID)
-	public static Inspirations instance;
-
 	public static PulseManager pulseManager = new PulseManager(Config.pulseConfig);
-	public static GuiHandler guiHandler = new GuiHandler();
 
 	static {
 		pulseManager.registerPulse(new InspirationsShared());
@@ -64,7 +59,6 @@ public class Inspirations {
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		Config.preInit(event);
-		NetworkRegistry.INSTANCE.registerGuiHandler(instance, guiHandler);
 
 		InspirationsNetwork.instance.setup();
 	}
