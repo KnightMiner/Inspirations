@@ -246,6 +246,7 @@ public class Config {
 	public static short milkCooldownTime = 600;
 	public static boolean caveSpiderDrops = true;
 	public static boolean skeletonSkull = true;
+	public static boolean customPortalColor = true;
 	// heartbeet
 	public static boolean enableHeartbeet = true;
 	public static boolean brewHeartbeet = true;
@@ -527,6 +528,8 @@ public class Config {
 			milkCooldown = configFile.getBoolean("milkCooldown", "tweaks", milkCooldown, "Adds a cooldown to milking cows, prevents practically infinite milk in modded worlds where milk is more useful.");
 			milkCooldownTime = (short)configFile.getInt("time", "tweaks.milkCooldown", milkCooldownTime, 1, Short.MAX_VALUE, "Delay in seconds after milking a cow before it can be milked again.");
 
+			// custom portal color
+			customPortalColor = configFile.getBoolean("customPortalColor", "tweaks", customPortalColor, "Allows the portal color to be changed by placing colored blocks under the portal. Any block that tints a beacon beam will work for the color.");
 		}
 
 		// compatibility

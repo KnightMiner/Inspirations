@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "axis=z": { "model": "inspirations:portal_ew" },
+    "axis=x": { "model": "inspirations:portal_ns" }
+  }
+}

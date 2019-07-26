@@ -1,18 +1,17 @@
 package knightminer.inspirations.tweaks;
 
-import java.util.LinkedHashMap;
-
 import com.google.common.collect.Maps;
-
 import knightminer.inspirations.common.ClientProxy;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.client.ClientUtil;
+import knightminer.inspirations.library.client.NameStateMapper;
 import knightminer.inspirations.library.client.PropertyStateMapper;
 import knightminer.inspirations.recipes.RecipesClientProxy;
 import knightminer.inspirations.tweaks.block.BlockBetterFlowerPot;
 import knightminer.inspirations.tweaks.block.BlockFittedCarpet;
+import knightminer.inspirations.tweaks.client.PortalColorHandler;
 import net.minecraft.block.BlockCarpet;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
@@ -37,12 +36,15 @@ import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import java.util.LinkedHashMap;
+
 public class TweaksClientProxy extends ClientProxy {
 
 	private static final ResourceLocation CARPET_MODEL = Util.getResource("carpet");
 	private static final ResourceLocation CAULDRON_ITEM_MODEL = Util.getResource("cauldron_item");
 	private static final ResourceLocation ENCHANTED_BOOK = Util.getResource("enchanted_book");
 	private static final ResourceLocation FIREWORKS = Util.getResource("fireworks");
+	private static final ResourceLocation PORTAL = Util.getResource("portal");
 	private static final ModelResourceLocation FLOWER_POT_MODEL = new ModelResourceLocation(Util.getResource("flower_pot"), "normal");
 
 	@SubscribeEvent
@@ -52,6 +54,9 @@ public class TweaksClientProxy extends ClientProxy {
 				BlockFittedCarpet.NORTHWEST, BlockFittedCarpet.NORTHEAST, BlockFittedCarpet.SOUTHWEST, BlockFittedCarpet.SOUTHEAST
 				));
 		setModelStateMapper(InspirationsTweaks.flowerPot, new FlowerPotStateMapper());
+		if (Config.customPortalColor) {
+			setModelStateMapper(Blocks.PORTAL, new NameStateMapper(PORTAL));
+		}
 
 		registerItemModel(InspirationsTweaks.cactusSeeds);
 		registerItemModel(InspirationsTweaks.carrotSeeds);
@@ -92,6 +97,11 @@ public class TweaksClientProxy extends ClientProxy {
 				}
 				return -1;
 			}, Blocks.FLOWER_POT);
+		}
+
+		// portal tinting
+		if (Config.customPortalColor) {
+			registerBlockColors(colors, new PortalColorHandler(), Blocks.PORTAL);
 		}
 
 		// coloring on sugar cane crop to match reeds

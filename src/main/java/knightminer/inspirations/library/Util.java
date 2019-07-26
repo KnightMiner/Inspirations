@@ -22,6 +22,7 @@ import net.minecraft.util.text.translation.I18n;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
@@ -155,6 +156,17 @@ public class Util {
 		int j = (color & 0xFFFF) >> 8;
 		int k = (color & 0xFF);
 		return new float[] {i / 255.0f, j / 255.0f, k / 255.0f};
+	}
+
+	/**
+	 * Splits a hex color integer into three float color components between 0 and 1
+	 * @param component  float color component array, must be length 3
+	 * @return  Color integer value
+	 */
+	public static int getColorInteger(@Nonnull float[] component) {
+		return ((int)(component[0] * 255) & 0xFF) << 16
+					 | ((int)(component[1] * 255) & 0xFF) << 8
+					 | ((int)(component[2] * 255) & 0xFF);
 	}
 
 	/**
