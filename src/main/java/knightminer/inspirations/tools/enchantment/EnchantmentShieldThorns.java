@@ -4,7 +4,6 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentThorns;
 import net.minecraft.init.Enchantments;
 import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.ItemShield;
 import net.minecraft.item.ItemStack;
 
 public class EnchantmentShieldThorns extends EnchantmentThorns {
@@ -14,7 +13,7 @@ public class EnchantmentShieldThorns extends EnchantmentThorns {
 
   @Override
   public boolean canApplyAtEnchantingTable(ItemStack stack) {
-    return stack.getItem() instanceof ItemShield || super.canApplyAtEnchantingTable(stack);
+    return stack.getItem().isShield(stack, null) || super.canApplyAtEnchantingTable(stack);
   }
 
   @Override

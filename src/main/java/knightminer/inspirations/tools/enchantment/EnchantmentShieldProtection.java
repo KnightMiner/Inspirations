@@ -3,7 +3,6 @@ package knightminer.inspirations.tools.enchantment;
 import net.minecraft.enchantment.EnchantmentProtection;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.ItemShield;
 import net.minecraft.item.ItemStack;
 
 import java.util.List;
@@ -15,7 +14,7 @@ public class EnchantmentShieldProtection extends EnchantmentProtection {
 
   @Override
   public boolean canApplyAtEnchantingTable(ItemStack stack) {
-    return stack.getItem() instanceof ItemShield || super.canApplyAtEnchantingTable(stack);
+    return stack.getItem().isShield(stack, null) || super.canApplyAtEnchantingTable(stack);
   }
 
   @Override

@@ -8,7 +8,6 @@ import net.minecraft.init.Enchantments;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemAxe;
-import net.minecraft.item.ItemShield;
 import net.minecraft.item.ItemStack;
 
 import java.util.List;
@@ -21,7 +20,7 @@ public class EnchantmentExtendedKnockback extends EnchantmentKnockback {
   @Override
   public boolean canApplyAtEnchantingTable(ItemStack stack) {
     Item item = stack.getItem();
-    return (Config.moreShieldEnchantments && item instanceof ItemShield)
+    return (Config.moreShieldEnchantments && item.isShield(stack, null))
            || (Config.axeEnchantmentTable && Config.axeWeaponEnchants && item instanceof ItemAxe)
            || super.canApplyAtEnchantingTable(stack);
   }
@@ -36,7 +35,7 @@ public class EnchantmentExtendedKnockback extends EnchantmentKnockback {
   public List<ItemStack> getEntityEquipment(EntityLivingBase entity) {
     // shields in hand should not give knockback, just on hit
     List<ItemStack> items = super.getEntityEquipment(entity);
-    items.removeIf((stack) -> stack.getItem() instanceof ItemShield);
+    items.removeIf((stack) -> stack.getItem().isShield(stack, entity));
     return items;
   }
 
