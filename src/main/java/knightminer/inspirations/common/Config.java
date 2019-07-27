@@ -1,15 +1,20 @@
 package knightminer.inspirations.common;
 
+import com.electronwill.nightconfig.core.EnumGetMethod;
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.InspirationsRegistry;
-import knightminer.inspirations.library.ItemMetaKey;
 import knightminer.inspirations.library.util.RecipeUtil;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.renderer.model.multipart.ICondition;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.JSONUtils;
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.common.crafting.IConditionSerializer;
+import net.minecraftforge.common.util.JsonUtils;
 import net.minecraftforge.fml.loading.FMLConfig;
 import slimeknights.mantle.pulsar.config.PulsarConfig;
 
@@ -22,28 +27,37 @@ import java.util.stream.Stream;
 
 import static net.minecraftforge.common.ForgeConfigSpec.*;
 
-public static class Config {
+@SuppressWarnings("WeakerAccess")
+public class Config {
 
 	public static PulsarConfig pulseConfig = new PulsarConfig("inspirationsModules", "Modules");
 
+	public static Builder BUILDER;
+	public static ForgeConfigSpec SPEC;
+	static {
+		BUILDER = new Builder();
+		configure(BUILDER);
+		SPEC = BUILDER.build();
+	}
+
 	// general
-	public BooleanValue showAllVariants;
-	public BooleanValue witherBoneDrop;
+	public static BooleanValue showAllVariants;
+	public static BooleanValue witherBoneDrop;
 
 	// building
-	public BooleanValue enableRope;
-	public BooleanValue enableGlassDoor;
-	public BooleanValue enableMulch;
-	public BooleanValue enablePath;
-	public BooleanValue enableFlowers;
-	public BooleanValue enableEnlightenedBush;
+	public static BooleanValue enableRope;
+	public static BooleanValue enableGlassDoor;
+	public static BooleanValue enableMulch;
+	public static BooleanValue enablePath;
+	public static BooleanValue enableFlowers;
+	public static BooleanValue enableEnlightenedBush;
 
-	public BooleanValue enableBookshelf;
-	public BooleanValue enableColoredBooks;
-	public BooleanValue bookshelvesBoostEnchanting;
-	public DoubleValue defaultEnchantingPower;
+	public static BooleanValue enableBookshelf;
+	public static BooleanValue enableColoredBooks;
+	public static BooleanValue bookshelvesBoostEnchanting;
+	public static DoubleValue defaultEnchantingPower;
 
-	public ConfigValue<List<String>> bookKeywords;
+	public static ConfigValue<List<String>> bookKeywords;
 	private static List<String> bookKeywordsDefault = Arrays.asList(
 			"almanac",
 			"atlas",
@@ -60,7 +74,7 @@ public static class Config {
 			"thesaurus",
 			"tome"
 	);
-	public ConfigValue<List<String>> bookOverrides;
+	public static ConfigValue<List<String>> bookOverrides;
 	private static List<String> bookOverridesDefault = Arrays.asList(
 			"defiledlands:book_wyrm_raw->false",
 			"defiledlands:book_wyrm_cooked->false",
@@ -73,19 +87,19 @@ public static class Config {
 	);
 
 	// utility
-	public BooleanValue enableTorchLever;
-	public BooleanValue enableRedstoneTorchLever;
-	public BooleanValue enableRedstoneBook;
-	public BooleanValue enableBricksButton;
-	public BooleanValue enableRedstoneBarrel;
-	public BooleanValue enableCarpetedTrapdoor;
-	public BooleanValue enableCarpetedPressurePlate;
-	public BooleanValue enableCollector;
-	public BooleanValue enablePipe;
-	public BooleanValue pipeUpwards;
-	public BooleanValue enableDispenserFluidTanks;
-	public BooleanValue milkSquids;
-	public IntValue milkSquidCooldown;
+	public static BooleanValue enableTorchLever;
+	public static BooleanValue enableRedstoneTorchLever;
+	public static BooleanValue enableRedstoneBook;
+	public static BooleanValue enableBricksButton;
+	public static BooleanValue enableRedstoneBarrel;
+	public static BooleanValue enableCarpetedTrapdoor;
+	public static BooleanValue enableCarpetedPressurePlate;
+	public static BooleanValue enableCollector;
+	public static BooleanValue enablePipe;
+	public static BooleanValue pipeUpwards;
+	public static BooleanValue enableDispenserFluidTanks;
+	public static BooleanValue milkSquids;
+	public static IntValue milkSquidCooldown;
 	public static String[] fluidContainers = {
 			"ceramics:clay_bucket",
 			"forge:bucketfilled",
@@ -97,28 +111,43 @@ public static class Config {
 
 	// recipes
 	// cauldron - extended
-	public BooleanValue enableCauldronRecipes;
-	public BooleanValue enableExtendedCauldron;
-	public BooleanValue simpleCauldronRecipes;
+	public static BooleanValue enableCauldronRecipes;
+	public static BooleanValue enableExtendedCauldron;
+	public static BooleanValue simpleCauldronRecipes;
 	// cauldron - extended options
-	public BooleanValue enableBiggerCauldron;
-	public BooleanValue fasterCauldronRain;
-	public BooleanValue spongeEmptyCauldron;
-	public BooleanValue cauldronObsidian;
-	public BooleanValue spongeCauldronFull;
-	public BooleanValue dropCauldronContents;
+	public static BooleanValue enableBiggerCauldron;
+	public static BooleanValue fasterCauldronRain;
+
+	private enum SpongeEmptyCauldron {
+		FALSE, // No emptying.
+		TRUE, // For any amount of liquid.
+		FULL  // Allowed, but only full cauldrons.
+	}
+
+	private static EnumValue<SpongeEmptyCauldron> spongeEmptyCauldron;
+
+	public static boolean canSpongeEmptyCauldron() {
+		return spongeEmptyCauldron.get() != SpongeEmptyCauldron.FALSE;
+	}
+	public static boolean canSpongeEmptyFullOnly() {
+		return spongeEmptyCauldron.get() == SpongeEmptyCauldron.FULL;
+	}
+
+	public static BooleanValue cauldronObsidian;
+
+	public static BooleanValue dropCauldronContents;
 	// cauldron - fluids
-	public BooleanValue enableCauldronFluids;
-	public BooleanValue enableMilk;
+	public static BooleanValue enableCauldronFluids;
+	public static BooleanValue enableMilk;
 	// cauldron - dyeing
-	public BooleanValue enableCauldronDyeing;
-	public BooleanValue patchVanillaDyeRecipes;
-	public BooleanValue extraBottleRecipes;
+	public static BooleanValue enableCauldronDyeing;
+	public static BooleanValue patchVanillaDyeRecipes;
+	public static BooleanValue extraBottleRecipes;
 	// cauldron - potions
-	public BooleanValue enableCauldronPotions;
-	public BooleanValue enableCauldronBrewing;
+	public static BooleanValue enableCauldronPotions;
+	public static BooleanValue enableCauldronBrewing;
 	private static boolean expensiveCauldronBrewing = true;
-	public static boolean cauldronTipArrows = true;
+	public static BooleanValue cauldronTipArrows;
 	// cauldron - recipes
 	private static String[] cauldronRecipes = {
 			"minecraft:sticky_piston->minecraft:piston"
@@ -127,7 +156,7 @@ public static class Config {
 			"minecraft:fire"
 	};
 	// cauldron - fluid containers
-	public static boolean enableCauldronDispenser = true;
+	public static BooleanValue enableCauldronDispenser;
 	public static String[] cauldronDispenserRecipes = {
 			"inspirations:dyed_bottle",
 			"inspirations:materials:2",
@@ -144,7 +173,7 @@ public static class Config {
 			"toughasnails:purified_water_bottle"
 	};
 	// anvil smashing
-	public static boolean enableAnvilSmashing = true;
+	public static BooleanValue enableAnvilSmashing;
 	private static String[] anvilSmashing = {
 			"# Stone",
 			"minecraft:stone:0->minecraft:cobblestone",
@@ -200,61 +229,61 @@ public static class Config {
 
 
 	// tools
-	public static boolean enableLock = true;
-	public static boolean enableRedstoneCharge = true;
-	public static boolean enableChargedArrow = true;
-	public static boolean harvestHangingVines = true;
-	public static boolean shearsReclaimMelons = true;
-	public static boolean enableNorthCompass = true;
-	public static boolean renameVanillaCompass = true;
-	public static boolean enableBarometer = true;
-	public static boolean enablePhotometer = true;
+	public static BooleanValue enableLock;
+	public static BooleanValue enableRedstoneCharge;
+	public static BooleanValue enableChargedArrow;
+	public static BooleanValue harvestHangingVines;
+	public static BooleanValue shearsReclaimMelons;
+	public static BooleanValue enableNorthCompass;
+	public static BooleanValue renameVanillaCompass;
+	public static BooleanValue enableBarometer;
+	public static BooleanValue enablePhotometer;
 	// crook
-	public static boolean enableCrook = true;
-	public static boolean separateCrook = true;
+	public static BooleanValue enableCrook;
+	public static BooleanValue separateCrook;
 	public static boolean hoeCrook = false;
 	public static int crookChance = 10;
-	public static boolean netherCrooks = true;
+	public static BooleanValue netherCrooks;
 	// waypoint compass
-	public static boolean enableWaypointCompass = true;
-	public static boolean dyeWaypointCompass = true;
-	public static boolean craftWaypointCompass = true;
-	public static boolean copyWaypointCompass = true;
-	public static boolean waypointCompassAdvTooltip = true;
-	public static boolean waypointCompassCrossDimension = true;
+	public static BooleanValue enableWaypointCompass;
+	public static BooleanValue dyeWaypointCompass;
+	public static BooleanValue craftWaypointCompass;
+	public static BooleanValue copyWaypointCompass;
+	public static BooleanValue waypointCompassAdvTooltip;
+	public static BooleanValue waypointCompassCrossDimension;
 	// enchantments
-	public static boolean moreShieldEnchantments = true;
-	public static boolean shieldEnchantmentTable = true;
-	public static boolean axeWeaponEnchants = true;
-	public static boolean axeEnchantmentTable = true;
+	public static BooleanValue moreShieldEnchantments;
+	public static BooleanValue shieldEnchantmentTable;
+	public static BooleanValue axeWeaponEnchants;
+	public static BooleanValue axeEnchantmentTable;
 
 	// tweaks
-	public static boolean enablePigDesaddle = true;
-	public static boolean enableFittedCarpets = true;
-	public static boolean betterFlowerPot = true;
-	public static boolean flowerPotComparator = true;
-	public static boolean coloredEnchantedRibbons = true;
-	public static boolean brewMissingPotions = true;
-	public static boolean coloredFireworkItems = true;
-	public static boolean lilypadBreakFall = true;
-	public static boolean betterCauldronItem = true;
-	public static boolean unstackableRecipeAlts = true;
-	public static boolean dispensersPlaceAnvils = true;
+	public static BooleanValue enablePigDesaddle;
+	public static BooleanValue enableFittedCarpets;
+	public static BooleanValue betterFlowerPot;
+	public static BooleanValue flowerPotComparator;
+	public static BooleanValue coloredEnchantedRibbons;
+	public static BooleanValue brewMissingPotions;
+	public static BooleanValue coloredFireworkItems;
+	public static BooleanValue lilypadBreakFall;
+	public static BooleanValue betterCauldronItem;
+	public static BooleanValue unstackableRecipeAlts;
+	public static BooleanValue dispensersPlaceAnvils;
 	public static boolean milkCooldown = false;
 	public static short milkCooldownTime = 600;
 	// heartbeet
-	public static boolean enableHeartbeet = true;
-	public static boolean brewHeartbeet = true;
+	public static BooleanValue enableHeartbeet;
+	public static BooleanValue brewHeartbeet;
 	public static int heartbeetChance = 75;
 	// seeds
-	public static boolean enableMoreSeeds = true;
-	public static boolean addGrassDrops = true;
-	public static boolean nerfCarrotPotatoDrops = true;
+	public static BooleanValue enableMoreSeeds;
+	public static BooleanValue addGrassDrops;
+	public static BooleanValue nerfCarrotPotatoDrops;
 	// bonemeal
-	public static boolean bonemealMushrooms = true;
-	public static boolean bonemealDeadBush = true;
-	public static boolean bonemealGrassSpread = true;
-	public static boolean bonemealMyceliumSpread = true;
+	public static BooleanValue bonemealMushrooms;
+	public static BooleanValue bonemealDeadBush;
+	public static BooleanValue bonemealGrassSpread;
+	public static BooleanValue bonemealMyceliumSpread;
 
 	public static String[] flowerOverrides = {
 			"biomesoplenty:flower_0->7",
@@ -270,14 +299,13 @@ public static class Config {
 			"minecraft:bucket",
 			"simplytea:teapot"
 	};
-	public static Set<ItemMetaKey> milkContainers;
+	public static Set<Item> milkContainers;
 
 	// compatibility
-	public static boolean tanJuiceInCauldron = true;
+	public static BooleanValue tanJuiceInCauldron;
 
 
-	public Config() {
-		Builder builder = new Builder();
+	private static void configure(Builder builder) {
 
 		showAllVariants = builder
 				.comment("Shows all variants for dynamically textured blocks, like bookshelves. If false just the first will be shown")
@@ -293,9 +321,11 @@ public static class Config {
 			// bookshelves
 			enableBookshelf = builder
 					.comment("Enables the bookshelf: a decorative block to display books")
+					.worldRestart()
 					.define("bookshelf", true);
 			enableColoredBooks = builder
 					.comment("Enables colored books: basically colored versions of the vanilla book to decorate bookshelves")
+					.worldRestart()
 					.define("bookshelf.coloredBooks", true );
 			// Todo: force colored books when shelf is disabled.
 
@@ -307,56 +337,77 @@ public static class Config {
 					.defineInRange("bookshelf.defaultEnchanting", 1.5f, 0.0f, 15.0f);
 			bookKeywords = builder
 					.comment("List of keywords for valid books, used to determine valid books in the bookshelf")
-					.defineList("bookshelf.bookKeywords",  bookKeywordsDefault, (Object x) -> true);
+					.defineList("bookshelf.bookKeywords",  bookKeywordsDefault, (Object x) -> x instanceof String);
 
 
 			// rope
 			enableRope = builder
 					.comment("Enables rope: can be climbed like ladders and extended with additional rope")
+					.worldRestart()
 					.define("rope", true);
 
 			// glass door
 			enableGlassDoor = builder
 					.comment("Enables glass doors and trapdoors: basically doors, but made of glass. Not sure what you would expect.")
+					.worldRestart()
 					.define("glassDoor", true);
 
 			// mulch
 			enableMulch = builder
 					.comment("Enables mulch: a craftable falling block which supports plants such as flowers")
+					.worldRestart()
 					.define("mulch", true);
 
 			// path
 			enablePath = builder
 					.comment("Enables stone paths: a carpet like decorative block for making decorative paths")
+					.worldRestart()
 					.define("path", true);
 
 			// flowers
 			enableFlowers = builder
 					.comment("Enables additional flowers from breaking double flowers with shears.")
+					.worldRestart()
 					.define("flowers", true);
 
 			// enlightenedBush
 			enableEnlightenedBush = builder
 					.comment( "Enables enlightened bushes: bushes with lights.")
+					.worldRestart()
 					.define("enlightenedBush", true);
 		}
 		builder.pop();
 
 		builder.push("utility");
 		{
-			enableRedstoneBook = configFile.getBoolean("redstoneBook", "utility", enableRedstoneBook, "Enables the trapped book: will emit redstone power when placed in a bookshelf. Requires bookshelf.") && enableBookshelf;
+			enableRedstoneBook = builder
+					.comment("Enables the trapped book: will emit redstone power when placed in a bookshelf. Requires bookshelf.")
+					.worldRestart()
+					.define("redstoneBook", true);
 
 			// torch lever
-			enableTorchLever = configFile.getBoolean("torchLever", "utility", enableTorchLever, "Enables the torch lever: basically a lever which looks like a torch");
+			enableTorchLever = builder
+					.comment("Enables the torch lever: basically a lever which looks like a torch")
+					.worldRestart()
+					.define("torchLever", true);
 
-			// lock
-			enableBricksButton = configFile.getBoolean("bricksButton", "utility", enableBricksButton, "Enables button blocks disguised as a full bricks or nether bricks block");
+			// bricks button
+			enableBricksButton = builder
+					.comment("Enables button blocks disguised as a full bricks or nether bricks block")
+					.worldRestart()
+					.define("bricksButton", true);
 
 			// redstone barrel
-			enableRedstoneBarrel = configFile.getBoolean("redstoneBarrel", "utility", enableRedstoneBarrel, "Enables the redstone barrel: a block that gives a configurable comparator output and can be pushed by pistons");
+			enableRedstoneBarrel = builder
+					.comment("Enables the redstone barrel: a block that gives a configurable comparator output and can be pushed by pistons")
+					.worldRestart()
+					.define("redstoneBarrel", true);
 
 			// redstone torch lever
-			enableRedstoneTorchLever = configFile.getBoolean("redstoneTorchLever", "utility", enableRedstoneTorchLever, "Enables the redstone torch lever: a lever that toggles its state when the block it's on gets powered");
+			enableRedstoneTorchLever = builder
+					.comment("Enables the redstone torch lever: a lever that toggles its state when the block it's on gets powered")
+					.worldRestart()
+					.define("redstoneTorchLever", true);
 
 			// carpeted trapdoor
 			enableCarpetedTrapdoor = configFile.getBoolean("carpetedTrapdoor", "utility", enableCarpetedTrapdoor, "Enables carpeted trapdoors: a trapdoor which appears to be a carpet when closed");
@@ -379,23 +430,24 @@ public static class Config {
 		builder.pop();
 
 		// recipes
-		builder.push("recipies");
+		builder.push("recipes");
 		{
 			// anvil smashing
 			// configFile.moveProperty("tweaks", "anvilSmashing", "recipes");
 			enableAnvilSmashing = builder
 					.comment("Anvils break glass blocks and transform blocks into other blocks on landing. Uses a block override, so disable if another mod replaces anvils")
+					.worldRestart()
 					.define("anvilSmashing", true);
 
 			// cauldron //
 
 			// basic config
-			String spongeEmptyString = configFile.getString("spongeEmpty", "recipes.cauldron", "true", "Allows sponges to be used to empty the cauldron of dye, water, or potions. Can be 'true', 'false', or 'full'. If set to 'full', requires the cauldron to be full, prevents duplicating water but is less useful for removing unwanted fluids.", new String[]{ "false", "full", "true" });
-			spongeEmptyCauldron = !spongeEmptyString.equals("false");
-			spongeCauldronFull = spongeEmptyString.equals("full");
+			spongeEmptyCauldron = builder
+					.comment("Allows sponges to be used to empty the cauldron of dye, water, or potions. Can be 'true', 'false', or 'full'. If set to 'full', requires the cauldron to be full, prevents duplicating water but is less useful for removing unwanted fluids.")
+					.defineEnum("spongeEmpty", SpongeEmptyCauldron.TRUE);
 
 			// extended options
-			String extendCauldron = configFile.getString("extendCauldron", "recipes", "true", "Allows additional recipes to be performed in the cauldron. Can be 'true', 'false', or 'simple'. If true, requires a block substitution. If simple, functionality will be limited to water in cauldrons.", new String[]{ "false", "simple", "true" });
+			String extendCauldron = configFile.getString("extendCauldron", "recipes", "true", "Allows additional recipes to be performed in the cauldron. Can be 'true', 'false', or 'simple'. If true, requires a block substitution. If simple, functionality will be limited to water in cauldrons.", new String[]{"false", "simple", "true"});
 			enableCauldronRecipes = !extendCauldron.equals("false");
 			simpleCauldronRecipes = extendCauldron.equals("simple");
 			enableExtendedCauldron = extendCauldron.equals("true");
@@ -429,15 +481,10 @@ public static class Config {
 			enableCauldronDispenser = configFile.getBoolean("dispenser", "recipes.cauldron", enableCauldronDispenser, "Allows dispensers to perform some recipes in the cauldron. Intended to be used for recipes to fill and empty fluid containers as droppers can already be used for recipes") && enableCauldronRecipes;
 			cauldronDispenserRecipes = configFile.get("recipes.cauldron.dispenser", "items", cauldronDispenserRecipes,
 					"List of itemstacks that can be used as to perform cauldron recipes in a dispenser").getStringList();
-
-			// milk squids
-			milkSquids = configFile.getBoolean("milkSquids", "tweaks", milkSquids, "Allows milking squids with a glass bottle to get black dyed water.");
-			milkSquidCooldown = (short)configFile.getInt("cooldown", "tweaks.milkSquids", milkSquidCooldown, 1, Short.MAX_VALUE, "Delay in seconds after milking a squid before it can be milked again.");
-
 		}
 		builder.pop();
 
-		// tools
+		builder.push("tools");
 		{
 			// redstone charge
 			configFile.moveProperty("utility", "redstoneCharge", "tools");
@@ -489,8 +536,9 @@ public static class Config {
 			axeWeaponEnchants = configFile.getBoolean("axeWeapon", "tools.enchantments", axeWeaponEnchants, "If true, axes will be able to be enchanted with weapon enchants such as looting, fire aspect, and knockback");
 			axeEnchantmentTable = configFile.getBoolean("axeTable", "tools.enchantments", axeEnchantmentTable, "If true, axes can receive available weapon enchantments at the enchantment table");
 		}
+		builder.pop();
 
-		// tweaks
+		builder.push("tweaks");
 		{
 			// pig desaddle
 			enablePigDesaddle = configFile.getBoolean("desaddlePig", "tweaks", enablePigDesaddle, "Allows pigs to be desaddled by shift-right click with an empty hand");
@@ -549,17 +597,25 @@ public static class Config {
 			milkCooldownTime = (short)configFile.getInt("time", "tweaks.milkCooldown", milkCooldownTime, 1, Short.MAX_VALUE, "Delay in seconds after milking a cow before it can be milked again.");
 
 		}
+		builder.pop();
+
+		// milk squids
+		milkSquids = builder
+				.comment("Allows milking squids with a glass bottle to get black dyed water.")
+				.define("tweaks.milkSquids", true);
+		milkSquidCooldown = builder
+				.comment("Delay in seconds after milking a squid before it can be milked again.")
+				.defineInRange("tweaks.milkSquids.cooldown", 300, 1, Short.MAX_VALUE);
 
 		// compatibility
+		builder.push("compatibility");
 		{
 			// TAN Plugin: make juice in cauldron
-			tanJuiceInCauldron = configFile.getBoolean("tanJuiceInCauldron", "compatibility", tanJuiceInCauldron, "Enables making Tough as Nails juices in the cauldron. Requires enhanced cauldron") && enableCauldronFluids;
+			tanJuiceInCauldron = builder
+					.comment("Enables making Tough as Nails juices in the cauldron. Requires enhanced cauldron")
+					.define("tanJuiceInCauldron", true);
 		}
-
-		// saving
-		if(configFile.hasChanged()) {
-			configFile.save();
-		}
+		builder.pop();
 	}
 
 	/**
@@ -840,7 +896,7 @@ public static class Config {
 	 * @param fires  List of fire blocks or block states
 	 */
 	private static void processCauldronFire(String[] fires) {
-		if(!enableCauldronRecipes) {
+		if(!enableCauldronRecipes.get()) {
 			return;
 		}
 
@@ -863,9 +919,9 @@ public static class Config {
 			return;
 		}
 
-		ImmutableSet.Builder<ItemMetaKey> builder = ImmutableSet.builder();
+		ImmutableSet.Builder<Item> builder = ImmutableSet.builder();
 		Consumer<ItemStack> callback = (stack) -> {
-			builder.add(new ItemMetaKey(stack));
+			builder.add(stack.getItem());
 		};
 		for(String container : containers) {
 			// skip blank lines and comments
@@ -881,65 +937,65 @@ public static class Config {
 	 * Factories for recipe conditions
 	 */
 
-	public static class PulseLoaded implements IConditionFactory {
+	public static class PulseLoaded implements IConditionSerializer {
 		@Override
-		public BooleanSupplier parse(JsonContext context, JsonObject json) {
-			String pulse = JsonUtils.getString(json, "pulse");
+		public BooleanSupplier parse(JsonObject json) {
+			String pulse = JSONUtils.getString(json, "pulse");
 			return () -> Inspirations.pulseManager.isPulseLoaded(pulse);
 		}
 	}
 
-	public static class ConfigProperty implements IConditionFactory {
+	public static class ConfigProperty implements IConditionSerializer {
 		@Override
-		public BooleanSupplier parse(JsonContext context, JsonObject json) {
-			String prop = JsonUtils.getString(json, "prop");
+		public BooleanSupplier parse(JsonObject json) {
+			String prop = JSONUtils.getString(json, "prop");
 			return () -> propertyEnabled(prop);
 		}
 
 		private static boolean propertyEnabled(String property) {
 			switch(property) {
 				// building
-				case "bookshelf": return enableBookshelf;
-				case "colored_books": return enableColoredBooks;
-				case "enlightened_bush": return enableEnlightenedBush;
-				case "flowers": return enableFlowers;
-				case "glass_door": return enableGlassDoor;
-				case "mulch": return enableMulch;
-				case "path": return enablePath;
-				case "rope": return enableRope;
+				case "bookshelf": return enableBookshelf.get();
+				case "colored_books": return enableColoredBooks.get();
+				case "enlightened_bush": return enableEnlightenedBush.get();
+				case "flowers": return enableFlowers.get();
+				case "glass_door": return enableGlassDoor.get();
+				case "mulch": return enableMulch.get();
+				case "path": return enablePath.get();
+				case "rope": return enableRope.get();
 
 				// utility
-				case "bricks_button": return enableBricksButton;
-				case "carpeted_trapdoor": return enableCarpetedTrapdoor;
-				case "collector": return enableCollector;
-				case "pipe": return enablePipe;
-				case "redstone_barrel": return enableRedstoneBarrel;
-				case "redstone_book": return enableRedstoneBook;
-				case "redstone_torch_lever": return enableRedstoneTorchLever;
-				case "torch_lever": return enableTorchLever;
+				case "bricks_button": return enableBricksButton.get();
+				case "carpeted_trapdoor": return enableCarpetedTrapdoor.get();
+				case "collector": return enableCollector.get();
+				case "pipe": return enablePipe.get();
+				case "redstone_barrel": return enableRedstoneBarrel.get();
+				case "redstone_book": return enableRedstoneBook.get();
+				case "redstone_torch_lever": return enableRedstoneTorchLever.get();
+				case "torch_lever": return enableTorchLever.get();
 
 				// tools
-				case "barometer": return enableBarometer;
-				case "charged_arrow": return enableChargedArrow;
-				case "craft_waypoint_compass": return craftWaypointCompass;
-				case "crook": return separateCrook;
-				case "dye_waypoint_compass": return dyeWaypointCompass;
-				case "lock": return enableLock;
-				case "nether_crook": return netherCrooks;
-				case "north_compass": return enableNorthCompass;
-				case "photometer": return enablePhotometer;
-				case "redstone_charge": return enableRedstoneCharge;
+				case "barometer": return enableBarometer.get();
+				case "charged_arrow": return enableChargedArrow.get();
+				case "craft_waypoint_compass": return craftWaypointCompass.get();
+				case "crook": return separateCrook.get();
+				case "dye_waypoint_compass": return dyeWaypointCompass.get();
+				case "lock": return enableLock.get();
+				case "nether_crook": return netherCrooks.get();
+				case "north_compass": return enableNorthCompass.get();
+				case "photometer": return enablePhotometer.get();
+				case "redstone_charge": return enableRedstoneCharge.get();
 
 				// tweaks
-				case "more_seeds": return enableMoreSeeds;
-				case "unstackable_alts": return unstackableRecipeAlts;
+				case "more_seeds": return enableMoreSeeds.get();
+				case "unstackable_alts": return unstackableRecipeAlts.get();
 
 				// recipes
-				case "cauldron_dyeing": return enableCauldronDyeing;
-				case "cauldron_fluids": return enableCauldronFluids;
-				case "cauldron_potions": return enableCauldronPotions;
-				case "extra_dyed_bottle_recipes": return extraBottleRecipes;
-				case "patch_vanilla_dye_recipes": return patchVanillaDyeRecipes;
+				case "cauldron_dyeing": return enableCauldronDyeing.get();
+				case "cauldron_fluids": return enableCauldronFluids.get();
+				case "cauldron_potions": return enableCauldronPotions.get();
+				case "extra_dyed_bottle_recipes": return extraBottleRecipes.get();
+				case "patch_vanilla_dye_recipes": return patchVanillaDyeRecipes.get();
 			}
 
 			throw new JsonSyntaxException("Invalid propertyname '" + property + "'");
