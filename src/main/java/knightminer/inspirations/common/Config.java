@@ -37,6 +37,7 @@ public class Config {
 
 	// building
 	public static boolean enableRope = true;
+	public static boolean enableRopeLadder = true;
 	public static boolean enableGlassDoor = true;
 	public static boolean enableMulch = true;
 	public static boolean enablePath = true;
@@ -307,6 +308,7 @@ public class Config {
 
 			// rope
 			enableRope = configFile.getBoolean("rope", "building", enableRope, "Enables rope: can be climbed like ladders and extended with additional rope");
+			enableRopeLadder = configFile.getBoolean("ropeLadder", "building", enableRopeLadder, "Enables rope ladders: right click ropes with sticks to extend the hitbox") && enableRope;
 
 			// glass door
 			enableGlassDoor = configFile.getBoolean("glassDoor", "building", enableGlassDoor, "Enables glass doors and trapdoors: basically doors, but made of glass. Not sure what you would expect.");

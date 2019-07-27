@@ -1,10 +1,5 @@
 package knightminer.inspirations.building.block;
 
-import java.util.Locale;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -16,12 +11,15 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -33,8 +31,13 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import slimeknights.mantle.block.EnumBlock;
 import slimeknights.mantle.client.CreativeTab;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Locale;
+
 public class BlockRope extends EnumBlock<BlockRope.RopeType> {
 
+	public static final PropertyEnum<Rungs> RUNGS = PropertyEnum.create("rungs", Rungs.class);
 	public static final PropertyEnum<RopeType> TYPE = PropertyEnum.create("type", RopeType.class);
 	public static final PropertyBool BOTTOM = PropertyBool.create("bottom");
 	public BlockRope() {
@@ -42,20 +45,20 @@ public class BlockRope extends EnumBlock<BlockRope.RopeType> {
 
 		this.setCreativeTab(CreativeTab.DECORATIONS);
 		this.setHardness(0.5f);
-		this.setHarvestLevel("pickaxe", 0, this.getDefaultState().withProperty(TYPE, RopeType.CHAIN));
+		this.setDefaultState(this.getBlockState().getBaseState().withProperty(TYPE, RopeType.ROPE).withProperty(RUNGS, Rungs.NONE));
+		IBlockState chain = this.getDefaultState().withProperty(TYPE, RopeType.CHAIN);
+		for (Rungs rungs : Rungs.values()) {
+			this.setHarvestLevel("pickaxe", 0, chain.withProperty(RUNGS, rungs));
+		}
 	}
 
 	/* Blockstate */
 
 	@Override
 	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, TYPE, BOTTOM);
+		return new BlockStateContainer(this, TYPE, RUNGS, BOTTOM);
 	}
 
-	/**
-	 * Get the actual Block state of this Block at the given position. This applies properties not visible in the
-	 * metadata, such as fence connections.
-	 */
 	@Override
 	public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
 		BlockPos down = pos.down();
@@ -70,6 +73,25 @@ public class BlockRope extends EnumBlock<BlockRope.RopeType> {
 		BlockFaceShape shape = state.getBlockFaceShape(world, pos, EnumFacing.UP);
 		return shape == BlockFaceShape.CENTER || shape == BlockFaceShape.CENTER_BIG || shape == BlockFaceShape.SOLID;
 	}
+
+	@Nonnull
+	@Override
+	public IBlockState getStateFromMeta(int meta) {
+		return this.getDefaultState().withProperty(prop, fromMeta(meta & 0b0011)).withProperty(RUNGS, Rungs.fromMeta(meta >> 2));
+	}
+
+	@Override
+	public int getMetaFromState(IBlockState state) {
+		return state.getValue(prop).getMeta() | (state.getValue(RUNGS).getMeta() << 2);
+	}
+
+	@Override
+	public int damageDropped(IBlockState state) {
+		return state.getValue(prop).getMeta();
+	}
+
+
+	/* Metal props */
 
 	@Override
 	@Deprecated
@@ -147,26 +169,35 @@ public class BlockRope extends EnumBlock<BlockRope.RopeType> {
 	// right click with a rope to extend downwards
 	@Override
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float clickX, float clickY, float clickZ) {
-		// no need to check verticals, one is not possible and the other normal block placement
-		if(side.getAxis().isVertical()) {
-			return false;
+		ItemStack stack = player.getHeldItem(hand);
+
+		// if rope, extend
+		if(Block.getBlockFromItem(stack.getItem()) == this) {
+			return extendRope(world, pos, state, side, player, stack, clickX, clickY, clickZ);
 		}
 
-		ItemStack stack = player.getHeldItem(hand);
-		// check if the item is the same type as us
-		if(Block.getBlockFromItem(stack.getItem()) != this || this.getStateFromMeta(stack.getMetadata()) != state) {
+		return false;
+	}
+
+	private boolean extendRope(World world, BlockPos pos, IBlockState state, EnumFacing side, EntityPlayer player, ItemStack stack, float clickX, float clickY, float clickZ) {
+		// no need to check verticals, one is not possible and the other normal block placement
+		// also skip if wrong rope type
+		RopeType type = state.getValue(TYPE);
+		if(stack.getMetadata() != type.getMeta()) {
 			return false;
 		}
 
 		// find the first block at the bottom of the rope
 		BlockPos next = pos.down();
-		while(world.getBlockState(next) == state) {
+		IBlockState below = world.getBlockState(next);
+		while(below.getBlock() == this && below.getValue(TYPE) == type) {
 			next = next.down();
+			below = world.getBlockState(next);
 		}
 		if(this.canPlaceBlockAt(world, next)) {
 			ItemBlock itemBlock = (ItemBlock)stack.getItem();
-			if(itemBlock.placeBlockAt(stack, player, world, next, side, clickX, clickY, clickZ, state)) {
-				IBlockState newState = world.getBlockState(pos);
+			IBlockState newState = this.getDefaultState().withProperty(TYPE, type);
+			if(itemBlock.placeBlockAt(stack, player, world, next, side, clickX, clickY, clickZ, newState)) {
 				SoundType soundtype = newState.getBlock().getSoundType(newState, world, pos, player);
 				world.playSound(player, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
 				if(!player.capabilities.isCreativeMode) {
@@ -178,16 +209,33 @@ public class BlockRope extends EnumBlock<BlockRope.RopeType> {
 		return true;
 	}
 
-	// when breaking, place all items from ropes below at the position of this rope
+
+	@Override
+	public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
+		// drop sticks if rungs
+		super.getDrops(drops, world, pos, state, fortune);
+		if (state.getValue(RUNGS) != Rungs.NONE) {
+			drops.add(new ItemStack(state.getValue(TYPE).getItem(), 4));
+		}
+	}
+
 	@Override
 	public void onBlockHarvested(World world, BlockPos pos, IBlockState state, EntityPlayer player) {
+		// when breaking, place all items from ropes below at the position of this rope
 		// break all blocks below that are ropes
+		RopeType type = state.getValue(TYPE);
 		BlockPos next = pos.down();
+		IBlockState below = world.getBlockState(next);
 		int count = 0;
+		int extra = 0;
 		// go down to the bottom
-		while(world.getBlockState(next) == state) {
-			next = next.down();
+		while(below.getBlock() == this && below.getValue(TYPE) == type) {
 			count++;
+			if (below.getValue(RUNGS) != Rungs.NONE) {
+				extra++;
+			}
+			next = next.down();
+			below = world.getBlockState(next);
 		}
 		// then break them coming back up
 		for(int i = 0; i < count; i++) {
@@ -196,8 +244,12 @@ public class BlockRope extends EnumBlock<BlockRope.RopeType> {
 		}
 
 		// then spawn their items up here
-		ItemStack drops = new ItemStack(this, count, this.getMetaFromState(state));
+		ItemStack drops = new ItemStack(this, count, type.getMeta());
 		spawnAsEntity(world, pos, drops);
+		if (extra > 0) {
+			ItemStack extraDrop = new ItemStack(type.getItem(), extra*4);
+			spawnAsEntity(world, pos, extraDrop);
+		}
 	}
 
 
@@ -233,19 +285,29 @@ public class BlockRope extends EnumBlock<BlockRope.RopeType> {
 
 	/* Bounds */
 
-	protected static final AxisAlignedBB BOUNDS = new AxisAlignedBB(0.375, 0, 0.375, 0.625, 1, 0.625);
-	protected static final AxisAlignedBB BOUNDS_BOTTOM = new AxisAlignedBB(0.375, 0.25, 0.375, 0.625, 1, 0.625);
+	// order is X, Y, Z
+	protected static final AxisAlignedBB[] BOUNDS = {
+			new AxisAlignedBB(0.375,  0, 0.375,  0.625, 1,  0.625),
+			new AxisAlignedBB(0.0625, 0, 0.375,  0.9375, 1, 0.625),
+			new AxisAlignedBB(0.375,  0, 0.0625, 0.625, 1,  0.9375)
+	};
+	protected static final AxisAlignedBB[] BOUNDS_BOTTOM = {
+			new AxisAlignedBB(0.375,  0.25, 0.375,  0.625,  1, 0.625),
+			new AxisAlignedBB(0.0625, 0.25, 0.375,  0.9375, 1, 0.625),
+			new AxisAlignedBB(0.375,  0.25, 0.0625, 0.625,  1, 0.9375)
+	};
+
 	@Nonnull
 	@Override
 	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+		int rungs = state.getValue(RUNGS).getMeta();
 		if(state.getActualState(source, pos).getValue(BOTTOM)) {
-			return BOUNDS_BOTTOM;
+			return BOUNDS_BOTTOM[rungs];
 		}
-		return BOUNDS;
-
+		return BOUNDS[rungs];
 	}
 
-	public static enum RopeType implements IStringSerializable, EnumBlock.IEnumMeta {
+	public enum RopeType implements IStringSerializable, EnumBlock.IEnumMeta {
 		ROPE,
 		CHAIN,
 		VINE;
@@ -264,6 +326,49 @@ public class BlockRope extends EnumBlock<BlockRope.RopeType> {
 		public String getName() {
 			return this.name().toLowerCase(Locale.US);
 		}
+
+		public Item getItem() {
+			// TODO: in 1.14, use bamboo for vines
+			if(this == CHAIN) {
+				return Items.IRON_NUGGET;
+			}
+			return Items.STICK;
+		}
 	}
 
+	public enum Rungs implements IStringSerializable, EnumBlock.IEnumMeta {
+		NONE,
+		X,
+		Z;
+
+		private int meta;
+		Rungs() {
+			this.meta = ordinal();
+		}
+
+		@Override
+		public int getMeta() {
+			return meta;
+		}
+
+		@Override
+		public String getName() {
+			return this.name().toLowerCase(Locale.US);
+		}
+
+		public static Rungs fromMeta(int meta) {
+			if (meta < 0 || meta > values().length) {
+				return NONE;
+			}
+			return values()[meta];
+		}
+
+		public static Rungs fromAxis(EnumFacing.Axis axis) {
+			switch(axis) {
+				case X: return X;
+				case Z: return Z;
+			}
+			return NONE;
+		}
+	}
 }

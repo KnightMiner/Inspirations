@@ -15,6 +15,7 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.client.BlockItemStateMapper;
 import knightminer.inspirations.library.client.ClientUtil;
+import knightminer.inspirations.library.client.PropertyStateMapper;
 import knightminer.inspirations.library.util.TextureBlockUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDoor;
@@ -65,6 +66,7 @@ public class BuildingClientProxy extends ClientProxy {
 	public void registerModels(ModelRegistryEvent event) {
 		setModelStateMapper(InspirationsBuilding.glassDoor, new StateMap.Builder().ignore(BlockDoor.POWERED).build());
 		setModelStateMapper(InspirationsBuilding.flower, new BlockItemStateMapper());
+		setModelStateMapper(InspirationsBuilding.rope, new PropertyStateMapper(BlockRope.TYPE));
 
 		// items
 		registerItemMetaDynamic(InspirationsBuilding.books);
@@ -91,7 +93,7 @@ public class BuildingClientProxy extends ClientProxy {
 	private void registerRopeModels(Block rope) {
 		if(rope != null) {
 			for(RopeType type : RopeType.values()) {
-				registerItemModel(rope, type.getMeta(), "bottom=item,type=" + type.getName());
+				registerItemModel(rope, type.getMeta(), type.getName());
 			}
 		}
 	}

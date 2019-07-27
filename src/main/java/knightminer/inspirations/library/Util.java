@@ -19,6 +19,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.translation.I18n;
+import net.minecraftforge.oredict.OreDictionary;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -231,5 +232,18 @@ public class Util {
 		}
 
 		return closest;
+	}
+
+	/** Checks if the given stack matches the given oredict name */
+	public static boolean oreMatches(ItemStack stack, @Nonnull String ore) {
+		if (stack.isEmpty()) {
+			return false;
+		}
+		for (int id : OreDictionary.getOreIDs(stack)) {
+			if (ore.equals(OreDictionary.getOreName(id))) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
