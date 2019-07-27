@@ -8,6 +8,7 @@ import knightminer.inspirations.library.recipe.cauldron.CauldronFluidTransformRe
 import knightminer.inspirations.library.recipe.cauldron.FillCauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe.CauldronState;
+import knightminer.inspirations.library.util.RecipeMatchOredictStack;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBush;
 import net.minecraft.block.BlockCrops;
@@ -433,6 +434,24 @@ public class InspirationsRegistry {
 			stack.setCount(count * 3);
 		}
 		addCauldronRecipe(new CauldronFluidTransformRecipe(RecipeMatch.of(stack, stack.getCount(), 1), input, output, boiling, (Config.enableBiggerCauldron ? 4 : 3)));
+	}
+
+	/**
+	 * Adds a fluid transform cauldron recipe with a variant for one layer and for 3
+	 * @param name       Oredictionary name
+	 * @param count      Required stack size
+	 * @param input      Input fluid
+	 * @param output     Output fluid
+	 * @param boiling  Whether the cauldron must be boiling or not. If null, the cauldron being boiling is ignored
+	 */
+	public static void addCauldronScaledTransformRecipe(String name, int count, Fluid input, Fluid output, Boolean boiling) {
+		addCauldronRecipe(new CauldronFluidTransformRecipe(new RecipeMatchOredictStack(name, count, 1), input, output, boiling, 1));
+		int fullCount = count*2;
+		if(Config.enableBiggerCauldron) {
+			addCauldronRecipe(new CauldronFluidTransformRecipe(new RecipeMatchOredictStack(name, count*2, 1), input, output, boiling, 2));
+			fullCount = count*3;
+		}
+		addCauldronRecipe(new CauldronFluidTransformRecipe(new RecipeMatchOredictStack(name, fullCount, 1), input, output, boiling, (Config.enableBiggerCauldron ? 4 : 3)));
 	}
 
 	/**

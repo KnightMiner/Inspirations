@@ -113,6 +113,7 @@ public class Config {
 	// cauldron - fluids
 	public static boolean enableCauldronFluids = true;
 	public static boolean enableMilk = true;
+	public static boolean cauldronStew = true;
 	// cauldron - dyeing
 	public static boolean enableCauldronDyeing = true;
 	public static boolean patchVanillaDyeRecipes = true;
@@ -391,6 +392,7 @@ public class Config {
 			enableCauldronFluids = configFile.getBoolean("fluids", "recipes.cauldron", enableCauldronFluids, "Allows cauldrons to be filled with any fluid and use them in recipes") && enableExtendedCauldron;
 			configFile.moveProperty("recipes.cauldron", "milk", "recipes.cauldron.fluids");
 			enableMilk = configFile.getBoolean("milk", "recipes.cauldron.fluids", enableMilk, "Registers milk as a fluid so it can be used in cauldron recipes.") && enableCauldronFluids;
+			cauldronStew = configFile.getBoolean("stew", "recipes.cauldron.fluids", cauldronStew, "Allows making stews and soups in cauldrons") && enableCauldronFluids;
 
 			// dyeing
 			enableCauldronDyeing = configFile.getBoolean("dyeing", "recipes.cauldron", enableCauldronDyeing, "Allows cauldrons to be filled with dyes and dye items using cauldrons") && enableExtendedCauldron;
@@ -920,8 +922,8 @@ public class Config {
 
 				// recipes
 				case "cauldron_dyeing": return enableCauldronDyeing;
-				case "cauldron_fluids": return enableCauldronFluids;
 				case "cauldron_potions": return enableCauldronPotions;
+				case "cauldron_stew": return cauldronStew;
 				case "extra_dyed_bottle_recipes": return extraBottleRecipes;
 				case "patch_vanilla_dye_recipes": return patchVanillaDyeRecipes;
 			}

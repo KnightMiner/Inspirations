@@ -1,7 +1,6 @@
 package knightminer.inspirations.shared;
 
 import com.google.common.eventbus.Subscribe;
-
 import knightminer.inspirations.common.CommonProxy;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
@@ -95,10 +94,6 @@ public class InspirationsShared extends PulseBase {
 			if(Config.enableCauldronPotions) {
 				splashBottle = materials.addMeta(2, "splash_bottle", CreativeTabs.BREWING);
 				lingeringBottle = materials.addMeta(3, "lingering_bottle", CreativeTabs.BREWING);
-			}
-			if(Config.enableCauldronFluids) {
-				mushrooms = materials.addMeta(4, "mushrooms");
-				rabbitStewMix = materials.addMeta(5, "rabbit_stew_mix");
 			}
 			milkCooldownSquid = Config.milkSquids;
 		}

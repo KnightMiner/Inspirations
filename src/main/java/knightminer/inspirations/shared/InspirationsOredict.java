@@ -1,9 +1,6 @@
 package knightminer.inspirations.shared;
 
-import javax.annotation.Nonnull;
-
 import com.google.common.eventbus.Subscribe;
-
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.utility.InspirationsUtility;
@@ -16,6 +13,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.oredict.OreDictionary;
 import slimeknights.mantle.pulsar.pulse.Pulse;
+
+import javax.annotation.Nonnull;
 
 @Pulse(id = InspirationsShared.pulseID, description = "Blocks and items used by all modules", forced = true)
 public class InspirationsOredict {
@@ -51,6 +50,8 @@ public class InspirationsOredict {
 	private void ensureVanilla() {
 		oredict(Items.BOOK, "book");
 		oredict(Blocks.TRAPDOOR, "trapdoorWood");
+		oredict(Blocks.RED_MUSHROOM, "mushroomAny");
+		oredict(Blocks.BROWN_MUSHROOM, "mushroomAny");
 	}
 
 	private void registerShared() {

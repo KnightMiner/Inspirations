@@ -47,6 +47,7 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
+import net.minecraft.item.ItemSoup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.Ingredient;
@@ -92,9 +93,11 @@ public class InspirationsRecipes extends PulseBase {
 
 	// items
 	public static ItemDyedWaterBottle dyedWaterBottle;
+	public static ItemSoup potatoSoupItem;
 
 	// fluids
 	public static Fluid mushroomStew;
+	public static Fluid potatoSoup;
 	public static Fluid beetrootSoup;
 	public static Fluid rabbitStew;
 	public static Fluid milk;
@@ -104,13 +107,14 @@ public class InspirationsRecipes extends PulseBase {
 	public void preInit(FMLPreInitializationEvent event) {
 		proxy.preInit();
 
-		if(Config.enableCauldronFluids) {
+		if(Config.cauldronStew) {
 			mushroomStew = registerColoredFluid("mushroom_stew", 0xFFCD8C6F);
+			potatoSoup = registerColoredFluid("potato_soup", 0xFFFFE7A8);
 			beetrootSoup = registerColoredFluid("beetroot_soup", 0xFFB82A30);
 			rabbitStew = registerColoredFluid("rabbit_stew", 0xFF984A2C);
-			if(Config.enableMilk) {
-				milk = registerFluid(new Fluid("milk", Util.getResource("blocks/milk"), Util.getResource("blocks/milk_flow")));
-			}
+		}
+		if(Config.enableMilk) {
+			milk = registerFluid(new Fluid("milk", Util.getResource("blocks/milk"), Util.getResource("blocks/milk_flow")));
 		}
 	}
 
@@ -133,6 +137,9 @@ public class InspirationsRecipes extends PulseBase {
 
 		if(Config.enableCauldronDyeing) {
 			dyedWaterBottle = registerItem(r, new ItemDyedWaterBottle(), "dyed_bottle");
+		}
+		if(Config.cauldronStew) {
+			potatoSoupItem = registerItem(r, new ItemSoup(8), "potato_soup");
 		}
 	}
 
@@ -270,9 +277,12 @@ public class InspirationsRecipes extends PulseBase {
 		if(Config.enableCauldronFluids) {
 			InspirationsRegistry.addCauldronRecipe(FillFluidContainerFromCauldron.INSTANCE);
 
-			addStewRecipes(new ItemStack(Items.BEETROOT_SOUP), beetrootSoup, new ItemStack(Items.BEETROOT, 6));
-			addStewRecipes(new ItemStack(Items.MUSHROOM_STEW), mushroomStew, InspirationsShared.mushrooms.copy());
-			addStewRecipes(new ItemStack(Items.RABBIT_STEW), rabbitStew, InspirationsShared.rabbitStewMix.copy());
+			if (Config.cauldronStew) {
+				addStewRecipes(new ItemStack(Items.BEETROOT_SOUP), beetrootSoup, new ItemStack(Items.BEETROOT, 6), FluidRegistry.WATER);
+				addStewRecipes(new ItemStack(Items.MUSHROOM_STEW), mushroomStew, "mushroomAny", 2, FluidRegistry.WATER);
+				addStewRecipes(new ItemStack(potatoSoupItem), potatoSoup, new ItemStack(Items.BAKED_POTATO, 2), mushroomStew);
+				addStewRecipes(new ItemStack(Items.RABBIT_STEW), rabbitStew, new ItemStack(Items.COOKED_RABBIT), potatoSoup);
+			}
 		} else {
 			// above relied on for bucket filling cauldron
 			InspirationsRegistry.addCauldronFluidItem(new ItemStack(Items.WATER_BUCKET), new ItemStack(Items.BUCKET), FluidRegistry.WATER, 3);
@@ -308,8 +318,15 @@ public class InspirationsRecipes extends PulseBase {
 		}
 	}
 
-	private static void addStewRecipes(ItemStack stew, Fluid fluid, ItemStack ingredient) {
-		InspirationsRegistry.addCauldronScaledTransformRecipe(ingredient, FluidRegistry.WATER, fluid, true);
+	private static void addStewRecipes(ItemStack stew, Fluid fluid, ItemStack ingredient, Fluid base) {
+		InspirationsRegistry.addCauldronScaledTransformRecipe(ingredient, base, fluid, true);
+		// filling and emptying bowls
+		InspirationsRegistry.addCauldronRecipe(new CauldronFluidRecipe(RecipeMatch.of(Items.BOWL), fluid, stew, null, SoundEvents.ITEM_BOTTLE_FILL));
+		InspirationsRegistry.addCauldronRecipe(new FillCauldronRecipe(RecipeMatch.of(stew), fluid, 1, new ItemStack(Items.BOWL)));
+	}
+
+	private static void addStewRecipes(ItemStack stew, Fluid fluid, String ingredient, int count, Fluid base) {
+		InspirationsRegistry.addCauldronScaledTransformRecipe(ingredient, count, base, fluid, true);
 		// filling and emptying bowls
 		InspirationsRegistry.addCauldronRecipe(new CauldronFluidRecipe(RecipeMatch.of(Items.BOWL), fluid, stew, null, SoundEvents.ITEM_BOTTLE_FILL));
 		InspirationsRegistry.addCauldronRecipe(new FillCauldronRecipe(RecipeMatch.of(stew), fluid, 1, new ItemStack(Items.BOWL)));

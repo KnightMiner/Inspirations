@@ -1,10 +1,6 @@
 package knightminer.inspirations.recipes;
 
-import java.util.LinkedHashMap;
-import javax.annotation.Nonnull;
-
 import com.google.common.collect.Maps;
-
 import knightminer.inspirations.common.ClientProxy;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.Util;
@@ -28,6 +24,9 @@ import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import javax.annotation.Nonnull;
+import java.util.LinkedHashMap;
+
 public class RecipesClientProxy extends ClientProxy {
 	private static final ResourceLocation POTION_MODEL = new ResourceLocation("bottle_drinkable");
 	public static final ResourceLocation CAULDRON_MODEL = Util.getResource("cauldron");
@@ -35,6 +34,8 @@ public class RecipesClientProxy extends ClientProxy {
 	@SubscribeEvent
 	public void registerModels(ModelRegistryEvent event) {
 		setModelStateMapper(InspirationsRecipes.cauldron, new CauldronStateMapper(CAULDRON_MODEL));
+
+		registerItemModel(InspirationsRecipes.potatoSoupItem);
 		if(Config.enableCauldronDyeing) {
 			registerItemModel(InspirationsRecipes.dyedWaterBottle, POTION_MODEL);
 		}

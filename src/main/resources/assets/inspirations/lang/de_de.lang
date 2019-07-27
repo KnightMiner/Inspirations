@@ -122,10 +122,6 @@ item.inspirations.sugar_cane_seeds.name=Zuckerrohrsamen
 
 item.inspirations.materials.splash_bottle.name=Wurftrankflasche
 item.inspirations.materials.lingering_bottle.name=Verweiltrankflasche
-item.inspirations.materials.mushrooms.name=Pilze
-item.inspirations.materials.mushrooms.tooltip=Werden zum Zubereiten von Pilzsuppe verwendet
-item.inspirations.materials.rabbit_stew_mix.name=Kaninchenragout-Mischung
-item.inspirations.materials.rabbit_stew_mix.tooltip=Wird zum Zubereiten von Kaninchenragout verwendet
 
 item.inspirations.dyed_bottle.name=Gefärbte Wasserflasche
 item.inspirations.dyed_bottle.white.name=Weiß-gefärbtes-Wasser-Flasche
