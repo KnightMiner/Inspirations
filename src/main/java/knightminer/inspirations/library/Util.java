@@ -7,25 +7,22 @@ import java.util.Locale;
 import javax.annotation.Nullable;
 
 import knightminer.inspirations.library.util.ReflectionUtil;
+import net.minecraft.potion.*;
+import net.minecraft.util.text.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import knightminer.inspirations.Inspirations;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.item.DyeColor;
+import net.minecraft.item.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionEffect;
-import net.minecraft.potion.PotionType;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.translation.I18n;
 
 @SuppressWarnings("deprecation")
 public class Util {
@@ -43,21 +40,26 @@ public class Util {
 	/**
 	 * Translate the string, insert parameters into the translation key
 	 */
+	@Deprecated
 	public static String translate(String key, Object... pars) {
 		// translates twice to allow rerouting/alias
-		return I18n.translateToLocal(I18n.translateToLocal(String.format(key, pars)).trim()).trim();
+		String trans = new TranslationTextComponent(String.format(key, pars)).getUnformattedComponentText().trim();
+		return new TranslationTextComponent(trans).getUnformattedComponentText().trim();
 	}
 
 	/**
 	 * Translate the string, insert parameters into the result of the translation
 	 */
+	@Deprecated
 	public static String translateFormatted(String key, Object... pars) {
 		// translates twice to allow rerouting/alias
-		return I18n.translateToLocal(I18n.translateToLocalFormatted(key, pars).trim()).trim();
+		String trans = new TranslationTextComponent(key, pars).getUnformattedComponentText().trim();
+		return new TranslationTextComponent(trans).getUnformattedComponentText().trim();
 	}
 
+	@Deprecated
 	public static boolean canTranslate(String key) {
-		return I18n.canTranslate(key);
+		return true;
 	}
 
 	public static Logger getLogger(String type) {
@@ -77,7 +79,7 @@ public class Util {
 	 * @param state  Input state
 	 * @return  ItemStack for the state, or ItemStack.EMPTY if a valid item cannot be found
 	 */
-	public static ItemStack getStackFromState(@Nullable IBlockState state) {
+	public static ItemStack getStackFromState(@Nullable BlockState state) {
 		if (state == null) {
 			return ItemStack.EMPTY;
 		}
@@ -101,8 +103,7 @@ public class Util {
 		if(item == Items.AIR) {
 			return ItemStack.EMPTY;
 		}
-		int meta = block.damageDropped(state);
-		return new ItemStack(item, 1, meta);
+		return new ItemStack(item);
 	}
 
 	/**
@@ -163,8 +164,8 @@ public class Util {
 	 * @param potionType  Potion type input
 	 * @param lores       List to add the tooltips into
 	 */
-	public static void addPotionTooltip(PotionType potionType, List<String> lores) {
-		List<PotionEffect> effects = potionType.getEffects();
+	public static void addPotionTooltip(Potion potionType, List<String> lores) {
+		List<EffectInstance> effects = potionType.getEffects();
 
 		if (effects.isEmpty()) {
 			String s = translate("effect.none").trim();
@@ -172,17 +173,17 @@ public class Util {
 			return;
 		}
 
-		for (PotionEffect effect : effects) {
+		for (EffectInstance effect : effects) {
 			String effectString = translate(effect.getEffectName()).trim();
-			Potion potion = effect.getPotion();
+			Effect potion = effect.getPotion();
 
 			if (effect.getAmplifier() > 0) {
 				effectString += " " + translate("potion.potency." + effect.getAmplifier()).trim();
 			}
 			if (effect.getDuration() > 20) {
-				effectString += " (" + Potion.getPotionDurationString(effect, 1.0f) + ")";
+				effectString += " (" + EffectUtils.getPotionDurationString(effect, 1.0f) + ")";
 			}
-			lores.add((potion.isBadEffect() ? TextFormatting.RED : TextFormatting.BLUE) + effectString);
+			lores.add((potion.isBeneficial() ? TextFormatting.BLUE : TextFormatting.RED) + effectString);
 		}
 	}
 
@@ -191,9 +192,9 @@ public class Util {
 	 * @param color  Dye color input
 	 * @return  EnumDyeColor matching, or null for no match
 	 */
-	public static EnumDyeColor getDyeForColor(int color) {
-		for(EnumDyeColor dyeColor : EnumDyeColor.values()) {
-			if(dyeColor.colorValue == color) {
+	public static DyeColor getDyeForColor(int color) {
+		for(DyeColor dyeColor : DyeColor.values()) {
+			if(dyeColor.getId() == color) {
 				return dyeColor;
 			}
 		}
