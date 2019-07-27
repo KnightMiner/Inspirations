@@ -5,10 +5,10 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import knightminer.inspirations.library.Util;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.SoundEvents;
 import slimeknights.mantle.util.RecipeMatch;
 
 public abstract class CauldronRecipeMatchRecipe implements ISimpleCauldronRecipe {
@@ -44,7 +44,7 @@ public abstract class CauldronRecipeMatchRecipe implements ISimpleCauldronRecipe
 	 * @param levels   Amount of levels consumed by the recipe, also determines how many levels are required to perform the recipe
 	 */
 	public CauldronRecipeMatchRecipe(RecipeMatch input, ItemStack result, @Nullable Boolean boiling, int levels) {
-		this(input, result, boiling, levels, SoundEvents.ENTITY_BOBBER_SPLASH);
+		this(input, result, boiling, levels, SoundEvents.ENTITY_FISHING_BOBBER_SPLASH);
 	}
 
 	@Override

@@ -5,7 +5,9 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 import net.minecraft.init.PotionTypes;
 import net.minecraft.item.ItemStack;
+import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionType;
+import net.minecraft.potion.Potions;
 import net.minecraftforge.fluids.FluidRegistry;
 import slimeknights.mantle.util.RecipeMatch;
 
@@ -15,7 +17,7 @@ import slimeknights.mantle.util.RecipeMatch;
 @ParametersAreNonnullByDefault
 public class CauldronPotionRecipe extends CauldronRecipeMatchRecipe {
 
-	protected PotionType potion;
+	protected Potion potion;
 
 	/**
 	 * @param input    Input recipe match entry
@@ -24,7 +26,7 @@ public class CauldronPotionRecipe extends CauldronRecipeMatchRecipe {
 	 * @param levels   Amount of levels consumed by the recipe, also determines how many levels are required to perform the recipe
 	 * @param boiling  If true, the cauldron must be above fire, if false it must not be above fire. Set to null to ignore fire
 	 */
-	public CauldronPotionRecipe(RecipeMatch input, PotionType potion, ItemStack result, int levels, @Nullable Boolean boiling) {
+	public CauldronPotionRecipe(RecipeMatch input, Potion potion, ItemStack result, int levels, @Nullable Boolean boiling) {
 		super(input, result, boiling, levels);
 		this.potion = potion;
 	}
@@ -36,7 +38,7 @@ public class CauldronPotionRecipe extends CauldronRecipeMatchRecipe {
 
 	@Override
 	public Object getInputState() {
-		return potion == PotionTypes.WATER ? FluidRegistry.WATER : potion;
+		return potion == Potions.WATER ? FluidRegistry.WATER : potion;
 	}
 
 	@Override

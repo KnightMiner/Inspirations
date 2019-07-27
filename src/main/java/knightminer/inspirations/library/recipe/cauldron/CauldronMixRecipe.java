@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableList;
 
 import knightminer.inspirations.library.InspirationsRegistry;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
@@ -39,10 +40,11 @@ public class CauldronMixRecipe implements ISimpleCauldronRecipe {
 		}
 
 		// stack must be a fluid container
-		IFluidHandlerItem fluidHandler = FluidUtil.getFluidHandler(stack);
-		if(fluidHandler == null) {
+		LazyOptional<IFluidHandlerItem> maybefluidHandler = FluidUtil.getFluidHandler(stack);
+		if(!maybefluidHandler.isPresent()) {
 			return false;
 		}
+		IFluidHandlerItem fluidHandler = maybefluidHandler.orElseThrow(() -> new RuntimeException("Not present?"));
 
 		// fluid in stack must be a cauldron fluid
 		FluidStack fluidStack = fluidHandler.drain(1000, false);

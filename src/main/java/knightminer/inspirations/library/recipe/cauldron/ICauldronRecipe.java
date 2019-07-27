@@ -1,15 +1,20 @@
 package knightminer.inspirations.library.recipe.cauldron;
 
 import knightminer.inspirations.library.InspirationsRegistry;
-import net.minecraft.init.PotionTypes;
-import net.minecraft.init.SoundEvents;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.potion.PotionType;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.IntNBT;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.Potions;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.SoundEvents;
+import net.minecraft.util.registry.Registry;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidUtil;
 
 import javax.annotation.Nonnull;
 
@@ -85,7 +90,7 @@ public interface ICauldronRecipe {
 	 * @return  Sound event
 	 */
 	default SoundEvent getSound(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		return SoundEvents.ENTITY_BOBBER_SPLASH;
+		return SoundEvents.ENTITY_FISHING_BOBBER_SPLASH;
 	}
 
 	/**
@@ -93,7 +98,7 @@ public interface ICauldronRecipe {
 	 * @return  Sound volume
 	 */
 	default float getVolume(SoundEvent sound) {
-		return sound == SoundEvents.ENTITY_BOBBER_SPLASH ? 0.3f : 1.0f;
+		return sound == SoundEvents.ENTITY_FISHING_BOBBER_SPLASH ? 0.3f : 1.0f;
 	}
 
 	/**
@@ -111,7 +116,7 @@ public interface ICauldronRecipe {
 	 */
 	public class CauldronState {
 		private int color;
-		private PotionType potion;
+		private Potion potion;
 		private FluidStack fluid;
 
 		/** Special constant for default cauldron state. Use this instead of setting the state to null */
@@ -147,8 +152,8 @@ public interface ICauldronRecipe {
 		 * Gets a potion cauldron state
 		 * @param potion  Potion input
 		 */
-		public static CauldronState potion(PotionType potion) {
-			if(potion == PotionTypes.WATER) {
+		public static CauldronState potion(Potion potion) {
+			if(potion == Potions.WATER) {
 				return WATER;
 			}
 
@@ -162,7 +167,7 @@ public interface ICauldronRecipe {
 		 * @param fluid  Fluid input
 		 */
 		public static CauldronState fluid(Fluid fluid) {
-			if(fluid == FluidRegistry.WATER) {
+			if(fluid == Fluids.WATER) {
 				return WATER;
 			}
 
@@ -194,9 +199,9 @@ public interface ICauldronRecipe {
 		 * Gets the potion for this state
 		 * @return  potion for this state, or null if it is not a potion
 		 */
-		public PotionType getPotion() {
+		public Potion getPotion() {
 			if(this == WATER) {
-				return PotionTypes.WATER;
+				return Potions.WATER;
 			}
 			return potion;
 		}
@@ -254,7 +259,7 @@ public interface ICauldronRecipe {
 		 * Creates a new cauldron state from NBT
 		 * @param tags  NBT tags
 		 */
-		public static CauldronState fromNBT(NBTTagCompound tags) {
+		public static CauldronState fromNBT(CompoundNBT tags) {
 			// quick boolean for water
 			if(tags.getBoolean(TAG_WATER)) {
 				return WATER;
@@ -262,13 +267,13 @@ public interface ICauldronRecipe {
 
 			// the rest will set properties
 			CauldronState state = new CauldronState();
-			if(tags.hasKey(TAG_COLOR)) {
-				state.color = tags.getInteger(TAG_COLOR);
+			if(tags.contains(TAG_COLOR)) {
+				state.color = tags.getInt(TAG_COLOR);
 			}
-			if(tags.hasKey(TAG_POTION)) {
-				state.potion = PotionType.getPotionTypeForName(tags.getString(TAG_POTION));
+			if(tags.contains(TAG_POTION)) {
+				state.potion = Potion.getPotionTypeForName(tags.getString(TAG_POTION));
 			}
-			if(tags.hasKey(TAG_FLUID)) {
+			if(tags.contains(TAG_FLUID)) {
 				Fluid fluid = FluidRegistry.getFluid(tags.getString(TAG_FLUID));
 				if(fluid != null) {
 					state.fluid = new FluidStack(fluid, Fluid.BUCKET_VOLUME);
@@ -280,26 +285,26 @@ public interface ICauldronRecipe {
 
 		/**
 		 * Writes this state to NBT
-		 * @return  NBTTagCompound of the state
+		 * @return  CompoundNBT of the state
 		 */
 		@Nonnull
-		public NBTTagCompound writeToNBT() {
-			NBTTagCompound tags = new NBTTagCompound();
+		public CompoundNBT writeToNBT() {
+			CompoundNBT tags = new CompoundNBT();
 			// if water, just set a boolean so we have something
 			if(this == WATER) {
-				tags.setBoolean(TAG_WATER, true);
+				tags.putBoolean(TAG_WATER, true);
 				return tags;
 			}
 
 			// otherwise set each property we have
 			if(color > -1) {
-				tags.setInteger(TAG_COLOR, color);
+				tags.putInt(TAG_COLOR, color);
 			}
 			if(potion != null) {
-				tags.setString(TAG_POTION, potion.getRegistryName().toString());
+				tags.putString(TAG_POTION, potion.getRegistryName().toString());
 			}
 			if(fluid != null) {
-				tags.setString(TAG_FLUID, fluid.getFluid().getName());
+				tags.putString(TAG_FLUID, fluid.getFluid().getName());
 			}
 
 			return tags;

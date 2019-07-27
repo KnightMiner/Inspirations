@@ -1,11 +1,13 @@
 package knightminer.inspirations.library.recipe.cauldron;
 
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import knightminer.inspirations.library.InspirationsRegistry;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.SoundEvents;
 import net.minecraftforge.fluids.Fluid;
 import slimeknights.mantle.util.RecipeMatch;
 
@@ -26,7 +28,7 @@ public class FillCauldronRecipe extends CauldronFluidRecipe {
 	 * @param boiling     If true, the cauldron must be placed above lava for this recipe
 	 * @param sound       Sound to play when filling
 	 */
-	public FillCauldronRecipe(RecipeMatch input, Fluid fluid, int amount, ItemStack container, Boolean boiling, SoundEvent sound) {
+	public FillCauldronRecipe(RecipeMatch input, Fluid fluid, int amount, ItemStack container, @Nullable Boolean boiling, SoundEvent sound) {
 		super(input, fluid, container, boiling, 0, sound);
 		this.amount = amount;
 	}

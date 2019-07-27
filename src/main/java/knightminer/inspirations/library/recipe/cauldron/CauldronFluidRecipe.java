@@ -3,9 +3,9 @@ package knightminer.inspirations.library.recipe.cauldron;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.SoundEvents;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import slimeknights.mantle.util.RecipeMatch;
@@ -42,7 +42,7 @@ public class CauldronFluidRecipe extends CauldronRecipeMatchRecipe {
 	 * @param levels   Amount of levels consumed by the recipe, also determines how many levels are required to perform the recipe
 	 */
 	public CauldronFluidRecipe(RecipeMatch input, @Nullable Fluid fluid, ItemStack result, @Nullable Boolean boiling, int levels) {
-		this(input, fluid, result, boiling, levels, SoundEvents.ENTITY_BOBBER_SPLASH);
+		this(input, fluid, result, boiling, levels, SoundEvents.ENTITY_FISHING_BOBBER_SPLASH);
 	}
 
 	/**
@@ -65,7 +65,7 @@ public class CauldronFluidRecipe extends CauldronRecipeMatchRecipe {
 	 * @param boiling  If true, the cauldron must be above fire, if false it must not be above fire. Set to null to ignore fire
 	 */
 	public CauldronFluidRecipe(RecipeMatch input, @Nullable Fluid fluid, ItemStack result, @Nullable Boolean boiling) {
-		this(input, fluid, result, boiling, SoundEvents.ENTITY_BOBBER_SPLASH);
+		this(input, fluid, result, boiling, SoundEvents.ENTITY_FISHING_BOBBER_SPLASH);
 	}
 
 	/**

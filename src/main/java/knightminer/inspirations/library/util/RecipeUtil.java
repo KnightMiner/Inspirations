@@ -2,12 +2,13 @@ package knightminer.inspirations.library.util;
 
 import java.util.function.Consumer;
 
+import net.minecraft.item.Items;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.state.BlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -35,7 +36,7 @@ public final class RecipeUtil {
 	}
 
 	/**
-	 * Parses an itemstack from a string in the format of "modid:item[:meta]"
+	 * Parses an itemstack from a string in the format of "modid:item"
 	 * @param string         Input string
 	 * @param allowWildcard  If true, -1 will be a valid metadata to use as a wildcard.
 	 * 						 Additionally, changes the default metadata to wildcard instead of 0
@@ -55,16 +56,7 @@ public final class RecipeUtil {
 			return ItemStack.EMPTY;
 		}
 
-		int meta = allowWildcard ? -1 : 0;
-		if(parts.length > 2) {
-			// already validated above
-			meta = Integer.parseInt(parts[2]);
-		}
-		if(meta == -1) {
-			meta = OreDictionary.WILDCARD_VALUE;
-		}
-
-		return new ItemStack(item, 1, meta);
+		return new ItemStack(item);
 	}
 
 	/**

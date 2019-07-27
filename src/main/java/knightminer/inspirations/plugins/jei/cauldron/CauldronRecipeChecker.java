@@ -12,7 +12,7 @@ import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.BannerPattern;
 
@@ -76,11 +76,11 @@ public class CauldronRecipeChecker {
 					continue;
 				}
 				ItemStack stack = output.copy();
-				NBTTagCompound entityTag = stack.getOrCreateSubCompound("BlockEntityTag");
+				CompoundNBT entityTag = stack.getOrCreateSubCompound("BlockEntityTag");
 				NBTTagList patternList = new NBTTagList();
 				entityTag.setTag("Patterns", patternList);
 
-				NBTTagCompound patternTag = new NBTTagCompound();
+				CompoundNBT patternTag = new CompoundNBT();
 				patternTag.setString("Pattern", pattern.getHashname());
 				patternTag.setInteger("Color", patternColor.getDyeDamage());
 				patternList.appendTag(patternTag);

@@ -2,90 +2,90 @@ package knightminer.inspirations.library.recipe;
 
 import javax.annotation.Nonnull;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.util.TagUtil;
 import knightminer.inspirations.library.util.TextureBlockUtil;
 import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
-import net.minecraft.inventory.InventoryCrafting;
+import net.minecraft.block.Blocks;
+import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.util.JsonUtils;
+import net.minecraft.item.crafting.ShapedRecipe;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.common.crafting.IRecipeFactory;
-import net.minecraftforge.common.crafting.JsonContext;
-import net.minecraftforge.common.crafting.CraftingHelper.ShapedPrimer;
-import net.minecraftforge.oredict.OreDictionary;
-import net.minecraftforge.oredict.ShapedOreRecipe;
 
-public class TextureRecipe extends ShapedOreRecipe {
+public class TextureRecipe extends ShapedRecipe {
 
 	public final Ingredient texture; // first one found of these determines the output block used
-	public TextureRecipe(ResourceLocation group, Ingredient texture, ItemStack result, ShapedPrimer primer) {
-		super(group, result, primer);
 
+	public TextureRecipe(ResourceLocation id, String group, int width, int height, Ingredient texture, NonNullList<Ingredient> inputs, ItemStack output) {
+		super(id, group, width, height, inputs, output);
+		this.texture = texture;
+	}
+
+	private TextureRecipe(ShapedRecipe orig, Ingredient texture) {
+		super(orig.getId(), orig.getGroup(), orig.getWidth(), orig.getHeight(), orig.getIngredients(), orig.getRecipeOutput());
 		this.texture = texture;
 	}
 
 	@Nonnull
 	@Override
-	public ItemStack getCraftingResult(InventoryCrafting craftMatrix) {
+	public ItemStack getCraftingResult(CraftingInventory craftMatrix) {
+		ItemStack result = super.getCraftingResult(craftMatrix);
 		for(int i = 0; i < craftMatrix.getSizeInventory(); i++) {
-			for(ItemStack ore : texture.getMatchingStacks()) {
+			for(ItemStack potential : texture.getMatchingStacks()) {
 				ItemStack stack = craftMatrix.getStackInSlot(i);
-				if(OreDictionary.itemMatches(ore, stack, false) && Block.getBlockFromItem(stack.getItem()) != Blocks.AIR) {
-					Block block = Block.getBlockFromItem(output.getItem());
-					return TextureBlockUtil.createTexturedStack(block, output.getItemDamage(), Block.getBlockFromItem(stack.getItem()), stack.getItemDamage());
+				if(potential.isItemEqual(stack) && Block.getBlockFromItem(stack.getItem()) != Blocks.AIR) {
+					Block outBlock = Block.getBlockFromItem(result.getItem());
+					return TextureBlockUtil.createTexturedStack(outBlock, Block.getBlockFromItem(stack.getItem()));
 				}
 			}
 		}
 
-		return super.getCraftingResult(craftMatrix);
+		return result;
 	}
 
 	@Nonnull
 	@Override
 	public ItemStack getRecipeOutput() {
+		ItemStack output = super.getRecipeOutput();
 		if(!(texture.getMatchingStacks().length == 0) && !output.isEmpty()) {
 			ItemStack stack = texture.getMatchingStacks()[0];
 			Block block = Block.getBlockFromItem(output.getItem());
-			int meta = stack.getItemDamage();
-
-			if(meta == OreDictionary.WILDCARD_VALUE) {
-				meta = 0;
-			}
-
-			return TextureBlockUtil.createTexturedStack(block, output.getItemDamage(), Block.getBlockFromItem(stack.getItem()), meta);
+			return TextureBlockUtil.createTexturedStack(block, Block.getBlockFromItem(stack.getItem()));
 		}
 
 		return super.getRecipeOutput();
 	}
 
-	/**
-	 * Gets the recipe output without applying the legs block
-	 */
-	public ItemStack getPlainRecipeOutput() {
-		return output;
-	}
+	public static final IRecipeSerializer<?> SERIALIZER = new TextureRecipe.Serializer().setRegistryName(new ResourceLocation(Inspirations.modID, "shaped_texturing"));
 
-	public static class Factory implements IRecipeFactory {
+	private static class Serializer extends net.minecraftforge.registries.ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<TextureRecipe> {
+
 		@Override
-		public IRecipe parse(JsonContext context, JsonObject json) {
-			ShapedOreRecipe recipe = ShapedOreRecipe.factory(context, json);
+		public TextureRecipe read(ResourceLocation recipeId, JsonObject json) {
+			ShapedRecipe recipe = CRAFTING_SHAPED.read(recipeId, json);
 
-			ShapedPrimer primer = new ShapedPrimer();
-			primer.width = recipe.getRecipeWidth();
-			primer.height = recipe.getRecipeHeight();
-			primer.mirrored = JsonUtils.getBoolean(json, "mirrored", true);
-			primer.input = recipe.getIngredients();
+			Ingredient texture = CraftingHelper.getIngredient(TagUtil.getElement(json, "texture"));
 
-			JsonElement elem = TagUtil.getElement(json, "texture");
+			return new TextureRecipe(recipe, texture);
+		}
 
-			return new TextureRecipe(recipe.getGroup().isEmpty() ? null : new ResourceLocation(recipe.getGroup()), CraftingHelper.getIngredient(elem, context), recipe.getRecipeOutput(), primer);
+		@Override
+		public TextureRecipe read(ResourceLocation recipeId, PacketBuffer buffer) {
+			ShapedRecipe recipe = CRAFTING_SHAPED.read(recipeId, buffer);
+			return new TextureRecipe(recipe, Ingredient.read(buffer));
+		}
+
+		@Override
+		public void write(PacketBuffer buffer, TextureRecipe recipe) {
+			CRAFTING_SHAPED.write(buffer, recipe);
+			recipe.texture.write(buffer);
 		}
 	}
 }
