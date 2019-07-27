@@ -229,6 +229,7 @@ public class Config {
 	// enchantments
 	public static boolean moreShieldEnchantments = true;
 	public static boolean shieldEnchantmentTable = true;
+	public static boolean fixShieldTooltip = true;
 	public static boolean axeWeaponEnchants = true;
 	public static boolean axeEnchantmentTable = true;
 
@@ -470,6 +471,7 @@ public class Config {
 			// enchantments
 			moreShieldEnchantments = configFile.getBoolean("moreShield", "tools.enchantments", moreShieldEnchantments, "If true, shields can now be enchanted with enchantments such as protection, fire aspect, knockback, and thorns");
 			shieldEnchantmentTable = configFile.getBoolean("shieldTable", "tools.enchantments", shieldEnchantmentTable, "If true, shields can be enchanted in an enchantment table. Does not support modded shields as it requires a registry substitution") && moreShieldEnchantments;
+			fixShieldTooltip = configFile.getBoolean("fixShieldTooltip", "tools.enchantments", fixShieldTooltip, "If true, fixes the tooltip on shield items so it looks better with both patterns and enchantments");
 			axeWeaponEnchants = configFile.getBoolean("axeWeapon", "tools.enchantments", axeWeaponEnchants, "If true, axes will be able to be enchanted with weapon enchants such as looting, fire aspect, and knockback");
 			axeEnchantmentTable = configFile.getBoolean("axeTable", "tools.enchantments", axeEnchantmentTable, "If true, axes can receive available weapon enchantments at the enchantment table");
 		}
