@@ -7,17 +7,21 @@ import com.google.gson.JsonSyntaxException;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.util.RecipeUtil;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.renderer.model.multipart.ICondition;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.JSONUtils;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.IConditionSerializer;
 import net.minecraftforge.common.util.JsonUtils;
 import net.minecraftforge.fml.loading.FMLConfig;
 import slimeknights.mantle.pulsar.config.PulsarConfig;
 
+import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -102,7 +106,7 @@ public class Config {
 	public static IntValue milkSquidCooldown;
 	public static String[] fluidContainers = {
 			"ceramics:clay_bucket",
-			"forge:bucketfilled",
+			"forge:bucket_filled",
 			"minecraft:bucket",
 			"minecraft:water_bucket",
 			"minecraft:milk_bucket",
@@ -110,13 +114,32 @@ public class Config {
 	};
 
 	// recipes
+
+	private enum BooleanAndSimple {
+		FALSE, // Don't the object
+		SIMPLE, // Add features without replacing.
+		TRUE // Replace the object.
+	}
+
 	// cauldron - extended
-	public static BooleanValue enableCauldronRecipes;
-	public static BooleanValue enableExtendedCauldron;
-	public static BooleanValue simpleCauldronRecipes;
+	private static EnumValue<BooleanAndSimple> extendCauldron;
+
+	public static boolean enableCauldronRecipes() {
+		return extendCauldron.get() != BooleanAndSimple.FALSE;
+	}
+	public static boolean enableExtendedCauldron() {
+		return extendCauldron.get() != BooleanAndSimple.TRUE;
+	}
+	public static boolean simpleCauldronRecipes() {
+		return extendCauldron.get() == BooleanAndSimple.SIMPLE;
+	}
+
 	// cauldron - extended options
-	public static BooleanValue enableBiggerCauldron;
-	public static BooleanValue fasterCauldronRain;
+	private static BooleanValue enableBiggerCauldronRaw;
+	private static BooleanValue fasterCauldronRainRaw;
+	public static boolean enableBiggerCauldron() { return enableBiggerCauldronRaw.get() && enableExtendedCauldron(); }
+	public static boolean fasterCauldronRain() { return fasterCauldronRainRaw.get() && enableExtendedCauldron(); }
+
 
 	private enum SpongeEmptyCauldron {
 		FALSE, // No emptying.
@@ -135,14 +158,29 @@ public class Config {
 
 	public static BooleanValue cauldronObsidian;
 
-	public static BooleanValue dropCauldronContents;
+	public static BooleanValue dropCauldronContentsRaw;
+	public static boolean dropCauldronContents() {
+		return dropCauldronContentsRaw.get() && enableExtendedCauldron.get();
+	}
+
 	// cauldron - fluids
 	public static BooleanValue enableCauldronFluids;
 	public static BooleanValue enableMilk;
 	// cauldron - dyeing
-	public static BooleanValue enableCauldronDyeing;
-	public static BooleanValue patchVanillaDyeRecipes;
-	public static BooleanValue extraBottleRecipes;
+	private static BooleanValue enableCauldronDyeingRaw;
+	private static BooleanValue patchVanillaDyeRecipesRaw;
+	private static BooleanValue extraBottleRecipesRaw;
+
+	public static boolean enableCauldronDyeing() {
+		return enableCauldronDyeingRaw.get() && enableExtendedCauldron();
+	}
+	public static boolean patchVanillaDyeRecipes() {
+		return patchVanillaDyeRecipesRaw.get() && enableCauldronDyeing();
+	}
+	public static boolean extraBottleRecipes() {
+		return extraBottleRecipesRaw.get() && enableCauldronDyeing();
+	}
+
 	// cauldron - potions
 	public static BooleanValue enableCauldronPotions;
 	public static BooleanValue enableCauldronBrewing;
@@ -239,11 +277,22 @@ public class Config {
 	public static BooleanValue enableBarometer;
 	public static BooleanValue enablePhotometer;
 	// crook
-	public static BooleanValue enableCrook;
-	public static BooleanValue separateCrook;
-	public static boolean hoeCrook = false;
-	public static int crookChance = 10;
-	public static BooleanValue netherCrooks;
+	private static EnumValue<BooleanAndSimple> crookType;
+
+	public static boolean enableCrook() {
+		return crookType.get() != BooleanAndSimple.FALSE;
+	}
+	public static boolean separateCrook() {
+		return crookType.get() == BooleanAndSimple.TRUE;
+	}
+	public static boolean hoeCrook() {
+		return crookType.get() == BooleanAndSimple.SIMPLE;
+	}
+	public static IntValue crookChance;
+	private static BooleanValue netherCrooksRaw;
+	public static boolean enableNetherCrook() {
+		return netherCrooksRaw.get() && separateCrook();
+	}
 	// waypoint compass
 	public static BooleanValue enableWaypointCompass;
 	public static BooleanValue dyeWaypointCompass;
@@ -269,8 +318,8 @@ public class Config {
 	public static BooleanValue betterCauldronItem;
 	public static BooleanValue unstackableRecipeAlts;
 	public static BooleanValue dispensersPlaceAnvils;
-	public static boolean milkCooldown = false;
-	public static short milkCooldownTime = 600;
+	public static BooleanValue milkCooldown;
+	public static IntValue milkCooldownTime;
 	// heartbeet
 	public static BooleanValue enableHeartbeet;
 	public static BooleanValue brewHeartbeet;
@@ -410,20 +459,38 @@ public class Config {
 					.define("redstoneTorchLever", true);
 
 			// carpeted trapdoor
-			enableCarpetedTrapdoor = configFile.getBoolean("carpetedTrapdoor", "utility", enableCarpetedTrapdoor, "Enables carpeted trapdoors: a trapdoor which appears to be a carpet when closed");
+			enableCarpetedTrapdoor = builder
+					.comment("Enables carpeted trapdoors: a trapdoor which appears to be a carpet when closed")
+					.worldRestart()
+					.define("carpetedTrapdoor", true);
 
 			// carpeted pressure plate
-			enableCarpetedPressurePlate = configFile.getBoolean("carpetedPressurePlate", "utility", enableCarpetedPressurePlate, "Allows placing a carpet on a stone pressure plate to hide it");
+			enableCarpetedPressurePlate = builder
+					.comment("Allows placing a carpet on a stone pressure plate to hide it")
+					.worldRestart()
+					.define("carpetedPressurePlate", true);
 
 			// collector
-			enableCollector = configFile.getBoolean("collector", "utility", enableCollector, "Enables the collector: extracts items from inventories or the world similar to a hopper, but can face in all 6 directions and cannot place items in inventories");
+			enableCollector = builder
+					.comment("Enables the collector: extracts items from inventories or the world similar to a hopper, but can face in all 6 directions and cannot place items in inventories")
+					.worldRestart()
+					.define("collector", true);
 
 			// pipe
-			enablePipe = configFile.getBoolean("pipe", "utility", enablePipe, "Enables pipes: a more economical hopper that only outputs items, does not pull from inventories. Both cheaper and better for performance.");
-			pipeUpwards = configFile.getBoolean("upwards", "utility.pipe", pipeUpwards, "Allows pipes to output upwards. This removes a limitation on not being able to pipe items up without dropper elevators, but should be balanced alongside modded pipes.");
+			enablePipe = builder
+					.comment("Enables pipes: a more economical hopper that only outputs items, does not pull from inventories. Both cheaper and better for performance.")
+					.worldRestart()
+					.define("pipe", true);
+			pipeUpwards = builder
+					.comment("Allows pipes to output upwards. This removes a limitation on not being able to pipe items up without dropper elevators, but should be balanced alongside modded pipes.")
+					.worldRestart()
+					.define("utility.pipeupwards", true);
 
 			// dispenser fluid containers
-			enableDispenserFluidTanks = configFile.getBoolean("dispenserFluidTanks", "utility", enableDispenserFluidTanks, "Allows dispensers to fill and empty fluid tanks using fluid containers");
+			enableDispenserFluidTanks = builder
+					.comment("Allows dispensers to fill and empty fluid tanks using fluid containers")
+					.worldRestart()
+					.define("dispenserFluidTanks", true);
 			fluidContainers = configFile.get("utility.dispenserFluidTanks", "containers", fluidContainers,
 					"List of itemstacks that can be used as fluid containers to fill or empty fluid tanks").getStringList();
 		}
@@ -447,15 +514,25 @@ public class Config {
 					.defineEnum("spongeEmpty", SpongeEmptyCauldron.TRUE);
 
 			// extended options
-			String extendCauldron = configFile.getString("extendCauldron", "recipes", "true", "Allows additional recipes to be performed in the cauldron. Can be 'true', 'false', or 'simple'. If true, requires a block substitution. If simple, functionality will be limited to water in cauldrons.", new String[]{"false", "simple", "true"});
-			enableCauldronRecipes = !extendCauldron.equals("false");
-			simpleCauldronRecipes = extendCauldron.equals("simple");
-			enableExtendedCauldron = extendCauldron.equals("true");
+			extendCauldron = builder
+					.comment("Allows additional recipes to be performed in the cauldron. Can be 'true', 'false', or 'simple'. If true, requires a block substitution. If simple, functionality will be limited to water in cauldrons.")
+					.worldRestart()
+					.defineEnum("extendCauldron", BooleanAndSimple.TRUE);
 
-			enableBiggerCauldron = configFile.getBoolean("bigger", "recipes.cauldron", enableBiggerCauldron, "Makes the cauldron hold 4 bottle per bucket instead of 3. Translates better to modded fluids.") && enableExtendedCauldron;
-			InspirationsRegistry.setConfig("biggerCauldron", enableBiggerCauldron);
-			fasterCauldronRain = configFile.getBoolean("fasterRain", "recipes.cauldron", fasterCauldronRain, "Cauldrons fill faster in the rain than vanilla painfully slow rate.") && enableExtendedCauldron;
-			dropCauldronContents = configFile.getBoolean("dropContents", "recipes.cauldron", dropCauldronContents, "Cauldrons will drop their contents when broken.") && enableExtendedCauldron;
+			enableBiggerCauldronRaw = builder
+					.comment("Makes the cauldron hold 4 bottle per bucket instead of 3. Translates better to modded fluids.")
+					.worldRestart()
+					.define("recipes.cauldron.bigger", false);
+
+			InspirationsRegistry.setConfig("biggerCauldron", enableBiggerCauldron());
+
+			fasterCauldronRainRaw = builder
+					.comment("Cauldrons fill faster in the rain than vanilla painfully slow rate.")
+					.define("cauldron.fasterRain", true);
+			dropCauldronContentsRaw = builder
+					.comment("Cauldrons will drop their contents when broken.")
+					.define("cauldron.dropContents", true);
+
 
 			cauldronObsidian = configFile.getBoolean("obsidian", "recipes.cauldron", cauldronObsidian, "Allows making obsidian in a cauldron by using a lava bucket on a water filled cauldron. Supports modded buckets. If cauldron fluids is enabled, you can also use a water bucket on a lava filled cauldron.");
 
@@ -465,12 +542,16 @@ public class Config {
 			enableMilk = configFile.getBoolean("milk", "recipes.cauldron.fluids", enableMilk, "Registers milk as a fluid so it can be used in cauldron recipes.") && enableCauldronFluids;
 
 			// dyeing
-			enableCauldronDyeing = configFile.getBoolean("dyeing", "recipes.cauldron", enableCauldronDyeing, "Allows cauldrons to be filled with dyes and dye items using cauldrons") && enableExtendedCauldron;
-			patchVanillaDyeRecipes = configFile.getBoolean("patchVanillaRecipes", "recipes.cauldron.dyeing", patchVanillaDyeRecipes, "Makes crafting two dyed water bottles together produce a dyed water bottle. Requires modifying vanilla recipes to prevent a conflict") && enableCauldronDyeing;
-			extraBottleRecipes = configFile.getBoolean("extraBottleRecipes", "recipes.cauldron.dyeing", extraBottleRecipes, "Adds extra dyed bottle recipes to craft green and brown") && enableCauldronDyeing;
+			enableCauldronDyeingRaw = builder
+					.comment("Allows cauldrons to be filled with dyes and dye items using cauldrons")
+					.define("cauldron.dyeing", true);
+			patchVanillaDyeRecipesRaw = builder
+					.comment("Makes crafting two dyed water bottles together produce a dyed water bottle. Requires modifying vanilla recipes to prevent a conflict")
+					.define("cauldron.dyeing.patchVanillaRecipes", true);
+			extraBottleRecipesRaw = configFile.getBoolean("extraBottleRecipes", "recipes.cauldron.dyeing", extraBottleRecipes, "Adds extra dyed bottle recipes to craft green and brown") && enableCauldronDyeing;
 
 			// potions
-			configFile.renameProperty("recipes.cauldron", "brewing", "potions");
+//			configFile.renameProperty("recipes.cauldron", "brewing", "potions");
 			enableCauldronPotions = configFile.getBoolean("potions", "recipes.cauldron", enableCauldronPotions, "Allows cauldrons to be filled with potions and support brewing") && enableExtendedCauldron;
 			enableCauldronBrewing = configFile.getBoolean("brewing", "recipes.cauldron.potions", enableCauldronBrewing, "Allows cauldrons to perform brewing recipes.") && enableCauldronPotions;
 			expensiveCauldronBrewing = configFile.getBoolean("brewingExpensive", "recipes.cauldron.potions", expensiveCauldronBrewing, "Caps brewing at 2 potions per ingredient, requiring 2 ingredients for a full cauldron. Makes the brewing stand still useful and balances better against the bigger cauldron.") && enableCauldronBrewing;
@@ -478,7 +559,7 @@ public class Config {
 			InspirationsRegistry.setConfig("expensiveCauldronBrewing", expensiveCauldronBrewing);
 
 			// dispensers
-			enableCauldronDispenser = configFile.getBoolean("dispenser", "recipes.cauldron", enableCauldronDispenser, "Allows dispensers to perform some recipes in the cauldron. Intended to be used for recipes to fill and empty fluid containers as droppers can already be used for recipes") && enableCauldronRecipes;
+			enableCauldronDispenser = configFile.getBoolean("dispenser", "recipes.cauldron", enableCauldronDispenser, "Allows dispensers to perform some recipes in the cauldron. Intended to be used for recipes to fill and empty fluid containers as droppers can already be used for recipes") && enableCauldronRecipes();
 			cauldronDispenserRecipes = configFile.get("recipes.cauldron.dispenser", "items", cauldronDispenserRecipes,
 					"List of itemstacks that can be used as to perform cauldron recipes in a dispenser").getStringList();
 		}
@@ -487,21 +568,34 @@ public class Config {
 		builder.push("tools");
 		{
 			// redstone charge
-			configFile.moveProperty("utility", "redstoneCharge", "tools");
-			enableRedstoneCharge = configFile.getBoolean("redstoneCharge", "tools", enableRedstoneCharge, "Enables the redstone charger: a quick pulse created with a flint and steel like item");
-			enableChargedArrow = configFile.getBoolean("chargedArrow", "tools", enableChargedArrow, "Enables the charged arrow: places a redstone pulse where it lands");
+			enableRedstoneCharge = builder
+					.comment("Enables the redstone charger: a quick pulse created with a flint and steel like item")
+					.worldRestart()
+					.define("redstoneCharge", true);
+
+			enableChargedArrow = builder
+					.comment("Enables the charged arrow: places a redstone pulse where it lands")
+					.worldRestart()
+					.define("chargedArrow", true);
 
 			// lock
-			configFile.moveProperty("utility", "lock", "tools");
-			enableLock = configFile.getBoolean("lock", "tools", enableLock, "Enables locks and keys: an item allowing you to lock a tile entity to only open for a special named item");
+			enableLock = builder
+					.comment("Enables locks and keys: an item allowing you to lock a tile entity to only open for a special named item")
+					.worldRestart()
+					.define("lock", true);
 
 			// crooks
-			String crookType = configFile.getString("crook", "tools", "true", "Enables the crook: a tool to break leaves faster and increase sapling chance. Can be 'true', 'false', or 'simple'. If true, adds a new tool. If simple, functionality will be added to hoes instead.", new String[]{ "false", "simple", "true" });
-			enableCrook = !crookType.equals("false");
-			separateCrook = crookType.equals("true");
-			hoeCrook = crookType.equals("simple");
-			crookChance = configFile.getInt("chance", "tools.crook", crookChance, 1, 100, "Chance of a sapling to drop when using the crook. Acts as 1 in [chance] if the initial sapling drop fails. Set to 1 to always drop saplings when using a crook.");
-			netherCrooks = configFile.getBoolean("netherCrooks", "tools.crook", netherCrooks, "Enables crooks crafted from blaze rods and wither bones. They have higher stats than other crooks and inflict fire and wither on the target respectively.") && separateCrook;
+			crookType = builder
+					.comment("Enables the crook: a tool to break leaves faster and increase sapling chance. Can be 'true', 'false', or 'simple'. If true, adds a new tool. If simple, functionality will be added to hoes instead.")
+					.worldRestart()
+					.defineEnum("crook", BooleanAndSimple.TRUE);
+			crookChance = builder
+					.comment("Chance of a sapling to drop when using the crook. Acts as 1 in [chance] if the initial sapling drop fails. Set to 1 to always drop saplings when using a crook.")
+					.defineInRange("crook.chance", 10,1, 100);
+			netherCrooksRaw = builder
+					.comment("Enables crooks crafted from blaze rods and wither bones. They have higher stats than other crooks and inflict fire and wither on the target respectively.")
+					.worldRestart()
+					.define("crook.netherCrooks", true);
 
 			// harvest hanging vines
 			configFile.moveProperty("tweaks", "harvestHangingVines", "tools.shears");
@@ -513,16 +607,28 @@ public class Config {
 			shearsReclaimMelons = configFile.getBoolean("reclaimMelons", "tools.shears", shearsReclaimMelons, "Breaking a melon block with shears will always return 9 slices");
 
 			// compass
-			enableNorthCompass = configFile.getBoolean("northCompass", "tools", enableNorthCompass, "Enables the north compass: a cheaper compass that always points north. Intended to either allow packs to replace the compass or as an alternative for F3 navigation");
-			renameVanillaCompass = configFile.getBoolean("renameVanilla", "tools.northCompass", renameVanillaCompass, "Renames the vanilla compass to 'origin compass' to help clarify the difference between the two compasses.");
+			enableNorthCompass = builder
+					.comment("Enables the north compass: a cheaper compass that always points north. Intended to either allow packs to replace the compass or as an alternative for F3 navigation")
+					.worldRestart()
+					.define("northCompass", true);
+			renameVanillaCompass = builder
+					.comment("Renames the vanilla compass to 'origin compass' to help clarify the difference between the two compasses.")
+					.worldRestart()
+					.define("northCompass.renameVanilla", true);
 
 			// barometer
-			enableBarometer = configFile.getBoolean("barometer", "tools", enableBarometer, "Enables the barometer: a tool to measure the player's height in world.");
+			enableBarometer = builder
+					.comment("Enables the barometer: a tool to measure the player's height in world.")
+					.worldRestart()
+					.define("barometer",  true);
 
 			// photometer
-			enablePhotometer = configFile.getBoolean("photometer", "tools", enablePhotometer, "Enables the photometer: a tool to measure light in world. Can be pointed at a block to measure the light level of that block.");
+			enablePhotometer = builder
+					.comment("Enables the photometer: a tool to measure light in world. Can be pointed at a block to measure the light level of that block.")
+					.worldRestart()
+					.define("photometer", true);
 
-			// photometer
+			// waypoint compass
 			enableWaypointCompass = configFile.getBoolean("waypointCompass", "tools", enableWaypointCompass, "Enables the waypoint compass: a compass which points towards a full beacon.");
 			dyeWaypointCompass = configFile.getBoolean("dye", "tools.waypointCompass", dyeWaypointCompass, "If true, waypoint compasses can be dyed all vanilla colors") && enableWaypointCompass;
 			craftWaypointCompass = configFile.getBoolean("craft", "tools.waypointCompass", craftWaypointCompass, "If true, waypoint compasses can be crafted using iron and a blaze rod. If false, they are obtained by using a vanilla compass on a beacon.") && enableWaypointCompass;
@@ -541,17 +647,16 @@ public class Config {
 		builder.push("tweaks");
 		{
 			// pig desaddle
-			enablePigDesaddle = configFile.getBoolean("desaddlePig", "tweaks", enablePigDesaddle, "Allows pigs to be desaddled by shift-right click with an empty hand");
+			enablePigDesaddle = builder
+					.comment("Allows pigs to be desaddled by shift-right click with an empty hand")
+					.define("desaddlePig", true);
 
 			// fitted carpets
-			enableFittedCarpets = configFile.getBoolean("fittedCarpets", "tweaks", enableFittedCarpets, "Carpets fit to stairs. Uses a block override, so disable if another mod replaces carpets");
+			enableFittedCarpets = builder
+					.comment("Carpets fit to stairs. Uses a block override, so disable if another mod replaces carpets")
+					.define("fittedCarpets", true);
 
 			// bonemeal
-			if (getConfigVersion() < 0.4) {
-				boolean oldValue = configFile.get("tweaks", "extraBonemeal", true).getBoolean();
-				bonemealMushrooms = oldValue;
-				bonemealDeadBush = oldValue;
-			}
 			bonemealMushrooms = configFile.getBoolean("mushrooms", "tweaks.bonemeal", bonemealMushrooms, "Bonemeal can be used on mycelium to produce mushrooms");
 			bonemealDeadBush = configFile.getBoolean("deadBush", "tweaks.bonemeal", bonemealDeadBush, "Bonemeal can be used on sand to produce dead bushes");
 			bonemealGrassSpread = configFile.getBoolean("grassSpread", "tweaks.bonemeal", bonemealGrassSpread, "Bonemeal can be used on dirt to produce grass if adjecent to grass");
@@ -563,23 +668,39 @@ public class Config {
 			heartbeetChance = configFile.getInt("chance", "tweaks.heartbeet", heartbeetChance, 10, 1000, "Chance of a heartbeet to drop instead of a normal drop. Formula is two 1 in [chance] chances for it to drop each harvest");
 
 			// dispensers place anvils
-			dispensersPlaceAnvils = configFile.getBoolean("dispensersPlaceAnvils", "tweaks", dispensersPlaceAnvils, "Dispensers will place anvils instead of dropping them. Plays well with anvil smashing.");
+			dispensersPlaceAnvils = builder
+					.comment("Dispensers will place anvils instead of dropping them. Plays well with anvil smashing.")
+					.define("dispensersPlaceAnvils", true);
 
 			// better cauldron item
-			betterCauldronItem = configFile.getBoolean("betterCauldronItemModel", "tweaks", betterCauldronItem, "Replaces the flat cauldron sprite with the 3D cauldron block model");
+			betterCauldronItem = builder
+					.comment("Replaces the flat cauldron sprite with the 3D cauldron block model")
+					.define("betterCauldronItemModel", true);
 
 			// better flower pots
-			betterFlowerPot = configFile.getBoolean("betterFlowerPot", "tweaks", betterFlowerPot, "Flower pots can hold modded flowers");
-			flowerPotComparator = configFile.getBoolean("comparator", "tweaks.betterFlowerPot", flowerPotComparator, "Flower pots will emit a comparator signal if they have a flower");
+			betterFlowerPot = builder
+					.comment("Flower pots can hold modded flowers")
+					.worldRestart()
+					.define("betterFlowerPot", true);
+			flowerPotComparator = builder
+					.comment( "Flower pots will emit a comparator signal if they have a flower")
+					.define("betterFlowerPot.comparator", true);
 
 			// colored enchanted book ribbons
-			coloredEnchantedRibbons = configFile.getBoolean("coloredEnchantedRibbons", "tweaks", coloredEnchantedRibbons, "The ribbon on enchanted books colors based on the enchantment rarity");
+			coloredEnchantedRibbons = builder
+					.comment("The ribbon on enchanted books colors based on the enchantment rarity")
+					.worldRestart()
+					.define("coloredEnchantedRibbons", true);
 
 			// more potions
-			brewMissingPotions = configFile.getBoolean("brewMissingPotions", "tweaks", brewMissingPotions, "Adds brewing recipes for vanilla potions which are missing a recipe");
+			brewMissingPotions = builder
+					.comment("Adds brewing recipes for vanilla potions which are missing a recipe")
+					.define("brewMissingPotions", true);
 
 			// colored fireworks
-			coloredFireworkItems = configFile.getBoolean("coloredFireworkItems", "tweaks", coloredFireworkItems, "Colors the fireworks item based on the colors of the stars");
+			coloredFireworkItems = builder
+					.comment("Colors the fireworks item based on the colors of the stars")
+					.define("coloredFireworkItems", true);
 
 			// lilypad fall breaking
 			lilypadBreakFall = configFile.getBoolean("lilypadBreakFall", "tweaks", lilypadBreakFall, "Lily pads prevent fall damage, but break in the process");
@@ -588,14 +709,20 @@ public class Config {
 			unstackableRecipeAlts = configFile.getBoolean("unstackableRecipeAlts", "tweaks", unstackableRecipeAlts, "Adds stackable recipes to some vanilla or Inspriations items that require unstackable items to craft");
 
 			// seeds
-			enableMoreSeeds = configFile.getBoolean("moreSeeds", "tweaks", enableMoreSeeds, "Adds seeds for additional vanilla plants, including cactus, sugar cane, carrots, and potatoes.");
+			enableMoreSeeds = builder
+					.comment("Adds seeds for additional vanilla plants, including cactus, sugar cane, carrots, and potatoes.")
+					.worldRestart()
+					.define("moreSeeds", true);
 			addGrassDrops = configFile.getBoolean("grassDrops", "tweaks.moreSeeds", addGrassDrops, "Makes carrot and potato seeds drop from grass") && enableMoreSeeds;
 			nerfCarrotPotatoDrops = configFile.getBoolean("nerfCarrotPotatoDrops", "tweaks.moreSeeds", nerfCarrotPotatoDrops, "Makes carrots and potatoes drop their respective seed if not fully grown") && enableMoreSeeds;
 
 			// milk cooldown
-			milkCooldown = configFile.getBoolean("milkCooldown", "tweaks", milkCooldown, "Adds a cooldown to milking cows, prevents practically infinite milk in modded worlds where milk is more useful.");
-			milkCooldownTime = (short)configFile.getInt("time", "tweaks.milkCooldown", milkCooldownTime, 1, Short.MAX_VALUE, "Delay in seconds after milking a cow before it can be milked again.");
-
+			milkCooldown = builder
+					.comment("Adds a cooldown to milking cows, prevents practically infinite milk in modded worlds where milk is more useful.")
+					.define("milkCooldown", false);
+			milkCooldownTime = builder
+					.comment("Delay in seconds after milking a cow before it can be milked again.")
+					.defineInRange("milkCooldown.time", 600, 1, Short.MAX_VALUE);
 		}
 		builder.pop();
 
@@ -728,7 +855,7 @@ public class Config {
 	 * @param overrides  Input string array
 	 */
 	private static void processBookOverrides(String[] overrides) {
-		if(!enableBookshelf) {
+		if(!enableBookshelf.get()) {
 			return;
 		}
 
@@ -747,7 +874,7 @@ public class Config {
 			}
 
 			// finally, parse the isBook boolean. Pretty lazy here, just check if its not the string false
-			float power = defaultEnchantingPower;
+			float power = defaultEnchantingPower.get().floatValue();
 			if (parts.length > 1) {
 				try {
 					power = Float.parseFloat(parts[1]);
@@ -765,7 +892,7 @@ public class Config {
 				power = -1;
 			}
 			final float enchPower = power;
-			RecipeUtil.forStackInString(parts[0], stack -> InspirationsRegistry.registerBook(stack, enchPower));
+			RecipeUtil.forStackInString(parts[0], stack -> InspirationsRegistry.registerBook(stack.getItem(), enchPower));
 		}
 	}
 
@@ -774,7 +901,7 @@ public class Config {
 	 * @param overrides  Overrides to process
 	 */
 	private static void processFlowerOverrides(String[] overrides) {
-		if(!Config.betterFlowerPot) {
+		if(!Config.betterFlowerPot.get()) {
 			return;
 		}
 		for(String line : overrides) {
@@ -807,7 +934,7 @@ public class Config {
 	 * @param transformations  Input array
 	 */
 	private static void processAnvilSmashing(String[] transformations) {
-		if(!enableAnvilSmashing) {
+		if(!enableAnvilSmashing.get()) {
 			return;
 		}
 
@@ -826,7 +953,7 @@ public class Config {
 			}
 
 			// if the length is 1, this is block breaking, so use air for the output
-			IBlockState output;
+			BlockState output;
 			if(transformParts.length == 1) {
 				output = Blocks.AIR.getDefaultState();
 			} else {
@@ -848,7 +975,7 @@ public class Config {
 	 * @param cauldronRecipes  List of recipe strings
 	 */
 	private static void processCauldronRecipes(String[] cauldronRecipes) {
-		if(!enableCauldronRecipes) {
+		if(!enableCauldronRecipes()) {
 			return;
 		}
 
@@ -896,7 +1023,7 @@ public class Config {
 	 * @param fires  List of fire blocks or block states
 	 */
 	private static void processCauldronFire(String[] fires) {
-		if(!enableCauldronRecipes.get()) {
+		if(!enableCauldronRecipes()) {
 			return;
 		}
 
@@ -915,7 +1042,7 @@ public class Config {
 	 * @param containers
 	 */
 	private static void processMilkContainers(String[] containers) {
-		if(!milkCooldown) {
+		if(!milkCooldown.get()) {
 			return;
 		}
 
@@ -938,16 +1065,18 @@ public class Config {
 	 */
 
 	public static class PulseLoaded implements IConditionSerializer {
+		@Nonnull
 		@Override
-		public BooleanSupplier parse(JsonObject json) {
+		public BooleanSupplier parse(@Nonnull JsonObject json) {
 			String pulse = JSONUtils.getString(json, "pulse");
 			return () -> Inspirations.pulseManager.isPulseLoaded(pulse);
 		}
 	}
 
 	public static class ConfigProperty implements IConditionSerializer {
+		@Nonnull
 		@Override
-		public BooleanSupplier parse(JsonObject json) {
+		public BooleanSupplier parse(@Nonnull JsonObject json) {
 			String prop = JSONUtils.getString(json, "prop");
 			return () -> propertyEnabled(prop);
 		}
@@ -978,10 +1107,10 @@ public class Config {
 				case "barometer": return enableBarometer.get();
 				case "charged_arrow": return enableChargedArrow.get();
 				case "craft_waypoint_compass": return craftWaypointCompass.get();
-				case "crook": return separateCrook.get();
+				case "crook": return separateCrook();
 				case "dye_waypoint_compass": return dyeWaypointCompass.get();
 				case "lock": return enableLock.get();
-				case "nether_crook": return netherCrooks.get();
+				case "nether_crook": return enableNetherCrook();
 				case "north_compass": return enableNorthCompass.get();
 				case "photometer": return enablePhotometer.get();
 				case "redstone_charge": return enableRedstoneCharge.get();
@@ -991,14 +1120,15 @@ public class Config {
 				case "unstackable_alts": return unstackableRecipeAlts.get();
 
 				// recipes
-				case "cauldron_dyeing": return enableCauldronDyeing.get();
+				case "cauldron_dyeing": return enableCauldronDyeing();
 				case "cauldron_fluids": return enableCauldronFluids.get();
 				case "cauldron_potions": return enableCauldronPotions.get();
-				case "extra_dyed_bottle_recipes": return extraBottleRecipes.get();
-				case "patch_vanilla_dye_recipes": return patchVanillaDyeRecipes.get();
+				case "extra_dyed_bottle_recipes": return extraBottleRecipes();
+				case "patch_vanilla_dye_recipes": return patchVanillaDyeRecipes();
 			}
 
 			throw new JsonSyntaxException("Invalid propertyname '" + property + "'");
 		}
 	}
+
 }
