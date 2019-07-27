@@ -63,7 +63,7 @@ public class TextureRecipe extends ShapedRecipe {
 		return super.getRecipeOutput();
 	}
 
-	public static final IRecipeSerializer<?> SERIALIZER = new TextureRecipe.Serializer().setRegistryName(new ResourceLocation(Inspirations.modID, "shaped_texturing"));
+	public static final IRecipeSerializer<?> SERIALIZER = new TextureRecipe.Serializer().setRegistryName(new ResourceLocation(Inspirations.modID, "texture_recipe"));
 
 	private static class Serializer extends net.minecraftforge.registries.ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<TextureRecipe> {
 

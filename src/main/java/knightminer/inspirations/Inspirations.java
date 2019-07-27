@@ -15,6 +15,9 @@ import knightminer.inspirations.shared.InspirationsShared;
 import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import knightminer.inspirations.utility.InspirationsUtility;
+import knightminer.inspirations.library.recipe.ModItemList;
+import knightminer.inspirations.library.recipe.ShapelessNoContainerRecipe;
+import knightminer.inspirations.library.recipe.TextureRecipe;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -63,8 +66,16 @@ public class Inspirations {
 		InspirationsNetwork.instance.setup();
 	}
 
-	@Mod.EventHandler
-	public void init(FMLInitializationEvent event) {
-		Config.init(event);
+	@SubscribeEvent
+	public void registerRecipeTypes(RegistryEvent.Register<IRecipeSerializer<?>> event) {
+		IForgeRegistry<IRecipeSerializer<?>> r = event.getRegistry();
+
+		r.register(ShapelessNoContainerRecipe.SERIALIZER);
+		r.register(TextureRecipe.SERIALIZER);
+
+		// These don't have registries yet.
+		CraftingHelper.register(new ResourceLocation(Inspirations.modID, "pulse_loaded"), new Config.PulseLoaded());
+		CraftingHelper.register(new ResourceLocation(Inspirations.modID, "config"), new Config.ConfigProperty());
+		CraftingHelper.register(new ResourceLocation(Inspirations.modID, "mod_item_list"), ModItemList.SERIALIZER);
 	}
 }

@@ -35,7 +35,7 @@ public class ShapelessNoContainerRecipe extends ShapelessRecipe {
 		return SERIALIZER;
 	}
 
-	public static final IRecipeSerializer<?> SERIALIZER = new Serializer().setRegistryName(new ResourceLocation(Inspirations.modID, "shapeless_destroy_container"));
+	public static final IRecipeSerializer<?> SERIALIZER = new Serializer().setRegistryName(new ResourceLocation(Inspirations.modID, "shapeless_no_container"));
 
 	private static class Serializer extends net.minecraftforge.registries.ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<ShapelessNoContainerRecipe> {
 		// This recipe has the exact same options as the parent type, redirect to that code.
