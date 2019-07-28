@@ -25,6 +25,7 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.Tag;
 import net.minecraft.util.ResourceLocation;
@@ -46,6 +47,8 @@ import java.util.Set;
 public class InspirationsRegistry {
 	public static final Logger log = Util.getLogger("api");
 
+	// Blocks with this tag act as fire for the cauldron.
+	public static final Tag<Block> TAG_CAULDRON_FIRE = new BlockTags.Wrapper(new ResourceLocation(Inspirations.modID, "cauldron_fire"));
 	// Items with this tag are registered to have fluid tank functionality.
 	public static final Tag<Item> TAG_FLUID_TANKS = new ItemTags.Wrapper(new ResourceLocation(Inspirations.modID, "fluid_containers"));
 	/**
@@ -542,7 +545,7 @@ public class InspirationsRegistry {
 	 * @return  True if the state is considered fire
 	 */
 	public static boolean isCauldronFire(BlockState state) {
-		return cauldronFireBlocks.contains(state.getBlock()) || cauldronFireStates.contains(state);
+		return state.getBlock().isIn(TAG_CAULDRON_FIRE);
 	}
 
 	/** Internal method to add the normal cauldron block, just needs to run after the substitution */
