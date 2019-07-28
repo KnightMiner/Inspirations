@@ -25,6 +25,9 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.Tag;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvents;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.oredict.OreDictionary;
@@ -43,6 +46,8 @@ import java.util.Set;
 public class InspirationsRegistry {
 	public static final Logger log = Util.getLogger("api");
 
+	// Items with this tag are registered to have fluid tank functionality.
+	public static final Tag<Item> TAG_FLUID_TANKS = new ItemTags.Wrapper(new ResourceLocation(Inspirations.modID, "fluid_containers"));
 	/**
 	 * Sets a value from the Inspirations config into the registry. Used to keep the config out of the library
 	 * @param key    Key to set

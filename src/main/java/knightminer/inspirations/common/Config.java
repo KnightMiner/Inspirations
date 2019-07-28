@@ -104,14 +104,6 @@ public class Config {
 	public static BooleanValue enableDispenserFluidTanks;
 	public static BooleanValue milkSquids;
 	public static IntValue milkSquidCooldown;
-	public static String[] fluidContainers = {
-			"ceramics:clay_bucket",
-			"forge:bucket_filled",
-			"minecraft:bucket",
-			"minecraft:water_bucket",
-			"minecraft:milk_bucket",
-			"minecraft:lava_bucket"
-	};
 
 	// recipes
 
@@ -491,8 +483,6 @@ public class Config {
 					.comment("Allows dispensers to fill and empty fluid tanks using fluid containers")
 					.worldRestart()
 					.define("dispenserFluidTanks", true);
-			fluidContainers = configFile.get("utility.dispenserFluidTanks", "containers", fluidContainers,
-					"List of itemstacks that can be used as fluid containers to fill or empty fluid tanks").getStringList();
 		}
 		builder.pop();
 

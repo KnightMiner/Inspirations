@@ -345,14 +345,11 @@ public class InspirationsRecipes extends PulseBase {
 	private void registerDispenserBehavior() {
 		if(Config.enableCauldronDispenser) {
 			Multimap<Item,Integer> map = HashMultimap.create();
-			for(String line : Config.cauldronDispenserRecipes) {
-				if (!StringUtils.isNullOrEmpty(line)) {
-					ItemStack stack = RecipeUtil.getItemStackFromString(line, true);
-					map.put(stack.getItem(), stack.getMetadata());
-				}
-			}
-			for(Map.Entry<Item,Collection<Integer>> entry : map.asMap().entrySet()) {
-				registerDispenseCauldronLogic(entry.getKey(), toArray(entry.getValue()));
+			for(String line : InspirationsRegistry.TAG_FLUID_TANKS.getAllElements()) {
+				registerDispenserBehavior(
+						item,
+						new DispenseCauldronRecipe(BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.getObject(item))
+				);
 			}
 		}
 	}
@@ -363,9 +360,5 @@ public class InspirationsRecipes extends PulseBase {
 			return new int[0];
 		}
 		return list.stream().mapToInt(i->i).toArray();
-	}
-
-	private static void registerDispenseCauldronLogic(Item item, int[] meta) {
-		registerDispenserBehavior(item, new DispenseCauldronRecipe(BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.getObject(item), meta));
 	}
 }
