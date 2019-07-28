@@ -18,8 +18,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemHoe;
 import net.minecraft.item.ItemShears;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityBeacon;
 import net.minecraft.util.DamageSource;
@@ -32,7 +30,6 @@ import net.minecraft.world.ILockableContainer;
 import net.minecraft.world.LockCode;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
@@ -365,22 +362,6 @@ public class ToolsEvents {
 					attacker.addVelocity(-MathHelper.sin(target.rotationYaw * 0.017453292F) * knockback * 0.5f, 0.1D, MathHelper.cos(target.rotationYaw * 0.017453292F) * knockback * 0.5f);
 				}
 			}
-		}
-	}
-
-	@SubscribeEvent
-	public static void fixShieldTooltip(ItemTooltipEvent event) {
-		if (!Config.fixShieldTooltip) {
-			return;
-		}
-		ItemStack stack = event.getItemStack();
-		if (stack.getItem() != Items.SHIELD) {
-			return;
-		}
-		NBTTagCompound tags = stack.getSubCompound("BlockEntityTag");
-		if (tags != null && tags.hasKey("Patterns") && stack.isItemEnchanted()) {
-			NBTTagList patterns = tags.getTagList("Patterns", 10);
-			event.getToolTip().add(patterns.tagCount()+1, "");
 		}
 	}
 }

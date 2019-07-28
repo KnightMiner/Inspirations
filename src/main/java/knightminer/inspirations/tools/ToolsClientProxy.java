@@ -1,6 +1,7 @@
 package knightminer.inspirations.tools;
 
 import knightminer.inspirations.common.ClientProxy;
+import knightminer.inspirations.common.Config;
 import knightminer.inspirations.tools.client.RenderModArrow;
 import knightminer.inspirations.tools.entity.EntityModArrow;
 import knightminer.inspirations.tools.item.ItemModArrow.ArrowType;
@@ -8,9 +9,14 @@ import knightminer.inspirations.tools.item.ItemWaypointCompass;
 import knightminer.inspirations.utility.block.BlockRedstoneCharge;
 import net.minecraft.client.renderer.block.statemap.StateMap;
 import net.minecraft.client.renderer.color.ItemColors;
+import net.minecraft.init.Items;
 import net.minecraft.item.EnumDyeColor;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -64,5 +70,21 @@ public class ToolsClientProxy extends ClientProxy {
 			}
 			return -1;
 		}, InspirationsTools.waypointCompass);
+	}
+
+	@SubscribeEvent
+	public static void fixShieldTooltip(ItemTooltipEvent event) {
+		if (!Config.fixShieldTooltip) {
+			return;
+		}
+		ItemStack stack = event.getItemStack();
+		if (stack.getItem() != Items.SHIELD) {
+			return;
+		}
+		NBTTagCompound tags = stack.getSubCompound("BlockEntityTag");
+		if (tags != null && tags.hasKey("Patterns") && stack.isItemEnchanted()) {
+			NBTTagList patterns = tags.getTagList("Patterns", 10);
+			event.getToolTip().add(patterns.tagCount()+1, "");
+		}
 	}
 }
