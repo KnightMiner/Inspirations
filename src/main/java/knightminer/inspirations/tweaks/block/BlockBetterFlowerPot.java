@@ -1,8 +1,8 @@
 package knightminer.inspirations.tweaks.block;
 
-import javax.annotation.Nonnull;
-
 import knightminer.inspirations.common.Config;
+import knightminer.inspirations.common.network.InspirationsNetwork;
+import knightminer.inspirations.common.network.RenderBlockUpdatePacket;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.util.TextureBlockUtil;
 import net.minecraft.block.Block;
@@ -28,6 +28,8 @@ import net.minecraftforge.common.property.IUnlistedProperty;
 import net.minecraftforge.items.ItemHandlerHelper;
 import slimeknights.mantle.client.ModelHelper;
 import slimeknights.mantle.property.PropertyString;
+
+import javax.annotation.Nonnull;
 
 public class BlockBetterFlowerPot extends BlockFlowerPot {
 
@@ -83,6 +85,7 @@ public class BlockBetterFlowerPot extends BlockFlowerPot {
 
 		flowerPot.markDirty();
 		world.notifyBlockUpdate(pos, state, state, 3);
+		InspirationsNetwork.sendToClients(world, pos, new RenderBlockUpdatePacket(pos));
 		return true;
 	}
 

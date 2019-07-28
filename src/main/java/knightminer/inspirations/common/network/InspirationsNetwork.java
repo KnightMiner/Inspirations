@@ -26,6 +26,9 @@ public class InspirationsNetwork extends NetworkWrapper {
 
 		// milk cooldown
 		registerPacketClient(MilkablePacket.class);
+
+		// generic block update
+		registerPacketClient(RenderBlockUpdatePacket.class);
 	}
 
 	public static void sendToAll(AbstractPacket packet) {
