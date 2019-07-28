@@ -354,11 +354,17 @@ public class TweaksEvents {
 
 	@SubscribeEvent
 	public static void updatePortalPlace(BlockEvent.PlaceEvent event) {
+		if(!Config.customPortalColor) {
+			return;
+		}
 		updatePortal(event);
 	}
 
 	@SubscribeEvent
 	public static void updatePortalPlace(BlockEvent.BreakEvent event) {
+		if(!Config.customPortalColor) {
+			return;
+		}
 		updatePortal(event);
 	}
 
