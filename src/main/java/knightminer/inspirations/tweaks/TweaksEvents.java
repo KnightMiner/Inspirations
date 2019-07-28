@@ -3,6 +3,7 @@ package knightminer.inspirations.tweaks;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.common.network.MilkablePacket;
+import knightminer.inspirations.common.network.PortalColorUpdatePacket;
 import knightminer.inspirations.library.ItemMetaKey;
 import knightminer.inspirations.shared.InspirationsShared;
 import knightminer.inspirations.shared.SharedEvents;
@@ -30,6 +31,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract;
+import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
 import net.minecraftforge.fml.common.eventhandler.Event.Result;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -347,6 +349,24 @@ public class TweaksEvents {
 					InspirationsNetwork.sendToClients(event.getWorld(), target.getPosition(), new MilkablePacket(target, false));
 				}
 			}
+		}
+	}
+
+	@SubscribeEvent
+	public static void updatePortalPlace(BlockEvent.PlaceEvent event) {
+		updatePortal(event);
+	}
+
+	@SubscribeEvent
+	public static void updatePortalPlace(BlockEvent.BreakEvent event) {
+		updatePortal(event);
+	}
+
+	private static void updatePortal(BlockEvent event) {
+		World world = event.getWorld();
+		BlockPos pos = event.getPos().up(2);
+		if (world.getBlockState(pos).getBlock() == Blocks.PORTAL) {
+			InspirationsNetwork.sendToClients(world, pos, new PortalColorUpdatePacket(pos));
 		}
 	}
 }

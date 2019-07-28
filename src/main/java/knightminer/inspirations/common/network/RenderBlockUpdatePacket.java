@@ -8,8 +8,8 @@ import net.minecraft.util.math.BlockPos;
 import slimeknights.mantle.network.AbstractPacketThreadsafe;
 
 public class RenderBlockUpdatePacket extends AbstractPacketThreadsafe {
-  public BlockPos pos;
 
+  protected BlockPos pos;
   public RenderBlockUpdatePacket() {}
 
   public RenderBlockUpdatePacket(BlockPos pos) {

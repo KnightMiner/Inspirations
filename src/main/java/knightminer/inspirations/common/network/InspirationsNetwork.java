@@ -29,6 +29,9 @@ public class InspirationsNetwork extends NetworkWrapper {
 
 		// generic block update
 		registerPacketClient(RenderBlockUpdatePacket.class);
+
+		// portal colors
+		registerPacketClient(PortalColorUpdatePacket.class);
 	}
 
 	public static void sendToAll(AbstractPacket packet) {

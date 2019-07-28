@@ -32,17 +32,12 @@ public class PortalColorHandler implements IBlockColor {
 
     // iterate down until the first non-portal block
     // can skip every other block as it takes at least 2 from a portal to below a portal
-    pos = pos.down(2);
-    IBlockState colorState = world.getBlockState(pos);
-    Block block = colorState.getBlock();
-    while(block == Blocks.PORTAL || block == Blocks.OBSIDIAN) {
-      // update iterator
-      pos = pos.down(block == Blocks.PORTAL ? 2 : 1);
-      colorState = world.getBlockState(pos);
-      block = colorState.getBlock();
+    pos = pos.down();
+    while(world.getBlockState(pos).getBlock() == Blocks.PORTAL) {
+      pos = pos.down();
     }
 
-    return getColorValue(world, pos);
+    return getColorValue(world, pos.down());
   }
 
   /**
