@@ -61,7 +61,7 @@ public class Config {
 	public static BooleanValue bookshelvesBoostEnchanting;
 	public static DoubleValue defaultEnchantingPower;
 
-	public static ConfigValue<List<String>> bookKeywords;
+	public static ConfigValue<List<? extends String>> bookKeywords;
 	private static List<String> bookKeywordsDefault = Arrays.asList(
 			"almanac",
 			"atlas",
@@ -285,16 +285,30 @@ public class Config {
 	public static boolean enableNetherCrook() {
 		return netherCrooksRaw.get() && separateCrook();
 	}
+
 	// waypoint compass
 	public static BooleanValue enableWaypointCompass;
-	public static BooleanValue dyeWaypointCompass;
-	public static BooleanValue craftWaypointCompass;
-	public static BooleanValue copyWaypointCompass;
+	private static BooleanValue dyeWaypointCompassRaw;
+	private static BooleanValue craftWaypointCompassRaw;
+	private static BooleanValue copyWaypointCompassRaw;
 	public static BooleanValue waypointCompassAdvTooltip;
 	public static BooleanValue waypointCompassCrossDimension;
+	public static boolean dyeWaypointCompass () {
+		return dyeWaypointCompassRaw.get() && enableWaypointCompass.get();
+	}
+	public static boolean craftWaypointCompass () {
+		return craftWaypointCompassRaw.get() && enableWaypointCompass.get();
+	}
+	public static boolean copyWaypointCompass () {
+		return copyWaypointCompassRaw.get() && enableWaypointCompass.get();
+	}
+
 	// enchantments
 	public static BooleanValue moreShieldEnchantments;
-	public static BooleanValue shieldEnchantmentTable;
+	private static BooleanValue shieldEnchantmentTableRaw;
+	public static boolean shieldEnchantmentTable() {
+		return shieldEnchantmentTableRaw.get() && moreShieldEnchantments.get();
+	}
 	public static BooleanValue axeWeaponEnchants;
 	public static BooleanValue axeEnchantmentTable;
 
@@ -312,14 +326,25 @@ public class Config {
 	public static BooleanValue dispensersPlaceAnvils;
 	public static BooleanValue milkCooldown;
 	public static IntValue milkCooldownTime;
+
 	// heartbeet
 	public static BooleanValue enableHeartbeet;
-	public static BooleanValue brewHeartbeet;
-	public static int heartbeetChance = 75;
+	private static BooleanValue brewHeartbeetRaw;
+	public boolean brewHeartbeet() {
+		return brewHeartbeetRaw.get() && enableHeartbeet.get();
+	}
+	public static IntValue heartbeetChance;
+
 	// seeds
 	public static BooleanValue enableMoreSeeds;
-	public static BooleanValue addGrassDrops;
-	public static BooleanValue nerfCarrotPotatoDrops;
+	private static BooleanValue addGrassDropsRaw;
+	private static BooleanValue nerfCarrotPotatoDropsRaw;
+	public boolean addGrassDrops() {
+		return addGrassDropsRaw.get() && enableMoreSeeds.get();
+	}
+	public boolean nerfCarrotPotatoDrops() {
+		return nerfCarrotPotatoDropsRaw.get() && enableMoreSeeds.get();
+	}
 	// bonemeal
 	public static BooleanValue bonemealMushrooms;
 	public static BooleanValue bonemealDeadBush;
@@ -376,9 +401,10 @@ public class Config {
 			defaultEnchantingPower = builder
 					.comment("Default power for a book for enchanting, can be overridden in the book overrides.")
 					.defineInRange("bookshelf.defaultEnchanting", 1.5f, 0.0f, 15.0f);
+
 			bookKeywords = builder
 					.comment("List of keywords for valid books, used to determine valid books in the bookshelf")
-					.defineList("bookshelf.bookKeywords",  bookKeywordsDefault, (Object x) -> x instanceof String);
+					.defineList("bookshelf.bookKeywords",  bookKeywordsDefault, (x) -> x instanceof String);
 
 
 			// rope
@@ -588,13 +614,14 @@ public class Config {
 					.define("crook.netherCrooks", true);
 
 			// harvest hanging vines
-			configFile.moveProperty("tweaks", "harvestHangingVines", "tools.shears");
-			harvestHangingVines = configFile.getBoolean("harvestHangingVines", "tools.shears", harvestHangingVines, "When shearing vines, any supported vines will also be sheared instead of just broken");
+			harvestHangingVines = builder
+					.comment("When shearing vines, any supported vines will also be sheared instead of just broken")
+					.define("shears.harvestHangingVines", true);
 
 			// shears reclaim melons
-			configFile.moveProperty("tweaks", "shearsReclaimMelons", "tools.shears");
-			configFile.renameProperty("tools.shears", "shearsReclaimMelons", "reclaimMelons");
-			shearsReclaimMelons = configFile.getBoolean("reclaimMelons", "tools.shears", shearsReclaimMelons, "Breaking a melon block with shears will always return 9 slices");
+			shearsReclaimMelons = builder
+					.comment("Breaking a melon block with shears will always return 9 slices")
+					.define("reclaimMelons", true);
 
 			// compass
 			enableNorthCompass = builder
@@ -619,18 +646,39 @@ public class Config {
 					.define("photometer", true);
 
 			// waypoint compass
-			enableWaypointCompass = configFile.getBoolean("waypointCompass", "tools", enableWaypointCompass, "Enables the waypoint compass: a compass which points towards a full beacon.");
-			dyeWaypointCompass = configFile.getBoolean("dye", "tools.waypointCompass", dyeWaypointCompass, "If true, waypoint compasses can be dyed all vanilla colors") && enableWaypointCompass;
-			craftWaypointCompass = configFile.getBoolean("craft", "tools.waypointCompass", craftWaypointCompass, "If true, waypoint compasses can be crafted using iron and a blaze rod. If false, they are obtained by using a vanilla compass on a beacon.") && enableWaypointCompass;
-			waypointCompassAdvTooltip = configFile.getBoolean("advTooltip", "tools.waypointCompass", waypointCompassAdvTooltip, "If true, waypoint compasses show the position target in the advanced item tooltip. Disable for packs that disable coordinates.");
-			waypointCompassCrossDimension = configFile.getBoolean("crossDimension", "tools.waypointCompass", waypointCompassCrossDimension, "If true, waypoint compasses work across dimensions. The coordinates between the overworld and nether will be adjusted, allowing for portal syncing.");
-			copyWaypointCompass = configFile.getBoolean("copy", "tools.waypointCompass", copyWaypointCompass, "If true, you can copy the position of one waypoint compass to another in a crafting table, similarly to maps or compasses") && enableWaypointCompass;
+			enableWaypointCompass = builder
+					.comment("Enables the waypoint compass: a compass which points towards a full beacon.")
+					.worldRestart()
+					.define("waypointCompass", true);
+			dyeWaypointCompassRaw = builder
+					.comment("If true, waypoint compasses can be dyed all vanilla colors")
+					.define("waypointCompass.dye", true);
+			craftWaypointCompassRaw = builder
+					.comment("If true, waypoint compasses can be crafted using iron and a blaze rod. If false, they are obtained by using a vanilla compass on a beacon.")
+					.define("waypointCompass.craft", true);
+			waypointCompassAdvTooltip = builder
+					.comment("If true, waypoint compasses show the position target in the advanced item tooltip. Disable for packs that disable coordinates.")
+					.define("waypointCompass.advTooltip", true);
+			waypointCompassCrossDimension = builder
+					.comment("If true, waypoint compasses work across dimensions. The coordinates between the overworld and nether will be adjusted, allowing for portal syncing.")
+					.define("waypointCompass.crossDimension", true);
+			copyWaypointCompassRaw = builder
+					.comment("If true, you can copy the position of one waypoint compass to another in a crafting table, similarly to maps or compasses")
+					.define("waypointCompass.copy", true);
 
 			// enchantments
-			moreShieldEnchantments = configFile.getBoolean("moreShield", "tools.enchantments", moreShieldEnchantments, "If true, shields can now be enchanted with enchantments such as protection, fire aspect, knockback, and thorns");
-			shieldEnchantmentTable = configFile.getBoolean("shieldTable", "tools.enchantments", shieldEnchantmentTable, "If true, shields can be enchanted in an enchantment table. Does not support modded shields as it requires a registry substitution") && moreShieldEnchantments;
-			axeWeaponEnchants = configFile.getBoolean("axeWeapon", "tools.enchantments", axeWeaponEnchants, "If true, axes will be able to be enchanted with weapon enchants such as looting, fire aspect, and knockback");
-			axeEnchantmentTable = configFile.getBoolean("axeTable", "tools.enchantments", axeEnchantmentTable, "If true, axes can receive available weapon enchantments at the enchantment table");
+			moreShieldEnchantments = builder
+					.comment("If true, shields can now be enchanted with enchantments such as protection, fire aspect, knockback, and thorns")
+					.define("enchantments.moreShield", true);
+			shieldEnchantmentTableRaw = builder
+					.comment("If true, shields can be enchanted in an enchantment table. Does not support modded shields as it requires a registry substitution")
+					.define("enchantments.shieldTable", true);
+			axeWeaponEnchants = builder
+					.comment("If true, axes will be able to be enchanted with weapon enchants such as looting, fire aspect, and knockback")
+					.define("enchantments.axeWeapon", true);
+			axeEnchantmentTable = builder
+					.comment("If true, axes can receive available weapon enchantments at the enchantment table")
+					.define("enchantments.axeTable", true);
 		}
 		builder.pop();
 
@@ -647,15 +695,31 @@ public class Config {
 					.define("fittedCarpets", true);
 
 			// bonemeal
-			bonemealMushrooms = configFile.getBoolean("mushrooms", "tweaks.bonemeal", bonemealMushrooms, "Bonemeal can be used on mycelium to produce mushrooms");
-			bonemealDeadBush = configFile.getBoolean("deadBush", "tweaks.bonemeal", bonemealDeadBush, "Bonemeal can be used on sand to produce dead bushes");
-			bonemealGrassSpread = configFile.getBoolean("grassSpread", "tweaks.bonemeal", bonemealGrassSpread, "Bonemeal can be used on dirt to produce grass if adjecent to grass");
-			bonemealMyceliumSpread = configFile.getBoolean("myceliumSpread", "tweaks.bonemeal", bonemealMyceliumSpread, "Bonemeal can be used on dirt to produce mycelium if adjecent to mycelium");
+			builder.push("bonemeal");
+			bonemealMushrooms = builder
+					.comment("Bonemeal can be used on mycelium to produce mushrooms")
+					.define("mushrooms", true);
+			bonemealDeadBush = builder
+					.comment("Bonemeal can be used on sand to produce dead bushes")
+					.define("deadBush", true);
+			bonemealGrassSpread = builder
+					.comment("Bonemeal can be used on dirt to produce grass if adjecent to grass")
+					.define("grassSpread", true);
+			bonemealMyceliumSpread = builder
+					.comment("Bonemeal can be used on dirt to produce mycelium if adjecent to mycelium")
+					.define("myceliumSpread", true);
+			builder.pop();
 
 			// heartroot
-			enableHeartbeet = configFile.getBoolean("heartbeet", "tweaks", enableHeartbeet, "Enables heartbeets: a rare drop from beetroots which can be eaten to restore a bit of health");
-			brewHeartbeet = configFile.getBoolean("brewRegeneration", "tweaks.heartbeet", brewHeartbeet, "Allows heartbeets to be used as an alternative to ghast tears in making potions of regeneration") && enableHeartbeet;
-			heartbeetChance = configFile.getInt("chance", "tweaks.heartbeet", heartbeetChance, 10, 1000, "Chance of a heartbeet to drop instead of a normal drop. Formula is two 1 in [chance] chances for it to drop each harvest");
+			enableHeartbeet = builder
+					.comment("Enables heartbeets: a rare drop from beetroots which can be eaten to restore a bit of health")
+					.define("heartbeet", true);
+			brewHeartbeetRaw = builder
+					.comment("Allows heartbeets to be used as an alternative to ghast tears in making potions of regeneration")
+					.define("heartbeet.brewRegeneration", true);  // && enableHeartbeet;
+			heartbeetChance = builder
+					.comment("Chance of a heartbeet to drop instead of a normal drop. Formula is two 1 in [chance] chances for it to drop each harvest")
+					.defineInRange("heartbeet.chance", 75, 10, 1000);
 
 			// dispensers place anvils
 			dispensersPlaceAnvils = builder
@@ -693,18 +757,26 @@ public class Config {
 					.define("coloredFireworkItems", true);
 
 			// lilypad fall breaking
-			lilypadBreakFall = configFile.getBoolean("lilypadBreakFall", "tweaks", lilypadBreakFall, "Lily pads prevent fall damage, but break in the process");
+			lilypadBreakFall = builder
+					.comment("Lily pads prevent fall damage, but break in the process")
+					.define("lilypadBreakFall", true);
 
 			// stackable alternative recipes
-			unstackableRecipeAlts = configFile.getBoolean("unstackableRecipeAlts", "tweaks", unstackableRecipeAlts, "Adds stackable recipes to some vanilla or Inspriations items that require unstackable items to craft");
+			unstackableRecipeAlts = builder
+					.comment("Adds stackable recipes to some vanilla or Inspriations items that require unstackable items to craft")
+					.define("unstackableRecipeAlts", true);
 
 			// seeds
 			enableMoreSeeds = builder
 					.comment("Adds seeds for additional vanilla plants, including cactus, sugar cane, carrots, and potatoes.")
 					.worldRestart()
 					.define("moreSeeds", true);
-			addGrassDrops = configFile.getBoolean("grassDrops", "tweaks.moreSeeds", addGrassDrops, "Makes carrot and potato seeds drop from grass") && enableMoreSeeds;
-			nerfCarrotPotatoDrops = configFile.getBoolean("nerfCarrotPotatoDrops", "tweaks.moreSeeds", nerfCarrotPotatoDrops, "Makes carrots and potatoes drop their respective seed if not fully grown") && enableMoreSeeds;
+			addGrassDropsRaw = builder
+					.comment("Makes carrot and potato seeds drop from grass")
+					.define("moreSeeds.grassDrops", true);
+			nerfCarrotPotatoDropsRaw = builder
+					.comment("Makes carrots and potatoes drop their respective seed if not fully grown")
+					.define("moreSeeds.nerfCarrotPotatoDrops", true);
 
 			// milk cooldown
 			milkCooldown = builder
@@ -733,14 +805,6 @@ public class Config {
 					.define("tanJuiceInCauldron", true);
 		}
 		builder.pop();
-	}
-
-	/**
-	 * Anything which we need access to block or item registries
-	 * @param event
-	 */
-	public static void init(FMLInitializationEvent event) {
-		double version = getConfigVersion();
 
 		// building
 		Property property = configFile.get("building.bookshelf", "bookOverrides", bookOverrides,
@@ -788,11 +852,6 @@ public class Config {
 		milkContainersDefault = configFile.get("tweaks.milkCooldown", "containers", milkContainersDefault,
 				"List of containers which will milk a cow when interacting. Used to prevent milking and to apply the milked tag").getStringList();
 		processMilkContainers(milkContainersDefault);
-
-		// saving
-		if(configFile.hasChanged()) {
-			configFile.save();
-		}
 	}
 
 	/**
