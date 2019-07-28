@@ -7,8 +7,16 @@ import java.util.Locale;
 import javax.annotation.Nullable;
 
 import knightminer.inspirations.library.util.ReflectionUtil;
+import net.minecraft.enchantment.Enchantments;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.potion.*;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.*;
+import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.storage.loot.LootContext;
+import net.minecraft.world.storage.loot.LootParameterSet;
+import net.minecraft.world.storage.loot.LootParameterSets;
+import net.minecraft.world.storage.loot.LootParameters;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -74,31 +82,46 @@ public class Util {
 				&& aabb.minZ <= hitZ && hitZ <= aabb.maxZ;
 	}
 
+	// An item with Silk Touch, to make blocks drop their silk touch items if they have any.
+	// Using a Stick makes sure it won't be damaged.
+	private static ItemStack silkTouchItem = new ItemStack(Items.STICK);
+	static {
+		silkTouchItem.addEnchantment(Enchantments.SILK_TOUCH, 1);
+	}
+
 	/**
-	 * Gets an item stack from a block state. Uses Block::getSilkTouchDrop
+	 * Gets an item stack from a block state. Uses Silk Touch drops
 	 * @param state  Input state
 	 * @return  ItemStack for the state, or ItemStack.EMPTY if a valid item cannot be found
 	 */
-	public static ItemStack getStackFromState(@Nullable BlockState state) {
+	public static ItemStack getStackFromState(ServerWorld world, @Nullable BlockState state) {
 		if (state == null) {
 			return ItemStack.EMPTY;
 		}
 		Block block = state.getBlock();
+
 		// skip air
 		if(block == Blocks.AIR) {
 			return ItemStack.EMPTY;
 		}
 
-		// first try getSilkTouchDrop, which just has to be protected
-		ItemStack drop = ReflectionUtil.invokeGetSilkTouchDrop(block, state);
-		if( drop != null ) { // stack is null if reflection fails
-			return drop;
+		// Fill a fake context in to get Silk Touch drops.
+		// From LootParameterSets.Block,
+		// BLOCK_STATE, POSITION and TOOL is required and
+		// THIS_ENTITY, BLOCK_ENTITY and EXPLOSION_RADIUS are optional.
+		// BLOCK_STATE is provided by getDrops().
+		List<ItemStack> drops = state.getDrops(new LootContext.Builder(world)
+				.withParameter(LootParameters.POSITION, new BlockPos(0, 0, 64))
+				.withParameter(LootParameters.TOOL, silkTouchItem)
+		);
+		if( drops.size() > 0 ) {
+			return drops.get(0);
 		}
 
-		// if it fails, do a fallback of damageDropped and item.getItemFromBlock
+		// if it fails, do a fallback of item.getItemFromBlock
 		InspirationsRegistry.log.error("Failed to get silk touch drop for {}, using fallback", state);
 
-		// fallback, use item and damage dropped
+		// fallback, use item dropped
 		Item item = Item.getItemFromBlock(block);
 		if(item == Items.AIR) {
 			return ItemStack.EMPTY;

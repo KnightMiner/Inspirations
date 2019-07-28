@@ -53,11 +53,6 @@ public final class ReflectionUtil {
 		}
 	}
 
-	@Nullable
-	public static ItemStack invokeGetSilkTouchDrop(@Nonnull Block block, IBlockState state) {
-		return invokeMethod(Block.class, block, "getSilkTouchDrop", "func_180643_i", new Class[] {IBlockState.class}, state);
-	}
-
 	/**
 	 * Looks up a class by its name, caches it for further use and returns it.<br>
 	 * If it can't find the class, it will be logged and <tt>null</tt> is returned.
