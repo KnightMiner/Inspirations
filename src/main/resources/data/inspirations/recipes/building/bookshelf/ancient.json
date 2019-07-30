@@ -12,7 +12,7 @@
   "type": "inspirations:texture_recipe",
   "group": "inspirations:bookshelf",
   "texture": {
-    "item": "#WOOD_SLAB"
+    "tag": "minecraft:wooden_slabs"
   },
   "pattern": [
     "SSS",
@@ -20,12 +20,11 @@
     "SSS"
   ],
   "key": {
-    "S": { "item": "#WOOD_SLAB" },
+    "S": { "tag": "minecraft:wooden_slabs" },
     "P": { "item": "minecraft:paper" }
   },
   "result": {
-    "item": "inspirations:bookshelf",
-    "data": 3,
+    "item": "inspirations:ancient_bookshelf",
     "count": 2
   }
 }

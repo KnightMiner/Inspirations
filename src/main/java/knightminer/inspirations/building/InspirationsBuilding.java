@@ -118,7 +118,7 @@ public class InspirationsBuilding extends PulseBase {
 		IForgeRegistry<Block> r = event.getRegistry();
 
 		if(Config.enableBookshelf) {
-			shelf_normal = registerBlock(r, new BlockBookshelf(), "normal_bookshelf");
+			shelf_normal = registerBlock(r, new BlockBookshelf(), "bookshelf");
 			shelf_ancient = registerBlock(r, new BlockBookshelf(), "ancient_bookshelf");
 			shelf_rainbow = registerBlock(r, new BlockBookshelf(), "rainbow_bookshelf");
 			shelf_tomes = registerBlock(r, new BlockBookshelf(), "tomes_bookshelf");
