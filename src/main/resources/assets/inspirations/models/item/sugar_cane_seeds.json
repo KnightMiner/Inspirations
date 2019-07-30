@@ -1,6 +1,6 @@
 {
     "parent": "item/generated",
     "textures": {
-        "layer0": "inspirations:items/sugar_cane_seeds"
+        "layer0": "inspirations:item/sugar_cane_seeds"
     }
 }

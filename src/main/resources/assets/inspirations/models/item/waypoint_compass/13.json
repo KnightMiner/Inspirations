@@ -1,7 +1,7 @@
 {
     "parent": "item/generated",
     "textures": {
-        "layer0": "inspirations:items/waypoint_compass",
-        "layer1": "inspirations:items/waypoint_compass/13"
+        "layer0": "inspirations:item/waypoint_compass",
+        "layer1": "inspirations:item/waypoint_compass/13"
     }
 }

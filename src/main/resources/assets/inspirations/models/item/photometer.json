@@ -1,7 +1,7 @@
 {
     "parent": "item/generated",
     "textures": {
-        "layer0": "inspirations:items/photometer/00"
+        "layer0": "inspirations:item/photometer/00"
     },
     "overrides": [
         { "predicate": { "light":  0 }, "model": "inspirations:item/photometer" },

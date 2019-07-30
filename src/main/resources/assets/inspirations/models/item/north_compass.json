@@ -1,7 +1,7 @@
 {
     "parent": "item/generated",
     "textures": {
-        "layer0": "inspirations:items/north_compass/16"
+        "layer0": "inspirations:item/north_compass/16"
     },
     "overrides": [
         { "predicate": { "angle": 0.000000 }, "model": "inspirations:item/north_compass" },

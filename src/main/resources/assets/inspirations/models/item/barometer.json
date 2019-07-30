@@ -1,7 +1,7 @@
 {
     "parent": "item/generated",
     "textures": {
-        "layer0": "inspirations:items/barometer/00"
+        "layer0": "inspirations:item/barometer/00"
     },
     "overrides": [
         { "predicate": { "height": 0.000000 }, "model": "inspirations:item/barometer" },
