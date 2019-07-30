@@ -1,8 +1,8 @@
 {
     "parent": "block/thin_block",
     "textures": {
-        "particle": "inspirations:blocks/stonebricks_tiles",
-        "texture": "inspirations:blocks/stonebricks_tiles"
+        "particle": "inspirations:block/stonebricks_tiles",
+        "texture": "inspirations:block/stonebricks_tiles"
     },
     "elements": [
         {

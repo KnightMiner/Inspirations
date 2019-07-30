@@ -4,8 +4,7 @@
       "uvlock": true
   },
   "variants": {
-     "type=bricks": { "model": "inspirations:path/bricks" },
-     "type=rocks":  [
+     "":  [
          { "model": "inspirations:path/rocks_1" },
          { "model": "inspirations:path/rocks_1", "y": 90 },
          { "model": "inspirations:path/rocks_1", "y": 180 },
@@ -18,8 +17,6 @@
          { "model": "inspirations:path/rocks_3", "y": 90 },
          { "model": "inspirations:path/rocks_3", "y": 180 },
          { "model": "inspirations:path/rocks_3", "y": 270 }
-     ],
-     "type=round":  { "model": "inspirations:path/round" },
-     "type=tiles":  { "model": "inspirations:path/tiles" }
+     ]
   }
 }
