@@ -8,8 +8,8 @@
         }
     },
     "textures": {
-        "particle": "blocks/nether_brick",
-        "button": "blocks/nether_brick"
+        "particle": "block/nether_brick",
+        "button": "block/nether_brick"
     },
     "elements": [
         {

@@ -1,9 +1,9 @@
 {
     "ambientocclusion": false,
     "textures": {
-        "particle": "blocks/redstone_torch_off",
-        "base": "blocks/cobblestone",
-        "lever": "blocks/redstone_torch_off"
+        "particle": "block/redstone_torch_off",
+        "base": "block/cobblestone",
+        "lever": "block/redstone_torch_off"
     },
     "elements": [
         {   "from": [ 5, 0, 4 ],

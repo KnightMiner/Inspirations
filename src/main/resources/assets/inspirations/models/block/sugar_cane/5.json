@@ -1,8 +1,8 @@
 {
 	"ambientocclusion": false,
   "textures": {
-    "particle": "blocks/reeds",
-    "cross": "blocks/reeds"
+    "particle": "block/reeds",
+    "cross": "block/reeds"
   },
 	"elements": [
 		{

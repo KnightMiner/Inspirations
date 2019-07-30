@@ -1,8 +1,8 @@
 {
 	"textures": {
-		"particle": "blocks/hopper_outside",
-		"hopper": "blocks/hopper_outside",
-		"inside": "blocks/hopper_inside"
+		"particle": "block/hopper_outside",
+		"hopper": "block/hopper_outside",
+		"inside": "block/hopper_inside"
 	},
 	"elements": [
 		{

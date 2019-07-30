@@ -1,6 +1,6 @@
 {
   "parent": "block/flower_pot_fern",
   "textures": {
-    "plant": "inspirations:blocks/flower_missingno"
+    "plant": "inspirations:block/flower_missingno"
   }
 }

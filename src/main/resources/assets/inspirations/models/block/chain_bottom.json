@@ -1,7 +1,7 @@
 {
     "textures": {
-        "chain": "blocks/hopper_outside",
-        "particle": "inspirations:blocks/chain"
+        "chain": "block/hopper_outside",
+        "particle": "inspirations:block/chain"
     },
     "elements": [
         {

@@ -1,9 +1,9 @@
 {
     "ambientocclusion": false,
     "textures": {
-        "particle": "inspirations:blocks/carpeted_trapdoor",
-        "front": "inspirations:blocks/carpeted_trapdoor",
-        "side": "inspirations:blocks/carpeted_trapdoor_side"
+        "particle": "inspirations:block/carpeted_trapdoor",
+        "front": "inspirations:block/carpeted_trapdoor",
+        "side": "inspirations:block/carpeted_trapdoor_side"
     },
     "elements": [
         {   "from": [ 0, 13, 0 ],

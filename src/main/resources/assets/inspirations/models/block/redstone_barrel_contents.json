@@ -1,7 +1,7 @@
 {
 	"ambientocclusion": false,
 	"textures": {
-		"redstone": "inspirations:blocks/redstone_dust"
+		"redstone": "inspirations:block/redstone_dust"
 	},
 	"elements": [
 		{
