@@ -16,19 +16,12 @@
       }
     }
   ],
-  "type": "forge:ore_shapeless",
+  "type": "minecraft:crafting_shapeless",
   "result": {
-    "item": "inspirations:flower",
-    "data": 3
+    "item": "inspirations:cyan_flower",
   },
   "ingredients": [
-    {
-      "type": "forge:ore_dict",
-      "ore": "dyeCyan"
-    },
-    {
-      "item": "inspirations:flower",
-      "data": 0
-    }
+    { "tag": "forge:dyes/cyan" },
+    { "item": "inspirations:rose" }
   ]
 }

@@ -9,16 +9,14 @@
       "prop": "flowers"
     }
   ],
-  "type": "forge:ore_shapeless",
+  "type": "minecraft:crafting_shapeless",
   "group": "minecraft:red_dye",
   "result": {
-    "item": "minecraft:dye",
-    "data": 1
+    "item": "minecraft:red_dye"
   },
   "ingredients": [
     {
-      "item": "inspirations:flower",
-      "data": 0
+      "item": "inspirations:rose",
     }
   ]
 }

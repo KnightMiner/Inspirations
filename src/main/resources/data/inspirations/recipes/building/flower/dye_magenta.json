@@ -9,16 +9,14 @@
       "prop": "flowers"
     }
   ],
-  "type": "forge:ore_shapeless",
+  "type": "minecraft:crafting_shapeless",
   "group": "minecraft:magenta_dye",
   "result": {
-    "item": "minecraft:dye",
-    "data": 13
+    "item": "minecraft:magenta_dye"
   },
   "ingredients": [
     {
-      "item": "inspirations:flower",
-      "data": 1
+      "item": "inspirations:syringa"
     }
   ]
 }

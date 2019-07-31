@@ -9,16 +9,14 @@
       "prop": "flowers"
     }
   ],
-  "type": "forge:ore_shapeless",
+  "type": "minecraft:crafting_shapeless",
   "group": "minecraft:pink_dye",
   "result": {
-    "item": "minecraft:dye",
-    "data": 9
+    "item": "minecraft:pink_dye"
   },
   "ingredients": [
     {
-      "item": "inspirations:flower",
-      "data": 2
+      "item": "inspirations:paeonia"
     }
   ]
 }
