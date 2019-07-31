@@ -17,14 +17,10 @@
     "V"
   ],
   "key": {
-    "V": {
-      "type": "forge:ore_dict",
-      "ore": "vine"
-    }
+    "V": { "type": "forge:vines" }
   },
   "result": {
-    "item": "inspirations:rope",
-    "data": 2,
+    "item": "inspirations:vine",
     "count": 3
   }
 }

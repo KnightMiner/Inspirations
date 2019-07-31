@@ -9,7 +9,7 @@
       "prop": "rope"
     }
   ],
-  "type": "forge:ore_shaped",
+  "type": "minecraft:crafting_shaped",
   "group": "inspirations:rope",
   "pattern": [
     "B",
@@ -22,8 +22,7 @@
     }
   },
   "result": {
-    "item": "inspirations:rope",
-    "data": 1,
+    "item": "inspirations:chain",
     "count": 6
   }
 }

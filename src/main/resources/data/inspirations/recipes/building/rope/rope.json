@@ -9,7 +9,7 @@
       "prop": "rope"
     }
   ],
-  "type": "forge:ore_shaped",
+  "type": "minecraft:crafting_shaped",
   "group": "inspirations:rope",
   "pattern": [
     "SS",
@@ -17,14 +17,10 @@
     "SS"
   ],
   "key": {
-    "S": {
-      "type": "forge:ore_dict",
-      "ore": "string"
-    }
+    "S": { "type": "forge:strings" }
   },
   "result": {
     "item": "inspirations:rope",
-    "data": 0,
     "count": 3
   }
 }
