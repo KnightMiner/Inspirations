@@ -62,15 +62,15 @@ public class BlockRope extends EnumBlock<BlockRope.RopeType> {
 	@Override
 	public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
 		BlockPos down = pos.down();
-		return state.withProperty(BOTTOM, !canConnectTo(world.getBlockState(down), world, down));
+		return state.withProperty(BOTTOM, !canConnectTo(world.getBlockState(down), world, down, EnumFacing.UP));
 	}
 
-	private boolean canConnectTo(IBlockState state, IBlockAccess world, BlockPos pos) {
+	private boolean canConnectTo(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing side) {
 		if(state.getBlock() == this) {
 			return true;
 		}
 
-		BlockFaceShape shape = state.getBlockFaceShape(world, pos, EnumFacing.UP);
+		BlockFaceShape shape = state.getBlockFaceShape(world, pos, side);
 		return shape == BlockFaceShape.CENTER || shape == BlockFaceShape.CENTER_BIG || shape == BlockFaceShape.SOLID;
 	}
 
@@ -146,7 +146,7 @@ public class BlockRope extends EnumBlock<BlockRope.RopeType> {
 	private boolean isValidRope(World world, BlockPos pos) {
 		BlockPos up = pos.up();
 		IBlockState state = world.getBlockState(up);
-		return state.isSideSolid(world, up, EnumFacing.DOWN) || state.getBlock() == this;
+		return canConnectTo(state, world, pos, EnumFacing.DOWN);
 	}
 
 	/**
