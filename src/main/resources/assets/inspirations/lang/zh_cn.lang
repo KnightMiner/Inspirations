@@ -122,6 +122,10 @@ item.inspirations.sugar_cane_seeds.name=甘蔗种子
 
 item.inspirations.materials.splash_bottle.name=喷溅型药水瓶
 item.inspirations.materials.lingering_bottle.name=滞留型药水瓶
+item.inspirations.materials.mushrooms.name=蘑菇煲原料
+item.inspirations.materials.mushrooms.tooltip=用于烹制蘑菇煲
+item.inspirations.materials.rabbit_stew_mix.name=兔肉煲原料
+item.inspirations.materials.rabbit_stew_mix.tooltip=用于烹制兔肉煲
 
 item.inspirations.dyed_bottle.name=染色水瓶
 item.inspirations.dyed_bottle.white.name=白色染色水瓶

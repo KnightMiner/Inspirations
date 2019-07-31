@@ -95,6 +95,10 @@ public class InspirationsShared extends PulseBase {
 				splashBottle = materials.addMeta(2, "splash_bottle", CreativeTabs.BREWING);
 				lingeringBottle = materials.addMeta(3, "lingering_bottle", CreativeTabs.BREWING);
 			}
+			if(Config.cauldronStew) {
+				mushrooms = materials.addMeta(4, "mushrooms", null);
+				rabbitStewMix = materials.addMeta(5, "rabbit_stew_mix", null);
+			}
 			milkCooldownSquid = Config.milkSquids;
 		}
 		if(isToolsLoaded() && Config.separateCrook) {

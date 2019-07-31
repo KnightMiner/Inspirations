@@ -282,6 +282,10 @@ public class InspirationsRecipes extends PulseBase {
 				addStewRecipes(new ItemStack(Items.MUSHROOM_STEW), mushroomStew, "mushroomAny", 2, FluidRegistry.WATER);
 				addStewRecipes(new ItemStack(potatoSoupItem), potatoSoup, new ItemStack(Items.BAKED_POTATO, 2), mushroomStew);
 				addStewRecipes(new ItemStack(Items.RABBIT_STEW), rabbitStew, new ItemStack(Items.COOKED_RABBIT), potatoSoup);
+
+				// legacy
+				addStewRecipes(new ItemStack(Items.MUSHROOM_STEW), mushroomStew, InspirationsShared.mushrooms.copy(), FluidRegistry.WATER);
+				addStewRecipes(new ItemStack(Items.RABBIT_STEW), rabbitStew, InspirationsShared.rabbitStewMix.copy(), FluidRegistry.WATER);
 			}
 		} else {
 			// above relied on for bucket filling cauldron

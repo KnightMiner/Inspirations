@@ -122,6 +122,10 @@ item.inspirations.sugar_cane_seeds.name=Sugar Cane Seeds
 
 item.inspirations.materials.splash_bottle.name=Splash Potion Bottle
 item.inspirations.materials.lingering_bottle.name=Lingering Potion Bottle
+item.inspirations.materials.mushrooms.name=Mushrooms
+item.inspirations.materials.mushrooms.tooltip=Used in brewing mushroom stew
+item.inspirations.materials.rabbit_stew_mix.name=Rabbit Stew Mix
+item.inspirations.materials.rabbit_stew_mix.tooltip=Used in brewing rabbit stew
 
 item.inspirations.potato_soup.name=Potato Soup
 item.inspirations.dyed_bottle.name=Dyed Water Bottle

@@ -1,7 +1,5 @@
 package knightminer.inspirations.plugins.jei.cauldron;
 
-import java.util.ArrayList;
-import java.util.List;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
@@ -15,6 +13,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.BannerPattern;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CauldronRecipeChecker {
 	public static List<ICauldronRecipeWrapper> getRecipes() {
@@ -31,7 +32,7 @@ public class CauldronRecipeChecker {
 			if(recipe instanceof ISimpleCauldronRecipe) {
 				ISimpleCauldronRecipe simpleRecipe = (ISimpleCauldronRecipe) recipe;
 				if(simpleRecipe.getState() != null && simpleRecipe.getInputState() != null
-						&& simpleRecipe.getInput() != null && !simpleRecipe.getInput().isEmpty()) {
+						&& inputValid(simpleRecipe.getInput())) {
 					recipes.add(new CauldronRecipeWrapper(simpleRecipe));
 				}
 			}
@@ -52,6 +53,15 @@ public class CauldronRecipeChecker {
 		}
 
 		return recipes;
+	}
+
+	private static boolean inputValid(List<ItemStack> input) {
+		if (input == null || input.isEmpty()) {
+			return false;
+		}
+		// hide legacy recipes
+		return !input.stream().anyMatch((s)->ItemStack.areItemsEqual(s, InspirationsShared.mushrooms)
+																  || ItemStack.areItemsEqual(s, InspirationsShared.rabbitStewMix));
 	}
 
 	private static CauldronRecipeWrapper makeArmorWashRecipe(ItemArmor item) {

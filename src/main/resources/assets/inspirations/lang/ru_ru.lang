@@ -120,6 +120,10 @@ tile.inspirations.carpeted_trapdoor_black.name=Люк с чёрным ковро
 
 item.inspirations.materials.splash_bottle.name=Пузырёк для взрывного зелья
 item.inspirations.materials.lingering_bottle.name=Пузырёк для туманного зелья
+item.inspirations.materials.mushrooms.name=Грибы
+item.inspirations.materials.mushrooms.tooltip=Используется в приготовлении тушёных грибов
+item.inspirations.materials.rabbit_stew_mix.name=Смесь для тушёной крольчатины
+item.inspirations.materials.rabbit_stew_mix.tooltip=Используется в приготовлении тушёной крольчатины
 
 item.inspirations.dyed_bottle.name=Пузырёк красителя
 item.inspirations.dyed_bottle.white.name=Пузырёк белого красителя

@@ -1,14 +1,14 @@
 package knightminer.inspirations.shared.item;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import gnu.trove.map.hash.TIntObjectHashMap;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import slimeknights.mantle.item.ItemMetaDynamic;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class ItemMaterials extends ItemMetaDynamic {
 
@@ -29,16 +29,21 @@ public class ItemMaterials extends ItemMetaDynamic {
 		return this;
 	}
 
+	@Override
+	public ItemStack addMeta(int meta, String name) {
+		return this.addMeta(meta, name, getCreativeTab());
+	}
+
 	/**
 	 * Add a valid metadata with a specific creative tab set
 	 *
 	 * @param meta The metadata value
 	 * @param name The name used for registering the itemmodel as well as the unlocalized name of the meta. The unlocalized name will be lowercased and stripped of whitespaces.
-	 * @param tab  Creative tab to display the item in. If using {@link #addMeta(int, String)}, it will default to the items tab
+	 * @param tab  Creative tab to display the item in, use null for hidden. If using {@link #addMeta(int, String)}, it will default to the items tab
 	 * @return An itemstack representing the Item-Meta combination.
 	 */
 	public ItemStack addMeta(int meta, String name, CreativeTabs tab) {
-		ItemStack stack = addMeta(meta, name);
+		ItemStack stack = super.addMeta(meta, name);
 		creativeTabs.put(meta, tab);
 		allTabs.add(tab);
 		return stack;
@@ -46,7 +51,7 @@ public class ItemMaterials extends ItemMetaDynamic {
 
 	@Override
 	public CreativeTabs[] getCreativeTabs() {
-		return creativeTabs.values(new CreativeTabs[creativeTabs.size()]);
+		return allTabs.stream().toArray(CreativeTabs[]::new);
 	}
 
 	@Override
@@ -61,14 +66,13 @@ public class ItemMaterials extends ItemMetaDynamic {
 	}
 
 	private boolean isInCreativeTab(CreativeTabs targetTab, int i) {
+		CreativeTabs tab = creativeTabs.get(i);
+		if (tab == null) {
+			return false;
+		}
 		if(targetTab == CreativeTabs.SEARCH) {
 			return true;
 		}
-
-		CreativeTabs tab = creativeTabs.get(i);
-		if(tab != null) {
-			return targetTab == tab;
-		}
-		return targetTab == this.getCreativeTab();
+		return targetTab == tab;
 	}
 }
