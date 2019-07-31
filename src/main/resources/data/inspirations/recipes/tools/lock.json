@@ -1,32 +1,25 @@
 {
   "conditions": [
     {
-      "type": "pulse_loaded",
+      "type": "inspirations:pulse_loaded",
       "pulse": "InspirationsTools"
     },
     {
-      "type": "config",
+      "type": "inspirations:config",
       "prop": "lock"
     }
   ],
   "result": {
-    "item": "inspirations:materials",
-    "data": 0
+    "item": "inspirations:lock",
   },
   "mirrored": true,
   "pattern": [
     "N",
     "I"
   ],
-  "type": "forge:ore_shaped",
+  "type": "minecraft:crafting_shaped",
   "key": {
-    "I": {
-      "type": "forge:ore_dict",
-      "ore": "ingotIron"
-    },
-    "N": {
-      "type": "forge:ore_dict",
-      "ore": "nuggetIron"
-    }
+    "I": { "tag": "forge:ingots/iron" },
+    "N": { "type": "forge:nuggets/iron" }
   }
 }

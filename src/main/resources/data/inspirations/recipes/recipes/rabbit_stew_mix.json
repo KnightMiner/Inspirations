@@ -9,10 +9,9 @@
       "prop": "cauldron_fluids"
     }
   ],
-  "type": "forge:ore_shapeless",
+  "type": "minecraft:crafting_shapeless",
   "result": {
-    "item": "inspirations:materials",
-    "data": 5
+    "item": "inspirations:rabbit_stew_mix",
   },
   "ingredients": [
     [
@@ -20,7 +19,7 @@
       { "item": "minecraft:brown_mushroom" }
     ],
     { "item": "minecraft:baked_potato" },
-    { "type": "forge:ore_dict", "ore": "cropCarrot" },
+    { "type": "minecraft:carrot" },
     { "item": "minecraft:cooked_rabbit" }
   ]
 }

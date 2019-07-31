@@ -9,27 +9,15 @@
       "prop": "cauldron_potions"
     }
   ],
-  "type": "forge:ore_shapeless",
+  "type": "minecraft:crafting_shapeless",
   "result": {
-    "item": "inspirations:materials",
-    "data": 3,
+    "item": "inspirations:lingering_bottle",
     "count": 3
   },
   "ingredients": [
-    {
-      "item": "minecraft:dragon_breath"
-    },
-    {
-      "item": "inspirations:materials",
-      "data": 2
-    },
-    {
-      "item": "inspirations:materials",
-      "data": 2
-    },
-    {
-      "item": "inspirations:materials",
-      "data": 2
-    }
+    { "item": "minecraft:dragon_breath" },
+    { "item": "inspirations:splash_bottle" },
+    { "item": "inspirations:splash_bottle" },
+    { "item": "inspirations:splash_bottle" }
   ]
 }

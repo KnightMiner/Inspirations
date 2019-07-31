@@ -1,11 +1,11 @@
 {
   "conditions": [
     {
-      "type": "pulse_loaded",
+      "type": "inspirations:pulse_loaded",
       "pulse": "InspirationsTools"
     },
     {
-      "type": "config",
+      "type": "inspirations:config",
       "prop": "photometer"
     }
   ],
@@ -16,11 +16,11 @@
     "RBG",
     " I "
   ],
-  "type": "forge:ore_shaped",
+  "type": "minecraft:crafting_shaped",
   "key": {
-    "B": {"item": "minecraft:glass_bottle"},
-    "R": {"type": "forge:ore_dict", "ore": "dustRedstone"},
-    "G": {"type": "forge:ore_dict", "ore": "dustGlowstone"},
-    "I": {"type": "forge:ore_dict", "ore": "ingotIron"}
+    "B": { "item": "minecraft:glass_bottle" },
+    "R": { "tag": "forge:dusts/redstone" },
+    "G": { "tag": "forge:dusts/glowstone" },
+    "I": { "tag": "forge:ingots/iron" }
   }
 }

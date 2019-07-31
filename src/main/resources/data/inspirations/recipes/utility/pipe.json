@@ -1,25 +1,24 @@
 {
   "conditions": [
     {
-      "type": "pulse_loaded",
+      "type": "inspirations:pulse_loaded",
       "pulse": "InspirationsUtility"
     },
     {
-      "type": "config",
+      "type": "inspirations:config",
       "prop": "pipe"
     }
   ],
   "result": {
     "item": "inspirations:pipe",
-    "data": 0,
     "count": 4
   },
   "pattern": [
     "IPI"
   ],
-  "type": "forge:ore_shaped",
+  "type": "minecraft:crafting_shaped",
   "key": {
-    "I": { "type": "forge:ore_dict", "ore": "ingotIron" },
-    "P": { "type": "forge:ore_dict", "ore": "plankWood" }
+    "I": { "tag": "forge:ingots/iron" },
+    "P": { "tag": "minecraft:planks" }
   }
 }

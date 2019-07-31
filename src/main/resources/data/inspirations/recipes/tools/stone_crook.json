@@ -17,11 +17,8 @@
     " S",
     " S"
   ],
-  "type": "forge:ore_shaped",
+  "type": "minecraft:crafting_shaped",
   "key": {
-    "S": {
-      "type": "forge:ore_dict",
-      "ore": "rodStone"
-    }
+    "S": { "tag": "forge:rods/stone" }
   }
 }

@@ -9,20 +9,16 @@
       "prop": "glass_door"
     }
   ],
-  "type": "forge:ore_shaped",
+  "type": "minecraft:crafting_shaped",
   "pattern": [
     "GGG",
     "GGG"
   ],
   "key": {
-    "G": {
-      "type": "forge:ore_dict",
-      "ore": "paneGlassColorless"
-    }
+    "G": { "item": "minecraft:glass_pane" }
   },
   "result": {
     "item": "inspirations:glass_trapdoor",
-    "data": 0,
     "count": 2
   }
 }

@@ -1,17 +1,16 @@
 {
   "conditions": [
     {
-      "type": "pulse_loaded",
+      "type": "inspirations:pulse_loaded",
       "pulse": "InspirationsTools"
     },
     {
-      "type": "config",
+      "type": "inspirations:config",
       "prop": "charged_arrow"
     }
   ],
   "result": {
-    "item": "inspirations:arrow",
-    "data": 0,
+    "item": "inspirations:charged_arrow",
     "count": 8
   },
   "pattern": [
@@ -19,19 +18,11 @@
     "S",
     "F"
   ],
-  "type": "forge:ore_shaped",
+  "type": "minecraft:crafting_shaped",
   "key": {
-    "R": {
-      "type": "forge:ore_dict",
-      "ore": "dustRedstone"
-    },
-    "S": {
-      "type": "forge:ore_dict",
-      "ore": "stickWood"
-    },
-    "F": {
-      "type": "forge:ore_dict",
-      "ore": "feather"
+    "R": { "tag": "forge:dusts/redstone" },
+    "S": { "tag": "forge:rods/wooden" }, 
+    "F": { "tag": "forge:feathers" }
     }
   }
 }

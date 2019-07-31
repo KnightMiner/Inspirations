@@ -1,27 +1,21 @@
 {
   "conditions": [
     {
-      "type": "pulse_loaded",
+      "type": "inspirations:pulse_loaded",
       "pulse": "InspirationsTools"
     },
     {
-      "type": "config",
+      "type": "inspirations:config",
       "prop": "redstone_charge"
     }
   ],
-  "type": "forge:ore_shapeless",
+  "type": "minecraft:crafting_shapeless",
   "result": {
     "item": "inspirations:redstone_charger",
     "count": 1
   },
   "ingredients": [
-    {
-      "type": "forge:ore_dict",
-      "ore": "ingotGold"
-    },
-    {
-      "type": "forge:ore_dict",
-      "ore": "dustRedstone"
-    }
+    { "tag": "forge:ingots/gold" },
+    { "tag": "forge:dusts/redstone" }
   ]
 }

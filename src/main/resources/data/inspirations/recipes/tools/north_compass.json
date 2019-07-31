@@ -1,11 +1,11 @@
 {
   "conditions": [
     {
-      "type": "pulse_loaded",
+      "type": "inspirations:pulse_loaded",
       "pulse": "InspirationsTools"
     },
     {
-      "type": "config",
+      "type": "inspirations:config",
       "prop": "north_compass"
     }
   ],
@@ -17,9 +17,9 @@
     "INI",
     " I "
   ],
-  "type": "forge:ore_shaped",
+  "type": "minecraft:crafting_shaped",
   "key": {
-    "I": {"type": "forge:ore_dict", "ore": "ingotIron"},
-    "N": {"type": "forge:ore_dict", "ore": "nuggetIron"}
+    "I": { "tag": "forge:ingots/iron" },
+    "N": { "type": "forge:nuggets/iron" }
   }
 }

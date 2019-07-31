@@ -18,9 +18,9 @@
     "IBI",
     " I "
   ],
-  "type": "forge:ore_shaped",
+  "type": "minecraft:crafting_shaped",
   "key": {
-    "B": {"item": "minecraft:blaze_rod"},
-    "I": {"type": "forge:ore_dict", "ore": "ingotIron"}
+    "B": { "tag": "forge:rods/blaze" },
+    "I": { "tag": "forge:ingots/iron" }
   }
 }

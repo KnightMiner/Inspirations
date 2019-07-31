@@ -11,8 +11,7 @@
   ],
   "type": "forge:ore_shapeless",
   "result": {
-    "item": "inspirations:materials",
-    "data": 4
+    "item": "inspirations:mushrooms"
   },
   "ingredients": [
     {

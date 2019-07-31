@@ -1,32 +1,25 @@
 {
   "conditions": [
     {
-      "type": "pulse_loaded",
+      "type": "inspirations:pulse_loaded",
       "pulse": "InspirationsUtility"
     },
     {
-      "type": "config",
+      "type": "inspirations:config",
       "prop": "redstone_barrel"
     }
   ],
   "result": {
-    "item": "inspirations:redstone_barrel",
-    "data": 0
+    "item": "inspirations:redstone_barrel"
   },
   "pattern": [
     "S S",
     "SRS",
     "SSS"
   ],
-  "type": "forge:ore_shaped",
+  "type": "minecraf:crafting_shaped",
   "key": {
-    "S": {
-      "item": "minecraft:stone_slab",
-      "data": 0
-    },
-    "R": {
-      "type": "forge:ore_dict",
-      "ore": "dustRedstone"
-    }
+    "S": { "item": "minecraft:smooth_stone_slab" },
+    "R": { "tag": "forge:dusts/redstone" }
   }
 }

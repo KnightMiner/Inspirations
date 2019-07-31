@@ -1,22 +1,21 @@
 {
   "conditions": [
     {
-      "type": "pulse_loaded",
+      "type": "inspirations:pulse_loaded",
       "pulse": "InspirationsUtility"
     },
     {
-      "type": "config",
+      "type": "inspirations:config",
       "prop": "dye_waypoint_compass"
     }
   ],
   "type": "inspirations:waypoint_compass",
   "group": "inspirations:dye_waypoint_compass",
   "result": {
-    "item": "inspirations:waypoint_compass",
-    "data": 4
+    "item": "inspirations:yellow_waypoint_compass",
   },
   "ingredients": [
-    {"item": "#WAYPOINT_COMPASS"},
-    {"type": "forge:ore_dict", "ore": "dyeYellow"}
+    { "tag": "inspirations:waypoint_compasses" },
+    { "tag": "forge:dyes/yellow" }
   ]
 }

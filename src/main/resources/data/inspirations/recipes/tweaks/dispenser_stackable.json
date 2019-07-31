@@ -1,11 +1,11 @@
 {
   "conditions": [
     {
-      "type": "pulse_loaded",
+      "type": "inspirations:pulse_loaded",
       "pulse": "InspirationsTweaks"
     },
     {
-      "type": "config",
+      "type": "inspriations:config",
       "prop": "unstackable_alts"
     }
   ],
@@ -17,10 +17,10 @@
     "TDS",
     " TS"
   ],
-  "type": "forge:ore_shaped",
+  "type": "minecraft:crafting_shaped",
   "key": {
-    "T": { "type": "forge:ore_dict", "ore": "stickWood" },
-    "S": { "type": "forge:ore_dict", "ore": "string" },
+    "T": { "tag": "forge:sticks/wooden" },
+    "S": { "tag": "forge:strings" },
     "D": { "item": "minecraft:dropper" }
   }
 }

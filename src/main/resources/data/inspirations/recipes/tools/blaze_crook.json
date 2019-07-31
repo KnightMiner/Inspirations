@@ -1,11 +1,11 @@
 {
   "conditions": [
     {
-      "type": "pulse_loaded",
+      "type": "inspirations:pulse_loaded",
       "pulse": "InspirationsTools"
     },
     {
-      "type": "config",
+      "type": "inspirations:config",
       "prop": "nether_crook"
     }
   ],
@@ -17,10 +17,8 @@
     " S",
     " S"
   ],
-  "type": "forge:ore_shaped",
+  "type": "minecraft:crafting_shaped",
   "key": {
-    "S": {
-      "item": "minecraft:blaze_rod"
-    }
+    "S": { "tag": "forge:rods/blaze" }
   }
 }

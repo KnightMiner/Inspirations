@@ -1,17 +1,16 @@
 {
   "conditions": [
     {
-      "type": "pulse_loaded",
+      "type": "inspirations:pulse_loaded",
       "pulse": "InspirationsUtility"
     },
     {
-      "type": "config",
+      "type": "inspirations:config",
       "prop": "redstone_torch_lever"
     }
   ],
   "result": {
     "item": "inspirations:redstone_torch_lever",
-    "data": 0
   },
   "pattern": [
     "T",
@@ -19,7 +18,7 @@
   ],
   "type": "forge:ore_shaped",
   "key": {
-    "S": { "type": "forge:ore_dict", "ore": "cobblestone" },
+    "S": { "tag": "forge:cobblestone" },
     "T": { "item": "minecraft:redstone_torch" }
   }
 }

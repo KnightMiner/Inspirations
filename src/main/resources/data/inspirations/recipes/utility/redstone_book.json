@@ -13,29 +13,16 @@
       "prop": "redstone_book"
     }
   ],
-  "type": "forge:ore_shapeless",
+  "type": "minecraft:crafting_shapeless",
   "group": "inspirations:colored_book",
   "result": {
-    "item": "inspirations:books",
-    "data": 16,
+    "item": "inspirations:redstone_book",
     "count": 1
   },
   "ingredients": [
-    {
-      "type": "forge:ore_dict",
-      "ore": "leather"
-    },
-    {
-      "type": "forge:ore_dict",
-      "ore": "paper"
-    },
-    {
-      "type": "forge:ore_dict",
-      "ore": "paper"
-    },
-    {
-      "type": "forge:ore_dict",
-      "ore": "dustRedstone"
-    }
+    { "item": "minecraft:leather" },
+    { "item": "minecraft:paper" },
+    { "item": "minecraft:paper" },
+    { "tag": "forge:dusts/redstone" }
   ]
 }

@@ -19,13 +19,7 @@
   ],
   "type": "forge:ore_shaped",
   "key": {
-    "S": {
-      "type": "forge:ore_dict",
-      "ore": "cobblestone"
-    },
-    "T": {
-      "type": "forge:ore_dict",
-      "ore": "torch"
-    }
+    "S": { "tag": "forge:cobblestone" },
+    "T": { "tag": "forge:torches" }
   }
 }
