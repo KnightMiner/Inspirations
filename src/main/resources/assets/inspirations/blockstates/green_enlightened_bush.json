@@ -1,0 +1,10 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "inspirations:enlightened_bush",
+    "textures": {
+      "leaves": "block/leaves_oak",
+      "lights": "inspirations:block/lights_green"
+    }
+  }
+}
