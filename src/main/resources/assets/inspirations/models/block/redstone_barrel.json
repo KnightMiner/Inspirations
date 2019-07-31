@@ -2,9 +2,9 @@
   "parent": "block/block",
 	"ambientocclusion": false,
 	"textures": {
-		"particle": "block/stone_slab_top",
-		"top":      "block/stone_slab_top",
-		"stone":    "block/stone_slab_top"
+		"particle": "block/smooth_stone",
+		"top":      "block/smooth_stone",
+		"stone":    "block/smooth_stone"
 	},
 	"elements": [
 		{
