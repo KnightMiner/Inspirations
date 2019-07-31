@@ -6,7 +6,7 @@
   "variants": {
     "level": {
        "0": {},
-       "1": { "textures": { "top": "inspirations:blocks/redstone_dust" }},
+       "1": { "textures": { "top": "inspirations:block/redstone_dust" }},
        "2": { "submodel": { "contents": { "model": "inspirations:redstone_barrel_contents" }}},
        "3": { "submodel": { "contents": { "model": "inspirations:redstone_barrel_contents", "transform": { "translation": [ 0, 0.0625, 0 ] } }}},
        "4": { "submodel": { "contents": { "model": "inspirations:redstone_barrel_contents", "transform": { "translation": [ 0, 0.125,  0 ] } }}},

@@ -18,7 +18,7 @@
     "inventory": {
       "transform": "forge:default-item",
       "model": "forge:item-layer",
-      "textures": { "layer0": "inspirations:items/redstone_torch_lever" }
+      "textures": { "layer0": "inspirations:item/redstone_torch_lever" }
     }
   }
 }
