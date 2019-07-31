@@ -9,20 +9,14 @@
       "prop": "colored_books"
     }
   ],
-  "type": "forge:ore_shapeless",
+  "type": "minecraft:crafting_shapeless",
   "group": "inspirations:colored_book",
   "result": {
-    "item": "inspirations:books",
-    "data": 5,
+    "item": "inspirations:lime_book",
     "count": 1
   },
   "ingredients": [
-    {
-      "type": "forge:ore_dict",
-      "ore": "dyeLime"
-    },
-    {
-      "item": "minecraft:book"
-    }
+    { "tag": "forge:dyes/lime" },
+    { "item": "minecraft:book" }
   ]
 }

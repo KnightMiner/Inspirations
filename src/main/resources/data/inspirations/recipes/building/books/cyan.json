@@ -9,20 +9,14 @@
       "prop": "colored_books"
     }
   ],
-  "type": "forge:ore_shapeless",
+  "type": "minecraft:crafting_shapeless",
   "group": "inspirations:colored_book",
   "result": {
-    "item": "inspirations:books",
-    "data": 9,
+    "item": "inspirations:cyan_book",
     "count": 1
   },
   "ingredients": [
-    {
-      "type": "forge:ore_dict",
-      "ore": "dyeCyan"
-    },
-    {
-      "item": "minecraft:book"
-    }
+    { "tag": "forge:dyes/cyan" },
+    { "item": "minecraft:book" }
   ]
 }

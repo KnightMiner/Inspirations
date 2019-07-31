@@ -9,20 +9,14 @@
       "prop": "colored_books"
     }
   ],
-  "type": "forge:ore_shapeless",
+  "type": "minecraft:crafting_shapeless",
   "group": "inspirations:colored_book",
   "result": {
-    "item": "inspirations:books",
-    "data": 2,
+    "item": "inspirations:magenta_book",
     "count": 1
   },
   "ingredients": [
-    {
-      "type": "forge:ore_dict",
-      "ore": "dyeMagenta"
-    },
-    {
-      "item": "minecraft:book"
-    }
+    { "tag": "forge:dyes/magenta" },
+    { "item": "minecraft:book" }
   ]
 }
