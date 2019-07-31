@@ -15,28 +15,10 @@
     "CC"
   ],
   "key": {
-    "C": [
-      {
-        "item": "minecraft:stonebrick",
-        "data": 0
-      },
-      {
-        "item": "minecraft:stonebrick",
-        "data": 1
-      },
-      {
-        "item": "minecraft:stonebrick",
-        "data": 2
-      },
-      {
-        "item": "minecraft:stonebrick",
-        "data": 3
-      }
-    ]
+    "C": { "tag": "minecraft:stone_bricks"}
   },
   "result": {
-    "item": "inspirations:path",
-    "data": 2,
+    "item": "inspirations:tile_path",
     "count": 3
   }
 }

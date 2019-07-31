@@ -17,14 +17,10 @@
     " S "
   ],
   "key": {
-    "S": {
-      "type": "forge:ore_dict",
-      "ore": "stone"
-    }
+    "S": { "tag": "forge:stone" }
   },
   "result": {
-    "item": "inspirations:path",
-    "data": 1,
+    "item": "inspirations:round_path",
     "count": 6
   }
 }

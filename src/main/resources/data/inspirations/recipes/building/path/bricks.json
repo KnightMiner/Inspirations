@@ -9,7 +9,7 @@
       "prop": "path"
     }
   ],
-  "type": "forge:ore_shaped",
+  "type": "minecraft:crafting_shaped",
   "group": "inspirations:path",
   "pattern": [
     "BB"
@@ -20,8 +20,7 @@
     }
   },
   "result": {
-    "item": "inspirations:path",
-    "data": 3,
+    "item": "inspirations:brick_path",
     "count": 3
   }
 }
