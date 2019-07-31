@@ -1,33 +1,26 @@
 {
   "conditions": [
     {
-      "type": "pulse_loaded",
+      "type": "inspirations:pulse_loaded",
       "pulse": "InspirationsBuilding"
     },
     {
-      "type": "config",
+      "type": "inspirations:config",
       "prop": "mulch"
     }
   ],
-  "type": "forge:ore_shaped",
+  "type": "minecraft:crafting_shaped",
   "pattern": [
     " S ",
     "SDS",
     " S "
   ],
   "key": {
-    "S": {
-      "type": "forge:ore_dict",
-      "ore": "stickWood"
-    },
-    "D": {
-      "type": "forge:ore_dict",
-      "ore": "dyeMagenta"
-    }
+    "S": { "tag": "forge:rods/wooden" },
+    "D": { "type": "forge:dyes/magenta" }
   },
   "result": {
-    "item": "inspirations:mulch",
-    "data": 4,
+    "item": "inspirations:ruby_mulch",
     "count": 2
   }
 }

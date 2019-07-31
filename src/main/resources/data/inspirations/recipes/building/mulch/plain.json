@@ -1,28 +1,24 @@
 {
   "conditions": [
     {
-      "type": "pulse_loaded",
+      "type": "minecraft:pulse_loaded",
       "pulse": "InspirationsBuilding"
     },
     {
-      "type": "config",
+      "type": "minecraft:config",
       "prop": "mulch"
     }
   ],
-  "type": "forge:ore_shaped",
+  "type": "minecraft:crafting_shaped",
   "pattern": [
     "SS",
     "SS"
   ],
   "key": {
-    "S": {
-      "type": "forge:ore_dict",
-      "ore": "stickWood"
-    }
+    "S": { "tag": "forge:rods/wooden" }
   },
   "result": {
-    "item": "inspirations:mulch",
-    "data": 0,
+    "item": "inspirations:plain_mulch",
     "count": 2
   }
 }
