@@ -1,4 +1,5 @@
 {
+  "_comment": "Blocks with this tag provide heat to cauldrons above them.",
   "values": [
     "minecraft:fire",
   ]
