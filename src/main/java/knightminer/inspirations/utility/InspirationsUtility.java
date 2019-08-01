@@ -5,6 +5,7 @@ import com.google.common.eventbus.Subscribe;
 import knightminer.inspirations.common.CommonProxy;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
+import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.utility.block.BlockBricksButton;
 import knightminer.inspirations.utility.block.BlockCarpetedPressurePlate;
 import knightminer.inspirations.utility.block.BlockCarpetedPressurePlate.BlockCarpetedPressurePlate2;
@@ -19,18 +20,29 @@ import knightminer.inspirations.utility.block.BlockTorchLever;
 import knightminer.inspirations.utility.dispenser.DispenseFluidTank;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDispenser;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.CarpetBlock;
+import net.minecraft.block.DispenserBlock;
+import net.minecraft.block.material.Material;
+import net.minecraft.dispenser.IDispenseItemBehavior;
 import net.minecraft.init.Items;
+import net.minecraft.item.DyeColor;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent.Register;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.pulsar.pulse.Pulse;
 
@@ -38,8 +50,7 @@ import slimeknights.mantle.pulsar.pulse.Pulse;
 public class InspirationsUtility extends PulseBase {
 	public static final String pulseID = "InspirationsUtility";
 
-	@SidedProxy(clientSide = "knightminer.inspirations.utility.UtilityClientProxy", serverSide = "knightminer.inspirations.common.CommonProxy")
-	public static CommonProxy proxy;
+	public static CommonProxy proxy = DistExecutor.runForDist(()->()->new UtilityClientProxy(), ()->()-> new CommonProxy());
 
 	// blocks
 	public static Block torchLever;
@@ -47,9 +58,8 @@ public class InspirationsUtility extends PulseBase {
 	public static BlockBricksButton bricksButton;
 	public static Block redstoneTorchLever;
 	public static Block redstoneTorchLeverPowered;
-	public static Block[] carpetedTrapdoors;
-	public static Block carpetedPressurePlate1;
-	public static Block carpetedPressurePlate2;
+	public static Block[] carpetedTrapdoors = new Block[16];
+	public static Block[] carpetedPressurePlate = new Block[16];
 	public static Block collector;
 	public static Block pipe;
 	public static Item pipeItem;
@@ -83,15 +93,38 @@ public class InspirationsUtility extends PulseBase {
 				carpetedTrapdoors[color.getMetadata()] = registerBlock(r, new BlockCarpetedTrapdoor(), "carpeted_trapdoor_" + color.getName());
 			}
 		}
-		if(Config.enableCarpetedPressurePlate) {
-			carpetedPressurePlate1 = registerBlock(r, new BlockCarpetedPressurePlate(false), "carpeted_pressure_plate_1");
-			carpetedPressurePlate2 = registerBlock(r, new BlockCarpetedPressurePlate2(), "carpeted_pressure_plate_2");
+		if(Config.enableCarpetedPressurePlate.get()) {
+			CarpetBlock[] carpets = new CarpetBlock[] {
+				(CarpetBlock)Blocks.WHITE_CARPET,
+				(CarpetBlock)Blocks.ORANGE_CARPET,
+				(CarpetBlock)Blocks.MAGENTA_CARPET,
+				(CarpetBlock)Blocks.LIGHT_BLUE_CARPET,
+				(CarpetBlock)Blocks.YELLOW_CARPET,
+				(CarpetBlock)Blocks.LIME_CARPET,
+				(CarpetBlock)Blocks.PINK_CARPET,
+				(CarpetBlock)Blocks.GRAY_CARPET,
+				(CarpetBlock)Blocks.LIGHT_GRAY_CARPET,
+				(CarpetBlock)Blocks.CYAN_CARPET,
+				(CarpetBlock)Blocks.PURPLE_CARPET,
+				(CarpetBlock)Blocks.BLUE_CARPET,
+				(CarpetBlock)Blocks.BROWN_CARPET,
+				(CarpetBlock)Blocks.GREEN_CARPET,
+				(CarpetBlock)Blocks.RED_CARPET,
+				(CarpetBlock)Blocks.BLACK_CARPET,
+			};
+			for(CarpetBlock carpet : carpets) {
+				carpetedPressurePlate[carpet.getColor().getId()] = registerBlock(r,
+						new BlockCarpetedPressurePlate(carpet),
+						carpet.getColor().getName() + "_carpeted_pressure_plate"
+				);
+			}
 		}
-		if(Config.enableCollector) {
+
+		if(Config.enableCollector.get()) {
 			collector = registerBlock(r, new BlockCollector(), "collector");
 			registerTE(TileCollector.class, "collector");
 		}
-		if(Config.enablePipe) {
+		if(Config.enablePipe.get()) {
 			pipe = registerBlock(r, new BlockPipe(), "pipe");
 			registerTE(TilePipe.class, "pipe");
 		}
