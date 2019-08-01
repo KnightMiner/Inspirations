@@ -1,24 +1,14 @@
 package knightminer.inspirations.building.block;
 
 import com.google.common.collect.ImmutableMap;
-import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.building.tileentity.TileBookshelf;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.InspirationsRegistry;
-import knightminer.inspirations.library.PropertyUnlistedInteger;
 import knightminer.inspirations.library.util.TextureBlockUtil;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.properties.PropertyDirection;
-import net.minecraft.block.properties.PropertyEnum;
-import net.minecraft.block.state.BlockFaceShape;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.IFluidState;
 import net.minecraft.item.BlockItemUseContext;
@@ -31,23 +21,16 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
 import net.minecraft.util.Direction;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootContext;
 import net.minecraft.world.storage.loot.LootParameters;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.model.data.ModelProperty;
 import slimeknights.mantle.block.InventoryBlock;
 
@@ -55,7 +38,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class BlockBookshelf extends InventoryBlock implements ITileEntityProvider {
 
@@ -102,18 +84,23 @@ public class BlockBookshelf extends InventoryBlock implements ITileEntityProvide
 
 	@Override
 	protected boolean openGui(PlayerEntity player, World world, BlockPos pos) {
-		player.openContainer(Inspirations.instance, 0, world, pos.getX(), pos.getY(), pos.getZ());
-		return true;
+		TileEntity te = world.getTileEntity(pos);
+		if(te instanceof TileBookshelf) {
+			player.openContainer((TileBookshelf)te);
+			return true;
+		}
+		return false;
 	}
 
 
 	/* Activation */
+
 	@Override
-	public boolean onBlockActivated(World world, BlockPos pos, BlockState state, PlayerEntity player, Hand hand, Direction side, float clickX, float clickY, float clickZ) {
+	public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) {
 		Direction facing = state.get(FACING);
 
 		// skip sides, we don't need them
-		if(facing != side) {
+		if(facing != trace.getFace()) {
 			return false;
 		}
 
@@ -123,7 +110,7 @@ public class BlockBookshelf extends InventoryBlock implements ITileEntityProvide
 		}
 
 		// if we did not click a book, just do the GUI as well
-		int book = bookClicked(facing, clickX, clickY, clickZ);
+		int book = bookClicked(facing, trace.getHitVec());
 		if(book == -1) {
 			return world.isRemote || openGui(player, world, pos);
 		}
@@ -144,17 +131,17 @@ public class BlockBookshelf extends InventoryBlock implements ITileEntityProvide
 		return true;
 	}
 
-	private static int bookClicked(Direction facing, float clickX, float clickY, float clickZ) {
+	private static int bookClicked(Direction facing, Vec3d click) {
 		// if we did not click between the shelves, ignore
-		if(clickY < 0.0625 || clickY > 0.9375) {
+		if(click.y < 0.0625 || click.y > 0.9375) {
 			return -1;
 		}
 		int shelf = 0;
 		// if we clicked below the middle shelf, add 7 to the book
-		if(clickY <= 0.4375) {
+		if(click.y <= 0.4375) {
 			shelf = 7;
 			// if we clicked below the top shelf but not quite in the middle shelf, no book
-		} else if(clickY < 0.5625) {
+		} else if(click.y < 0.5625) {
 			return -1;
 		}
 
@@ -165,14 +152,14 @@ public class BlockBookshelf extends InventoryBlock implements ITileEntityProvide
 		double x2 = offX ==  1 ? 0.375 : 0.9375;
 		double z2 = offZ ==  1 ? 0.375 : 0.9375;
 		// ensure we clicked within a shelf, not outside one
-		if(clickX < x1 || clickX > x2 || clickZ < z1 || clickZ > z2) {
+		if(click.x < x1 || click.x > x2 || click.z < z1 || click.z > z2) {
 			return -1;
 		}
 
 		// okay, so now we know we clicked in the book area, so just take the position clicked to determine where
 		Direction dir = facing.rotateYCCW();
 		// subtract one pixel and multiply by our direction
-		double clicked = (dir.getXOffset() * clickX) + (dir.getZOffset() * clickZ) - 0.0625;
+		double clicked = (dir.getXOffset() * click.x) + (dir.getZOffset() * click.z) - 0.0625;
 		// if negative, just add one to wrap back around
 		if(clicked < 0) {
 			clicked = 1 + clicked;
@@ -283,6 +270,7 @@ public class BlockBookshelf extends InventoryBlock implements ITileEntityProvide
 		return state.with(FACING, direction.rotate(state.get(FACING)));
 	}
 
+	@Nonnull
 	@Override
 	public BlockState mirror(BlockState state, Mirror mirror) {
 		return state.with(FACING, mirror.mirror(state.get(FACING)));
@@ -325,7 +313,7 @@ public class BlockBookshelf extends InventoryBlock implements ITileEntityProvide
 
 	@Override
 	public float getEnchantPowerBonus(BlockState state, IWorldReader world, BlockPos pos) {
-		if (!Config.bookshelvesBoostEnchanting) {
+		if (!Config.bookshelvesBoostEnchanting.get()) {
 			return 0;
 		}
 		TileEntity te = world.getTileEntity(pos);
@@ -333,34 +321,5 @@ public class BlockBookshelf extends InventoryBlock implements ITileEntityProvide
 			return ((TileBookshelf) te).getEnchantPower();
 		}
 		return 0;
-	}
-
-	public static enum BookshelfType implements IStringSerializable {
-		NORMAL,
-		RAINBOW,
-		TOMES,
-		ANCIENT;
-
-		private int meta;
-		BookshelfType() {
-			this.meta = ordinal();
-		}
-
-		@Override
-		public String getName() {
-			return this.name().toLowerCase(Locale.US);
-		}
-
-		public int getMeta() {
-			return meta;
-		}
-
-		public static BookshelfType fromMeta(int meta) {
-			if(meta < 0 || meta >= values().length) {
-				meta = 0;
-			}
-
-			return values()[meta];
-		}
 	}
 }

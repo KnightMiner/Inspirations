@@ -13,8 +13,8 @@ import slimeknights.mantle.inventory.MultiModuleContainer;
 
 public class ContainerBookshelf extends MultiModuleContainer<TileBookshelf> {
 
-	public ContainerBookshelf(int winId, PlayerInventory inventoryPlayer) {
-		super(InspirationsBuilding.contBookshelf, winId, null);
+	public ContainerBookshelf(int winId, PlayerInventory inventoryPlayer, TileBookshelf shelf) {
+		super(InspirationsBuilding.contBookshelf, winId, shelf);
 		for(int i = 0; i < 7; i++) {
 			this.addSlot(new SlotBookshelf(tile, i, 26 + (i*18), 18));
 		}
