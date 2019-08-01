@@ -1,7 +1,5 @@
 package knightminer.inspirations.common;
 
-import com.electronwill.nightconfig.core.EnumGetMethod;
-import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import knightminer.inspirations.Inspirations;
@@ -9,16 +7,13 @@ import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.util.RecipeUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.renderer.model.multipart.ICondition;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.IConditionSerializer;
-import net.minecraftforge.common.util.JsonUtils;
-import net.minecraftforge.fml.loading.FMLConfig;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.config.ModConfig;
 import slimeknights.mantle.pulsar.config.PulsarConfig;
 
 import javax.annotation.Nonnull;
@@ -26,7 +21,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import static net.minecraftforge.common.ForgeConfigSpec.*;
@@ -152,12 +146,20 @@ public class Config {
 
 	public static BooleanValue dropCauldronContentsRaw;
 	public static boolean dropCauldronContents() {
-		return dropCauldronContentsRaw.get() && enableExtendedCauldron.get();
+		return dropCauldronContentsRaw.get() && enableExtendedCauldron();
 	}
 
 	// cauldron - fluids
-	public static BooleanValue enableCauldronFluids;
-	public static BooleanValue enableMilk;
+	private static BooleanValue enableCauldronFluidsRaw;
+	private static BooleanValue enableMilkRaw;
+
+	public static boolean enableCauldronFluids() {
+		return enableCauldronFluidsRaw.get() && enableExtendedCauldron();
+	}
+	public static boolean enableMilk() {
+		return enableMilkRaw.get() && enableExtendedCauldron();
+	}
+
 	// cauldron - dyeing
 	private static BooleanValue enableCauldronDyeingRaw;
 	private static BooleanValue patchVanillaDyeRecipesRaw;
@@ -174,34 +176,34 @@ public class Config {
 	}
 
 	// cauldron - potions
-	public static BooleanValue enableCauldronPotions;
-	public static BooleanValue enableCauldronBrewing;
-	private static boolean expensiveCauldronBrewing = true;
-	public static BooleanValue cauldronTipArrows;
+	private static BooleanValue enableCauldronPotionsRaw;
+	private static BooleanValue enableCauldronBrewingRaw;
+	private static BooleanValue expensiveCauldronBrewingRaw;
+	private static BooleanValue cauldronTipArrowsRaw;
+
+	public static boolean enableCauldronPotions() {
+		return enableCauldronPotionsRaw.get() && enableExtendedCauldron();
+	}
+	public static boolean enableCauldronBrewing() {
+		return enableCauldronBrewingRaw.get() && enableCauldronPotions();
+	}
+	public static boolean expensiveCauldronBrewing() {
+		return expensiveCauldronBrewingRaw.get() && enableCauldronPotions();
+	}
+	public static boolean cauldronTipArrows() {
+		return cauldronTipArrowsRaw.get() && enableCauldronPotions();
+	}
+
 	// cauldron - recipes
 	private static String[] cauldronRecipes = {
 			"minecraft:sticky_piston->minecraft:piston"
 	};
-	private static String[] cauldronFire = {
-			"minecraft:fire"
-	};
+
 	// cauldron - fluid containers
-	public static BooleanValue enableCauldronDispenser;
-	public static String[] cauldronDispenserRecipes = {
-			"inspirations:dyed_bottle",
-			"inspirations:materials:2",
-			"inspirations:materials:3",
-			"minecraft:beetroot_soup",
-			"minecraft:bowl",
-			"minecraft:glass_bottle",
-			"minecraft:lingering_potion",
-			"minecraft:mushroom_stew",
-			"minecraft:potion",
-			"minecraft:rabbit_stew",
-			"minecraft:splash_potion",
-			"toughasnails:fruit_juice",
-			"toughasnails:purified_water_bottle"
-	};
+	private static BooleanValue enableCauldronDispenserRaw;
+	public static boolean enableCauldronDispenser() {
+		return enableCauldronDispenserRaw.get() && enableCauldronPotions();
+	}
 	// anvil smashing
 	public static BooleanValue enableAnvilSmashing;
 	private static String[] anvilSmashing = {
@@ -535,49 +537,65 @@ public class Config {
 					.worldRestart()
 					.defineEnum("extendCauldron", BooleanAndSimple.TRUE);
 
-			enableBiggerCauldronRaw = builder
-					.comment("Makes the cauldron hold 4 bottle per bucket instead of 3. Translates better to modded fluids.")
-					.worldRestart()
-					.define("recipes.cauldron.bigger", false);
+			builder.push("cauldron");
+			{
 
-			InspirationsRegistry.setConfig("biggerCauldron", enableBiggerCauldron());
+				enableBiggerCauldronRaw = builder
+						.comment("Makes the cauldron hold 4 bottle per bucket instead of 3. Translates better to modded fluids.")
+						.worldRestart()
+						.define("bigger", false);
 
-			fasterCauldronRainRaw = builder
-					.comment("Cauldrons fill faster in the rain than vanilla painfully slow rate.")
-					.define("cauldron.fasterRain", true);
-			dropCauldronContentsRaw = builder
-					.comment("Cauldrons will drop their contents when broken.")
-					.define("cauldron.dropContents", true);
+				fasterCauldronRainRaw = builder
+						.comment("Cauldrons fill faster in the rain than vanilla painfully slow rate.")
+						.define("fasterRain", true);
+				dropCauldronContentsRaw = builder
+						.comment("Cauldrons will drop their contents when broken.")
+						.define("dropContents", true);
 
 
-			cauldronObsidian = configFile.getBoolean("obsidian", "recipes.cauldron", cauldronObsidian, "Allows making obsidian in a cauldron by using a lava bucket on a water filled cauldron. Supports modded buckets. If cauldron fluids is enabled, you can also use a water bucket on a lava filled cauldron.");
+				cauldronObsidian = builder
+						.comment("Allows making obsidian in a cauldron by using a lava bucket on a water filled cauldron. Supports modded buckets. If cauldron fluids is enabled, you can also use a water bucket on a lava filled cauldron.")
+						.define("obsidian", true);
 
-			// fluids
-			enableCauldronFluids = configFile.getBoolean("fluids", "recipes.cauldron", enableCauldronFluids, "Allows cauldrons to be filled with any fluid and use them in recipes") && enableExtendedCauldron;
-			configFile.moveProperty("recipes.cauldron", "milk", "recipes.cauldron.fluids");
-			enableMilk = configFile.getBoolean("milk", "recipes.cauldron.fluids", enableMilk, "Registers milk as a fluid so it can be used in cauldron recipes.") && enableCauldronFluids;
+				// fluids
+				enableCauldronFluidsRaw = builder
+						.comment("Allows cauldrons to be filled with any fluid and use them in recipes")
+						.define("fluids", true);
+				enableMilkRaw = builder
+						.comment("Registers milk as a fluid so it can be used in cauldron recipes.")
+						.define("fluids.milk", true);
 
-			// dyeing
-			enableCauldronDyeingRaw = builder
-					.comment("Allows cauldrons to be filled with dyes and dye items using cauldrons")
-					.define("cauldron.dyeing", true);
-			patchVanillaDyeRecipesRaw = builder
-					.comment("Makes crafting two dyed water bottles together produce a dyed water bottle. Requires modifying vanilla recipes to prevent a conflict")
-					.define("cauldron.dyeing.patchVanillaRecipes", true);
-			extraBottleRecipesRaw = configFile.getBoolean("extraBottleRecipes", "recipes.cauldron.dyeing", extraBottleRecipes, "Adds extra dyed bottle recipes to craft green and brown") && enableCauldronDyeing;
+				// dyeing
+				enableCauldronDyeingRaw = builder
+						.comment("Allows cauldrons to be filled with dyes and dye items using cauldrons")
+						.define("dyeing", true);
+				patchVanillaDyeRecipesRaw = builder
+						.comment("Makes crafting two dyed water bottles together produce a dyed water bottle. Requires modifying vanilla recipes to prevent a conflict")
+						.define("dyeing.patchVanillaRecipes", true);
+				extraBottleRecipesRaw = builder
+						.comment("Adds extra dyed bottle recipes to craft green and brown")
+						.define("dyeing.extraBottleRecipes", true);
 
-			// potions
-//			configFile.renameProperty("recipes.cauldron", "brewing", "potions");
-			enableCauldronPotions = configFile.getBoolean("potions", "recipes.cauldron", enableCauldronPotions, "Allows cauldrons to be filled with potions and support brewing") && enableExtendedCauldron;
-			enableCauldronBrewing = configFile.getBoolean("brewing", "recipes.cauldron.potions", enableCauldronBrewing, "Allows cauldrons to perform brewing recipes.") && enableCauldronPotions;
-			expensiveCauldronBrewing = configFile.getBoolean("brewingExpensive", "recipes.cauldron.potions", expensiveCauldronBrewing, "Caps brewing at 2 potions per ingredient, requiring 2 ingredients for a full cauldron. Makes the brewing stand still useful and balances better against the bigger cauldron.") && enableCauldronBrewing;
-			cauldronTipArrows = configFile.getBoolean("tippedArrow", "recipes.cauldron.potions", cauldronTipArrows, "Allows cauldrons to tip arrows with potions.") && enableCauldronPotions;
-			InspirationsRegistry.setConfig("expensiveCauldronBrewing", expensiveCauldronBrewing);
+				// potions
+				enableCauldronPotionsRaw = builder
+						.comment("Allows cauldrons to be filled with potions and support brewing")
+						.define("potions", true);
+				enableCauldronBrewingRaw = builder
+						.comment("Allows cauldrons to perform brewing recipes.")
+						.define("potions.brewing", true);
+				expensiveCauldronBrewingRaw = builder
+						.comment("Caps brewing at 2 potions per ingredient, requiring 2 ingredients for a full cauldron. Makes the brewing stand still useful and balances better against the bigger cauldron.")
+						.define("potions.brewingExpensive", true);
+				cauldronTipArrowsRaw = builder
+						.comment("Allows cauldrons to tip arrows with potions.")
+						.define("potions.tippedArrow", true);
 
-			// dispensers
-			enableCauldronDispenser = configFile.getBoolean("dispenser", "recipes.cauldron", enableCauldronDispenser, "Allows dispensers to perform some recipes in the cauldron. Intended to be used for recipes to fill and empty fluid containers as droppers can already be used for recipes") && enableCauldronRecipes();
-			cauldronDispenserRecipes = configFile.get("recipes.cauldron.dispenser", "items", cauldronDispenserRecipes,
-					"List of itemstacks that can be used as to perform cauldron recipes in a dispenser").getStringList();
+				// dispensers
+				enableCauldronDispenserRaw = builder
+						.comment("Allows dispensers to perform some recipes in the cauldron. Intended to be used for recipes to fill and empty fluid containers as droppers can already be used for recipes")
+						.define("dispenser", true);
+			}
+			builder.pop();
 		}
 		builder.pop();
 
@@ -842,16 +860,6 @@ public class Config {
 			property.set(flowerOverrides);
 		}
 		processFlowerOverrides(flowerOverrides);
-
-		// cauldron fires
-		cauldronFire = configFile.get("recipes.cauldron", "fires", cauldronFire,
-				"List of blocks to act is fire below a cauldron. Format is modid:name[:meta]. If meta is excluded all states of the block will count as fire").getStringList();
-		processCauldronFire(cauldronFire);
-
-		// cauldron fires
-		milkContainersDefault = configFile.get("tweaks.milkCooldown", "containers", milkContainersDefault,
-				"List of containers which will milk a cow when interacting. Used to prevent milking and to apply the milked tag").getStringList();
-		processMilkContainers(milkContainersDefault);
 	}
 
 	/**
@@ -885,18 +893,6 @@ public class Config {
 		}
 
 		return line;
-	}
-
-	/**
-	 * Safely gets the config version as a double
-	 * @return Config version
-	 */
-	private static double getConfigVersion() {
-		try {
-			return Double.parseDouble(configFile.getLoadedConfigVersion());
-		} catch (NumberFormatException e) {
-			return Double.NaN;
-		}
 	}
 
 	/**
@@ -1066,49 +1062,6 @@ public class Config {
 		}
 	}
 
-
-	/**
-	 * Parses the cauldron fire list from the config
-	 * @param fires  List of fire blocks or block states
-	 */
-	private static void processCauldronFire(String[] fires) {
-		if(!enableCauldronRecipes()) {
-			return;
-		}
-
-		for(String fire : fires) {
-			// skip blank lines and comments
-			if("".equals(fire) || fire.startsWith("#")) {
-				continue;
-			}
-
-			RecipeUtil.forBlockInString(fire, InspirationsRegistry::registerCauldronFire, InspirationsRegistry::registerCauldronFire);
-		}
-	}
-
-	/**
-	 * Parses the milk containers list into a ImmutableSet
-	 * @param containers
-	 */
-	private static void processMilkContainers(String[] containers) {
-		if(!milkCooldown.get()) {
-			return;
-		}
-
-		ImmutableSet.Builder<Item> builder = ImmutableSet.builder();
-		Consumer<ItemStack> callback = (stack) -> {
-			builder.add(stack.getItem());
-		};
-		for(String container : containers) {
-			// skip blank lines and comments
-			if("".equals(container) || container.startsWith("#")) {
-				continue;
-			}
-			RecipeUtil.forStackInString(container, callback);
-		}
-		milkContainers = builder.build();
-	}
-
 	/*
 	 * Factories for recipe conditions
 	 */
@@ -1155,9 +1108,9 @@ public class Config {
 				// tools
 				case "barometer": return enableBarometer.get();
 				case "charged_arrow": return enableChargedArrow.get();
-				case "craft_waypoint_compass": return craftWaypointCompass.get();
+				case "craft_waypoint_compass": return craftWaypointCompass();
 				case "crook": return separateCrook();
-				case "dye_waypoint_compass": return dyeWaypointCompass.get();
+				case "dye_waypoint_compass": return dyeWaypointCompass();
 				case "lock": return enableLock.get();
 				case "nether_crook": return enableNetherCrook();
 				case "north_compass": return enableNorthCompass.get();
@@ -1170,14 +1123,20 @@ public class Config {
 
 				// recipes
 				case "cauldron_dyeing": return enableCauldronDyeing();
-				case "cauldron_fluids": return enableCauldronFluids.get();
-				case "cauldron_potions": return enableCauldronPotions.get();
+				case "cauldron_fluids": return enableCauldronFluids();
+				case "cauldron_potions": return enableCauldronPotions();
 				case "extra_dyed_bottle_recipes": return extraBottleRecipes();
 				case "patch_vanilla_dye_recipes": return patchVanillaDyeRecipes();
 			}
 
 			throw new JsonSyntaxException("Invalid propertyname '" + property + "'");
 		}
+	}
+
+    @SubscribeEvent
+    public static void configChanged(final ModConfig.ConfigReloading configEvent) {
+		InspirationsRegistry.setConfig("biggerCauldron", enableBiggerCauldron());
+		InspirationsRegistry.setConfig("expensiveCauldronBrewing", expensiveCauldronBrewing());
 	}
 
 }
