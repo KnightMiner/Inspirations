@@ -1,117 +1,89 @@
 package knightminer.inspirations.utility.block;
 
-import javax.annotation.Nonnull;
-
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyInteger;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.item.Items;
+import net.minecraft.state.IntegerProperty;
+import net.minecraft.state.StateContainer;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.items.ItemHandlerHelper;
 
+import javax.annotation.Nonnull;
+
 public class BlockRedstoneBarrel extends Block {
-
-	private static final AxisAlignedBB BOUNDS = new AxisAlignedBB(0.0625, 0, 0.0625, 0.9375, 1, 0.9375);
-	public static final PropertyInteger LEVEL = PropertyInteger.create("level", 0, 15);
+	public static final IntegerProperty LEVEL = IntegerProperty.create("level", 0, 15);
 	public BlockRedstoneBarrel() {
-		super(Material.ROCK);
-
-		this.setCreativeTab(CreativeTabs.REDSTONE);
-		this.setHardness(1.5F);
-		this.setResistance(10.0F);
-		this.setSoundType(SoundType.STONE);
+		super(Block.Properties.create(Material.ROCK)
+				.hardnessAndResistance(1.5F, 10.0F)
+				.sound(SoundType.STONE)
+		);
+		setDefaultState(getStateContainer().getBaseState().with(LEVEL, 0));
 	}
 
 
 	/* Blockstate */
 
 	@Override
-	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, LEVEL);
+	protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+		builder.add(LEVEL);
 	}
 
-	@Override
-	public IBlockState getStateFromMeta(int meta) {
-		return this.getDefaultState().withProperty(LEVEL, meta);
-	}
-
-	/**
-	 * Convert the BlockState into the correct metadata value
-	 */
-	@Override
-	public int getMetaFromState(IBlockState state) {
-		return state.getValue(LEVEL);
-	}
-
-
-	/* Properties */
-
-	@Override
-	public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune){
-		drops.add(new ItemStack(this));
-		int level = state.getValue(LEVEL);
-		if(level > 0) {
-			drops.add(new ItemStack(Items.REDSTONE, level));
+	// Collision shape.
+	private static final VoxelShape SHAPE_FRAME = VoxelShapes.or(
+			// The four sides of the barrel.
+			VoxelShapes.create(1, 0, 1, 15, 1, 2),
+			VoxelShapes.create(1, 0, 1, 2, 1, 15),
+			VoxelShapes.create(1, 0, 14, 15, 1, 15),
+			VoxelShapes.create(14, 0, 1, 15, 1, 15)
+	);
+	private static VoxelShape[] SHAPES = new VoxelShape[15];
+	// For each level, the middle section.
+	static {
+		for (int i = 0; i <= 15; i++) {
+			SHAPES[i] = VoxelShapes.or(SHAPE_FRAME, VoxelShapes.create(2, 0, 2, 14, i+1, 14));
 		}
 	}
 
 	@Nonnull
 	@Override
-	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-		return BOUNDS;
-	}
-
-	/**
-	 * Used to determine ambient occlusion and culling when rebuilding chunks for render
-	 */
-	@Override
-	public boolean isOpaqueCube(IBlockState state) {
-		return false;
-	}
-
-	@Override
-	public boolean isFullCube(IBlockState state) {
-		return false;
+	public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
+		return SHAPES[state.get(LEVEL)];
 	}
 
 
 	/* Redstone */
 	@Override
-	public boolean hasComparatorInputOverride(IBlockState state) {
+	public boolean hasComparatorInputOverride(BlockState state) {
 		return true;
 	}
 
 	@Override
-	public int getComparatorInputOverride(IBlockState blockState, World worldIn, BlockPos pos) {
-		return blockState.getValue(LEVEL);
+	public int getComparatorInputOverride(BlockState blockState, World worldIn, BlockPos pos) {
+		return blockState.get(LEVEL);
 	}
 
-	/**
-	 * Called when the block is right clicked by a player.
-	 */
 	@Override
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-		int level = state.getValue(LEVEL);
+	public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+		int level = state.get(LEVEL);
 		ItemStack stack = player.getHeldItem(hand);
 
 		// holding redstone: fill
 		if(stack.getItem() == Items.REDSTONE) {
 			if(level < 15) {
 				if(!world.isRemote) {
-					if(!player.capabilities.isCreativeMode) {
+					if(!player.isCreative()) {
 						stack.shrink(1);
 					}
 					setLevel(world, pos, state, level + 1);
@@ -132,8 +104,8 @@ public class BlockRedstoneBarrel extends Block {
 		return false;
 	}
 
-	public void setLevel(World world, BlockPos pos, IBlockState state, int level) {
-		world.setBlockState(pos, state.withProperty(LEVEL, Integer.valueOf(MathHelper.clamp(level, 0, 15))), 2);
+	public void setLevel(World world, BlockPos pos, BlockState state, int level) {
+		world.setBlockState(pos, state.with(LEVEL, MathHelper.clamp(level, 0, 15)), 2);
 		world.updateComparatorOutputLevel(pos, this);
 	}
 }
