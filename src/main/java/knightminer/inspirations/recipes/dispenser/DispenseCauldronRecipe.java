@@ -6,29 +6,20 @@ import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe.CauldronState;
 import knightminer.inspirations.recipes.block.BlockEnhancedCauldron;
 import knightminer.inspirations.recipes.tileentity.TileCauldron;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockCauldron;
-import net.minecraft.block.BlockDispenser;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.CauldronBlock;
-import net.minecraft.block.DispenserBlock;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.dispenser.BehaviorDefaultDispenseItem;
+import net.minecraft.block.*;
 import net.minecraft.dispenser.DefaultDispenseItemBehavior;
-import net.minecraft.dispenser.IBehaviorDispenseItem;
 import net.minecraft.dispenser.IBlockSource;
 import net.minecraft.dispenser.IDispenseItemBehavior;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.DispenserTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityDispenser;
 import net.minecraft.util.Direction;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+
+import javax.annotation.Nonnull;
 
 public class DispenseCauldronRecipe extends DefaultDispenseItemBehavior {
 	private static final DefaultDispenseItemBehavior DEFAULT = new DefaultDispenseItemBehavior();
@@ -38,9 +29,10 @@ public class DispenseCauldronRecipe extends DefaultDispenseItemBehavior {
 		this.fallback = fallback;
 	}
 
+	@Nonnull
 	@Override
-	protected ItemStack dispenseStack(IBlockSource source, ItemStack stack) {
-		if(!stack.getItem().isIn(InspirationsRegistry.TAG_FLUID_TANKS)) {
+   protected ItemStack dispenseStack(IBlockSource source, ItemStack stack) {
+		if(!stack.getItem().isIn(InspirationsRegistry.TAG_DISP_CAULDRON_RECIPES)) {
 			return fallback.dispense(source, stack);
 		}
 
@@ -57,7 +49,7 @@ public class DispenseCauldronRecipe extends DefaultDispenseItemBehavior {
 		CauldronState cauldronState = CauldronState.WATER;
 		boolean boiling = false;
 		Block block = state.getBlock();
-		if(Config.enableExtendedCauldron.get() && block instanceof BlockEnhancedCauldron) {
+		if(Config.enableExtendedCauldron() && block instanceof BlockEnhancedCauldron) {
 			TileEntity te = world.getTileEntity(pos);
 			if(te instanceof TileCauldron) {
 				cauldron = (TileCauldron) te;
@@ -81,14 +73,14 @@ public class DispenseCauldronRecipe extends DefaultDispenseItemBehavior {
 		CauldronState newState = recipe.getState(stack, boiling, level, cauldronState);
 
 		// if its not extended, stop right here and disallow any recipes which do not return water
-		if(!Config.enableExtendedCauldron.get() && !CauldronState.WATER.matches(newState)) {
+		if(!Config.enableExtendedCauldron() && !CauldronState.WATER.matches(newState)) {
 			return DEFAULT.dispense(source, stack);
 		}
 
 		// play sound
 		SoundEvent sound = recipe.getSound(stack, boiling, level, cauldronState);
 		if(sound != null) {
-			world.playSound((EntityPlayer)null, pos, sound, SoundCategory.BLOCKS, recipe.getVolume(sound), 1.0F);
+			world.playSound(null, pos, sound, SoundCategory.BLOCKS, recipe.getVolume(sound), 1.0F);
 		}
 
 		// update level
@@ -100,17 +92,17 @@ public class DispenseCauldronRecipe extends DefaultDispenseItemBehavior {
 				cauldron = null;
 			} else {
 				if(!(block instanceof CauldronBlock)) {
-					Blocks.CAULDRON.setWaterLevel(world, pos, Blocks.CAULDRON.getDefaultState(), newLevel);
+					((CauldronBlock)Blocks.CAULDRON).setWaterLevel(world, pos, Blocks.CAULDRON.getDefaultState(), newLevel);
 
 					// missing the tile entity
-					if(Config.enableExtendedCauldron) {
+					if(Config.enableExtendedCauldron()) {
 						TileEntity te = world.getTileEntity(pos);
 						if(te instanceof TileCauldron) {
 							cauldron = (TileCauldron)te;
 						}
 					}
 				} else {
-					((BlockCauldron)block).setWaterLevel(world, pos, state, newLevel);
+					((CauldronBlock)block).setWaterLevel(world, pos, state, newLevel);
 				}
 				if(newLevel == 0) {
 					newState = CauldronState.WATER;
@@ -153,7 +145,7 @@ public class DispenseCauldronRecipe extends DefaultDispenseItemBehavior {
 	}
 
 	private static void dispenseItem(IBlockSource source, ItemStack stack) {
-		if(((TileEntityDispenser)source.getBlockTileEntity()).addItemStack(stack) < 0) {
+		if(((DispenserTileEntity)source.getBlockTileEntity()).addItemStack(stack) < 0) {
 			DEFAULT.dispense(source, stack);
 		}
 	}

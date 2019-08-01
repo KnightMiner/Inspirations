@@ -50,8 +50,11 @@ public class InspirationsRegistry {
 	// Blocks with this tag act as fire for the cauldron.
 	public static final Tag<Block> TAG_CAULDRON_FIRE = new BlockTags.Wrapper(new ResourceLocation(Inspirations.modID, "cauldron_fire"));
 	// Items with this tag are registered to have fluid tank functionality.
-	public static final Tag<Item> TAG_FLUID_TANKS = new ItemTags.Wrapper(new ResourceLocation(Inspirations.modID, "fluid_containers"));
-	/**
+	public static final Tag<Item> TAG_DISP_FLUID_TANKS = new ItemTags.Wrapper(new ResourceLocation(Inspirations.modID, "fluid_containers"));
+	// Items with this tag are registered to perform cauldron recipes.
+	public static final Tag<Item> TAG_DISP_CAULDRON_RECIPES = new ItemTags.Wrapper(new ResourceLocation(Inspirations.modID, "cauldron_recipes"));
+
+    /**
 	 * Sets a value from the Inspirations config into the registry. Used to keep the config out of the library
 	 * @param key    Key to set
 	 * @param value  Boolean value
