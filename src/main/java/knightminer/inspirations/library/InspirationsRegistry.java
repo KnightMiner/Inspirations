@@ -1,6 +1,7 @@
 package knightminer.inspirations.library;
 
 import com.google.common.collect.ImmutableList;
+import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.event.RegisterEvent.RegisterCauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.CauldronFluidRecipe;
@@ -9,19 +10,15 @@ import knightminer.inspirations.library.recipe.cauldron.FillCauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe.CauldronState;
 import net.minecraft.block.*;
-import net.minecraft.block.BlockBush;
-import net.minecraft.block.BlockCrops;
-import net.minecraft.block.BlockDeadBush;
-import net.minecraft.block.BlockDoublePlant;
-import net.minecraft.block.BlockLilyPad;
-import net.minecraft.block.BlockMushroom;
-import net.minecraft.block.BlockSapling;
-import net.minecraft.block.BlockTallGrass;
+import net.minecraft.block.BushBlock;
+import net.minecraft.block.CropsBlock;
+import net.minecraft.block.DeadBushBlock;
+import net.minecraft.block.DoublePlantBlock;
+import net.minecraft.block.LilyPadBlock;
+import net.minecraft.block.MushroomBlock;
+import net.minecraft.block.SaplingBlock;
+import net.minecraft.block.TallGrassBlock;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.BlockState;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -31,7 +28,6 @@ import net.minecraft.tags.Tag;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvents;
 import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.oredict.OreDictionary;
 import org.apache.logging.log4j.Logger;
 import slimeknights.mantle.util.RecipeMatch;
 
@@ -129,18 +125,18 @@ public class InspirationsRegistry {
 	 * Registers an override to state a stack is definately a book or not a book, primarily used by the config
 	 * @param stack   Itemstack which is a book
 	 * @param isBook  True if its a book, false if its not a book
-	 * @deprecated use {@link #registerBook(ItemStack, float)}
+	 * @deprecated use {@link #registerBook(Item, float)}
 	 */
 	@Deprecated
 	public static void registerBook(ItemStack stack, boolean isBook) {
-		registerBook(stack, isBook ? 1.5f : -1f);
+		registerBook(stack.getItem(), isBook ? 1.5f : -1f);
 	}
 
 	/**
 	 * Registers an override to state a stack is definately a book or not a book, primarily used by the config
 	 * @param item  Item which is a book
 	 * @param isBook  True if its a book, false if its not a book
-	 * @deprecated use {@link #registerBook(ItemStack, float)}
+	 * @deprecated use {@link #registerBook(Item, float)}
 	 */
 	@Deprecated
 	public static void registerBook(Item item, boolean isBook) {
@@ -426,12 +422,12 @@ public class InspirationsRegistry {
 		stack = stack.copy();
 		int count = stack.getCount();
 		stack.setCount(count * 2);
-		if(Config.enableBiggerCauldron.get()) {
+		if(Config.enableBiggerCauldron()) {
 			addCauldronRecipe(new CauldronFluidTransformRecipe(RecipeMatch.of(stack, stack.getCount(), 1), input, output, boiling, 2));
 			stack = stack.copy();
 			stack.setCount(count * 3);
 		}
-		addCauldronRecipe(new CauldronFluidTransformRecipe(RecipeMatch.of(stack, stack.getCount(), 1), input, output, boiling, (Config.enableBiggerCauldron.get() ? 4 : 3)));
+		addCauldronRecipe(new CauldronFluidTransformRecipe(RecipeMatch.of(stack, stack.getCount(), 1), input, output, boiling, (Config.enableBiggerCauldron() ? 4 : 3)));
 	}
 
 	/**
