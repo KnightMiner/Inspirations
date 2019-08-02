@@ -17,6 +17,8 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.Item;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.profiler.IProfiler;
+import net.minecraft.resources.IFutureReloadListener;
 import net.minecraft.resources.IResourceManager;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
@@ -35,12 +37,16 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 @OnlyIn(Dist.CLIENT)
-public final class ClientUtil {
+public final class ClientUtil implements IFutureReloadListener {
 	public static final String TAG_TEXTURE_PATH = "texture_path";
 	private static final Minecraft mc = Minecraft.getInstance();
 	private ClientUtil() {}
+
+	public static final ClientUtil INST = new ClientUtil();
 
 	private static Map<Item, Integer> colorCache = new HashMap<>();
 
@@ -97,10 +103,11 @@ public final class ClientUtil {
 
 	/**
 	 * Called on resource reload to clear any resource based cache
-	 * @param manager
 	 */
-	public static void onResourceReload(IResourceManager manager) {
-		colorCache.clear();
+
+	@Override
+	public CompletableFuture<Void> reload(IStage stage, IResourceManager resourceManager, IProfiler preparationsProfiler, IProfiler reloadProfiler, Executor backgroundExecutor, Executor gameExecutor) {
+		return CompletableFuture.runAsync(() -> colorCache.clear(), gameExecutor);
 	}
 
 	/**
