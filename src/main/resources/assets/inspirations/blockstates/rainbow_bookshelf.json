@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "inspirations:bookshelf/normal",
+    "model": "inspirations:block/bookshelf/normal",
     "textures": {
       "texture": "block/planks_oak",
       "books":   "inspirations:block/books_rainbow",

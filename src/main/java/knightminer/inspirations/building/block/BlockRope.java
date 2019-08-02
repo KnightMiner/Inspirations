@@ -2,6 +2,8 @@ package knightminer.inspirations.building.block;
 
 import javax.annotation.Nullable;
 
+import knightminer.inspirations.common.Config;
+import knightminer.inspirations.common.block.HidableBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -21,11 +23,11 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.*;
 
-public class BlockRope extends Block {
+public class BlockRope extends HidableBlock {
 
 	public static final BooleanProperty BOTTOM = BooleanProperty.create("bottom");
 	public BlockRope(Properties props) {
-		super(props);
+		super(props, Config.enableRope::get);
 		this.setDefaultState(this.stateContainer.getBaseState().with(BOTTOM, false));
 	}
 
@@ -45,9 +47,9 @@ public class BlockRope extends Block {
 		if(state.getBlock() == this) {
 			return true;
 		}
-		// See Block.func_220055_a
-		// .project(.ONLY_SECOND)
-		return !state.isIn(BlockTags.LEAVES) && !VoxelShapes.compare(state.getCollisionShape(world, pos).func_212434_a(Direction.UP), BOUNDS, IBooleanFunction.field_223232_c_);
+		return !state.isIn(BlockTags.LEAVES) && !VoxelShapes.compare(
+				state.getCollisionShape(world, pos).project(Direction.UP), BOUNDS, IBooleanFunction.ONLY_SECOND
+		);
 	}
 
 	/* Ropey logic */

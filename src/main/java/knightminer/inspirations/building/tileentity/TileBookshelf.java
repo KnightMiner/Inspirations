@@ -24,8 +24,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.ServerWorld;
-import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.client.model.ModelDataManager;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelDataMap;
@@ -58,7 +57,6 @@ public class TileBookshelf extends InventoryTileEntity {
 			// update for rendering
 			if(getWorld().isRemote) {
 				ModelDataManager.requestModelDataRefresh(this);
-				getWorld().markForRerender(getPos());
 			}
 
 			// if we have redstone books and either the old stack or the new one is a book, update

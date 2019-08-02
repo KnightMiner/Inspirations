@@ -4,6 +4,6 @@
       "uvlock": true
   },
   "variants": {
-     "":  { "model": "inspirations:path/round" }
+     "":  { "model": "inspirations:block/path/round" }
   }
 }

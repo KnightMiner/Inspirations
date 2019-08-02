@@ -5,7 +5,7 @@
     "textures": {
       "texture": "block/planks_oak",
       "books": "inspirations:block/books_ancient"
-    },
+    }
   },
   "variants": {
     "facing": {

@@ -5,7 +5,7 @@
     "bottom":  "inspirations:block/rope_bottom"
   },
   "variants": {
-    "bottom=false": { "model": "inspirations:rope" },
-    "bottom=true":  { "model": "inspirations:rope_bottom" }
-  },
+    "bottom=false": { "model": "inspirations:block/rope" },
+    "bottom=true":  { "model": "inspirations:block/rope_bottom" }
+  }
 }

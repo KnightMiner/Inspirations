@@ -40,7 +40,7 @@ public class BookshelfModel extends TextureModel {
 		int books = booksValue != null ? booksValue : 0;
 		try {
 			// grab the model from cache if present
-			bakedModel = BOOK_CACHE.get(new BookshelfCacheKey(extendedState.getClean(), texture, books), () -> {
+			bakedModel = BOOK_CACHE.get(new BookshelfCacheKey(state, texture, books), () -> {
 				// have books
 				ImmutableMap.Builder<String, String> builder = ImmutableMap.builder();
 				if(texture != null) {
@@ -53,7 +53,8 @@ public class BookshelfModel extends TextureModel {
 						builder.put("#bookLabel" + i, "");
 					}
 				}
-				return getTexturedModel(builder.build());
+				return originalModel;
+//				return getTexturedModel(builder.build());
 			});
 		} catch(ExecutionException e) {
 			Inspirations.log.error(e);

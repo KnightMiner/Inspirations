@@ -2,18 +2,24 @@ package knightminer.inspirations.building.block;
 
 import java.util.Locale;
 
+import knightminer.inspirations.common.Config;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SaplingBlock;
 import net.minecraft.block.FallingBlock;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraftforge.common.PlantType;
 import net.minecraftforge.common.ToolType;
+
+import javax.annotation.Nonnull;
 
 public class BlockMulch extends FallingBlock {
 
@@ -26,6 +32,13 @@ public class BlockMulch extends FallingBlock {
 			.hardnessAndResistance(0.6F)
 		);
 	}
+
+    @Override
+    public void fillItemGroup(@Nonnull ItemGroup group, @Nonnull NonNullList<ItemStack> items) {
+        if(group == ItemGroup.SEARCH || Config.enableMulch.get()) {
+			super.fillItemGroup(group, items);
+        }
+    }
 
 	/*
 	 * Plants

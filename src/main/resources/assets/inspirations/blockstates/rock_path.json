@@ -5,18 +5,18 @@
   },
   "variants": {
      "":  [
-         { "model": "inspirations:path/rocks_1" },
-         { "model": "inspirations:path/rocks_1", "y": 90 },
-         { "model": "inspirations:path/rocks_1", "y": 180 },
-         { "model": "inspirations:path/rocks_1", "y": 270 },
-         { "model": "inspirations:path/rocks_2" },
-         { "model": "inspirations:path/rocks_2", "y": 90 },
-         { "model": "inspirations:path/rocks_2", "y": 180 },
-         { "model": "inspirations:path/rocks_2", "y": 270 },
-         { "model": "inspirations:path/rocks_3" },
-         { "model": "inspirations:path/rocks_3", "y": 90 },
-         { "model": "inspirations:path/rocks_3", "y": 180 },
-         { "model": "inspirations:path/rocks_3", "y": 270 }
+         { "model": "inspirations:block/path/rocks_1" },
+         { "model": "inspirations:block/path/rocks_1", "y": 90 },
+         { "model": "inspirations:block/path/rocks_1", "y": 180 },
+         { "model": "inspirations:block/path/rocks_1", "y": 270 },
+         { "model": "inspirations:block/path/rocks_2" },
+         { "model": "inspirations:block/path/rocks_2", "y": 90 },
+         { "model": "inspirations:block/path/rocks_2", "y": 180 },
+         { "model": "inspirations:block/path/rocks_2", "y": 270 },
+         { "model": "inspirations:block/path/rocks_3" },
+         { "model": "inspirations:block/path/rocks_3", "y": 90 },
+         { "model": "inspirations:block/path/rocks_3", "y": 180 },
+         { "model": "inspirations:block/path/rocks_3", "y": 270 }
      ]
   }
 }

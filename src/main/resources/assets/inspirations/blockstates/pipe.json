@@ -1,81 +1,81 @@
 {
     "multipart": [
         {   "when": { "facing": "north", "hopper": "false" },
-            "apply": { "model": "inspirations:pipe/output" }
+            "apply": { "model": "inspirations:block/pipe/output" }
         },
         {   "when": { "facing": "north", "hopper": "true" },
-            "apply": { "model": "inspirations:pipe/output_hopper" }
+            "apply": { "model": "inspirations:block/pipe/output_hopper" }
         },
         {   "when": { "north": "false", "facing": "east|south|west|up|down" },
-            "apply": { "model": "inspirations:pipe/disconnected" }
+            "apply": { "model": "inspirations:block/pipe/disconnected" }
         },
         {   "when": { "north": "true", "facing": "east|south|west|up|down" },
-            "apply": { "model": "inspirations:pipe/input" }
+            "apply": { "model": "inspirations:block/pipe/input" }
         },
         
         {   "when": { "facing": "east", "hopper": "false" },
-            "apply": { "model": "inspirations:pipe/output", "y": 90 }
+            "apply": { "model": "inspirations:block/pipe/output", "y": 90 }
         },
         {   "when": { "facing": "east", "hopper": "true" },
-            "apply": { "model": "inspirations:pipe/output_hopper", "y": 90 }
+            "apply": { "model": "inspirations:block/pipe/output_hopper", "y": 90 }
         },
         {   "when": { "east": "false", "facing": "north|south|west|up|down"},
-            "apply": { "model": "inspirations:pipe/disconnected", "y": 90 }
+            "apply": { "model": "inspirations:block/pipe/disconnected", "y": 90 }
         },
         {   "when": { "east": "true", "facing": "north|south|west|up|down"},
-            "apply": { "model": "inspirations:pipe/input", "y": 90 }
+            "apply": { "model": "inspirations:block/pipe/input", "y": 90 }
         },
         
         {   "when": { "facing": "south", "hopper": "false" },
-            "apply": { "model": "inspirations:pipe/output", "y": 180 }
+            "apply": { "model": "inspirations:block/pipe/output", "y": 180 }
         },
         {   "when": { "facing": "south", "hopper": "true" },
-            "apply": { "model": "inspirations:pipe/output_hopper", "y": 180 }
+            "apply": { "model": "inspirations:block/pipe/output_hopper", "y": 180 }
         },
         {   "when": { "south": "false", "facing": "north|east|west|up|down" },
-            "apply": { "model": "inspirations:pipe/disconnected", "y": 180 }
+            "apply": { "model": "inspirations:block/pipe/disconnected", "y": 180 }
         },
         {   "when": { "south": "true", "facing": "north|east|west|up|down" },
-            "apply": { "model": "inspirations:pipe/input", "y": 180 }
+            "apply": { "model": "inspirations:block/pipe/input", "y": 180 }
         },
         
         {   "when": { "facing": "west", "hopper": "false" },
-            "apply": { "model": "inspirations:pipe/output", "y": 270 }
+            "apply": { "model": "inspirations:block/pipe/output", "y": 270 }
         },
         {   "when": { "facing": "west", "hopper": "true" },
-            "apply": { "model": "inspirations:pipe/output_hopper", "y": 270 }
+            "apply": { "model": "inspirations:block/pipe/output_hopper", "y": 270 }
         },
         {   "when": { "west": "false", "facing": "north|east|south|up|down"},
-            "apply": { "model": "inspirations:pipe/disconnected", "y": 270 }
+            "apply": { "model": "inspirations:block/pipe/disconnected", "y": 270 }
         },
         {   "when": { "west": "true", "facing": "north|east|south|up|down"},
-            "apply": { "model": "inspirations:pipe/input", "y": 270 }
+            "apply": { "model": "inspirations:block/pipe/input", "y": 270 }
         },
         
         {   "when": { "facing": "up", "hopper": "false" },
-            "apply": { "model": "inspirations:pipe/output_up" }
+            "apply": { "model": "inspirations:block/pipe/output_up" }
         },
         {   "when": { "facing": "up", "hopper": "true" },
-            "apply": { "model": "inspirations:pipe/output_up_hopper" }
+            "apply": { "model": "inspirations:block/pipe/output_up_hopper" }
         },
         {   "when": { "up": "false", "facing": "north|east|south|west|down" },
-            "apply": { "model": "inspirations:pipe/disconnected_up" }
+            "apply": { "model": "inspirations:block/pipe/disconnected_up" }
         },
         {   "when": { "up": "true", "facing": "north|east|south|west|down" },
-            "apply": { "model": "inspirations:pipe/input_up" }
+            "apply": { "model": "inspirations:block/pipe/input_up" }
         },
         
         {   "when": { "facing": "down", "hopper": "false" },
-            "apply": { "model": "inspirations:pipe/output_down" }
+            "apply": { "model": "inspirations:block/pipe/output_down" }
         },
         {   "when": { "facing": "down", "hopper": "true" },
-            "apply": { "model": "inspirations:pipe/output_down_hopper" }
+            "apply": { "model": "inspirations:block/pipe/output_down_hopper" }
         },
         {   "when": { "down": "false", "facing": "north|east|south|west|up"},
-            "apply": { "model": "inspirations:pipe/disconnected_down" }
+            "apply": { "model": "inspirations:block/pipe/disconnected_down" }
         },
         {   "when": { "down": "true", "facing": "north|east|south|west|up"},
-            "apply": { "model": "inspirations:pipe/input_down" }
+            "apply": { "model": "inspirations:block/pipe/input_down" }
         }
     ]
 }

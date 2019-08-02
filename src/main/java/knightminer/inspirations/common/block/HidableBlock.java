@@ -1,22 +1,18 @@
-package knightminer.inspirations.common.item;
+package knightminer.inspirations.common.block;
 
 import knightminer.inspirations.common.IHidable;
-import net.minecraft.item.Item;
+import net.minecraft.block.Block;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
-import net.minecraftforge.common.ForgeConfigSpec;
 
 import javax.annotation.Nonnull;
 import java.util.function.Supplier;
 
-/**
- * Item which is hidden if the config value is disabled.
- */
-public class HidableItem extends Item implements IHidable {
+public class HidableBlock extends Block implements IHidable {
     private final Supplier<Boolean> enabled;
 
-    public HidableItem(Properties properties, Supplier<Boolean> isEnabled) {
+    public HidableBlock(Properties properties, Supplier<Boolean> isEnabled) {
         super(properties);
         this.enabled = isEnabled;
     }

@@ -41,7 +41,7 @@ import java.util.List;
 
 public class BlockBookshelf extends InventoryBlock implements ITileEntityProvider {
 
-	public static final DirectionProperty FACING = BlockStateProperties.FACING;
+	public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
 	public static final ModelProperty<String> TEXTURE = TextureBlockUtil.TEXTURE_PROP;
 	public static final ModelProperty<Integer> BOOKS = new ModelProperty<>();
 
@@ -278,10 +278,12 @@ public class BlockBookshelf extends InventoryBlock implements ITileEntityProvide
 
 	/* Drops */
 
-	@Override
-	public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
-		TextureBlockUtil.addBlocksFromTag(BlockTags.WOODEN_SLABS, this, items);
-	}
+    @Override
+    public void fillItemGroup(@Nonnull ItemGroup group, @Nonnull NonNullList<ItemStack> items) {
+        if(group == ItemGroup.SEARCH || Config.enableBookshelf.get()) {
+			TextureBlockUtil.addBlocksFromTag(BlockTags.WOODEN_SLABS, this, items);
+        }
+    }
 
 	@Override
 	public ItemStack getPickBlock(BlockState state, RayTraceResult target, IBlockReader world, BlockPos pos, PlayerEntity player) {
