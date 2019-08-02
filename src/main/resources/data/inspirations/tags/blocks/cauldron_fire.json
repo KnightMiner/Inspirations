@@ -1,6 +1,6 @@
 {
-  "_comment": "Blocks with this tag provide heat to cauldrons above them.",
+  "_comment": "Blocks with this tag will be recognised as able to heat the cauldron.",
   "values": [
-    "minecraft:fire",
+    "minecraft:fire"
   ]
 }

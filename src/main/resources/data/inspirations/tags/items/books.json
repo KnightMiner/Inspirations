@@ -3,7 +3,7 @@
     "minecraft:book",
     "minecraft:writable_book",
     "minecraft:written_book",
-    "minecraft:enchanted_book",
+    "minecraft:enchanted_book"
   ],
   "optional": [
     "inspirations:white_book",

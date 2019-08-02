@@ -3,8 +3,7 @@
     "" : {
       "model": "minecraft:blocks/cube_all",
       "textures": {
-        "leaves": "block/leaves_oak",
-        "lights": "inspirations:block/mulch_yellow"
+        "all": "inspirations:block/mulch_yellow"
       }
     }
   }

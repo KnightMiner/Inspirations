@@ -4,6 +4,6 @@
       "uvlock": true
   },
   "variants": {
-     "": { "model": "inspirations:path/bricks" }
+     "": { "model": "inspirations:block/path/bricks" }
   }
 }

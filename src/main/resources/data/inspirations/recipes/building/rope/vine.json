@@ -1,11 +1,11 @@
 {
   "conditions": [
     {
-      "type": "pulse_loaded",
+      "type": "inspirations:pulse_loaded",
       "pulse": "InspirationsBuilding"
     },
     {
-      "type": "config",
+      "type": "inspirations:config",
       "prop": "rope"
     }
   ],

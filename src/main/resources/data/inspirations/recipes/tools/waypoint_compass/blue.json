@@ -12,7 +12,7 @@
   "type": "inspirations:waypoint_compass",
   "group": "inspirations:dye_waypoint_compass",
   "result": {
-    "item": "inspirations:blue_waypoint_compass",
+    "item": "inspirations:blue_waypoint_compass"
   },
   "ingredients": [
     { "tag": "inspirations:waypoint_compasses" },

@@ -4,10 +4,10 @@
     "minecraft:bucket",
     "minecraft:water_bucket",
     "minecraft:milk_bucket",
-    "minecraft:lava_bucket",
+    "minecraft:lava_bucket"
   ],
   "optional": [
     "ceramics:clay_bucket",
-    "forge:bucket_filled",
+    "forge:bucket_filled"
   ]
 }

@@ -1,17 +1,17 @@
 {
   "conditions": [
     {
-      "type": "pulse_loaded",
+      "type": "inspirations:pulse_loaded",
       "pulse": "InspirationsRecipes"
     },
     {
-      "type": "config",
+      "type": "inspirations:config",
       "prop": "cauldron_fluids"
     }
   ],
   "type": "minecraft:crafting_shapeless",
   "result": {
-    "item": "inspirations:rabbit_stew_mix",
+    "item": "inspirations:rabbit_stew_mix"
   },
   "ingredients": [
     [
