@@ -1,12 +1,12 @@
 package knightminer.inspirations.common.network;
 
 import knightminer.inspirations.Inspirations;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.fml.network.PacketDistributor;
 import slimeknights.mantle.network.AbstractPacket;
 import slimeknights.mantle.network.NetworkWrapper;
 
@@ -14,7 +14,7 @@ public class InspirationsNetwork extends NetworkWrapper {
 
 	public static InspirationsNetwork instance = new InspirationsNetwork();
 
-	public InspirationsNetwork() {
+	private InspirationsNetwork() {
 		super(Inspirations.modID);
 	}
 
@@ -22,37 +22,28 @@ public class InspirationsNetwork extends NetworkWrapper {
 		// register all the packets
 
 		// bookshelf
-		registerPacketClient(InventorySlotSyncPacket.class);
+		registerPacket(InventorySlotSyncPacket.class, InventorySlotSyncPacket::encode, InventorySlotSyncPacket::decode, InventorySlotSyncPacket::handle);
 
 		// milk cooldown
-		registerPacketClient(MilkablePacket.class);
+		registerPacket(MilkablePacket.class, MilkablePacket::encode, MilkablePacket::decode, MilkablePacket::handle);
 	}
 
 	public static void sendToAll(AbstractPacket packet) {
-		instance.network.sendToAll(packet);
+		instance.network.send(PacketDistributor.ALL.noArg(), packet);
 	}
 
-	public static void sendTo(AbstractPacket packet, EntityPlayerMP player) {
-		instance.network.sendTo(packet, player);
+	public static void sendTo(AbstractPacket packet, ServerPlayerEntity player) {
+		instance.network.send(PacketDistributor.PLAYER.with(() -> player), packet);
 	}
 
 	public static void sendToClients(World world, BlockPos pos, AbstractPacket packet) {
-		if(world instanceof WorldServer) {
-			sendToClients((WorldServer)world, pos, packet);
+		if(world instanceof ServerWorld) {
+			sendToClients((ServerWorld)world, pos, packet);
 		}
 	}
 
-	public static void sendToClients(WorldServer world, BlockPos pos, AbstractPacket packet) {
-		Chunk chunk = world.getChunkFromBlockCoords(pos);
-		for(EntityPlayer player : world.playerEntities) {
-			// only send to relevant players
-			if(!(player instanceof EntityPlayerMP)) {
-				continue;
-			}
-			EntityPlayerMP playerMP = (EntityPlayerMP) player;
-			if(world.getPlayerChunkMap().isPlayerWatchingChunk(playerMP, chunk.x, chunk.z)) {
-				InspirationsNetwork.sendTo(packet, playerMP);
-			}
-		}
+	public static void sendToClients(ServerWorld world, BlockPos pos, AbstractPacket packet) {
+		Chunk chunk = world.getChunkAt(pos);
+		instance.network.send(PacketDistributor.TRACKING_CHUNK.with(() -> chunk), packet);
 	}
 }

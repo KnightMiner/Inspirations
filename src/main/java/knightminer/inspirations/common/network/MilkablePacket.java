@@ -1,53 +1,57 @@
 package knightminer.inspirations.common.network;
 
-import io.netty.buffer.ByteBuf;
 import knightminer.inspirations.shared.SharedEvents;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetHandlerPlayServer;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
 import slimeknights.mantle.network.AbstractPacketThreadsafe;
+
+import java.util.function.Supplier;
 
 public class MilkablePacket extends AbstractPacketThreadsafe {
 
 	private int entityID;
 	private boolean milkable;
 
-	public MilkablePacket() {}
+	private MilkablePacket() {}
+
 	public MilkablePacket(Entity entity, boolean milkable) {
 		entityID = entity.getEntityId();
 		this.milkable = milkable;
 	}
 
 	@Override
-	public void toBytes(ByteBuf buf) {
+	public void encode(PacketBuffer buf) {
 		buf.writeInt(entityID);
 		buf.writeBoolean(milkable);
 	}
 
-	@Override
-	public void fromBytes(ByteBuf buf) {
-		entityID = buf.readInt();
-		milkable = buf.readBoolean();
+	public static MilkablePacket decode(PacketBuffer buf) {
+		MilkablePacket packet = new MilkablePacket();
+		packet.entityID = buf.readInt();
+		packet.milkable = buf.readBoolean();
+		return packet;
 	}
 
 	@Override
-	public void handleClientSafe(NetHandlerPlayClient netHandler) {
-		Entity entity = Minecraft.getMinecraft().world.getEntityByID(entityID);
+	public void handle(Supplier<NetworkEvent.Context> context) {
+		// only send to clients.
+		switch (context.get().getDirection()) {
+		  case LOGIN_TO_SERVER:
+		  case PLAY_TO_SERVER:
+			throw new UnsupportedOperationException("Clientside only");
+		}
+
+		Entity entity = Minecraft.getInstance().world.getEntityByID(entityID);
 		if(entity == null) {
 			return;
 		}
 
-		NBTTagCompound tags = entity.getEntityData();
+		CompoundNBT tags = entity.getEntityData();
 		// value for not milkable does not matter as long as its greater than 0
-		tags.setShort(SharedEvents.TAG_MILKCOOLDOWN, (short)(milkable ? 0 : 100));
-	}
-
-	@Override
-	public void handleServerSafe(NetHandlerPlayServer netHandler) {
-		// only send to clients
-		throw new UnsupportedOperationException("Clientside only");
+		tags.putShort(SharedEvents.TAG_MILKCOOLDOWN, (short)(milkable ? 0 : 100));
 	}
 
 }
