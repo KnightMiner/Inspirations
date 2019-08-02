@@ -1,6 +1,6 @@
 {
   "replace": false,
-  "optional": [
+  "values": [
     "#inspirations:carpeted_trapdoors"
   ]
 }

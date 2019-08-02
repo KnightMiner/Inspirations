@@ -8,7 +8,7 @@
       "minecraft:mushroom_stew",
       "minecraft:potion",
       "minecraft:rabbit_stew",
-      "minecraft:splash_potion",
+      "minecraft:splash_potion"
   ],
   "optional": [
     "#inspirations:dyed_bottles",

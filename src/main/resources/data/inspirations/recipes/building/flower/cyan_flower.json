@@ -18,7 +18,7 @@
   ],
   "type": "minecraft:crafting_shapeless",
   "result": {
-    "item": "inspirations:cyan_flower",
+    "item": "inspirations:cyan_flower"
   },
   "ingredients": [
     { "tag": "forge:dyes/cyan" },

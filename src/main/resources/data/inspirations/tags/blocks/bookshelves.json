@@ -1,9 +1,10 @@
 {
   "replace": false,
+  "values": [],
   "optional": [
     "inspirations:random_bookshelf",
     "inspirations:rainbow_bookshelf",
     "inspirations:tomes_bookshelf",
-    "inspirations:ancient_bookshelf",
+    "inspirations:ancient_bookshelf"
   ]
 }

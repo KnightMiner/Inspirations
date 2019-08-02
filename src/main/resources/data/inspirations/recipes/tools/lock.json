@@ -10,7 +10,7 @@
     }
   ],
   "result": {
-    "item": "inspirations:lock",
+    "item": "inspirations:lock"
   },
   "mirrored": true,
   "pattern": [
@@ -20,6 +20,6 @@
   "type": "minecraft:crafting_shaped",
   "key": {
     "I": { "tag": "forge:ingots/iron" },
-    "N": { "type": "forge:nuggets/iron" }
+    "N": { "tag": "forge:nuggets/iron" }
   }
 }

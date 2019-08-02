@@ -12,7 +12,7 @@
   "type": "minecraft:crafting_shapeless",
   "group": "minecraft:cyan_dye",
   "result": {
-    "item": "minecraft:cyan_dye",
+    "item": "minecraft:cyan_dye"
   },
   "ingredients": [
     {
