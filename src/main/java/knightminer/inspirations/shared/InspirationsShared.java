@@ -3,6 +3,7 @@ package knightminer.inspirations.shared;
 import knightminer.inspirations.common.CommonProxy;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
+import knightminer.inspirations.common.item.HidableItem;
 import net.minecraft.item.Food;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -19,6 +20,8 @@ import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.pulsar.pulse.Pulse;
+
+import java.util.function.Supplier;
 
 
 @Pulse(id = InspirationsShared.pulseID, description = "Blocks and items used by all modules", forced = true)
@@ -41,7 +44,6 @@ public class InspirationsShared extends PulseBase {
 
 	// edibles
 	public static Item heartbeet;
-	public static Item boiledEgg;
 
 	// flags
 	private static boolean witherBoneDrop = false;
@@ -58,41 +60,63 @@ public class InspirationsShared extends PulseBase {
 		IForgeRegistry<Item> r = event.getRegistry();
 
 		// add items from modules
-		if(isToolsLoaded() && Config.enableLock) {
-			lock = registerItem(r, new Item(new Item.Properties().group(ItemGroup.MATERIALS)), "lock");
-			key = registerItem(r, new Item(new Item.Properties().group(ItemGroup.MATERIALS)),  "key");
+		if(isToolsLoaded()) {
+			lock = registerItem(r, new HidableItem(
+				new Item.Properties().group(ItemGroup.MATERIALS),
+				Config.enableLock::get
+			), "lock");
+			key = registerItem(r, new HidableItem(
+				new Item.Properties().group(ItemGroup.MATERIALS),
+				Config.enableLock::get
+			),  "key");
 		}
 
 		if(isTweaksLoaded()) {
-			if(Config.enableHeartbeet) {
-				heartbeet = registerItem(r, new Item(new Item.Properties().group(ItemGroup.FOOD).food(
-						new Food.Builder().hunger(2).saturation(2.4f).effect(new EffectInstance(Effects.REGENERATION, 100), 1).build()
-				)), "heartbeet");
-			}
-			if(Config.brewMissingPotions) {
-				silverfishPowder = registerItem(r, new Item(new Item.Properties().group(ItemGroup.BREWING)),  "silverfish_powder");
-			}
+			heartbeet = registerItem(r, new HidableItem(
+				new Item.Properties().group(ItemGroup.FOOD).food(
+				new Food.Builder().hunger(2).saturation(2.4f).effect(new EffectInstance(Effects.REGENERATION, 100), 1).build()),
+				Config.enableHeartbeet::get
+			), "heartbeet");
+			silverfishPowder = registerItem(r, new HidableItem(
+				new Item.Properties().group(ItemGroup.BREWING),
+				Config.brewMissingPotions::get
+			),  "silverfish_powder");
 		}
 		// used in both extended brewing and nether crooks
-		if((isTweaksLoaded() && Config.brewMissingPotions) || (isToolsLoaded() && Config.netherCrooks)) {
-			witherBone = registerItem(r, new Item(new Item.Properties().group(ItemGroup.BREWING)), "wither_bone");
-			witherBoneDrop = Config.witherBoneDrop;
-			milkCooldownCow = Config.milkCooldown;
+		if(isTweaksLoaded() || isToolsLoaded()) {
+			witherBone = registerItem(r, new HidableItem(
+				new Item.Properties().group(ItemGroup.BREWING),
+				() -> Config.brewMissingPotions.get() || Config.enableNetherCrook()
+			), "wither_bone");
+//			witherBoneDrop = Config.witherBoneDrop.get();
+//			milkCooldownCow = Config.milkCooldown.get();
 		}
 
 		if(isRecipesLoaded()) {
-			if(Config.enableCauldronPotions) {
-				splashBottle =  registerItem(r, new Item(new Item.Properties().group(ItemGroup.BREWING)), "splash_bottle");
-				lingeringBottle =  registerItem(r, new Item(new Item.Properties().group(ItemGroup.BREWING)), "lingering_bottle");
-			}
-			if(Config.enableCauldronFluids) {
-				mushrooms =  registerItem(r, new Item(new Item.Properties().group(ItemGroup.MATERIALS)), "mushrooms");
-				rabbitStewMix =  registerItem(r, new Item(new Item.Properties().group(ItemGroup.MATERIALS)), "rabbit_stew_mix");
-			}
-			milkCooldownSquid = Config.milkSquids;
+			splashBottle = registerItem(r, new HidableItem(
+				new Item.Properties().group(ItemGroup.BREWING),
+				Config::enableCauldronPotions
+			), "splash_bottle");
+			lingeringBottle = registerItem(r, new HidableItem(
+				new Item.Properties().group(ItemGroup.BREWING),
+				Config::enableCauldronPotions
+			), "lingering_bottle");
+
+			mushrooms = registerItem(r, new HidableItem(
+				new Item.Properties().group(ItemGroup.MATERIALS),
+				Config::enableCauldronFluids
+			), "mushrooms");
+			rabbitStewMix = registerItem(r, new HidableItem(
+				new Item.Properties().group(ItemGroup.MATERIALS),
+				Config::enableCauldronFluids
+			), "rabbit_stew_mix");
+//			milkCooldownSquid = Config.milkSquids.get();
 		}
-		if(isToolsLoaded() && Config.separateCrook) {
-			stoneRod = registerItem(r, new Item(new Item.Properties().group(ItemGroup.MATERIALS)), "stone_rod");
+		if( isToolsLoaded()) {
+			stoneRod = registerItem(r, new HidableItem(
+				new Item.Properties().group(ItemGroup.MATERIALS),
+				Config::separateCrook
+			), "stone_rod");
 		}
 	}
 
