@@ -1,12 +1,11 @@
 package knightminer.inspirations.tweaks;
 
-import java.util.Iterator;
-
-import com.google.common.eventbus.Subscribe;
+import java.util.*;
 
 import knightminer.inspirations.common.CommonProxy;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
+import knightminer.inspirations.common.item.HidableBlockItem;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.util.ReflectionUtil;
 import knightminer.inspirations.shared.InspirationsShared;
@@ -15,40 +14,34 @@ import knightminer.inspirations.tweaks.block.BlockCactusCrop;
 import knightminer.inspirations.tweaks.block.BlockFittedCarpet;
 import knightminer.inspirations.tweaks.block.BlockSugarCaneCrop;
 import knightminer.inspirations.tweaks.item.ItemSeed;
+import knightminer.inspirations.tweaks.tileentity.TileFlowerPot;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockAnvil;
-import net.minecraft.block.BlockCrops;
-import net.minecraft.block.BlockDispenser;
-import net.minecraft.block.BlockTallGrass;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.dispenser.BehaviorDefaultDispenseItem;
-import net.minecraft.dispenser.IBehaviorDispenseItem;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.init.MobEffects;
-import net.minecraft.init.PotionTypes;
-import net.minecraft.item.EnumDyeColor;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemSeeds;
-import net.minecraft.item.ItemStack;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.CropsBlock;
+import net.minecraft.block.DispenserBlock;
+import net.minecraft.dispenser.DefaultDispenseItemBehavior;
+import net.minecraft.dispenser.IDispenseItemBehavior;
+import net.minecraft.item.*;
 import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.potion.PotionEffect;
-import net.minecraft.potion.PotionHelper;
-import net.minecraft.potion.PotionType;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.potion.*;
+import net.minecraft.potion.PotionBrewing;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.common.EnumPlantType;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.PlantType;
+import net.minecraftforge.common.brewing.BrewingRecipe;
+import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.RegistryEvent.Register;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.oredict.OreIngredient;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.pulsar.pulse.Pulse;
 
@@ -62,8 +55,8 @@ public class InspirationsTweaks extends PulseBase {
 	// blocks
 	public static Block carpet;
 	public static Block flowerPot;
-	public static BlockCrops cactusCrop;
-	public static BlockCrops sugarCaneCrop;
+	public static CropsBlock cactusCrop;
+	public static CropsBlock sugarCaneCrop;
 
 	// items
 	public static Item potatoSeeds;
@@ -106,10 +99,8 @@ public class InspirationsTweaks extends PulseBase {
 		if(Config.betterFlowerPot) {
 			flowerPot = register(r, new BlockBetterFlowerPot(), new ResourceLocation("flower_pot"));
 		}
-		if(Config.enableMoreSeeds) {
-			cactusCrop = register(r, new BlockCactusCrop(), "cactus_crop");
-			sugarCaneCrop = register(r, new BlockSugarCaneCrop(), "sugar_cane_crop");
-		}
+		cactusCrop = register(r, new BlockCactusCrop(), "cactus");
+		sugarCaneCrop = register(r, new BlockSugarCaneCrop(), "reeds");
 	}
 
 	@SubscribeEvent

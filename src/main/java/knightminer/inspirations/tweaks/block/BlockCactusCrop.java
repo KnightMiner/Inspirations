@@ -1,63 +1,58 @@
 package knightminer.inspirations.tweaks.block;
 
 import knightminer.inspirations.tweaks.InspirationsTweaks;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.IItemProvider;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
-import net.minecraftforge.common.EnumPlantType;
+import net.minecraftforge.common.PlantType;
+
+import javax.annotation.Nonnull;
 
 public class BlockCactusCrop extends BlockBlockCrop {
 
-	private static final AxisAlignedBB[] BOUNDS = {
-			new AxisAlignedBB(0.4375, 0, 0.4375, 0.5625, 0.125, 0.5625),
-			new AxisAlignedBB(0.375,  0, 0.375,  0.625,  0.25,  0.625 ),
-			new AxisAlignedBB(0.3125, 0, 0.3125, 0.6875, 0.375, 0.6875),
-			new AxisAlignedBB(0.25,   0, 0.25,   0.75,   0.5,   0.75  ),
-			new AxisAlignedBB(0.1875, 0, 0.1875, 0.8125, 0.625, 0.8125),
-			new AxisAlignedBB(0.125,  0, 0.125,  0.875,  0.75,  0.875 ),
-			new AxisAlignedBB(0.0625, 0, 0.0625, 0.9375, 0.875, 0.9375)
+	private static final VoxelShape[] BOUNDS = {
+			Block.makeCuboidShape(0.4375, 0, 0.4375, 0.5625, 0.125, 0.5625),
+			Block.makeCuboidShape(0.375, 0, 0.375, 0.625, 0.25, 0.625),
+			Block.makeCuboidShape(0.3125, 0, 0.3125, 0.6875, 0.375, 0.6875),
+			Block.makeCuboidShape(0.25, 0, 0.25, 0.75, 0.5, 0.75),
+			Block.makeCuboidShape(0.1875, 0, 0.1875, 0.8125, 0.625, 0.8125),
+			Block.makeCuboidShape(0.125, 0, 0.125, 0.875, 0.75, 0.875),
+			Block.makeCuboidShape(0.0625, 0, 0.0625, 0.9375, 0.875, 0.9375)
 	};
 	public BlockCactusCrop() {
-		super(Blocks.CACTUS, EnumPlantType.Desert, BOUNDS);
-		this.setHardness(0.4F);
-		this.setSoundType(SoundType.CLOTH);
-		this.setUnlocalizedName("cactus");
+		super(Blocks.CACTUS, PlantType.Desert, BOUNDS, Block.Properties
+			.create(Material.CACTUS)
+			.hardnessAndResistance(0.4F)
+			.tickRandomly()
+			.sound(SoundType.CLOTH)
+		);
 	}
 
+	@Nonnull
 	@Override
-	public Item getSeed() {
+	protected IItemProvider getSeedsItem() {
 		return InspirationsTweaks.cactusSeeds;
 	}
 
 	@Override
-	public boolean canBlockStay(World world, BlockPos pos, IBlockState state) {
-		return Blocks.CACTUS.canBlockStay(world, pos);
-	}
-
-	@Override
-	@Deprecated
-	public Material getMaterial(IBlockState state) {
-		return Material.CACTUS;
+	public boolean isValidPosition(@Nonnull BlockState state, IWorldReader world, @Nonnull BlockPos pos) {
+		return Blocks.CACTUS.isValidPosition(Blocks.CACTUS.getDefaultState(), world, pos);
 	}
 
 
 	/* spiky! */
 
 	@Override
-	public AxisAlignedBB getCollisionBoundingBox(IBlockState state, IBlockAccess world, BlockPos pos) {
-		return BOUNDS[this.getAge(state)];
-	}
-
-	@Override
-	public void onEntityCollidedWithBlock(World world, BlockPos pos, IBlockState state, Entity entity) {
+	public void onEntityCollision(@Nonnull BlockState state, @Nonnull World worldIn, @Nonnull BlockPos pos, @Nonnull Entity entity) {
 		entity.attackEntityFrom(DamageSource.CACTUS, 1.0F);
 	}
 }
