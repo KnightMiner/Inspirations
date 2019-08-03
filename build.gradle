@@ -37,8 +37,10 @@ if (System.getenv().BUILD_NUMBER != null) {
 }
 
 minecraft {
-	mappings channel: 'snapshot', version: config.mappings
+	mappings channel: 'snapshot', version: config.mappings_version
 //    replace '${version}', project.version
+
+    accessTransformer project.file("src/main/resources/META-INF/inspirations_at.cfg")
 
      runs {
          client {
