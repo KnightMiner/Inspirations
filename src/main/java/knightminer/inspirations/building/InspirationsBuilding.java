@@ -136,10 +136,10 @@ public class InspirationsBuilding extends PulseBase {
 					mulch_color.getName() + "_mulch"));
 		}
 
-		path_rock = registerBlock(r, new BlockPath(MaterialColor.STONE), "rock_path");
-		path_round = registerBlock(r, new BlockPath(MaterialColor.STONE), "round_path");
-		path_tile = registerBlock(r, new BlockPath(MaterialColor.STONE), "tile_path");
-		path_brick = registerBlock(r, new BlockPath(MaterialColor.RED), "brick_path");
+		path_rock = registerBlock(r, new BlockPath(BlockPath.SHAPE_ROCK, MaterialColor.STONE), "rock_path");
+		path_round = registerBlock(r, new BlockPath(BlockPath.SHAPE_ROUND, MaterialColor.STONE), "round_path");
+		path_tile = registerBlock(r, new BlockPath(BlockPath.SHAPE_TILE, MaterialColor.STONE), "tile_path");
+		path_brick = registerBlock(r, new BlockPath(BlockPath.SHAPE_BRICK, MaterialColor.RED), "brick_path");
 
 
 		flower_cyan = registerBlock(r, new BlockFlower(null), "cyan_flower");

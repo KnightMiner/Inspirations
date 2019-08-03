@@ -10,30 +10,74 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ToolType;
 import slimeknights.mantle.client.CreativeTab;
 
+import javax.annotation.Nonnull;
+
 public class BlockPath extends HidableBlock {
 
-	public BlockPath(MaterialColor mapColor) {
+	private final VoxelShape shape;
+	private final VoxelShape coll_shape;
+
+	public BlockPath(VoxelShape shape, MaterialColor mapColor) {
 		super(Block.Properties.create(Material.ROCK, mapColor)
 			.hardnessAndResistance(1.5F, 10F)
 			.harvestTool(ToolType.PICKAXE).harvestLevel(0),
 			Config.enablePath::get
 		);
-
+		// Each path has a different shape, but use the bounding box for collisions.
+		this.shape = shape;
+		this.coll_shape = VoxelShapes.create(shape.getBoundingBox());
 	}
 
 	/* Block Shape */
 
-	protected static final VoxelShape BOUNDS = Block.makeCuboidShape(0, 0, 0, 16, 1, 16);
+	public static final VoxelShape SHAPE_ROUND = VoxelShapes.or(
+//		Block.makeCuboidShape(5, 0, 1, 11, 1, 15),
+//		Block.makeCuboidShape(1, 0, 5, 5, 1, 11),
+//		Block.makeCuboidShape(11, 0, 5, 15, 1, 11),
+//		Block.makeCuboidShape(2, 0, 3, 5, 1, 5),
+//		Block.makeCuboidShape(11, 0, 3, 14, 1, 5),
+//		Block.makeCuboidShape(11, 0, 11, 14, 1, 13),
+//		Block.makeCuboidShape(2, 0, 11, 5, 1, 13),
+//		Block.makeCuboidShape(3, 0, 2, 5, 1, 3),
+//		Block.makeCuboidShape(11, 0, 2, 13, 1, 3),
+//		Block.makeCuboidShape(11, 0, 13, 13, 1, 14),
+//		Block.makeCuboidShape(3, 0, 13, 5, 1, 14)
+		Block.makeCuboidShape(1, 0, 5, 15, 1, 11),
+		Block.makeCuboidShape(5, 0, 1, 11, 1, 15),
+		Block.makeCuboidShape(2, 0, 3, 14, 1, 13),
+		Block.makeCuboidShape(3, 0, 2, 13, 1, 14)
+	).simplify();
+	public static final VoxelShape SHAPE_TILE = VoxelShapes.or(
+		Block.makeCuboidShape(1, 0, 1, 7, 1, 7),
+		Block.makeCuboidShape(9, 0, 1, 15, 1, 7),
+		Block.makeCuboidShape(9, 0, 9, 15, 1, 15),
+		Block.makeCuboidShape(1, 0, 9, 7, 1, 15)
+	);
+	public static final VoxelShape SHAPE_BRICK = VoxelShapes.or(
+		Block.makeCuboidShape(0, 0, 0, 3, 1, 3),
+		Block.makeCuboidShape(4, 0, 0, 7, 1, 1),
+		Block.makeCuboidShape(0, 0, 4, 3, 1, 11),
+		Block.makeCuboidShape(12, 0, 8, 15, 1, 15)
+	);
+	// There's multiple variants for these, just use a square.
+	public static final VoxelShape SHAPE_ROCK = Block.makeCuboidShape(.5, 0, .5, 15.5, 1, 15.5);
 
+	@Nonnull
 	@Override
 	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-		return BOUNDS;
+		return shape;
+	}
+
+	@Override
+	public VoxelShape getCollisionShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+		return coll_shape;
 	}
 
 	/* Solid surface below */
