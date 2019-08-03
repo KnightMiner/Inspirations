@@ -1,33 +1,40 @@
 package knightminer.inspirations;
 
-import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.common.Config;
+import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.common.network.InspirationsNetwork;
-import knightminer.inspirations.plugins.LeatherWorksPlugin;
-import knightminer.inspirations.plugins.RatsPlugin;
-import knightminer.inspirations.plugins.TwilightForestPlugin;
-import knightminer.inspirations.plugins.tan.ToughAsNailsPlugin;
-import knightminer.inspirations.plugins.top.TheOneProbePlugin;
-import knightminer.inspirations.plugins.waila.WailaPlugin;
-import knightminer.inspirations.recipes.InspirationsRecipes;
-import knightminer.inspirations.shared.InspirationsOredict;
-import knightminer.inspirations.shared.InspirationsShared;
-import knightminer.inspirations.tools.InspirationsTools;
-import knightminer.inspirations.tweaks.InspirationsTweaks;
-import knightminer.inspirations.utility.InspirationsUtility;
+import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.recipe.ModItemList;
 import knightminer.inspirations.library.recipe.ShapelessNoContainerRecipe;
 import knightminer.inspirations.library.recipe.TextureRecipe;
-import net.minecraftforge.fluids.FluidRegistry;
+//import knightminer.inspirations.plugins.LeatherWorksPlugin;
+//import knightminer.inspirations.plugins.RatsPlugin;
+//import knightminer.inspirations.plugins.TwilightForestPlugin;
+//import knightminer.inspirations.plugins.tan.ToughAsNailsPlugin;
+//import knightminer.inspirations.plugins.top.TheOneProbePlugin;
+//import knightminer.inspirations.plugins.waila.WailaPlugin;
+import knightminer.inspirations.building.InspirationsBuilding;
+//import knightminer.inspirations.recipes.InspirationsRecipes;
+import knightminer.inspirations.shared.InspirationsShared;
+//import knightminer.inspirations.tools.InspirationsTools;
+import knightminer.inspirations.tweaks.InspirationsTweaks;
+//import knightminer.inspirations.utility.InspirationsUtility;
+import net.minecraft.item.crafting.IRecipeSerializer;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.crafting.CraftingHelper;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.registries.IForgeRegistry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import slimeknights.mantle.pulsar.control.PulseManager;
 
 @Mod(Inspirations.modID)
+@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class Inspirations {
 	public static final String modID = "inspirations";
 	public static final String modVersion = "${version}";
@@ -35,35 +42,46 @@ public class Inspirations {
 
 	public static final Logger log = LogManager.getLogger(modID);
 
-	public static PulseManager pulseManager = new PulseManager(Config.pulseConfig);
+	public static PulseManager pulseManager;
 
-	static {
+	public Inspirations() {
+		pulseManager = new PulseManager(Config.pulseConfig);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+        MinecraftForge.EVENT_BUS.register(pulseManager);
+        MinecraftForge.EVENT_BUS.addListener(this::registerRecipeTypes);
+
 		pulseManager.registerPulse(new InspirationsShared());
 		pulseManager.registerPulse(new InspirationsBuilding());
-		pulseManager.registerPulse(new InspirationsUtility());
-		pulseManager.registerPulse(new InspirationsTools());
-		pulseManager.registerPulse(new InspirationsRecipes());
+//		pulseManager.registerPulse(new InspirationsUtility());
+//		pulseManager.registerPulse(new InspirationsTools());
+//		pulseManager.registerPulse(new InspirationsRecipes());
 		pulseManager.registerPulse(new InspirationsTweaks());
-		pulseManager.registerPulse(new InspirationsOredict());
 		// plugins
-		pulseManager.registerPulse(new ToughAsNailsPlugin());
-		pulseManager.registerPulse(new TheOneProbePlugin());
-		pulseManager.registerPulse(new WailaPlugin());
-		pulseManager.registerPulse(new LeatherWorksPlugin());
-		pulseManager.registerPulse(new RatsPlugin());
-		pulseManager.registerPulse(new TwilightForestPlugin());
+//		pulseManager.registerPulse(new ToughAsNailsPlugin());
+//		pulseManager.registerPulse(new TheOneProbePlugin());
+//		pulseManager.registerPulse(new WailaPlugin());
+//		pulseManager.registerPulse(new LeatherWorksPlugin());
+//		pulseManager.registerPulse(new RatsPlugin());
+//		pulseManager.registerPulse(new TwilightForestPlugin());
 
-		// needs to be done statically, but only the recipes module uses it
-		if(pulseManager.isPulseLoaded(InspirationsRecipes.pulseID) && Config.enableCauldronFluids) {
-			FluidRegistry.enableUniversalBucket();
-		}
-	}
-
-	@Mod.EventHandler
-	public void preInit(FMLPreInitializationEvent event) {
-		Config.preInit(event);
+//		 needs to be done statically, but only the recipes module uses it
+//		if(pulseManager.isPulseLoaded(InspirationsRecipes.pulseID) && Config.INSTANCE.enableCauldronFluids.get()) {
+//			FluidRegistry.enableUniversalBucket();
+//		}
+		pulseManager.enablePulses();
 
 		InspirationsNetwork.instance.setup();
+
+		// These don't have registries yet.
+		CraftingHelper.register(new ResourceLocation(Inspirations.modID, "pulse_loaded"), new Config.PulseLoaded());
+		CraftingHelper.register(new ResourceLocation(Inspirations.modID, "config"), new Config.ConfigProperty());
+		CraftingHelper.register(new ResourceLocation(Inspirations.modID, "mod_item_list"), ModItemList.SERIALIZER);
+	}
+
+	@SubscribeEvent
+	public void configChanged(final ModConfig.ConfigReloading configEvent) {
+		InspirationsRegistry.setConfig("biggerCauldron", Config.enableBiggerCauldron());
+		InspirationsRegistry.setConfig("expensiveCauldronBrewing", Config.expensiveCauldronBrewing());
 	}
 
 	@SubscribeEvent
