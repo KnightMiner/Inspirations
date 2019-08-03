@@ -50,6 +50,8 @@ public class InspirationsRegistry {
 	// Items with this tag are registered to perform cauldron recipes.
 	public static final Tag<Item> TAG_DISP_CAULDRON_RECIPES = new ItemTags.Wrapper(new ResourceLocation(Inspirations.modID, "cauldron_recipes"));
 
+	public static final Tag<Item> TAG_MILK_CONTAINERS = new ItemTags.Wrapper(new ResourceLocation(Inspirations.modID, "milk_containers"));
+
     /**
 	 * Sets a value from the Inspirations config into the registry. Used to keep the config out of the library
 	 * @param key    Key to set
