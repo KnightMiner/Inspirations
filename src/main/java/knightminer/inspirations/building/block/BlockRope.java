@@ -76,7 +76,11 @@ public class BlockRope extends HidableBlock {
 		if (!this.isValidRope(world, pos)) {
 			return Blocks.AIR.getDefaultState();
 		}
-		return super.updatePostPlacement(state, facing, facingState, world, pos, facingPos);
+		if (facing == Direction.DOWN) {
+			BlockPos down = pos.down();
+			return state.with(BOTTOM, !canConnectTo(world.getBlockState(down), world, down));
+		}
+		return state;
 	}
 
 	// right click with a rope to extend downwards
@@ -89,7 +93,7 @@ public class BlockRope extends HidableBlock {
 
 		ItemStack stack = player.getHeldItem(hand);
 		// check if the item is the same type as us
-		if(Block.getBlockFromItem(stack.getItem()) == this) {
+		if(Block.getBlockFromItem(stack.getItem()) != this) {
 			return false;
 		}
 
@@ -102,9 +106,9 @@ public class BlockRope extends HidableBlock {
 			BlockItem itemBlock = (BlockItem)stack.getItem();
 			if(itemBlock.tryPlace(new DirectionalPlaceContext(world, next, hit.getFace(), stack, hit.getFace())) == ActionResultType.SUCCESS) {
 				SoundType soundtype = this.getSoundType(state, world, next, player);
-				world.playSound(player, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
-				if(!player.isCreative()) {
-					stack.shrink(1);
+				if(player.isCreative()) {
+					// Refund the item.
+					stack.grow(1);
 				}
 			}
 		}
