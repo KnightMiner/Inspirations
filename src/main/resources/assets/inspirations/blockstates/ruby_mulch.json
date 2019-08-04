@@ -1,10 +1,7 @@
 {
   "variants": {
     "" : {
-      "model": "minecraft:blocks/cube_all",
-      "textures": {
-        "all": "inspirations:block/mulch_ruby"
-      }
+      "model": "inspirations:block/mulch/ruby"
     }
   }
 }
