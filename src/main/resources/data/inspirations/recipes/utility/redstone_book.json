@@ -1,15 +1,15 @@
 {
   "conditions": [
     {
-      "type": "pulse_loaded",
+      "type": "inspirations:pulse_loaded",
       "pulse": "InspirationsBuilding"
     },
     {
-      "type": "pulse_loaded",
+      "type": "inspirations:pulse_loaded",
       "pulse": "InspirationsUtility"
     },
     {
-      "type": "config",
+      "type": "inspirations:config",
       "prop": "redstone_book"
     }
   ],
