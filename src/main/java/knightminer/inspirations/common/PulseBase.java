@@ -3,62 +3,58 @@ package knightminer.inspirations.common;
 import java.util.Locale;
 
 import knightminer.inspirations.Inspirations;
-import knightminer.inspirations.building.InspirationsBuilding;
+import knightminer.inspirations.common.item.HidableBlockItem;
 import knightminer.inspirations.library.Util;
-import knightminer.inspirations.recipes.InspirationsRecipes;
-import knightminer.inspirations.tools.InspirationsTools;
-import knightminer.inspirations.tweaks.InspirationsTweaks;
-import knightminer.inspirations.utility.InspirationsUtility;
+//import knightminer.inspirations.building.InspirationsBuilding;
+//import knightminer.inspirations.recipes.InspirationsRecipes;
+//import knightminer.inspirations.tools.InspirationsTools;
+//import knightminer.inspirations.tweaks.InspirationsTweaks;
+//import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockDispenser;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.dispenser.IBehaviorDispenseItem;
-import net.minecraft.entity.Entity;
+import net.minecraft.block.DispenserBlock;
+import net.minecraft.dispenser.IDispenseItemBehavior;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemGroup;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.storage.loot.LootEntry;
-import net.minecraft.world.storage.loot.LootEntryTable;
 import net.minecraft.world.storage.loot.LootPool;
 import net.minecraft.world.storage.loot.RandomValueRange;
-import net.minecraft.world.storage.loot.conditions.LootCondition;
+import net.minecraft.world.storage.loot.StandaloneLootEntry;
+import net.minecraft.world.storage.loot.conditions.ILootCondition;
+import net.minecraft.world.storage.loot.functions.ILootFunction;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
-import slimeknights.mantle.block.BlockStairsBase;
-import slimeknights.mantle.block.EnumBlock;
-import slimeknights.mantle.block.EnumBlockSlab;
-import slimeknights.mantle.item.ItemBlockMeta;
-import slimeknights.mantle.item.ItemBlockSlab;
+import slimeknights.mantle.block.StairsBaseBlock;
 
 public class PulseBase {
 	/* Loaded */
 	public static boolean isBuildingLoaded() {
-		return Inspirations.pulseManager.isPulseLoaded(InspirationsBuilding.pulseID);
+		return true;
+//		return Inspirations.pulseManager.isPulseLoaded(InspirationsBuilding.pulseID);
 	}
 
 	public static boolean isUtilityLoaded() {
-		return Inspirations.pulseManager.isPulseLoaded(InspirationsUtility.pulseID);
+		return true;
+//		return Inspirations.pulseManager.isPulseLoaded(InspirationsUtility.pulseID);
 	}
 
 	public static boolean isTweaksLoaded() {
-		return Inspirations.pulseManager.isPulseLoaded(InspirationsTweaks.pulseID);
+		return true;
+//		return Inspirations.pulseManager.isPulseLoaded(InspirationsTweaks.pulseID);
 	}
 
 	public static boolean isRecipesLoaded() {
-		return Inspirations.pulseManager.isPulseLoaded(InspirationsRecipes.pulseID);
+		return true;
+//		return Inspirations.pulseManager.isPulseLoaded(InspirationsRecipes.pulseID);
 	}
 
 	public static boolean isToolsLoaded() {
-		return Inspirations.pulseManager.isPulseLoaded(InspirationsTools.pulseID);
+		return true;
+//		return Inspirations.pulseManager.isPulseLoaded(InspirationsTools.pulseID);
 	}
 
 	/* Normal registration */
@@ -67,10 +63,6 @@ public class PulseBase {
 			throw new IllegalArgumentException(
 					String.format("Unlocalized names need to be all lowercase! Block: %s", name));
 		}
-
-		String prefixedName = Util.resource(name);
-		block.setRegistryName(prefixedName);
-
 		register(registry, block, name);
 		return block;
 	}
@@ -158,14 +150,14 @@ public class PulseBase {
 		return fluid;
 	}
 
-	protected static void registerDispenserBehavior(Block block, IBehaviorDispenseItem behavior) {
+	protected static void registerDispenserBehavior(Block block, IDispenseItemBehavior behavior) {
 		if(block != null) {
 			registerDispenserBehavior(Item.getItemFromBlock(block), behavior);
 		}
 	}
-	protected static void registerDispenserBehavior(Item item, IBehaviorDispenseItem behavior) {
+	protected static void registerDispenserBehavior(Item item, IDispenseItemBehavior behavior) {
 		if(item != null) {
-			BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(item, behavior);
+			DispenserBlock.registerDispenseBehavior(item, behavior);
 		}
 	}
 
