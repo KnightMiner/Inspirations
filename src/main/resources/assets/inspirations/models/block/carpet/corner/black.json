@@ -1,6 +1,6 @@
 {
     "parent": "inspirations:block/carpet/corner/base",
     "textures": {
-        "wool": "block/wool_colored_black"
+        "wool": "block/black_wool"
     }
 }

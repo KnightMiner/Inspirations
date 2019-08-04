@@ -1,6 +1,6 @@
 {
     "parent": "inspirations:block/carpet/front_post/base",
     "textures": {
-        "wool": "block/wool_colored_gray"
+        "wool": "block/gray_wool"
     }
 }

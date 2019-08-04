@@ -1,6 +1,6 @@
 {
     "parent": "inspirations:block/carpet/wall_right/base",
     "textures": {
-        "wool": "block/wool_colored_magenta"
+        "wool": "block/magenta_wool"
     }
 }
