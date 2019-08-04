@@ -1,5 +1,4 @@
 {
-    "forge_marker": 1,
     "variants": {
         "facing=east,half=lower,hinge=left,open=false":  { "model": "inspirations:block/door/glass_bottom" },
         "facing=south,half=lower,hinge=left,open=false": { "model": "inspirations:block/door/glass_bottom", "y": 90 },

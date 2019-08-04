@@ -3,7 +3,7 @@
     "textures": {
         "top": "inspirations:block/glass_door_upper",
         "bottom": "inspirations:block/glass_door_lower",
-        "particle": "#top"
+        "particle": "inspirations:block/glass_door_upper"
     },
     "elements": [
         {

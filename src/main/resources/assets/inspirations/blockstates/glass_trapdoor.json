@@ -1,26 +1,20 @@
 {
-    "forge_marker": 1,
-    "defaults": {
-        "textures": {
-            "texture": "inspirations:block/glass_trapdoor"
-        }
-    },
     "variants": {
-        "facing=north,half=bottom,open=false": { "model": "minecraft:block/template_orientable_trapdoor_open" },
-        "facing=south,half=bottom,open=false": { "model": "minecraft:block/template_orientable_trapdoor_open", "y": 180 },
-        "facing=east,half=bottom,open=false": { "model": "minecraft:block/template_orientable_trapdoor_open", "y": 90 },
-        "facing=west,half=bottom,open=false": { "model": "minecraft:block/template_orientable_trapdoor_open", "y": 270 },
-        "facing=north,half=top,open=false": { "model": "minecraft:block/template_orientable_trapdoor_top", "y": 180  },
-        "facing=south,half=top,open=false": { "model": "minecraft:block/template_orientable_trapdoor_top", "y": 90 },
-        "facing=east,half=top,open=false": { "model": "minecraft:block/template_orientable_trapdoor_top", "y": 270 },
-        "facing=west,half=top,open=false": { "model": "minecraft:block/template_orientable_trapdoor_top" },
-        "facing=north,half=bottom,open=true": { "model": "minecraft:block/template_orientable_trapdoor_open" },
-        "facing=south,half=bottom,open=true": { "model": "minecraft:block/template_orientable_trapdoor_open", "y": 180 },
-        "facing=east,half=bottom,open=true": { "model": "minecraft:block/template_orientable_trapdoor_open", "y": 90 },
-        "facing=west,half=bottom,open=true": { "model": "minecraft:block/template_orientable_trapdoor_open", "y": 270 },
-        "facing=north,half=top,open=true": { "model": "minecraft:block/template_orientable_trapdoor_open" },
-        "facing=south,half=top,open=true": { "model": "minecraft:block/template_orientable_trapdoor_open", "y": 180 },
-        "facing=east,half=top,open=true": { "model": "minecraft:block/template_orientable_trapdoor_open", "y": 90 },
-        "facing=west,half=top,open=true": { "model": "minecraft:block/template_orientable_trapdoor_open", "y": 270 }
+        "facing=north,half=bottom,open=false": { "model": "inspirations:block/trapdoor/glass_trapdoor_bottom" },
+        "facing=south,half=bottom,open=false": { "model": "inspirations:block/trapdoor/glass_trapdoor_bottom", "y": 180 },
+        "facing=east,half=bottom,open=false": { "model": "inspirations:block/trapdoor/glass_trapdoor_bottom", "y": 90 },
+        "facing=west,half=bottom,open=false": { "model": "inspirations:block/trapdoor/glass_trapdoor_bottom", "y": 270 },
+        "facing=north,half=top,open=false": { "model": "inspirations:block/trapdoor/glass_trapdoor_top", "y": 180  },
+        "facing=south,half=top,open=false": { "model": "inspirations:block/trapdoor/glass_trapdoor_top", "y": 90 },
+        "facing=east,half=top,open=false": { "model": "inspirations:block/trapdoor/glass_trapdoor_top", "y": 270 },
+        "facing=west,half=top,open=false": { "model": "inspirations:block/trapdoor/glass_trapdoor_top" },
+        "facing=north,half=bottom,open=true": { "model": "inspirations:block/trapdoor/glass_trapdoor_open" },
+        "facing=south,half=bottom,open=true": { "model": "inspirations:block/trapdoor/glass_trapdoor_open", "y": 180 },
+        "facing=east,half=bottom,open=true": { "model": "inspirations:block/trapdoor/glass_trapdoor_open", "y": 90 },
+        "facing=west,half=bottom,open=true": { "model": "inspirations:block/trapdoor/glass_trapdoor_open", "y": 270 },
+        "facing=north,half=top,open=true": { "model": "inspirations:block/trapdoor/glass_trapdoor_open" },
+        "facing=south,half=top,open=true": { "model": "inspirations:block/trapdoor/glass_trapdoor_open", "y": 180 },
+        "facing=east,half=top,open=true": { "model": "inspirations:block/trapdoor/glass_trapdoor_open", "y": 90 },
+        "facing=west,half=top,open=true": { "model": "inspirations:block/trapdoor/glass_trapdoor_open", "y": 270 }
     }
 }
