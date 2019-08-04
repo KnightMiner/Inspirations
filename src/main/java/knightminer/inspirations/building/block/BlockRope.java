@@ -1,18 +1,19 @@
 package knightminer.inspirations.building.block;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.block.HidableBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.SoundType;
+import net.minecraft.block.*;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.Fluids;
+import net.minecraft.fluid.IFluidState;
 import net.minecraft.item.*;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
+import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
@@ -23,16 +24,26 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.*;
 
-public class BlockRope extends HidableBlock {
+public class BlockRope extends HidableBlock implements IWaterLoggable {
 
 	public static final BooleanProperty BOTTOM = BooleanProperty.create("bottom");
+	public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
+
 	public BlockRope(Properties props) {
 		super(props, Config.enableRope::get);
-		this.setDefaultState(this.stateContainer.getBaseState().with(BOTTOM, false));
+		this.setDefaultState(this.stateContainer.getBaseState()
+				.with(BOTTOM, false)
+				.with(WATERLOGGED, false)
+		);
 	}
 
 	protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-      builder.add(BOTTOM);
+      builder.add(BOTTOM, WATERLOGGED);
+	}
+
+	@Nonnull
+	public IFluidState getFluidState(BlockState state) {
+	  return state.get(WATERLOGGED) ? Fluids.WATER.getStillFluidState(false) : super.getFluidState(state);
 	}
 
 	@Nullable
@@ -40,7 +51,9 @@ public class BlockRope extends HidableBlock {
 	public BlockState getStateForPlacement(BlockItemUseContext context) {
 		BlockState state = super.getStateForPlacement(context);
 		BlockPos down = context.getPos().down();
-		return state.with(BOTTOM, !canConnectTo(context.getWorld().getBlockState(down), context.getWorld(), down));
+		return state
+			.with(BOTTOM, !canConnectTo(context.getWorld().getBlockState(down), context.getWorld(), down))
+			.with(WATERLOGGED, context.getWorld().getFluidState(context.getPos()).getFluid() == Fluids.WATER);
 	}
 
 	private boolean canConnectTo(BlockState state, IBlockReader world, BlockPos pos) {
