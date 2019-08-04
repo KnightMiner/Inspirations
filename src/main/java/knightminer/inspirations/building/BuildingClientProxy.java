@@ -172,9 +172,9 @@ public class BuildingClientProxy extends ClientProxy {
 
 		// book covers, too lazy to make 16 cover textures
 		for (Map.Entry<DyeColor, Item> book_entry: InspirationsBuilding.book_colors.entrySet()) {
-			float rgb[] = book_entry.getKey().getColorComponentValues();
-			int color = 0xFF000000 | (int) rgb[0] << 16 | (int) rgb[1] << 8 | (int) rgb[2];
-			itemColors.register((stack, tintIndex) -> (tintIndex == 0) ? color : -1, book_entry.getValue());
+			float[] rgb = book_entry.getKey().getColorComponentValues();
+			int color = (int) (rgb[0]*255) << 16 | (int) (rgb[1]*255) << 8 | (int) (rgb[2]*255);
+			itemColors.register((stack, tintIndex) -> (tintIndex == 1) ? color : -1, book_entry.getValue());
 		}
 
 		// bush block colors
