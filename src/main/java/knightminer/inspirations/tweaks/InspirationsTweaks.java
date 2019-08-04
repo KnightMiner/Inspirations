@@ -7,12 +7,9 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.common.item.HidableBlockItem;
 import knightminer.inspirations.library.InspirationsRegistry;
-import knightminer.inspirations.library.util.ReflectionUtil;
+import knightminer.inspirations.library.Util;
 import knightminer.inspirations.shared.InspirationsShared;
-import knightminer.inspirations.tweaks.block.BlockBetterFlowerPot;
-import knightminer.inspirations.tweaks.block.BlockCactusCrop;
-import knightminer.inspirations.tweaks.block.BlockFittedCarpet;
-import knightminer.inspirations.tweaks.block.BlockSugarCaneCrop;
+import knightminer.inspirations.tweaks.block.*;
 import knightminer.inspirations.tweaks.item.ItemSeed;
 import knightminer.inspirations.tweaks.tileentity.TileFlowerPot;
 import net.minecraft.block.Block;
@@ -24,7 +21,6 @@ import net.minecraft.dispenser.IDispenseItemBehavior;
 import net.minecraft.item.*;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.potion.*;
-import net.minecraft.potion.PotionBrewing;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ActionResultType;
@@ -34,7 +30,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.PlantType;
-import net.minecraftforge.common.brewing.BrewingRecipe;
 import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.RegistryEvent.Register;
@@ -53,7 +48,8 @@ public class InspirationsTweaks extends PulseBase {
 	public static CommonProxy proxy;
 
 	// blocks
-	public static Block carpet;
+	public static Map<DyeColor, BlockFittedCarpet> fitCarpets = new HashMap<>();
+	public static Map<DyeColor, BlockFlatCarpet> flatCarpets = new HashMap<>();
 	public static Block flowerPot;
 	public static CropsBlock cactusCrop;
 	public static CropsBlock sugarCaneCrop;
@@ -93,14 +89,41 @@ public class InspirationsTweaks extends PulseBase {
 	public void registerBlocks(Register<Block> event) {
 		IForgeRegistry<Block> r = event.getRegistry();
 
-		if(Config.enableFittedCarpets) {
-			carpet = register(r, new BlockFittedCarpet(), new ResourceLocation("carpet"));
-		}
 		if(Config.betterFlowerPot) {
 			flowerPot = register(r, new BlockBetterFlowerPot(), new ResourceLocation("flower_pot"));
 		}
+		registerCarpet(r, DyeColor.WHITE, Blocks.WHITE_CARPET);
+		registerCarpet(r, DyeColor.ORANGE, Blocks.ORANGE_CARPET);
+		registerCarpet(r, DyeColor.MAGENTA, Blocks.MAGENTA_CARPET);
+		registerCarpet(r, DyeColor.LIGHT_BLUE, Blocks.LIGHT_BLUE_CARPET);
+		registerCarpet(r, DyeColor.YELLOW, Blocks.YELLOW_CARPET);
+		registerCarpet(r, DyeColor.LIME, Blocks.LIME_CARPET);
+		registerCarpet(r, DyeColor.PINK, Blocks.PINK_CARPET);
+		registerCarpet(r, DyeColor.GRAY, Blocks.GRAY_CARPET);
+		registerCarpet(r, DyeColor.LIGHT_GRAY, Blocks.LIGHT_GRAY_CARPET);
+		registerCarpet(r, DyeColor.CYAN, Blocks.CYAN_CARPET);
+		registerCarpet(r, DyeColor.PURPLE, Blocks.PURPLE_CARPET);
+		registerCarpet(r, DyeColor.BLUE, Blocks.BLUE_CARPET);
+		registerCarpet(r, DyeColor.BROWN, Blocks.BROWN_CARPET);
+		registerCarpet(r, DyeColor.GREEN, Blocks.GREEN_CARPET);
+		registerCarpet(r, DyeColor.RED, Blocks.RED_CARPET);
+		registerCarpet(r, DyeColor.BLACK, Blocks.BLACK_CARPET);
+
 		cactusCrop = register(r, new BlockCactusCrop(), "cactus");
 		sugarCaneCrop = register(r, new BlockSugarCaneCrop(), "reeds");
+	}
+
+	private void registerCarpet(IForgeRegistry<Block> r, DyeColor color, Block origCarpet) {
+		// The flat version overrides vanilla (with no blockstate values).
+		// The fitted version goes in our mod namespace.
+
+		BlockFlatCarpet flatCarpet = new BlockFlatCarpet(color, origCarpet);
+		BlockFittedCarpet fitCarpet = new BlockFittedCarpet(color, origCarpet);
+		register(r, flatCarpet, origCarpet.getRegistryName());
+		register(r, fitCarpet, color.getName() + "_fitted_carpet");
+
+		fitCarpets.put(color, fitCarpet);
+		flatCarpets.put(color, flatCarpet);
 	}
 
 	@SubscribeEvent
