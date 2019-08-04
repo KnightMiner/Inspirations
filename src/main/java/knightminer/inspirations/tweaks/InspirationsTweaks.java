@@ -44,8 +44,8 @@ import slimeknights.mantle.pulsar.pulse.Pulse;
 public class InspirationsTweaks extends PulseBase {
 	public static final String pulseID = "InspirationsTweaks";
 
-	@SidedProxy(clientSide = "knightminer.inspirations.tweaks.TweaksClientProxy", serverSide = "knightminer.inspirations.common.CommonProxy")
-	public static CommonProxy proxy;
+	@SuppressWarnings("Convert2MethodRef")
+	public static CommonProxy proxy = DistExecutor.runForDist(()->()->new TweaksClientProxy(), ()->()->new CommonProxy());
 
 	// blocks
 	public static Map<DyeColor, BlockFittedCarpet> fitCarpets = new HashMap<>();
@@ -109,8 +109,9 @@ public class InspirationsTweaks extends PulseBase {
 		registerCarpet(r, DyeColor.RED, Blocks.RED_CARPET);
 		registerCarpet(r, DyeColor.BLACK, Blocks.BLACK_CARPET);
 
-		cactusCrop = register(r, new BlockCactusCrop(), "cactus");
-		sugarCaneCrop = register(r, new BlockSugarCaneCrop(), "reeds");
+
+		cactusCrop = register(r, new BlockCactusCrop(), "cactus_crop");
+		sugarCaneCrop = register(r, new BlockSugarCaneCrop(), "sugar_cane_crop");
 	}
 
 	private void registerCarpet(IForgeRegistry<Block> r, DyeColor color, Block origCarpet) {
@@ -130,12 +131,19 @@ public class InspirationsTweaks extends PulseBase {
 	public void registerItem(Register<Item> event) {
 		IForgeRegistry<Item> r = event.getRegistry();
 
-		if(Config.enableMoreSeeds) {
-			cactusSeeds = registerItem(r, new ItemSeed(InspirationsTweaks.cactusCrop, EnumPlantType.Desert), "cactus_seeds");
-			sugarCaneSeeds = registerItem(r, new ItemSeed(InspirationsTweaks.sugarCaneCrop, EnumPlantType.Beach), "sugar_cane_seeds");
 			carrotSeeds = registerItem(r, new ItemSeeds(Blocks.CARROTS, Blocks.FARMLAND), "carrot_seeds");
 			potatoSeeds = registerItem(r, new ItemSeeds(Blocks.POTATOES, Blocks.FARMLAND), "potato_seeds");
 		}
+
+		cactusSeeds = registerItem(r, new HidableBlockItem(
+			InspirationsTweaks.cactusCrop,
+			new Item.Properties().group(ItemGroup.FOOD)
+		), "cactus_seeds");
+
+		sugarCaneSeeds = registerItem(r, new HidableBlockItem(
+			InspirationsTweaks.sugarCaneCrop,
+			new Item.Properties().group(ItemGroup.FOOD)
+		), "sugar_cane_seeds");
 	}
 
 	@SubscribeEvent

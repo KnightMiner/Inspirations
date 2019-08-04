@@ -7,22 +7,29 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.CropsBlock;
 import net.minecraft.state.IntegerProperty;
 import net.minecraft.state.StateContainer;
+import net.minecraft.util.Direction;
 import net.minecraft.util.IItemProvider;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorldReader;
+import net.minecraft.world.World;
+import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.PlantType;
 import net.minecraftforge.registries.IRegistryDelegate;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-public abstract class BlockBlockCrop extends CropsBlock implements IHidable {
-
-	private IRegistryDelegate<Block> block;
-	private PlantType type;
-	private final VoxelShape[] shape;
+public abstract class BlockBlockCrop extends CropsBlock implements IHidable, IPlantable {
+	protected IRegistryDelegate<Block> block;
+	protected PlantType type;
+	protected final VoxelShape[] shape;
 	public static final IntegerProperty SMALL_AGE = IntegerProperty.create("age", 0, 6);
+
 	public BlockBlockCrop(Block block, PlantType type, VoxelShape[] shape, Block.Properties props) {
 		super(props);
 		this.block = block.delegate;
@@ -33,6 +40,12 @@ public abstract class BlockBlockCrop extends CropsBlock implements IHidable {
 	@Override
 	public boolean isEnabled() {
 		return Config.enableMoreSeeds.get();
+	}
+
+	@Override
+	public boolean isValidPosition(@Nonnull BlockState state, IWorldReader world, BlockPos pos) {
+		BlockState soil = world.getBlockState(pos.down());
+		return soil.canSustainPlant(world, pos, Direction.UP, this);
 	}
 
 	/* Age logic */
@@ -67,6 +80,12 @@ public abstract class BlockBlockCrop extends CropsBlock implements IHidable {
 	@Nonnull
 	@Override
 	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+		return shape[this.getAge(state)];
+	}
+
+	@Nonnull
+	@Override
+	public VoxelShape getRaytraceShape(@Nonnull BlockState state, @Nonnull IBlockReader world, @Nonnull BlockPos pos) {
 		return shape[this.getAge(state)];
 	}
 
