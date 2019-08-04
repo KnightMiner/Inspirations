@@ -16,7 +16,7 @@
     "count": 1
   },
   "ingredients": [
-    { "tag": "forge:dyes/silver" },
+    { "tag": "forge:dyes/light_gray" },
     { "item": "minecraft:book" }
   ]
 }

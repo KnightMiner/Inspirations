@@ -17,7 +17,7 @@
   ],
   "key": {
     "S": { "tag": "forge:rods/wooden" },
-    "D": { "type": "forge:dyes/orange" }
+    "D": { "tag": "forge:dyes/orange" }
   },
   "result": {
     "item": "inspirations:amber_mulch",

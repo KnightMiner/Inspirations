@@ -17,7 +17,7 @@
     "V"
   ],
   "key": {
-    "V": { "type": "forge:vines" }
+    "V": { "tag": "forge:vines" }
   },
   "result": {
     "item": "inspirations:vine",

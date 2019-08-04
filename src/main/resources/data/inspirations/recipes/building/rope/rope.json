@@ -17,7 +17,7 @@
     "SS"
   ],
   "key": {
-    "S": { "type": "forge:strings" }
+    "S": { "tag": "forge:strings" }
   },
   "result": {
     "item": "inspirations:rope",

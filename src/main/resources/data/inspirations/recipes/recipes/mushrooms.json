@@ -9,16 +9,10 @@
       "prop": "cauldron_fluids"
     }
   ],
-  "type": "forge:ore_shapeless",
-  "result": {
-    "item": "inspirations:mushrooms"
-  },
+  "type": "minecraft:crafting_shapeless",
+  "result": { "item": "inspirations:mushrooms" },
   "ingredients": [
-    {
-      "item": "minecraft:red_mushroom"
-    },
-    {
-      "item": "minecraft:brown_mushroom"
-    }
+    { "item": "minecraft:red_mushroom" },
+    { "item": "minecraft:brown_mushroom" }
   ]
 }

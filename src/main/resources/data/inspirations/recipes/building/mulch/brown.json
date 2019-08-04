@@ -17,7 +17,7 @@
   ],
   "key": {
     "S": { "tag": "forge:rods/wooden" },
-    "D": { "type": "forge:dyes/brown" }
+    "D": { "tag": "forge:dyes/brown" }
   },
   "result": {
     "item": "inspirations:brown_mulch",

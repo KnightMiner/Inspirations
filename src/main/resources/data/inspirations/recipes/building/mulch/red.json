@@ -17,7 +17,7 @@
   ],
   "key": {
     "S": { "tag": "forge:rods/wooden" },
-    "D": { "type": "forge:dyes/red" }
+    "D": { "tag": "forge:dyes/red" }
   },
   "result": {
     "item": "inspirations:red_mulch",

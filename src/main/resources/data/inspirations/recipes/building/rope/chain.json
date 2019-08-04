@@ -17,9 +17,7 @@
     "B"
   ],
   "key": {
-    "B": {
-      "item": "minecraft:iron_bars"
-    }
+    "B": { "item": "minecraft:iron_bars" }
   },
   "result": {
     "item": "inspirations:chain",

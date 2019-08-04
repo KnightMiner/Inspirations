@@ -1,18 +1,19 @@
+
 {
   "conditions": [
     {
-      "type": "pulse_loaded",
+      "type": "inspirations:pulse_loaded",
       "pulse": "InspirationsUtility"
     },
     {
-      "type": "config",
+      "type": "inspirations:config",
       "prop": "carpeted_trapdoor"
     }
   ],
-  "type": "forge:ore_shaped",
+  "type": "minecraft:crafting_shaped",
   "group": "inspirations:carpeted_trapdoor",
   "result": {
-    "item": "inspirations:carpeted_trapdoor_green",
+    "item": "inspirations:green_carpeted_trapdoor",
     "data": 0
   },
   "pattern": [
@@ -20,7 +21,7 @@
     "T"
   ],
   "key": {
-    "C": { "item": "minecraft:carpet", "data": 13 },
-    "T": { "item": "#TRAPDOOR" }
+    "C": { "item": "minecraft:green_carpet" },
+    "T": { "tag": "minecraft:wooden_trapdoors" }
   }
 }

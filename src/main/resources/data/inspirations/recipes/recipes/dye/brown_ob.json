@@ -9,7 +9,7 @@
       "prop": "extra_dyed_bottle_recipes"
     }
   ],
-  "type": "shapeless_no_container",
+  "type": "inspirations:shapeless_no_container",
   "group": "inspirations:dyed_bottle",
   "result": {
     "item": "inspirations:dyed_bottle",

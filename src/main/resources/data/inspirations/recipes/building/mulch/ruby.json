@@ -17,7 +17,7 @@
   ],
   "key": {
     "S": { "tag": "forge:rods/wooden" },
-    "D": { "type": "forge:dyes/magenta" }
+    "D": { "tag": "forge:dyes/magenta" }
   },
   "result": {
     "item": "inspirations:ruby_mulch",

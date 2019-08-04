@@ -1,15 +1,15 @@
 {
   "conditions": [
     {
-      "type": "pulse_loaded",
+      "type": "inspirations:pulse_loaded",
       "pulse": "InspirationsRecipes"
     },
     {
-      "type": "config",
+      "type": "inspirations:config",
       "prop": "patch_vanilla_dye_recipes"
     }
   ],
-  "type": "shapeless_no_container",
+  "type": "inspirations:shapeless_no_container",
   "group": "inspirations:dyed_bottle",
   "result": {
     "item": "inspirations:dyed_bottle",

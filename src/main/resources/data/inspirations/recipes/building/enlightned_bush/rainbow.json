@@ -1,12 +1,12 @@
 {
   "conditions": [
     {
-      "type": "pulse_loaded",
+      "type": "inspirations:pulse_loaded",
       "pulse": "InspirationsBuilding"
     },
     {
-      "type": "config",
-      "prop": "enlightened_bush"
+      "type": "inspirations:config",
+      "prop": "inspirations:enlightened_bush"
     }
   ],
   "type": "inspirations:texture_recipe",
