@@ -2,6 +2,7 @@ package knightminer.inspirations.common;
 
 import javax.annotation.Nonnull;
 
+import knightminer.inspirations.library.client.ClientUtil;
 import knightminer.inspirations.shared.client.TextureModel;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.color.BlockColors;
@@ -22,17 +23,16 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 public class ClientProxy extends CommonProxy {
 	public static final String VARIANT_INVENTORY = "inventory";
 
-	@Override
-	public void preInit() {
-		super.preInit();
-
+	public ClientProxy() {
 		MinecraftForge.EVENT_BUS.register(this);
+		FMLJavaModLoadingContext.get().getModEventBus().register(this);
 	}
-
 
 
 	/* Fluids */
