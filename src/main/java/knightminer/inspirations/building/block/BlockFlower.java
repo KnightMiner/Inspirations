@@ -14,6 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
@@ -29,7 +30,9 @@ public class BlockFlower extends BushBlock implements IGrowable {
 	public BlockFlower(DoublePlantBlock largePlant) {
 		super(Block.Properties.create(Material.PLANTS).hardnessAndResistance(0F).sound(SoundType.PLANT));
 		this.largePlant = largePlant;
-		largeToFlower.put(largePlant, this);
+		if (largePlant != null) {
+			largeToFlower.put(largePlant, this);
+		}
 	}
 
     @Override
@@ -55,6 +58,11 @@ public class BlockFlower extends BushBlock implements IGrowable {
 	public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
 		Vec3d off = state.getOffset(world, pos);
 		return SHAPE.withOffset(off.x, off.y, off.z);
+	}
+
+	@Override
+	public VoxelShape getCollisionShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+		return VoxelShapes.empty();
 	}
 
 	@Override
