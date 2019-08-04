@@ -1,0 +1,52 @@
+{
+    "textures": {
+        "texture": "inspirations:block/vine",
+        "bottom":  "inspirations:block/vine_bottom",
+        "particle": "inspirations:block/vine_bottom"
+    },
+    "elements": [
+        {
+            "name": "NorthSouth",
+            "from": [ 6, 7, 8 ], 
+            "to": [ 10, 16, 8 ], 
+            "faces": {
+                "north": { "texture": "#bottom", "tintindex": 0 },
+                "south": { "texture": "#bottom", "tintindex": 0 }
+            }
+        },
+        {
+            "name": "EastWest",
+            "from": [ 8, 7, 6 ], 
+            "to": [ 8, 16, 10 ], 
+            "faces": {
+                "east": { "texture": "#bottom", "tintindex": 0 },
+                "west": { "texture": "#bottom", "tintindex": 0 }
+            }
+        },
+        {
+            "name": "TopBottom",
+            "from": [ 7, 7, 7 ], 
+            "to": [ 9, 16, 9 ], 
+            "faces": {
+                "north": { "texture": "#bottom", "tintindex": 0 },
+                "south": { "texture": "#bottom", "tintindex": 0 },
+                "east":  { "texture": "#bottom", "tintindex": 0 },
+                "west":  { "texture": "#bottom", "tintindex": 0 },
+                "up":    { "texture": "#bottom", "tintindex": 0, "cullface": "up" }
+            }
+        },
+        {
+            "name": "Ball",
+            "from": [ 6.5, 4, 6.5 ], 
+            "to": [ 9.5, 7, 9.5 ], 
+            "faces": {
+                "north": { "texture": "#bottom", "uv": [ 7, 9, 10, 12 ], "tintindex": 0 },
+                "south": { "texture": "#bottom", "uv": [ 7, 9, 10, 12 ], "tintindex": 0 },
+                "east":  { "texture": "#bottom", "uv": [ 7, 9, 10, 12 ], "tintindex": 0 },
+                "west":  { "texture": "#bottom", "uv": [ 7, 9, 10, 12 ], "tintindex": 0 },
+                "up":    { "texture": "#bottom", "uv": [ 7, 9, 10, 12 ], "tintindex": 0 },
+                "down":  { "texture": "#bottom", "uv": [ 7, 9, 10, 12 ], "tintindex": 0 }
+            }
+        }
+    ]
+}

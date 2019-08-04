@@ -1,13 +1,6 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "textures": {
-      "texture": "inspirations:block/vine",
-      "bottom":  "inspirations:block/vine_bottom"
-    }
-  },
   "variants": {
-    "bottom=false": { "model": "inspirations:block/rope" },
-    "bottom=true":  { "model": "inspirations:block/rope_bottom" }
+    "bottom=false": { "model": "inspirations:block/vine" },
+    "bottom=true":  { "model": "inspirations:block/vine_bottom" }
   }
 }

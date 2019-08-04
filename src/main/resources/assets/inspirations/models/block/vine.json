@@ -1,0 +1,40 @@
+{
+    "textures": {
+        "texture": "inspirations:block/vine",
+        "bottom":  "inspirations:block/vine_bottom",
+        "particle": "inspirations:block/vine_bottom"
+    },
+    "elements": [
+        {
+            "name": "NorthSouth",
+            "from": [ 6, 0, 8 ], 
+            "to": [ 10, 16, 8 ], 
+            "faces": {
+                "north": { "texture": "#texture", "tintindex": 0 },
+                "south": { "texture": "#texture", "tintindex": 0 }
+            }
+        },
+        {
+            "name": "EastWest",
+            "from": [ 8, 0, 6 ], 
+            "to": [ 8, 16, 10 ], 
+            "faces": {
+                "east": { "texture": "#texture", "tintindex": 0 },
+                "west": { "texture": "#texture", "tintindex": 0 }
+            }
+        },
+        {
+            "name": "TopBottom",
+            "from": [ 7, 0, 7 ], 
+            "to": [ 9, 16, 9 ], 
+            "faces": {
+                "north": { "texture": "#texture", "tintindex": 0 },
+                "south": { "texture": "#texture", "tintindex": 0 },
+                "east":  { "texture": "#texture", "tintindex": 0 },
+                "west":  { "texture": "#texture", "tintindex": 0 },
+                "up":    { "texture": "#texture", "tintindex": 0, "cullface": "up" },
+                "down":  { "texture": "#texture", "tintindex": 0, "cullface": "down" }
+            }
+        }
+    ]
+}
