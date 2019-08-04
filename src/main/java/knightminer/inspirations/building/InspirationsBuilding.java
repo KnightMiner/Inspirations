@@ -59,8 +59,8 @@ public class InspirationsBuilding extends PulseBase {
 	public static BlockPath path_brick;
 
 	public static Block flower_cyan;
-	public static Block flower_lilac;
-	public static Block flower_peony;
+	public static Block flower_syringa;
+	public static Block flower_paeonia;
 	public static Block flower_rose;
 
 	public static Block enlightenedBush;
@@ -143,8 +143,8 @@ public class InspirationsBuilding extends PulseBase {
 
 
 		flower_cyan = registerBlock(r, new BlockFlower(null), "cyan_flower");
-		flower_lilac = registerBlock(r, new BlockFlower((DoublePlantBlock) Blocks.LILAC), "lilac");
-		flower_peony = registerBlock(r, new BlockFlower((DoublePlantBlock) Blocks.PEONY), "peony");
+		flower_syringa = registerBlock(r, new BlockFlower((DoublePlantBlock) Blocks.LILAC), "syringa");
+		flower_paeonia = registerBlock(r, new BlockFlower((DoublePlantBlock) Blocks.PEONY), "paeonia");
 		flower_rose = registerBlock(r, new BlockFlower((DoublePlantBlock) Blocks.ROSE_BUSH), "rose");
 
 
@@ -189,8 +189,8 @@ public class InspirationsBuilding extends PulseBase {
 		registerItemBlock(r, path_brick, ItemGroup.DECORATIONS);
 
 		registerItemBlock(r, flower_cyan, ItemGroup.DECORATIONS);
-		registerItemBlock(r, flower_lilac, ItemGroup.DECORATIONS);
-		registerItemBlock(r, flower_peony, ItemGroup.DECORATIONS);
+		registerItemBlock(r, flower_syringa, ItemGroup.DECORATIONS);
+		registerItemBlock(r, flower_paeonia, ItemGroup.DECORATIONS);
 		registerItemBlock(r, flower_rose, ItemGroup.DECORATIONS);
 
 //		registerItemBlock(r, new ItemBlockTexture(enlightenedBush, new Item.Properties().group(ItemGroup.DECORATIONS)));
