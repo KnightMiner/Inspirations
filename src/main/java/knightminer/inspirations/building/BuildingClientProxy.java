@@ -4,12 +4,15 @@ import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.block.BlockBookshelf;
 import knightminer.inspirations.building.block.BlockEnlightenedBush;
 import knightminer.inspirations.building.client.BookshelfModel;
+import knightminer.inspirations.building.client.GuiBookshelf;
+import knightminer.inspirations.building.inventory.ContainerBookshelf;
 import knightminer.inspirations.building.tileentity.TileBookshelf;
 import knightminer.inspirations.common.ClientProxy;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.client.ClientUtil;
 import knightminer.inspirations.library.util.TextureBlockUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.client.renderer.model.IBakedModel;
@@ -50,6 +53,8 @@ public class BuildingClientProxy extends ClientProxy {
 			Inspirations.log.error("Failed to register resource reload listener, expected instance of IReloadableResourceManager but got {}", manager.getClass());
 		}
 
+		// Register GUIs.
+		ScreenManager.registerFactory(InspirationsBuilding.contBookshelf, GuiBookshelf::new);
 	}
 
 

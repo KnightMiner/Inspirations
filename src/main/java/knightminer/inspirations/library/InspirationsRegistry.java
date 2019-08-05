@@ -77,7 +77,7 @@ public class InspirationsRegistry {
 	 * Books
 	 */
 	private static Map<Item, Float> books = new HashMap<>();
-	private static String[] bookKeywords = new String[0];
+	private static List<String> bookKeywords = new ArrayList<>();
 
 	/**
 	 * Checks if the given item stack is a book
@@ -158,8 +158,10 @@ public class InspirationsRegistry {
 	 * Internal function used to allow the config to set the list of book keywords. Should not need to be called outside of Inspirations
 	 * @param keywords Keyword list
 	 */
-	public static void setBookKeywords(String[] keywords) {
+	public static void setBookKeywords(List<String> keywords) {
 		bookKeywords = keywords;
+		// Clear the cache.
+		books.clear();
 	}
 
 

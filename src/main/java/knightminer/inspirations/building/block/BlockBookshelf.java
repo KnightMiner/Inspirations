@@ -10,7 +10,9 @@ import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.fluid.IFluidState;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -32,6 +34,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootContext;
 import net.minecraft.world.storage.loot.LootParameters;
 import net.minecraftforge.client.model.data.ModelProperty;
+import net.minecraftforge.fml.network.NetworkHooks;
 import slimeknights.mantle.block.InventoryBlock;
 
 import javax.annotation.Nonnull;
@@ -50,7 +53,7 @@ public class BlockBookshelf extends InventoryBlock implements ITileEntityProvide
 			.hardnessAndResistance(2.0F, 5.0F)
 			.sound(SoundType.WOOD)
 		);
-		this.setDefaultState(this.getDefaultState().with(FACING, Direction.NORTH));
+		this.setDefaultState(this.getStateContainer().getBaseState().with(FACING, Direction.NORTH));
 	}
 
 	@Override
@@ -84,9 +87,12 @@ public class BlockBookshelf extends InventoryBlock implements ITileEntityProvide
 
 	@Override
 	protected boolean openGui(PlayerEntity player, World world, BlockPos pos) {
+		if (!(player instanceof ServerPlayerEntity)) {
+			throw new AssertionError("Needs to be server!");
+		}
 		TileEntity te = world.getTileEntity(pos);
 		if(te instanceof TileBookshelf) {
-			player.openContainer((TileBookshelf)te);
+			NetworkHooks.openGui((ServerPlayerEntity) player, (INamedContainerProvider) te, pos);
 			return true;
 		}
 		return false;

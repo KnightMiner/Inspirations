@@ -12,8 +12,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.JSONUtils;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.crafting.IConditionSerializer;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.config.ModConfig;
 import slimeknights.mantle.pulsar.config.PulsarConfig;
 
 import javax.annotation.Nonnull;
@@ -21,7 +19,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
-import java.util.stream.Stream;
 
 import static net.minecraftforge.common.ForgeConfigSpec.*;
 
@@ -32,11 +29,6 @@ public class Config {
 
 	public static Builder BUILDER;
 	public static ForgeConfigSpec SPEC;
-	static {
-		BUILDER = new Builder();
-		configure(BUILDER);
-		SPEC = BUILDER.build();
-	}
 
 	// general
 	public static BooleanValue showAllVariants;
@@ -55,23 +47,8 @@ public class Config {
 	public static BooleanValue bookshelvesBoostEnchanting;
 	public static DoubleValue defaultEnchantingPower;
 
-	public static ConfigValue<List<? extends String>> bookKeywords;
-	private static List<String> bookKeywordsDefault = Arrays.asList(
-			"almanac",
-			"atlas",
-			"book",
-			"catalogue",
-			"concordance",
-			"dictionary",
-			"directory",
-			"encyclopedia",
-			"guide",
-			"journal",
-			"lexicon",
-			"manual",
-			"thesaurus",
-			"tome"
-	);
+	public static ConfigValue<String> bookKeywords;
+	private static String bookKeywordsDefault = "almanac, atlas, book, catalogue, concordance, dictionary, directory, encyclopedia, guide, journal, lexicon, manual, thesaurus, tome";
 	public static ConfigValue<List<String>> bookOverrides;
 	private static List<String> bookOverridesDefault = Arrays.asList(
 			"defiledlands:book_wyrm_raw->false",
@@ -373,7 +350,11 @@ public class Config {
 
 	// compatibility
 	public static BooleanValue tanJuiceInCauldron;
-
+	static {
+		BUILDER = new Builder();
+		configure(BUILDER);
+		SPEC = BUILDER.build();
+	}
 
 	private static void configure(Builder builder) {
 
@@ -406,9 +387,9 @@ public class Config {
 					.comment("Default power for a book for enchanting, can be overridden in the book overrides.")
 					.defineInRange("bookshelf.defaultEnchanting", 1.5f, 0.0f, 15.0f);
 
-//			bookKeywords = builder
-//					.comment("List of keywords for valid books, used to determine valid books in the bookshelf")
-//					.defineList("bookshelf.bookKeywords",  bookKeywordsDefault, (x) -> x instanceof String);
+			bookKeywords = builder
+					.comment("List of keywords for valid books, used to determine valid books in the bookshelf. Separate each by commas.")
+					.define("bookshelf.bookKeywords", bookKeywordsDefault);
 
 
 			// rope

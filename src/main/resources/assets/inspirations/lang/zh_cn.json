@@ -66,7 +66,7 @@
     "item.inspirations.red_book": "红色的书",
     "item.inspirations.black_book": "黑色的书",
 
-    "gui.inspirations.bookshelf": "书架",
+    "gui.inspirations.bookshelf.name": "书架",
 
 
     "_comment": "############",

@@ -80,9 +80,15 @@ public class Inspirations {
 	}
 
 	@SubscribeEvent
-	public void configChanged(final ModConfig.ConfigReloading configEvent) {
+	public void configChanged(final ModConfig.ModConfigEvent configEvent) {
 		InspirationsRegistry.setConfig("biggerCauldron", Config.enableBiggerCauldron());
 		InspirationsRegistry.setConfig("expensiveCauldronBrewing", Config.expensiveCauldronBrewing());
+		InspirationsRegistry.setBookKeywords(Arrays
+			.stream(Config.bookKeywords.get()
+			.split(","))
+			.map(String::trim)
+			.collect(Collectors.toList())
+		);
 	}
 
 	@SubscribeEvent

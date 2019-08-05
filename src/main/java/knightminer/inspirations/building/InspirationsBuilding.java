@@ -10,7 +10,6 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.common.item.HidableItem;
 import knightminer.inspirations.common.item.ItemBlockTexture;
-import knightminer.inspirations.library.InspirationsRegistry;
 //import knightminer.inspirations.library.recipe.cauldron.CauldronDyeRecipe;
 //import knightminer.inspirations.utility.inventory.ContainerCollector;
 import net.minecraft.block.*;
@@ -97,7 +96,7 @@ public class InspirationsBuilding extends PulseBase {
 	public void registerContainers(Register<ContainerType<?>> event) {
 		IForgeRegistry<ContainerType<?>> r = event.getRegistry();
 
-//		contBookshelf = register(r, new ContainerType<>(ContainerBookshelf::new), "bookshelf");
+		contBookshelf = register(r, new ContainerType<>(new ContainerBookshelf.Factory()), "bookshelf");
 	}
 
 	@SubscribeEvent

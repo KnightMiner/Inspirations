@@ -66,7 +66,7 @@
     "item.inspirations.red_book": "Красная книга",
     "item.inspirations.black_book": "Чёрная книга",
 
-    "gui.inspirations.bookshelf": "Книжная полка",
+    "gui.inspirations.bookshelf.name": "Книжная полка",
 
 
     "_comment": "#############",

@@ -66,7 +66,7 @@
     "item.inspirations.red_book": "Red Book",
     "item.inspirations.black_book": "Black Book",
 
-    "gui.inspirations.bookshelf": "Bookshelf",
+    "gui.inspirations.bookshelf.name": "Bookshelf",
 
 
     "_comment": "Utility",
