@@ -30,10 +30,13 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityFlowerPot;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.DimensionType;
+import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeColorHelper;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.LinkedHashMap;
@@ -101,7 +104,7 @@ public class TweaksClientProxy extends ClientProxy {
 
 		// portal tinting
 		if (Config.customPortalColor) {
-			registerBlockColors(colors, new PortalColorHandler(), Blocks.PORTAL);
+			registerBlockColors(colors, PortalColorHandler.INSTANCE, Blocks.PORTAL);
 		}
 
 		// coloring on sugar cane crop to match reeds
@@ -206,6 +209,27 @@ public class TweaksClientProxy extends ClientProxy {
 		if(InspirationsTweaks.flowerPot != null) {
 			replaceTexturedModel(event, FLOWER_POT_MODEL, "plant", false);
 		}
+	}
+
+	@SubscribeEvent
+	public void onWorldLoad(WorldEvent.Load event) {
+		if(!Config.customPortalColor) {
+			return;
+		}
+		World world = event.getWorld();
+		int dimension = world.provider.getDimension();
+		// only matters in the overworld and nether, portals invalid elsewhere
+		if (dimension == DimensionType.OVERWORLD.getId() || dimension == DimensionType.NETHER.getId()) {
+			world.addEventListener(PortalColorHandler.INSTANCE);
+		}
+	}
+
+	@SubscribeEvent
+	public void onWorldUnload(WorldEvent.Unload event) {
+		if(!Config.customPortalColor) {
+			return;
+		}
+		event.getWorld().removeEventListener(PortalColorHandler.INSTANCE);
 	}
 
 	private static class FlowerPotStateMapper extends StateMapperBase {
