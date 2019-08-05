@@ -28,10 +28,14 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.IForgeRegistry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import slimeknights.mantle.pulsar.control.PulseManager;
+
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 @Mod(Inspirations.modID)
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -47,8 +51,10 @@ public class Inspirations {
 	public Inspirations() {
 		pulseManager = new PulseManager(Config.pulseConfig);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+
         MinecraftForge.EVENT_BUS.register(pulseManager);
         MinecraftForge.EVENT_BUS.addListener(this::registerRecipeTypes);
+        FMLJavaModLoadingContext.get().getModEventBus().register(this);
 
 		pulseManager.registerPulse(new InspirationsShared());
 		pulseManager.registerPulse(new InspirationsBuilding());
@@ -71,11 +77,6 @@ public class Inspirations {
 		pulseManager.enablePulses();
 
 		InspirationsNetwork.instance.setup();
-
-		// These don't have registries yet.
-		CraftingHelper.register(new ResourceLocation(Inspirations.modID, "pulse_loaded"), new Config.PulseLoaded());
-		CraftingHelper.register(new ResourceLocation(Inspirations.modID, "config"), new Config.ConfigProperty());
-		CraftingHelper.register(new ResourceLocation(Inspirations.modID, "mod_item_list"), ModItemList.SERIALIZER);
 	}
 
 	@SubscribeEvent
