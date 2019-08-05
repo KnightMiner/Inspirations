@@ -2,27 +2,18 @@ package knightminer.inspirations.building;
 
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.block.BlockBookshelf;
-import knightminer.inspirations.building.block.BlockBookshelf.BookshelfType;
 import knightminer.inspirations.building.block.BlockEnlightenedBush;
-import knightminer.inspirations.building.block.BlockEnlightenedBush.LightsType;
-import knightminer.inspirations.building.block.BlockFlower.FlowerType;
-import knightminer.inspirations.building.block.BlockRope;
-import knightminer.inspirations.building.block.BlockRope.RopeType;
 import knightminer.inspirations.building.client.BookshelfModel;
 import knightminer.inspirations.building.tileentity.TileBookshelf;
 import knightminer.inspirations.common.ClientProxy;
-import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.Util;
-import knightminer.inspirations.library.client.BlockItemStateMapper;
 import knightminer.inspirations.library.client.ClientUtil;
 import knightminer.inspirations.library.util.TextureBlockUtil;
-import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.DyeColor;
 import net.minecraft.resources.IReloadableResourceManager;
@@ -36,7 +27,6 @@ import net.minecraft.world.FoliageColors;
 import net.minecraft.world.biome.BiomeColors;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
-import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -51,60 +41,17 @@ public class BuildingClientProxy extends ClientProxy {
 	public void preInit() {
 		super.preInit();
 
-		if (Config.enableBookshelf) {
-			// listener to clear bookshelf model cache as its shared by all bookshelf model files
-			IResourceManager manager = Minecraft.getInstance().getResourceManager();
-			// should always be true, but just in case
-			if(manager instanceof IReloadableResourceManager) {
-				((IReloadableResourceManager) manager).addReloadListener((a,b,c,d,e,f) -> CompletableFuture.runAsync(BookshelfModel.BOOK_CACHE::invalidateAll));
-			} else {
-				Inspirations.log.error("Failed to register resource reload listener, expected instance of IReloadableResourceManager but got {}", manager.getClass());
-			}
+		// listener to clear bookshelf model cache as its shared by all bookshelf model files
+		IResourceManager manager = Minecraft.getInstance().getResourceManager();
+		// should always be true, but just in case
+		if(manager instanceof IReloadableResourceManager) {
+			((IReloadableResourceManager) manager).addReloadListener((a,b,c,d,e,f) -> CompletableFuture.runAsync(BookshelfModel.BOOK_CACHE::invalidateAll));
+		} else {
+			Inspirations.log.error("Failed to register resource reload listener, expected instance of IReloadableResourceManager but got {}", manager.getClass());
 		}
+
 	}
 
-	@SubscribeEvent
-	public void registerModels(ModelRegistryEvent event) {
-		setModelStateMapper(InspirationsBuilding.glassDoor, new StateMap.Builder().ignore(BlockDoor.POWERED).build());
-		setModelStateMapper(InspirationsBuilding.flower, new BlockItemStateMapper());
-
-		// items
-		registerItemMetaDynamic(InspirationsBuilding.books);
-
-		// blocks
-		registerItemModel(InspirationsBuilding.glassDoorItem);
-		registerItemModel(InspirationsBuilding.glassTrapdoor);
-		registerRopeModels(InspirationsBuilding.rope);
-		registerItemBlockMeta(InspirationsBuilding.mulch);
-		registerItemBlockMeta(InspirationsBuilding.path);
-		registerItemBlockMeta(InspirationsBuilding.enlightenedBush);
-		registerFlowerModels(InspirationsBuilding.flower);
-		registerBookshelfModels(InspirationsBuilding.bookshelf);
-	}
-
-	private void registerBookshelfModels(Block bookshelf) {
-		if(bookshelf != null) {
-			for(BookshelfType type : BookshelfType.values()) {
-				registerItemModel(bookshelf, type.getMeta(), "facing=south,type=" + type.getName());
-			}
-		}
-	}
-
-	private void registerRopeModels(Block rope) {
-		if(rope != null) {
-			for(RopeType type : RopeType.values()) {
-				registerItemModel(rope, type.getMeta(), "bottom=item,type=" + type.getName());
-			}
-		}
-	}
-
-	private void registerFlowerModels(Block flower) {
-		if(flower != null) {
-			for(FlowerType type : FlowerType.values()) {
-				registerItemModel(flower, type.getMeta(), "block=false,type=" + type.getName());
-			}
-		}
-	}
 
 	@SubscribeEvent
 	public void registerBlockColors(ColorHandlerEvent.Block event) {
@@ -140,22 +87,22 @@ public class BuildingClientProxy extends ClientProxy {
 		}, InspirationsBuilding.vine);
 
 		// bush block coloring
-		blockColors.register((state, world, pos, tintIndex) -> {
-			if(tintIndex != 0 || world == null || pos == null) {
-				return -1;
-			}
-			int color = state.get(BlockEnlightenedBush.LIGHTS).getColor();
-			if(color > -1) {
-				return color;
-			}
-
-			TileEntity te = world.getTileEntity(pos);
-			if(te != null) {
-				ItemStack stack = ItemStack.read(TextureBlockUtil.getTextureBlock(te));
-				return ClientUtil.getStackBlockColorsSafe(stack, world, pos, 0);
-			}
-			return FoliageColors.getDefault();
-		}, InspirationsBuilding.enlightenedBush);
+//		blockColors.register((state, world, pos, tintIndex) -> {
+//			if(tintIndex != 0 || world == null || pos == null) {
+//				return -1;
+//			}
+//			int color = state.get(BlockEnlightenedBush.LIGHTS).getColor();
+//			if(color > -1) {
+//				return color;
+//			}
+//
+//			TileEntity te = world.getTileEntity(pos);
+//			if(te != null) {
+//				ItemStack stack = ItemStack.read(TextureBlockUtil.getTextureBlock(te));
+//				return ClientUtil.getStackBlockColorsSafe(stack, world, pos, 0);
+//			}
+//			return FoliageColors.getDefault();
+//		}, InspirationsBuilding.enlightenedBush);
 	}
 
 	@SubscribeEvent
@@ -172,8 +119,7 @@ public class BuildingClientProxy extends ClientProxy {
 
 		// book covers, too lazy to make 16 cover textures
 		for (Map.Entry<DyeColor, Item> book_entry: InspirationsBuilding.book_colors.entrySet()) {
-			float[] rgb = book_entry.getKey().getColorComponentValues();
-			int color = (int) (rgb[0]*255) << 16 | (int) (rgb[1]*255) << 8 | (int) (rgb[2]*255);
+			int color = book_entry.getKey().colorValue;
 			itemColors.register((stack, tintIndex) -> (tintIndex == 1) ? color : -1, book_entry.getValue());
 		}
 
@@ -196,9 +142,8 @@ public class BuildingClientProxy extends ClientProxy {
 			return FoliageColors.getDefault();
 		}, InspirationsBuilding.enlightenedBush);
 
-		// redirect to block colors
-		registerItemColors(itemColors, (stack, tintIndex) -> ClientUtil.getStackBlockColors(stack, null, null, tintIndex),
-				InspirationsBuilding.rope);
+		// We can't get the world position of the item, so use the default tint.
+		registerItemColors(itemColors, (stack, tintIndex) -> FoliageColors.getDefault(), InspirationsBuilding.vine);
 	}
 
 	/**
