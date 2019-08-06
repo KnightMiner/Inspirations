@@ -9,7 +9,7 @@
       "prop": "dye_waypoint_compass"
     }
   ],
-  "type": "inspirations:waypoint_compass",
+  "type": "inspirations:dye_waypoint_compass",
   "group": "inspirations:dye_waypoint_compass",
   "result": {
     "item": "inspirations:lime_waypoint_compass"
