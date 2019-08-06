@@ -2,17 +2,16 @@ package knightminer.inspirations.tools.client;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.item.EntityItemFrame;
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.item.ItemFrameEntity;
 import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumFacing.Axis;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class NorthCompassGetter implements IItemPropertyGetter {
 	double rotation;
@@ -20,13 +19,13 @@ public class NorthCompassGetter implements IItemPropertyGetter {
 	long lastUpdateTick;
 
 	@Override
-	@SideOnly(Side.CLIENT)
-	public float apply(ItemStack stack, @Nullable World world, @Nullable EntityLivingBase entity) {
+	@OnlyIn(Dist.CLIENT)
+	public float call(ItemStack stack, @Nullable World world, @Nullable LivingEntity entity) {
 		if(stack.isOnItemFrame()) {
-			EntityItemFrame frame = stack.getItemFrame();
-			EnumFacing facing = frame.getHorizontalFacing();
+			ItemFrameEntity frame = stack.getItemFrame();
+			Direction facing = frame.getHorizontalFacing();
 			// TODO: quark support
-			if(facing == null || facing.getAxis() == Axis.Y) {
+			if(facing.getAxis() == Direction.Axis.Y) {
 				return 0;
 			}
 			return MathHelper.positiveModulo(facing.getHorizontalIndex()/4f + 0.5f + frame.getRotation()/8f, 1);
@@ -43,13 +42,13 @@ public class NorthCompassGetter implements IItemPropertyGetter {
 		}
 
 		double angle = MathHelper.positiveModulo(entity.rotationYaw/360, 1);
-		return (float) (entity instanceof EntityPlayerSP ? wobble(world, angle) : angle);
+		return (float) (entity == Minecraft.getInstance().player ? wobble(world, angle) : angle);
 	}
 
-	@SideOnly(Side.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	private double wobble(World world, double angle) {
-		if(world.getTotalWorldTime() != lastUpdateTick) {
-			lastUpdateTick = world.getTotalWorldTime();
+		if(world.getGameTime() != lastUpdateTick) {
+			lastUpdateTick = world.getGameTime();
 			double d0 = angle - rotation;
 			d0 = MathHelper.positiveModulo(d0 + 0.5D, 1.0D) - 0.5D;
 			rota += d0 * 0.1D;

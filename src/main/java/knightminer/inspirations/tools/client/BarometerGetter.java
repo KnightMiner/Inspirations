@@ -3,17 +3,17 @@ package knightminer.inspirations.tools.client;
 import javax.annotation.Nullable;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class BarometerGetter implements IItemPropertyGetter {
 	@Override
-	@SideOnly(Side.CLIENT)
-	public float apply(ItemStack stack, @Nullable World world, @Nullable EntityLivingBase entityIn) {
+	@OnlyIn(Dist.CLIENT)
+	public float call(ItemStack stack, @Nullable World world, @Nullable LivingEntity entityIn) {
 		Entity entity = entityIn != null ? entityIn : stack.getItemFrame();
 		if(entity == null) {
 			return 0;
