@@ -70,9 +70,10 @@ public class InspirationsTools extends PulseBase {
 	public static Item northCompass;
 	public static Item barometer;
 	public static Item photometer;
-	public static Item waypointCompass;
 	public static ArrowItem redstoneArrow;
 
+	// The "undyed" compass is White.
+	public static Map<DyeColor, ItemWaypointCompass> waypointCompasses = new HashMap<>();
 	// tool materials
 	public static ToolMaterial bone;
 	public static ToolMaterial blaze;
@@ -130,47 +131,46 @@ public class InspirationsTools extends PulseBase {
 			}
 		}
 
-		if(Config.enableNorthCompass) {
-			northCompass = registerItem(r, new Item().setCreativeTab(CreativeTabs.TOOLS), "north_compass");
-			northCompass.addPropertyOverride(new ResourceLocation("angle"), new NorthCompassGetter());
-			if(Config.renameVanillaCompass) {
-				Items.COMPASS.setUnlocalizedName(Util.prefix("origin_compass"));
-			}
+		redstoneArrow = registerItem(r, new RedstoneArrowItem(toolProps), "charged_arrow");
+
+		redstoneCharger = registerItem(r, new ItemRedstoneCharger(), "redstone_charger");
+
+
+		northCompass = registerItem(r, new HidableItem(toolProps, Config.enableNorthCompass::get), "north_compass");
+		northCompass.addPropertyOverride(Util.getResource("angle"), new NorthCompassGetter());
+
+//		if(Config.renameVanillaCompass.get()) {
+//				Items.COMPASS.translationKey = Util.prefix("origin_compass");
+//		}
+		barometer = registerItem(r, new HidableItem(toolProps, Config.enableBarometer::get), "barometer");
+		barometer.addPropertyOverride(Util.getResource("height"), new BarometerGetter());
+
+		photometer = registerItem(r, new HidableItem(toolProps, Config.enablePhotometer::get), "photometer");
+		photometer.addPropertyOverride(Util.getResource("light"), new PhotometerGetter());
+
+		for(DyeColor color: DyeColor.values()) {
+			waypointCompasses.put(color, registerItem(r, new ItemWaypointCompass(color),
+				// Give a nicer name to the "undyed" compass.
+				(color == DyeColor.WHITE) ? "waypoint_compass": color.getName() + "_waypoint_compass"
+			));
 		}
 
-		if(Config.enableBarometer) {
-			barometer = registerItem(r, new Item().setCreativeTab(CreativeTabs.TOOLS), "barometer");
-			barometer.addPropertyOverride(new ResourceLocation("height"), new BarometerGetter());
-		}
-
-		if(Config.enablePhotometer) {
-			photometer = registerItem(r, new Item().setCreativeTab(CreativeTabs.TOOLS), "photometer");
-			photometer.addPropertyOverride(new ResourceLocation("light"), new PhotometerGetter());
-		}
-
-		if(Config.enableWaypointCompass) {
-			waypointCompass = registerItem(r, new ItemWaypointCompass(), "waypoint_compass");
-		}
-
-		if(Config.shieldEnchantmentTable) {
-			register(r, new ItemEnchantableShield(), new ResourceLocation("shield"));
-		}
+//		if(Config.shieldEnchantmentTable) {
+//			register(r, new ItemEnchantableShield(), new ResourceLocation("shield"));
+//		}
 	}
 
 	@SubscribeEvent
-	public void registerEntities(Register<EntityEntry> event) {
-		IForgeRegistry<EntityEntry> r = event.getRegistry();
-		r.register(getEntityBuilder(EntityModArrow.class, "arrow", EntityIds.ARROW)
-				.tracker(64, 1, false)
-				.build());
+	public void registerEntities(Register<EntityType<?>> event) {
+		IForgeRegistry<EntityType<?>> r = event.getRegistry();
+		r.register(entRSArrow);
 	}
 
 	@SubscribeEvent
-	public void registerRecipes(Register<IRecipe> event) {
-		IForgeRegistry<IRecipe> r = event.getRegistry();
-		if(Config.copyWaypointCompass) {
-			register(r, new WaypointCompassCopyRecipe(), "waypoint_compass_copy");
-		}
+	public void registerRecipes(Register<IRecipeSerializer<?>> event) {
+		IForgeRegistry<IRecipeSerializer<?>> r = event.getRegistry();
+		register(r, WaypointCompassCopyRecipe.SERIALIZER, "copy_waypoint_compass");
+		register(r, WaypointCompassDyeingRecipe.SERIALIZER, "dye_waypoint_compass");
 	}
 
 	@SubscribeEvent
@@ -203,25 +203,14 @@ public class InspirationsTools extends PulseBase {
 		}
 	}
 
-	@Subscribe
-	public void init(FMLInitializationEvent event) {
+	@SubscribeEvent
+	public void init(FMLCommonSetupEvent event) {
 		proxy.init();
-
-		if(Config.separateCrook) {
-			bone.setRepairItem(new ItemStack(Items.BONE));
-			if(Config.netherCrooks) {
-				blaze.setRepairItem(new ItemStack(Items.BLAZE_ROD));
-				wither.setRepairItem(InspirationsShared.witherBone);
-			}
-		}
-
-		registerDispenserBehavior();
 	}
 
-	@Subscribe
-	public void postInit(FMLPostInitializationEvent event) {
+	@SubscribeEvent
+	public void postInit(FMLCommonSetupEvent event) {
 		proxy.postInit();
-		MinecraftForge.EVENT_BUS.register(ToolsEvents.class);
 	}
 
 	private void registerDispenserBehavior() {
