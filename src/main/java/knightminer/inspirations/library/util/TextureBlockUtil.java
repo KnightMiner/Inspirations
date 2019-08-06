@@ -120,7 +120,7 @@ public final class TextureBlockUtil {
 	public static void addBlocksFromTag(Tag<Block> tag, Block block, NonNullList<ItemStack> list) {
 		for(Block textureBlock : tag.getAllElements()) {
 			list.add(createTexturedStack(block, textureBlock));
-			if(!Config.showAllVariants) {
+			if(!Config.showAllVariants.get()) {
 				return;
 			}
 		}
