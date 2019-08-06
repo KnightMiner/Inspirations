@@ -16,7 +16,7 @@ import knightminer.inspirations.library.recipe.TextureRecipe;
 import knightminer.inspirations.building.InspirationsBuilding;
 //import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.shared.InspirationsShared;
-//import knightminer.inspirations.tools.InspirationsTools;
+import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 //import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraft.item.crafting.IRecipeSerializer;
@@ -62,7 +62,7 @@ public class Inspirations {
 		pulseManager.registerPulse(new InspirationsShared());
 		pulseManager.registerPulse(new InspirationsBuilding());
 //		pulseManager.registerPulse(new InspirationsUtility());
-//		pulseManager.registerPulse(new InspirationsTools());
+		pulseManager.registerPulse(new InspirationsTools());
 //		pulseManager.registerPulse(new InspirationsRecipes());
 		pulseManager.registerPulse(new InspirationsTweaks());
 		// plugins
