@@ -53,12 +53,18 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.pulsar.pulse.Pulse;
 
+import javax.annotation.Nonnull;
+import java.util.HashMap;
+import java.util.Map;
+
 @Pulse(id = InspirationsTools.pulseID, description = "Adds various tools or tweaks to vanilla tools")
 public class InspirationsTools extends PulseBase {
 	public static final String pulseID = "InspirationsTools";
 
-	@SidedProxy(clientSide = "knightminer.inspirations.tools.ToolsClientProxy", serverSide = "knightminer.inspirations.common.CommonProxy")
-	public static CommonProxy proxy;
+	public static CommonProxy proxy = DistExecutor.runForDist(
+		()->()->new ToolsClientProxy(),
+		()->()->new CommonProxy()
+	);
 
 	// items
 	public static Item redstoneCharger;
@@ -74,10 +80,41 @@ public class InspirationsTools extends PulseBase {
 
 	// The "undyed" compass is White.
 	public static Map<DyeColor, ItemWaypointCompass> waypointCompasses = new HashMap<>();
+
 	// tool materials
-	public static ToolMaterial bone;
-	public static ToolMaterial blaze;
-	public static ToolMaterial wither;
+	public static IItemTier bone = new IItemTier() {
+		public int getMaxUses() { return 225; }
+		public float getEfficiency() { return 4.0F; }
+		public float getAttackDamage() { return 1.5F; }
+		public int getHarvestLevel() { return 1; }
+		public int getEnchantability() { return 10; }
+		public Ingredient getRepairMaterial() {
+			return Ingredient.fromTag(ItemTags.getCollection()
+				.getOrCreate(new ResourceLocation("forge", "bones")));
+		}
+	};
+	public static IItemTier blaze = new IItemTier() {
+		public int getMaxUses() { return 300; }
+		public float getEfficiency() { return 6.0F; }
+		public float getAttackDamage() { return 2.0F; }
+		public int getHarvestLevel() { return 2; }
+		public int getEnchantability() { return 20; }
+		public Ingredient getRepairMaterial() {
+			return Ingredient.fromTag(ItemTags.getCollection()
+				.getOrCreate(new ResourceLocation("forge", "rods/blaze")));
+		}
+	};
+	public static IItemTier wither = new IItemTier() {
+		public int getMaxUses() { return 375; }
+		public float getEfficiency() { return 6.0F; }
+		public float getAttackDamage() { return 1.5F; }
+		public int getHarvestLevel() { return 2; }
+		public int getEnchantability() { return 10; }
+		public Ingredient getRepairMaterial() {
+			return Ingredient.fromTag(ItemTags.getCollection()
+				.getOrCreate(new ResourceLocation("forge", "bones/wither")));
+		}
+	};
 
 	// blocks
 	public static Block redstoneCharge;
@@ -92,18 +129,11 @@ public class InspirationsTools extends PulseBase {
 		.setUpdateInterval(20)
 	,"redstone_arrow");
 
-	@Subscribe
-	public void preInit(FMLPreInitializationEvent event) {
+	@SubscribeEvent
+	public void setup(FMLCommonSetupEvent event) {
 		proxy.preInit();
-
-		if(Config.separateCrook) {
-			bone = EnumHelper.addToolMaterial(Util.prefix("bone"), 1, 225, 4.0F, 1.5F, 10);
-			if(Config.netherCrooks) {
-				blaze = EnumHelper.addToolMaterial(Util.prefix("blaze"), 2, 300, 6.0F, 2.0F, 20);
-				wither = EnumHelper.addToolMaterial(Util.prefix("wither"), 2, 375, 6.0F, 1.5F, 10);
-			}
-		}
 		MinecraftForge.EVENT_BUS.register(ToolsEvents.class);
+		registerDispenserBehavior();
 	}
 
 	@SubscribeEvent
@@ -117,24 +147,19 @@ public class InspirationsTools extends PulseBase {
 	public void registerItems(Register<Item> event) {
 		IForgeRegistry<Item> r = event.getRegistry();
 
-		arrow = registerItem(r, new ItemModArrow(), "arrow");
-		if(Config.enableRedstoneCharge) {
-			redstoneCharger = registerItem(r, new ItemRedstoneCharger(), "redstone_charger");
-		}
-		if(Config.separateCrook) {
-			woodenCrook = registerItem(r, new ItemCrook(ToolMaterial.WOOD), "wooden_crook");
-			stoneCrook = registerItem(r, new ItemCrook(ToolMaterial.STONE), "stone_crook");
-			boneCrook = registerItem(r, new ItemCrook(bone), "bone_crook");
-			if(Config.netherCrooks) {
-				blazeCrook = registerItem(r, new ItemCrook(blaze), "blaze_crook");
-				witherCrook = registerItem(r, new ItemCrook(wither), "wither_crook");
-			}
-		}
+		// Reuse...
+		Item.Properties toolProps = new Item.Properties().group(ItemGroup.TOOLS);
 
 		redstoneArrow = registerItem(r, new RedstoneArrowItem(toolProps), "charged_arrow");
 
 		redstoneCharger = registerItem(r, new ItemRedstoneCharger(), "redstone_charger");
 
+		woodenCrook = registerItem(r, new ItemCrook(ItemTier.WOOD, Config::separateCrook), "wooden_crook");
+		stoneCrook = registerItem(r, new ItemCrook(ItemTier.STONE, Config::separateCrook), "stone_crook");
+		boneCrook = registerItem(r, new ItemCrook(bone, Config::separateCrook), "bone_crook");
+
+		blazeCrook = registerItem(r, new ItemCrook(blaze, Config::enableNetherCrook), "blaze_crook");
+		witherCrook = registerItem(r, new ItemCrook(wither, Config::enableNetherCrook), "wither_crook");
 
 		northCompass = registerItem(r, new HidableItem(toolProps, Config.enableNorthCompass::get), "north_compass");
 		northCompass.addPropertyOverride(Util.getResource("angle"), new NorthCompassGetter());
@@ -177,30 +202,30 @@ public class InspirationsTools extends PulseBase {
 	public void registerEnchantments(Register<Enchantment> event) {
 		IForgeRegistry<Enchantment> r = event.getRegistry();
 
-		if(Config.moreShieldEnchantments) {
-			EntityEquipmentSlot[] slots = new EntityEquipmentSlot[] {EntityEquipmentSlot.HEAD, EntityEquipmentSlot.CHEST, EntityEquipmentSlot.LEGS, EntityEquipmentSlot.FEET};
-			register(r, new EnchantmentShieldProtection(Enchantment.Rarity.COMMON, EnchantmentProtection.Type.ALL, slots), new ResourceLocation("protection"));
-			register(r, new EnchantmentShieldProtection(Enchantment.Rarity.UNCOMMON, EnchantmentProtection.Type.FIRE, slots), new ResourceLocation("fire_protection"));
-			register(r, new EnchantmentShieldProtection(Enchantment.Rarity.UNCOMMON, EnchantmentProtection.Type.PROJECTILE, slots), new ResourceLocation("projectile_protection"));
-			register(r, new EnchantmentShieldProtection(Enchantment.Rarity.RARE, EnchantmentProtection.Type.EXPLOSION, slots), new ResourceLocation("blast_protection"));
-			register(r, new EnchantmentShieldThorns(Enchantment.Rarity.VERY_RARE, slots), new ResourceLocation("thorns"));
-		}
-
-		if(Config.moreShieldEnchantments || Config.axeWeaponEnchants) {
-			EntityEquipmentSlot[] slots = new EntityEquipmentSlot[] {EntityEquipmentSlot.MAINHAND};
-			register(r, new EnchantmentExtendedKnockback(Enchantment.Rarity.UNCOMMON, slots), new ResourceLocation("knockback"));
-			register(r, new EnchantmentExtendedFire(Enchantment.Rarity.RARE, slots), new ResourceLocation("fire_aspect"));
-			if(Config.axeWeaponEnchants) {
-				register(r, new EnchantmentAxeLooting(Enchantment.Rarity.RARE, EnumEnchantmentType.WEAPON, slots), new ResourceLocation("looting"));
-			}
-		}
-
-		if(Config.axeEnchantmentTable) {
-			EntityEquipmentSlot[] slots = new EntityEquipmentSlot[] {EntityEquipmentSlot.MAINHAND};
-			register(r, new EnchantmentAxeDamage(Enchantment.Rarity.COMMON, 0, slots), new ResourceLocation("sharpness"));
-			register(r, new EnchantmentAxeDamage(Enchantment.Rarity.UNCOMMON, 1, slots), new ResourceLocation("smite"));
-			register(r, new EnchantmentAxeDamage(Enchantment.Rarity.UNCOMMON, 2, slots), new ResourceLocation("bane_of_arthropods"));
-		}
+//		if(Config.moreShieldEnchantments) {
+//			EntityEquipmentSlot[] slots = new EntityEquipmentSlot[] {EntityEquipmentSlot.HEAD, EntityEquipmentSlot.CHEST, EntityEquipmentSlot.LEGS, EntityEquipmentSlot.FEET};
+//			register(r, new EnchantmentShieldProtection(Enchantment.Rarity.COMMON, EnchantmentProtection.Type.ALL, slots), new ResourceLocation("protection"));
+//			register(r, new EnchantmentShieldProtection(Enchantment.Rarity.UNCOMMON, EnchantmentProtection.Type.FIRE, slots), new ResourceLocation("fire_protection"));
+//			register(r, new EnchantmentShieldProtection(Enchantment.Rarity.UNCOMMON, EnchantmentProtection.Type.PROJECTILE, slots), new ResourceLocation("projectile_protection"));
+//			register(r, new EnchantmentShieldProtection(Enchantment.Rarity.RARE, EnchantmentProtection.Type.EXPLOSION, slots), new ResourceLocation("blast_protection"));
+//			register(r, new EnchantmentShieldThorns(Enchantment.Rarity.VERY_RARE, slots), new ResourceLocation("thorns"));
+//		}
+//
+//		if(Config.moreShieldEnchantments || Config.axeWeaponEnchants) {
+//			EntityEquipmentSlot[] slots = new EntityEquipmentSlot[] {EntityEquipmentSlot.MAINHAND};
+//			register(r, new EnchantmentExtendedKnockback(Enchantment.Rarity.UNCOMMON, slots), new ResourceLocation("knockback"));
+//			register(r, new EnchantmentExtendedFire(Enchantment.Rarity.RARE, slots), new ResourceLocation("fire_aspect"));
+//			if(Config.axeWeaponEnchants) {
+//				register(r, new EnchantmentAxeLooting(Enchantment.Rarity.RARE, EnumEnchantmentType.WEAPON, slots), new ResourceLocation("looting"));
+//			}
+//		}
+//
+//		if(Config.axeEnchantmentTable) {
+//			EntityEquipmentSlot[] slots = new EntityEquipmentSlot[] {EntityEquipmentSlot.MAINHAND};
+//			register(r, new EnchantmentAxeDamage(Enchantment.Rarity.COMMON, 0, slots), new ResourceLocation("sharpness"));
+//			register(r, new EnchantmentAxeDamage(Enchantment.Rarity.UNCOMMON, 1, slots), new ResourceLocation("smite"));
+//			register(r, new EnchantmentAxeDamage(Enchantment.Rarity.UNCOMMON, 2, slots), new ResourceLocation("bane_of_arthropods"));
+//		}
 	}
 
 	@SubscribeEvent
@@ -214,25 +239,28 @@ public class InspirationsTools extends PulseBase {
 	}
 
 	private void registerDispenserBehavior() {
-		registerDispenserBehavior(arrow, new BehaviorProjectileDispense() {
+		registerDispenserBehavior(redstoneArrow, new ProjectileDispenseBehavior() {
+			@Nonnull
 			@Override
-			protected IProjectile getProjectileEntity(World world, IPosition position, ItemStack stack) {
-				EntityModArrow arrow = new EntityModArrow(world, position.getX(), position.getY(), position.getZ(), stack.getMetadata());
-				arrow.pickupStatus = EntityArrow.PickupStatus.ALLOWED;
+			protected IProjectile getProjectileEntity(@Nonnull World world, @Nonnull IPosition position, @Nonnull ItemStack stack) {
+				RedstoneArrow arrow = new RedstoneArrow(world, position.getX(), position.getY(), position.getZ());
+				arrow.pickupStatus = ArrowEntity.PickupStatus.ALLOWED;
 				return arrow;
 			}
 		});
-		registerDispenserBehavior(redstoneCharger, new Bootstrap.BehaviorDispenseOptional() {
+		registerDispenserBehavior(redstoneCharger, new OptionalDispenseBehavior() {
+			@Nonnull
 			@Override
 			protected ItemStack dispenseStack(IBlockSource source, ItemStack stack) {
 				this.successful = true;
 				World world = source.getWorld();
-				EnumFacing facing = source.getBlockState().getValue(BlockDispenser.FACING);
+				Direction facing = source.getBlockState().get(DispenserBlock.FACING);
 				BlockPos pos = source.getBlockPos().offset(facing);
 
-				if (redstoneCharge.canPlaceBlockAt(world, pos)) {
-					world.setBlockState(pos, redstoneCharge.getDefaultState().withProperty(BlockRedstoneCharge.FACING, facing));
-
+				if (world.getBlockState(pos).isReplaceable(new DirectionalPlaceContext(
+					world, pos, facing, ItemStack.EMPTY, facing
+				))) {
+					world.setBlockState(pos, redstoneCharge.getDefaultState().with(BlockRedstoneCharge.FACING, facing));
 					if (stack.attemptDamageItem(1, world.rand, null)) {
 						stack.setCount(0);
 					}
