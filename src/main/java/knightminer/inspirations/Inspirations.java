@@ -48,6 +48,9 @@ public class Inspirations {
 
 	public static PulseManager pulseManager;
 
+	// We can't read the config very early on.
+	public static boolean configLoaded = false;
+
 	public Inspirations() {
 		pulseManager = new PulseManager(Config.pulseConfig);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
@@ -81,6 +84,8 @@ public class Inspirations {
 
 	@SubscribeEvent
 	public void configChanged(final ModConfig.ModConfigEvent configEvent) {
+		configLoaded = true;
+
 		InspirationsRegistry.setConfig("biggerCauldron", Config.enableBiggerCauldron());
 		InspirationsRegistry.setConfig("expensiveCauldronBrewing", Config.expensiveCauldronBrewing());
 		InspirationsRegistry.setBookKeywords(Arrays

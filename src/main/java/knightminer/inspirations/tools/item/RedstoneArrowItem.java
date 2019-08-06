@@ -6,7 +6,7 @@ import java.util.function.BooleanSupplier;
 import javax.annotation.Nonnull;
 
 import knightminer.inspirations.common.Config;
-import knightminer.inspirations.tools.entity.EntityModArrow;
+import knightminer.inspirations.tools.entity.RedstoneArrow;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.projectile.EntityArrow;
@@ -25,7 +25,7 @@ public class ItemModArrow extends ItemArrow {
 
 	@Override
 	public EntityArrow createArrow(World world, ItemStack stack, EntityLivingBase shooter) {
-		return new EntityModArrow(world, shooter, stack.getMetadata());
+		return new RedstoneArrow(world, shooter, stack.getMetadata());
 	}
 
 	@Override
