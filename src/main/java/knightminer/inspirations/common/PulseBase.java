@@ -119,22 +119,10 @@ public class PulseBase {
 		return thing;
 	}
 
-
-	/* Tile Entity & Entity */
-	protected static <T extends Entity> EntityEntryBuilder<T> getEntityBuilder(Class<T> clazz, String name, int id) {
-		return EntityEntryBuilder.<T>create()
-				.entity(clazz)
-				.id(Util.getResource(name), id)
-				.name(Util.prefix(name));
-	}
-
-	protected static void registerTE(Class<? extends TileEntity> teClazz, String name) {
-		if(!name.equals(name.toLowerCase(Locale.US))) {
-			throw new IllegalArgumentException(
-					String.format("Unlocalized names need to be all lowercase! TE: %s", name));
-		}
-
-		GameRegistry.registerTileEntity(teClazz, Util.getResource(name));
+	protected static <X extends Entity> EntityType<X> buildEntity(EntityType.Builder<X> builder, String id) {
+		EntityType<X> type = builder.build(id);
+		type.setRegistryName(new ResourceLocation(Inspirations.modID, id));
+		return type;
 	}
 
 	/* Other */
