@@ -131,8 +131,9 @@ public class InspirationsTweaks extends PulseBase {
 	public void registerItem(Register<Item> event) {
 		IForgeRegistry<Item> r = event.getRegistry();
 
-			carrotSeeds = registerItem(r, new ItemSeeds(Blocks.CARROTS, Blocks.FARMLAND), "carrot_seeds");
-			potatoSeeds = registerItem(r, new ItemSeeds(Blocks.POTATOES, Blocks.FARMLAND), "potato_seeds");
+		for (BlockFlatCarpet carpet: flatCarpets.values()) {
+			BlockItem item = register(r, new BlockItem(carpet, new Item.Properties().group(ItemGroup.DECORATIONS)), carpet.getRegistryName());
+			Item.BLOCK_TO_ITEM.put(carpet, item);
 		}
 
 		cactusSeeds = registerItem(r, new HidableBlockItem(
@@ -144,6 +145,9 @@ public class InspirationsTweaks extends PulseBase {
 			InspirationsTweaks.sugarCaneCrop,
 			new Item.Properties().group(ItemGroup.FOOD)
 		), "sugar_cane_seeds");
+
+		carrotSeeds = registerItem(r, new ItemSeed((CropsBlock) Blocks.CARROTS, PlantType.Crop), "carrot_seeds");
+		potatoSeeds = registerItem(r, new ItemSeed((CropsBlock) Blocks.POTATOES, PlantType.Crop), "potato_seeds");
 	}
 
 	@SubscribeEvent
