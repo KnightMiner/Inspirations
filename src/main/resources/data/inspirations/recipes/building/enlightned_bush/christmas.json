@@ -12,7 +12,7 @@
   "type": "inspirations:texture_recipe",
   "group": "inspirations:enlightened_bush",
   "texture": {
-    "item": "#LEAVES"
+    "tag": "minecraft:leaves"
   },
   "pattern": [
     " r ",
@@ -20,10 +20,10 @@
     " g "
   ],
   "key": {
-    "L": { "item": "#LEAVES" },
-    "G": { "type": "forge:ore_dict", "ore": "dustGlowstone" },
-    "r": { "type": "forge:ore_dict", "ore": "dyeRed" },
-    "g": { "type": "forge:ore_dict", "ore": "dyeGreen" }
+    "L": { "tag": "minecraft:leaves" },
+    "G": { "tag": "forge:dusts/glowstone" },
+    "r": { "tag": "forge:dyes/red" },
+    "g": { "tag": "forge:dyes/green" }
   },
   "result": {
     "item": "inspirations:enlightened_bush",

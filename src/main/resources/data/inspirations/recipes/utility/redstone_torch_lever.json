@@ -10,13 +10,13 @@
     }
   ],
   "result": {
-    "item": "inspirations:redstone_torch_lever",
+    "item": "inspirations:redstone_torch_lever"
   },
   "pattern": [
     "T",
     "S"
   ],
-  "type": "forge:ore_shaped",
+  "type": "minecraft:crafting_shaped",
   "key": {
     "S": { "tag": "forge:cobblestone" },
     "T": { "item": "minecraft:redstone_torch" }

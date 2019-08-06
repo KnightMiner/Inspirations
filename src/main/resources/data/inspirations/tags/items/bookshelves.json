@@ -1,5 +1,6 @@
 {
   "replace": false,
+  "values": [],
   "optional": [
     "inspirations:random_bookshelf",
     "inspirations:rainbow_bookshelf",

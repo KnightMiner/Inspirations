@@ -4,21 +4,21 @@
         "layer0": "inspirations:item/photometer/00"
     },
     "overrides": [
-        { "predicate": { "light":  0 }, "model": "inspirations:item/photometer" },
-        { "predicate": { "light":  1 }, "model": "inspirations:item/photometer/01" },
-        { "predicate": { "light":  2 }, "model": "inspirations:item/photometer/02" },
-        { "predicate": { "light":  3 }, "model": "inspirations:item/photometer/03" },
-        { "predicate": { "light":  4 }, "model": "inspirations:item/photometer/04" },
-        { "predicate": { "light":  5 }, "model": "inspirations:item/photometer/05" },
-        { "predicate": { "light":  6 }, "model": "inspirations:item/photometer/06" },
-        { "predicate": { "light":  7 }, "model": "inspirations:item/photometer/07" },
-        { "predicate": { "light":  8 }, "model": "inspirations:item/photometer/08" },
-        { "predicate": { "light":  9 }, "model": "inspirations:item/photometer/09" },
-        { "predicate": { "light": 10 }, "model": "inspirations:item/photometer/10" },
-        { "predicate": { "light": 11 }, "model": "inspirations:item/photometer/11" },
-        { "predicate": { "light": 12 }, "model": "inspirations:item/photometer/12" },
-        { "predicate": { "light": 13 }, "model": "inspirations:item/photometer/13" },
-        { "predicate": { "light": 14 }, "model": "inspirations:item/photometer/14" },
-        { "predicate": { "light": 15 }, "model": "inspirations:item/photometer/15" }
+        { "predicate": { "inspirations:light":  0 }, "model": "inspirations:item/photometer" },
+        { "predicate": { "inspirations:light":  1 }, "model": "inspirations:item/photometer/01" },
+        { "predicate": { "inspirations:light":  2 }, "model": "inspirations:item/photometer/02" },
+        { "predicate": { "inspirations:light":  3 }, "model": "inspirations:item/photometer/03" },
+        { "predicate": { "inspirations:light":  4 }, "model": "inspirations:item/photometer/04" },
+        { "predicate": { "inspirations:light":  5 }, "model": "inspirations:item/photometer/05" },
+        { "predicate": { "inspirations:light":  6 }, "model": "inspirations:item/photometer/06" },
+        { "predicate": { "inspirations:light":  7 }, "model": "inspirations:item/photometer/07" },
+        { "predicate": { "inspirations:light":  8 }, "model": "inspirations:item/photometer/08" },
+        { "predicate": { "inspirations:light":  9 }, "model": "inspirations:item/photometer/09" },
+        { "predicate": { "inspirations:light": 10 }, "model": "inspirations:item/photometer/10" },
+        { "predicate": { "inspirations:light": 11 }, "model": "inspirations:item/photometer/11" },
+        { "predicate": { "inspirations:light": 12 }, "model": "inspirations:item/photometer/12" },
+        { "predicate": { "inspirations:light": 13 }, "model": "inspirations:item/photometer/13" },
+        { "predicate": { "inspirations:light": 14 }, "model": "inspirations:item/photometer/14" },
+        { "predicate": { "inspirations:light": 15 }, "model": "inspirations:item/photometer/15" }
     ]
 }

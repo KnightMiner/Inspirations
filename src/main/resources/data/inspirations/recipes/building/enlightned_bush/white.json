@@ -12,14 +12,14 @@
   "type": "inspirations:texture_recipe",
   "group": "inspirations:enlightened_bush",
   "texture": {
-    "item": "#LEAVES"
+    "tag": "minecraft:leaves"
   },
   "pattern": [
     "GLG"
   ],
   "key": {
-    "L": { "item": "#LEAVES" },
-    "G": { "type": "forge:ore_dict", "ore": "dustGlowstone" }
+    "L": { "tag": "minecraft:leaves" },
+    "G": { "tag": "forge:dusts/glowstone" }
   },
   "result": {
     "item": "inspirations:enlightened_bush",
