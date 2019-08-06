@@ -2,27 +2,27 @@ package knightminer.inspirations.tools.enchantment;
 
 import knightminer.inspirations.common.Config;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentLootBonus;
-import net.minecraft.enchantment.EnumEnchantmentType;
-import net.minecraft.init.Enchantments;
-import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.ItemAxe;
+import net.minecraft.enchantment.LootBonusEnchantment;
+import net.minecraft.enchantment.EnchantmentType;
+import net.minecraft.enchantment.Enchantments;
+import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.item.AxeItem;
 import net.minecraft.item.ItemStack;
 
-public class EnchantmentAxeLooting extends EnchantmentLootBonus {
-  public EnchantmentAxeLooting(Rarity rarityIn, EnumEnchantmentType typeIn, EntityEquipmentSlot... slots) {
+public class EnchantmentAxeLooting extends LootBonusEnchantment {
+  public EnchantmentAxeLooting(Rarity rarityIn, EnchantmentType typeIn, EquipmentSlotType... slots) {
     super(rarityIn, typeIn, slots);
   }
 
   @Override
   public boolean canApplyAtEnchantingTable(ItemStack stack) {
-    return (Config.axeEnchantmentTable && stack.getItem() instanceof ItemAxe) || super.canApplyAtEnchantingTable(stack);
+    return (Config.axeEnchantmentTable.get() && stack.getItem() instanceof AxeItem) || super.canApplyAtEnchantingTable(stack);
   }
 
   @Override
   public boolean canApply(ItemStack stack) {
     // fallback in case axes cannot be enchanted at the table, but can receive from books
-    return stack.getItem() instanceof ItemAxe || super.canApplyAtEnchantingTable(stack);
+    return stack.getItem() instanceof AxeItem || super.canApplyAtEnchantingTable(stack);
   }
 
   @Override

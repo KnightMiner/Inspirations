@@ -2,41 +2,47 @@ package knightminer.inspirations.tools.enchantment;
 
 import knightminer.inspirations.common.Config;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentKnockback;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.init.Enchantments;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.enchantment.Enchantments;
+import net.minecraft.enchantment.KnockbackEnchantment;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.item.AxeItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemAxe;
-import net.minecraft.item.ItemShield;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ShieldItem;
 
-import java.util.List;
+import javax.annotation.Nonnull;
+import java.util.Map;
 
-public class EnchantmentExtendedKnockback extends EnchantmentKnockback {
-  public EnchantmentExtendedKnockback(Rarity rarityIn, EntityEquipmentSlot... slots) {
+public class EnchantmentExtendedKnockback extends KnockbackEnchantment {
+  public EnchantmentExtendedKnockback(Rarity rarityIn, EquipmentSlotType... slots) {
     super(rarityIn, slots);
   }
 
   @Override
   public boolean canApplyAtEnchantingTable(ItemStack stack) {
     Item item = stack.getItem();
-    return (Config.moreShieldEnchantments && item instanceof ItemShield)
-           || (Config.axeEnchantmentTable && Config.axeWeaponEnchants && item instanceof ItemAxe)
+    return (Config.moreShieldEnchantments.get() && item instanceof ShieldItem)
+           || (Config.axeEnchantmentTable.get() && Config.axeWeaponEnchants.get() && item instanceof AxeItem)
            || super.canApplyAtEnchantingTable(stack);
   }
 
   @Override
-  public boolean canApply(ItemStack stack) {
+  public boolean canApply(@Nonnull ItemStack stack) {
     // fallback in case axes cannot be enchanted at the table, but can receive from books
-    return (Config.axeWeaponEnchants && stack.getItem() instanceof ItemAxe) || super.canApply(stack);
+    return (Config.axeWeaponEnchants.get() && stack.getItem() instanceof AxeItem) || super.canApply(stack);
   }
 
+  @Nonnull
   @Override
-  public List<ItemStack> getEntityEquipment(EntityLivingBase entity) {
+  public Map<EquipmentSlotType, ItemStack> getEntityEquipment(@Nonnull LivingEntity entity) {
     // shields in hand should not give knockback, just on hit
-    List<ItemStack> items = super.getEntityEquipment(entity);
-    items.removeIf((stack) -> stack.getItem() instanceof ItemShield);
+    Map<EquipmentSlotType, ItemStack> items = super.getEntityEquipment(entity);
+    for (EquipmentSlotType slot: EquipmentSlotType.values()) {
+      if (items.get(slot).getItem() instanceof ShieldItem) {
+        items.put(slot, ItemStack.EMPTY);
+      }
+    }
     return items;
   }
 
