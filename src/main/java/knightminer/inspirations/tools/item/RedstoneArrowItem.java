@@ -1,79 +1,46 @@
 package knightminer.inspirations.tools.item;
 
-import java.util.Locale;
-import java.util.function.BooleanSupplier;
-
 import javax.annotation.Nonnull;
 
 import knightminer.inspirations.common.Config;
+import knightminer.inspirations.common.IHidable;
+import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.tools.entity.RedstoneArrow;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.projectile.EntityArrow;
-import net.minecraft.item.ItemArrow;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.AbstractArrowEntity;
+import net.minecraft.item.ArrowItem;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
 
-public class ItemModArrow extends ItemArrow {
+public class RedstoneArrowItem extends ArrowItem implements IHidable {
+
+	public RedstoneArrowItem(Properties builder) {
+		super(builder);
+	}
+
 	@Nonnull
 	@Override
-	public String getUnlocalizedName(ItemStack stack) {
-		// eventually may have more types here
-		return super.getUnlocalizedName(stack) + "." + ArrowType.fromMeta(stack.getMetadata()).getName();
+	public AbstractArrowEntity createArrow(@Nonnull World world, @Nonnull ItemStack stack, LivingEntity shooter) {
+		return new RedstoneArrow(world, shooter);
 	}
 
 	@Override
-	public EntityArrow createArrow(World world, ItemStack stack, EntityLivingBase shooter) {
-		return new RedstoneArrow(world, shooter, stack.getMetadata());
-	}
-
-	@Override
-	public boolean isInfinite(ItemStack stack, ItemStack bow, net.minecraft.entity.player.EntityPlayer player) {
+	public boolean isInfinite(ItemStack stack, ItemStack bow, PlayerEntity player) {
 		return false;
 	}
 
-	/**
-	 * returns a list of items with the same ID, but different meta (eg: dye returns 16 items)
-	 */
 	@Override
-	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
-		if (this.isInCreativeTab(tab)) {
-			for(ArrowType type : ArrowType.values()) {
-				if(type.isEnabled()) {
-					items.add(new ItemStack(this, 1, type.getMeta()));
-				}
-			}
-		}
+	public boolean isEnabled() {
+		return Config.enableRedstoneCharge.get();
 	}
 
-	public static enum ArrowType {
-		CHARGED(() -> Config.enableChargedArrow);
-
-		private int meta;
-		private BooleanSupplier enabled;
-		ArrowType(BooleanSupplier enabled) {
-			this.meta = ordinal();
-			this.enabled = enabled;
-		}
-
-		public boolean isEnabled() {
-			return enabled.getAsBoolean();
-		}
-
-		public int getMeta() {
-			return meta;
-		}
-
-		public String getName() {
-			return name().toLowerCase(Locale.US);
-		}
-
-		public static ArrowType fromMeta(int meta) {
-			if(meta >= values().length) {
-				meta = 0;
-			}
-			return values()[meta];
+	@Override
+	public void fillItemGroup(@Nonnull ItemGroup group, @Nonnull NonNullList<ItemStack> items) {
+		if (group == ItemGroup.SEARCH || isEnabled()) {
+			super.fillItemGroup(group, items);
 		}
 	}
 }

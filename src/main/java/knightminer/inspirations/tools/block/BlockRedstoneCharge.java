@@ -1,4 +1,4 @@
-package knightminer.inspirations.utility.block;
+package knightminer.inspirations.tools.block;
 
 import java.util.Random;
 
@@ -7,7 +7,10 @@ import javax.annotation.Nullable;
 
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.material.PushReaction;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.BlockItemUseContext;
+import net.minecraft.item.ItemStack;
 import net.minecraft.particles.RedstoneParticleData;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.DirectionProperty;
@@ -40,6 +43,22 @@ public class BlockRedstoneCharge extends Block {
 		this.setDefaultState(this.getStateContainer().getBaseState().with(FACING, Direction.DOWN).with(QUICK, false));
 	}
 
+	// These should be overwritten by everything.
+
+	@Override
+	public boolean isAir(BlockState state, IBlockReader world, BlockPos pos) {
+		return true;
+	}
+
+	@Override
+	public boolean isReplaceable(BlockState p_196253_1_, BlockItemUseContext p_196253_2_) {
+		return true;
+	}
+
+	@Override
+	public PushReaction getPushReaction(BlockState p_149656_1_) {
+		return PushReaction.DESTROY;
+	}
 
 	/* Blockstate */
 
@@ -57,14 +76,13 @@ public class BlockRedstoneCharge extends Block {
 		return 20;
 	}
 
-	@Nonnull
 	@Override
-	public BlockState updatePostPlacement(@Nonnull BlockState state, Direction facing, BlockState facingState, IWorld world, BlockPos pos, BlockPos facingPos) {
+	public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack stack) {
 		if (!world.isRemote()) {
 			world.notifyNeighbors(pos.offset(state.get(FACING)), this);
 			world.getPendingBlockTicks().scheduleTick(pos, this, state.get(QUICK) ? 2 : 20);
 		}
-		return super.updatePostPlacement(state, facing, facingState, world, pos, facingPos);
+		super.onBlockPlacedBy(world, pos, state, entity, stack);
 	}
 
 	@Override
@@ -110,8 +128,7 @@ public class BlockRedstoneCharge extends Block {
 
 
 	/* Bounds */
-
-	protected static final VoxelShape BOUNDS = Block.makeCuboidShape(6, 6, 6, 10, 10, 10);
+	private static final VoxelShape BOUNDS = Block.makeCuboidShape(6, 6, 6, 10, 10, 10);
 
 
 	@Nonnull

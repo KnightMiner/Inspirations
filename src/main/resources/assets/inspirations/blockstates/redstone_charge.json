@@ -1,11 +1,7 @@
 {
-  "forge_marker": 1,
   "variants": {
     "": {
-      "model": "block",
-      "textures": {
-        "particle": "blocks/redstone_block"
-      }
+      "model": "inspirations:block/redstone_charge"
     }
   }
 }

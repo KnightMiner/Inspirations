@@ -3,10 +3,11 @@ package knightminer.inspirations.tools;
 import com.google.common.eventbus.Subscribe;
 import knightminer.inspirations.common.CommonProxy;
 import knightminer.inspirations.common.Config;
-import knightminer.inspirations.common.EntityIds;
 import knightminer.inspirations.common.PulseBase;
+import knightminer.inspirations.common.item.HidableItem;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.shared.InspirationsShared;
+import knightminer.inspirations.tools.block.BlockRedstoneCharge;
 import knightminer.inspirations.tools.client.BarometerGetter;
 import knightminer.inspirations.tools.client.NorthCompassGetter;
 import knightminer.inspirations.tools.client.PhotometerGetter;
@@ -16,46 +17,39 @@ import knightminer.inspirations.tools.enchantment.EnchantmentExtendedFire;
 import knightminer.inspirations.tools.enchantment.EnchantmentExtendedKnockback;
 import knightminer.inspirations.tools.enchantment.EnchantmentShieldProtection;
 import knightminer.inspirations.tools.enchantment.EnchantmentShieldThorns;
-import knightminer.inspirations.tools.entity.EntityModArrow;
+import knightminer.inspirations.tools.entity.RedstoneArrow;
 import knightminer.inspirations.tools.item.ItemCrook;
-import knightminer.inspirations.tools.item.ItemEnchantableShield;
-import knightminer.inspirations.tools.item.ItemModArrow;
 import knightminer.inspirations.tools.item.ItemRedstoneCharger;
 import knightminer.inspirations.tools.item.ItemWaypointCompass;
+import knightminer.inspirations.tools.item.RedstoneArrowItem;
 import knightminer.inspirations.tools.recipe.WaypointCompassCopyRecipe;
-import knightminer.inspirations.utility.block.BlockRedstoneCharge;
+import knightminer.inspirations.tools.recipe.WaypointCompassDyeingRecipe;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockDispenser;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.dispenser.BehaviorProjectileDispense;
+import net.minecraft.block.DispenserBlock;
 import net.minecraft.dispenser.IBlockSource;
 import net.minecraft.dispenser.IPosition;
+import net.minecraft.dispenser.OptionalDispenseBehavior;
+import net.minecraft.dispenser.ProjectileDispenseBehavior;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentProtection;
-import net.minecraft.enchantment.EnumEnchantmentType;
+import net.minecraft.entity.EntityClassification;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.IProjectile;
-import net.minecraft.entity.projectile.EntityArrow;
-import net.minecraft.init.Bootstrap;
-import net.minecraft.init.Items;
-import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.Item;
-import net.minecraft.item.Item.ToolMaterial;
-import net.minecraft.item.ItemArrow;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.entity.projectile.ArrowEntity;
+import net.minecraft.item.*;
+import net.minecraft.item.crafting.IRecipeSerializer;
+import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.event.RegistryEvent.Register;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.registry.EntityEntry;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.pulsar.pulse.Pulse;
 
@@ -77,6 +71,7 @@ public class InspirationsTools extends PulseBase {
 	public static Item barometer;
 	public static Item photometer;
 	public static Item waypointCompass;
+	public static ArrowItem redstoneArrow;
 
 	// tool materials
 	public static ToolMaterial bone;
@@ -86,7 +81,15 @@ public class InspirationsTools extends PulseBase {
 	// blocks
 	public static Block redstoneCharge;
 
-	public static ItemArrow arrow;
+	// EntityType.Builder.<ArrowEntity>create(ArrowEntity::new, EntityClassification.MISC).size(0.5F, 0.5F));
+    // EntityType.Builder.<SpectralArrowEntity>create(SpectralArrowEntity::new, EntityClassification.MISC).size(0.5F, 0.5F));
+	// Entities
+	public static EntityType<RedstoneArrow> entRSArrow = buildEntity(EntityType.Builder
+		.<RedstoneArrow>create(RedstoneArrow::new, EntityClassification.MISC)
+		.size(0.5F, 0.5F)
+		.setTrackingRange(4)
+		.setUpdateInterval(20)
+	,"redstone_arrow");
 
 	@Subscribe
 	public void preInit(FMLPreInitializationEvent event) {
@@ -99,15 +102,14 @@ public class InspirationsTools extends PulseBase {
 				wither = EnumHelper.addToolMaterial(Util.prefix("wither"), 2, 375, 6.0F, 1.5F, 10);
 			}
 		}
+		MinecraftForge.EVENT_BUS.register(ToolsEvents.class);
 	}
 
 	@SubscribeEvent
 	public void registerBlocks(Register<Block> event) {
 		IForgeRegistry<Block> r = event.getRegistry();
 
-		if(Config.enableRedstoneCharge || Config.enableChargedArrow) {
-			redstoneCharge = registerBlock(r, new BlockRedstoneCharge(), "redstone_charge");
-		}
+		redstoneCharge = registerBlock(r, new BlockRedstoneCharge(), "redstone_charge");
 	}
 
 	@SubscribeEvent

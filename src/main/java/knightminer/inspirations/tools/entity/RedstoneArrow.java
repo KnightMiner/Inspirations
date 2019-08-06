@@ -3,43 +3,62 @@ package knightminer.inspirations.tools.entity;
 import static knightminer.inspirations.tools.InspirationsTools.redstoneCharge;
 
 import knightminer.inspirations.tools.InspirationsTools;
-import knightminer.inspirations.utility.block.BlockRedstoneCharge;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.projectile.EntityArrow;
-import net.minecraft.init.SoundEvents;
+import knightminer.inspirations.tools.block.BlockRedstoneCharge;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.projectile.AbstractArrowEntity;
+import net.minecraft.item.DirectionalPlaceContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
 
-public class EntityModArrow extends EntityArrow {
+import javax.annotation.Nonnull;
 
-	private int meta;
-	public EntityModArrow(World world) {
-		super(world);
+public class RedstoneArrow extends AbstractArrowEntity {
+	public RedstoneArrow(EntityType<RedstoneArrow> entType, World world) {
+		super(entType, world);
 	}
 
-	public EntityModArrow(World world, double x, double y, double z, int meta) {
-		super(world, x, y, z);
-		init(meta);
+	public RedstoneArrow(World world, double x, double y, double z) {
+		super(InspirationsTools.entRSArrow, x, y, z, world);
+		init();
 	}
 
-	public EntityModArrow(World world, EntityLivingBase shooter, int meta) {
-		super(world, shooter);
-		init(meta);
+	public RedstoneArrow(World world, LivingEntity shooter) {
+		super(InspirationsTools.entRSArrow, shooter, world);
+		init();
 	}
 
-	private void init(int meta) {
-		this.meta = meta;
+	private void init() {
 		this.setDamage(0.25);
 	}
 
+	private static TranslationTextComponent NAME = new TranslationTextComponent("item.inspirations.charged_arrow");
+
+	@Nonnull
+	@Override
+	public ITextComponent getName() {
+		if (this.hasCustomName()) {
+			return super.getName();
+		} else {
+			return NAME;
+		}
+	}
+
+	@Nonnull
 	@Override
 	protected ItemStack getArrowStack() {
-		return new ItemStack(InspirationsTools.arrow, 1, meta);
+		return new ItemStack(InspirationsTools.redstoneArrow, 1);
 	}
 
 	/**
@@ -47,42 +66,30 @@ public class EntityModArrow extends EntityArrow {
 	 */
 	@Override
 	protected void onHit(RayTraceResult raytrace) {
-		if(raytrace.typeOfHit == RayTraceResult.Type.BLOCK) {
+		if(raytrace.getType() == RayTraceResult.Type.BLOCK && raytrace instanceof BlockRayTraceResult) {
 			// get to the block the arrow is on
-			BlockPos pos = raytrace.getBlockPos().offset(raytrace.sideHit);
+			Direction sideHit = ((BlockRayTraceResult)raytrace).getFace();
+			BlockPos pos = ((BlockRayTraceResult)raytrace).getPos().offset(sideHit);
 
 			// if there is a block there, try the block next to that
-			if(!redstoneCharge.canPlaceBlockAt(world, pos)) {
-				pos = pos.offset(raytrace.sideHit);
-				if(!redstoneCharge.canPlaceBlockAt(world, pos)) {
+			if(!world.getBlockState(pos).isReplaceable(new DirectionalPlaceContext(world, pos, sideHit, ItemStack.EMPTY, sideHit))) {
+				pos = pos.offset(sideHit);
+				if(!world.getBlockState(pos).isReplaceable(new DirectionalPlaceContext(world, pos, sideHit, ItemStack.EMPTY, sideHit))) {
 					super.onHit(raytrace);
 					return;
 				}
 			}
 
 			world.playSound(null, pos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0F, world.rand.nextFloat() * 0.4F + 0.8F);
-			IBlockState state = redstoneCharge.getDefaultState().withProperty(BlockRedstoneCharge.FACING, raytrace.sideHit.getOpposite());
-			world.setBlockState(pos, state, 11);
+			BlockState state = redstoneCharge.getDefaultState().with(BlockRedstoneCharge.FACING, sideHit.getOpposite());
+			world.setBlockState(pos, state, Constants.BlockFlags.DEFAULT_AND_RERENDER);
+			redstoneCharge.onBlockPlacedBy(world, pos, state, null, ItemStack.EMPTY);
 
-			this.setDead();
+
+			this.remove();
 			return;
 		}
 
 		super.onHit(raytrace);
-	}
-
-
-	/* NBT */
-	public static final String TAG_META = "meta";
-	@Override
-	public void writeEntityToNBT(CompoundNBT compound) {
-		super.writeEntityToNBT(compound);
-		compound.setInteger(TAG_META, meta);
-	}
-
-	@Override
-	public void readEntityFromNBT(CompoundNBT compound) {
-		super.readEntityFromNBT(compound);
-		this.meta = compound.getInteger(TAG_META);
 	}
 }

@@ -3,7 +3,7 @@
     "_comment": "Shared  #",
     "_comment": "###########",
 
-    "entity.inspirations.arrow": "Arrow",
+    "entity.inspirations.charged_arrow": "Charged Arrow",
 
 
     "_comment": "###########",
@@ -178,7 +178,7 @@
 
     "block.inspirations.redstone_charge": "Redstone Charge",
     "item.inspirations.redstone_charger": "Redstone Charger",
-    "item.inspirations.arrow.charged": "Charged Arrow",
+    "item.inspirations.charged_arrow": "Charged Arrow",
 
     "item.inspirations.lock": "Blank Lock",
     "item.inspirations.lock.tooltip": "Used to lock containers\\nMust first be named in an anvil",
@@ -201,9 +201,9 @@
     "item.inspirations.waypoint_compass.vanilla.tooltip": "Use a %s on an active beacon to obtain",
     "item.inspirations.waypoint_compass.pos.tooltip": "%s at (%s, %s)",
 
-    "dimension.overworld": "Overworld",
-    "dimension.the_nether": "The Nether",
-    "dimension.the_end": "The End",
+    "dimension.minecraft.overworld": "Overworld",
+    "dimension.minecraft.the_nether": "The Nether",
+    "dimension.minecraft.the_end": "The End",
 
     "_comment": "###########",
     "_comment": "Tweaks  #",

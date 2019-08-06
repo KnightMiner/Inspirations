@@ -1,20 +1,22 @@
 package knightminer.inspirations.tools.client;
 
 import knightminer.inspirations.library.Util;
-import knightminer.inspirations.tools.entity.EntityModArrow;
-import net.minecraft.client.renderer.entity.RenderArrow;
-import net.minecraft.client.renderer.entity.RenderManager;
+import knightminer.inspirations.tools.entity.RedstoneArrow;
+import net.minecraft.client.renderer.entity.ArrowRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.util.ResourceLocation;
 
-public class RenderModArrow extends RenderArrow<EntityModArrow> {
+import javax.annotation.Nonnull;
+
+public class RenderModArrow extends ArrowRenderer<RedstoneArrow> {
 
 	public static final ResourceLocation CHARGED_ARROW = Util.getResource("textures/entity/arrow/charged.png");
-	public RenderModArrow(RenderManager renderManager) {
+	public RenderModArrow(EntityRendererManager renderManager) {
 		super(renderManager);
 	}
 
 	@Override
-	protected ResourceLocation getEntityTexture(EntityModArrow entity) {
+	protected ResourceLocation getEntityTexture(@Nonnull RedstoneArrow entity) {
 		return CHARGED_ARROW;
 	}
 

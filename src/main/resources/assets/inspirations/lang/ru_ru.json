@@ -119,7 +119,7 @@
     "_comment": "Рецепты  #",
     "_comment": "############",
 
-    "item.inspirations..splash_bottle": "Пузырёк для взрывного зелья",
+    "item.inspirations.splash_bottle": "Пузырёк для взрывного зелья",
     "item.inspirations.lingering_bottle": "Пузырёк для туманного зелья",
     "item.inspirations.mushrooms": "Грибы",
     "item.inspirations.mushrooms.tooltip": "Используется в приготовлении тушёных грибов",

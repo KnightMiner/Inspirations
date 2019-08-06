@@ -1,63 +1,75 @@
 package knightminer.inspirations.tools.item;
 
-import static knightminer.inspirations.tools.InspirationsTools.redstoneCharge;
-
-import knightminer.inspirations.utility.block.BlockRedstoneCharge;
+import knightminer.inspirations.tools.InspirationsTools;
+import knightminer.inspirations.tools.block.BlockRedstoneCharge;
 import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.SoundEvents;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.*;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
+
+import javax.annotation.Nonnull;
+
+import static knightminer.inspirations.tools.InspirationsTools.redstoneCharge;
 
 public class ItemRedstoneCharger extends Item {
 	public ItemRedstoneCharger() {
-		this.maxStackSize = 1;
-		this.setMaxDamage(120);
-		this.setCreativeTab(CreativeTabs.TOOLS);
+		super(new Item.Properties()
+			.maxDamage(120)
+			.group(ItemGroup.TOOLS)
+		);
 	}
 
 	/**
 	 * Called when a Block is right-clicked with this Item
 	 */
+	@Nonnull
 	@Override
-	public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+	public ActionResultType onItemUse(ItemUseContext context) {
+		BlockPos pos = context.getPos();
+		Direction facing = context.getFace();
+		World world = context.getWorld();
+		
 		// we clicked a block, but want the position in front of the block
-		if(!redstoneCharge.canPlaceBlockAt(world, pos)) {
+		if(world.getBlockState(pos).isSolid()) {
 			pos = pos.offset(facing);
 		}
 
-		ItemStack stack = player.getHeldItem(hand);
+		ItemStack stack = context.getItem();
 
 		// stop if we cannot edit
-		if (!player.canPlayerEdit(pos, facing, stack)) {
-			return EnumActionResult.FAIL;
+		if (context.getPlayer() == null || !context.getPlayer().canPlayerEdit(pos, facing, ItemStack.EMPTY)) {
+			return ActionResultType.FAIL;
 		}
+		
+		BlockState state = InspirationsTools.redstoneCharge.getDefaultState()
+			.with(BlockRedstoneCharge.FACING, facing.getOpposite())
+			.with(BlockRedstoneCharge.QUICK, context.isPlacerSneaking());
+		
+		DirectionalPlaceContext blockContext = new DirectionalPlaceContext(world, pos, facing, ItemStack.EMPTY, facing);
+		
 
 		// try placing a redstone charge
-		if (redstoneCharge.canPlaceBlockAt(world, pos)) {
-			world.playSound(player, pos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0F, itemRand.nextFloat() * 0.4F + 0.8F);
-			IBlockState state = redstoneCharge.getDefaultState()
-					.withProperty(BlockRedstoneCharge.FACING, facing.getOpposite())
-					.withProperty(BlockRedstoneCharge.QUICK, player.isSneaking());
-			world.setBlockState(pos, state, 11);
+
+		if (world.getBlockState(pos).isReplaceable(blockContext)) {
+			world.playSound(context.getPlayer(), pos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0F, world.rand.nextFloat() * 0.4F + 0.8F);
+			world.setBlockState(pos, state, Constants.BlockFlags.DEFAULT_AND_RERENDER);
+			redstoneCharge.onBlockPlacedBy(world, pos, state, null, ItemStack.EMPTY);
 		}
 
 		// mark we used the item
-		if (player instanceof EntityPlayerMP) {
-			CriteriaTriggers.PLACED_BLOCK.trigger((EntityPlayerMP)player, pos, stack);
+		if (context.getPlayer() instanceof ServerPlayerEntity) {
+			CriteriaTriggers.PLACED_BLOCK.trigger((ServerPlayerEntity)context.getPlayer(), pos, stack);
 		}
 
 		// damage it and return
-		stack.damageItem(1, player);
-		return EnumActionResult.SUCCESS;
+		stack.damageItem(1, context.getPlayer(), player -> player.sendBreakAnimation(context.getHand()));
+		return ActionResultType.SUCCESS;
 	}
 }

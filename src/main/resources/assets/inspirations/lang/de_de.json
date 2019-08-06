@@ -179,7 +179,7 @@
 
     "block.inspirations.redstone_charge": "Redstone-Ladung",
     "item.inspirations.redstone_charger": "Redstone-Ladegerät",
-    "item.inspirations.arrow.charged": "Aufgeladener Pfeil",
+    "item.inspirations.charged_arrow": "Aufgeladener Pfeil",
 
     "item.inspirations.lock": "Blanko-Schloss",
     "item.inspirations.lock.tooltip": "Wird zum Sperren von Behältern verwendet\\nMuss zuerst in einem Amboss umbenannt werden",
