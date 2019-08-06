@@ -27,6 +27,7 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.Tag;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvents;
+import net.minecraftforge.common.ToolType;
 import net.minecraftforge.fluids.Fluid;
 import org.apache.logging.log4j.Logger;
 import slimeknights.mantle.util.RecipeMatch;
@@ -52,6 +53,9 @@ public class InspirationsRegistry {
 
 	public static final Tag<Item> TAG_MILK_CONTAINERS = new ItemTags.Wrapper(new ResourceLocation(Inspirations.modID, "milk_containers"));
 
+	public static final ToolType SHEAR_TYPE = ToolType.get("shears");
+	public static final ToolType CROOK_TYPE = ToolType.get("crook");
+	public static final ToolType HOE_TYPE = ToolType.get("hoe");
     /**
 	 * Sets a value from the Inspirations config into the registry. Used to keep the config out of the library
 	 * @param key    Key to set
