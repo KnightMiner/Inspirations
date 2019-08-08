@@ -1,13 +1,13 @@
 ############
-#   Общее  #
+#  Shared  #
 ############
 
 entity.inspirations.arrow.name=Стрела
 
 
-#################
-# Строительство #
-#################
+############
+# Building #
+############
 
 tile.inspirations.bookshelf.normal.name=Книжная полка
 tile.inspirations.bookshelf.rainbow.name=Радужная книжная полка
@@ -68,9 +68,9 @@ item.inspirations.books.black.name=Чёрная книга
 gui.inspirations.bookshelf.name=Книжная полка
 
 
-##############
-# Полезности #
-##############
+#############
+#  Utility  #
+#############
 
 tile.inspirations.torch_lever.name=Факел-рычаг
 tile.inspirations.bricks_button.bricks.name=Кнопка в кирпиче
@@ -78,16 +78,7 @@ tile.inspirations.bricks_button.nether.name=Кнопка в незеритово
 tile.inspirations.redstone_barrel.name=Бочка красного камня
 tile.inspirations.redstone_torch_lever.name=Красный факел-рычаг
 
-tile.inspirations.redstone_charge.name=Заряд красного камня
-item.inspirations.redstone_charger.name=Зарядник красного камня
-item.inspirations.arrow.charged.name=Заряженная стрела
-
 item.inspirations.books.redstone.name=Книга-ловушка
-
-item.inspirations.materials.lock.name=Чистый замок
-item.inspirations.materials.lock.tooltip=Используется для запирания контейнеров\nНеобходимо переименовать в наковальне
-item.inspirations.materials.key.name=Чистый ключ
-item.inspirations.materials.key.tooltip=Используется для снятия подходящих замков
 
 inspirations.lock.success=Контейнер заперт
 inspirations.lock.fail.locked=Этот контейнер уже заперт
@@ -114,9 +105,20 @@ tile.inspirations.carpeted_trapdoor_green.name=Люк с зелёным ковр
 tile.inspirations.carpeted_trapdoor_red.name=Люк с красным ковром
 tile.inspirations.carpeted_trapdoor_black.name=Люк с чёрным ковром
 
+tile.inspirations.collector.name=Коллектор
+gui.inspirations.collector.name=Коллектор
+
+tile.inspirations.pipe.name=Труба
+gui.inspirations.pipe.name=Труба
+
 #############
-#  Рецепты  #
+#  Recipes  #
 #############
+
+item.inspirations.cactus_seeds.name=Семена кактуса
+item.inspirations.carrot_seeds.name=Семена моркови
+item.inspirations.potato_seeds.name=Семена картофеля
+item.inspirations.sugar_cane_seeds.name=Семена сахарного тростника
 
 item.inspirations.materials.splash_bottle.name=Пузырёк для взрывного зелья
 item.inspirations.materials.lingering_bottle.name=Пузырёк для туманного зелья
@@ -125,6 +127,7 @@ item.inspirations.materials.mushrooms.tooltip=Используется в при
 item.inspirations.materials.rabbit_stew_mix.name=Смесь для тушёной крольчатины
 item.inspirations.materials.rabbit_stew_mix.tooltip=Используется в приготовлении тушёной крольчатины
 
+item.inspirations.potato_soup.name=Картофельный суп
 item.inspirations.dyed_bottle.name=Пузырёк красителя
 item.inspirations.dyed_bottle.white.name=Пузырёк белого красителя
 item.inspirations.dyed_bottle.orange.name=Пузырёк оранжевого красителя
@@ -144,8 +147,16 @@ item.inspirations.dyed_bottle.red.name=Пузырёк красного крас�
 item.inspirations.dyed_bottle.black.name=Пузырёк чёрного красителя
 
 fluid.inspirations.mushroom_stew=Тушёные грибы
+fluid.inspirations.potato_soup=Картофельный суп
 fluid.inspirations.beetroot_soup=Свекольник
 fluid.inspirations.rabbit_stew=Тушёная крольчатина
+fluid.inspirations.milk=Молоко
+
+death.attack.inspirations.boiling=%s был сварен заживо
+
+# GUI
+gui.inspirations.cauldron.dye=Окрашенная вода
+gui.inspirations.cauldron.color=Цвет: %s
 
 # JEI
 gui.jei.anvil_smashing.title=Разрушение наковальней
@@ -153,12 +164,54 @@ gui.jei.cauldron.title=Котёл
 gui.jei.cauldron.level=%s пузырька
 gui.jei.cauldron.level.singular=1 пузырёк
 gui.jei.cauldron.level.empty=Пустой
-gui.jei.cauldron.color=%s краситель
+gui.jei.cauldron.color=%s окрашенная вода
 gui.jei.cauldron.boiling=Котёл необходимо поместить над огнём
 
+# WAILA
+options.inspirations.cauldron=Котел
+gui.waila.inspirations.cauldron.bottles=%s / %s бутылок
+
+# TOP
+gui.top.inspirations.cauldron.bottles=бутылок
 
 ############
-# Хитрости #
+#  Tools   #
+############
+
+tile.inspirations.redstone_charge.name=Заряд красного камня
+item.inspirations.redstone_charger.name=Зарядник красного камня
+item.inspirations.arrow.charged.name=Заряженная стрела
+
+item.inspirations.materials.lock.name=Чистый замок
+item.inspirations.materials.lock.tooltip=Используется для запирания контейнеров\nНеобходимо переименовать в наковальне
+item.inspirations.materials.key.name=Чистый ключ
+item.inspirations.materials.key.tooltip=Используется для снятия подходящих замков
+
+item.inspirations.materials.stone_rod.name=Каменный стержень
+item.inspirations.wooden_crook.name=Деревянный крюк
+item.inspirations.stone_crook.name=Каменный крюк
+item.inspirations.bone_crook.name=Костяной крюк
+item.inspirations.blaze_crook.name=Крюк из огненного стержня
+item.inspirations.wither_crook.name=Крюк из иссушенной кости
+
+item.inspirations.origin_compass.name=Начальный компас
+item.inspirations.north_compass.name=Северный компас
+item.inspirations.barometer.name=Барометр
+item.inspirations.photometer.name=Фотометр
+item.inspirations.waypoint_compass.name=Компас маяка
+item.inspirations.waypoint_compass.blank.tooltip=Используйте на активном маяке, чтобы установить цель
+item.inspirations.waypoint_compass.vanilla.tooltip=Используйте %s на активном маяке для получения
+item.inspirations.waypoint_compass.pos.tooltip=%s в (%s, %s)
+
+dimension.overworld.name=Верхний мир
+dimension.the_nether.name=Нижний мир
+dimension.the_end.name=Край
+dimension.lostcities.name=Потерянные города
+dimension.hunting_dim.name=Охотничье измерение
+dimension.aetheri.name=Эфир
+
+############
+#  Tweaks  #
 ############
 
 item.inspirations.edibles.heartbeet.name=Свекла-сердце
@@ -181,13 +234,13 @@ splash_potion.effect.levitation=Взрывное зелье левитации
 splash_potion.effect.blindness=Взрывное зелье слепоты
 splash_potion.effect.decay=Взрывное зелье разложения
 
-lingering_potion.effect.haste=Туманное зелье спешки
-lingering_potion.effect.fatigue=Туманное зелье усталости
-lingering_potion.effect.hunger=Туманное зелье голода
-lingering_potion.effect.resistance=Туманное зелье стойкости
-lingering_potion.effect.levitation=Туманное зелье левитации
-lingering_potion.effect.blindness=Туманное зелье слепоты
-lingering_potion.effect.decay=Туманное зелье разложения
+lingering_potion.effect.haste=Затяжное зелье спешки
+lingering_potion.effect.fatigue=Затяжное зелье усталости
+lingering_potion.effect.hunger=Затяжное зелье голода
+lingering_potion.effect.resistance=Затяжное зелье стойкости
+lingering_potion.effect.levitation=Затяжное зелье левитации
+lingering_potion.effect.blindness=Затяжное зелье слепоты
+lingering_potion.effect.decay=Затяжное зелье разложения
 
 tipped_arrow.effect.haste=Стрела спешки
 tipped_arrow.effect.fatigue=Стрела усталости
@@ -197,9 +250,9 @@ tipped_arrow.effect.levitation=Стрела левитации
 tipped_arrow.effect.blindness=Стрела слепоты
 tipped_arrow.effect.decay=Стрела разложения
 
-##############
-# TAN-плагин #
-##############
+#############
+# TANPlugin #
+#############
 
 fluid.inspirations.dirty_water=Грязная вода
 fluid.inspirations.filtered_water=Отфильтрованная вода
