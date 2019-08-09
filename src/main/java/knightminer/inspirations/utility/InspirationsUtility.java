@@ -94,17 +94,13 @@ public class InspirationsUtility extends PulseBase {
 			redstoneTorchLever = registerBlock(r, new BlockRedstoneTorchLever(false), "redstone_torch_lever");
 			redstoneTorchLeverPowered = registerBlock(r, new BlockRedstoneTorchLever(true), "redstone_torch_lever_powered");
 		}
-		if(Config.enableCarpetedTrapdoor) {
-			carpetedTrapdoors = new Block[16];
-			for(EnumDyeColor color : EnumDyeColor.values()) {
-				carpetedTrapdoors[color.getMetadata()] = registerBlock(r, new BlockCarpetedTrapdoor(), "carpeted_trapdoor_" + color.getName());
-			}
-		}
 		redstoneBarrel = registerBlock(r, new BlockRedstoneBarrel(), "redstone_barrel");
 
 		if(Config.enableCollector.get()) {
 			collector = registerBlock(r, new BlockCollector(), "collector");
 			registerTE(TileCollector.class, "collector");
+		for(DyeColor color : DyeColor.values()) {
+			carpetedTrapdoors[color.getId()] = registerBlock(r, new BlockCarpetedTrapdoor(color),  color.getName() + "_carpeted_trapdoor");
 		}
 		if(Config.enablePipe.get()) {
 			pipe = registerBlock(r, new BlockPipe(), "pipe");
@@ -146,15 +142,13 @@ public class InspirationsUtility extends PulseBase {
 		if(redstoneTorchLever != null) {
 			registerItemBlock(r, redstoneTorchLever);
 		}
-		if(carpetedTrapdoors != null) {
-			for(Block trapdoor : carpetedTrapdoors) {
-				registerItemBlock(r, trapdoor);
-			}
 		register(r, new TorchLeverItem(), "torch_lever");
 		registerItemBlock(r, redstoneBarrel, ItemGroup.REDSTONE);
 		}
 		if(collector != null) {
 			registerItemBlock(r, collector);
+		for(Block trapdoor : carpetedTrapdoors) {
+			registerItemBlock(r, trapdoor, ItemGroup.REDSTONE);
 		}
 		for(Block pressurePlate : carpetedPressurePlates) {
 			registerItemBlock(r, pressurePlate, ItemGroup.REDSTONE);
