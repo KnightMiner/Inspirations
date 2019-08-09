@@ -34,6 +34,7 @@ public class BlockTorchLever extends TorchBlock {
 				.tickRandomly()
 				.sound(SoundType.WOOD)
 		);
+		setDefaultState(getDefaultState().with(SWING, Direction.UP));
 	}
 
 	@Override

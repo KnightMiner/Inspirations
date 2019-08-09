@@ -36,6 +36,7 @@ public class BlockWallTorchLever extends WallTorchBlock {
 				.tickRandomly()
 				.sound(SoundType.WOOD)
 		);
+		setDefaultState(getDefaultState().with(POWERED, false));
     }
 
     @Override
