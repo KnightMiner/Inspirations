@@ -1,5 +1,7 @@
 package knightminer.inspirations.utility.block;
 
+import knightminer.inspirations.common.Config;
+import knightminer.inspirations.common.block.HidableBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
@@ -22,12 +24,13 @@ import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
 
-public class BlockRedstoneBarrel extends Block {
+public class BlockRedstoneBarrel extends HidableBlock {
 	public static final IntegerProperty LEVEL = IntegerProperty.create("level", 0, 15);
 	public BlockRedstoneBarrel() {
 		super(Block.Properties.create(Material.ROCK)
 				.hardnessAndResistance(1.5F, 10.0F)
-				.sound(SoundType.STONE)
+				.sound(SoundType.STONE),
+				Config.enableRedstoneBarrel::get
 		);
 		setDefaultState(getStateContainer().getBaseState().with(LEVEL, 0));
 	}
@@ -43,16 +46,17 @@ public class BlockRedstoneBarrel extends Block {
 	// Collision shape.
 	private static final VoxelShape SHAPE_FRAME = VoxelShapes.or(
 			// The four sides of the barrel.
-			VoxelShapes.create(1, 0, 1, 15, 1, 2),
-			VoxelShapes.create(1, 0, 1, 2, 1, 15),
-			VoxelShapes.create(1, 0, 14, 15, 1, 15),
-			VoxelShapes.create(14, 0, 1, 15, 1, 15)
+			Block.makeCuboidShape(1, 0, 1, 15, 16, 2),
+			Block.makeCuboidShape(1, 0, 1, 2, 16, 15),
+			Block.makeCuboidShape(1, 0, 14, 15, 16, 15),
+			Block.makeCuboidShape(14, 0, 1, 15, 16, 15)
 	);
-	private static VoxelShape[] SHAPES = new VoxelShape[15];
+	private static VoxelShape[] SHAPES = new VoxelShape[16];
 	// For each level, the middle section.
 	static {
 		for (int i = 0; i <= 15; i++) {
-			SHAPES[i] = VoxelShapes.or(SHAPE_FRAME, VoxelShapes.create(2, 0, 2, 14, i+1, 14));
+			// The empty barrel is 1 thick.
+			SHAPES[i] = VoxelShapes.or(SHAPE_FRAME, Block.makeCuboidShape(2, 0, 2, 14, (i==0) ? 1 : i+0.5, 14));
 		}
 	}
 

@@ -23,6 +23,7 @@ import net.minecraft.block.BlockDispenser;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CarpetBlock;
 import net.minecraft.block.DispenserBlock;
+import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.dispenser.IDispenseItemBehavior;
 import net.minecraft.init.Items;
@@ -56,17 +57,26 @@ public class InspirationsUtility extends PulseBase {
 	public static Block torchLeverWall;
 	public static Block torchLeverFloor;
 	public static Block redstoneBarrel;
-	public static BlockBricksButton bricksButton;
+	public static Block bricksButton;
+	public static Block netherBricksButton;
 	public static Block redstoneTorchLever;
 	public static Block redstoneTorchLeverPowered;
 	public static Block[] carpetedTrapdoors = new Block[16];
-	public static Block[] carpetedPressurePlate = new Block[16];
+	public static Block[] carpetedPressurePlates = new Block[16];
 	public static Block collector;
 	public static Block pipe;
 	public static Item pipeItem;
 
-	@Subscribe
-	public void preInit(FMLPreInitializationEvent event) {
+	// Tile entities
+	public static TileEntityType<TileCollector> tileCollector;
+	public static TileEntityType<TilePipe> tilePipe;
+
+	// Inventory containers
+	public static ContainerType<ContainerCollector> contCollector;
+	public static ContainerType<ContainerPipe> contPipe;
+
+	@SubscribeEvent
+	public void preInit(FMLCommonSetupEvent event) {
 		proxy.preInit();
 	}
 
@@ -79,9 +89,6 @@ public class InspirationsUtility extends PulseBase {
 
 		if(Config.enableBricksButton) {
 			bricksButton = registerBlock(r, new BlockBricksButton(), "bricks_button");
-		}
-		if(Config.enableRedstoneBarrel) {
-			redstoneBarrel = registerBlock(r, new BlockRedstoneBarrel(), "redstone_barrel");
 		}
 		if(Config.enableRedstoneTorchLever) {
 			redstoneTorchLever = registerBlock(r, new BlockRedstoneTorchLever(false), "redstone_torch_lever");
@@ -119,6 +126,7 @@ public class InspirationsUtility extends PulseBase {
 				);
 			}
 		}
+		redstoneBarrel = registerBlock(r, new BlockRedstoneBarrel(), "redstone_barrel");
 
 		if(Config.enableCollector.get()) {
 			collector = registerBlock(r, new BlockCollector(), "collector");
@@ -138,9 +146,6 @@ public class InspirationsUtility extends PulseBase {
 		if(bricksButton != null) {
 			registerEnumItemBlock(r, bricksButton);
 		}
-		if(redstoneBarrel != null) {
-			registerItemBlock(r, redstoneBarrel);
-		}
 		if(redstoneTorchLever != null) {
 			registerItemBlock(r, redstoneTorchLever);
 		}
@@ -149,6 +154,7 @@ public class InspirationsUtility extends PulseBase {
 				registerItemBlock(r, trapdoor);
 			}
 		register(r, new TorchLeverItem(), "torch_lever");
+		registerItemBlock(r, redstoneBarrel, ItemGroup.REDSTONE);
 		}
 		if(collector != null) {
 			registerItemBlock(r, collector);

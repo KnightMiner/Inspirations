@@ -1,0 +1,15 @@
+{
+  "ambientocclusion": false,
+  "textures": {
+    "redstone": "inspirations:block/redstone_dust"
+  },
+  "elements": [
+    {
+      "from": [2, 9.5, 2],
+      "to": [14, 9.5, 14],
+      "faces": {
+        "up": { "texture": "#redstone", "tintindex": 1 }
+      }
+    }
+  ]
+}
