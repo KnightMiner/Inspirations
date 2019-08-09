@@ -11,6 +11,7 @@ import net.minecraft.enchantment.Enchantments;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.potion.*;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.*;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.loot.LootContext;
@@ -76,10 +77,10 @@ public class Util {
 		return LogManager.getLogger(log + "-" + type);
 	}
 
-	public static boolean clickedAABB(AxisAlignedBB aabb, float hitX, float hitY, float hitZ) {
-		return aabb.minX <= hitX && hitX <= aabb.maxX
-				&& aabb.minY <= hitY && hitY <= aabb.maxY
-				&& aabb.minZ <= hitZ && hitZ <= aabb.maxZ;
+	public static boolean clickedAABB(AxisAlignedBB aabb, Vec3d hit) {
+		return aabb.minX <= hit.x && hit.x <= aabb.maxX
+				&& aabb.minY <= hit.y && hit.y <= aabb.maxY
+				&& aabb.minZ <= hit.z && hit.z <= aabb.maxZ;
 	}
 
 	// An item with Silk Touch, to make blocks drop their silk touch items if they have any.
