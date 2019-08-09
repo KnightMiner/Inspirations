@@ -1,20 +1,9 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "textures": {
-      "torch": "inspirations:blocks/torch_lever"
-    }
-  },
   "variants": {
-    "side": {
-      "east":  {},
-      "south": { "y":  90 },
-      "west":  { "y": 180 },
-      "north": { "y": 270 }
-    },
-    "powered": {
-      "true":  { "model": "inspirations:torch_lever" },
-      "false": { "model": "torch" }
-    }
+    "swing=up":    { "model": "inspirations:block/torch_lever/vertical_off" },
+    "swing=east":  { "model": "inspirations:block/torch_lever/vertical_on" },
+    "swing=south": { "model": "inspirations:block/torch_lever/vertical_on", "y":  90 },
+    "swing=west":  { "model": "inspirations:block/torch_lever/vertical_on", "y": 180 },
+    "swing=north": { "model": "inspirations:block/torch_lever/vertical_on", "y": 270 }
   }
 }

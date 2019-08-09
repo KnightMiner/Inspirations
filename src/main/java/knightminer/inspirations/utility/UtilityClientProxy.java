@@ -96,29 +96,6 @@ public class UtilityClientProxy extends ClientProxy {
 	}
 
 	/**
-	 * Mapper for torch levers, to simplify rotations for the floor state
-	 */
-	private static class TorchLeverStateMapper extends StateMapperBase {
-		@Nonnull
-		@Override
-		protected ModelResourceLocation getModelResourceLocation(@Nonnull IBlockState state) {
-			ResourceLocation base = state.getBlock().getRegistryName();
-			LinkedHashMap<IProperty<?>, Comparable<?>> map = Maps.newLinkedHashMap(state.getProperties());
-			String suffix = "";
-			// if up, use the up file and ignore facing
-			if(state.getValue(BlockTorchLever.FACING) == EnumFacing.UP) {
-				map.remove(BlockTorchLever.FACING);
-			} else {
-				// otherwise ignore side
-				map.remove(BlockTorchLever.SIDE);
-				suffix = "_wall";
-			}
-			ResourceLocation res = new ResourceLocation(base.getResourceDomain(), base.getResourcePath() + suffix);
-			return new ModelResourceLocation(res, this.getPropertyString(map));
-		}
-	}
-
-	/**
 	 * Mapper for redstone torch levers, to combine the two blocks as if its all one block
 	 */
 	private static class RedstoneTorchLeverStateMapper extends StateMapperBase {

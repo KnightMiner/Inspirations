@@ -53,7 +53,8 @@ public class InspirationsUtility extends PulseBase {
 	public static CommonProxy proxy = DistExecutor.runForDist(()->()->new UtilityClientProxy(), ()->()-> new CommonProxy());
 
 	// blocks
-	public static Block torchLever;
+	public static Block torchLeverWall;
+	public static Block torchLeverFloor;
 	public static Block redstoneBarrel;
 	public static BlockBricksButton bricksButton;
 	public static Block redstoneTorchLever;
@@ -73,9 +74,8 @@ public class InspirationsUtility extends PulseBase {
 	public void registerBlocks(Register<Block> event) {
 		IForgeRegistry<Block> r = event.getRegistry();
 
-		if(Config.enableTorchLever) {
-			torchLever = registerBlock(r, new BlockTorchLever(), "torch_lever");
-		}
+		torchLeverFloor = registerBlock(r, new BlockTorchLever(), "torch_lever");
+		torchLeverWall = registerBlock(r, new BlockWallTorchLever(), "wall_torch_lever");
 
 		if(Config.enableBricksButton) {
 			bricksButton = registerBlock(r, new BlockBricksButton(), "bricks_button");
@@ -135,9 +135,6 @@ public class InspirationsUtility extends PulseBase {
 		IForgeRegistry<Item> r = event.getRegistry();
 
 		// itemblocks
-		if(torchLever != null) {
-			registerItemBlock(r, torchLever);
-		}
 		if(bricksButton != null) {
 			registerEnumItemBlock(r, bricksButton);
 		}
@@ -151,6 +148,7 @@ public class InspirationsUtility extends PulseBase {
 			for(Block trapdoor : carpetedTrapdoors) {
 				registerItemBlock(r, trapdoor);
 			}
+		register(r, new TorchLeverItem(), "torch_lever");
 		}
 		if(collector != null) {
 			registerItemBlock(r, collector);

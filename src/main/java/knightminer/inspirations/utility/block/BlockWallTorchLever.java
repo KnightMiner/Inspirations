@@ -1,16 +1,16 @@
 package knightminer.inspirations.utility.block;
 
-import java.util.Random;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
-import net.minecraft.block.TorchBlock;
+import net.minecraft.block.WallTorchBlock;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particles.ParticleTypes;
+import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.DirectionProperty;
 import net.minecraft.state.StateContainer;
+import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
@@ -21,11 +21,13 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
+import java.util.Random;
 
-public class BlockTorchLever extends TorchBlock {
-	public static final DirectionProperty SWING = DirectionProperty.create("swing", (dir) -> dir != Direction.DOWN);
+public class BlockWallTorchLever extends WallTorchBlock {
+	public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
+	public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
 
-	public BlockTorchLever() {
+    public BlockWallTorchLever() {
 		super(Block.Properties
 				.create(Material.MISCELLANEOUS)
 				.doesNotBlockMovement()
@@ -34,32 +36,30 @@ public class BlockTorchLever extends TorchBlock {
 				.tickRandomly()
 				.sound(SoundType.WOOD)
 		);
-	}
+    }
 
-	@Override
+    @Override
 	protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-		builder.add(SWING);
+		builder.add(POWERED, FACING);
 	}
 
-	private boolean isPowered(BlockState state) {
-		return state.get(SWING) != Direction.UP;
-	}
 
-	@Override
+    @Override
 	public void animateTick(BlockState state, @Nonnull World world, BlockPos pos, @Nonnull Random rand) {
-		Direction swing = state.get(SWING);
+		Direction facing = state.get(FACING);
 		double x = pos.getX() + 0.5D;
 		double y = pos.getY() + 0.7D;
 		double z = pos.getZ() + 0.5D;
 
-		if(isPowered(state)) {
-			int offsetX = swing.getXOffset();
-			int offsetZ = swing.getZOffset();
-			world.addParticle(ParticleTypes.SMOKE, x + 0.23D * offsetX, y - 0.05D, z + 0.23D * offsetZ, 0.0D, 0.0D, 0.0D);
-			world.addParticle(ParticleTypes.FLAME, x + 0.23D * offsetX, y - 0.05D, z + 0.23D * offsetZ, 0.0D, 0.0D, 0.0D);
-		} else {
-			world.addParticle(ParticleTypes.SMOKE, x, y, z, 0.0D, 0.0D, 0.0D);
-			world.addParticle(ParticleTypes.FLAME, x, y, z, 0.0D, 0.0D, 0.0D);
+        Direction opposite = facing.getOpposite();
+        int offsetX = opposite.getXOffset();
+        int offsetZ = opposite.getZOffset();
+        if(state.get(POWERED)) {
+            world.addParticle(ParticleTypes.SMOKE, x + 0.10D * offsetX, y + 0.08D, z + 0.10D * offsetZ, 0.0D, 0.0D, 0.0D);
+            world.addParticle(ParticleTypes.FLAME,        x + 0.10D * offsetX, y + 0.08D, z + 0.10D * offsetZ, 0.0D, 0.0D, 0.0D);
+        } else {
+            world.addParticle(ParticleTypes.SMOKE, x + 0.27D * offsetX, y + 0.22D, z + 0.27D * offsetZ, 0.0D, 0.0D, 0.0D);
+            world.addParticle(ParticleTypes.FLAME, x + 0.27D * offsetX, y + 0.22D, z + 0.27D * offsetZ, 0.0D, 0.0D, 0.0D);
 		}
 	}
 
@@ -67,28 +67,21 @@ public class BlockTorchLever extends TorchBlock {
 	 * Powering
 	 */
 
-	@Override
-	public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) {
+    @Override
+    public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) {
 		if (world.isRemote) {
 			return true;
 		}
 
-		float pitch;
-		if (isPowered(state)) {
-			state = state.with(SWING, Direction.UP);
-			pitch = 0.5f;
-		} else {
-			state = state.with(SWING, player.getHorizontalFacing());
-			pitch = 0.6f;
-		}
-
+		// update state
+		state = state.cycle(POWERED);
 		world.setBlockState(pos, state, 3);
 		// play sound
+		float pitch = state.get(POWERED) ? 0.6F : 0.5F;
 		world.playSound(null, pos, SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.3F, pitch);
 		// notify update
 		world.notifyNeighborsOfStateChange(pos, this);
-		world.notifyNeighborsOfStateChange(pos.down(), this);
-
+		world.notifyNeighborsOfStateChange(pos.offset(state.get(FACING).getOpposite()), this);
 		return true;
 	}
 
@@ -98,26 +91,26 @@ public class BlockTorchLever extends TorchBlock {
 	 */
 
 	@Override
-	public void onReplaced(BlockState state, @Nonnull World world, @Nonnull BlockPos pos, BlockState newState, boolean isMoving) {
+	public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
 		// if powered, send updates for power
-		if (state.getBlock() != newState.getBlock() && !isMoving && isPowered(state)) {
+		if (state.getBlock() != newState.getBlock() && !isMoving && state.get(POWERED)) {
 			world.notifyNeighborsOfStateChange(pos, this);
-			world.notifyNeighborsOfStateChange(pos.down(), this);
+			world.notifyNeighborsOfStateChange(pos.offset(state.get(FACING).getOpposite()), this);
 		}
 		super.onReplaced(state, world, pos, newState, isMoving);
 	}
 
-	@Override
-	public int getWeakPower(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
-		return isPowered(state) ? 15 : 0;
+    @Override
+    public int getWeakPower(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
+		return state.get(POWERED) ? 15 : 0;
 	}
 
 	@Override
 	public int getStrongPower(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
-		if (!isPowered(state)) {
+		if (!state.get(POWERED)) {
 			return 0;
 		}
-		return side == Direction.DOWN ? 15 : 0;
+		return state.get(FACING) == side ? 15 : 0;
 	}
 
 	/**
