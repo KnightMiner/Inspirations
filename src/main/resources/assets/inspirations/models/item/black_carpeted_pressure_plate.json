@@ -1,0 +1,6 @@
+{
+  "parent": "inspirations:block/carpeted_pressure_plate_unpressed",
+  "textures": {
+    "wool": "minecraft:block/black_wool"
+  }
+}

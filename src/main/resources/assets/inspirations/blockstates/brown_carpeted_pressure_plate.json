@@ -1,0 +1,11 @@
+{
+  "variants": {
+    "powered=false": {
+      "model": "inspirations:block/carpet/plate/brown"
+    },
+    "powered=true": {
+      "model": "inspirations:block/carpet/plate/brown_pressed",
+      "y": 180
+    }
+  }
+}

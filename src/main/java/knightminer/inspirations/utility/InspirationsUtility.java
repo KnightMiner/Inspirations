@@ -100,32 +100,6 @@ public class InspirationsUtility extends PulseBase {
 				carpetedTrapdoors[color.getMetadata()] = registerBlock(r, new BlockCarpetedTrapdoor(), "carpeted_trapdoor_" + color.getName());
 			}
 		}
-		if(Config.enableCarpetedPressurePlate.get()) {
-			CarpetBlock[] carpets = new CarpetBlock[] {
-				(CarpetBlock)Blocks.WHITE_CARPET,
-				(CarpetBlock)Blocks.ORANGE_CARPET,
-				(CarpetBlock)Blocks.MAGENTA_CARPET,
-				(CarpetBlock)Blocks.LIGHT_BLUE_CARPET,
-				(CarpetBlock)Blocks.YELLOW_CARPET,
-				(CarpetBlock)Blocks.LIME_CARPET,
-				(CarpetBlock)Blocks.PINK_CARPET,
-				(CarpetBlock)Blocks.GRAY_CARPET,
-				(CarpetBlock)Blocks.LIGHT_GRAY_CARPET,
-				(CarpetBlock)Blocks.CYAN_CARPET,
-				(CarpetBlock)Blocks.PURPLE_CARPET,
-				(CarpetBlock)Blocks.BLUE_CARPET,
-				(CarpetBlock)Blocks.BROWN_CARPET,
-				(CarpetBlock)Blocks.GREEN_CARPET,
-				(CarpetBlock)Blocks.RED_CARPET,
-				(CarpetBlock)Blocks.BLACK_CARPET,
-			};
-			for(CarpetBlock carpet : carpets) {
-				carpetedPressurePlate[carpet.getColor().getId()] = registerBlock(r,
-						new BlockCarpetedPressurePlate(carpet),
-						carpet.getColor().getName() + "_carpeted_pressure_plate"
-				);
-			}
-		}
 		redstoneBarrel = registerBlock(r, new BlockRedstoneBarrel(), "redstone_barrel");
 
 		if(Config.enableCollector.get()) {
@@ -135,6 +109,29 @@ public class InspirationsUtility extends PulseBase {
 		if(Config.enablePipe.get()) {
 			pipe = registerBlock(r, new BlockPipe(), "pipe");
 			registerTE(TilePipe.class, "pipe");
+		CarpetBlock[] carpets = new CarpetBlock[] {
+			(CarpetBlock)Blocks.WHITE_CARPET,
+			(CarpetBlock)Blocks.ORANGE_CARPET,
+			(CarpetBlock)Blocks.MAGENTA_CARPET,
+			(CarpetBlock)Blocks.LIGHT_BLUE_CARPET,
+			(CarpetBlock)Blocks.YELLOW_CARPET,
+			(CarpetBlock)Blocks.LIME_CARPET,
+			(CarpetBlock)Blocks.PINK_CARPET,
+			(CarpetBlock)Blocks.GRAY_CARPET,
+			(CarpetBlock)Blocks.LIGHT_GRAY_CARPET,
+			(CarpetBlock)Blocks.CYAN_CARPET,
+			(CarpetBlock)Blocks.PURPLE_CARPET,
+			(CarpetBlock)Blocks.BLUE_CARPET,
+			(CarpetBlock)Blocks.BROWN_CARPET,
+			(CarpetBlock)Blocks.GREEN_CARPET,
+			(CarpetBlock)Blocks.RED_CARPET,
+			(CarpetBlock)Blocks.BLACK_CARPET,
+		};
+		for(CarpetBlock carpet : carpets) {
+			carpetedPressurePlates[carpet.getColor().getId()] = registerBlock(r,
+					new BlockCarpetedPressurePlate(carpet),
+					carpet.getColor().getName() + "_carpeted_pressure_plate"
+			);
 		}
 	}
 
@@ -159,8 +156,8 @@ public class InspirationsUtility extends PulseBase {
 		if(collector != null) {
 			registerItemBlock(r, collector);
 		}
-		if(pipe != null) {
-			pipeItem = registerItemBlock(r, pipe);
+		for(Block pressurePlate : carpetedPressurePlates) {
+			registerItemBlock(r, pressurePlate, ItemGroup.REDSTONE);
 		}
 	}
 
