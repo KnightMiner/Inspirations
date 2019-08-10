@@ -24,9 +24,11 @@ public class NorthCompassGetter implements IItemPropertyGetter {
 		if(stack.isOnItemFrame()) {
 			ItemFrameEntity frame = stack.getItemFrame();
 			Direction facing = frame.getHorizontalFacing();
-			// TODO: quark support
-			if(facing.getAxis() == Direction.Axis.Y) {
-				return 0;
+			if(facing == Direction.DOWN) {
+				return frame.getRotation()/8f;
+			} else if (facing == Direction.UP) {
+				// Flip 180 degrees.
+				return MathHelper.positiveModulo(0.5f + frame.getRotation()/8f, 1f);
 			}
 			return MathHelper.positiveModulo(facing.getHorizontalIndex()/4f + 0.5f + frame.getRotation()/8f, 1);
 		}
