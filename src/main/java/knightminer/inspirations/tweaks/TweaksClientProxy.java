@@ -108,84 +108,83 @@ public class TweaksClientProxy extends ClientProxy {
 		ItemColors itemColors = event.getItemColors();
 
 		// colored ribbons on enchanted books
-		if(Config.coloredEnchantedRibbons) {
-			registerItemColors(itemColors, (stack, tintIndex) -> {
-				if(tintIndex == 0) {
-					// find the rarest enchantment we have
-					Enchantment.Rarity rarity = Enchantment.Rarity.COMMON;
-					for(NBTBase tag : ItemEnchantedBook.getEnchantments(stack)) {
-						if(tag.getId() == 10) {
-							int id = ((NBTTagCompound) tag).getShort("id");
-							Enchantment enchantment = Enchantment.getEnchantmentByID(id);
-							if(enchantment != null) {
-								Enchantment.Rarity newRarity = enchantment.getRarity();
-								if(newRarity != null && newRarity.getWeight() < rarity.getWeight()) {
-									rarity = newRarity;
-								}
+		itemColors.register((stack, tintIndex) -> {
+			if(tintIndex == 0 && Config.coloredEnchantedRibbons.get()) {
+				// find the rarest enchantment we have
+				Enchantment.Rarity rarity = Enchantment.Rarity.COMMON;
+				for(INBT tag : EnchantedBookItem.getEnchantments(stack)) {
+					if(tag.getId() == Constants.NBT.TAG_COMPOUND) {
+						int id = ((CompoundNBT) tag).getShort("id");
+						Enchantment enchantment = Enchantment.getEnchantmentByID(id);
+						if(enchantment != null) {
+							Enchantment.Rarity newRarity = enchantment.getRarity();
+							if(newRarity != null && newRarity.getWeight() < rarity.getWeight()) {
+								rarity = newRarity;
 							}
 						}
 					}
-
-					// color by that rarity
-					switch(rarity) {
-						case COMMON:    return 0xFF2151;
-						case UNCOMMON:  return 0xE2882D;
-						case RARE:      return 0x00FF21;
-						case VERY_RARE: return 0x9F7FFF;
-					}
 				}
+
+				// color by that rarity
+				switch(rarity) {
+					case COMMON:    return 0xFF2151;
+					case UNCOMMON:  return 0xE2882D;
+					case RARE:      return 0x00FF21;
+					case VERY_RARE: return 0x9F7FFF;
+				}
+			}
+			return -1;
+		}, Items.ENCHANTED_BOOK);
+
+		itemColors.register((stack, tintIndex) -> {
+			if (!Config.coloredFireworkItems.get()) {
 				return -1;
-			}, Items.ENCHANTED_BOOK);
-		}
-
-		if(Config.coloredFireworkItems) {
-			registerItemColors(itemColors, (stack, tintIndex) -> {
-				NBTTagCompound nbt = stack.getSubCompound("Fireworks");
-				// string is darker with more gunpowder
-				if(tintIndex == 2) {
-					if (nbt != null && nbt.hasKey("Flight", 99)) {
-						byte flight = nbt.getByte("Flight");
-						switch(flight) {
-							case 1:
-								return 0x808080;
-							case 2:
-								return 0x606060;
-							case 3:
-								return 0x303030;
-						}
-						if(flight > 3) {
-							return 0x000000;
-						}
+			}
+			CompoundNBT nbt = stack.getChildTag("Fireworks");
+			// string is darker with more gunpowder
+			if(tintIndex == 2) {
+				if (nbt != null && nbt.contains("Flight", Constants.NBT.TAG_ANY_NUMERIC)) {
+					byte flight = nbt.getByte("Flight");
+					switch(flight) {
+						case 1:
+							return 0x808080;
+						case 2:
+							return 0x606060;
+						case 3:
+							return 0x303030;
 					}
-					return 0xA0A0A0;
+					if(flight > 3) {
+						return 0x000000;
+					}
 				}
-				// color the stripes and the top
-				if(tintIndex == 0 || tintIndex == 1) {
-					// no NBT?
-					int missing = tintIndex == 1 ? 0xCCA190 : 0xC0C0C0;
-					if(nbt == null) {
-						return missing;
-					}
-
-					NBTTagList stars = nbt.getTagList("Explosions", 10);
-					// not enough stars?
-					if(tintIndex >= stars.tagCount()) {
-						return missing;
-					}
-
-					// grab the proper star's first color
-					NBTTagCompound star = stars.getCompoundTagAt(tintIndex);
-					int[] colors = star.getIntArray("Colors");
-					if (colors.length > 0) {
-						return colors[0];
-					}
-
+				return 0xA0A0A0;
+			}
+			// color the stripes and the top
+			if(tintIndex == 0 || tintIndex == 1) {
+				// no NBT?
+				int missing = tintIndex == 1 ? 0xCCA190 : 0xC0C0C0;
+				if(nbt == null) {
 					return missing;
 				}
 
-				return -1;
-			}, Items.FIREWORKS);
-		}
+				ListNBT stars = nbt.getList("Explosions", 10);
+				// not enough stars?
+				if(tintIndex >= stars.size()) {
+					return missing;
+				}
+
+				// grab the proper star's first color
+				CompoundNBT star = stars.getCompound(tintIndex);
+				int[] colors = star.getIntArray("Colors");
+				if (colors.length > 0) {
+					return colors[0];
+				}
+
+				return missing;
+			}
+
+			return -1;
+		}, Items.FIREWORK_ROCKET);
 	}
 
 	/**
