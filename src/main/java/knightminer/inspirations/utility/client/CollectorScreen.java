@@ -2,14 +2,17 @@ package knightminer.inspirations.utility.client;
 
 import knightminer.inspirations.utility.inventory.ContainerCollector;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
-import slimeknights.mantle.client.gui.GuiMultiModule;
+import net.minecraft.util.text.ITextComponent;
+import slimeknights.mantle.client.screen.MultiModuleScreen;
 
-public class GuiCollector extends GuiMultiModule {
+public class CollectorScreen extends MultiModuleScreen<ContainerCollector> {
 
 	private static final ResourceLocation BACKGROUND = new ResourceLocation("textures/gui/container/dispenser.png");
-	public GuiCollector(ContainerCollector container) {
-		super(container);
+
+	public CollectorScreen(ContainerCollector container, PlayerInventory playerInv, ITextComponent title) {
+		super(container, playerInv, title);
 	}
 
 	@Override
@@ -20,7 +23,7 @@ public class GuiCollector extends GuiMultiModule {
 
 	@Override
 	protected void drawPlayerInventoryName() {
-		String localizedName = Minecraft.getMinecraft().player.inventory.getDisplayName().getUnformattedText();
-		this.fontRenderer.drawString(localizedName, 8, this.ySize - 96 + 2, 0x404040);
+		String localizedName = Minecraft.getInstance().player.inventory.getDisplayName().getUnformattedComponentText();
+		this.font.drawString(localizedName, 8, this.ySize - 96 + 2, 0x404040);
 	}
 }

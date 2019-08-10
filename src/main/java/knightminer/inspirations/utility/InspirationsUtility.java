@@ -4,6 +4,7 @@ package knightminer.inspirations.utility;
 import knightminer.inspirations.common.CommonProxy;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.utility.block.*;
+import knightminer.inspirations.utility.inventory.ContainerCollector;
 import knightminer.inspirations.utility.inventory.ContainerPipe;
 import knightminer.inspirations.utility.item.TorchLeverItem;
 import knightminer.inspirations.utility.tileentity.TileCollector;
@@ -74,9 +75,6 @@ public class InspirationsUtility extends PulseBase {
 		}
 		redstoneBarrel = registerBlock(r, new BlockRedstoneBarrel(), "redstone_barrel");
 
-		if(Config.enableCollector.get()) {
-			collector = registerBlock(r, new BlockCollector(), "collector");
-			registerTE(TileCollector.class, "collector");
 		for(DyeColor color : DyeColor.values()) {
 			carpetedTrapdoors[color.getId()] = registerBlock(r, new BlockCarpetedTrapdoor(color),  color.getName() + "_carpeted_trapdoor");
 		}
@@ -104,12 +102,17 @@ public class InspirationsUtility extends PulseBase {
 					carpet.getColor().getName() + "_carpeted_pressure_plate"
 			);
 		}
+		collector = registerBlock(r, new BlockCollector(), "collector");
 		pipe = registerBlock(r, new BlockPipe(), "pipe");
 	}
 
 	@SubscribeEvent
 	public void registerTEs(Register<TileEntityType<?>> event) {
 		IForgeRegistry<TileEntityType<?>> r = event.getRegistry();
+
+		tileCollector = register(r, TileEntityType.Builder.create(
+				TileCollector::new, collector
+		).build(null), "collector");
 
 		tilePipe = register(r, TileEntityType.Builder.create(
 				TilePipe::new, pipe
@@ -120,6 +123,7 @@ public class InspirationsUtility extends PulseBase {
 	public void registerContainers(Register<ContainerType<?>> event) {
 		IForgeRegistry<ContainerType<?>> r = event.getRegistry();
 
+		contCollector = register(r, new ContainerType<>(new ContainerCollector.Factory()), "collector");
 		contPipe = register(r, new ContainerType<>(new ContainerPipe.Factory()), "pipe");
 	}
 
@@ -145,6 +149,7 @@ public class InspirationsUtility extends PulseBase {
 		for(Block pressurePlate : carpetedPressurePlates) {
 			registerItemBlock(r, pressurePlate, ItemGroup.REDSTONE);
 		}
+		registerItemBlock(r, collector, ItemGroup.REDSTONE);
 		pipeItem = registerItemBlock(r, pipe, ItemGroup.REDSTONE);
 	}
 
