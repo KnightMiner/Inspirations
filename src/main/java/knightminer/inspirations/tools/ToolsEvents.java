@@ -318,7 +318,7 @@ public class ToolsEvents {
 		World world = event.getWorld();
 		BlockPos pos = event.getPos();
 		TileEntity te = world.getTileEntity(pos);
-		if (te instanceof BeaconTileEntity && ((BeaconTileEntity)te).getLevels() > 0) {
+		if (ItemWaypointCompass.beaconIsComplete(te)) {
 			if (!world.isRemote) {
 				// give the player the linked compass
 				DyeColor color = DyeColor.WHITE;

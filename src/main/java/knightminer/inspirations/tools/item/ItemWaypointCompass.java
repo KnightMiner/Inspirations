@@ -23,7 +23,6 @@ import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.print.attribute.standard.MediaSize;
 import java.util.List;
 
 public class ItemWaypointCompass extends HidableItem {
@@ -78,6 +77,19 @@ public class ItemWaypointCompass extends HidableItem {
     }
   }
 
+  /**
+   * Determine if the examined beacon has at least one level.
+   * @param te
+   * @return
+   */
+  public static boolean beaconIsComplete(TileEntity te) {
+    if (!(te instanceof BeaconTileEntity)) {
+      return false;
+    }
+    BeaconTileEntity beacon = (BeaconTileEntity)te;
+    return beacon.getLevels() > 0 && beacon.beamSegments.size() != 0;
+  }
+
   /** Checks a position in the world to see if the compass is valid */
   private void checkPos(ItemStack stack, World world, BlockPos pos) {
     if (pos != null && world.isBlockLoaded(pos)) {
@@ -85,8 +97,7 @@ public class ItemWaypointCompass extends HidableItem {
       if (te instanceof BeaconTileEntity) {
         // if the beacon beam is just missing, wait another cycle before clearing, this sometimes happens on world load
         CompoundNBT tags = stack.getOrCreateTag();
-        if (true) {
-//        if (((BeaconTileEntity)te).isComplete) {
+        if (beaconIsComplete(te)) {
           tags.remove(TAG_CHECK_BEACON);
         } else if (tags.getBoolean(TAG_CHECK_BEACON)) {
           clearNBT(stack);
