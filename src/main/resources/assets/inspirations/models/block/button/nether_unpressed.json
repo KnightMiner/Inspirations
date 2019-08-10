@@ -1,7 +1,7 @@
 {
     "textures": {
-        "particle": "block/nether_brick",
-        "button": "block/nether_brick"
+        "particle": "block/nether_bricks",
+        "button": "block/nether_bricks"
     },
     "elements": [
         {

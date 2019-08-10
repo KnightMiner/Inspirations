@@ -1,122 +1,98 @@
 package knightminer.inspirations.utility.block;
 
-import java.util.Locale;
 import java.util.Random;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.google.common.collect.ImmutableMap;
 
-import knightminer.inspirations.library.Util;
-import net.minecraft.block.BlockButton;
-import net.minecraft.block.BlockHorizontal;
+import knightminer.inspirations.common.Config;
+import knightminer.inspirations.common.block.HidableBlock;
+import net.minecraft.block.AbstractButtonBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.properties.PropertyDirection;
-import net.minecraft.block.properties.PropertyEnum;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.SoundEvents;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.IStringSerializable;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.Rotation;
-import net.minecraft.util.SoundCategory;
+import net.minecraft.state.BooleanProperty;
+import net.minecraft.state.DirectionProperty;
+import net.minecraft.state.StateContainer;
+import net.minecraft.state.properties.BlockStateProperties;
+import net.minecraft.util.*;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorld;
+import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
-import slimeknights.mantle.block.EnumBlock;
 
-public class BlockBricksButton extends EnumBlock<BlockBricksButton.BrickType> {
+public class BlockBricksButton extends HidableBlock {
 
-	public static final PropertyEnum<BrickType> TYPE = PropertyEnum.create("type", BrickType.class);
-	public static final PropertyDirection FACING = BlockHorizontal.FACING;
-	public static final PropertyBool POWERED = BlockButton.POWERED;
-	public BlockBricksButton() {
-		super(Material.ROCK, TYPE, BrickType.class);
+	public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+	public static final BooleanProperty POWERED = AbstractButtonBlock.POWERED;
+	private final ImmutableMap<Direction, AxisAlignedBB> buttonBounds;
 
-		this.setTickRandomly(true);
-		this.setCreativeTab(CreativeTabs.REDSTONE);
-		this.setHardness(1.5F);
-		this.setResistance(10.0F);
-		this.setSoundType(SoundType.STONE);
-		this.setDefaultState(this.blockState.getBaseState()
-				.withProperty(TYPE, BrickType.BRICKS)
-				.withProperty(FACING, EnumFacing.NORTH)
-				.withProperty(POWERED, false));
+	public BlockBricksButton(ImmutableMap<Direction, AxisAlignedBB> buttonBounds) {
+		super(Block.Properties
+				.create(Material.ROCK)
+				.hardnessAndResistance(1.5F, 10.0F)
+				.sound(SoundType.STONE)
+				.tickRandomly(),
+				Config.enableBricksButton::get
+		);
+		this.buttonBounds = buttonBounds;
+
+		this.setDefaultState(this.getStateContainer().getBaseState()
+				.with(FACING, Direction.NORTH)
+				.with(POWERED, false));
 	}
 
 
 	/* Blockstate */
 
 	@Override
-	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, TYPE, FACING, POWERED);
+	protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+		builder.add(FACING, POWERED);
+		super.fillStateContainer(builder);
 	}
 
-	/**
-	 * Convert the given metadata into a BlockState for this Block
-	 */
 	@Override
-	public IBlockState getStateFromMeta(int meta) {
-		return this.getDefaultState()
-				.withProperty(TYPE, BrickType.fromMeta(meta & 1))
-				.withProperty(FACING, EnumFacing.getHorizontal(meta >> 1))
-				.withProperty(POWERED, (meta & 8) > 0);
+	public BlockState getStateForPlacement(BlockState state, Direction facing, BlockState neighState, IWorld world, BlockPos pos, BlockPos facingPos, Hand hand) {
+		return state.with(FACING, facing.getOpposite());
 	}
 
-	/**
-	 * Convert the BlockState into the correct metadata value
-	 */
 	@Override
-	public int getMetaFromState(IBlockState state) {
-		return state.getValue(TYPE).getMeta()
-				| (state.getValue(FACING).getHorizontalIndex() << 1)
-				| (state.getValue(POWERED) ? 8 : 0);
-	}
-
-	/**
-	 * Called by ItemBlocks just before a block is actually set in the world, to allow for adjustments to the
-	 * IBlockstate
-	 */
-	@Override
-	public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
-		return this.getStateFromMeta(meta).withProperty(FACING, placer.getHorizontalFacing().getOpposite());
+	public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, @Nullable LivingEntity player, ItemStack stack) {
+		if (player != null) {
+			world.setBlockState(pos, state.with(FACING, player.getAdjustedHorizontalFacing().getOpposite()));
+		}
+		super.onBlockPlacedBy(world, pos, state, player, stack);
 	}
 
 	/**
 	 * Returns the blockstate with the given rotation from the passed blockstate. If inapplicable, returns the passed
 	 * blockstate.
 	 */
+	@Nonnull
 	@Override
-	public IBlockState withRotation(IBlockState state, Rotation rot) {
-		return state.withProperty(FACING, rot.rotate(state.getValue(FACING)));
+	public BlockState rotate(BlockState state, Rotation rot) {
+		return state.with(FACING, rot.rotate(state.get(FACING)));
 	}
 
 	/**
 	 * Returns the blockstate with the given mirror of the passed blockstate. If inapplicable, returns the passed
 	 * blockstate.
 	 */
+	@Nonnull
 	@Override
-	public IBlockState withMirror(IBlockState state, Mirror mirrorIn) {
-		return state.withRotation(mirrorIn.toRotation(state.getValue(FACING)));
-	}
-
-	@Override
-	public int damageDropped(IBlockState state) {
-		return state.getValue(TYPE).getMeta();
-	}
-
-	@Override
-	protected ItemStack getSilkTouchDrop(IBlockState state) {
-		return new ItemStack(this, 1, state.getValue(TYPE).getMeta());
+	public BlockState mirror(BlockState state, Mirror mirror) {
+		return state.with(FACING, mirror.mirror(state.get(FACING)));
 	}
 
 	/* Pressing the button */
@@ -125,7 +101,7 @@ public class BlockBricksButton extends EnumBlock<BlockBricksButton.BrickType> {
 	 * How many world ticks before ticking
 	 */
 	@Override
-	public int tickRate(World worldIn) {
+	public int tickRate(IWorldReader p_149738_1_) {
 		return 20;
 	}
 
@@ -133,93 +109,87 @@ public class BlockBricksButton extends EnumBlock<BlockBricksButton.BrickType> {
 	 * Called when the block is right clicked by a player.
 	 */
 	@Override
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) {
 		// if you did not click the secret button, no button for you
-		if(!Util.clickedAABB(getButtonBox(state), hitX, hitY, hitZ)) {
+		if(!getButtonBox(state).contains(trace.getHitVec().subtract(new Vec3d(pos)))) {
 			return false;
 		}
 
 		// if already powered, we done here
-		if (state.getValue(POWERED)) {
+		if (state.get(POWERED)) {
 			return true;
 		}
 
-		world.setBlockState(pos, state.withProperty(POWERED, true), 3);
-		world.markBlockRangeForRenderUpdate(pos, pos);
+		world.setBlockState(pos, state.with(POWERED, true), 3);
 		world.playSound(player, pos, SoundEvents.BLOCK_STONE_BUTTON_CLICK_ON, SoundCategory.BLOCKS, 0.3F, 0.6F);
-		world.notifyNeighborsOfStateChange(pos, this, false);
-		world.scheduleUpdate(pos, this, this.tickRate(world));
+		world.notifyNeighborsOfStateChange(pos, this);
+		world.getPendingBlockTicks().scheduleTick(pos, this, this.tickRate(world));
 		return true;
 	}
 
-	/**
-	 * Called randomly when setTickRandomly is set to true (used by e.g. crops to grow, etc.)
-	 */
-	@Override
-	public void randomTick(World worldIn, BlockPos pos, IBlockState state, Random random) {}
 
 	@Override
-	public void updateTick(World world, BlockPos pos, IBlockState state, Random rand) {
+	public void randomTick(@Nonnull BlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull Random rand) {
+	}
+
+	@Override
+	public void tick(BlockState state, World world, BlockPos pos, Random random) {
 		if (world.isRemote) {
 			return;
 		}
-		if ((state.getValue(POWERED))) {
-			world.setBlockState(pos, state.withProperty(POWERED, false));
-			world.notifyNeighborsOfStateChange(pos, this, false);
+		if ((state.get(POWERED))) {
+			world.setBlockState(pos, state.with(POWERED, false));
+			world.notifyNeighborsOfStateChange(pos, this);
 			world.playSound(null, pos, SoundEvents.BLOCK_STONE_BUTTON_CLICK_OFF, SoundCategory.BLOCKS, 0.3F, 0.5F);
-			world.markBlockRangeForRenderUpdate(pos, pos);
 		}
 	}
 
-	private static final ImmutableMap<EnumFacing, AxisAlignedBB> BRICK_BUTTON;
-	private static final ImmutableMap<EnumFacing, AxisAlignedBB> NETHER_BUTTON;
+	public static final ImmutableMap<Direction, AxisAlignedBB> BRICK_BUTTON;
+	public static final ImmutableMap<Direction, AxisAlignedBB> NETHER_BUTTON;
 	static {
-		ImmutableMap.Builder<EnumFacing, AxisAlignedBB> bounds = ImmutableMap.builder();
-		bounds.put(EnumFacing.NORTH, new AxisAlignedBB(0.3125, 0.3125, 0,      0.75,   0.5, 0.0625));
-		bounds.put(EnumFacing.SOUTH, new AxisAlignedBB(0.25,   0.3125, 0.9375, 0.6875, 0.5, 1     ));
-		bounds.put(EnumFacing.WEST,  new AxisAlignedBB(0,      0.3125, 0.25,   0.0625, 0.5, 0.6875));
-		bounds.put(EnumFacing.EAST,  new AxisAlignedBB(0.9375, 0.3125, 0.3125, 1,      0.5, 0.75  ));
+		ImmutableMap.Builder<Direction, AxisAlignedBB> bounds = ImmutableMap.builder();
+		bounds.put(Direction.NORTH, new AxisAlignedBB(0.3125, 0.3125, 0,      0.75,   0.5, 0.0625));
+		bounds.put(Direction.SOUTH, new AxisAlignedBB(0.25,   0.3125, 0.9375, 0.6875, 0.5, 1.0125));
+		bounds.put(Direction.WEST,  new AxisAlignedBB(0,      0.3125, 0.25,   0.0625, 0.5, 0.6875));
+		bounds.put(Direction.EAST,  new AxisAlignedBB(0.9375, 0.3125, 0.3125, 1.0125, 0.5, 0.75  ));
 		BRICK_BUTTON = bounds.build();
 
 		bounds = ImmutableMap.builder();
-		bounds.put(EnumFacing.NORTH, new AxisAlignedBB(0.375,  0.5, 0,      0.8125, 0.6875, 0.0625));
-		bounds.put(EnumFacing.SOUTH, new AxisAlignedBB(0.1875, 0.5, 0.9375, 0.625,  0.6875, 1     ));
-		bounds.put(EnumFacing.WEST,  new AxisAlignedBB(0,      0.5, 0.1875, 0.0625, 0.6875, 0.625 ));
-		bounds.put(EnumFacing.EAST,  new AxisAlignedBB(0.9375, 0.5, 0.375,  1,      0.6875, 0.8125));
+		bounds.put(Direction.NORTH, new AxisAlignedBB(0.375,  0.5, 0,      0.8125, 0.6875, 0.0625));
+		bounds.put(Direction.SOUTH, new AxisAlignedBB(0.1875, 0.5, 0.9375, 0.625,  0.6875, 1.0125));
+		bounds.put(Direction.WEST,  new AxisAlignedBB(0,      0.5, 0.1875, 0.0625, 0.6875, 0.625 ));
+		bounds.put(Direction.EAST,  new AxisAlignedBB(0.9375, 0.5, 0.375,  1.0125, 0.6875, 0.8125));
 		NETHER_BUTTON = bounds.build();
 	}
 
-	private static AxisAlignedBB getButtonBox(IBlockState state) {
-		EnumFacing facing = state.getValue(FACING);
-		if(state.getValue(TYPE) == BrickType.BRICKS) {
-			return BRICK_BUTTON.get(facing);
-		}
-
-		return NETHER_BUTTON.get(facing);
+	private AxisAlignedBB getButtonBox(BlockState state) {
+		return buttonBounds.get(state.get(FACING));
 	}
 
 
 	/* Redstone logic */
 
+
 	/**
 	 * Called serverside after this block is replaced with another in Chunk, but before the Tile Entity is updated
 	 */
+
 	@Override
-	public void breakBlock(World world, BlockPos pos, IBlockState state) {
-		if (state.getValue(POWERED)) {
-			world.notifyNeighborsOfStateChange(pos, this, false);
+	public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
+		if (state.getBlock() != newState.getBlock() && state.get(POWERED)) {
+			world.notifyNeighborsOfStateChange(pos, this);
 		}
 
-		super.breakBlock(world, pos, state);
+		super.onReplaced(state, world, pos, newState, isMoving);
 	}
 
 	@Override
-	public int getWeakPower(IBlockState state, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
-		return state.getValue(POWERED) ? 15 : 0;
+	public int getWeakPower(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
+		return state.get(POWERED) ? 15 : 0;
 	}
 
 	@Override
-	public int getStrongPower(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
+	public int getStrongPower(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
 		// we may be a button, but we act as though ourself is the block that is powered
 		return 0;
 	}
@@ -227,42 +197,15 @@ public class BlockBricksButton extends EnumBlock<BlockBricksButton.BrickType> {
 	/**
 	 * Can this block provide power. Only wire currently seems to have this change based on its state.
 	 */
+
 	@Override
-	public boolean canProvidePower(IBlockState state) {
+	public boolean canProvidePower(BlockState state) {
 		return true;
 	}
 
 	@Override
-	public boolean canConnectRedstone(IBlockState state, IBlockAccess world, BlockPos pos, @Nullable EnumFacing side) {
+	public boolean canConnectRedstone(BlockState state, IBlockReader world, BlockPos pos, @Nullable Direction side) {
 		return false;
-	}
-
-
-	public enum BrickType implements IStringSerializable, EnumBlock.IEnumMeta {
-		BRICKS,
-		NETHER;
-
-		private int meta;
-		BrickType() {
-			this.meta = ordinal();
-		}
-
-		@Override
-		public int getMeta() {
-			return meta;
-		}
-
-		@Override
-		public String getName() {
-			return name().toLowerCase(Locale.US);
-		}
-
-		public static BrickType fromMeta(int i) {
-			if(i < 0 || i > values().length) {
-				i = 0;
-			}
-			return values()[i];
-		}
 	}
 
 }

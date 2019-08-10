@@ -8,8 +8,8 @@
         }
     },
     "textures": {
-        "particle": "block/brick",
-        "button":   "block/brick"
+        "particle": "block/bricks",
+        "button":   "block/bricks"
     },
     "elements": [
         {

@@ -1,0 +1,12 @@
+{
+    "variants": {
+        "facing=east,powered=false":  { "model": "inspirations:block/button/bricks_unpressed", "y": 270 },
+        "facing=south,powered=false": { "model": "inspirations:block/button/bricks_unpressed" },
+        "facing=west,powered=false":  { "model": "inspirations:block/button/bricks_unpressed", "y": 90 },
+        "facing=north,powered=false": { "model": "inspirations:block/button/bricks_unpressed", "y": 180 },
+        "facing=east,powered=true":   { "model": "inspirations:block/button/bricks_pressed", "y": 270 },
+        "facing=south,powered=true":  { "model": "inspirations:block/button/bricks_pressed" },
+        "facing=west,powered=true":   { "model": "inspirations:block/button/bricks_pressed", "y": 90 },
+        "facing=north,powered=true":  { "model": "inspirations:block/button/bricks_pressed", "y": 180 }
+    }
+}
