@@ -31,7 +31,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityFlowerPot;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.biome.BiomeColorHelper;
+import net.minecraft.world.biome.BiomeColors;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
@@ -99,7 +99,7 @@ public class TweaksClientProxy extends ClientProxy {
 			if(world == null || pos == null) {
 				return -1;
 			}
-			return BiomeColorHelper.getGrassColorAtPos(world, pos);
+			return BiomeColors.getGrassColor(world, pos);
 		}, InspirationsTweaks.sugarCaneCrop);
 	}
 
