@@ -70,7 +70,7 @@ public class BlockBookshelf extends InventoryBlock implements ITileEntityProvide
 	@Nullable
 	@Override
 	public BlockState getStateForPlacement(BlockItemUseContext context) {
-		return getDefaultState().with(FACING, context.getNearestLookingDirection().getOpposite());
+		return getDefaultState().with(FACING, context.getPlacementHorizontalFacing().getOpposite());
 	}
 
 	@Override
