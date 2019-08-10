@@ -148,18 +148,22 @@ public class InspirationsUtility extends PulseBase {
 		MinecraftForge.EVENT_BUS.register(UtilityEvents.class);
 	}
 
-	private void registerDispenserBehavior() {
-		if(Config.enableDispenserFluidTanks) {
-			for(String container : Config.fluidContainers) {
-				Item item = GameRegistry.findRegistry(Item.class).getValue(new ResourceLocation(container));
-				if(item != null && item != Items.AIR) {
-					registerDispenseTankLogic(item);
-				}
-			}
+	// Get access to the existing behaviours.
+	private static class DispenserRegAccess extends DispenserBlock {
+		DispenserRegAccess() { super(Block.Properties.create(Material.AIR));}
+		IDispenseItemBehavior getRegisteredBehaviour(Item item) {
+			return super.getBehavior(new ItemStack(item));
 		}
 	}
+	private DispenserRegAccess dispenserReg = new DispenserRegAccess();
 
-	private static void registerDispenseTankLogic(Item item) {
-		registerDispenserBehavior(item, new DispenseFluidTank(BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.getObject(item)));
+	private void registerDispenserBehavior() {
+//		if(Config.enableDispenserFluidTanks.get()) {
+//			for(Item item : InspirationsRegistry.TAG_DISP_FLUID_TANKS.getAllElements()) {
+//				if(item != null) {
+//					DispenserBlock.registerDispenseBehavior(item, new DispenseFluidTank(dispenserReg.getRegisteredBehaviour(item)));
+//				}
+//			}
+//		}
 	}
 }
