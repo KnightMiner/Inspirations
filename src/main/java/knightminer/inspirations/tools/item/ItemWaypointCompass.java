@@ -140,7 +140,7 @@ public class ItemWaypointCompass extends HidableItem {
       if (Config.waypointCompassAdvTooltip.get() && flag == ITooltipFlag.TooltipFlags.ADVANCED) {
         BlockPos pos = getPos(stack);
         if (pos != null) {
-          dimensionTooltip = new TranslationTextComponent(getTranslationKey() + ".pos.tooltip", dimension, pos.getX(), pos.getZ());
+          dimensionTooltip = new TranslationTextComponent(getTranslationKey() + ".pos.tooltip", prettyDim, pos.getX(), pos.getZ());
         }
       }
       tooltip.add(dimensionTooltip);
