@@ -30,6 +30,7 @@ import net.minecraft.world.LockCode;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.loot.LootContext;
+import net.minecraft.world.storage.loot.LootParameters;
 import net.minecraft.world.storage.loot.LootTable;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
@@ -154,7 +155,11 @@ public class ToolsEvents {
 		int count = 0;
 		while(state.getBlock() == block && vine.isShearable(shears, world, pos) && !vineCanStay(world, state, pos)) {
 			count++;
-			for(ItemStack stack : vine.onSheared(shears, world, pos, 0)) {
+			for(ItemStack stack : vine.getDrops(state, new LootContext.Builder(world)
+					.withParameter(LootParameters.TOOL, shears)
+					.withParameter(LootParameters.POSITION, pos)
+					.withParameter(LootParameters.THIS_ENTITY, player)
+			)) {
 				Block.spawnAsEntity(world, pos, stack);
 			}
 			pos = pos.down();
@@ -171,7 +176,7 @@ public class ToolsEvents {
 	private static boolean vineCanStay(World world, BlockState state, BlockPos pos) {
 		// check if any of the four sides allows the vine to stay
 		for (Direction side : Direction.Plane.HORIZONTAL) {
-			if (state.get(VineBlock.getPropertyFor(side)) && VineBlock.canAttachTo(world, pos, side.getOpposite())) {
+			if (state.get(VineBlock.getPropertyFor(side)) && VineBlock.canAttachTo(world, pos.offset(side), side)) {
 				return true;
 			}
 		}
