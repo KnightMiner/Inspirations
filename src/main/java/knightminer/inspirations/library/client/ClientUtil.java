@@ -41,12 +41,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 @OnlyIn(Dist.CLIENT)
-public final class ClientUtil implements IFutureReloadListener {
+public final class ClientUtil {
 	public static final String TAG_TEXTURE_PATH = "texture_path";
 	private static final Minecraft mc = Minecraft.getInstance();
 	private ClientUtil() {}
-
-	public static final ClientUtil INST = new ClientUtil();
 
 	private static Map<Item, Integer> colorCache = new HashMap<>();
 
@@ -105,10 +103,11 @@ public final class ClientUtil implements IFutureReloadListener {
 	 * Called on resource reload to clear any resource based cache
 	 */
 
-	@Override
-	public CompletableFuture<Void> reload(IStage stage, IResourceManager resourceManager, IProfiler preparationsProfiler, IProfiler reloadProfiler, Executor backgroundExecutor, Executor gameExecutor) {
-		return CompletableFuture.runAsync(() -> colorCache.clear(), gameExecutor);
+	public static void clearCache() {
+		colorCache.clear();
+		unsafe.clear();
 	}
+
 
 	/**
 	 * Gets the sprite for the given texture location, or null if no sprite is found
@@ -182,13 +181,13 @@ public final class ClientUtil implements IFutureReloadListener {
 
 		// do not try if it failed before
 		Item item = stack.getItem();
-		if(!ClientUtil.unsafe.contains(item)) {
+		if(!unsafe.contains(item)) {
 			try {
 				return ClientUtil.getStackBlockColors(stack, world, pos, index);
 			} catch (Exception e) {
 				// catch and log possible exceptions. Most likely exception is ClassCastException if they do not perform safety checks
 				Inspirations.log.error(String.format("Caught exception getting block colors for %s", item.getRegistryName()), e);
-				ClientUtil.unsafe.add(item);
+				unsafe.add(item);
 			}
 		}
 

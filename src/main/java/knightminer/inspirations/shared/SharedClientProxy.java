@@ -5,12 +5,12 @@ import knightminer.inspirations.common.ClientProxy;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.client.ClientUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.client.resources.IReloadableResourceManager;
-import net.minecraft.client.resources.IResourceManager;
-import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraft.resources.IReloadableResourceManager;
+import net.minecraft.resources.IResourceManager;
 import net.minecraftforge.client.event.TextureStitchEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+
+import java.util.concurrent.CompletableFuture;
 
 public class SharedClientProxy extends ClientProxy {
 
@@ -19,10 +19,14 @@ public class SharedClientProxy extends ClientProxy {
 		super.preInit();
 
 		// listener to clear color cache from client utils
-		IResourceManager manager = Minecraft.getMinecraft().getResourceManager();
+		IResourceManager manager = Minecraft.getInstance().getResourceManager();
 		// should always be true, but just in case
 		if(manager instanceof IReloadableResourceManager) {
-			((IReloadableResourceManager) manager).registerReloadListener(ClientUtil::onResourceReload);
+			((IReloadableResourceManager) manager).addReloadListener(
+					(stage, resMan, prepProp, reloadProf, bgExec, gameExec) -> CompletableFuture
+									.runAsync(ClientUtil::clearCache, gameExec)
+									.thenCompose(stage::markCompleteAwaitingOthers)
+			);
 		} else {
 			Inspirations.log.error("Failed to register resource reload listener, expected instance of IReloadableResourceManager but got {}", manager.getClass());
 		}

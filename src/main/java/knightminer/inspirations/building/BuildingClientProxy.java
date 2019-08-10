@@ -5,7 +5,6 @@ import knightminer.inspirations.building.block.BlockBookshelf;
 import knightminer.inspirations.building.block.BlockEnlightenedBush;
 import knightminer.inspirations.building.client.BookshelfModel;
 import knightminer.inspirations.building.client.GuiBookshelf;
-import knightminer.inspirations.building.inventory.ContainerBookshelf;
 import knightminer.inspirations.building.tileentity.TileBookshelf;
 import knightminer.inspirations.common.ClientProxy;
 import knightminer.inspirations.library.Util;
@@ -48,7 +47,11 @@ public class BuildingClientProxy extends ClientProxy {
 		IResourceManager manager = Minecraft.getInstance().getResourceManager();
 		// should always be true, but just in case
 		if(manager instanceof IReloadableResourceManager) {
-			((IReloadableResourceManager) manager).addReloadListener((a,b,c,d,e,f) -> CompletableFuture.runAsync(BookshelfModel.BOOK_CACHE::invalidateAll));
+			((IReloadableResourceManager) manager).addReloadListener(
+					(stage, resMan, prepProp, reloadProf, bgExec, gameExec) -> CompletableFuture
+							.runAsync(BookshelfModel.BOOK_CACHE::invalidateAll, gameExec)
+							.thenCompose(stage::markCompleteAwaitingOthers)
+			);
 		} else {
 			Inspirations.log.error("Failed to register resource reload listener, expected instance of IReloadableResourceManager but got {}", manager.getClass());
 		}
