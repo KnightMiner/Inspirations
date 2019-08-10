@@ -3,51 +3,43 @@ package knightminer.inspirations.utility.tileentity;
 import javax.annotation.Nonnull;
 
 import knightminer.inspirations.common.Config;
-import knightminer.inspirations.utility.client.GuiPipe;
+import knightminer.inspirations.utility.InspirationsUtility;
+import knightminer.inspirations.utility.block.BlockPipe;
 import knightminer.inspirations.utility.inventory.ContainerPipe;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
+import net.minecraft.tileentity.HopperTileEntity;
+import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityHopper;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ITickable;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.util.Direction;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
-import slimeknights.mantle.common.IInventoryGui;
-import slimeknights.mantle.tileentity.TileInventory;
+import slimeknights.mantle.tileentity.InventoryTileEntity;
 
-public class TilePipe extends TileInventory implements IInventoryGui, ITickable  {
-
+public class TilePipe extends InventoryTileEntity implements ITickableTileEntity {
+	public static ITextComponent TITLE = new TranslationTextComponent("gui.inspirations.pipe");
 	private short cooldown = 0;
+
 	public TilePipe() {
-		super("gui.inspirations.pipe.name", 1);
+		super(InspirationsUtility.tilePipe, TITLE, 1);
 	}
 
 	@Override
-	public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate) {
-		// triggering does not mean you go and delete the TE
-		return oldState.getBlock() != newSate.getBlock();
-	}
-
-	@Override
-	public void update() {
+	public void tick() {
 		if(world == null || world.isRemote) {
 			return;
 		}
 
 		// do not function if facing up when disallowed
-		EnumFacing facing = this.getFacing();
-		if(!Config.pipeUpwards && facing == EnumFacing.UP) {
+		Direction facing = this.getFacing();
+		if(!Config.pipeUpwards.get() && facing == Direction.UP) {
 			return;
 		}
 
@@ -65,14 +57,13 @@ public class TilePipe extends TileInventory implements IInventoryGui, ITickable 
 		// if we have a TE and its an item handler, try inserting into that
 		TileEntity te = world.getTileEntity(pos.offset(facing));
 		if(te != null) {
-			IItemHandler neighbor = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing.getOpposite());
-			if(neighbor != null) {
+			te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing.getOpposite()).ifPresent((neighbor) -> {
 				ItemStack copy = stack.copy();
 				copy.setCount(1);
 				// if we successfully place it in, shrink it here
 				if(ItemHandlerHelper.insertItemStacked(neighbor, copy, false).isEmpty()) {
-					if(te instanceof TileEntityHopper) {
-						((TileEntityHopper)te).setTransferCooldown(7);
+					if(te instanceof HopperTileEntity) {
+						((HopperTileEntity)te).setTransferCooldown(7);
 					}
 
 					// remove the stack if empty
@@ -84,7 +75,7 @@ public class TilePipe extends TileInventory implements IInventoryGui, ITickable 
 
 					this.markDirty();
 				}
-			}
+			});
 		}
 	}
 
@@ -94,22 +85,17 @@ public class TilePipe extends TileInventory implements IInventoryGui, ITickable 
 		cooldown = 7; // set the cooldown to prevent instant retransfer
 	}
 
-	private EnumFacing getFacing() {
-		return EnumFacing.getFront(this.getBlockMetadata() & 7);
+	private Direction getFacing() {
+		return this.getBlockState().get(BlockPipe.FACING);
 	}
 
 
 	/* GUI */
 
+	@Nonnull
 	@Override
-	public ContainerPipe createContainer(InventoryPlayer inventoryplayer, World world, BlockPos pos) {
-		return new ContainerPipe(inventoryplayer, this);
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public GuiContainer createGui(InventoryPlayer inventoryplayer, World world, BlockPos pos) {
-		return new GuiPipe(createContainer(inventoryplayer, world, pos));
+	public Container createMenu(int winId, @Nonnull PlayerInventory inv, @Nonnull PlayerEntity entity) {
+		return new ContainerPipe(winId, inv, this);
 	}
 
 
@@ -117,23 +103,23 @@ public class TilePipe extends TileInventory implements IInventoryGui, ITickable 
 
 	@Nonnull
 	@Override
-	public NBTTagCompound getUpdateTag() {
+	public CompoundNBT getUpdateTag() {
 		// new tag instead of super since default implementation calls the super of writeToNBT
-		return writeToNBT(new NBTTagCompound());
+		return write(new CompoundNBT());
 	}
 
 	@Override
-	public SPacketUpdateTileEntity getUpdatePacket() {
+	public SUpdateTileEntityPacket getUpdatePacket() {
 		// note that this sends all of the tile data. you should change this if you use additional tile data
-		NBTTagCompound tag = getTileData().copy();
-		writeToNBT(tag);
-		return new SPacketUpdateTileEntity(this.getPos(), this.getBlockMetadata(), tag);
+		CompoundNBT tag = getTileData().copy();
+		write(tag);
+		return new SUpdateTileEntityPacket(this.getPos(), 0, tag);
 	}
 
 	@Override
-	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
-		NBTTagCompound tag = pkt.getNbtCompound();
-		readFromNBT(tag);
+	public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
+		CompoundNBT tag = pkt.getNbtCompound();
+		read(tag);
 	}
 
 
@@ -142,15 +128,16 @@ public class TilePipe extends TileInventory implements IInventoryGui, ITickable 
 	private static final String TAG_COOLDOWN = "cooldown";
 
 	@Override
-	public void readFromNBT(NBTTagCompound tags) {
-		super.readFromNBT(tags);
+	public void read(CompoundNBT tags) {
+		super.read(tags);
 		this.cooldown = tags.getShort(TAG_COOLDOWN);
 	}
 
+	@Nonnull
 	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound tags) {
-		super.writeToNBT(tags);
-		tags.setShort(TAG_COOLDOWN, this.cooldown);
+	public CompoundNBT write(CompoundNBT tags) {
+		super.write(tags);
+		tags.putShort(TAG_COOLDOWN, this.cooldown);
 
 		return tags;
 	}
