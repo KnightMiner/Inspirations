@@ -18,7 +18,7 @@ public class BlockCarpetedPressurePlate extends PressurePlateBlock {
 	private final CarpetBlock carpet;
 
 	public BlockCarpetedPressurePlate(CarpetBlock origCarpet) {
-		super(Sensitivity.MOBS, Block.Properties.create(Material.ROCK, origCarpet.getColor())
+		super(Sensitivity.MOBS, Block.Properties.create(Material.CARPET, origCarpet.getColor())
 				.hardnessAndResistance(0.5F)
 				.sound(SoundType.CLOTH)
 		);
