@@ -10,12 +10,12 @@
     }
   ],
   "type": "minecraft:crafting_shapeless",
-  "group": "inspirations:brick_button",
+  "group": "inspirations:bricks_button",
   "result": {
-    "item": "inspirations:brick_button"
+    "item": "inspirations:bricks_button"
   },
   "ingredients": [
-    { "item": "minecraft:brick_block" },
+    { "item": "minecraft:bricks" },
     { "item": "minecraft:stone_button" }
   ]
 }

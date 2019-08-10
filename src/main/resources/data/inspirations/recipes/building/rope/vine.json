@@ -9,7 +9,7 @@
       "prop": "rope"
     }
   ],
-  "type": "forge:ore_shaped",
+  "type": "minecraft:crafting_shaped",
   "group": "inspirations:rope",
   "pattern": [
     "V",

@@ -10,12 +10,12 @@
     }
   ],
   "type": "minecraft:crafting_shapeless",
-  "group": "inspirations:brick_button",
+  "group": "inspirations:bricks_button",
   "result": {
-    "item": "inspirations:nether_brick_button"
+    "item": "inspirations:nether_bricks_button"
   },
   "ingredients": [
-    { "item": "minecraft:nether_brick" },
+    { "item": "minecraft:nether_bricks" },
     { "item": "minecraft:stone_button" }
   ]
 }

@@ -1,23 +1,22 @@
 {
   "conditions": [
     {
-      "type": "pulse_loaded",
+      "type": "inspirations:pulse_loaded",
       "pulse": "InspirationsUtility"
     },
     {
-      "type": "config",
+      "type": "inspirations:config",
       "prop": "torch_lever"
     }
   ],
   "result": {
-    "item": "inspirations:torch_lever",
-    "data": 0
+    "item": "inspirations:torch_lever"
   },
   "pattern": [
     "T",
     "S"
   ],
-  "type": "forge:ore_shaped",
+  "type": "minecraft:crafting_shaped",
   "key": {
     "S": { "tag": "forge:cobblestone" },
     "T": { "tag": "forge:torches" }

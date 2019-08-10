@@ -12,7 +12,7 @@
   "type": "minecraft:crafting_shapeless",
   "group": "inspirations:colored_book",
   "result": {
-    "item": "inspirations:silver_book",
+    "item": "inspirations:light_gray_book",
     "count": 1
   },
   "ingredients": [

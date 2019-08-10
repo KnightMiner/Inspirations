@@ -1,17 +1,16 @@
 {
   "conditions": [
     {
-      "type": "pulse_loaded",
+      "type": "inspirations:pulse_loaded",
       "pulse": "InspirationsTools"
     },
     {
-      "type": "config",
+      "type": "inspirations:config",
       "prop": "craft_waypoint_compass"
     }
   ],
   "result": {
-    "item": "inspirations:waypoint_compass",
-    "data": 0
+    "item": "inspirations:waypoint_compass"
   },
   "pattern": [
     " I ",

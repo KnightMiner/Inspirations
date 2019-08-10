@@ -21,7 +21,7 @@
   "key": {
     "L": { "tag": "minecraft:leaves" },
     "G": { "tag": "forge:dusts/glowstone" },
-    "D": { "tag": "forge/dyes/blue" }
+    "D": { "tag": "forge:dyes/blue" }
   },
   "result": {
     "item": "inspirations:enlightened_bush",

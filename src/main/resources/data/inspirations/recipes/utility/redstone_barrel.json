@@ -17,7 +17,7 @@
     "SRS",
     "SSS"
   ],
-  "type": "minecraf:crafting_shaped",
+  "type": "minecraft:crafting_shaped",
   "key": {
     "S": { "item": "minecraft:smooth_stone_slab" },
     "R": { "tag": "forge:dusts/redstone" }

@@ -1,7 +1,7 @@
 {
   "conditions": [
     {
-      "type": "inspriations:pulse_loaded",
+      "type": "inspirations:pulse_loaded",
       "pulse": "InspirationsUtility"
     },
     {
@@ -27,7 +27,7 @@
   ],
   "type": "minecraft:crafting_shaped",
   "key": {
-    "T": { "tag": "forge:sticks/wooden" },
+    "T": { "tag": "forge:rods/wooden" },
     "S": { "tag": "forge:strings" },
     "D": { "item": "minecraft:dropper" }
   }

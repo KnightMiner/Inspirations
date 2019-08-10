@@ -20,7 +20,7 @@
   ],
   "key": {
     "L": { "tag": "leaves" },
-    "G": { "tag": "forge/dusts/glowstone" },
+    "G": { "tag": "forge:dusts/glowstone" },
     "D": { "tag": "forge:dye/green" }
   },
   "result": {

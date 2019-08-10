@@ -11,7 +11,7 @@
     {
       "type": "forge:not",
       "value": {
-        "type": "config",
+        "type": "inspirations:config",
         "prop": "cauldron_dyeing"
       }
     }

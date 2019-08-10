@@ -12,10 +12,10 @@
   "type": "inspirations:dye_waypoint_compass",
   "group": "inspirations:dye_waypoint_compass",
   "result": {
-    "item": "inspirations:silver_waypoint_compass"
+    "item": "inspirations:light_gray_waypoint_compass"
   },
   "ingredients": [
     { "tag": "inspirations:waypoint_compasses" },
-    { "tag": "forge:dyes/silver" }
+    { "tag": "forge:dyes/light_gray" }
   ]
 }

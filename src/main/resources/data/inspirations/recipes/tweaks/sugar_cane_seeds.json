@@ -15,7 +15,7 @@
     "count": 4
   },
   "ingredients": [
-    { "item": "minecraft:reeds" },
-    { "item": "minecraft:reeds" }
+    { "item": "minecraft:sugar_cane" },
+    { "item": "minecraft:sugar_cane" }
   ]
 }
