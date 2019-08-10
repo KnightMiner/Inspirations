@@ -1,5 +1,5 @@
 {
-    "parent": "item/generated",
+    "parent": "inspirations:item/barometer/pose",
     "textures": {
         "layer0": "inspirations:item/barometer/32"
     }
