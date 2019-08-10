@@ -66,13 +66,9 @@ public class InspirationsUtility extends PulseBase {
 		torchLeverFloor = registerBlock(r, new BlockTorchLever(), "torch_lever");
 		torchLeverWall = registerBlock(r, new BlockWallTorchLever(), "wall_torch_lever");
 
-		if(Config.enableBricksButton) {
-			bricksButton = registerBlock(r, new BlockBricksButton(), "bricks_button");
-		}
-		if(Config.enableRedstoneTorchLever) {
-			redstoneTorchLever = registerBlock(r, new BlockRedstoneTorchLever(false), "redstone_torch_lever");
-			redstoneTorchLeverPowered = registerBlock(r, new BlockRedstoneTorchLever(true), "redstone_torch_lever_powered");
-		}
+		bricksButton = registerBlock(r, new BlockBricksButton(BlockBricksButton.BRICK_BUTTON), "bricks_button");
+		netherBricksButton = registerBlock(r, new BlockBricksButton(BlockBricksButton.NETHER_BUTTON), "nether_bricks_button");
+
 		redstoneBarrel = registerBlock(r, new BlockRedstoneBarrel(), "redstone_barrel");
 
 		for(DyeColor color : DyeColor.values()) {
@@ -132,17 +128,10 @@ public class InspirationsUtility extends PulseBase {
 		IForgeRegistry<Item> r = event.getRegistry();
 
 		// itemblocks
-		if(bricksButton != null) {
-			registerEnumItemBlock(r, bricksButton);
-		}
-		if(redstoneTorchLever != null) {
-			registerItemBlock(r, redstoneTorchLever);
-		}
 		register(r, new TorchLeverItem(), "torch_lever");
+		registerItemBlock(r, bricksButton, ItemGroup.REDSTONE);
+		registerItemBlock(r, netherBricksButton, ItemGroup.REDSTONE);
 		registerItemBlock(r, redstoneBarrel, ItemGroup.REDSTONE);
-		}
-		if(collector != null) {
-			registerItemBlock(r, collector);
 		for(Block trapdoor : carpetedTrapdoors) {
 			registerItemBlock(r, trapdoor, ItemGroup.REDSTONE);
 		}
@@ -153,15 +142,9 @@ public class InspirationsUtility extends PulseBase {
 		pipeItem = registerItemBlock(r, pipe, ItemGroup.REDSTONE);
 	}
 
-	@Subscribe
-	public void init(FMLInitializationEvent event) {
-		proxy.init();
+	@SubscribeEvent
+	public void init(FMLCommonSetupEvent event) {
 		registerDispenserBehavior();
-	}
-
-	@Subscribe
-	public void postInit(FMLPostInitializationEvent event) {
-		proxy.postInit();
 		MinecraftForge.EVENT_BUS.register(UtilityEvents.class);
 	}
 
