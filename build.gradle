@@ -119,13 +119,18 @@ repositories {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:' + config.minecraft_version + '-' + config.forge_version
-//    deobfCompile "mezz.jei:jei_${config.minecraft_version}:${config.jei_version}"
-//    deobfCompile "slimeknights.mantle:Mantle:${config.minecraft_base_version}-${config.mantle_version}"
-//    deobfCompile "mcp.mobius.waila:Hwyla:${config.hwyla_version}"
-//    deobfCompile("mcjty.theoneprobe:TheOneProbe-1.12:${config.probe_version}") {
-//        exclude group: 'cofh' // don't grab redstone flux too, don't use it
-//    }
+    minecraft "net.minecraftforge:forge:${config.minecraft_version}-${config.forge_version}"
+    
+    // compile against the JEI API but do not include it at runtime
+    compileOnly fg.deobf("mezz.jei:jei-${config.minecraft_version_jei}:${config.jei_version}:api")
+    // at runtime, use the full JEI jar
+    runtimeOnly fg.deobf("mezz.jei:jei-${config.minecraft_version_jei}:${config.jei_version}")
+
+    compile fg.deobf("slimeknights.mantle:Mantle:${config.minecraft_version}-${config.mantle_version}")
+    //deobfCompile "mcp.mobius.waila:Hwyla:${config.hwyla_version}"
+    //deobfCompile("mcjty.theoneprobe:TheOneProbe-1.12:${config.probe_version}") {
+    //    exclude group: 'cofh' // don't grab redstone flux too, don't use it
+    //}
     //deobfCompile curse.resolve("leather-works", "2695934")
     //deobfCompile curse.resolve("tough-as-nails", "2644652")
 	//deobfCompile "net.ilexiconn:llibrary:1.7.9-1.12.2"
