@@ -35,14 +35,18 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class BlockPipe extends InventoryBlock implements IHidable {
-
+	// Facing is the direction we output to.
 	public static final DirectionProperty FACING = BlockStateProperties.FACING;
+	// These six values specify if another pipe/hopper is in this direction for us
+	// to visually connect to.
 	public static final BooleanProperty NORTH = BlockStateProperties.NORTH;
 	public static final BooleanProperty EAST = BlockStateProperties.EAST;
 	public static final BooleanProperty SOUTH = BlockStateProperties.SOUTH;
 	public static final BooleanProperty WEST = BlockStateProperties.WEST;
 	public static final BooleanProperty UP = BlockStateProperties.UP;
 	public static final BooleanProperty DOWN = BlockStateProperties.DOWN;
+	// If this is set, there is a hopper on our output side which isn't facing towards us.
+	// We then render a longer pipe to connect with the spout model.
 	public static final BooleanProperty HOPPER = BooleanProperty.create("hopper");
 
 	// Direction.getIndex() -> Property. Order is D-U-N-S-W-E
