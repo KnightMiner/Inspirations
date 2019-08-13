@@ -7,8 +7,9 @@ import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.recipes.recipe.ArmorClearRecipe;
 import knightminer.inspirations.recipes.recipe.ArmorDyeingCauldronRecipe;
-import net.minecraft.item.ItemArmor;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraft.item.ArmorMaterial;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import slimeknights.mantle.pulsar.pulse.Pulse;
 
 @Pulse(
@@ -21,15 +22,15 @@ public class TwilightForestPlugin {
   public static final String pulseID = "TwilightForestPlugin";
   public static final String requiredModID = "twilightforest";
 
-  @Subscribe
-  public void init(FMLInitializationEvent event) {
-    if (!Config.enableCauldronRecipes) {
+  @SubscribeEvent
+  public void init(FMLCommonSetupEvent event) {
+    if (!Config.enableCauldronRecipes()) {
       return;
     }
     try {
-      ItemArmor.ArmorMaterial material = ItemArmor.ArmorMaterial.valueOf("ARCTIC");
+      ArmorMaterial material = ArmorMaterial.valueOf("ARCTIC");
       InspirationsRegistry.addCauldronRecipe(new ArmorClearRecipe(material));
-      if (Config.enableCauldronDyeing) {
+      if (Config.enableCauldronDyeing()) {
         InspirationsRegistry.addCauldronRecipe(new ArmorDyeingCauldronRecipe(material));
       }
     } catch(IllegalArgumentException e) {

@@ -1,18 +1,15 @@
 package knightminer.inspirations.plugins.jei.cauldron.ingredient;
 
-import java.awt.Color;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import com.google.common.collect.ImmutableList;
 
 import knightminer.inspirations.Inspirations;
-import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import mezz.jei.api.ingredients.IIngredientHelper;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
 
 public enum DyeIngredientHelper implements IIngredientHelper<DyeIngredient> {
@@ -20,14 +17,9 @@ public enum DyeIngredientHelper implements IIngredientHelper<DyeIngredient> {
 
 	public static final List<DyeIngredient> ALL_DYES;
 	static {
-		ALL_DYES = Config.enableCauldronDyeing ? Arrays.stream(EnumDyeColor.values())
+		ALL_DYES = Arrays.stream(DyeColor.values())
 				.map(DyeIngredient::new)
-				.collect(Collectors.toList()) : Collections.emptyList();
-	}
-
-	@Override
-	public List<DyeIngredient> expandSubtypes(List<DyeIngredient> ingredients) {
-		return ingredients;
+				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -42,7 +34,7 @@ public enum DyeIngredientHelper implements IIngredientHelper<DyeIngredient> {
 
 	@Override
 	public String getDisplayName(DyeIngredient ingredient) {
-		return Util.translateFormatted("gui.jei.cauldron.color", Util.translate("item.fireworksCharge.%s", ingredient.getDye().getUnlocalizedName()));
+		return Util.translateFormatted("gui.jei.cauldron.color", Util.translate("item.fireworksCharge.%s", ingredient.getDye().getName()));
 	}
 
 	@Override
@@ -61,8 +53,8 @@ public enum DyeIngredientHelper implements IIngredientHelper<DyeIngredient> {
 	}
 
 	@Override
-	public Iterable<Color> getColors(DyeIngredient ingredient) {
-		return ImmutableList.of(new Color(ingredient.getDye().colorValue));
+	public Iterable<Integer> getColors(DyeIngredient ingredient) {
+		return ImmutableList.of(ingredient.getDye().colorValue);
 	}
 
 	@Override
@@ -82,6 +74,6 @@ public enum DyeIngredientHelper implements IIngredientHelper<DyeIngredient> {
 
 	@Override
 	public ItemStack getCheatItemStack(DyeIngredient ingredient) {
-		return new ItemStack(InspirationsRecipes.dyedWaterBottle, 1, ingredient.getDye().getDyeDamage());
+		return new ItemStack(InspirationsRecipes.simpleDyedWaterBottle.get(ingredient.getDye()));
 	}
 }

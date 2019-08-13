@@ -10,10 +10,10 @@ import mcjty.theoneprobe.api.IProbeInfo;
 import mcjty.theoneprobe.api.IProbeInfoProvider;
 import mcjty.theoneprobe.api.NumberFormat;
 import mcjty.theoneprobe.api.ProbeMode;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.EnumDyeColor;
-import net.minecraft.potion.PotionType;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.DyeColor;
+import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -28,10 +28,10 @@ public class CauldronInfoProvider implements IProbeInfoProvider {
 	}
 
 	@Override
-	public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, EntityPlayer player, World world, IBlockState state, IProbeHitData data) {
+	public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity playerEntity, World world, BlockState state, IProbeHitData data) {
 		// first, ensure it is a cauldron
 		if(state.getBlock() instanceof BlockEnhancedCauldron) {
-			int level = ((BlockEnhancedCauldron)state.getBlock()).getLevel(state);
+			int level = ((BlockEnhancedCauldron)state.getBlock()).getLevel(state, world, data.getPos());
 			int color = 0x0000DD;
 			String colorString = null;
 
@@ -52,7 +52,7 @@ public class CauldronInfoProvider implements IProbeInfoProvider {
 
 						// likewise potions are simple
 					} else if(cauldron.getPotion() != null) {
-						PotionType potion = cauldron.getPotion();
+						Potion potion = cauldron.getPotion();
 						probeInfo.horizontal().text(Util.translate(potion.getNamePrefixed("potion.effect.")));
 						color = PotionUtils.getPotionColor(potion);
 
@@ -62,9 +62,9 @@ public class CauldronInfoProvider implements IProbeInfoProvider {
 						colorString = "#" + Integer.toHexString(color).toUpperCase();
 
 						// first, try a dye color
-						EnumDyeColor dyeColor = Util.getDyeForColor(color);
+						DyeColor dyeColor = Util.getDyeForColor(color);
 						if(dyeColor != null) {
-							probeInfo.horizontal().text(Util.translateFormatted("gui.jei.cauldron.color", Util.translate("item.fireworksCharge.%s", dyeColor.getUnlocalizedName())));
+							probeInfo.horizontal().text(Util.translateFormatted("gui.jei.cauldron.color", Util.translate("item.fireworksCharge.%s", dyeColor.getTranslationKey())));
 						} else {
 							// if not a dye color, just display as is and display the color on the next line
 							probeInfo.horizontal().text(Util.translate("gui.inspirations.cauldron.dye"));

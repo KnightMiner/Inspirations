@@ -1,17 +1,17 @@
 package knightminer.inspirations.plugins.top;
 
-import com.google.common.eventbus.Subscribe;
-
-import net.minecraftforge.fml.common.event.FMLInterModComms;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.InterModComms;
+import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import slimeknights.mantle.pulsar.pulse.Pulse;
 
 @Pulse(id = "TheOneProbePlugin", modsRequired = TheOneProbePlugin.modid, defaultEnable = true)
 public class TheOneProbePlugin {
 	public static final String modid = "theoneprobe";
 
-	@Subscribe
-	public void preInit(FMLPreInitializationEvent event) {
-		FMLInterModComms.sendFunctionMessage(modid, "getTheOneProbe", "knightminer.inspirations.plugins.top.TheOneProbeRegistrar");
+	@SubscribeEvent
+	public void preInit(InterModEnqueueEvent event) {
+		InterModComms.sendTo(modid, "getTheOneProbe", TheOneProbeRegistrar::new);
+
 	}
 }

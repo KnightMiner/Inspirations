@@ -12,6 +12,8 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.registries.ObjectHolder;
 import slimeknights.mantle.pulsar.pulse.Pulse;
 
 @Pulse(
@@ -24,13 +26,13 @@ public class RatsPlugin extends PulseBase{
     public static final String pulseID = "RatsPlugin";
 
     public static final String requiredModID = "rats";
-    @GameRegistry.ObjectHolder(RatsPlugin.requiredModID + ":cauldron_milk")
+    @ObjectHolder(RatsPlugin.requiredModID + ":cauldron_milk")
     public static final Block milkCauldron = null;
 
 
     @Subscribe
-    public void init(FMLInitializationEvent event) {
-        if (!Config.enableCauldronFluids) {
+    public void init(FMLCommonSetupEvent event) {
+        if (!Config.enableCauldronFluids()) {
             return;
         }
         final Fluid milk = FluidRegistry.getFluid("milk");

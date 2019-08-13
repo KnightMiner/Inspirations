@@ -7,10 +7,13 @@ import knightminer.inspirations.plugins.jei.cauldron.CauldronRecipeCategory;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.potion.PotionType;
+import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TranslationTextComponent;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +31,7 @@ public enum PotionIngredientRenderer implements IIngredientRenderer<PotionIngred
 	}
 
 	public static PotionIngredientRenderer forLevel(int level) {
-		if(level < 1 || level > 4 || (level == 4 && !Config.enableBiggerCauldron)) {
+		if(level < 1 || level > 4 || (level == 4 && !Config.enableBiggerCauldron())) {
 			return INVALID;
 		}
 
@@ -38,20 +41,21 @@ public enum PotionIngredientRenderer implements IIngredientRenderer<PotionIngred
 	public static final ResourceLocation POTION_TEXTURE = Util.getResource("blocks/fluid_potion");
 
 	@Override
-	public void render(Minecraft minecraft, int x, int y, PotionIngredient potion) {
+	public void render(int x, int y, PotionIngredient potion) {
 		if(potion == null || level == INVALID.level) {
 			return;
 		}
 
 		float[] color = Util.getColorComponents(PotionUtils.getPotionColor(potion.getPotion()));
-		ClientUtil.renderJEICauldronFluid(minecraft, x, y, POTION_TEXTURE, color, level);
+		ClientUtil.renderJEICauldronFluid(x, y, POTION_TEXTURE, color, level);
 	}
 
+	@Nonnull
 	@Override
-	public List<String> getTooltip(Minecraft minecraft, PotionIngredient ingredient, ITooltipFlag tooltipFlag) {
+	public List<String> getTooltip(PotionIngredient ingredient, ITooltipFlag tooltipFlag) {
 		List<String> tooltip = new ArrayList<>();
-		PotionType potion = ingredient.getPotion();
-		tooltip.add(Util.translate(potion.getNamePrefixed("potion.effect.")));
+		Potion potion = ingredient.getPotion();
+		tooltip.add(new TranslationTextComponent(potion.getNamePrefixed("potion.effect.")).getUnformattedComponentText());
 		Util.addPotionTooltip(potion, tooltip);
 		CauldronRecipeCategory.addLevelTooltip(level, tooltip);
 		return tooltip;

@@ -11,25 +11,22 @@ import com.google.common.collect.ImmutableList;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.Util;
 import mezz.jei.api.ingredients.IIngredientHelper;
-import net.minecraft.init.Items;
-import net.minecraft.init.PotionTypes;
 import net.minecraft.item.ItemStack;
-import net.minecraft.potion.PotionType;
+import net.minecraft.item.Items;
 import net.minecraft.potion.PotionUtils;
+import net.minecraft.potion.Potions;
+import net.minecraft.util.registry.Registry;
+
+import javax.annotation.Nonnull;
 
 public enum PotionIngredientHelper implements IIngredientHelper<PotionIngredient> {
 	INSTANCE;
 
 	public static final List<PotionIngredient> ALL_POTIONS;
 	static {
-		ALL_POTIONS = Config.enableCauldronPotions ? StreamSupport.stream(PotionType.REGISTRY.spliterator(), false)
-				.filter(type->type != PotionTypes.EMPTY && type != PotionTypes.WATER).map(PotionIngredient::new)
-				.collect(Collectors.toList()) : Collections.emptyList();
-	}
-
-	@Override
-	public List<PotionIngredient> expandSubtypes(List<PotionIngredient> ingredients) {
-		return ingredients;
+		ALL_POTIONS = StreamSupport.stream(Registry.POTION.spliterator(), false)
+				.filter(type->type != Potions.EMPTY && type != Potions.WATER).map(PotionIngredient::new)
+				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -59,21 +56,22 @@ public enum PotionIngredientHelper implements IIngredientHelper<PotionIngredient
 
 	@Override
 	public String getModId(PotionIngredient potion) {
-		return potion.getPotion().getRegistryName().getResourceDomain();
+		return potion.getPotion().getRegistryName().getNamespace();
 	}
 
 	@Override
-	public Iterable<Color> getColors(PotionIngredient potion) {
-		return ImmutableList.of(new Color(PotionUtils.getPotionColor(potion.getPotion())));
+	public Iterable<Integer> getColors(PotionIngredient potion) {
+		return ImmutableList.of(PotionUtils.getPotionColor(potion.getPotion()));
 	}
 
 	@Override
 	public String getResourceId(PotionIngredient potion) {
-		return potion.getPotion().getRegistryName().getResourcePath();
+		return potion.getPotion().getRegistryName().getPath();
 	}
 
+	@Nonnull
 	@Override
-	public PotionIngredient copyIngredient(PotionIngredient potion) {
+	public PotionIngredient copyIngredient(@Nonnull PotionIngredient potion) {
 		return potion;
 	}
 
@@ -84,6 +82,6 @@ public enum PotionIngredientHelper implements IIngredientHelper<PotionIngredient
 
 	@Override
 	public ItemStack getCheatItemStack(PotionIngredient potion) {
-		return PotionUtils.addPotionToItemStack(new ItemStack(Items.POTIONITEM), potion.getPotion());
+		return PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), potion.getPotion());
 	}
 }

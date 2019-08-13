@@ -10,7 +10,9 @@ import knightminer.inspirations.recipes.tileentity.TileCauldron;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import mcp.mobius.waila.api.IWailaDataProvider;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.item.DyeColor;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
@@ -24,9 +26,9 @@ public class CauldronProvider implements IWailaDataProvider {
 		}
 
 		// first, ensure it is a cauldron
-		IBlockState state = accessor.getBlockState();
+		BlockState state = accessor.getBlockState();
 		if(state.getBlock() instanceof BlockEnhancedCauldron) {
-			int level = ((BlockEnhancedCauldron)state.getBlock()).getLevel(state);
+			int level = ((BlockEnhancedCauldron)state.getBlock()).getLevel(state, world, pos);
 			String colorString = null;
 
 			// if we have a TE and the levels are at least 1, try fancy string
@@ -48,7 +50,7 @@ public class CauldronProvider implements IWailaDataProvider {
 					colorString = "#" + Integer.toHexString(color).toUpperCase();
 
 					// first, try a dye color
-					EnumDyeColor dyeColor = Util.getDyeForColor(color);
+					DyeColor dyeColor = Util.getDyeForColor(color);
 					if(dyeColor != null) {
 						current.add(Util.translateFormatted("gui.jei.cauldron.color", Util.translate("item.fireworksCharge.%s", dyeColor.getUnlocalizedName())));
 					} else {

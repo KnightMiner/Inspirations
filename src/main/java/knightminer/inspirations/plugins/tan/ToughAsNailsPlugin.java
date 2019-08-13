@@ -1,21 +1,20 @@
 package knightminer.inspirations.plugins.tan;
 
-import com.google.common.eventbus.Subscribe;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.recipes.InspirationsRecipes;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
+import net.minecraft.block.Blocks;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fluids.Fluid;
+import net.minecraft.item.Items;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
-import net.minecraftforge.oredict.OreDictionary;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.registries.ObjectHolder;
 import slimeknights.mantle.pulsar.pulse.Pulse;
 
 @Pulse(
@@ -40,16 +39,16 @@ public class ToughAsNailsPlugin extends PulseBase {
 	public static Fluid[] juices;
 
 
-	@Subscribe
-	public void preInit(FMLPreInitializationEvent event) {
-		if(!Config.enableExtendedCauldron) {
+	@SubscribeEvent
+	public void registerFluids(RegistryEvent<Fluid> event) {
+		if (!Config.enableExtendedCauldron()) {
 			return;
 		}
 
 		// juice types
-		if(Config.tanJuiceInCauldron) {
+		if (Config.tanJuiceInCauldron.get()) {
 			sweetenedWater = registerColoredFluid("sweetened_water", 0xFF35ACF2);//0xFFA0E2FF);
-			juices = new Fluid[] {
+			juices = new Fluid[]{
 					registerColoredFluid("apple_juice", 0xFFFBBA44),
 					registerColoredFluid("beetroot_juice", 0xFFAA1226),
 					registerColoredFluid("cactus_juice", 0xFF7FB33D),
@@ -64,13 +63,11 @@ public class ToughAsNailsPlugin extends PulseBase {
 		}
 	}
 
-	@Subscribe
-	public void init(FMLInitializationEvent event) {
-		// we need cauldron fluids for this to work
-		if(!Config.enableExtendedCauldron) {
+	@SubscribeEvent
+	public void setup(FMLCommonSetupEvent event) {
+		if(!Config.enableExtendedCauldron()) {
 			return;
 		}
-
 		// allow water to be purified in the cauldron, then used to make juices
 		Fluid purifiedWater = FluidRegistry.getFluid("purified_water");
 		if(purifiedWater != null) {
@@ -97,7 +94,7 @@ public class ToughAsNailsPlugin extends PulseBase {
 			}
 
 			// make juice in the cauldron
-			if(Config.tanJuiceInCauldron && fruitJuice != null) {
+			if(Config.tanJuiceInCauldron.get() && fruitJuice != null) {
 				InspirationsRegistry.addCauldronScaledTransformRecipe(new ItemStack(Items.SUGAR), purifiedWater, sweetenedWater, null);
 				Item[] items = {
 						Items.APPLE,
@@ -105,7 +102,7 @@ public class ToughAsNailsPlugin extends PulseBase {
 						Item.getItemFromBlock(Blocks.CACTUS),
 						Items.CARROT,
 						Items.CHORUS_FRUIT,
-						Items.SPECKLED_MELON,
+						Items.GLISTERING_MELON_SLICE,
 						Items.GOLDEN_APPLE,
 						Items.GOLDEN_CARROT,
 						Items.MELON,

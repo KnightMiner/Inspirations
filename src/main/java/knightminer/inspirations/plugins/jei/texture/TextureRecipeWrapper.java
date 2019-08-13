@@ -5,8 +5,14 @@ import com.google.common.collect.ImmutableList;
 import knightminer.inspirations.library.recipe.TextureRecipe;
 import knightminer.inspirations.library.util.TextureBlockUtil;
 import knightminer.inspirations.plugins.jei.JEIPlugin;
+import mezz.jei.api.gui.ingredient.IGuiIngredientGroup;
+import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
+import mezz.jei.api.helpers.IStackHelper;
+import mezz.jei.api.recipe.IFocusFactory;
+import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.common.util.Size2i;
 import net.minecraftforge.oredict.OreDictionary;
 import java.util.List;
 
@@ -20,7 +26,9 @@ import mezz.jei.api.recipe.IStackHelper;
 import mezz.jei.api.recipe.wrapper.ICustomCraftingRecipeWrapper;
 import mezz.jei.api.recipe.wrapper.IShapedCraftingRecipeWrapper;
 
-public class TextureRecipeWrapper implements IRecipeWrapper, IShapedCraftingRecipeWrapper, ICustomCraftingRecipeWrapper {
+import javax.annotation.Nullable;
+
+public class TextureRecipeWrapper implements ICraftingCategoryExtension {
 
 	private final TextureRecipe recipe;
 	private final int width;
@@ -72,14 +80,10 @@ public class TextureRecipeWrapper implements IRecipeWrapper, IShapedCraftingReci
 		}
 	}
 
+	@Nullable
 	@Override
-	public int getWidth() {
-		return width;
-	}
-
-	@Override
-	public int getHeight() {
-		return height;
+	public Size2i getSize() {
+		return new Size2i(width, height);
 	}
 
 	private boolean isOutputBlock(ItemStack stack) {
@@ -89,7 +93,7 @@ public class TextureRecipeWrapper implements IRecipeWrapper, IShapedCraftingReci
 
 		for(ItemStack output : recipe.texture.getMatchingStacks()) {
 			// if the item matches the oredict entry, it is an output block
-			if(OreDictionary.itemMatches(output, stack, false)) {
+			if(stack.isItemEqual(output)) {
 				return true;
 			}
 		}
@@ -114,12 +118,11 @@ public class TextureRecipeWrapper implements IRecipeWrapper, IShapedCraftingReci
 			// input means we clicked on an ingredient, make sure it is one that affects the legs
 			if(mode == IFocus.Mode.INPUT && isOutputBlock(focus)) {
 				// first, get the output recipe
-				ItemStack output = recipe.getPlainRecipeOutput();
+				ItemStack output = recipe.getRecipeOutput();
 				Block block = Block.getBlockFromItem(output.getItem());
 
 				// then create a stack with the focus item (which we already validated above)
-				ItemStack outputFocus = TextureBlockUtil.createTexturedStack(block, output.getItemDamage(), Block.getBlockFromItem(focus.getItem()),
-						focus.getItemDamage());
+				ItemStack outputFocus = TextureBlockUtil.createTexturedStack(block, Block.getBlockFromItem(focus.getItem()));
 
 				// and finally, set the focus override for the recipe
 				guiIngredients.setOverrideDisplayFocus(JEIPlugin.recipeRegistry.createFocus(IFocus.Mode.OUTPUT, outputFocus));
