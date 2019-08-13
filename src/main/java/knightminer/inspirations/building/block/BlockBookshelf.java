@@ -12,6 +12,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.fluid.IFluidState;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemGroup;
@@ -216,10 +218,16 @@ public class BlockBookshelf extends InventoryBlock implements ITileEntityProvide
 
 	@Override
 	public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
-		// if powered, send updates for power
-		if (!isMoving  && state.getBlock() != newState.getBlock() && getPower(world, pos) > 0) {
-			world.notifyNeighborsOfStateChange(pos, this);
-			world.notifyNeighborsOfStateChange(pos.offset(state.get(FACING).getOpposite()), this);
+		if (state.getBlock() != newState.getBlock()) {
+			// if powered, send updates for power
+			if (getPower(world, pos) > 0){
+				world.notifyNeighborsOfStateChange(pos, this);
+				world.notifyNeighborsOfStateChange(pos.offset(state.get(FACING).getOpposite()), this);
+			}
+			TileEntity tileentity = world.getTileEntity(pos);
+			if (tileentity instanceof IInventory) {
+				InventoryHelper.dropInventoryItems(world, pos, (IInventory)tileentity);
+			}
 		}
 		super.onReplaced(state, world, pos, newState, isMoving);
 	}

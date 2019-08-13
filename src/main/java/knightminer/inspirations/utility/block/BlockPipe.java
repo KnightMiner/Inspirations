@@ -8,6 +8,8 @@ import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.Item;
@@ -150,6 +152,16 @@ public class BlockPipe extends InventoryBlock implements IHidable {
 		return super.onBlockActivated(state, world, pos, player, hand, trace);
 	}
 
+	@Override
+	public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
+		// If destroyed, drop contents.
+		if (state.getBlock() != newState.getBlock()) {
+			TileEntity te = world.getTileEntity(pos);
+			if (te instanceof IInventory) {
+				InventoryHelper.dropInventoryItems(world, pos, (IInventory)te);
+			}
+		}
+	}
 
 	/* Model and shape */
 

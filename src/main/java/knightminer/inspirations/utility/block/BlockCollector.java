@@ -11,6 +11,8 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemGroup;
@@ -91,6 +93,17 @@ public class BlockCollector extends InventoryBlock implements IHidable {
 			facing = facing.getOpposite();
 		}
 		return this.getDefaultState().with(FACING, facing);
+	}
+
+	@Override
+	public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
+		// If destroyed, drop contents.
+		if (state.getBlock() != newState.getBlock()) {
+			TileEntity te = world.getTileEntity(pos);
+			if (te instanceof IInventory) {
+				InventoryHelper.dropInventoryItems(world, pos, (IInventory)te);
+			}
+		}
 	}
 
 	/* Tile Entity */
