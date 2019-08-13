@@ -56,12 +56,17 @@ public class BlockRope extends HidableBlock implements IWaterLoggable {
 			.with(WATERLOGGED, context.getWorld().getFluidState(context.getPos()).getFluid() == Fluids.WATER);
 	}
 
+	private static final VoxelShape ATTACH_TOP = Block.makeCuboidShape(6.0, 15, 6.0, 10.0, 16, 10.0);
+	private static final VoxelShape ATTACH_BOTTOM = Block.makeCuboidShape(6.0, 0, 6.0, 10.0, 1, 10.0);
+
 	private boolean canConnectTo(BlockState state, IBlockReader world, BlockPos pos) {
 		if(state.getBlock() == this) {
 			return true;
 		}
+		// Check if the top of the block is able to attach to the rope - the center 4x4 must
+		// all be present.
 		return !state.isIn(BlockTags.LEAVES) && !VoxelShapes.compare(
-				state.getCollisionShape(world, pos).project(Direction.UP), BOUNDS, IBooleanFunction.ONLY_SECOND
+				state.getCollisionShape(world, pos).project(Direction.UP), ATTACH_TOP, IBooleanFunction.ONLY_SECOND
 		);
 	}
 
@@ -75,7 +80,14 @@ public class BlockRope extends HidableBlock implements IWaterLoggable {
 	private boolean isValidRope(IWorldReader world, BlockPos pos) {
 		BlockPos up = pos.up();
 		BlockState state = world.getBlockState(up);
-		return Block.hasSolidSide(state, world, up, Direction.DOWN) || state.getBlock() == this;
+		if(state.getBlock() == this) {
+			return true;
+		}
+		// Check if the bottom of the block is able to attach to the rope - the center 4x4 must
+		// all be present.
+		return !state.isIn(BlockTags.LEAVES) && !VoxelShapes.compare(
+				state.getCollisionShape(world, pos).project(Direction.DOWN), ATTACH_BOTTOM, IBooleanFunction.ONLY_SECOND
+		);
 	}
 
 	/**
@@ -84,7 +96,8 @@ public class BlockRope extends HidableBlock implements IWaterLoggable {
     * returns its solidified counterpart.
     * Note that this method should ideally consider only the specific face passed in.
     */
-   public BlockState updatePostPlacement(BlockState state, Direction facing, BlockState facingState, IWorld world, BlockPos pos, BlockPos facingPos) {
+	@Nonnull
+	public BlockState updatePostPlacement(@Nonnull BlockState state, Direction facing, BlockState facingState, IWorld world, BlockPos pos, BlockPos facingPos) {
 		// if the rope is not valid, break it
 		if (!this.isValidRope(world, pos)) {
 			return Blocks.AIR.getDefaultState();
@@ -118,7 +131,6 @@ public class BlockRope extends HidableBlock implements IWaterLoggable {
 		if(this.isValidPosition(state, world, next)) {
 			BlockItem itemBlock = (BlockItem)stack.getItem();
 			if(itemBlock.tryPlace(new DirectionalPlaceContext(world, next, hit.getFace(), stack, hit.getFace())) == ActionResultType.SUCCESS) {
-				SoundType soundtype = this.getSoundType(state, world, next, player);
 				if(player.isCreative()) {
 					// Refund the item.
 					stack.grow(1);
@@ -131,7 +143,7 @@ public class BlockRope extends HidableBlock implements IWaterLoggable {
 
 	// when breaking, place all items from ropes below at the position of this rope
 	@Override
-	public void onBlockHarvested(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+	public void onBlockHarvested(World world, BlockPos pos, BlockState state, @Nonnull PlayerEntity player) {
 		// break all blocks below that are ropes
 		BlockPos next = pos.down();
 		int count = 0;
@@ -159,6 +171,7 @@ public class BlockRope extends HidableBlock implements IWaterLoggable {
 		return true;
 	}
 
+	@Nonnull
 	@Override
 	public BlockRenderLayer getRenderLayer() {
 		return BlockRenderLayer.CUTOUT;
@@ -170,6 +183,7 @@ public class BlockRope extends HidableBlock implements IWaterLoggable {
 	protected static final VoxelShape BOUNDS = Block.makeCuboidShape(6.0, 0.0, 6.0, 10.0, 16.0, 10.0);
 	protected static final VoxelShape BOUNDS_BOTTOM = Block.makeCuboidShape(6.0, 4.0, 6.0, 10.0, 16.0, 10.0);
 
+	@Nonnull
 	@Override
 	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
 		if(state.get(BOTTOM)) {
