@@ -121,13 +121,10 @@ public class BlockPipe extends InventoryBlock implements IHidable {
 		World world = context.getWorld();
 		BlockPos pos = context.getPos();
 
-		Direction facing = Direction.DOWN;
-		for(Direction possFacing: context.getNearestLookingDirections()) {
-			// only allow up if allowed in the config, otherwise pick the next best option.
-			if (!Config.pipeUpwards.get() || possFacing != Direction.UP) {
-				facing = possFacing;
-				break;
-			}
+		Direction facing = context.getFace().getOpposite();
+		// only allow up if allowed in the config.
+		if (!Config.pipeUpwards.get() && facing == Direction.UP) {
+			facing = context.getPlacementHorizontalFacing();
 		}
 
 		BlockState offsetState = world.getBlockState(pos.offset(facing));
