@@ -20,7 +20,8 @@ import knightminer.inspirations.library.util.ReflectionUtil;
 import knightminer.inspirations.recipes.block.BlockEnhancedCauldron;
 import knightminer.inspirations.recipes.block.BlockSmashingAnvil;
 import knightminer.inspirations.recipes.dispenser.DispenseCauldronRecipe;
-import knightminer.inspirations.recipes.item.ItemDyedWaterBottle;
+import knightminer.inspirations.recipes.item.ItemMixedDyedWaterBottle;
+import knightminer.inspirations.recipes.item.ItemSimpleDyedWaterBottle;
 import knightminer.inspirations.recipes.recipe.ArmorClearRecipe;
 import knightminer.inspirations.recipes.recipe.ArmorDyeingCauldronRecipe;
 import knightminer.inspirations.recipes.recipe.BannerClearRecipe;
@@ -38,13 +39,14 @@ import knightminer.inspirations.recipes.tileentity.TileCauldron;
 import knightminer.inspirations.shared.InspirationsShared;
 import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockDispenser;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.init.PotionTypes;
 import net.minecraft.init.SoundEvents;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
@@ -66,32 +68,31 @@ import net.minecraftforge.common.brewing.IBrewingRecipe;
 import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.oredict.OreDictionary;
+import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.pulsar.pulse.Pulse;
 import slimeknights.mantle.util.RecipeMatch;
 
-import java.util.Collection;
 import java.util.Map;
 
 @Pulse(id = InspirationsRecipes.pulseID, description = "Adds additional recipe types, including cauldrons and anvil smashing")
 public class InspirationsRecipes extends PulseBase {
 	public static final String pulseID = "InspirationsRecipes";
 
-	@SidedProxy(clientSide = "knightminer.inspirations.recipes.RecipesClientProxy", serverSide = "knightminer.inspirations.common.CommonProxy")
-	public static CommonProxy proxy;
+	public static CommonProxy proxy = DistExecutor.runForDist(
+			() -> () -> new RecipesClientProxy(),
+			() -> () -> new CommonProxy()
+			);
 
 	// blocks
 	public static Block anvil;
 	public static BlockEnhancedCauldron cauldron;
 
 	// items
-	public static ItemDyedWaterBottle dyedWaterBottle;
+	public static Map<DyeColor, ItemSimpleDyedWaterBottle> simpleDyedWaterBottle;
+	public static ItemMixedDyedWaterBottle mixedDyedWaterBottle;
 
 	// fluids
 	public static Fluid mushroomStew;
@@ -100,8 +101,8 @@ public class InspirationsRecipes extends PulseBase {
 	public static Fluid milk;
 
 
-	@Subscribe
-	public void preInit(FMLPreInitializationEvent event) {
+	@SubscribeEvent
+	public void preInit(FMLCommonSetupEvent event) {
 		proxy.preInit();
 
 		if(Config.enableCauldronFluids) {
@@ -131,9 +132,13 @@ public class InspirationsRecipes extends PulseBase {
 	public void registerItems(Register<Item> event) {
 		IForgeRegistry<Item> r = event.getRegistry();
 
-		if(Config.enableCauldronDyeing) {
-			dyedWaterBottle = registerItem(r, new ItemDyedWaterBottle(), "dyed_bottle");
+		for(DyeColor color: DyeColor.values()) {
+			simpleDyedWaterBottle.put(color, registerItem(r,
+					new ItemSimpleDyedWaterBottle(color),
+					color.getName() + "_dyed_bottle"
+			));
 		}
+		mixedDyedWaterBottle = registerItem(r, new ItemMixedDyedWaterBottle(), "mixed_dyed_bottle");
 	}
 
 	@SubscribeEvent
