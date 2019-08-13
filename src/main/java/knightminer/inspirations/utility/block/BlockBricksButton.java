@@ -155,10 +155,10 @@ public class BlockBricksButton extends HidableBlock {
 		BRICK_BUTTON = bounds.build();
 
 		bounds = ImmutableMap.builder();
-		bounds.put(Direction.NORTH, new AxisAlignedBB(0.375,  0.5, 0,      0.8125, 0.6875, 0.0625));
-		bounds.put(Direction.SOUTH, new AxisAlignedBB(0.1875, 0.5, 0.9375, 0.625,  0.6875, 1.0125));
-		bounds.put(Direction.WEST,  new AxisAlignedBB(0,      0.5, 0.1875, 0.0625, 0.6875, 0.625 ));
-		bounds.put(Direction.EAST,  new AxisAlignedBB(0.9375, 0.5, 0.375,  1.0125, 0.6875, 0.8125));
+		bounds.put(Direction.NORTH, new AxisAlignedBB(0.5,    0.5, 0,      0.9375, 0.6875, 0.0625));
+		bounds.put(Direction.SOUTH, new AxisAlignedBB(0.0625, 0.5, 0.9375, 0.5,    0.6875, 1.0125));
+		bounds.put(Direction.WEST,  new AxisAlignedBB(0,      0.5, 0.0625, 0.0625, 0.6875, 0.5));
+		bounds.put(Direction.EAST,  new AxisAlignedBB(0.9375, 0.5, 0.5,    1.0125, 0.6875, 0.9375));
 		NETHER_BUTTON = bounds.build();
 	}
 
