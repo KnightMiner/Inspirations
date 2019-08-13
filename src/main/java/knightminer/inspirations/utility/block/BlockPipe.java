@@ -106,6 +106,7 @@ public class BlockPipe extends InventoryBlock implements IHidable {
 		Direction facing = state.get(FACING);
 		BlockState offsetState = world.getBlockState(pos.offset(facing));
 
+		// We only need to check the one side that updated.
 		return state
 				.with(HOPPER, offsetState.getBlock() instanceof HopperBlock &&
 						offsetState.get(HopperBlock.FACING) != facing.getOpposite()
@@ -219,67 +220,46 @@ public class BlockPipe extends InventoryBlock implements IHidable {
 			BOUNDS_EAST  = VoxelShapes.create(0.625, 0.25, 0.375, 1, 0.5, 0.625),
 			// extra bounds for the raytrace to select the little connections
 			BOUNDS_DOWN_CONNECT  = VoxelShapes.create(0.34375, 0,       0.34375, 0.65625, 0.0625,  0.65625),
-			BOUNDS_UP_CONNECT    = VoxelShapes.create(0.34375, 0.9375,  0.34375, 0.59375, 1,       0.65625),
+			BOUNDS_UP_CONNECT    = VoxelShapes.create(0.34375, 0.9375,  0.34375, 0.65625, 1,       0.65625),
 			BOUNDS_NORTH_CONNECT = VoxelShapes.create(0.34375, 0.21875, 0,       0.65625, 0.53125, 0.0625 ),
 			BOUNDS_SOUTH_CONNECT = VoxelShapes.create(0.34375, 0.21875, 0.9375,  0.65625, 0.53125, 1      ),
 			BOUNDS_WEST_CONNECT  = VoxelShapes.create(0,       0.21875, 0.34375, 0.0625,  0.53125, 0.65625),
 			BOUNDS_EAST_CONNECT  = VoxelShapes.create(0.9375,  0.21875, 0.34375, 1,       0.53125, 0.65625);
 
-	// above side bounds in an array to index easier - DUNSWE
-	private static final VoxelShape[] BOUNDS_SIDES = {
-			BOUNDS_DOWN, BOUNDS_UP, BOUNDS_NORTH, BOUNDS_SOUTH, BOUNDS_WEST, BOUNDS_EAST
-	};
+
+	// Compute a static lookup table for all the combinations.
+	// First index is the facing, the second is a connections bitmask.
+	private static VoxelShape[][] BOUNDS = new VoxelShape[6][64];
+
+	static {
+		// above side bounds in an array to index easier - DUNSWE
+		VoxelShape[] BOUNDS_SIDES = {
+				BOUNDS_DOWN, BOUNDS_UP, BOUNDS_NORTH, BOUNDS_SOUTH, BOUNDS_WEST, BOUNDS_EAST
+		};
+		VoxelShape[] BOUNDS_CONN_SIDES = {
+				BOUNDS_DOWN_CONNECT, BOUNDS_UP_CONNECT, BOUNDS_NORTH_CONNECT,
+				BOUNDS_SOUTH_CONNECT, BOUNDS_WEST_CONNECT, BOUNDS_EAST_CONNECT
+		};
+		for (int i = 0; i < 64; i++) {
+			VoxelShape shape = BOUNDS_CENTER;
+			for (int j = 0; j < 6; j++) {
+				if ((i & (1<<j)) != 0) {
+					shape = VoxelShapes.or(shape, BOUNDS_CONN_SIDES[j], BOUNDS_SIDES[j]);
+				}
+			}
+			for (int j = 0; j < 6; j++) {
+				BOUNDS[j][i] = VoxelShapes.or(shape, BOUNDS_SIDES[j]);
+			}
+		}
+	}
 
 	@Nonnull
 	@Override
 	public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
-		// center
-		VoxelShape shape = VoxelShapes.or(BOUNDS_CENTER, BOUNDS_SIDES[state.get(FACING).getIndex()]);
-
-		// add each side
-		if(state.get(UP))    shape = VoxelShapes.or(shape, BOUNDS_UP);
-		if(state.get(DOWN))  shape = VoxelShapes.or(shape, BOUNDS_DOWN);
-		if(state.get(NORTH)) shape = VoxelShapes.or(shape, BOUNDS_NORTH);
-		if(state.get(SOUTH)) shape = VoxelShapes.or(shape, BOUNDS_SOUTH);
-		if(state.get(WEST))  shape = VoxelShapes.or(shape, BOUNDS_WEST);
-		if(state.get(EAST))  shape = VoxelShapes.or(shape, BOUNDS_EAST);
-		return shape;
+		int bitmask = 0;
+		for (int i = 0; i < 6; i++) {
+			bitmask |= state.get(DIR_ENABLED[i]) ? (1 << i) : 0;
+		}
+		return BOUNDS[state.get(FACING).getIndex()][bitmask];
 	}
-
-//	public RayTraceResult collisionRayTrace(IBlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull Vec3d start, @Nonnull Vec3d end) {
-//		state = state.getActualState(world, pos);
-//
-//		// basically the same BlockStairs does
-//		// Raytrace through all included AABBs (sides) and return the nearest
-//		// in the case of channels, we need to ensure each piece is actually enabled first though
-//		List<RayTraceResult> list = new ArrayList<>(8);
-//		list.add(rayTrace(pos, start, end, BOUNDS_CENTER));
-//		list.add(rayTrace(pos, start, end, BOUNDS_SIDES[state.getValue(FACING).getIndex()]));
-//
-//		// add each enabled side
-//		if(state.getValue(UP)){
-//			list.add(rayTrace(pos, start, end, BOUNDS_UP));
-//			list.add(rayTrace(pos, start, end, BOUNDS_UP_CONNECT));
-//		}
-//		if(state.getValue(DOWN)) {
-//			list.add(rayTrace(pos, start, end, BOUNDS_DOWN));
-//			list.add(rayTrace(pos, start, end, BOUNDS_DOWN_CONNECT));
-//		}
-//		if(state.getValue(NORTH)) {
-//			list.add(rayTrace(pos, start, end, BOUNDS_NORTH));
-//			list.add(rayTrace(pos, start, end, BOUNDS_NORTH_CONNECT));
-//		}
-//		if(state.getValue(SOUTH)) {
-//			list.add(rayTrace(pos, start, end, BOUNDS_SOUTH));
-//			list.add(rayTrace(pos, start, end, BOUNDS_SOUTH_CONNECT));
-//		}
-//		if(state.getValue(WEST)) {
-//			list.add(rayTrace(pos, start, end, BOUNDS_WEST));
-//			list.add(rayTrace(pos, start, end, BOUNDS_WEST_CONNECT));
-//		}
-//		if(state.getValue(EAST)) {
-//			list.add(rayTrace(pos, start, end, BOUNDS_EAST));
-//			list.add(rayTrace(pos, start, end, BOUNDS_EAST_CONNECT));
-//		}
-//	}
 }
