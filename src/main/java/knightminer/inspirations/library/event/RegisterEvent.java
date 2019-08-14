@@ -2,8 +2,8 @@ package knightminer.inspirations.library.event;
 
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.eventhandler.Cancelable;
-import net.minecraftforge.fml.common.eventhandler.Event;
+import net.minecraftforge.eventbus.api.Cancelable;
+import net.minecraftforge.eventbus.api.Event;
 
 /**
  * Base class for registering things to the Inspirations Registry
