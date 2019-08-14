@@ -303,7 +303,6 @@ public class Config {
 	public static BooleanValue enablePigDesaddle;
 	public static BooleanValue enableFittedCarpets;
 	public static BooleanValue coloredEnchantedRibbons;
-	public static BooleanValue brewMissingPotions;
 	public static BooleanValue coloredFireworkItems;
 	public static BooleanValue lilypadBreakFall;
 	public static BooleanValue betterCauldronItem;
@@ -739,11 +738,6 @@ public class Config {
 					.comment("The ribbon on enchanted books colors based on the enchantment rarity")
 					.worldRestart()
 					.define("coloredEnchantedRibbons", true);
-
-			// more potions
-			brewMissingPotions = builder
-					.comment("Adds brewing recipes for vanilla potions which are missing a recipe")
-					.define("brewMissingPotions", true);
 
 			// colored fireworks
 			coloredFireworkItems = builder

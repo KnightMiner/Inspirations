@@ -57,30 +57,6 @@ public class InspirationsTweaks extends PulseBase {
 	public static Item sugarCaneSeeds;
 	public static Item cactusSeeds;
 
-	// potions
-	public static PotionType haste;
-	public static PotionType strongHaste;
-	public static PotionType fatigue;
-	public static PotionType strongFatigue;
-
-	public static PotionType hunger;
-	public static PotionType strongHunger;
-
-	public static PotionType resistance;
-	public static PotionType longResistance;
-	public static PotionType levitation;
-	public static PotionType longLevitation;
-
-	public static PotionType blindness;
-	public static PotionType longBlindness;
-	public static PotionType decay;
-	public static PotionType strongDecay;
-	public static PotionType longHunger;
-
-	@Subscribe
-	public void preInit(FMLPreInitializationEvent event) {
-		proxy.preInit();
-	}
 
 	@SubscribeEvent
 	public void registerBlocks(Register<Block> event) {
@@ -125,19 +101,19 @@ public class InspirationsTweaks extends PulseBase {
 	public void registerItem(Register<Item> event) {
 		IForgeRegistry<Item> r = event.getRegistry();
 
-		for (BlockFlatCarpet carpet: flatCarpets.values()) {
+		for (BlockFlatCarpet carpet : flatCarpets.values()) {
 			BlockItem item = register(r, new BlockItem(carpet, new Item.Properties().group(ItemGroup.DECORATIONS)), carpet.getRegistryName());
 			Item.BLOCK_TO_ITEM.put(carpet, item);
 		}
 
 		cactusSeeds = registerItem(r, new HidableBlockItem(
-			InspirationsTweaks.cactusCrop,
-			new Item.Properties().group(ItemGroup.FOOD)
+				InspirationsTweaks.cactusCrop,
+				new Item.Properties().group(ItemGroup.FOOD)
 		), "cactus_seeds");
 
 		sugarCaneSeeds = registerItem(r, new HidableBlockItem(
-			InspirationsTweaks.sugarCaneCrop,
-			new Item.Properties().group(ItemGroup.FOOD)
+				InspirationsTweaks.sugarCaneCrop,
+				new Item.Properties().group(ItemGroup.FOOD)
 		), "sugar_cane_seeds");
 
 		carrotSeeds = registerItem(r, new ItemSeed((CropsBlock) Blocks.CARROTS, PlantType.Crop), "carrot_seeds");
@@ -145,118 +121,41 @@ public class InspirationsTweaks extends PulseBase {
 	}
 
 	@SubscribeEvent
-	public void registerPotionTypes(Register<PotionType> event) {
-		IForgeRegistry<PotionType> r = event.getRegistry();
-
-		if(Config.brewMissingPotions) {
-			haste = register(r, new PotionType(new PotionEffect(MobEffects.HASTE, 3600)), "haste");
-			strongHaste = register(r, new PotionType("haste", new PotionEffect(MobEffects.HASTE, 1800, 1)), "strong_haste");
-			fatigue = register(r, new PotionType(new PotionEffect(MobEffects.MINING_FATIGUE, 1200)), "fatigue");
-			strongFatigue = register(r, new PotionType("fatigue", new PotionEffect(MobEffects.MINING_FATIGUE, 600, 1)), "strong_fatigue");
-
-			hunger = register(r, new PotionType(new PotionEffect(MobEffects.HUNGER, 900)), "hunger");
-			longHunger = register(r, new PotionType("hunger", new PotionEffect(MobEffects.HUNGER, 1800)), "long_hunger");
-			strongHunger = register(r, new PotionType("hunger", new PotionEffect(MobEffects.HUNGER, 450, 1)), "strong_hunger");
-
-			resistance = register(r, new PotionType(new PotionEffect(MobEffects.RESISTANCE, 2400)), "resistance");
-			longResistance = register(r, new PotionType("resistance", new PotionEffect(MobEffects.RESISTANCE, 6000)), "long_resistance");
-
-			levitation = register(r, new PotionType(new PotionEffect(MobEffects.LEVITATION, 160)), "levitation");
-			longLevitation = register(r, new PotionType("levitation", new PotionEffect(MobEffects.LEVITATION, 300)), "long_levitation");
-
-			blindness = register(r, new PotionType(new PotionEffect(MobEffects.BLINDNESS, 600)), "blindness");
-			longBlindness = register(r, new PotionType("blindness", new PotionEffect(MobEffects.BLINDNESS, 1200)), "long_blindness");
-
-			decay = register(r, new PotionType(new PotionEffect(MobEffects.WITHER, 600)), "decay");
-			strongDecay = register(r, new PotionType("decay", new PotionEffect(MobEffects.WITHER, 300, 1)), "long_decay");
-		}
-	}
-
-	@Subscribe
-	public void init(FMLInitializationEvent event) {
+	public void setup(FMLCommonSetupEvent event) {
+		proxy.preInit();
 		proxy.init();
 
-		if(Config.addGrassDrops) {
-			MinecraftForge.addGrassSeed(new ItemStack(InspirationsTweaks.carrotSeeds), 4);
-			MinecraftForge.addGrassSeed(new ItemStack(InspirationsTweaks.potatoSeeds), 3);
-		}
+		// TODO: Forge needs to implement the ability to inject these into the loot tables.
+		// See MinecraftForge#
+		//if(Config.addGrassDrops()) {
+		//	MinecraftForge.addGrassSeed(new ItemStack(InspirationsTweaks.carrotSeeds), 4);
+		//	MinecraftForge.addGrassSeed(new ItemStack(InspirationsTweaks.potatoSeeds), 3);
+		//}
 
-		// brew heartroots into regen potions
-		if(Config.brewHeartbeet) {
-			Ingredient heartbeet = Ingredient.fromStacks(InspirationsShared.heartbeet);
-			PotionHelper.addMix(PotionTypes.WATER, heartbeet, PotionTypes.MUNDANE);
-			PotionHelper.addMix(PotionTypes.AWKWARD, heartbeet, PotionTypes.REGENERATION);
-		}
-		if(Config.brewMissingPotions) {
-			// we need to start by removing a couple vanilla ones which we override
-			Iterator<?> iterator = PotionHelper.POTION_TYPE_CONVERSIONS.iterator();
-			while(iterator.hasNext()) {
-				PotionType input = ReflectionUtil.getMixPredicateInput(iterator.next());
-				if(input == PotionTypes.LEAPING || input == PotionTypes.LONG_LEAPING) {
-					iterator.remove();
-				}
-			}
-
-			// then add the new recipes
-			Ingredient redstone = Ingredient.fromItem(Items.REDSTONE);
-			Ingredient glowstone = Ingredient.fromItem(Items.GLOWSTONE_DUST);
-			Ingredient spiderEye = Ingredient.fromItem(Items.FERMENTED_SPIDER_EYE);
-
-			// haste
-			Ingredient silverfishPowder = Ingredient.fromStacks(InspirationsShared.silverfishPowder);
-			PotionHelper.addMix(PotionTypes.WATER, silverfishPowder, PotionTypes.MUNDANE);
-			PotionHelper.addMix(PotionTypes.AWKWARD, silverfishPowder, haste);
-			PotionHelper.addMix(haste, glowstone, strongHaste);
-
-			// fatigue
-			PotionHelper.addMix(haste, spiderEye, fatigue);
-			PotionHelper.addMix(strongHaste, spiderEye, strongFatigue);
-			PotionHelper.addMix(fatigue, glowstone, strongFatigue);
-
-			// hunger
-			PotionHelper.addMix(PotionTypes.REGENERATION, spiderEye, hunger);
-			PotionHelper.addMix(PotionTypes.LONG_REGENERATION, spiderEye, longHunger);
-			PotionHelper.addMix(PotionTypes.STRONG_REGENERATION, spiderEye, strongHunger);
-			PotionHelper.addMix(hunger, redstone, longHunger);
-			PotionHelper.addMix(hunger, glowstone, strongHunger);
-
-			// resistance
-			Ingredient skulkerShell = Ingredient.fromItem(Items.SHULKER_SHELL);
-			PotionHelper.addMix(PotionTypes.WATER, skulkerShell, PotionTypes.MUNDANE);
-			PotionHelper.addMix(PotionTypes.AWKWARD, skulkerShell, resistance);
-			PotionHelper.addMix(resistance, redstone, longResistance);
-
-			// levitation
-			PotionHelper.addMix(PotionTypes.LEAPING, spiderEye, levitation);
-			PotionHelper.addMix(PotionTypes.LONG_LEAPING, spiderEye, longLevitation);
-			PotionHelper.addMix(levitation, redstone, longLevitation);
-
-			// blindness
-			Ingredient inkSac = Ingredient.fromStacks(new ItemStack(Items.DYE, 1, EnumDyeColor.BLACK.getDyeDamage()));
-			PotionHelper.addMix(PotionTypes.WATER, inkSac, PotionTypes.MUNDANE);
-			PotionHelper.addMix(PotionTypes.AWKWARD, inkSac, blindness);
-			PotionHelper.addMix(blindness, redstone, longBlindness);
-
-			// decay
-			Ingredient witherBone = new OreIngredient("boneWithered");
-			PotionHelper.addMix(PotionTypes.WATER, witherBone, PotionTypes.MUNDANE);
-			PotionHelper.addMix(PotionTypes.AWKWARD, witherBone, decay);
-			PotionHelper.addMix(decay, glowstone, strongDecay);
-		}
+		// brew heartbeets into regen potions
+		Ingredient heartbeet = Ingredient.fromItems(InspirationsShared.heartbeet);
+		BrewingRecipeRegistry.addRecipe(
+				new NormalBrewingRecipe(Potions.WATER, heartbeet, Potions.MUNDANE, Config::brewHeartbeet)
+		);
+		BrewingRecipeRegistry.addRecipe(
+				new NormalBrewingRecipe(Potions.AWKWARD, heartbeet, Potions.REGENERATION, Config::brewHeartbeet
+				));
 
 		registerDispenserBehavior();
-	}
 
-	@Subscribe
-	public void postInit(FMLPostInitializationEvent event) {
-		proxy.postInit();
 		MinecraftForge.EVENT_BUS.register(TweaksEvents.class);
 	}
 
+	@SubscribeEvent
+	public void postInit(InterModProcessEvent event) {
+		proxy.postInit();
+	}
+
 	private static final ResourceLocation SILVERFISH_TABLE = new ResourceLocation("entities/silverfish");
+
 	@SubscribeEvent
 	public void onLootTableLoad(LootTableLoadEvent event) {
-		if(Config.brewMissingPotions && SILVERFISH_TABLE.equals(event.getName())) {
+		if (SILVERFISH_TABLE.equals(event.getName())) {
 			addToVanillaLoot(event, "entities/silverfish");
 		}
 	}
