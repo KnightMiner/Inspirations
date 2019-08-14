@@ -214,14 +214,13 @@ public final class ClientUtil {
 
 	/**
 	 * Renders a colored sprite to display in JEI as cauldron contents
-	 * @param mc        Minecraft instance
 	 * @param x         Sprite X position
 	 * @param y         Sprite Y position
 	 * @param location  Sprite resource location
 	 * @param color     Sprite color
 	 * @param level     Cauldron level
 	 */
-	public static void renderJEICauldronFluid(Minecraft mc, int x, int y, ResourceLocation location, float[] color, int level) {
+	public static void renderJEICauldronFluid(int x, int y, ResourceLocation location, float[] color, int level) {
 		GlStateManager.enableBlend();
 		mc.gameRenderer.enableLightmap();
 		GlStateManager.color3f(color[0], color[1], color[2]);
