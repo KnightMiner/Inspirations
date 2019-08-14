@@ -4,9 +4,11 @@ import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.item.HidableItem;
 import knightminer.inspirations.library.Util;
+import knightminer.inspirations.library.client.ClientUtil;
 import knightminer.inspirations.library.util.TagUtil;
 import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.tools.client.WaypointCompassGetter;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.*;
@@ -126,7 +128,7 @@ public class ItemWaypointCompass extends HidableItem {
         dimension = new ResourceLocation("null_dimension");
       }
       TranslationTextComponent prettyDim = new TranslationTextComponent(
-              "dimension." + dimension.getNamespace() + "." + dimension.getPath()
+              "dimension." + dimension.getNamespace() + "." + dimension.getPath().replace('/', '.')
       );
 
       ITextComponent dimensionTooltip;
@@ -134,13 +136,16 @@ public class ItemWaypointCompass extends HidableItem {
         dimensionTooltip = prettyDim;
       } else {
         // Fallback if we don't have a translation for the name.
-        dimensionTooltip = new StringTextComponent(dimension.toString());
+        dimensionTooltip = new StringTextComponent(ClientUtil.normalizeName(dimension.getPath()));
       }
 
-      if (Config.waypointCompassAdvTooltip.get() && flag == ITooltipFlag.TooltipFlags.ADVANCED) {
-        BlockPos pos = getPos(stack);
-        if (pos != null) {
-          dimensionTooltip = new TranslationTextComponent(getTranslationKey() + ".pos.tooltip", prettyDim, pos.getX(), pos.getZ());
+      if (flag == ITooltipFlag.TooltipFlags.ADVANCED) {
+        dimensionTooltip.appendSibling(new StringTextComponent(String.format(" (%d)", getDimension(stack))));
+        if (Config.waypointCompassAdvTooltip.get() && !Minecraft.getInstance().isReducedDebug()) {
+          BlockPos pos = getPos(stack);
+          if (pos != null) {
+            dimensionTooltip = new TranslationTextComponent(getTranslationKey() + ".pos.tooltip", prettyDim, pos.getX(), pos.getZ());
+          }
         }
       }
       tooltip.add(dimensionTooltip);

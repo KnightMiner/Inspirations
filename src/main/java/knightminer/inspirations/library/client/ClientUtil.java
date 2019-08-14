@@ -28,6 +28,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.commons.lang3.text.WordUtils;
 import org.lwjgl.opengl.GL11;
 import slimeknights.mantle.client.ModelHelper;
 
@@ -234,5 +235,16 @@ public final class ClientUtil {
 		}
 		GlStateManager.color3f(1, 1, 1);
 		GlStateManager.disableBlend();
+	}
+
+	private static final Map<String, String> NORMALIZED_NAMES = new HashMap<>();
+
+	/**
+	 * Normalizes a name by replacing underscores with spaces and capitalizing first letters
+	 * @param name Name to normalize
+	 * @return Normalized name
+	 */
+	public static String normalizeName(String name) {
+		return NORMALIZED_NAMES.computeIfAbsent(name, (s) -> WordUtils.capitalizeFully(name.replace('_', ' ')));
 	}
 }
