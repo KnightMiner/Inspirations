@@ -22,7 +22,7 @@ public class EnchantmentExtendedKnockback extends KnockbackEnchantment {
   @Override
   public boolean canApplyAtEnchantingTable(ItemStack stack) {
     Item item = stack.getItem();
-    return (Config.moreShieldEnchantments.get() && item instanceof ShieldItem)
+    return (Config.moreShieldEnchantments.get() && stack.isShield(null))
            || (Config.axeEnchantmentTable.get() && Config.axeWeaponEnchants.get() && item instanceof AxeItem)
            || super.canApplyAtEnchantingTable(stack);
   }
@@ -39,7 +39,7 @@ public class EnchantmentExtendedKnockback extends KnockbackEnchantment {
     // shields in hand should not give knockback, just on hit
     Map<EquipmentSlotType, ItemStack> items = super.getEntityEquipment(entity);
     for (EquipmentSlotType slot: EquipmentSlotType.values()) {
-      if (items.get(slot).getItem() instanceof ShieldItem) {
+      if (items.get(slot).isShield(entity)) {
         items.put(slot, ItemStack.EMPTY);
       }
     }

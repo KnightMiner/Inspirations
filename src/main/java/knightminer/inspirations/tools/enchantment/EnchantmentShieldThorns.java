@@ -14,7 +14,7 @@ public class EnchantmentShieldThorns extends ThornsEnchantment {
 
   @Override
   public boolean canApplyAtEnchantingTable(ItemStack stack) {
-    return stack.getItem() instanceof ShieldItem || super.canApplyAtEnchantingTable(stack);
+    return stack.isShield(null) || super.canApplyAtEnchantingTable(stack);
   }
 
   @Override
