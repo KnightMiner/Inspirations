@@ -38,8 +38,6 @@ public class InspirationsUtility extends PulseBase {
 	public static Block redstoneBarrel;
 	public static Block bricksButton;
 	public static Block netherBricksButton;
-	public static Block redstoneTorchLever;
-	public static Block redstoneTorchLeverPowered;
 	public static Block[] carpetedTrapdoors = new Block[16];
 	public static Block[] carpetedPressurePlates = new Block[16];
 	public static Block collector;
