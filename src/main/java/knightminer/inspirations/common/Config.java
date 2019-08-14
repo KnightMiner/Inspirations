@@ -296,8 +296,6 @@ public class Config {
 	// tweaks
 	public static BooleanValue enablePigDesaddle;
 	public static BooleanValue enableFittedCarpets;
-	public static BooleanValue betterFlowerPot;
-	public static BooleanValue flowerPotComparator;
 	public static BooleanValue coloredEnchantedRibbons;
 	public static BooleanValue brewMissingPotions;
 	public static BooleanValue coloredFireworkItems;
@@ -332,14 +330,6 @@ public class Config {
 	public static BooleanValue bonemealGrassSpread;
 	public static BooleanValue bonemealMyceliumSpread;
 
-	public static String[] flowerOverrides = {
-			"biomesoplenty:flower_0->7",
-			"biomesoplenty:flower_0->7",
-			"biomesoplenty:mushroom->1",
-			"biomesoplenty:sapling_0->12",
-			"biomesoplenty:sapling_1->12",
-			"biomesoplenty:sapling_2->12"
-	};
 	private static String[] milkContainersDefault = {
 			"ceramics:clay_bucket",
 			"minecraft:bowl", // mushroom stew from mooshrooms
@@ -732,15 +722,6 @@ public class Config {
 					.comment("Replaces the flat cauldron sprite with the 3D cauldron block model")
 					.define("betterCauldronItemModel", true);
 
-			// better flower pots
-			betterFlowerPot = builder
-					.comment("Flower pots can hold modded flowers")
-					.worldRestart()
-					.define("betterFlowerPot.enable", true);
-			flowerPotComparator = builder
-					.comment( "Flower pots will emit a comparator signal if they have a flower")
-					.define("betterFlowerPot.comparator", true);
-
 			// colored enchanted book ribbons
 			coloredEnchantedRibbons = builder
 					.comment("The ribbon on enchanted books colors based on the enchantment rarity")
@@ -831,13 +812,6 @@ public class Config {
 //				"List of recipes to add to the cauldron on right click. Format is (modid:input:meta|oreString)->modid:output:meta[->isBoiling]. If isBoiling is excluded, it defaults to false.").getStringList();
 //		processCauldronRecipes(cauldronRecipes);
 
-		// flowers
-//		property = configFile.get("tweaks.betterFlowerPot", "flowerOverrides", flowerOverrides,
-//				"List of itemstacks to override default flower behavior, default checks for BlockBush.\n"
-//						+ "Format is 'modid:name[:meta]->power'. Unset meta will default wildcard. Power refers to comparator power, non-zero makes it valid for a flower pot. Specific values:\n"
-//						+ "* 0 - not flower, blacklists from placing in a flower pot\n* 1 - mushroom\n* 4 - fern\n* 7 - flower\n* 10 - dead bush\n* 12 - sapling\n* 15 - cactus");
-//		flowerOverrides = property.getStringList();
-//		processFlowerOverrides(flowerOverrides);
 	}
 
 	/**
@@ -916,39 +890,6 @@ public class Config {
 			}
 			final float enchPower = power;
 			RecipeUtil.forStackInString(parts[0], stack -> InspirationsRegistry.registerBook(stack.getItem(), enchPower));
-		}
-	}
-
-	/**
-	 * Processes the flower string array into the registry
-	 * @param overrides  Overrides to process
-	 */
-	private static void processFlowerOverrides(String[] overrides) {
-		if(!Config.betterFlowerPot.get()) {
-			return;
-		}
-		for(String line : overrides) {
-			String[] split = line.split("->");
-			if(split.length != 2) {
-				Inspirations.log.error("Invalid flower pot override, expected format 'modid:name[:meta]->power'");
-				continue;
-			}
-
-			// parse comparator power
-			int power;
-			try {
-				power = Integer.parseInt(split[1]);
-			} catch(NumberFormatException e) {
-				Inspirations.log.error("Invalid flower pot power, must be a valid number");
-				continue;
-			}
-			if(power < 0 || power > 15) {
-				Inspirations.log.error("Invalid flower pot power, must between 0 to 15");
-				continue;
-			}
-
-			// find item
-			RecipeUtil.forStackInString(split[0], stack -> InspirationsRegistry.registerFlower(stack, power));
 		}
 	}
 

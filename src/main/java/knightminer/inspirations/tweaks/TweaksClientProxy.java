@@ -10,14 +10,11 @@ import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.client.ClientUtil;
 import knightminer.inspirations.library.client.PropertyStateMapper;
-import knightminer.inspirations.recipes.RecipesClientProxy;
-import knightminer.inspirations.tweaks.block.BlockBetterFlowerPot;
 import knightminer.inspirations.tweaks.block.BlockFittedCarpet;
 import net.minecraft.block.BlockCarpet;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.client.renderer.block.statemap.StateMapperBase;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.enchantment.Enchantment;
@@ -28,8 +25,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityFlowerPot;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.BiomeColors;
 import net.minecraftforge.client.event.ColorHandlerEvent;
@@ -43,7 +38,6 @@ public class TweaksClientProxy extends ClientProxy {
 	private static final ResourceLocation CAULDRON_ITEM_MODEL = Util.getResource("cauldron_item");
 	private static final ResourceLocation ENCHANTED_BOOK = Util.getResource("enchanted_book");
 	private static final ResourceLocation FIREWORKS = Util.getResource("fireworks");
-	private static final ModelResourceLocation FLOWER_POT_MODEL = new ModelResourceLocation(Util.getResource("flower_pot"), "normal");
 
 	@SubscribeEvent
 	public void registerModels(ModelRegistryEvent event) {
@@ -79,20 +73,6 @@ public class TweaksClientProxy extends ClientProxy {
 	@SubscribeEvent
 	public void registerBlockColors(ColorHandlerEvent.Block event) {
 		BlockColors colors = event.getBlockColors();
-
-		// the vanilla flower pot handler is pretty dumb, it only uses the item and not the specific stack with meta
-		if(Config.betterFlowerPot) {
-			registerBlockColors(colors, (state, world, pos, index) -> {
-				if (world != null && pos != null) {
-					TileEntity tileentity = world.getTileEntity(pos);
-					if (tileentity instanceof TileEntityFlowerPot) {
-						ItemStack stack = ((TileEntityFlowerPot)tileentity).getFlowerItemStack();
-						return ClientUtil.getStackBlockColorsSafe(stack, world, pos, 0);
-					}
-				}
-				return -1;
-			}, Blocks.FLOWER_POT);
-		}
 
 		// coloring on sugar cane crop to match reeds
 		registerBlockColors(colors, (state, world, pos, index) -> {
@@ -185,30 +165,5 @@ public class TweaksClientProxy extends ClientProxy {
 
 			return -1;
 		}, Items.FIREWORK_ROCKET);
-	}
-
-	/**
-	 * Replaces the bookshelf models with the dynamic texture model, which also handles books
-	 */
-	@SubscribeEvent
-	public void onModelBake(ModelBakeEvent event) {
-		if(InspirationsTweaks.flowerPot != null) {
-			replaceTexturedModel(event, FLOWER_POT_MODEL, "plant", false);
-		}
-	}
-
-	private static class FlowerPotStateMapper extends StateMapperBase {
-		@Override
-		protected ModelResourceLocation getModelResourceLocation(IBlockState state) {
-			if(state.getValue(BlockBetterFlowerPot.EXTRA)) {
-				return FLOWER_POT_MODEL;
-			}
-
-			LinkedHashMap<IProperty<?>, Comparable<?>> map = Maps.newLinkedHashMap(state.getProperties());
-			map.remove(BlockBetterFlowerPot.EXTRA);
-			map.remove(BlockBetterFlowerPot.LEGACY_DATA);
-
-			return new ModelResourceLocation(state.getBlock().getRegistryName(), this.getPropertyString(map));
-		}
 	}
 }
