@@ -219,17 +219,17 @@ public class BlockRope extends HidableBlock implements IWaterLoggable {
 		VoxelShape rope_core = Block.makeCuboidShape(7, 0, 7, 9, 10, 9);
 		VoxelShape rope_core_bottom = VoxelShapes.or(
 				Block.makeCuboidShape(7, 8, 7, 9, 16, 9),
-				Block.makeCuboidShape(6.5, 4, 6.5,9.5, 8, 9.5)
+				Block.makeCuboidShape(6.5, 4, 6.5, 9.5, 8, 9.5)
 		);
 
 		VoxelShape rope_rungs_x = VoxelShapes.or(
-				Block.makeCuboidShape(1, 5,  7, 15,  7, 9),
-				Block.makeCuboidShape(1, 9,  7, 15, 11, 9),
+				Block.makeCuboidShape(1, 5, 7, 15, 7, 9),
+				Block.makeCuboidShape(1, 9, 7, 15, 11, 9),
 				Block.makeCuboidShape(1, 13, 7, 15, 15, 9)
 		);
 		VoxelShape rope_rungs_z = VoxelShapes.or(
-				Block.makeCuboidShape(7, 5,  1, 9,  7, 15),
-				Block.makeCuboidShape(7, 9,  1, 9, 11, 15),
+				Block.makeCuboidShape(7, 5, 1, 9, 7, 15),
+				Block.makeCuboidShape(7, 9, 1, 9, 11, 15),
 				Block.makeCuboidShape(7, 13, 1, 9, 15, 15)
 		);
 
@@ -261,8 +261,8 @@ public class BlockRope extends HidableBlock implements IWaterLoggable {
 				Block.makeCuboidShape(1, 12, 7.5, 15, 13, 8.5)
 		);
 		VoxelShape chain_rungs_z = VoxelShapes.or(
-				Block.makeCuboidShape(7.5, 4,  1, 8.5, 5,  15),
-				Block.makeCuboidShape(7.5, 8,  1, 8.5, 9,  15),
+				Block.makeCuboidShape(7.5, 4, 1, 8.5, 5, 15),
+				Block.makeCuboidShape(7.5, 8, 1, 8.5, 9, 15),
 				Block.makeCuboidShape(7.5, 12, 1, 8.5, 13, 15)
 		);
 
@@ -283,7 +283,7 @@ public class BlockRope extends HidableBlock implements IWaterLoggable {
 	@Nonnull
 	@Override
 	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-		if(state.get(BOTTOM)) {
+		if (state.get(BOTTOM)) {
 			return shape_bottom[state.get(RUNGS).ordinal()];
 		}
 		return shape[state.get(RUNGS).ordinal()];
@@ -300,9 +300,11 @@ public class BlockRope extends HidableBlock implements IWaterLoggable {
 		}
 
 		public static Rungs fromAxis(Direction.Axis axis) {
-			switch(axis) {
-				case X: return X;
-				case Z: return Z;
+			switch (axis) {
+				case X:
+					return X;
+				case Z:
+					return Z;
 			}
 			return NONE;
 		}

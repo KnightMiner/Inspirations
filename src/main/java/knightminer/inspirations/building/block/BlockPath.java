@@ -38,17 +38,6 @@ public class BlockPath extends HidableBlock {
 	/* Block Shape */
 
 	public static final VoxelShape SHAPE_ROUND = VoxelShapes.or(
-//		Block.makeCuboidShape(5, 0, 1, 11, 1, 15),
-//		Block.makeCuboidShape(1, 0, 5, 5, 1, 11),
-//		Block.makeCuboidShape(11, 0, 5, 15, 1, 11),
-//		Block.makeCuboidShape(2, 0, 3, 5, 1, 5),
-//		Block.makeCuboidShape(11, 0, 3, 14, 1, 5),
-//		Block.makeCuboidShape(11, 0, 11, 14, 1, 13),
-//		Block.makeCuboidShape(2, 0, 11, 5, 1, 13),
-//		Block.makeCuboidShape(3, 0, 2, 5, 1, 3),
-//		Block.makeCuboidShape(11, 0, 2, 13, 1, 3),
-//		Block.makeCuboidShape(11, 0, 13, 13, 1, 14),
-//		Block.makeCuboidShape(3, 0, 13, 5, 1, 14)
 		Block.makeCuboidShape(1, 0, 5, 15, 1, 11),
 		Block.makeCuboidShape(5, 0, 1, 11, 1, 15),
 		Block.makeCuboidShape(2, 0, 3, 14, 1, 13),
@@ -61,10 +50,16 @@ public class BlockPath extends HidableBlock {
 		Block.makeCuboidShape(1, 0, 9, 7, 1, 15)
 	);
 	public static final VoxelShape SHAPE_BRICK = VoxelShapes.or(
-		Block.makeCuboidShape(0, 0, 0, 3, 1, 3),
-		Block.makeCuboidShape(4, 0, 0, 7, 1, 1),
-		Block.makeCuboidShape(0, 0, 4, 3, 1, 11),
-		Block.makeCuboidShape(12, 0, 8, 15, 1, 15)
+			Block.makeCuboidShape(0, 0, 0, 3, 1, 3),
+			Block.makeCuboidShape(4, 0, 0, 7, 1, 7),
+			Block.makeCuboidShape(0, 0, 4, 3, 1, 11),
+			Block.makeCuboidShape(12, 0, 8, 15, 1, 15),
+			Block.makeCuboidShape(8, 0, 0, 11, 1, 3),
+			Block.makeCuboidShape(8, 0, 12, 11, 1, 16),
+			Block.makeCuboidShape(12, 0, 0, 16, 1, 3),
+			Block.makeCuboidShape(8, 0, 4, 15, 1, 7),
+			Block.makeCuboidShape(4, 0, 8, 11, 1, 11),
+			Block.makeCuboidShape(0, 0, 12, 7, 1, 15)
 	);
 	// There's multiple variants for these, just use a square.
 	public static final VoxelShape SHAPE_ROCK = Block.makeCuboidShape(.5, 0, .5, 15.5, 1, 15.5);
