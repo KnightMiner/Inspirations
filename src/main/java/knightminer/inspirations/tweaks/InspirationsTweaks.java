@@ -6,12 +6,9 @@ import knightminer.inspirations.common.CommonProxy;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.common.item.HidableBlockItem;
-import knightminer.inspirations.library.InspirationsRegistry;
-import knightminer.inspirations.library.Util;
 import knightminer.inspirations.shared.InspirationsShared;
 import knightminer.inspirations.tweaks.block.*;
 import knightminer.inspirations.tweaks.item.ItemSeed;
-import knightminer.inspirations.tweaks.tileentity.TileFlowerPot;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CropsBlock;
@@ -22,7 +19,6 @@ import net.minecraft.item.*;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.potion.*;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
@@ -40,12 +36,14 @@ import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.pulsar.pulse.Pulse;
 
+import javax.annotation.Nullable;
+
 @Pulse(id = InspirationsTweaks.pulseID, description = "Various vanilla tweaks")
 public class InspirationsTweaks extends PulseBase {
 	public static final String pulseID = "InspirationsTweaks";
 
 	@SuppressWarnings("Convert2MethodRef")
-	public static CommonProxy proxy = DistExecutor.runForDist(()->()->new TweaksClientProxy(), ()->()->new CommonProxy());
+	public static CommonProxy proxy = DistExecutor.runForDist(() -> () -> new TweaksClientProxy(), () -> () -> new CommonProxy());
 
 	// blocks
 	public static Map<DyeColor, BlockFittedCarpet> fitCarpets = new HashMap<>();
@@ -263,37 +261,31 @@ public class InspirationsTweaks extends PulseBase {
 		}
 	}
 
-	private static final IBehaviorDispenseItem DEFAULT = new BehaviorDefaultDispenseItem();
+	private static final IDispenseItemBehavior DEFAULT = new DefaultDispenseItemBehavior();
+
 	private void registerDispenserBehavior() {
-		if(Config.dispensersPlaceAnvils) {
-			registerDispenserBehavior(Blocks.ANVIL, (source, stack) -> {
-				// get basic data
-				EnumFacing facing = source.getBlockState().getValue(BlockDispenser.FACING);
-				World world = source.getWorld();
-				BlockPos pos = source.getBlockPos().offset(facing);
+		IDispenseItemBehavior behavior = (source, stack) -> {
+			if (!Config.dispensersPlaceAnvils.get()) {
+				DEFAULT.dispense(source, stack);
+			}
+			// get basic data
+			Direction facing = source.getBlockState().get(DispenserBlock.FACING);
+			World world = source.getWorld();
+			BlockPos pos = source.getBlockPos().offset(facing);
 
-				// if we cannot place it, toss the item
-				if(!Blocks.ANVIL.canPlaceBlockAt(world, pos)) {
-					return DEFAULT.dispense(source, stack);
-				}
+			DirectionalPlaceContext context = new DirectionalPlaceContext(world, pos, facing, stack, facing.getOpposite());
 
-				// just in case
-				int meta = stack.getMetadata();
-				if(meta > 3 || meta < 0) {
-					meta = 3;
-				}
-
-				// determine the anvil to place
-				EnumFacing anvilFacing = facing.getAxis().isVertical() ? EnumFacing.NORTH : facing.rotateY();
-				IBlockState state = Blocks.ANVIL.getDefaultState()
-						.withProperty(BlockAnvil.DAMAGE, meta)
-						.withProperty(BlockAnvil.FACING, anvilFacing);
-
-				world.setBlockState(pos, state);
-				stack.shrink(1);
+			if (((BlockItem) stack.getItem()).tryPlace(context) == ActionResultType.SUCCESS) {
 				return stack;
-			});
-		}
+			} else {
+				// if we cannot place it, toss the item
+				return DEFAULT.dispense(source, stack);
+			}
+		};
+
+		DispenserBlock.registerDispenseBehavior(Blocks.ANVIL, behavior);
+		DispenserBlock.registerDispenseBehavior(Blocks.CHIPPED_ANVIL, behavior);
+		DispenserBlock.registerDispenseBehavior(Blocks.DAMAGED_ANVIL, behavior);
 
 	}
 }
