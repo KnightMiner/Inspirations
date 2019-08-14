@@ -36,6 +36,8 @@ public class Config {
 
 	// building
 	public static BooleanValue enableRope;
+	private static BooleanValue enableRopeLadder;
+	public static boolean enableRopeLadder() { return enableRopeLadder.get() && enableRope.get(); }
 	public static BooleanValue enableGlassDoor;
 	public static BooleanValue enableMulch;
 	public static BooleanValue enablePath;
@@ -387,6 +389,10 @@ public class Config {
 					.comment("Enables rope: can be climbed like ladders and extended with additional rope")
 					.worldRestart()
 					.define("rope", true);
+
+			enableRopeLadder = builder
+					.comment("Enables rope ladders: right click ropes with sticks to extend the hitbox")
+					.define("ropeLadder", true);
 
 			// glass door
 			enableGlassDoor = builder
