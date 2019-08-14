@@ -167,7 +167,7 @@ public class InspirationsBuilding extends PulseBase {
 		for (DyeColor color : DyeColor.values()) {
 			book_colors.put(color, registerItem(r, new HidableItem(
 					new Item.Properties().group(ItemGroup.MATERIALS),
-					Config.enableColoredBooks::get
+					Config::enableColoredBooks
 			), color.getName() + "_book"));
 		}
 
