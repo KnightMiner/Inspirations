@@ -53,8 +53,7 @@ public class BookshelfModel extends TextureModel {
 						builder.put("#bookLabel" + i, "");
 					}
 				}
-				return originalModel;
-//				return getTexturedModel(builder.build());
+				return getTexturedModel(builder.build());
 			});
 		} catch(ExecutionException e) {
 			Inspirations.log.error(e);
