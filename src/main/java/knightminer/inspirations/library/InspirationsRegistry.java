@@ -59,15 +59,15 @@ public class InspirationsRegistry {
 
 	public static final Tag<Item> TAG_DYE_BOTTLES = new ItemTags.Wrapper(Util.getResource("dyed_water_bottles"));
 
-    /**
+	/**
 	 * Sets a value from the Inspirations config into the registry. Used to keep the config out of the library
-	 * @param key    Key to set
-	 * @param value  Boolean value
-	 * @deprecated  For internal use only
+	 * @param key   Key to set
+	 * @param value Boolean value
+	 * @deprecated For internal use only
 	 */
 	@Deprecated
 	public static void setConfig(String key, boolean value) {
-		switch(key) {
+		switch (key) {
 			case "biggerCauldron":
 				cauldronBigger = value;
 				break;
@@ -88,8 +88,8 @@ public class InspirationsRegistry {
 
 	/**
 	 * Checks if the given item stack is a book
-	 * @param stack  Input stack
-	 * @return  True if its a book
+	 * @param stack Input stack
+	 * @return True if its a book
 	 */
 	public static boolean isBook(ItemStack stack) {
 		return !stack.isEmpty() && getBookEnchantingPower(stack) >= 0;
@@ -97,8 +97,8 @@ public class InspirationsRegistry {
 
 	/**
 	 * Checks if the given item stack is a book
-	 * @param book  Input stack
-	 * @return  True if its a book
+	 * @param book Input stack
+	 * @return True if its a book
 	 */
 	public static float getBookEnchantingPower(ItemStack book) {
 		if (book.isEmpty()) {
@@ -109,20 +109,20 @@ public class InspirationsRegistry {
 
 	/**
 	 * Helper function to check if a stack is a book, used internally by the book map
-	 * @param item  The item.
+	 * @param item The item.
 	 * @return The enchantment power, or -1F.
 	 */
 	@Nonnull
 	private static Float bookPower(Item item) {
 		// blocks are not books, catches bookshelves
-		if(Block.getBlockFromItem(item) != Blocks.AIR) {
+		if (Block.getBlockFromItem(item) != Blocks.AIR) {
 			return -1f;
 		}
 
 		// look through every keyword from the config
-		for(String keyword : bookKeywords) {
+		for (String keyword : bookKeywords) {
 			// if the unlocalized name or the registry name has the keyword, its a book
-			if(item.getRegistryName().getPath().contains(keyword)
+			if (item.getRegistryName().getPath().contains(keyword)
 					|| item.getTranslationKey().contains(keyword)) {
 				return Config.defaultEnchantingPower.get().floatValue();
 			}
@@ -132,8 +132,8 @@ public class InspirationsRegistry {
 
 	/**
 	 * Registers an override to state a stack is definately a book or not a book, primarily used by the config
-	 * @param stack   Itemstack which is a book
-	 * @param isBook  True if its a book, false if its not a book
+	 * @param stack  Itemstack which is a book
+	 * @param isBook True if its a book, false if its not a book
 	 * @deprecated use {@link #registerBook(Item, float)}
 	 */
 	@Deprecated
@@ -143,8 +143,8 @@ public class InspirationsRegistry {
 
 	/**
 	 * Registers an override to state a stack is definately a book or not a book, primarily used by the config
-	 * @param item  Item which is a book
-	 * @param isBook  True if its a book, false if its not a book
+	 * @param item   Item which is a book
+	 * @param isBook True if its a book, false if its not a book
 	 * @deprecated use {@link #registerBook(Item, float)}
 	 */
 	@Deprecated
@@ -154,8 +154,8 @@ public class InspirationsRegistry {
 
 	/**
 	 * Registers an override to state a stack is a book with an enchanting power
-	 * @param item   Item which is a book
-	 * @param power  Enchanting power, 1.5 is default, NaN is not a book. 0 is a valid power
+	 * @param item  Item which is a book
+	 * @param power Enchanting power, 1.5 is default, NaN is not a book. 0 is a valid power
 	 */
 	public static void registerBook(Item item, float power) {
 		books.put(item, power);
@@ -170,7 +170,7 @@ public class InspirationsRegistry {
 		// Clear the cache.
 		books.clear();
 	}
-	
+
 	/*
 	 * Anvil smashing
 	 */
@@ -180,8 +180,8 @@ public class InspirationsRegistry {
 
 	/**
 	 * Registers an anvil smashing result for the given block state
-	 * @param input   Input state
-	 * @param result  Result state
+	 * @param input  Input state
+	 * @param result Result state
 	 */
 	public static void registerAnvilSmashing(BlockState input, BlockState result) {
 		anvilSmashing.put(input, result);
@@ -189,8 +189,8 @@ public class InspirationsRegistry {
 
 	/**
 	 * Registers an anvil smashing result for the given block state
-	 * @param input   Input state
-	 * @param result  Result block
+	 * @param input  Input state
+	 * @param result Result block
 	 */
 	public static void registerAnvilSmashing(BlockState input, Block result) {
 		registerAnvilSmashing(input, result.getDefaultState());
@@ -198,7 +198,7 @@ public class InspirationsRegistry {
 
 	/**
 	 * Registers an anvil smashing result to break the given blockstate
-	 * @param input   Input block
+	 * @param input Input block
 	 */
 	public static void registerAnvilBreaking(BlockState input) {
 		registerAnvilSmashing(input, Blocks.AIR);
@@ -206,8 +206,8 @@ public class InspirationsRegistry {
 
 	/**
 	 * Registers an anvil smashing result for the given block
-	 * @param input   Input block
-	 * @param result  Result state
+	 * @param input  Input block
+	 * @param result Result state
 	 */
 	public static void registerAnvilSmashing(Block input, BlockState result) {
 		anvilSmashingBlocks.put(input, result);
@@ -215,8 +215,8 @@ public class InspirationsRegistry {
 
 	/**
 	 * Registers an anvil smashing result to break the given block
-	 * @param input   Input block
-	 * @param result  Result block
+	 * @param input  Input block
+	 * @param result Result block
 	 */
 	public static void registerAnvilSmashing(Block input, Block result) {
 		registerAnvilSmashing(input, result.getDefaultState());
@@ -224,7 +224,7 @@ public class InspirationsRegistry {
 
 	/**
 	 * Registers an anvil smashing result to break the given block
-	 * @param input   Input block
+	 * @param input Input block
 	 */
 	public static void registerAnvilBreaking(Block input) {
 		registerAnvilSmashing(input, Blocks.AIR);
@@ -232,7 +232,7 @@ public class InspirationsRegistry {
 
 	/**
 	 * Registers an anvil smashing result to break the given material
-	 * @param material  Input material
+	 * @param material Input material
 	 */
 	public static void registerAnvilBreaking(Material material) {
 		anvilBreaking.add(material);
@@ -240,18 +240,18 @@ public class InspirationsRegistry {
 
 	/**
 	 * Gets the result of an anvil landing on the given blockstate
-	 * @param state  Input blockstate
-	 * @return  BlockState result. Will be air if its breaking, or null if there is no behavior
+	 * @param state Input blockstate
+	 * @return BlockState result. Will be air if its breaking, or null if there is no behavior
 	 */
 	public static BlockState getAnvilSmashResult(BlockState state) {
-		if(anvilSmashing.containsKey(state)) {
+		if (anvilSmashing.containsKey(state)) {
 			return anvilSmashing.get(state);
 		}
 		Block block = state.getBlock();
-		if(anvilSmashingBlocks.containsKey(block)) {
+		if (anvilSmashingBlocks.containsKey(block)) {
 			return anvilSmashingBlocks.get(block);
 		}
-		if(anvilBreaking.contains(state.getMaterial())) {
+		if (anvilBreaking.contains(state.getMaterial())) {
 			return Blocks.AIR.getDefaultState();
 		}
 		return null;
@@ -259,8 +259,8 @@ public class InspirationsRegistry {
 
 	/**
 	 * Checks if we have a state specific smashing result. Used for JEI to filter out the lists for blocks
-	 * @param state  State to check
-	 * @return  True if we have a state specific result
+	 * @param state State to check
+	 * @return True if we have a state specific result
 	 */
 	public static boolean hasAnvilSmashStateResult(BlockState state) {
 		return anvilSmashing.containsKey(state);
@@ -268,17 +268,17 @@ public class InspirationsRegistry {
 
 	/**
 	 * Gets all smashing recipes in the form of blockstate to blockstate
-	 * @return  List of map entries for the recipes
+	 * @return List of map entries for the recipes
 	 */
-	public static List<Map.Entry<BlockState,BlockState>> getAllAnvilStateSmashing() {
+	public static List<Map.Entry<BlockState, BlockState>> getAllAnvilStateSmashing() {
 		return ImmutableList.copyOf(anvilSmashing.entrySet());
 	}
 
 	/**
 	 * Gets all smashing recipes in the form of block to blockstate
-	 * @return  List of map entries for the recipes
+	 * @return List of map entries for the recipes
 	 */
-	public static List<Map.Entry<Block,BlockState>> getAllAnvilBlockSmashing() {
+	public static List<Map.Entry<Block, BlockState>> getAllAnvilBlockSmashing() {
 		return ImmutableList.copyOf(anvilSmashingBlocks.entrySet());
 	}
 
@@ -291,13 +291,13 @@ public class InspirationsRegistry {
 
 	/**
 	 * Gets the result of a cauldron recipe
-	 * @param input    ItemStack input
-	 * @param boiling  Whether the cauldron is boiling
-	 * @return  Result of the recipe
+	 * @param input   ItemStack input
+	 * @param boiling Whether the cauldron is boiling
+	 * @return Result of the recipe
 	 */
 	public static ICauldronRecipe getCauldronResult(ItemStack input, boolean boiling, int level, CauldronState state) {
-		for(ICauldronRecipe recipe : cauldronRecipes) {
-			if(recipe.matches(input, boiling, level, state)) {
+		for (ICauldronRecipe recipe : cauldronRecipes) {
+			if (recipe.matches(input, boiling, level, state)) {
 				return recipe;
 			}
 		}
@@ -306,10 +306,10 @@ public class InspirationsRegistry {
 
 	/**
 	 * Adds a new cauldron recipe
-	 * @param recipe  Recipe to add
+	 * @param recipe Recipe to add
 	 */
 	public static void addCauldronRecipe(ICauldronRecipe recipe) {
-		if(new RegisterCauldronRecipe(recipe).fire()) {
+		if (new RegisterCauldronRecipe(recipe).fire()) {
 			cauldronRecipes.add(recipe);
 		} else {
 			log.debug("Cauldron recipe '{}' canceled by event", recipe);
@@ -318,9 +318,9 @@ public class InspirationsRegistry {
 
 	/**
 	 * Adds a new cauldron recipe
-	 * @param input      ItemStack to check for
-	 * @param output     Recipe output
-	 * @param boiling  Whether the cauldron must be boiling or not
+	 * @param input   ItemStack to check for
+	 * @param output  Recipe output
+	 * @param boiling Whether the cauldron must be boiling or not
 	 */
 	public static void addCauldronRecipe(ItemStack input, ItemStack output, Boolean boiling) {
 		addCauldronRecipe(new CauldronFluidRecipe(RecipeMatch.of(input), output, boiling));
@@ -328,17 +328,17 @@ public class InspirationsRegistry {
 
 	/**
 	 * Adds a fluid transform cauldron recipe with a variant for one layer and for 3
-	 * @param stack      Input stack. Stack size will be checked, and doubled for a cauldron with more than one bottle
-	 * @param input      Input fluid
-	 * @param output     Output fluid
-	 * @param boiling  Whether the cauldron must be boiling or not. If null, the cauldron being boiling is ignored
+	 * @param stack   Input stack. Stack size will be checked, and doubled for a cauldron with more than one bottle
+	 * @param input   Input fluid
+	 * @param output  Output fluid
+	 * @param boiling Whether the cauldron must be boiling or not. If null, the cauldron being boiling is ignored
 	 */
 	public static void addCauldronScaledTransformRecipe(ItemStack stack, Fluid input, Fluid output, Boolean boiling) {
 		addCauldronRecipe(new CauldronFluidTransformRecipe(RecipeMatch.of(stack, stack.getCount(), 1), input, output, boiling, 1));
 		stack = stack.copy();
 		int count = stack.getCount();
 		stack.setCount(count * 2);
-		if(Config.enableBiggerCauldron()) {
+		if (Config.enableBiggerCauldron()) {
 			addCauldronRecipe(new CauldronFluidTransformRecipe(RecipeMatch.of(stack, stack.getCount(), 1), input, output, boiling, 2));
 			stack = stack.copy();
 			stack.setCount(count * 3);
@@ -348,10 +348,10 @@ public class InspirationsRegistry {
 
 	/**
 	 * Adds a item to empty into and fill from the cauldron
-	 * @param filled     Filled version of container
-	 * @param container  Empty version of container
-	 * @param fluid      Fluid contained
-	 * @param amount     Amount this container counts for
+	 * @param filled    Filled version of container
+	 * @param container Empty version of container
+	 * @param fluid     Fluid contained
+	 * @param amount    Amount this container counts for
 	 */
 	public static void addCauldronFluidItem(ItemStack filled, ItemStack container, Fluid fluid, int amount) {
 		addCauldronRecipe(new FillCauldronRecipe(RecipeMatch.of(filled), fluid, amount, container.copy()));
@@ -360,9 +360,9 @@ public class InspirationsRegistry {
 
 	/**
 	 * Adds a item to empty into and fill from the cauldron
-	 * @param filled     Filled version of container
-	 * @param container  Empty version of container
-	 * @param fluid      Fluid contained
+	 * @param filled    Filled version of container
+	 * @param container Empty version of container
+	 * @param fluid     Fluid contained
 	 */
 	public static void addCauldronFluidItem(ItemStack filled, ItemStack container, Fluid fluid) {
 		addCauldronFluidItem(filled, container, fluid, 1);
@@ -370,7 +370,7 @@ public class InspirationsRegistry {
 
 	/**
 	 * Gets all cauldron recipes
-	 * @return  A list of all cauldron recipes
+	 * @return A list of all cauldron recipes
 	 */
 	public static List<ICauldronRecipe> getAllCauldronRecipes() {
 		return ImmutableList.copyOf(cauldronRecipes);
@@ -378,7 +378,7 @@ public class InspirationsRegistry {
 
 	/**
 	 * Adds an item to the cauldron blacklist, preventing its normal cauldron interaction
-	 * @param item  Item to add
+	 * @param item Item to add
 	 */
 	public static void addCauldronBlacklist(Item item) {
 		cauldronBlacklist.add(item);
@@ -386,8 +386,8 @@ public class InspirationsRegistry {
 
 	/**
 	 * Checks if an item is blacklisted from its normal cauldron interaction
-	 * @param stack  ItemStack to check
-	 * @return  True if the item is blacklisted
+	 * @param stack ItemStack to check
+	 * @return True if the item is blacklisted
 	 */
 	public static boolean isCauldronBlacklist(ItemStack stack) {
 		// check both the item with its current meta and with wildcard meta
@@ -400,12 +400,12 @@ public class InspirationsRegistry {
 	 */
 	private static boolean cauldronBigger = false, expensiveCauldronBrewing = false;
 	private static Set<Fluid> cauldronWater = new HashSet<>();
-	private static Map<Block,CauldronState> cauldronBlockStates = new HashMap<>();
-	private static Map<CauldronState,BlockState> cauldronFullStates = new HashMap<>();
+	private static Map<Block, CauldronState> cauldronBlockStates = new HashMap<>();
+	private static Map<CauldronState, BlockState> cauldronFullStates = new HashMap<>();
 
 	/**
 	 * Returns the maximum size for the cauldron
-	 * @return  4 if bigger cauldron, 3 otherwise
+	 * @return 4 if bigger cauldron, 3 otherwise
 	 */
 	public static int getCauldronMax() {
 		return cauldronBigger ? 4 : 3;
@@ -413,7 +413,7 @@ public class InspirationsRegistry {
 
 	/**
 	 * Returns if cauldron brewing is more expensive
-	 * @return  True if cauldron brewing is more expensive
+	 * @return True if cauldron brewing is more expensive
 	 */
 	public static boolean expensiveCauldronBrewing() {
 		return expensiveCauldronBrewing;
@@ -421,7 +421,7 @@ public class InspirationsRegistry {
 
 	/**
 	 * Adds the given fluid as cauldron water. Used for rain and fire checks among a few other things
-	 * @param fluid  Fluid to add
+	 * @param fluid Fluid to add
 	 */
 	public static void addCauldronWater(Fluid fluid) {
 		cauldronWater.add(fluid);
@@ -429,8 +429,8 @@ public class InspirationsRegistry {
 
 	/**
 	 * Checks if this fluid is considered water in the cauldron. Means it is a valid base for some recipes
-	 * @param fluid  Fluid to check
-	 * @return  True if the fluid is considered water
+	 * @param fluid Fluid to check
+	 * @return True if the fluid is considered water
 	 */
 	public static boolean isCauldronWater(Fluid fluid) {
 		return fluid != null && cauldronWater.contains(fluid);
@@ -438,8 +438,8 @@ public class InspirationsRegistry {
 
 	/**
 	 * Checks if a state is considered fire in a cauldron
-	 * @param state  State to check
-	 * @return  True if the state is considered fire
+	 * @param state State to check
+	 * @return True if the state is considered fire
 	 */
 	public static boolean isCauldronFire(BlockState state) {
 		if (state.getBlock().isIn(TAG_CAULDRON_FIRE)) {
@@ -451,15 +451,17 @@ public class InspirationsRegistry {
 		return false;
 	}
 
-	/** Internal method to add the normal cauldron block, just needs to run after the substitution */
+	/**
+	 * Internal method to add the normal cauldron block, just needs to run after the substitution
+	 */
 	public static void registerDefaultCauldron() {
 		cauldronBlockStates.put(Blocks.CAULDRON, CauldronState.WATER);
 	}
 
 	/**
 	 * Links a block state to a full iron cauldron state, should not be used for items that are not an iron cauldron
-	 * @param state          Block state being registered
-	 * @param cauldronState  State the cauldron is filled with
+	 * @param state         Block state being registered
+	 * @param cauldronState State the cauldron is filled with
 	 */
 	public static void registerFullCauldron(BlockState state, CauldronState cauldronState) {
 		cauldronBlockStates.put(state.getBlock(), cauldronState);
@@ -468,8 +470,8 @@ public class InspirationsRegistry {
 
 	/**
 	 * Checks if a block is a normal iron cauldron
-	 * @param state  State to check
-	 * @return  True if its a normal cauldron, false otherwise
+	 * @param state State to check
+	 * @return True if its a normal cauldron, false otherwise
 	 */
 	public static boolean isNormalCauldron(BlockState state) {
 		return cauldronBlockStates.containsKey(state.getBlock());
@@ -477,8 +479,8 @@ public class InspirationsRegistry {
 
 	/**
 	 * Gets the state for the given cauldron
-	 * @param state  Block state instance
-	 * @return  Cauldron state for the given block state
+	 * @param state Block state instance
+	 * @return Cauldron state for the given block state
 	 */
 	public static CauldronState getCauldronState(BlockState state) {
 		Block block = state.getBlock();
@@ -490,8 +492,8 @@ public class InspirationsRegistry {
 
 	/**
 	 * Checks if a given cauldron state has a full cauldron
-	 * @param state  Cauldron state to check
-	 * @return  True if it has a full cauldron
+	 * @param state Cauldron state to check
+	 * @return True if it has a full cauldron
 	 */
 	public static boolean hasFullCauldron(CauldronState state) {
 		return cauldronFullStates.containsKey(state);
@@ -499,8 +501,8 @@ public class InspirationsRegistry {
 
 	/**
 	 * Gets the full cauldron for a given state
-	 * @param state  Cauldron state to check
-	 * @return  Full cauldron block state
+	 * @param state Cauldron state to check
+	 * @return Full cauldron block state
 	 */
 	@Nullable
 	public static BlockState getFullCauldron(CauldronState state) {
