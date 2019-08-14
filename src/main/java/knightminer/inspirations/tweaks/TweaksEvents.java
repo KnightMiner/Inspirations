@@ -19,6 +19,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
@@ -26,9 +27,13 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.player.BonemealEvent;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract;
 import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
 import net.minecraftforge.eventbus.api.Event;
@@ -36,6 +41,7 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.items.ItemHandlerHelper;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 public class TweaksEvents {
@@ -347,6 +353,22 @@ public class TweaksEvents {
 					InspirationsNetwork.sendToClients(event.getWorld(), target.getPosition(), new MilkablePacket(target, false));
 				}
 			}
+		}
+	}
+
+	@SubscribeEvent
+	public static void fixShieldTooltip(ItemTooltipEvent event) {
+		if (!Config.fixShieldTooltip.get()) {
+			return;
+		}
+		ItemStack stack = event.getItemStack();
+		if (stack.getItem() != Items.SHIELD) {
+			return;
+		}
+		CompoundNBT tags = stack.getChildTag("BlockEntityTag");
+		if (tags != null && tags.contains("Patterns") && stack.isEnchanted()) {
+			ListNBT patterns = tags.getList("Patterns", 10);
+			event.getToolTip().add(patterns.size() + 1, new StringTextComponent(""));
 		}
 	}
 }

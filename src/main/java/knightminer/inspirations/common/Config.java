@@ -296,6 +296,7 @@ public class Config {
 	public static boolean shieldEnchantmentTable() {
 		return shieldEnchantmentTableRaw.get() && moreShieldEnchantments.get();
 	}
+	public static BooleanValue fixShieldTooltip;
 	public static BooleanValue axeWeaponEnchants;
 	public static BooleanValue axeEnchantmentTable;
 
@@ -675,6 +676,10 @@ public class Config {
 			shieldEnchantmentTableRaw = builder_override
 					.comment("If true, shields can be enchanted in an enchantment table. Does not support modded shields as it requires a registry substitution")
 					.define("enchantments.shieldTable", true);
+			fixShieldTooltip = builder
+					.comment("If true, fixes the tooltip on shield items so it looks better with both patterns and enchantments")
+					.define("fixShieldTooltip", true);
+
 			axeWeaponEnchants = builder
 					.comment("If true, axes will be able to be enchanted with weapon enchants such as looting, fire aspect, and knockback")
 					.define("enchantments.axeWeapon", true);
