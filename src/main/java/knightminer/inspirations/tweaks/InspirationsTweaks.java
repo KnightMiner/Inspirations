@@ -50,7 +50,6 @@ public class InspirationsTweaks extends PulseBase {
 	// blocks
 	public static Map<DyeColor, BlockFittedCarpet> fitCarpets = new HashMap<>();
 	public static Map<DyeColor, BlockFlatCarpet> flatCarpets = new HashMap<>();
-	public static Block flowerPot;
 	public static CropsBlock cactusCrop;
 	public static CropsBlock sugarCaneCrop;
 
@@ -89,9 +88,6 @@ public class InspirationsTweaks extends PulseBase {
 	public void registerBlocks(Register<Block> event) {
 		IForgeRegistry<Block> r = event.getRegistry();
 
-		if(Config.betterFlowerPot) {
-			flowerPot = register(r, new BlockBetterFlowerPot(), new ResourceLocation("flower_pot"));
-		}
 		registerCarpet(r, DyeColor.WHITE, Blocks.WHITE_CARPET);
 		registerCarpet(r, DyeColor.ORANGE, Blocks.ORANGE_CARPET);
 		registerCarpet(r, DyeColor.MAGENTA, Blocks.MAGENTA_CARPET);
@@ -192,11 +188,6 @@ public class InspirationsTweaks extends PulseBase {
 			Ingredient heartbeet = Ingredient.fromStacks(InspirationsShared.heartbeet);
 			PotionHelper.addMix(PotionTypes.WATER, heartbeet, PotionTypes.MUNDANE);
 			PotionHelper.addMix(PotionTypes.AWKWARD, heartbeet, PotionTypes.REGENERATION);
-		}
-		if(Config.betterFlowerPot) {
-			// add vanilla plants which are not met by the instanceof checks
-			InspirationsRegistry.registerFlower(Blocks.CACTUS, 0, 15);
-			InspirationsRegistry.registerFlower(Blocks.TALLGRASS, BlockTallGrass.EnumType.FERN.getMeta(), 4);
 		}
 		if(Config.brewMissingPotions) {
 			// we need to start by removing a couple vanilla ones which we override
