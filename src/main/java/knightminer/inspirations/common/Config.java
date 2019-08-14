@@ -29,6 +29,8 @@ public class Config {
 
 	public static Builder BUILDER;
 	public static ForgeConfigSpec SPEC;
+	public static Builder BUILDER_OVERRIDE;
+	public static ForgeConfigSpec SPEC_OVERRIDE;
 
 	// general
 	public static BooleanValue showAllVariants;
@@ -44,10 +46,14 @@ public class Config {
 	public static BooleanValue enableFlowers;
 	public static BooleanValue enableEnlightenedBush;
 
+
 	public static BooleanValue enableBookshelf;
-	public static BooleanValue enableColoredBooks;
+	private static BooleanValue enableColoredBooksRaw;
 	public static BooleanValue bookshelvesBoostEnchanting;
 	public static DoubleValue defaultEnchantingPower;
+	public static boolean enableColoredBooks() {
+		return enableColoredBooksRaw.get() && enableBookshelf.get();
+	}
 
 	public static ConfigValue<String> bookKeywords;
 	private static String bookKeywordsDefault = "almanac, atlas, book, catalogue, concordance, dictionary, directory, encyclopedia, guide, journal, lexicon, manual, thesaurus, tome";
@@ -89,16 +95,14 @@ public class Config {
 	}
 
 	// cauldron - extended
-	private static EnumValue<BooleanAndSimple> extendCauldron;
+	private static BooleanValue replaceCauldron;
+	private static BooleanValue enableCauldronRecipesRaw;
 
 	public static boolean enableCauldronRecipes() {
-		return extendCauldron.get() != BooleanAndSimple.FALSE;
+		return enableCauldronRecipesRaw.get();
 	}
 	public static boolean enableExtendedCauldron() {
-		return extendCauldron.get() != BooleanAndSimple.TRUE;
-	}
-	public static boolean simpleCauldronRecipes() {
-		return extendCauldron.get() == BooleanAndSimple.SIMPLE;
+		return replaceCauldron.get() && replaceCauldron.get();
 	}
 
 	// cauldron - extended options
@@ -344,11 +348,13 @@ public class Config {
 	public static BooleanValue tanJuiceInCauldron;
 	static {
 		BUILDER = new Builder();
-		configure(BUILDER);
+		BUILDER_OVERRIDE = new Builder();
+		configure(BUILDER, BUILDER_OVERRIDE);
 		SPEC = BUILDER.build();
+		SPEC_OVERRIDE = BUILDER_OVERRIDE.build();
 	}
 
-	private static void configure(Builder builder) {
+	private static void configure(Builder builder, Builder builder_override) {
 
 		showAllVariants = builder
 				.comment("Shows all variants for dynamically textured blocks, like bookshelves. If false just the first will be shown")
@@ -364,13 +370,10 @@ public class Config {
 			// bookshelves
 			enableBookshelf = builder
 					.comment("Enables the bookshelf: a decorative block to display books")
-					.worldRestart()
 					.define("bookshelf.enable", true);
-			enableColoredBooks = builder
+			enableColoredBooksRaw = builder
 					.comment("Enables colored books: basically colored versions of the vanilla book to decorate bookshelves")
-					.worldRestart()
 					.define("bookshelf.coloredBooks", true );
-			// Todo: force colored books when shelf is disabled.
 
 			bookshelvesBoostEnchanting = builder
 					.comment( "If true, bookshelves will increase enchanting table power.")
@@ -498,8 +501,8 @@ public class Config {
 		{
 			// anvil smashing
 			// configFile.moveProperty("tweaks", "anvilSmashing", "recipes");
-			enableAnvilSmashing = builder
-					.comment("Anvils break glass blocks and transform blocks into other blocks on landing. Uses a block override, so disable if another mod replaces anvils")
+			enableAnvilSmashing = builder_override
+					.comment("Anvils break glass blocks and transform blocks into other blocks on landing. Uses a block override, so disable if another mod replaces anvils.")
 					.worldRestart()
 					.define("anvilSmashing", true);
 
@@ -511,10 +514,13 @@ public class Config {
 					.defineEnum("spongeEmpty", SpongeEmptyCauldron.TRUE);
 
 			// extended options
-			extendCauldron = builder
-					.comment("Allows additional recipes to be performed in the cauldron. Can be 'true', 'false', or 'simple'. If true, requires a block substitution. If simple, functionality will be limited to water in cauldrons.")
+			replaceCauldron = builder_override
+					.comment("Replace the cauldron block to allow it to hold other liquids and perform recipes.")
 					.worldRestart()
-					.defineEnum("extendCauldron", BooleanAndSimple.TRUE);
+					.define("cauldron", true);
+			enableCauldronRecipesRaw = builder
+					.comment("Allows additional recipes to be performed in the cauldron. If the block replacement is disabled, functionality will be limited to water in cauldrons.")
+					.define("extendCauldron", true);
 
 			builder.push("cauldron");
 			{
@@ -667,7 +673,7 @@ public class Config {
 			moreShieldEnchantments = builder
 					.comment("If true, shields can now be enchanted with enchantments such as protection, fire aspect, knockback, and thorns")
 					.define("enchantments.moreShield", true);
-			shieldEnchantmentTableRaw = builder
+			shieldEnchantmentTableRaw = builder_override
 					.comment("If true, shields can be enchanted in an enchantment table. Does not support modded shields as it requires a registry substitution")
 					.define("enchantments.shieldTable", true);
 			axeWeaponEnchants = builder
@@ -687,8 +693,8 @@ public class Config {
 					.define("desaddlePig", true);
 
 			// fitted carpets
-			enableFittedCarpets = builder
-					.comment("Carpets fit to stairs. Uses a block override, so disable if another mod replaces carpets")
+			enableFittedCarpets = builder_override
+					.comment("Replace carpet blocks, allowing them to fit to stairs below them.")
 					.define("fittedCarpets", true);
 
 			// bonemeal
@@ -1012,7 +1018,7 @@ public class Config {
 			switch(property) {
 				// building
 				case "bookshelf": return enableBookshelf.get();
-				case "colored_books": return enableColoredBooks.get();
+				case "colored_books": return enableColoredBooks();
 				case "enlightened_bush": return enableEnlightenedBush.get();
 				case "flowers": return enableFlowers.get();
 				case "glass_door": return enableGlassDoor.get();
@@ -1034,6 +1040,7 @@ public class Config {
 				case "barometer": return enableBarometer.get();
 				case "charged_arrow": return enableChargedArrow.get();
 				case "craft_waypoint_compass": return craftWaypointCompass();
+				case "copy_waypoint_compass": return copyWaypointCompass();
 				case "crook": return separateCrook();
 				case "dye_waypoint_compass": return dyeWaypointCompass();
 				case "lock": return enableLock.get();

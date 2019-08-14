@@ -1,7 +1,8 @@
 package knightminer.inspirations;
 
+import com.electronwill.nightconfig.core.file.CommentedFileConfig;
+import com.electronwill.nightconfig.core.io.WritingMode;
 import knightminer.inspirations.common.Config;
-import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.recipe.ModItemList;
@@ -29,6 +30,7 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.registries.IForgeRegistry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -53,11 +55,23 @@ public class Inspirations {
 
 	public Inspirations() {
 		pulseManager = new PulseManager(Config.pulseConfig);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
 
-        MinecraftForge.EVENT_BUS.register(pulseManager);
-        MinecraftForge.EVENT_BUS.addListener(this::registerRecipeTypes);
-        FMLJavaModLoadingContext.get().getModEventBus().register(this);
+		log.info("Loading replacements config file...");
+		CommentedFileConfig repl_config = CommentedFileConfig
+				.builder(FMLPaths.CONFIGDIR.get().resolve(modID + "-replacements.toml"))
+				.sync().
+				preserveInsertionOrder().
+				writingMode(WritingMode.REPLACE).
+				build();
+		repl_config.load();
+		repl_config.save();
+		Config.SPEC_OVERRIDE.setConfig(repl_config);
+		log.info("Config loaded.");
+
+		MinecraftForge.EVENT_BUS.register(pulseManager);
+		MinecraftForge.EVENT_BUS.addListener(this::registerRecipeTypes);
+		FMLJavaModLoadingContext.get().getModEventBus().register(this);
 
 		pulseManager.registerPulse(new InspirationsShared());
 		pulseManager.registerPulse(new InspirationsBuilding());
@@ -73,7 +87,7 @@ public class Inspirations {
 //		pulseManager.registerPulse(new RatsPlugin());
 //		pulseManager.registerPulse(new TwilightForestPlugin());
 
-//		 needs to be done statically, but only the recipes module uses it
+//		// needs to be done statically, but only the recipes module uses it
 //		if(pulseManager.isPulseLoaded(InspirationsRecipes.pulseID) && Config.INSTANCE.enableCauldronFluids.get()) {
 //			FluidRegistry.enableUniversalBucket();
 //		}
@@ -89,10 +103,9 @@ public class Inspirations {
 		InspirationsRegistry.setConfig("biggerCauldron", Config.enableBiggerCauldron());
 		InspirationsRegistry.setConfig("expensiveCauldronBrewing", Config.expensiveCauldronBrewing());
 		InspirationsRegistry.setBookKeywords(Arrays
-			.stream(Config.bookKeywords.get()
-			.split(","))
-			.map(String::trim)
-			.collect(Collectors.toList())
+				.stream(Config.bookKeywords.get().split(","))
+				.map(String::trim)
+				.collect(Collectors.toList())
 		);
 	}
 
