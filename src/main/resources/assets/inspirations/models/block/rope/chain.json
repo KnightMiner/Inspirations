@@ -1,11 +1,24 @@
 {
     "textures": {
-        "chain": "block/hopper_outside",
+        "chain": "minecraft:block/hopper_outside",
         "particle": "inspirations:block/chain"
     },
     "elements": [
         {
             "name": "Bottom",
+            "from": [ 7, 0, 7 ], 
+            "to": [ 9, 1, 9 ], 
+            "faces": {
+                "north": { "texture": "#chain" },
+                "east":  { "texture": "#chain" },
+                "south": { "texture": "#chain" },
+                "west":  { "texture": "#chain" },
+                "up":    { "texture": "#chain" },
+                "down":  { "texture": "#chain", "cullface": "down" }
+            }
+        },
+        {
+            "name": "MiddleBottom",
             "from": [ 7, 4, 7 ], 
             "to": [ 9, 5, 9 ], 
             "faces": {
@@ -18,7 +31,7 @@
             }
         },
         {
-            "name": "Middle",
+            "name": "MiddleTop",
             "from": [ 7, 8, 7 ], 
             "to": [ 9, 9, 9 ], 
             "faces": {
@@ -44,7 +57,33 @@
             }
         },
         {
-            "name": "RingWest",
+            "name": "BottomRingWest",
+            "from": [ 6.5, 1, 7.5 ], 
+            "to": [ 7.5, 4, 8.5 ], 
+            "faces": {
+                "north": { "texture": "#chain", "uv": [ 6, 12,  7, 15 ] },
+                "east":  { "texture": "#chain" },
+                "south": { "texture": "#chain", "uv": [ 6, 12,  7, 15 ] },
+                "west":  { "texture": "#chain" },
+                "up":    { "texture": "#chain", "uv": [ 6, 12,  7, 13 ] },
+                "down":  { "texture": "#chain", "uv": [ 6, 14,  7, 15 ] }
+            }
+        },
+        {
+            "name": "BottomRingEast",
+            "from": [ 8.5, 1, 7.5 ], 
+            "to": [ 9.5, 4, 8.5 ], 
+            "faces": {
+                "north": { "texture": "#chain", "uv": [ 9, 12, 10, 15 ] },
+                "east":  { "texture": "#chain" },
+                "south": { "texture": "#chain", "uv": [ 9, 12, 10, 15 ] },
+                "west":  { "texture": "#chain" },
+                "up":    { "texture": "#chain", "uv": [ 9, 12, 10, 13 ] },
+                "down":  { "texture": "#chain", "uv": [ 9, 14, 10, 15 ] }
+            }
+        },
+        {
+            "name": "TopRingWest",
             "from": [ 6.5, 9, 7.5 ], 
             "to": [ 7.5, 12, 8.5 ], 
             "faces": {
@@ -57,7 +96,7 @@
             }
         },
         {
-            "name": "RingEast",
+            "name": "TopRingEast",
             "from": [ 8.5, 9, 7.5 ], 
             "to": [ 9.5, 12, 8.5 ], 
             "faces": {

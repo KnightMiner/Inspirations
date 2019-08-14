@@ -111,19 +111,28 @@ public class InspirationsBuilding extends PulseBase {
 		rope = registerBlock(r, new BlockRope(
 			Block.Properties.create(Material.CARPET)
 				.sound(SoundType.CLOTH)
-				.hardnessAndResistance(0.5F)
+				.hardnessAndResistance(0.5F),
+				Items.STICK,
+				BlockRope.SHAPE_ROPE,
+				BlockRope.SHAPE_ROPE_BOTTOM
 		), "rope");
 		vine = registerBlock(r, new BlockRope(
 			Block.Properties.create(Material.CARPET)
 				.sound(SoundType.PLANT)
-				.hardnessAndResistance(0.5F)
+				.hardnessAndResistance(0.5F),
+				Items.BAMBOO,
+				BlockRope.SHAPE_ROPE,
+				BlockRope.SHAPE_ROPE_BOTTOM
 		), "vine");
 		chain = registerBlock(r, new BlockRope(
 				Block.Properties.create(Material.IRON)
 				.sound(SoundType.METAL)
 				.hardnessAndResistance(5.0F)
 				.harvestTool(ToolType.PICKAXE)
-				.harvestLevel(0)
+				.harvestLevel(0),
+				Items.IRON_NUGGET,
+				BlockRope.SHAPE_CHAIN,
+				BlockRope.SHAPE_CHAIN_BOTTOM
 		), "chain");
 
 		glassDoor = registerBlock(r, new BlockGlassDoor(), "glass_door");

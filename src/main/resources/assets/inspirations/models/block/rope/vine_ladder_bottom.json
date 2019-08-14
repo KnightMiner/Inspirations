@@ -1,0 +1,92 @@
+{
+  "credit": "Made with Blockbench",
+  "textures": {
+    "bottom":  "inspirations:block/vine_bottom",
+    "particle": "inspirations:block/vine_bottom",
+    "rung": "inspirations:block/rope_ladder"
+  },
+  "elements": [
+    {
+      "name": "NorthSouth",
+      "from": [6, 8, 8],
+      "to": [10, 16, 8],
+      "faces": {
+        "north": {"uv": [6, 0, 10, 8], "texture": "#bottom", "tintindex": 0},
+        "south": {"uv": [6, 0, 10, 8], "texture": "#bottom", "tintindex": 0}
+      }
+    },
+    {
+      "name": "EastWest",
+      "from": [8, 8, 6],
+      "to": [8, 16, 10],
+      "faces": {
+        "east": {"uv": [6, 0, 10, 8], "texture": "#bottom", "tintindex": 0},
+        "west": {"uv": [6, 0, 10, 8], "texture": "#bottom", "tintindex": 0}
+      }
+    },
+    {
+      "name": "TopBottom",
+      "from": [7, 8, 7],
+      "to": [9, 16, 9],
+      "faces": {
+        "north": {"uv": [7, 0, 9, 8], "texture": "#bottom", "tintindex": 0},
+        "east":  {"uv": [7, 0, 9, 8], "texture": "#bottom", "tintindex": 0},
+        "south": {"uv": [7, 0, 9, 8], "texture": "#bottom", "tintindex": 0},
+        "west":  {"uv": [7, 0, 9, 8], "texture": "#bottom", "tintindex": 0},
+        "up":    {"uv": [7, 7, 9, 8], "texture": "#bottom", "tintindex": 0, "cullface": "up"}
+      }
+    },
+    {
+      "name": "Ball",
+      "from": [6.5, 4, 6.5],
+      "to": [9.5, 8, 9.5],
+      "faces": {
+        "north": {"uv": [7, 8, 10, 12], "texture": "#bottom", "tintindex": 0},
+        "east":  {"uv": [7, 8, 10, 12], "texture": "#bottom", "tintindex": 0},
+        "south": {"uv": [7, 8, 10, 12], "texture": "#bottom", "tintindex": 0},
+        "west":  {"uv": [7, 8, 10, 12], "texture": "#bottom", "tintindex": 0},
+        "up":    {"uv": [7, 8, 10, 12], "texture": "#bottom", "tintindex": 0},
+        "down":  {"uv": [7, 8, 10, 12], "texture": "#bottom", "tintindex": 0}
+      }
+    },
+    {
+      "name": "RungBottom",
+      "from": [1, 5, 7.5],
+      "to": [15, 7, 8.5],
+      "faces": {
+        "north": {"uv": [ 1,  9, 15, 11], "texture": "#rung"},
+        "east":  {"uv": [ 1,  9,  2, 11], "texture": "#rung"},
+        "south": {"uv": [ 1,  9, 15, 11], "texture": "#rung"},
+        "west":  {"uv": [14,  9, 15, 11], "texture": "#rung"},
+        "up":    {"uv": [ 1,  9, 15, 10], "texture": "#rung"},
+        "down":  {"uv": [ 0, 10, 14, 11], "texture": "#rung"}
+      }
+    },
+    {
+      "name": "RungMiddle",
+      "from": [1, 9, 7.5],
+      "to": [15, 11, 8.5],
+      "faces": {
+        "north": {"uv": [ 1, 5, 15, 7], "texture": "#rung"},
+        "east":  {"uv": [ 1, 5,  2, 7], "texture": "#rung"},
+        "south": {"uv": [ 1, 5, 15, 7], "texture": "#rung"},
+        "west":  {"uv": [14, 5, 15, 7], "texture": "#rung"},
+        "up":    {"uv": [ 1, 5, 15, 6], "texture": "#rung"},
+        "down":  {"uv": [ 1, 6, 15, 7], "texture": "#rung"}
+      }
+    },
+    {
+      "name": "RungTop",
+      "from": [1, 13, 7.5],
+      "to": [15, 15, 8.5],
+      "faces": {
+        "north": {"uv": [ 1, 1, 15, 3], "texture": "#rung"},
+        "east":  {"uv": [ 1, 1,  2, 3], "texture": "#rung"},
+        "south": {"uv": [ 1, 1, 15, 3], "texture": "#rung"},
+        "west":  {"uv": [14, 1, 15, 3], "texture": "#rung"},
+        "up":    {"uv": [ 1, 1, 15, 2], "texture": "#rung"},
+        "down":  {"uv": [ 1, 2, 15, 3], "texture": "#rung"}
+      }
+    }
+  ]
+}

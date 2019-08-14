@@ -1,6 +1,10 @@
 {
   "variants": {
-    "bottom=false": { "model": "inspirations:block/vine" },
-    "bottom=true":  { "model": "inspirations:block/vine_bottom" }
+    "bottom=false,rungs=none": { "model": "inspirations:block/rope/vine" },
+    "bottom=false,rungs=x":    { "model": "inspirations:block/rope/vine_ladder" },
+    "bottom=false,rungs=z":    { "model": "inspirations:block/rope/vine_ladder", "y": 90 },
+    "bottom=true,rungs=none":  { "model": "inspirations:block/rope/vine_bottom" },
+    "bottom=true,rungs=x":     { "model": "inspirations:block/rope/vine_ladder_bottom" },
+    "bottom=true,rungs=z":     { "model": "inspirations:block/rope/vine_ladder_bottom", "y": 90 }
   }
 }
