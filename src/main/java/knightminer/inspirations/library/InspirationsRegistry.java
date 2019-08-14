@@ -56,6 +56,9 @@ public class InspirationsRegistry {
 	public static final ToolType SHEAR_TYPE = ToolType.get("shears");
 	public static final ToolType CROOK_TYPE = ToolType.get("crook");
 	public static final ToolType HOE_TYPE = ToolType.get("hoe");
+
+	public static final Tag<Item> TAG_DYE_BOTTLES = new ItemTags.Wrapper(Util.getResource("dyed_water_bottles"));
+
     /**
 	 * Sets a value from the Inspirations config into the registry. Used to keep the config out of the library
 	 * @param key    Key to set
@@ -167,102 +170,7 @@ public class InspirationsRegistry {
 		// Clear the cache.
 		books.clear();
 	}
-
-
-	/*
-	 * Flowers
-	 */
-	private static Map<Item, Integer> flowers = new HashMap<>();
-
-	/**
-	 * Checks if the given item stack is a flower
-	 * @param stack  Input stack
-	 * @return  True if its a flower
-	 */
-	public static boolean isFlower(ItemStack stack) {
-		return getFlowerComparatorPower(stack) > 0;
-	}
-
-	/**
-	 * Gets the comparator level for a flower
-	 * @param stack  Input flower stack
-	 * @return  Comparator level
-	 */
-	public static int getFlowerComparatorPower(ItemStack stack) {
-		return flowers.computeIfAbsent(stack.getItem(), (key) -> {
-			Block block = Block.getBlockFromItem(key);
-
-			// not a flower means 0 override
-			// this handles vanilla logic excluding cactuses and ferns, which are registered directly
-			if(!(block instanceof BushBlock)
-					|| block instanceof DoublePlantBlock
-					|| block instanceof TallGrassBlock
-					|| block instanceof CropsBlock
-					|| block instanceof LilyPadBlock) {
-				return 0;
-			}
-
-			// cactus: 15
-			if(block instanceof SaplingBlock) {
-				return 12;
-			}
-			if(block instanceof DeadBushBlock) {
-				return 10;
-			}
-			// fern: 4
-			if(block instanceof MushroomBlock) {
-				return 1;
-			}
-
-			// flowers mostly
-			return 7;
-		});
-	}
-
-	/**
-	 * Registers an override to state a stack is definitely a flower or not a flower, primarily used by the config
-	 * @param stack     ItemStack which is a flower
-	 * @param isFlower  True if its a flower, false if its not a flower
-	 * @deprecated use {@link #registerFlower(ItemStack, int)}
-	 */
-	@Deprecated
-	public static void registerFlower(ItemStack stack, boolean isFlower) {
-		registerFlower(stack, isFlower ? 7 : 0);
-	}
-
-	/**
-	 * Registers an override to state a stack is definitely a flower or not a flower, specifying the power
-	 * @param stack  ItemStack to override
-	 * @param power  Comparator power. Set to 0 blacklist this stack as a flower
-	 */
-	public static void registerFlower(ItemStack stack, int power) {
-		flowers.put(stack.getItem(), power);
-	}
-
-	/**
-	 * Registers an override to state a stack is definitely a flower or not a flower, primarily used by the config
-	 * @param block      Block which is a flower
-	 * @param isFlower  True if its a flower, false if its not a flower
-	 */
-	@Deprecated
-	public static void registerFlower(Block block, boolean isFlower) {
-		registerFlower(new ItemStack(block), isFlower ? 7 : 0);
-	}
-
-	/**
-	 * Registers an override to state a stack is definitely a flower or not a flower, specifying the power
-	 * @param block  Block to override
-	 * @param meta   Meta to override
-	 * @param power  Comparator power. Set to 0 blacklist this stack as a flower
-	 */
-	public static void registerFlower(Block block, int meta, int power) {
-		Item item = Item.getItemFromBlock(block);
-		if(item != Items.AIR) {
-			flowers.put(item, power);
-		}
-	}
-
-
+	
 	/*
 	 * Anvil smashing
 	 */
@@ -492,8 +400,6 @@ public class InspirationsRegistry {
 	 */
 	private static boolean cauldronBigger = false, expensiveCauldronBrewing = false;
 	private static Set<Fluid> cauldronWater = new HashSet<>();
-	private static Set<Block> cauldronFireBlocks = new HashSet<>();
-	private static Set<BlockState> cauldronFireStates = new HashSet<>();
 	private static Map<Block,CauldronState> cauldronBlockStates = new HashMap<>();
 	private static Map<CauldronState,BlockState> cauldronFullStates = new HashMap<>();
 
@@ -531,28 +437,18 @@ public class InspirationsRegistry {
 	}
 
 	/**
-	 * Registers all variants of a block as acting as fire to heat a cauldron
-	 * @param block  Block to register
-	 */
-	public static void registerCauldronFire(Block block) {
-		cauldronFireBlocks.add(block);
-	}
-
-	/**
-	 * Registers a single block state to act as fire for a cauldron
-	 * @param block  Block state to register
-	 */
-	public static void registerCauldronFire(BlockState block) {
-		cauldronFireStates.add(block);
-	}
-
-	/**
 	 * Checks if a state is considered fire in a cauldron
 	 * @param state  State to check
 	 * @return  True if the state is considered fire
 	 */
 	public static boolean isCauldronFire(BlockState state) {
-		return state.getBlock().isIn(TAG_CAULDRON_FIRE);
+		if (state.getBlock().isIn(TAG_CAULDRON_FIRE)) {
+			return true;
+		}
+		if (state.getBlock() == Blocks.CAMPFIRE && state.get(CampfireBlock.LIT)) {
+			return true;
+		}
+		return false;
 	}
 
 	/** Internal method to add the normal cauldron block, just needs to run after the substitution */
