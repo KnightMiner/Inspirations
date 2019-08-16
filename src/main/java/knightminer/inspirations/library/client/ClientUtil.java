@@ -17,9 +17,6 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.Item;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.profiler.IProfiler;
-import net.minecraft.resources.IFutureReloadListener;
-import net.minecraft.resources.IResourceManager;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -38,21 +35,20 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 
 @OnlyIn(Dist.CLIENT)
 public final class ClientUtil {
 	public static final String TAG_TEXTURE_PATH = "texture_path";
 	private static final Minecraft mc = Minecraft.getInstance();
-	private ClientUtil() {}
+
+	private ClientUtil() { }
 
 	private static Map<Item, Integer> colorCache = new HashMap<>();
 
 	/**
 	 * Gets the color for an ItemStack
-	 * @param stack  Input stack
-	 * @return  Color for the stack
+	 * @param stack Input stack
+	 * @return Color for the stack
 	 */
 	public static int getStackColor(ItemStack stack) {
 		return colorCache.computeIfAbsent(stack.getItem(), ClientUtil::getStackColor);
@@ -61,16 +57,16 @@ public final class ClientUtil {
 	/**
 	 * Gets the color for an item stack, used internally by colorCache. Licensed under http://www.apache.org/licenses/LICENSE-2.0
 	 * @param key Item meta cache combination
-	 * @return  Color for the item meta combination
+	 * @return Color for the item meta combination
 	 * @author InsomniaKitten
 	 */
 	private static Integer getStackColor(Item key) {
 		IBakedModel model = mc.getItemRenderer().getItemModelWithOverrides(new ItemStack(key), null, null);
-		if(model == null) {
+		if (model == null) {
 			return -1;
 		}
 		TextureAtlasSprite sprite = model.getParticleTexture(EmptyModelData.INSTANCE);
-		if(sprite == null) {
+		if (sprite == null) {
 			return -1;
 		}
 		float r = 0, g = 0, b = 0, count = 0;
@@ -118,7 +114,7 @@ public final class ClientUtil {
 	public static TextureAtlasSprite getSprite(ResourceLocation location) {
 		AtlasTexture textureMapBlocks = mc.getTextureMap();
 		TextureAtlasSprite sprite = null;
-		if(location != null) {
+		if (location != null) {
 			sprite = textureMapBlocks.getSprite(location);
 		}
 		if (sprite == null) {
@@ -147,15 +143,15 @@ public final class ClientUtil {
 
 	/**
 	 * Gets the cached texture from the TileEntity, or stores it from the texture stack if none is cached
-	 * @param te  Tile Entity
-	 * @return  String of texture path, or empty string if none found
+	 * @param te Tile Entity
+	 * @return String of texture path, or empty string if none found
 	 */
 	public static String getTexturePath(TileEntity te) {
 		String texture = te.getTileData().getString(TAG_TEXTURE_PATH);
-		if(texture.isEmpty()) {
+		if (texture.isEmpty()) {
 			// load it from saved block
 			ItemStack stack = ItemStack.read(te.getTileData().getCompound(TextureBlockUtil.TAG_TEXTURE));
-			if(!stack.isEmpty()) {
+			if (!stack.isEmpty()) {
 				Block block = Block.getBlockFromItem(stack.getItem());
 				texture = ModelHelper.getTextureFromBlockstate(block.getDefaultState()).getName().toString();
 				te.getTileData().putString(TAG_TEXTURE_PATH, texture);
@@ -164,25 +160,27 @@ public final class ClientUtil {
 		return texture;
 	}
 
-	/** Any items which have blockColors methods that throw an exception */
+	/**
+	 * Any items which have blockColors methods that throw an exception
+	 */
 	private static Set<Item> unsafe = new HashSet<>();
 
 	/**
 	 * Gets the block colors for a block from an itemstack, logging an exception if it fails. Use this to get block colors when the implementation is unknown
-	 * @param stack  Stack to use
-	 * @param world  World
-	 * @param pos    Pos
-	 * @param index  Tint index
-	 * @return  color, or -1 for undefined
+	 * @param stack Stack to use
+	 * @param world World
+	 * @param pos   Pos
+	 * @param index Tint index
+	 * @return color, or -1 for undefined
 	 */
 	public static int getStackBlockColorsSafe(ItemStack stack, @Nullable IEnviromentBlockReader world, @Nullable BlockPos pos, int index) {
-		if(stack.isEmpty()) {
+		if (stack.isEmpty()) {
 			return -1;
 		}
 
 		// do not try if it failed before
 		Item item = stack.getItem();
-		if(!unsafe.contains(item)) {
+		if (!unsafe.contains(item)) {
 			try {
 				return ClientUtil.getStackBlockColors(stack, world, pos, index);
 			} catch (Exception e) {
@@ -198,14 +196,14 @@ public final class ClientUtil {
 
 	/**
 	 * Gets the block colors from an item stack
-	 * @param stack  Stack to check
-	 * @param world  World
-	 * @param pos    Pos
-	 * @param index  Tint index
-	 * @return  color, or -1 for undefined
+	 * @param stack Stack to check
+	 * @param world World
+	 * @param pos   Pos
+	 * @param index Tint index
+	 * @return color, or -1 for undefined
 	 */
 	public static int getStackBlockColors(ItemStack stack, @Nullable IEnviromentBlockReader world, @Nullable BlockPos pos, int index) {
-		if(stack.isEmpty() || !(stack.getItem() instanceof BlockItem)) {
+		if (stack.isEmpty() || !(stack.getItem() instanceof BlockItem)) {
 			return -1;
 		}
 		BlockItem item = (BlockItem) stack.getItem();
@@ -215,11 +213,11 @@ public final class ClientUtil {
 
 	/**
 	 * Renders a colored sprite to display in JEI as cauldron contents
-	 * @param x         Sprite X position
-	 * @param y         Sprite Y position
-	 * @param location  Sprite resource location
-	 * @param color     Sprite color
-	 * @param level     Cauldron level
+	 * @param x        Sprite X position
+	 * @param y        Sprite Y position
+	 * @param location Sprite resource location
+	 * @param color    Sprite color
+	 * @param level    Cauldron level
 	 */
 	public static void renderJEICauldronFluid(int x, int y, ResourceLocation location, float[] color, int level) {
 		GlStateManager.enableBlend();
@@ -227,7 +225,7 @@ public final class ClientUtil {
 		GlStateManager.color3f(color[0], color[1], color[2]);
 		// 0 means JEI ingredient list
 		TextureAtlasSprite sprite = ClientUtil.getSprite(location);
-		if(level == 0) {
+		if (level == 0) {
 			ClientUtil.renderFilledSprite(sprite, x, y, 16, 16);
 		} else {
 			int height = ((10 * level) / InspirationsRegistry.getCauldronMax());
