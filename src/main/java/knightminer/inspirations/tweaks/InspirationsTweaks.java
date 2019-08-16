@@ -104,6 +104,7 @@ public class InspirationsTweaks extends PulseBase {
 		for (BlockFlatCarpet carpet : flatCarpets.values()) {
 			BlockItem item = register(r, new BlockItem(carpet, new Item.Properties().group(ItemGroup.DECORATIONS)), carpet.getRegistryName());
 			Item.BLOCK_TO_ITEM.put(carpet, item);
+			Item.BLOCK_TO_ITEM.put(fitCarpets.get(carpet.getColor()), item);
 		}
 
 		cactusSeeds = registerItem(r, new HidableBlockItem(
