@@ -3,6 +3,7 @@ package knightminer.inspirations.tweaks;
 import knightminer.inspirations.common.ClientProxy;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.Util;
+import knightminer.inspirations.tweaks.client.PortalColorHandler;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.ItemColors;
@@ -34,6 +35,12 @@ public class TweaksClientProxy extends ClientProxy {
 	private static final ResourceLocation FIREWORKS_VANILLA = new ModelResourceLocation("firework_rocket", "inventory");
 	private static final ResourceLocation FIREWORKS_TINTED = Util.getResource("item/fireworks");
 
+	private static final ResourceLocation PORTAL_EW_VANILLA = new ModelResourceLocation(
+			"minecraft:nether_portal", "axis=z");
+	private static final ResourceLocation PORTAL_NS_VANILLA = new ModelResourceLocation(
+			"minecraft:nether_portal", "axis=x");
+	private static final ResourceLocation PORTAL_EW_TINTED = Util.getResource("block/nether_portal_tinted_ew");
+	private static final ResourceLocation PORTAL_NS_TINTED = Util.getResource("block/nether_portal_tinted_ns");
 
 	private static final ResourceLocation CAULDRON_MODEL_VANILLA = new ModelResourceLocation("cauldron", "inventory");
 	private static final ResourceLocation CAULDRON_ITEM_MODEL = new ModelResourceLocation(Util.getResource("cauldron"), "inventory");
@@ -41,6 +48,9 @@ public class TweaksClientProxy extends ClientProxy {
 	@SubscribeEvent
 	public void loadCustomModels(ModelRegistryEvent event) {
 		// Register these models to be loaded in directly.
+		ModelLoader.addSpecialModel(PORTAL_EW_TINTED);
+		ModelLoader.addSpecialModel(PORTAL_NS_TINTED);
+
 		ModelLoader.addSpecialModel(ENCHANTED_BOOK_TINTED);
 		ModelLoader.addSpecialModel(FIREWORKS_TINTED);
 
@@ -57,6 +67,9 @@ public class TweaksClientProxy extends ClientProxy {
 			map.put(CAULDRON_MODEL_VANILLA, map.get(CAULDRON_ITEM_MODEL));
 		}
 
+		if (Config.customPortalColor.get()) {
+			map.put(PORTAL_EW_VANILLA, map.get(PORTAL_EW_TINTED));
+			map.put(PORTAL_NS_VANILLA, map.get(PORTAL_NS_TINTED));
 		}
 
 		if (Config.coloredEnchantedRibbons.get()) {
@@ -79,6 +92,9 @@ public class TweaksClientProxy extends ClientProxy {
 			}
 			return BiomeColors.getGrassColor(world, pos);
 		}, InspirationsTweaks.sugarCaneCrop);
+
+		// portal tinting
+		registerBlockColors(colors, PortalColorHandler.INSTANCE, Blocks.NETHER_PORTAL);
 	}
 
 	@SubscribeEvent

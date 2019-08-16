@@ -311,6 +311,7 @@ public class Config {
 	public static BooleanValue dispensersPlaceAnvils;
 	public static BooleanValue milkCooldown;
 	public static IntValue milkCooldownTime;
+	public static BooleanValue customPortalColor;
 
 	// heartbeet
 	public static BooleanValue enableHeartbeet;
@@ -778,6 +779,9 @@ public class Config {
 			milkCooldownTime = builder
 					.comment("Delay in seconds after milking a cow before it can be milked again.")
 					.defineInRange("milkCooldown.time", 600, 1, Short.MAX_VALUE);
+			customPortalColor = builder
+					.comment( "Allows the portal color to be changed by placing colored blocks under the portal. Any block that tints a beacon beam will work for the color.")
+					.define("customPortalColor", true);
 		}
 		builder.pop();
 
