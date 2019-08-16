@@ -216,10 +216,10 @@ public class BlockRope extends HidableBlock implements IWaterLoggable {
 	public static final VoxelShape[] SHAPE_CHAIN_BOTTOM = new VoxelShape[3];
 
 	static {
-		VoxelShape rope_core = Block.makeCuboidShape(7, 0, 7, 9, 10, 9);
+		VoxelShape rope_core = Block.makeCuboidShape(7, 0, 7, 9, 16, 9);
 		VoxelShape rope_core_bottom = VoxelShapes.or(
-				Block.makeCuboidShape(7, 8, 7, 9, 16, 9),
-				Block.makeCuboidShape(6.5, 4, 6.5, 9.5, 8, 9.5)
+				Block.makeCuboidShape(7, 7, 7, 9, 16, 9),
+				Block.makeCuboidShape(6.5, 4, 6.5, 9.5, 7, 9.5)
 		);
 
 		VoxelShape rope_rungs_x = VoxelShapes.or(
