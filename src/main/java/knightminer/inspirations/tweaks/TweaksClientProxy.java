@@ -1,72 +1,70 @@
 package knightminer.inspirations.tweaks;
 
-import java.util.LinkedHashMap;
-
-import com.google.common.collect.Maps;
-
 import knightminer.inspirations.common.ClientProxy;
 import knightminer.inspirations.common.Config;
-import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.library.Util;
-import knightminer.inspirations.library.client.ClientUtil;
-import knightminer.inspirations.library.client.PropertyStateMapper;
-import knightminer.inspirations.tweaks.block.BlockFittedCarpet;
-import net.minecraft.block.BlockCarpet;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.ItemColors;
+import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemEnchantedBook;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.item.EnchantedBookItem;
+import net.minecraft.item.Items;
+import net.minecraft.nbt.INBT;
+import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.BiomeColors;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.ForgeRegistries;
+
+import java.util.Map;
 
 public class TweaksClientProxy extends ClientProxy {
+	private static final ResourceLocation ENCHANTED_BOOK_VANILLA = new ModelResourceLocation("enchanted_book", "inventory");
+	private static final ResourceLocation ENCHANTED_BOOK_TINTED = Util.getResource("item/enchanted_book");
 
-	private static final ResourceLocation CARPET_MODEL = Util.getResource("carpet");
-	private static final ResourceLocation CAULDRON_ITEM_MODEL = Util.getResource("cauldron_item");
-	private static final ResourceLocation ENCHANTED_BOOK = Util.getResource("enchanted_book");
-	private static final ResourceLocation FIREWORKS = Util.getResource("fireworks");
+	private static final ResourceLocation FIREWORKS_VANILLA = new ModelResourceLocation("firework_rocket", "inventory");
+	private static final ResourceLocation FIREWORKS_TINTED = Util.getResource("item/fireworks");
+
+
+	private static final ResourceLocation CAULDRON_MODEL_VANILLA = new ModelResourceLocation("cauldron", "inventory");
+	private static final ResourceLocation CAULDRON_ITEM_MODEL = new ModelResourceLocation(Util.getResource("cauldron"), "inventory");
 
 	@SubscribeEvent
-	public void registerModels(ModelRegistryEvent event) {
-		setModelStateMapper(InspirationsTweaks.carpet, new PropertyStateMapper(CARPET_MODEL,
-				BlockCarpet.COLOR,
-				BlockFittedCarpet.NORTHWEST, BlockFittedCarpet.NORTHEAST, BlockFittedCarpet.SOUTHWEST, BlockFittedCarpet.SOUTHEAST
-				));
-		setModelStateMapper(InspirationsTweaks.flowerPot, new FlowerPotStateMapper());
+	public void loadCustomModels(ModelRegistryEvent event) {
+		// Register these models to be loaded in directly.
+		ModelLoader.addSpecialModel(ENCHANTED_BOOK_TINTED);
+		ModelLoader.addSpecialModel(FIREWORKS_TINTED);
 
-		registerItemModel(InspirationsTweaks.cactusSeeds);
-		registerItemModel(InspirationsTweaks.carrotSeeds);
-		registerItemModel(InspirationsTweaks.potatoSeeds);
-		registerItemModel(InspirationsTweaks.sugarCaneSeeds);
+		ModelLoader.addSpecialModel(CAULDRON_ITEM_MODEL);
+	}
 
-		if(Config.betterCauldronItem) {
-			// if recipes is loaded, pull that model as there is a chance the two are different
-			// the extended cauldron needed to replace the model to add tintindex's
-			ResourceLocation model = CAULDRON_ITEM_MODEL;
-			if(PulseBase.isRecipesLoaded() && Config.enableExtendedCauldron) {
-				model = RecipesClientProxy.CAULDRON_MODEL;
-			}
-			registerItemModel(Items.CAULDRON, 0, model);
+
+	@SubscribeEvent
+	public void swapModels(ModelBakeEvent event) {
+		// Switch to the custom versions when loading models.
+		Map<ResourceLocation, IBakedModel>map = event.getModelRegistry();
+
+		if(Config.betterCauldronItem.get()) {
+			map.put(CAULDRON_MODEL_VANILLA, map.get(CAULDRON_ITEM_MODEL));
 		}
 
-		if(Config.coloredEnchantedRibbons) {
-			registerItemModel(Items.ENCHANTED_BOOK, ENCHANTED_BOOK);
 		}
-		if(Config.coloredFireworkItems) {
-			registerItemModel(Items.FIREWORKS, 0, FIREWORKS);
+
+		if (Config.coloredEnchantedRibbons.get()) {
+			map.put(ENCHANTED_BOOK_VANILLA, map.get(ENCHANTED_BOOK_TINTED));
+		}
+
+		if (Config.coloredFireworkItems.get()) {
+			map.put(FIREWORKS_VANILLA, map.get(FIREWORKS_TINTED));
 		}
 	}
 
@@ -94,8 +92,8 @@ public class TweaksClientProxy extends ClientProxy {
 				Enchantment.Rarity rarity = Enchantment.Rarity.COMMON;
 				for(INBT tag : EnchantedBookItem.getEnchantments(stack)) {
 					if(tag.getId() == Constants.NBT.TAG_COMPOUND) {
-						int id = ((CompoundNBT) tag).getShort("id");
-						Enchantment enchantment = Enchantment.getEnchantmentByID(id);
+						ResourceLocation id = new ResourceLocation(((CompoundNBT) tag).getString("id"));
+						Enchantment enchantment = ForgeRegistries.ENCHANTMENTS.getValue(id);
 						if(enchantment != null) {
 							Enchantment.Rarity newRarity = enchantment.getRarity();
 							if(newRarity != null && newRarity.getWeight() < rarity.getWeight()) {
