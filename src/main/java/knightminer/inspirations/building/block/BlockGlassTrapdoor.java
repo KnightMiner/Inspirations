@@ -17,16 +17,16 @@ public class BlockGlassTrapdoor extends TrapDoorBlock {
 
 	public BlockGlassTrapdoor() {
 		super(Block.Properties.create(Material.GLASS)
-			.hardnessAndResistance(0.3F)
-			.sound(SoundType.GLASS)
+				.hardnessAndResistance(0.3F)
+				.sound(SoundType.GLASS)
 		);
 		// this.disableStats();
 	}
 
-    @Override
-    public void fillItemGroup(@Nonnull ItemGroup group, @Nonnull NonNullList<ItemStack> items) {
-        if(group == ItemGroup.SEARCH || Config.enableGlassDoor.get()) {
+	@Override
+	public void fillItemGroup(@Nonnull ItemGroup group, @Nonnull NonNullList<ItemStack> items) {
+		if (group == ItemGroup.SEARCH || Config.enableGlassDoor.get()) {
 			super.fillItemGroup(group, items);
-        }
-    }
+		}
+	}
 }
