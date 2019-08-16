@@ -21,8 +21,6 @@ import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.pulsar.pulse.Pulse;
 
-import java.util.function.Supplier;
-
 
 @Pulse(id = InspirationsShared.pulseID, description = "Blocks and items used by all modules", forced = true)
 public class InspirationsShared extends PulseBase {
@@ -73,20 +71,20 @@ public class InspirationsShared extends PulseBase {
 
 		if(isTweaksLoaded()) {
 			heartbeet = registerItem(r, new HidableItem(
-				new Item.Properties().group(ItemGroup.FOOD).food(
-				new Food.Builder().hunger(2).saturation(2.4f).effect(new EffectInstance(Effects.REGENERATION, 100), 1).build()),
-				Config.enableHeartbeet::get
+					new Item.Properties().group(ItemGroup.FOOD).food(
+					new Food.Builder().hunger(2).saturation(2.4f).effect(new EffectInstance(Effects.REGENERATION, 100), 1).build()),
+					Config.enableHeartbeet::get
 			), "heartbeet");
 			silverfishPowder = registerItem(r, new HidableItem(
-				new Item.Properties().group(ItemGroup.BREWING),
-				Config.brewMissingPotions::get
+					new Item.Properties().group(ItemGroup.BREWING),
+					() -> false
 			),  "silverfish_powder");
 		}
-		// used in both extended brewing and nether crooks
+		// used for nether crooks
 		if(isTweaksLoaded() || isToolsLoaded()) {
 			witherBone = registerItem(r, new HidableItem(
-				new Item.Properties().group(ItemGroup.BREWING),
-				() -> Config.brewMissingPotions.get() || Config.enableNetherCrook()
+					new Item.Properties().group(ItemGroup.BREWING),
+					Config::enableNetherCrook
 			), "wither_bone");
 //			witherBoneDrop = Config.witherBoneDrop.get();
 //			milkCooldownCow = Config.milkCooldown.get();
