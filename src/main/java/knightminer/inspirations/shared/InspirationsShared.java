@@ -21,7 +21,6 @@ import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.pulsar.pulse.Pulse;
 
-
 @Pulse(id = InspirationsShared.pulseID, description = "Blocks and items used by all modules", forced = true)
 public class InspirationsShared extends PulseBase {
 	public static final String pulseID = "InspirationsShared";
@@ -42,11 +41,6 @@ public class InspirationsShared extends PulseBase {
 
 	// edibles
 	public static Item heartbeet;
-
-	// flags
-	private static boolean witherBoneDrop = false;
-	public static boolean milkCooldownCow = false;
-	public static boolean milkCooldownSquid = false;
 
 	@SubscribeEvent
 	public void preInit(FMLCommonSetupEvent event) {
@@ -86,8 +80,6 @@ public class InspirationsShared extends PulseBase {
 					new Item.Properties().group(ItemGroup.BREWING),
 					Config::enableNetherCrook
 			), "wither_bone");
-//			witherBoneDrop = Config.witherBoneDrop.get();
-//			milkCooldownCow = Config.milkCooldown.get();
 		}
 
 		if(isRecipesLoaded()) {
@@ -108,7 +100,6 @@ public class InspirationsShared extends PulseBase {
 				new Item.Properties().group(ItemGroup.MATERIALS),
 				Config::enableCauldronFluids
 			), "rabbit_stew_mix");
-//			milkCooldownSquid = Config.milkSquids.get();
 		}
 		if( isToolsLoaded()) {
 			stoneRod = registerItem(r, new HidableItem(
@@ -127,16 +118,13 @@ public class InspirationsShared extends PulseBase {
 	public void postInit(InterModProcessEvent event) {
 		proxy.postInit();
 
-		// currently just used for milking
-		if(milkCooldownCow || milkCooldownSquid) {
-			MinecraftForge.EVENT_BUS.register(SharedEvents.class);
-		}
+		MinecraftForge.EVENT_BUS.addListener(SharedEvents::updateMilkCooldown);
 	}
 
 	private static final ResourceLocation WITHER_SKELETON_TABLE = new ResourceLocation("entities/wither_skeleton");
 	@SubscribeEvent
 	public void onLootTableLoad(LootTableLoadEvent event) {
-		if(witherBoneDrop && WITHER_SKELETON_TABLE.equals(event.getName())) {
+		if(WITHER_SKELETON_TABLE.equals(event.getName())) {
 			addToVanillaLoot(event, "entities/wither_skeleton");
 		}
 	}
