@@ -40,7 +40,7 @@ minecraft {
 	mappings channel: 'snapshot', version: config.mappings_version
 //    replace '${version}', project.version
 
-    accessTransformer project.file("src/main/resources/META-INF/inspirations_at.cfg")
+    accessTransformer project.file("src/main/resources/META-INF/accesstransformer.cfg")
 
      runs {
          client {
@@ -160,7 +160,7 @@ dependencies {
 // Add Access Transformers Manifest
 jar {
     manifest {
-        attributes 'FMLAT': 'inspirations_at.cfg'
+        attributes 'FMLAT': 'accesstransformer.cfg'
     }
     
 //    finalizedBy reobfJar
