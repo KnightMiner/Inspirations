@@ -18,16 +18,13 @@ import net.minecraft.dispenser.IDispenseItemBehavior;
 import net.minecraft.item.*;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.potion.*;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.PlantType;
 import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
-import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
@@ -35,8 +32,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.pulsar.pulse.Pulse;
-
-import javax.annotation.Nullable;
 
 @Pulse(id = InspirationsTweaks.pulseID, description = "Various vanilla tweaks")
 public class InspirationsTweaks extends PulseBase {
@@ -150,15 +145,6 @@ public class InspirationsTweaks extends PulseBase {
 	@SubscribeEvent
 	public void postInit(InterModProcessEvent event) {
 		proxy.postInit();
-	}
-
-	private static final ResourceLocation SILVERFISH_TABLE = new ResourceLocation("entities/silverfish");
-
-	@SubscribeEvent
-	public void onLootTableLoad(LootTableLoadEvent event) {
-		if (SILVERFISH_TABLE.equals(event.getName())) {
-			addToVanillaLoot(event, "entities/silverfish");
-		}
 	}
 
 	private static final IDispenseItemBehavior DEFAULT = new DefaultDispenseItemBehavior();
