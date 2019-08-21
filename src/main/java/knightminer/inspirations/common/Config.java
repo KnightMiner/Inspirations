@@ -337,6 +337,9 @@ public class Config {
 	public static BooleanValue bonemealGrassSpread;
 	public static BooleanValue bonemealMyceliumSpread;
 
+	public static BooleanValue caveSpiderDrops;
+	public static BooleanValue skeletonSkull;
+
 	private static String[] milkContainersDefault = {
 			"ceramics:clay_bucket",
 			"minecraft:bowl", // mushroom stew from mooshrooms
@@ -792,6 +795,16 @@ public class Config {
 		milkSquidCooldown = builder
 				.comment("Delay in seconds after milking a squid before it can be milked again.")
 				.defineInRange("tweaks.milkSquids.cooldown", 300, 1, Short.MAX_VALUE);
+
+
+		// drops
+		caveSpiderDrops = builder
+				.comment("If true, cave spiders will rarely drop webs, giving them an advantage to farm over regular spiders")
+				.define("caveSpiderWeb", true);
+		skeletonSkull = builder
+				.comment("If true, skeletons will rarely drop their skull for consistency with wither skeletons. Does not affect creeper or zombie heads.")
+				.define("skeletonSkull", true);
+
 
 		// compatibility
 		builder.push("compatibility");
