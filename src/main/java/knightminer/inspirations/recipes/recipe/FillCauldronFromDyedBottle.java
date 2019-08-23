@@ -3,10 +3,10 @@ package knightminer.inspirations.recipes.recipe;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
-import knightminer.inspirations.recipes.InspirationsRecipes;
-import net.minecraft.init.SoundEvents;
+import knightminer.inspirations.recipes.item.ItemMixedDyedWaterBottle;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.SoundEvents;
 
 public enum FillCauldronFromDyedBottle implements ICauldronRecipe {
 	INSTANCE;
@@ -18,12 +18,12 @@ public enum FillCauldronFromDyedBottle implements ICauldronRecipe {
 		}
 
 		return (state.isWater() || state.getColor() > -1)
-				&& stack.getItem() == InspirationsRecipes.dyedWaterBottle;
+				&& stack.getItem().isIn(InspirationsRegistry.TAG_DYE_BOTTLES);
 	}
 
 	@Override
 	public CauldronState getState(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		int newColor = InspirationsRecipes.dyedWaterBottle.getColor(stack);
+		int newColor = ItemMixedDyedWaterBottle.dyeFromBottle(stack);
 		if(level == 0) {
 			return CauldronState.dye(newColor);
 		}

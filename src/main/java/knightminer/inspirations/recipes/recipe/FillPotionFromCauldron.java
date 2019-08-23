@@ -2,24 +2,26 @@ package knightminer.inspirations.recipes.recipe;
 
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionUtils;
+import net.minecraft.tags.Tag;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.SoundEvents;
 import slimeknights.mantle.util.RecipeMatch;
 
 public class FillPotionFromCauldron implements ICauldronRecipe {
 
-	private RecipeMatch bottle;
+	private Tag<Item> bottle;
 	private Item potion;
 	public FillPotionFromCauldron(Item potion, ItemStack bottle) {
 		this.bottle = RecipeMatch.of(bottle);
 		this.potion = potion;
 	}
 
-	public FillPotionFromCauldron(Item potion, String bottle) {
-		this.bottle = RecipeMatch.of(bottle);
+	public FillPotionFromCauldron(Item potion, Tag<Item> bottle) {
+		this.bottle = bottle;
 		this.potion = potion;
 	}
 
@@ -28,7 +30,7 @@ public class FillPotionFromCauldron implements ICauldronRecipe {
 		if(level == 0) {
 			return false;
 		}
-		return state.getPotion() != null && bottle.matches(Util.createNonNullList(stack)).isPresent();
+		return state.getPotion() != null && stack.getItem().isIn(bottle);
 	}
 
 	@Override
