@@ -38,7 +38,6 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 @Mod(Inspirations.modID)
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class Inspirations {
 	public static final String modID = "inspirations";
 
