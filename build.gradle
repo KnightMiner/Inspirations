@@ -38,7 +38,6 @@ if (System.getenv().BUILD_NUMBER != null) {
 
 minecraft {
 	mappings channel: 'snapshot', version: config.mappings_version
-//    replace '${version}', project.version
 
     accessTransformer project.file("src/main/resources/META-INF/accesstransformer.cfg")
 
@@ -122,9 +121,9 @@ dependencies {
     minecraft "net.minecraftforge:forge:${config.minecraft_version}-${config.forge_version}"
     
     // compile against the JEI API but do not include it at runtime
-    compileOnly fg.deobf("mezz.jei:jei-${config.minecraft_version_jei}:${config.jei_version}:api")
+    compileOnly fg.deobf("mezz.jei:jei-${config.minecraft_version}:${config.jei_version}:api")
     // at runtime, use the full JEI jar
-    runtimeOnly fg.deobf("mezz.jei:jei-${config.minecraft_version_jei}:${config.jei_version}")
+    runtimeOnly fg.deobf("mezz.jei:jei-${config.minecraft_version}:${config.jei_version}")
 
     compile fg.deobf("slimeknights.mantle:Mantle:${config.minecraft_version}-${config.mantle_version}")
     //deobfCompile "mcp.mobius.waila:Hwyla:${config.hwyla_version}"
@@ -138,32 +137,18 @@ dependencies {
     //deobfCompile curse.resolve("the-twilight-forest", "2618264")
 }
 
-//processResources {
-//    // this will ensure that this task is redone when the versions change.
-//    inputs.property "version", project.version
-//    inputs.property "mcversion", project.minecraft.version
-//
-//    // replace stuff in mcmod.info, nothing else
-//    from(sourceSets.main.resources.srcDirs) {
-//        include 'mcmod.info'
-//
-//        // replace version and mcversion
-//        expand 'version':project.version, 'mcversion':project.minecraft.version
-//    }
-//
-//    // copy everything else, thats not the mcmod.info
-//    from(sourceSets.main.resources.srcDirs) {
-//        exclude 'mcmod.info'
-//    }
-//}
-
-// Add Access Transformers Manifest
 jar {
     manifest {
-        attributes 'FMLAT': 'accesstransformer.cfg'
+        attributes([
+            "Specification-Title": "Inspirations",
+            "Specification-Vendor": "KnightMiner",
+            "Specification-Version": "1", // We are version 1 of ourselves
+            "Implementation-Title": project.name,
+            "Implementation-Version": "${version}",
+            "Implementation-Vendor": "KnightMiner",
+            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
     }
-    
-//    finalizedBy reobfJar
 }
 
 // because the normal output has been made to be obfuscated
