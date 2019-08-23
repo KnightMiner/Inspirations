@@ -26,6 +26,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.*;
+import net.minecraft.util.math.shapes.IBooleanFunction;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
@@ -186,6 +187,9 @@ public class BlockBookshelf extends InventoryBlock implements ITileEntityProvide
 		// shelf bounds
 		ImmutableMap.Builder<Direction, VoxelShape> builder = ImmutableMap.builder();
 		for(Direction side : Direction.Plane.HORIZONTAL) {
+			// Construct the shelf by constructing a half slab, then cutting out the two shelves.
+
+			// Exterior slab shape. For each direction, do 0.1 if the side is pointing that way.
 			int offX = side.getXOffset();
 			int offZ = side.getZOffset();
 			double x1 = offX == -1 ? 0.5 : 0;
@@ -193,14 +197,18 @@ public class BlockBookshelf extends InventoryBlock implements ITileEntityProvide
 			double x2 = offX ==  1 ? 0.5 : 1;
 			double z2 = offZ ==  1 ? 0.5 : 1;
 
-			builder.put(side, VoxelShapes.or(
-					VoxelShapes.create(x1,  0,      z1,  x2,  0.0625, z2), // bottom shelf
-					VoxelShapes.create(x1,  0.4375, z1,  x2,  0.5625, z2), // middle shelf
-					VoxelShapes.create(x1,  0.9375, z1,  x2,  1,      z2), // top shelf
+			// Rotate the 2 X-Z points correctly for the inset shelves.
+			Vec3d min = new Vec3d(-7/16.0, 0, -7/16.0).rotateYaw(-(float)Math.PI / 2F * side.getHorizontalIndex());
+			Vec3d max = new Vec3d(7/16.0, 1, 0).rotateYaw(-(float)Math.PI / 2F * side.getHorizontalIndex());
 
-					VoxelShapes.create(offX == -1 ? 0.625 : 0, 0, offZ == -1 ? 0.625 : 0, offX ==  1 ? 0.375 : 1, 1, offZ ==  1 ? 0.375 : 1), // back wall
-					VoxelShapes.create(x1, 0, z1, offX == 0 ? 0.0625 : x2, 1, offZ == 0 ? 0.0625 : z2), // side wall 1
-					VoxelShapes.create(offX == 0 ? 0.9375 : x1, 0, offZ == 0 ? 0.9375 : z1, x2, 1, z2) // side wall 2
+			// Then assemble.
+			builder.put(side, VoxelShapes.combineAndSimplify(
+					VoxelShapes.create(x1, 0, z1, x2, 1, z2), // Full half slab
+					VoxelShapes.or( // Then the two shelves.
+							VoxelShapes.create(0.5 + min.x, 1/16.0, 0.5 + min.z,  0.5 + max.x,  7/16.0, 0.5 + max.z),
+							VoxelShapes.create(0.5 + min.x, 9/16.0, 0.5 + min.z,  0.5 + max.x, 15/16.0, 0.5 + max.z)
+					),
+					IBooleanFunction.ONLY_FIRST
 			));
 		}
 		BOUNDS = builder.build();
