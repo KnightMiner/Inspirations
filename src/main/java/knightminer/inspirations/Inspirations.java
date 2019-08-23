@@ -11,7 +11,6 @@ import knightminer.inspirations.library.recipe.TextureRecipe;
 //import knightminer.inspirations.plugins.LeatherWorksPlugin;
 //import knightminer.inspirations.plugins.RatsPlugin;
 //import knightminer.inspirations.plugins.TwilightForestPlugin;
-//import knightminer.inspirations.plugins.tan.ToughAsNailsPlugin;
 //import knightminer.inspirations.plugins.top.TheOneProbePlugin;
 import knightminer.inspirations.building.InspirationsBuilding;
 //import knightminer.inspirations.recipes.InspirationsRecipes;
@@ -77,7 +76,6 @@ public class Inspirations {
 //		pulseManager.registerPulse(new InspirationsRecipes());
 		pulseManager.registerPulse(new InspirationsTweaks());
 		// plugins
-//		pulseManager.registerPulse(new ToughAsNailsPlugin());
 //		pulseManager.registerPulse(new TheOneProbePlugin());
 //		pulseManager.registerPulse(new LeatherWorksPlugin());
 //		pulseManager.registerPulse(new RatsPlugin());

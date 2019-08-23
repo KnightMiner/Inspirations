@@ -348,8 +348,6 @@ public class Config {
 	};
 	public static Set<Item> milkContainers;
 
-	// compatibility
-	public static BooleanValue tanJuiceInCauldron;
 	static {
 		BUILDER = new Builder();
 		BUILDER_OVERRIDE = new Builder();
@@ -804,17 +802,6 @@ public class Config {
 		skeletonSkull = builder
 				.comment("If true, skeletons will rarely drop their skull for consistency with wither skeletons. Does not affect creeper or zombie heads.")
 				.define("skeletonSkull", true);
-
-
-		// compatibility
-		builder.push("compatibility");
-		{
-			// TAN Plugin: make juice in cauldron
-			tanJuiceInCauldron = builder
-					.comment("Enables making Tough as Nails juices in the cauldron. Requires enhanced cauldron")
-					.define("tanJuiceInCauldron", true);
-		}
-		builder.pop();
 
 		// building
 //		Property property = configFile.get("building.bookshelf", "bookOverrides", bookOverrides,

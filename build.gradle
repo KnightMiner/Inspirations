@@ -131,7 +131,6 @@ dependencies {
     //    exclude group: 'cofh' // don't grab redstone flux too, don't use it
     //}
     //deobfCompile curse.resolve("leather-works", "2695934")
-    //deobfCompile curse.resolve("tough-as-nails", "2644652")
 	//deobfCompile "net.ilexiconn:llibrary:1.7.9-1.12.2"
     //deobfCompile curse.resolve("rats", "2732516")
     //deobfCompile curse.resolve("the-twilight-forest", "2618264")

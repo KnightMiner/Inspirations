@@ -56,9 +56,3 @@ Adds many small features with a vareity of inspirations.
     versionRange="[1.4,]"
     ordering="AFTER"
     side="BOTH"
-[[dependencies.inspirations]]
-    modId="toughasnails"
-    mandatory=false
-    versionRange="[3.1.0,]"
-    ordering="AFTER"
-    side="BOTH"
