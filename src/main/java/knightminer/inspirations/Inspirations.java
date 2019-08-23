@@ -42,8 +42,6 @@ import java.util.stream.Collectors;
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class Inspirations {
 	public static final String modID = "inspirations";
-	public static final String modVersion = "${version}";
-	public static final String modName = "Inspirations";
 
 	public static final Logger log = LogManager.getLogger(modID);
 
