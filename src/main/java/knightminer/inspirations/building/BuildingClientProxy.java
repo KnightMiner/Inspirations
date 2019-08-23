@@ -10,6 +10,7 @@ import knightminer.inspirations.common.ClientProxy;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.client.ClientUtil;
 import knightminer.inspirations.library.util.TextureBlockUtil;
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.renderer.color.BlockColors;
@@ -137,8 +138,13 @@ public class BuildingClientProxy extends ClientProxy {
 				return -1;
 			}
 
+			Block block = Block.getBlockFromItem(stack.getItem());
+			if (!(block instanceof BlockEnlightenedBush)) {
+				return -1;
+			}
+			
 			// if the type has it's own color, use that
-			int color = ((BlockEnlightenedBush)((BlockItem)stack.getItem()).getBlock()).getColor();
+			int color = ((BlockEnlightenedBush) block).getColor();
 			if(color > -1) {
 				return color;
 			}
