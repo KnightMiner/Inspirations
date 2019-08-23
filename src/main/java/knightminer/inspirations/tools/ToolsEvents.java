@@ -326,11 +326,12 @@ public class ToolsEvents {
 		if (ItemWaypointCompass.beaconIsComplete(te)) {
 			if (!world.isRemote) {
 				// give the player the linked compass
-				DyeColor color = DyeColor.WHITE;
+				ItemStack newStack;
 				if (stack.getItem() instanceof ItemWaypointCompass) {
-					color = ((ItemWaypointCompass) stack.getItem()).getColor();
+					newStack = stack.copy();
+				} else {
+					newStack = new ItemStack(InspirationsTools.waypointCompasses[DyeColor.WHITE.getId()]);
 				}
-				ItemStack newStack = new ItemStack(InspirationsTools.waypointCompasses.get(color));
 				ItemWaypointCompass.setNBT(newStack, world, pos);
 				if (stack.hasDisplayName()) {
 					newStack.setDisplayName(stack.getDisplayName());

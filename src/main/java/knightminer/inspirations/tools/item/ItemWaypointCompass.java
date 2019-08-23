@@ -33,20 +33,25 @@ public class ItemWaypointCompass extends HidableItem {
   public static final String TAG_DIMENSION = "dimension";
   public static final String TAG_CHECK_BEACON = "check_beacon";
 
-  private DyeColor color;
+  private final int bodyColor;
+  private final int needleColor;
 
-  public ItemWaypointCompass(DyeColor color) {
+
+  public ItemWaypointCompass(int bodyColor, int needleColor) {
     super(new Item.Properties().group(ItemGroup.TOOLS), Config.enableWaypointCompass::get);
-    this.color = color;
+
+    this.bodyColor = bodyColor;
+    this.needleColor = needleColor;
 
     this.addPropertyOverride(Util.getResource("angle"), new WaypointCompassGetter());
   }
 
-  /**
-   * Get the color the compass has been dyed.
-   */
-  public DyeColor getColor() {
-    return color;
+  public int getBodyColor() {
+    return bodyColor;
+  }
+
+  public int getNeedleColor() {
+    return needleColor;
   }
 
   /**
@@ -81,8 +86,8 @@ public class ItemWaypointCompass extends HidableItem {
 
   /**
    * Determine if the examined beacon has at least one level.
-   * @param te
-   * @return
+   * @param te Potential beacon tile
+   * @return If the beacon is constructed and can see the sky
    */
   public static boolean beaconIsComplete(TileEntity te) {
     if (!(te instanceof BeaconTileEntity)) {

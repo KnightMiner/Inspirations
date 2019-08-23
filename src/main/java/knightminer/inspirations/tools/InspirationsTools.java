@@ -79,7 +79,7 @@ public class InspirationsTools extends PulseBase {
 	public static ArrowItem redstoneArrow;
 
 	// The "undyed" compass is White.
-	public static Map<DyeColor, ItemWaypointCompass> waypointCompasses = new HashMap<>();
+	public static ItemWaypointCompass[] waypointCompasses = new ItemWaypointCompass[16];
 
 	// tool materials
 	public static IItemTier bone = new IItemTier() {
@@ -173,16 +173,37 @@ public class InspirationsTools extends PulseBase {
 		photometer = registerItem(r, new HidableItem(toolProps, Config.enablePhotometer::get), "photometer");
 		photometer.addPropertyOverride(Util.getResource("light"), new PhotometerGetter());
 
-		for(DyeColor color: DyeColor.values()) {
-			waypointCompasses.put(color, registerItem(r, new ItemWaypointCompass(color),
-				// Give a nicer name to the "undyed" compass.
-				(color == DyeColor.WHITE) ? "waypoint_compass": color.getName() + "_waypoint_compass"
-			));
-		}
+
+		waypointCompasses[DyeColor.WHITE.getId()] = registerItem(r,
+				new ItemWaypointCompass(0xDDDDDD, 0xFFC100), "waypoint_compass");
+		waypointCompasses[DyeColor.BLACK.getId()] = registerItem(r,
+				new ItemWaypointCompass(0x444444, DyeColor.RED.colorValue), "black_waypoint_compass");
+
+		registerWaypointCompass(r, DyeColor.LIGHT_GRAY, DyeColor.WHITE.colorValue);
+		registerWaypointCompass(r, DyeColor.GRAY,       DyeColor.LIGHT_GRAY.colorValue);
+		registerWaypointCompass(r, DyeColor.RED,        DyeColor.ORANGE.colorValue);
+		registerWaypointCompass(r, DyeColor.ORANGE,     DyeColor.YELLOW.colorValue);
+		registerWaypointCompass(r, DyeColor.YELLOW,     0xDBA213);
+		registerWaypointCompass(r, DyeColor.LIME,       DyeColor.BROWN.colorValue);
+		registerWaypointCompass(r, DyeColor.GREEN,      DyeColor.LIME.colorValue);
+		registerWaypointCompass(r, DyeColor.CYAN,       DyeColor.LIGHT_BLUE.colorValue);
+		registerWaypointCompass(r, DyeColor.LIGHT_BLUE, 0x77A9FF);
+		registerWaypointCompass(r, DyeColor.BLUE,       0x7E54FF);
+		registerWaypointCompass(r, DyeColor.PURPLE,     DyeColor.MAGENTA.colorValue);
+		registerWaypointCompass(r, DyeColor.MAGENTA,    DyeColor.PINK.colorValue);
+		registerWaypointCompass(r, DyeColor.PINK,       0xF2BFCE);
+		registerWaypointCompass(r, DyeColor.BROWN,      0xA59072);
 
 //		if(Config.shieldEnchantmentTable) {
 //			register(r, new ItemEnchantableShield(), new ResourceLocation("shield"));
 //		}
+	}
+
+	private void registerWaypointCompass(IForgeRegistry<Item> r, DyeColor body, int needle) {
+		waypointCompasses[body.getId()] = registerItem(r,
+				new ItemWaypointCompass(body.colorValue, needle),
+				body.getTranslationKey() + "_waypoint_compass"
+		);
 	}
 
 	@SubscribeEvent

@@ -4,6 +4,7 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.tools.item.ItemWaypointCompass;
 import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.crafting.IRecipeSerializer;
@@ -59,7 +60,7 @@ public class WaypointCompassCopyRecipe extends SpecialRecipe {
   @Nonnull
   @Override
   public ItemStack getRecipeOutput() {
-    return new ItemStack(InspirationsTools.waypointCompasses.get(null));
+    return ItemStack.EMPTY;
   }
 
   @Nonnull
@@ -86,10 +87,10 @@ public class WaypointCompassCopyRecipe extends SpecialRecipe {
     }
 
     if (!result.isEmpty() && !waypoint.isEmpty()) {
-      if (result.getItem() == Items.COMPASS) {
-        result = new ItemStack(InspirationsTools.waypointCompasses.get(null), 1);
-      } else {
+      if (result.getItem() instanceof ItemWaypointCompass) {
         result = result.copy();
+      } else {
+        result = new ItemStack(InspirationsTools.waypointCompasses[DyeColor.WHITE.getId()]);
       }
       result.setCount(count);
       ItemWaypointCompass.copyNBT(result, waypoint);
