@@ -26,6 +26,7 @@ import net.minecraftforge.common.util.Constants;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Supplier;
 
 public class ItemWaypointCompass extends HidableItem {
 
@@ -36,9 +37,12 @@ public class ItemWaypointCompass extends HidableItem {
   private final int bodyColor;
   private final int needleColor;
 
-
   public ItemWaypointCompass(int bodyColor, int needleColor) {
-    super(new Item.Properties().group(ItemGroup.TOOLS), Config.enableWaypointCompass::get);
+    this(bodyColor, needleColor, Config::dyeWaypointCompass);
+  }
+
+  public ItemWaypointCompass(int bodyColor, int needleColor, Supplier<Boolean> enableFunc) {
+    super(new Item.Properties().group(ItemGroup.TOOLS), enableFunc);
 
     this.bodyColor = bodyColor;
     this.needleColor = needleColor;

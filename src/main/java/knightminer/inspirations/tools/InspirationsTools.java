@@ -174,8 +174,11 @@ public class InspirationsTools extends PulseBase {
 		photometer.addPropertyOverride(Util.getResource("light"), new PhotometerGetter());
 
 
+		// White is the undyed version, so it's available without Config.dyeWaypointCompass() and has no color
+		// in the name.
 		waypointCompasses[DyeColor.WHITE.getId()] = registerItem(r,
-				new ItemWaypointCompass(0xDDDDDD, 0xFFC100), "waypoint_compass");
+				new ItemWaypointCompass(0xDDDDDD, 0xFFC100, Config.enableWaypointCompass::get
+		), "waypoint_compass");
 		waypointCompasses[DyeColor.BLACK.getId()] = registerItem(r,
 				new ItemWaypointCompass(0x444444, DyeColor.RED.colorValue), "black_waypoint_compass");
 
