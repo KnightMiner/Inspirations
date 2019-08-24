@@ -14,7 +14,6 @@ public class ToolsClientProxy extends ClientProxy {
 
 	@SubscribeEvent
 	public void clientSetup(FMLClientSetupEvent event) {
-		super.preInit();
 		RenderingRegistry.registerEntityRenderingHandler(RedstoneArrow.class, RenderModArrow::new);
 	}
 

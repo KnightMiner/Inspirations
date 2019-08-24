@@ -119,14 +119,12 @@ public class InspirationsTools extends PulseBase {
 	// blocks
 	public static Block redstoneCharge;
 
-	// EntityType.Builder.<ArrowEntity>create(ArrowEntity::new, EntityClassification.MISC).size(0.5F, 0.5F));
-    // EntityType.Builder.<SpectralArrowEntity>create(SpectralArrowEntity::new, EntityClassification.MISC).size(0.5F, 0.5F));
-	// Entities
 	public static EntityType<RedstoneArrow> entRSArrow = buildEntity(EntityType.Builder
 		.<RedstoneArrow>create(RedstoneArrow::new, EntityClassification.MISC)
 		.size(0.5F, 0.5F)
 		.setTrackingRange(4)
 		.setUpdateInterval(20)
+		.setCustomClientFactory((packet, world) -> new RedstoneArrow(InspirationsTools.entRSArrow, world))
 	,"redstone_arrow");
 
 	@SubscribeEvent

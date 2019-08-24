@@ -5,12 +5,14 @@ import static knightminer.inspirations.tools.InspirationsTools.redstoneCharge;
 import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.tools.block.BlockRedstoneCharge;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.AbstractArrowEntity;
 import net.minecraft.item.DirectionalPlaceContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResultType;
+import net.minecraft.network.IPacket;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
@@ -21,10 +23,12 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
+import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nonnull;
 
-public class RedstoneArrow extends AbstractArrowEntity {
+public class RedstoneArrow extends AbstractArrowEntity implements IEntityAdditionalSpawnData {
 	public RedstoneArrow(EntityType<RedstoneArrow> entType, World world) {
 		super(entType, world);
 	}
@@ -37,6 +41,26 @@ public class RedstoneArrow extends AbstractArrowEntity {
 	public RedstoneArrow(World world, LivingEntity shooter) {
 		super(InspirationsTools.entRSArrow, shooter, world);
 		init();
+	}
+
+	@Nonnull
+	@Override
+	public IPacket<?> createSpawnPacket() {
+		return NetworkHooks.getEntitySpawningPacket(this);
+	}
+
+	@Override
+	public void writeSpawnData(PacketBuffer buffer) {
+		Entity shooter = this.getShooter();
+		buffer.writeInt(shooter != null ? shooter.getEntityId() : 0);
+	}
+
+	@Override
+	public void readSpawnData(PacketBuffer buffer) {
+		Entity shooter = this.world.getEntityByID(buffer.readInt());
+		if (shooter != null) {
+			this.setShooter(shooter);
+		}
 	}
 
 	private void init() {
