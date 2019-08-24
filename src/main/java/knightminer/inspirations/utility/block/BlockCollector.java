@@ -60,7 +60,7 @@ public class BlockCollector extends InventoryBlock implements IHidable {
 	}
 
 	@Override
-	public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> stacks) {
+	public void fillItemGroup(@Nonnull ItemGroup group, NonNullList<ItemStack> stacks) {
 		if (group == ItemGroup.SEARCH || isEnabled()) {
 			super.fillItemGroup(group, stacks);
 		}

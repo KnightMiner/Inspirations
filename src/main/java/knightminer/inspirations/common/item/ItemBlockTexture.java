@@ -17,28 +17,11 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 
-public class ItemBlockTexture extends BlockItem implements IHidable {
-    private final Supplier<Boolean> enabled;
+public class ItemBlockTexture extends HidableBlockItem {
 
 	public ItemBlockTexture(Block block, BlockItem.Properties props) {
 		super(block, props);
-		if (block instanceof  IHidable){
-			enabled = ((IHidable) block)::isEnabled;
-		} else {
-			enabled = () -> true;
-		}
 	}
-
-    public boolean isEnabled() {
-        return enabled.get();
-    }
-
-    @Override
-    public void fillItemGroup(@Nonnull ItemGroup group, @Nonnull NonNullList<ItemStack> items) {
-        if(group == ItemGroup.SEARCH || isEnabled()) {
-            super.fillItemGroup(group, items);
-        }
-    }
 
 	@Override
 	public void addInformation(@Nonnull ItemStack stack, @Nullable World worldIn, @Nonnull List<ITextComponent> tooltip, @Nonnull ITooltipFlag flagIn) {

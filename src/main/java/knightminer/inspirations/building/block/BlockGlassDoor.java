@@ -2,6 +2,7 @@ package knightminer.inspirations.building.block;
 
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.common.Config;
+import knightminer.inspirations.common.IHidable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.DoorBlock;
@@ -17,7 +18,7 @@ import net.minecraft.world.IBlockReader;
 
 import javax.annotation.Nonnull;
 
-public class BlockGlassDoor extends DoorBlock {
+public class BlockGlassDoor extends DoorBlock implements IHidable {
 
 	public BlockGlassDoor() {
 		super(Block.Properties.create(Material.GLASS)
@@ -26,12 +27,10 @@ public class BlockGlassDoor extends DoorBlock {
 		);
 	}
 
-    @Override
-    public void fillItemGroup(@Nonnull ItemGroup group, @Nonnull NonNullList<ItemStack> items) {
-        if(group == ItemGroup.SEARCH || Config.enableGlassDoor.get()) {
-			super.fillItemGroup(group, items);
-        }
-    }
+	@Override
+	public boolean isEnabled() {
+		return Config.enableGlassDoor.get();
+	}
 
 	@Override
 	public ItemStack getPickBlock(BlockState state, RayTraceResult target, IBlockReader world, BlockPos pos, PlayerEntity player) {

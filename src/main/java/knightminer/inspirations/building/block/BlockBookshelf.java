@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.building.tileentity.TileBookshelf;
 import knightminer.inspirations.common.Config;
+import knightminer.inspirations.common.IHidable;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.util.TextureBlockUtil;
 import net.minecraft.block.*;
@@ -45,7 +46,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BlockBookshelf extends InventoryBlock implements ITileEntityProvider {
+public class BlockBookshelf extends InventoryBlock implements ITileEntityProvider, IHidable {
 
 	public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
 	public static final ModelProperty<String> TEXTURE = TextureBlockUtil.TEXTURE_PROP;
@@ -99,6 +100,20 @@ public class BlockBookshelf extends InventoryBlock implements ITileEntityProvide
 			return true;
 		}
 		return false;
+	}
+
+	/* Enable/Disabling */
+
+	@Override
+	public boolean isEnabled() {
+		return Config.enableBookshelf.get();
+	}
+
+	@Override
+	public void fillItemGroup(@Nonnull ItemGroup group, @Nonnull NonNullList<ItemStack> items) {
+		if(shouldAddtoItemGroup(group)) {
+			super.fillItemGroup(group, items);
+		}
 	}
 
 

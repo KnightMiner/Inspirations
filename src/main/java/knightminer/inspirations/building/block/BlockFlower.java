@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Random;
 
 import knightminer.inspirations.common.Config;
+import knightminer.inspirations.common.IHidable;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.item.ItemGroup;
@@ -21,7 +22,7 @@ import net.minecraft.world.World;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class BlockFlower extends BushBlock implements IGrowable {
+public class BlockFlower extends BushBlock implements IGrowable, IHidable {
     private static final VoxelShape SHAPE = Block.makeCuboidShape(5.0D, 0.0D, 5.0D, 11.0D, 10.0D, 11.0D);
 	private final DoublePlantBlock largePlant;
 
@@ -35,12 +36,17 @@ public class BlockFlower extends BushBlock implements IGrowable {
 		}
 	}
 
-    @Override
-    public void fillItemGroup(@Nonnull ItemGroup group, @Nonnull NonNullList<ItemStack> items) {
-        if(group == ItemGroup.SEARCH || Config.enableFlowers.get()) {
-			super.fillItemGroup(group, items);
+	@Override
+	public boolean isEnabled() {
+		return Config.enableFlowers.get();
+	}
+
+	@Override
+	public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
+        if(shouldAddtoItemGroup(group)) {
+            super.fillItemGroup(group, items);
         }
-    }
+	}
 
 	/**
 	 * Get the BlockFlower that matches the original double-high block type, or null.

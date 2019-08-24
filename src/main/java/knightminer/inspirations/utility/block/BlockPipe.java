@@ -79,8 +79,8 @@ public class BlockPipe extends InventoryBlock implements IHidable {
 	}
 
 	@Override
-	public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> stacks) {
-		if (group == ItemGroup.SEARCH || isEnabled()) {
+	public void fillItemGroup(@Nonnull ItemGroup group, NonNullList<ItemStack> stacks) {
+		if(shouldAddtoItemGroup(group)) {
 			super.fillItemGroup(group, stacks);
 		}
 	}

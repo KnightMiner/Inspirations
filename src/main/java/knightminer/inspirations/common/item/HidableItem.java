@@ -27,7 +27,7 @@ public class HidableItem extends Item implements IHidable {
 
     @Override
     public void fillItemGroup(@Nonnull ItemGroup group, @Nonnull NonNullList<ItemStack> items) {
-        if(group == ItemGroup.SEARCH || isEnabled()) {
+        if(shouldAddtoItemGroup(group)) {
             super.fillItemGroup(group, items);
         }
     }
