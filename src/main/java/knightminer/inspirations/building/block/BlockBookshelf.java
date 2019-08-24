@@ -7,7 +7,11 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.IHidable;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.util.TextureBlockUtil;
-import net.minecraft.block.*;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.ITileEntityProvider;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -22,11 +26,17 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.state.DirectionProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.*;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.Direction;
-import net.minecraft.util.math.*;
+import net.minecraft.util.Hand;
+import net.minecraft.util.Mirror;
+import net.minecraft.util.NonNullList;
+import net.minecraft.util.Rotation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.shapes.IBooleanFunction;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
@@ -54,8 +64,8 @@ public class BlockBookshelf extends InventoryBlock implements ITileEntityProvide
 
 	public BlockBookshelf() {
 		super(Block.Properties.create(Material.WOOD)
-			.hardnessAndResistance(2.0F, 5.0F)
-			.sound(SoundType.WOOD)
+				.hardnessAndResistance(2.0F, 5.0F)
+				.sound(SoundType.WOOD)
 		);
 		this.setDefaultState(this.getStateContainer().getBaseState().with(FACING, Direction.NORTH));
 	}
@@ -91,7 +101,7 @@ public class BlockBookshelf extends InventoryBlock implements ITileEntityProvide
 
 	@Override
 	protected boolean openGui(PlayerEntity player, World world, BlockPos pos) {
-		if (!(player instanceof ServerPlayerEntity)) {
+		if(!(player instanceof ServerPlayerEntity)) {
 			throw new AssertionError("Needs to be server!");
 		}
 		TileEntity te = world.getTileEntity(pos);
@@ -142,12 +152,12 @@ public class BlockBookshelf extends InventoryBlock implements ITileEntityProvide
 		TileEntity te = world.getTileEntity(pos);
 		if(te instanceof TileBookshelf) {
 			// try interacting
-			if (((TileBookshelf) te).interact(player, hand, book)) {
+			if(((TileBookshelf) te).interact(player, hand, book)) {
 				return true;
 			}
 
 			// if the offhand can interact, return false so we can process it later
-			if (InspirationsRegistry.isBook(player.getHeldItemOffhand())) {
+			if(InspirationsRegistry.isBook(player.getHeldItemOffhand())) {
 				return false;
 			}
 		}
@@ -173,8 +183,8 @@ public class BlockBookshelf extends InventoryBlock implements ITileEntityProvide
 		int offZ = facing.getZOffset();
 		double x1 = offX == -1 ? 0.625 : 0.0625;
 		double z1 = offZ == -1 ? 0.625 : 0.0625;
-		double x2 = offX ==  1 ? 0.375 : 0.9375;
-		double z2 = offZ ==  1 ? 0.375 : 0.9375;
+		double x2 = offX == +1 ? 0.375 : 0.9375;
+		double z2 = offZ == +1 ? 0.375 : 0.9375;
 		// ensure we clicked within a shelf, not outside one
 		if(click.x < x1 || click.x > x2 || click.z < z1 || click.z > z2) {
 			return -1;
@@ -190,7 +200,7 @@ public class BlockBookshelf extends InventoryBlock implements ITileEntityProvide
 		}
 
 		// multiply by 8 to account for extra 2 pixels
-		return shelf + Math.min((int)(clicked * 8), 7);
+		return shelf + Math.min((int) (clicked * 8), 7);
 	}
 
 	/*
@@ -209,19 +219,19 @@ public class BlockBookshelf extends InventoryBlock implements ITileEntityProvide
 			int offZ = side.getZOffset();
 			double x1 = offX == -1 ? 0.5 : 0;
 			double z1 = offZ == -1 ? 0.5 : 0;
-			double x2 = offX ==  1 ? 0.5 : 1;
-			double z2 = offZ ==  1 ? 0.5 : 1;
+			double x2 = offX == 1 ? 0.5 : 1;
+			double z2 = offZ == 1 ? 0.5 : 1;
 
 			// Rotate the 2 X-Z points correctly for the inset shelves.
-			Vec3d min = new Vec3d(-7/16.0, 0, -7/16.0).rotateYaw(-(float)Math.PI / 2F * side.getHorizontalIndex());
-			Vec3d max = new Vec3d(7/16.0, 1, 0).rotateYaw(-(float)Math.PI / 2F * side.getHorizontalIndex());
+			Vec3d min = new Vec3d(-7 / 16.0, 0, -7 / 16.0).rotateYaw(-(float) Math.PI / 2F * side.getHorizontalIndex());
+			Vec3d max = new Vec3d(7 / 16.0, 1, 0).rotateYaw(-(float) Math.PI / 2F * side.getHorizontalIndex());
 
 			// Then assemble.
 			builder.put(side, VoxelShapes.combineAndSimplify(
 					VoxelShapes.create(x1, 0, z1, x2, 1, z2), // Full half slab
 					VoxelShapes.or( // Then the two shelves.
-							VoxelShapes.create(0.5 + min.x, 1/16.0, 0.5 + min.z,  0.5 + max.x,  7/16.0, 0.5 + max.z),
-							VoxelShapes.create(0.5 + min.x, 9/16.0, 0.5 + min.z,  0.5 + max.x, 15/16.0, 0.5 + max.z)
+							VoxelShapes.create(0.5 + min.x, 1 / 16.0, 0.5 + min.z, 0.5 + max.x, 7 / 16.0, 0.5 + max.z),
+							VoxelShapes.create(0.5 + min.x, 9 / 16.0, 0.5 + min.z, 0.5 + max.x, 15 / 16.0, 0.5 + max.z)
 					),
 					IBooleanFunction.ONLY_FIRST
 			));
@@ -241,15 +251,15 @@ public class BlockBookshelf extends InventoryBlock implements ITileEntityProvide
 
 	@Override
 	public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
-		if (state.getBlock() != newState.getBlock()) {
+		if(state.getBlock() != newState.getBlock()) {
 			// if powered, send updates for power
-			if (getPower(world, pos) > 0){
+			if(getPower(world, pos) > 0) {
 				world.notifyNeighborsOfStateChange(pos, this);
 				world.notifyNeighborsOfStateChange(pos.offset(state.get(FACING).getOpposite()), this);
 			}
 			TileEntity tileentity = world.getTileEntity(pos);
-			if (tileentity instanceof IInventory) {
-				InventoryHelper.dropInventoryItems(world, pos, (IInventory)tileentity);
+			if(tileentity instanceof IInventory) {
+				InventoryHelper.dropInventoryItems(world, pos, (IInventory) tileentity);
 			}
 		}
 		super.onReplaced(state, world, pos, newState, isMoving);
@@ -262,7 +272,7 @@ public class BlockBookshelf extends InventoryBlock implements ITileEntityProvide
 
 	@Override
 	public int getStrongPower(BlockState state, IBlockReader blockAccess, BlockPos pos, Direction side) {
-		if (state.get(FACING) != side) {
+		if(state.get(FACING) != side) {
 			return 0;
 		}
 
@@ -315,13 +325,6 @@ public class BlockBookshelf extends InventoryBlock implements ITileEntityProvide
 
 	/* Drops */
 
-    @Override
-    public void fillItemGroup(@Nonnull ItemGroup group, @Nonnull NonNullList<ItemStack> items) {
-        if(group == ItemGroup.SEARCH || Config.enableBookshelf.get()) {
-			TextureBlockUtil.addBlocksFromTag(BlockTags.WOODEN_SLABS, this, items);
-        }
-    }
-
 	@Override
 	public ItemStack getPickBlock(BlockState state, RayTraceResult target, IBlockReader world, BlockPos pos, PlayerEntity player) {
 		return TextureBlockUtil.getBlockItemStack(world, pos, state);
@@ -352,7 +355,7 @@ public class BlockBookshelf extends InventoryBlock implements ITileEntityProvide
 
 	@Override
 	public float getEnchantPowerBonus(BlockState state, IWorldReader world, BlockPos pos) {
-		if (!Config.bookshelvesBoostEnchanting.get()) {
+		if(!Config.bookshelvesBoostEnchanting.get()) {
 			return 0;
 		}
 		TileEntity te = world.getTileEntity(pos);

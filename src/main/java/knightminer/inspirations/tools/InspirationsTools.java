@@ -1,12 +1,10 @@
 package knightminer.inspirations.tools;
 
-import com.google.common.eventbus.Subscribe;
 import knightminer.inspirations.common.CommonProxy;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.common.item.HidableItem;
 import knightminer.inspirations.library.Util;
-import knightminer.inspirations.shared.InspirationsShared;
 import knightminer.inspirations.tools.block.BlockRedstoneCharge;
 import knightminer.inspirations.tools.client.BarometerGetter;
 import knightminer.inspirations.tools.client.NorthCompassGetter;
@@ -35,15 +33,20 @@ import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.IProjectile;
 import net.minecraft.entity.projectile.ArrowEntity;
-import net.minecraft.item.*;
+import net.minecraft.item.ArrowItem;
+import net.minecraft.item.DirectionalPlaceContext;
+import net.minecraft.item.DyeColor;
+import net.minecraft.item.IItemTier;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemTier;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent.Register;
@@ -54,8 +57,6 @@ import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.pulsar.pulse.Pulse;
 
 import javax.annotation.Nonnull;
-import java.util.HashMap;
-import java.util.Map;
 
 @Pulse(id = InspirationsTools.pulseID, description = "Adds various tools or tweaks to vanilla tools")
 public class InspirationsTools extends PulseBase {
