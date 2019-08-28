@@ -143,9 +143,6 @@ public class InspirationsUtility extends PulseBase {
 		for(Block trapdoor : carpetedTrapdoors) {
 			registerBlockItem(r, trapdoor, ItemGroup.REDSTONE);
 		}
-		for(Block pressurePlate : carpetedPressurePlates) {
-			registerBlockItem(r, pressurePlate, ItemGroup.REDSTONE);
-		}
 		registerBlockItem(r, collector, ItemGroup.REDSTONE);
 		pipeItem = registerBlockItem(r, pipe, ItemGroup.REDSTONE);
 	}
