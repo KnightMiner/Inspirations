@@ -964,7 +964,7 @@ public class Config {
 		@Override
 		public BooleanSupplier parse(@Nonnull JsonObject json) {
 			String pulse = JSONUtils.getString(json, "pulse");
-			return () -> true;
+			return () -> Inspirations.pulseManager.isPulseLoaded(pulse);
 		}
 	}
 
