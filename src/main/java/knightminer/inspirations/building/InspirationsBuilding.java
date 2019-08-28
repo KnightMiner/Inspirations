@@ -74,9 +74,7 @@ public class InspirationsBuilding extends PulseBase {
 
 	// items
 	public static Item glassDoorItem;
-	public static Map<DyeColor, Item> book_colors=new HashMap<>();
-
-	// materials
+	public static Item[] coloredBooks = new Item[16];
 	public static Item redstoneBook;
 
 	// Tile Entities
@@ -176,10 +174,10 @@ public class InspirationsBuilding extends PulseBase {
 		IForgeRegistry<Item> r = event.getRegistry();
 
 		for (DyeColor color : DyeColor.values()) {
-			book_colors.put(color, registerItem(r, new HidableItem(
+			coloredBooks[color.getId()] = registerItem(r, new HidableItem(
 					new Item.Properties().group(ItemGroup.MATERIALS),
 					Config::enableColoredBooks
-			), color.getName() + "_book"));
+			), color.getName() + "_book");
 		}
 
 		redstoneBook = registerItem(r, new HidableItem(

@@ -41,8 +41,8 @@ public class InspirationsTweaks extends PulseBase {
 	public static CommonProxy proxy = DistExecutor.runForDist(() -> () -> new TweaksClientProxy(), () -> () -> new CommonProxy());
 
 	// blocks
-	public static Map<DyeColor, BlockFittedCarpet> fitCarpets = new HashMap<>();
-	public static Map<DyeColor, BlockFlatCarpet> flatCarpets = new HashMap<>();
+	public static BlockFittedCarpet[] fitCarpets = new BlockFittedCarpet[16];
+	public static BlockFlatCarpet[] flatCarpets = new BlockFlatCarpet[16];
 	public static CropsBlock cactusCrop;
 	public static CropsBlock sugarCaneCrop;
 
@@ -83,23 +83,20 @@ public class InspirationsTweaks extends PulseBase {
 		// The flat version overrides vanilla (with no blockstate values).
 		// The fitted version goes in our mod namespace.
 
-		BlockFlatCarpet flatCarpet = new BlockFlatCarpet(color, origCarpet);
-		BlockFittedCarpet fitCarpet = new BlockFittedCarpet(color, origCarpet);
+		BlockFlatCarpet flatCarpet = flatCarpets[color.getId()] = new BlockFlatCarpet(color, origCarpet);
+		BlockFittedCarpet fitCarpet = fitCarpets[color.getId()] = new BlockFittedCarpet(color, origCarpet);
 		register(r, flatCarpet, origCarpet.getRegistryName());
 		register(r, fitCarpet, color.getName() + "_fitted_carpet");
-
-		fitCarpets.put(color, fitCarpet);
-		flatCarpets.put(color, flatCarpet);
 	}
 
 	@SubscribeEvent
 	public void registerItem(Register<Item> event) {
 		IForgeRegistry<Item> r = event.getRegistry();
 
-		for (BlockFlatCarpet carpet : flatCarpets.values()) {
+		for (BlockFlatCarpet carpet : flatCarpets) {
 			BlockItem item = register(r, new BlockItem(carpet, new Item.Properties().group(ItemGroup.DECORATIONS)), carpet.getRegistryName());
 			Item.BLOCK_TO_ITEM.put(carpet, item);
-			Item.BLOCK_TO_ITEM.put(fitCarpets.get(carpet.getColor()), item);
+			Item.BLOCK_TO_ITEM.put(fitCarpets[carpet.getColor().getId()], item);
 		}
 
 		cactusSeeds = registerItem(r, new HidableBlockItem(

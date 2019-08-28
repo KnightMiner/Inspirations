@@ -42,14 +42,14 @@ public class BlockFlatCarpet extends CarpetBlock {
 		int shape = getStairShape(world.getBlockState(pos.down()));
 
 		if (shape != SHAPE_FLAT) {
-			return InspirationsTweaks.fitCarpets.get(this.getColor())
+			return InspirationsTweaks.fitCarpets[this.getColor().getId()]
                 .getDefaultState()
                 .with(NORTHWEST, (shape & 8) > 0)
                 .with(NORTHEAST, (shape & 4) > 0)
                 .with(SOUTHWEST, (shape & 2) > 0)
                 .with(SOUTHEAST, (shape & 1) > 0);
 		} else {
-			return InspirationsTweaks.flatCarpets.get(this.getColor()).getDefaultState();
+			return InspirationsTweaks.flatCarpets[this.getColor().getId()].getDefaultState();
 		}
 	}
 
@@ -63,7 +63,7 @@ public class BlockFlatCarpet extends CarpetBlock {
 	 */
 	@Override
 	public ItemStack getPickBlock(BlockState state, RayTraceResult target, IBlockReader world, BlockPos pos, PlayerEntity player) {
-		return new ItemStack(InspirationsTweaks.flatCarpets.get(this.getColor()));
+		return new ItemStack(InspirationsTweaks.flatCarpets[this.getColor().getId()]);
 	}
 
 	/**

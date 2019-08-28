@@ -127,9 +127,12 @@ public class BuildingClientProxy extends ClientProxy {
 		}, InspirationsBuilding.shelf_normal);
 
 		// book covers, too lazy to make 16 cover textures
-		for (Map.Entry<DyeColor, Item> book_entry: InspirationsBuilding.book_colors.entrySet()) {
-			int color = book_entry.getKey().colorValue;
-			itemColors.register((stack, tintIndex) -> (tintIndex == 1) ? color : -1, book_entry.getValue());
+		for (DyeColor color: DyeColor.values()) {
+			int hexColor = color.colorValue;
+			itemColors.register(
+					(stack, tintIndex) -> (tintIndex == 1) ? hexColor : -1,
+					InspirationsBuilding.coloredBooks[color.getId()]
+			);
 		}
 
 		// bush block colors
