@@ -1,6 +1,7 @@
 package knightminer.inspirations.building.client;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
@@ -18,7 +19,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.util.Direction;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.data.IModelData;
@@ -28,7 +28,7 @@ public class BookshelfModel extends TextureModel {
 	/** Book model cache, for internal use only */
 	public static final Cache<BookshelfCacheKey, IBakedModel> BOOK_CACHE = CacheBuilder.newBuilder().maximumSize(30).build();
 	public BookshelfModel(IBakedModel standard, IModel model) {
-		super(standard, model, DefaultVertexFormats.BLOCK, "texture", true);
+		super(standard, model, DefaultVertexFormats.BLOCK, "texture", false);
 	}
 
 	@Nonnull
@@ -66,7 +66,7 @@ public class BookshelfModel extends TextureModel {
 		@Nullable
 		private String texture;
 		private int books;
-		public BookshelfCacheKey(BlockState state, @Nullable String texture, int books) {
+		BookshelfCacheKey(BlockState state, @Nullable String texture, int books) {
 			this.state = state;
 			this.texture = texture;
 			this.books = books;
@@ -82,8 +82,7 @@ public class BookshelfModel extends TextureModel {
 			}
 
 			BookshelfCacheKey that = (BookshelfCacheKey) o;
-			return this.books == that.books && this.state == that.state
-					&& (this.texture == that.texture || this.texture != null && this.texture.equals(that.texture));
+			return this.books == that.books && this.state == that.state && Objects.equals(this.texture, that.texture);
 		}
 
 		@Override

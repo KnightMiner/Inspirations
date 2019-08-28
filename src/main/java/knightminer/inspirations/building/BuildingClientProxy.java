@@ -10,6 +10,7 @@ import knightminer.inspirations.common.ClientProxy;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.client.ClientUtil;
 import knightminer.inspirations.library.util.TextureBlockUtil;
+import knightminer.inspirations.shared.client.TextureModel;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
@@ -17,7 +18,7 @@ import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
-import net.minecraft.item.BlockItem;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.DyeColor;
 import net.minecraft.resources.IReloadableResourceManager;
 import net.minecraft.resources.IResourceManager;
@@ -34,7 +35,6 @@ import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 public class BuildingClientProxy extends ClientProxy {
@@ -182,11 +182,17 @@ public class BuildingClientProxy extends ClientProxy {
 	private static void replaceBookshelfModel(ModelBakeEvent event, BlockBookshelf shelf) {
 		for(Direction facing : Direction.Plane.HORIZONTAL){
 			ModelResourceLocation location = new ModelResourceLocation(shelf.getRegistryName(), String.format("facing=%s", facing.getName()));
-			IModel model=ModelLoaderRegistry.getModelOrLogError(location,"Error loading model for " + location);
+			IModel model = ModelLoaderRegistry.getModelOrLogError(location,"Error loading model for " + location);
 			IBakedModel standard = event.getModelRegistry().get(location);
 			IBakedModel finalModel = new BookshelfModel(standard, model);
 
 			event.getModelRegistry().put(location, finalModel);
 		}
+		ResourceLocation itemLoc = Util.getResource("models/item/" + shelf.getRegistryName().getPath());
+		IModel model = ModelLoaderRegistry.getModelOrLogError(itemLoc,"Error loading item model for " + itemLoc);
+		IBakedModel standard = event.getModelRegistry().get(itemLoc);
+		IBakedModel itemModel = new TextureModel(standard, model, DefaultVertexFormats.ITEM, "texture", true);
+
+		event.getModelRegistry().put(itemLoc, itemModel);
 	}
 }
