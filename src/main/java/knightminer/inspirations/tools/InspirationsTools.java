@@ -16,7 +16,6 @@ import knightminer.inspirations.tools.enchantment.EnchantmentExtendedKnockback;
 import knightminer.inspirations.tools.enchantment.EnchantmentShieldProtection;
 import knightminer.inspirations.tools.enchantment.EnchantmentShieldThorns;
 import knightminer.inspirations.tools.entity.RedstoneArrow;
-import knightminer.inspirations.tools.item.ItemCrook;
 import knightminer.inspirations.tools.item.ItemRedstoneCharger;
 import knightminer.inspirations.tools.item.ItemWaypointCompass;
 import knightminer.inspirations.tools.item.RedstoneArrowItem;
@@ -36,16 +35,11 @@ import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.item.ArrowItem;
 import net.minecraft.item.DirectionalPlaceContext;
 import net.minecraft.item.DyeColor;
-import net.minecraft.item.IItemTier;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemTier;
 import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -69,11 +63,6 @@ public class InspirationsTools extends PulseBase {
 
 	// items
 	public static Item redstoneCharger;
-	public static Item woodenCrook;
-	public static Item stoneCrook;
-	public static Item boneCrook;
-	public static Item blazeCrook;
-	public static Item witherCrook;
 	public static Item northCompass;
 	public static Item barometer;
 	public static Item photometer;
@@ -81,41 +70,6 @@ public class InspirationsTools extends PulseBase {
 
 	// The "undyed" compass is White.
 	public static ItemWaypointCompass[] waypointCompasses = new ItemWaypointCompass[16];
-
-	// tool materials
-	public static IItemTier bone = new IItemTier() {
-		public int getMaxUses() { return 225; }
-		public float getEfficiency() { return 4.0F; }
-		public float getAttackDamage() { return 1.5F; }
-		public int getHarvestLevel() { return 1; }
-		public int getEnchantability() { return 10; }
-		public Ingredient getRepairMaterial() {
-			return Ingredient.fromTag(ItemTags.getCollection()
-				.getOrCreate(new ResourceLocation("forge", "bones")));
-		}
-	};
-	public static IItemTier blaze = new IItemTier() {
-		public int getMaxUses() { return 300; }
-		public float getEfficiency() { return 6.0F; }
-		public float getAttackDamage() { return 2.0F; }
-		public int getHarvestLevel() { return 2; }
-		public int getEnchantability() { return 20; }
-		public Ingredient getRepairMaterial() {
-			return Ingredient.fromTag(ItemTags.getCollection()
-				.getOrCreate(new ResourceLocation("forge", "rods/blaze")));
-		}
-	};
-	public static IItemTier wither = new IItemTier() {
-		public int getMaxUses() { return 375; }
-		public float getEfficiency() { return 6.0F; }
-		public float getAttackDamage() { return 1.5F; }
-		public int getHarvestLevel() { return 2; }
-		public int getEnchantability() { return 10; }
-		public Ingredient getRepairMaterial() {
-			return Ingredient.fromTag(ItemTags.getCollection()
-				.getOrCreate(new ResourceLocation("forge", "bones/wither")));
-		}
-	};
 
 	// blocks
 	public static Block redstoneCharge;
@@ -152,13 +106,6 @@ public class InspirationsTools extends PulseBase {
 		redstoneArrow = registerItem(r, new RedstoneArrowItem(toolProps), "charged_arrow");
 
 		redstoneCharger = registerItem(r, new ItemRedstoneCharger(), "redstone_charger");
-
-		woodenCrook = registerItem(r, new ItemCrook(ItemTier.WOOD, Config::separateCrook), "wooden_crook");
-		stoneCrook = registerItem(r, new ItemCrook(ItemTier.STONE, Config::separateCrook), "stone_crook");
-		boneCrook = registerItem(r, new ItemCrook(bone, Config::separateCrook), "bone_crook");
-
-		blazeCrook = registerItem(r, new ItemCrook(blaze, Config::enableNetherCrook), "blaze_crook");
-		witherCrook = registerItem(r, new ItemCrook(wither, Config::enableNetherCrook), "wither_crook");
 
 		northCompass = registerItem(r, new HidableItem(toolProps, Config.enableNorthCompass::get), "north_compass");
 		northCompass.addPropertyOverride(Util.getResource("angle"), new NorthCompassGetter());
@@ -250,7 +197,6 @@ public class InspirationsTools extends PulseBase {
 //			register(r, new EnchantmentAxeDamage(Enchantment.Rarity.UNCOMMON, 2, slots), new ResourceLocation("bane_of_arthropods"));
 //		}
 	}
-
 	@SubscribeEvent
 	public void init(FMLCommonSetupEvent event) {
 		proxy.init();

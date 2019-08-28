@@ -34,7 +34,6 @@ public class Config {
 
 	// general
 	public static BooleanValue showAllVariants;
-	public static BooleanValue witherBoneDrop;
 
 	// building
 	public static BooleanValue enableRope;
@@ -87,12 +86,6 @@ public class Config {
 	public static boolean enableRedstoneBook() { return enableRedstoneBookRaw.get() && enableBookshelf.get(); }
 
 	// recipes
-
-	private enum BooleanAndSimple {
-		FALSE, // Don't the object
-		SIMPLE, // Add features without replacing.
-		TRUE // Replace the object.
-	}
 
 	// cauldron - extended
 	private static BooleanValue replaceCauldron;
@@ -255,23 +248,6 @@ public class Config {
 	public static BooleanValue renameVanillaCompass;
 	public static BooleanValue enableBarometer;
 	public static BooleanValue enablePhotometer;
-	// crook
-	private static EnumValue<BooleanAndSimple> crookType;
-
-	public static boolean enableCrook() {
-		return crookType.get() != BooleanAndSimple.FALSE;
-	}
-	public static boolean separateCrook() {
-		return crookType.get() == BooleanAndSimple.TRUE;
-	}
-	public static boolean hoeCrook() {
-		return crookType.get() == BooleanAndSimple.SIMPLE;
-	}
-	public static IntValue crookChance;
-	private static BooleanValue netherCrooksRaw;
-	public static boolean enableNetherCrook() {
-		return netherCrooksRaw.get() && separateCrook();
-	}
 
 	// waypoint compass
 	public static BooleanValue enableWaypointCompass;
@@ -361,10 +337,6 @@ public class Config {
 		showAllVariants = builder
 				.comment("Shows all variants for dynamically textured blocks, like bookshelves. If false just the first will be shown")
 				.define("general.showAllVariants", true);
-
-		witherBoneDrop = builder
-				.comment("Enables the wither bone drop. Option here in case another mod adds this. Requires either nether crooks or extra potions to be enabled")
-				.define("general.witherBoneDrop", true);
 
 
 		builder.push("building");
@@ -604,19 +576,6 @@ public class Config {
 					.comment("Enables locks and keys: an item allowing you to lock a tile entity to only open for a special named item")
 					.worldRestart()
 					.define("lock", true);
-
-			// crooks
-			crookType = builder
-					.comment("Enables the crook: a tool to break leaves faster and increase sapling chance. Can be 'true', 'false', or 'simple'. If true, adds a new tool. If simple, functionality will be added to hoes instead.")
-					.worldRestart()
-					.defineEnum("crook.enable", BooleanAndSimple.TRUE);
-			crookChance = builder
-					.comment("Chance of a sapling to drop when using the crook. Acts as 1 in [chance] if the initial sapling drop fails. Set to 1 to always drop saplings when using a crook.")
-					.defineInRange("crook.chance", 10,1, 100);
-			netherCrooksRaw = builder
-					.comment("Enables crooks crafted from blaze rods and wither bones. They have higher stats than other crooks and inflict fire and wither on the target respectively.")
-					.worldRestart()
-					.define("crook.netherCrooks", true);
 
 			// harvest hanging vines
 			harvestHangingVines = builder
@@ -1044,10 +1003,8 @@ public class Config {
 				case "charged_arrow": return enableChargedArrow.get();
 				case "craft_waypoint_compass": return craftWaypointCompass();
 				case "copy_waypoint_compass": return copyWaypointCompass();
-				case "crook": return separateCrook();
 				case "dye_waypoint_compass": return dyeWaypointCompass();
 				case "lock": return enableLock.get();
-				case "nether_crook": return enableNetherCrook();
 				case "north_compass": return enableNorthCompass.get();
 				case "photometer": return enablePhotometer.get();
 				case "redstone_charge": return enableRedstoneCharge.get();

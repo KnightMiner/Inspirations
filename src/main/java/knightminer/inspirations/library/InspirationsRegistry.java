@@ -54,8 +54,6 @@ public class InspirationsRegistry {
 	public static final Tag<Item> TAG_MILK_CONTAINERS = new ItemTags.Wrapper(new ResourceLocation(Inspirations.modID, "milk_containers"));
 
 	public static final ToolType SHEAR_TYPE = ToolType.get("shears");
-	public static final ToolType CROOK_TYPE = ToolType.get("crook");
-	public static final ToolType HOE_TYPE = ToolType.get("hoe");
 
 	public static final Tag<Item> TAG_DYE_BOTTLES = new ItemTags.Wrapper(Util.getResource("dyed_water_bottles"));
 

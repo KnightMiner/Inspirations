@@ -36,8 +36,6 @@ public class InspirationsShared extends PulseBase {
 	public static Item mushrooms;
 	public static Item rabbitStewMix;
 	public static Item silverfishPowder;
-	public static Item witherBone;
-	public static Item stoneRod;
 
 	// edibles
 	public static Item heartbeet;
@@ -74,13 +72,6 @@ public class InspirationsShared extends PulseBase {
 					() -> false
 			),  "silverfish_powder");
 		}
-		// used for nether crooks
-		if(isTweaksLoaded() || isToolsLoaded()) {
-			witherBone = registerItem(r, new HidableItem(
-					new Item.Properties().group(ItemGroup.BREWING),
-					Config::enableNetherCrook
-			), "wither_bone");
-		}
 
 		if(isRecipesLoaded()) {
 			splashBottle = registerItem(r, new HidableItem(
@@ -101,12 +92,6 @@ public class InspirationsShared extends PulseBase {
 				Config::enableCauldronFluids
 			), "rabbit_stew_mix");
 		}
-		if( isToolsLoaded()) {
-			stoneRod = registerItem(r, new HidableItem(
-				new Item.Properties().group(ItemGroup.MATERIALS),
-				Config::separateCrook
-			), "stone_rod");
-		}
 	}
 
 	@SubscribeEvent
@@ -119,13 +104,5 @@ public class InspirationsShared extends PulseBase {
 		proxy.postInit();
 
 		MinecraftForge.EVENT_BUS.addListener(SharedEvents::updateMilkCooldown);
-	}
-
-	private static final ResourceLocation WITHER_SKELETON_TABLE = new ResourceLocation("entities/wither_skeleton");
-	@SubscribeEvent
-	public void onLootTableLoad(LootTableLoadEvent event) {
-		if(WITHER_SKELETON_TABLE.equals(event.getName())) {
-			addToVanillaLoot(event, "entities/wither_skeleton");
-		}
 	}
 }

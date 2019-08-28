@@ -1,9 +1,0 @@
-{
-  "replace": false,
-  "values": [
-    "minecraft:bone"
-  ],
-  "optional": [
-    "inspirations:wither_bone"
-  ]
-}
