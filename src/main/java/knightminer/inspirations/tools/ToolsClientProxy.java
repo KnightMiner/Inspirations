@@ -21,21 +21,9 @@ public class ToolsClientProxy extends ClientProxy {
 	public void registerItemColors(ColorHandlerEvent.Item event) {
 		ItemColors itemColors = event.getItemColors();
 
-		// dyed waypoint compasses
+		// Dyed waypoint compasses. This implements IItemColor itself.
 		for(ItemWaypointCompass compass : InspirationsTools.waypointCompasses) {
-			int needleColor = compass.getNeedleColor();
-			int bodyColor = compass.getBodyColor();
-
-			itemColors.register((stack, tintIndex) -> {
-				switch(tintIndex) {
-					case 0:
-						return bodyColor;
-					case 1:
-						return needleColor;
-					default:
-						return -1;
-				}
-			}, compass);
+			itemColors.register(compass, compass);
 		}
 	}
 }
