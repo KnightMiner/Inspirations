@@ -191,6 +191,8 @@ public class BlockRope extends HidableBlock implements IWaterLoggable {
 		if (rungs > 0) {
 			spawnAsEntity(world, pos, new ItemStack(rungsItem, rungs * RUNG_ITEM_COUNT));
 		}
+
+		super.onBlockHarvested(world, pos, state, player);
 	}
 
 	/* Block properties */
