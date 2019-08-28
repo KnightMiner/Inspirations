@@ -50,7 +50,15 @@ public class InspirationsBuilding extends PulseBase {
 
 	public static Block glassDoor;
 	public static Block glassTrapdoor;
-	public static Map<BlockMulch.MulchColor, Block> mulch=new HashMap<>();
+
+	public static Block plainMulch;
+	public static Block brownMulch;
+	public static Block yellowMulch;
+	public static Block amberMulch;
+	public static Block rubyMulch;
+	public static Block redMulch;
+	public static Block blackMulch;
+	public static Block blueMulch;
 
 	public static BlockPath path_rock;
 	public static BlockPath path_round;
@@ -138,11 +146,14 @@ public class InspirationsBuilding extends PulseBase {
 		glassDoor = registerBlock(r, new BlockGlassDoor(), "glass_door");
 		glassTrapdoor = registerBlock(r, new BlockGlassTrapdoor(), "glass_trapdoor");
 
-		for (BlockMulch.MulchColor mulch_color: BlockMulch.MulchColor.values()) {
-			mulch.put(mulch_color,
-				registerBlock(r, new BlockMulch(mulch_color),
-					mulch_color.getName() + "_mulch"));
-		}
+		plainMulch = registerBlock(r, new BlockMulch(), "plain_mulch");
+		brownMulch = registerBlock(r, new BlockMulch(), "brown_mulch");
+		yellowMulch = registerBlock(r, new BlockMulch(), "yellow_mulch");
+		amberMulch = registerBlock(r, new BlockMulch(), "amber_mulch");
+		rubyMulch = registerBlock(r, new BlockMulch(), "ruby_mulch");
+		redMulch = registerBlock(r, new BlockMulch(), "red_mulch");
+		blackMulch = registerBlock(r, new BlockMulch(), "black_mulch");
+		blueMulch = registerBlock(r, new BlockMulch(), "blue_mulch");
 
 		path_rock = registerBlock(r, new BlockPath(BlockPath.SHAPE_ROCK, MaterialColor.STONE), "rock_path");
 		path_round = registerBlock(r, new BlockPath(BlockPath.SHAPE_ROUND, MaterialColor.STONE), "round_path");
@@ -187,9 +198,14 @@ public class InspirationsBuilding extends PulseBase {
 		registerItemBlock(r, vine, ItemGroup.DECORATIONS);
 		registerItemBlock(r, chain, ItemGroup.DECORATIONS);
 
-		for (Block mulchBlock : mulch.values()) {
-			registerItemBlock(r, mulchBlock, ItemGroup.BUILDING_BLOCKS);
-		}
+		registerItemBlock(r, plainMulch, ItemGroup.BUILDING_BLOCKS);
+		registerItemBlock(r, brownMulch, ItemGroup.BUILDING_BLOCKS);
+		registerItemBlock(r, yellowMulch, ItemGroup.BUILDING_BLOCKS);
+		registerItemBlock(r, amberMulch, ItemGroup.BUILDING_BLOCKS);
+		registerItemBlock(r, rubyMulch, ItemGroup.BUILDING_BLOCKS);
+		registerItemBlock(r, redMulch, ItemGroup.BUILDING_BLOCKS);
+		registerItemBlock(r, blackMulch, ItemGroup.BUILDING_BLOCKS);
+		registerItemBlock(r, blueMulch, ItemGroup.BUILDING_BLOCKS);
 
 		registerItemBlock(r, path_rock, ItemGroup.DECORATIONS);
 		registerItemBlock(r, path_round, ItemGroup.DECORATIONS);
