@@ -1,7 +1,6 @@
 package knightminer.inspirations.utility;
 
 
-import knightminer.inspirations.common.CommonProxy;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.utility.block.BlockBricksButton;
 import knightminer.inspirations.utility.block.BlockCarpetedPressurePlate;
@@ -17,8 +16,6 @@ import knightminer.inspirations.utility.item.TorchLeverItem;
 import knightminer.inspirations.utility.tileentity.TileCollector;
 import knightminer.inspirations.utility.tileentity.TilePipe;
 import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.CarpetBlock;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.material.Material;
 import net.minecraft.dispenser.IDispenseItemBehavior;
@@ -78,30 +75,7 @@ public class InspirationsUtility extends PulseBase {
 
 		for(DyeColor color : DyeColor.values()) {
 			carpetedTrapdoors[color.getId()] = registerBlock(r, new BlockCarpetedTrapdoor(color),  color.getName() + "_carpeted_trapdoor");
-		}
-		CarpetBlock[] carpets = new CarpetBlock[] {
-			(CarpetBlock)Blocks.WHITE_CARPET,
-			(CarpetBlock)Blocks.ORANGE_CARPET,
-			(CarpetBlock)Blocks.MAGENTA_CARPET,
-			(CarpetBlock)Blocks.LIGHT_BLUE_CARPET,
-			(CarpetBlock)Blocks.YELLOW_CARPET,
-			(CarpetBlock)Blocks.LIME_CARPET,
-			(CarpetBlock)Blocks.PINK_CARPET,
-			(CarpetBlock)Blocks.GRAY_CARPET,
-			(CarpetBlock)Blocks.LIGHT_GRAY_CARPET,
-			(CarpetBlock)Blocks.CYAN_CARPET,
-			(CarpetBlock)Blocks.PURPLE_CARPET,
-			(CarpetBlock)Blocks.BLUE_CARPET,
-			(CarpetBlock)Blocks.BROWN_CARPET,
-			(CarpetBlock)Blocks.GREEN_CARPET,
-			(CarpetBlock)Blocks.RED_CARPET,
-			(CarpetBlock)Blocks.BLACK_CARPET,
-		};
-		for(CarpetBlock carpet : carpets) {
-			carpetedPressurePlates[carpet.getColor().getId()] = registerBlock(r,
-					new BlockCarpetedPressurePlate(carpet),
-					carpet.getColor().getName() + "_carpeted_pressure_plate"
-			);
+			carpetedPressurePlates[color.getId()] = registerBlock(r, new BlockCarpetedPressurePlate(color), color.getName() + "_carpeted_pressure_plate");
 		}
 		collector = registerBlock(r, new BlockCollector(), "collector");
 		pipe = registerBlock(r, new BlockPipe(), "pipe");
