@@ -15,6 +15,8 @@ import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 import net.minecraftforge.common.PlantType;
 import net.minecraftforge.common.ToolType;
@@ -23,7 +25,7 @@ import javax.annotation.Nonnull;
 
 public class BlockMulch extends FallingBlock {
 
-	protected static final AxisAlignedBB BOUNDS = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.9375D, 1.0D);
+	protected static final VoxelShape SHAPE = Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 15.0D, 16.0D);
 
 	public BlockMulch(MulchColor color) {
 		super(Properties.create(Material.WOOD)
@@ -39,6 +41,12 @@ public class BlockMulch extends FallingBlock {
 			super.fillItemGroup(group, items);
         }
     }
+
+	@Nonnull
+	@Override
+	public VoxelShape getCollisionShape(@Nonnull BlockState state, @Nonnull IBlockReader worldIn, @Nonnull BlockPos pos, ISelectionContext context) {
+		return SHAPE;
+	}
 
 	/*
 	 * Plants
