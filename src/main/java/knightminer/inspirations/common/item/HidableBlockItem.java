@@ -24,6 +24,7 @@ public class HidableBlockItem extends BlockItem implements IHidable {
 		}
     }
 
+    @Override
     public boolean isEnabled() {
         return enabled.get();
     }

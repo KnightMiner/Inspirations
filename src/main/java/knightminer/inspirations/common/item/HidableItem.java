@@ -21,6 +21,7 @@ public class HidableItem extends Item implements IHidable {
         this.enabled = isEnabled;
     }
 
+    @Override
     public boolean isEnabled() {
         return enabled.get();
     }

@@ -17,6 +17,7 @@ public class HidableBlock extends Block implements IHidable {
         this.enabled = isEnabled;
     }
 
+    @Override
     public boolean isEnabled() {
         return enabled.get();
     }
