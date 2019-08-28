@@ -106,15 +106,15 @@ public class Config {
 
 
 	private enum SpongeEmptyCauldron {
-		FALSE, // No emptying.
-		TRUE, // For any amount of liquid.
+		DISABLED, // No emptying.
+		ANY, // For any amount of liquid.
 		FULL  // Allowed, but only full cauldrons.
 	}
 
 	private static EnumValue<SpongeEmptyCauldron> spongeEmptyCauldron;
 
 	public static boolean canSpongeEmptyCauldron() {
-		return spongeEmptyCauldron.get() != SpongeEmptyCauldron.FALSE;
+		return spongeEmptyCauldron.get() != SpongeEmptyCauldron.DISABLED;
 	}
 	public static boolean canSpongeEmptyFullOnly() {
 		return spongeEmptyCauldron.get() == SpongeEmptyCauldron.FULL;
@@ -484,8 +484,8 @@ public class Config {
 
 			// basic config
 			spongeEmptyCauldron = builder
-					.comment("Allows sponges to be used to empty the cauldron of dye, water, or potions. Can be 'true', 'false', or 'full'. If set to 'full', requires the cauldron to be full, prevents duplicating water but is less useful for removing unwanted fluids.")
-					.defineEnum("spongeEmpty", SpongeEmptyCauldron.TRUE);
+					.comment("Allows sponges to be used to empty the cauldron of dye, water, or potions. Can be 'disabled', 'full' or 'any'. If set to 'full', requires the cauldron to be full, prevents duplicating water but is less useful for removing unwanted fluids.")
+					.defineEnum("spongeEmpty", SpongeEmptyCauldron.ANY);
 
 			// extended options
 			replaceCauldron = builder_override
