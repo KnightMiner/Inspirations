@@ -15,14 +15,13 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ToolType;
-import slimeknights.mantle.client.CreativeTab;
 
 import javax.annotation.Nonnull;
 
 public class BlockPath extends HidableBlock {
 
 	private final VoxelShape shape;
-	private final VoxelShape coll_shape;
+	private final VoxelShape collShape;
 
 	public BlockPath(VoxelShape shape, MaterialColor mapColor) {
 		super(Block.Properties.create(Material.ROCK, mapColor)
@@ -32,7 +31,7 @@ public class BlockPath extends HidableBlock {
 		);
 		// Each path has a different shape, but use the bounding box for collisions.
 		this.shape = shape;
-		this.coll_shape = VoxelShapes.create(shape.getBoundingBox());
+		this.collShape = VoxelShapes.create(shape.getBoundingBox());
 	}
 
 	/* Block Shape */
@@ -70,9 +69,10 @@ public class BlockPath extends HidableBlock {
 		return shape;
 	}
 
+	@Nonnull
 	@Override
-	public VoxelShape getCollisionShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-		return coll_shape;
+	public VoxelShape getCollisionShape(@Nonnull BlockState state, @Nonnull IBlockReader world, @Nonnull BlockPos pos, ISelectionContext context) {
+		return collShape;
 	}
 
 	/* Solid surface below */
@@ -93,5 +93,4 @@ public class BlockPath extends HidableBlock {
 			world.destroyBlock(pos, true);
 		}
 	}
-
 }
