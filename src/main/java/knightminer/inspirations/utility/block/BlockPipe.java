@@ -10,6 +10,7 @@ import net.minecraft.block.DropperBlock;
 import net.minecraft.block.HopperBlock;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.material.MaterialColor;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.IInventory;
@@ -65,7 +66,7 @@ public class BlockPipe extends InventoryBlock implements IHidable {
 
 	public BlockPipe() {
 		super(Block.Properties
-				.create(Material.IRON)
+				.create(Material.IRON, MaterialColor.STONE)  // Darker than iron blocks.
 				.hardnessAndResistance(3.0F, 8.0F)
 				.sound(SoundType.METAL)
 		);

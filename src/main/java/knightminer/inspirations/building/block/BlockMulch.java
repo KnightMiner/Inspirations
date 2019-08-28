@@ -10,6 +10,7 @@ import net.minecraft.block.SaplingBlock;
 import net.minecraft.block.FallingBlock;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.material.MaterialColor;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
@@ -27,8 +28,8 @@ public class BlockMulch extends FallingBlock implements IHidable {
 
 	protected static final VoxelShape SHAPE = Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 15.0D, 16.0D);
 
-	public BlockMulch() {
-		super(Properties.create(Material.WOOD)
+	public BlockMulch(MaterialColor color) {
+		super(Properties.create(Material.WOOD, color)
 				.harvestTool(ToolType.SHOVEL)
 				.sound(SoundType.WET_GRASS)
 				.hardnessAndResistance(0.6F)

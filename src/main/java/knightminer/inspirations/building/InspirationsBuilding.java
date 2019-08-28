@@ -123,17 +123,17 @@ public class InspirationsBuilding extends PulseBase {
 		shelf_tomes = registerBlock(r, new BlockBookshelf(), "tomes_bookshelf");
 
 		rope = registerBlock(r, new BlockRope(Items.STICK, Block.Properties
-				.create(Material.CARPET)
+				.create(Material.CARPET, MaterialColor.OBSIDIAN)
 				.sound(SoundType.CLOTH)
 				.hardnessAndResistance(0.5F)
 		), "rope");
 		vine = registerBlock(r, new BlockRope(Items.BAMBOO, Block.Properties
-				.create(Material.CARPET)
+				.create(Material.CARPET, MaterialColor.FOLIAGE)
 				.sound(SoundType.PLANT)
 				.hardnessAndResistance(0.5F)
 		), "vine");
 		chain = registerBlock(r, new BlockChain(Items.IRON_NUGGET, Block.Properties
-				.create(Material.IRON)
+				.create(Material.IRON, MaterialColor.STONE)
 				.sound(SoundType.METAL)
 				.hardnessAndResistance(5.0F)
 				.harvestTool(ToolType.PICKAXE)
@@ -143,19 +143,19 @@ public class InspirationsBuilding extends PulseBase {
 		glassDoor = registerBlock(r, new BlockGlassDoor(), "glass_door");
 		glassTrapdoor = registerBlock(r, new BlockGlassTrapdoor(), "glass_trapdoor");
 
-		plainMulch = registerBlock(r, new BlockMulch(), "plain_mulch");
-		brownMulch = registerBlock(r, new BlockMulch(), "brown_mulch");
-		yellowMulch = registerBlock(r, new BlockMulch(), "yellow_mulch");
-		amberMulch = registerBlock(r, new BlockMulch(), "amber_mulch");
-		rubyMulch = registerBlock(r, new BlockMulch(), "ruby_mulch");
-		redMulch = registerBlock(r, new BlockMulch(), "red_mulch");
-		blackMulch = registerBlock(r, new BlockMulch(), "black_mulch");
-		blueMulch = registerBlock(r, new BlockMulch(), "blue_mulch");
+		plainMulch  = registerBlock(r, new BlockMulch(MaterialColor.LIGHT_GRAY), "plain_mulch");
+		brownMulch  = registerBlock(r, new BlockMulch(MaterialColor.DIRT),       "brown_mulch");
+		yellowMulch = registerBlock(r, new BlockMulch(MaterialColor.YELLOW),     "yellow_mulch");
+		amberMulch  = registerBlock(r, new BlockMulch(MaterialColor.OBSIDIAN),   "amber_mulch");
+		rubyMulch   = registerBlock(r, new BlockMulch(MaterialColor.RED),        "ruby_mulch");
+		redMulch    = registerBlock(r, new BlockMulch(MaterialColor.NETHERRACK), "red_mulch");
+		blackMulch  = registerBlock(r, new BlockMulch(MaterialColor.GRAY),       "black_mulch");
+		blueMulch   = registerBlock(r, new BlockMulch(MaterialColor.BLUE),       "blue_mulch");
 
-		path_rock = registerBlock(r, new BlockPath(BlockPath.SHAPE_ROCK, MaterialColor.STONE), "rock_path");
+		path_rock  = registerBlock(r, new BlockPath(BlockPath.SHAPE_ROCK,  MaterialColor.STONE), "rock_path");
 		path_round = registerBlock(r, new BlockPath(BlockPath.SHAPE_ROUND, MaterialColor.STONE), "round_path");
-		path_tile = registerBlock(r, new BlockPath(BlockPath.SHAPE_TILE, MaterialColor.STONE), "tile_path");
-		path_brick = registerBlock(r, new BlockPath(BlockPath.SHAPE_BRICK, MaterialColor.RED), "brick_path");
+		path_tile  = registerBlock(r, new BlockPath(BlockPath.SHAPE_TILE,  MaterialColor.STONE), "tile_path");
+		path_brick = registerBlock(r, new BlockPath(BlockPath.SHAPE_BRICK, MaterialColor.RED),  "brick_path");
 
 
 		flower_cyan = registerBlock(r, new BlockFlower(null), "cyan_flower");
