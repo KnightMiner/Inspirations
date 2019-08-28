@@ -2,26 +2,19 @@ package knightminer.inspirations.library;
 
 import com.google.common.collect.ImmutableList;
 import knightminer.inspirations.Inspirations;
-import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.event.RegisterEvent.RegisterCauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.CauldronFluidRecipe;
 import knightminer.inspirations.library.recipe.cauldron.CauldronFluidTransformRecipe;
 import knightminer.inspirations.library.recipe.cauldron.FillCauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe.CauldronState;
-import net.minecraft.block.*;
-import net.minecraft.block.BushBlock;
-import net.minecraft.block.CropsBlock;
-import net.minecraft.block.DeadBushBlock;
-import net.minecraft.block.DoublePlantBlock;
-import net.minecraft.block.LilyPadBlock;
-import net.minecraft.block.MushroomBlock;
-import net.minecraft.block.SaplingBlock;
-import net.minecraft.block.TallGrassBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.material.Material;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.Tag;
@@ -41,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+@SuppressWarnings("unused") // This is an API.
 public class InspirationsRegistry {
 	public static final Logger log = Util.getLogger("api");
 
@@ -82,7 +76,19 @@ public class InspirationsRegistry {
 	 * Books
 	 */
 	private static Map<Item, Float> books = new HashMap<>();
+	private static Map<Item, Float> bookCache = new HashMap<>();
 	private static List<String> bookKeywords = new ArrayList<>();
+
+	// Replicates Config.defaultEnchantingPower.
+	private static float defaultEnchantingPower = 1.5f;
+
+	/**
+	 * Internal function to set defaultEnchantingPower.
+	 * @deprecated For internal use only.
+	 */
+	public static void setDefaultEnchantingPower(float power) {
+		defaultEnchantingPower = power;
+	}
 
 	/**
 	 * Checks if the given item stack is a book
@@ -102,7 +108,7 @@ public class InspirationsRegistry {
 		if (book.isEmpty()) {
 			return 0;
 		}
-		return books.computeIfAbsent(book.getItem(), InspirationsRegistry::bookPower);
+		return bookCache.computeIfAbsent(book.getItem(), InspirationsRegistry::bookPower);
 	}
 
 	/**
@@ -112,6 +118,11 @@ public class InspirationsRegistry {
 	 */
 	@Nonnull
 	private static Float bookPower(Item item) {
+		Float override = books.get(item);
+		if (override != null) {
+			return override;
+		}
+
 		// blocks are not books, catches bookshelves
 		if (Block.getBlockFromItem(item) != Blocks.AIR) {
 			return -1f;
@@ -122,21 +133,10 @@ public class InspirationsRegistry {
 			// if the unlocalized name or the registry name has the keyword, its a book
 			if (item.getRegistryName().getPath().contains(keyword)
 					|| item.getTranslationKey().contains(keyword)) {
-				return Config.defaultEnchantingPower.get().floatValue();
+				return defaultEnchantingPower;
 			}
 		}
 		return -1f;
-	}
-
-	/**
-	 * Registers an override to state a stack is definately a book or not a book, primarily used by the config
-	 * @param stack  Itemstack which is a book
-	 * @param isBook True if its a book, false if its not a book
-	 * @deprecated use {@link #registerBook(Item, float)}
-	 */
-	@Deprecated
-	public static void registerBook(ItemStack stack, boolean isBook) {
-		registerBook(stack.getItem(), isBook ? 1.5f : -1f);
 	}
 
 	/**
@@ -166,7 +166,7 @@ public class InspirationsRegistry {
 	public static void setBookKeywords(List<String> keywords) {
 		bookKeywords = keywords;
 		// Clear the cache.
-		books.clear();
+		bookCache.clear();
 	}
 
 	/*
@@ -336,12 +336,12 @@ public class InspirationsRegistry {
 		stack = stack.copy();
 		int count = stack.getCount();
 		stack.setCount(count * 2);
-		if (Config.enableBiggerCauldron()) {
+		if (cauldronBigger) {
 			addCauldronRecipe(new CauldronFluidTransformRecipe(RecipeMatch.of(stack, stack.getCount(), 1), input, output, boiling, 2));
 			stack = stack.copy();
 			stack.setCount(count * 3);
 		}
-		addCauldronRecipe(new CauldronFluidTransformRecipe(RecipeMatch.of(stack, stack.getCount(), 1), input, output, boiling, (Config.enableBiggerCauldron() ? 4 : 3)));
+		addCauldronRecipe(new CauldronFluidTransformRecipe(RecipeMatch.of(stack, stack.getCount(), 1), input, output, boiling, cauldronBigger ? 4 : 3));
 	}
 
 	/**

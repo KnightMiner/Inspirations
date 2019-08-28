@@ -100,6 +100,7 @@ public class Inspirations {
 				.map(String::trim)
 				.collect(Collectors.toList())
 		);
+		InspirationsRegistry.setDefaultEnchantingPower(Config.defaultEnchantingPower.get().floatValue());
 	}
 
 	@SubscribeEvent
