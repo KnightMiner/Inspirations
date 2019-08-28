@@ -127,17 +127,17 @@ public class InspirationsUtility extends PulseBase {
 
 		// itemblocks
 		register(r, new TorchLeverItem(), "torch_lever");
-		registerItemBlock(r, bricksButton, ItemGroup.REDSTONE);
-		registerItemBlock(r, netherBricksButton, ItemGroup.REDSTONE);
-		registerItemBlock(r, redstoneBarrel, ItemGroup.REDSTONE);
+		registerBlockItem(r, bricksButton, ItemGroup.REDSTONE);
+		registerBlockItem(r, netherBricksButton, ItemGroup.REDSTONE);
+		registerBlockItem(r, redstoneBarrel, ItemGroup.REDSTONE);
 		for(Block trapdoor : carpetedTrapdoors) {
-			registerItemBlock(r, trapdoor, ItemGroup.REDSTONE);
+			registerBlockItem(r, trapdoor, ItemGroup.REDSTONE);
 		}
 		for(Block pressurePlate : carpetedPressurePlates) {
-			registerItemBlock(r, pressurePlate, ItemGroup.REDSTONE);
+			registerBlockItem(r, pressurePlate, ItemGroup.REDSTONE);
 		}
-		registerItemBlock(r, collector, ItemGroup.REDSTONE);
-		pipeItem = registerItemBlock(r, pipe, ItemGroup.REDSTONE);
+		registerBlockItem(r, collector, ItemGroup.REDSTONE);
+		pipeItem = registerBlockItem(r, pipe, ItemGroup.REDSTONE);
 	}
 
 	@SubscribeEvent

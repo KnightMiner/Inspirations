@@ -23,8 +23,14 @@ import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
+import slimeknights.mantle.common.IRegisterUtil;
 
-public class PulseBase {
+public class PulseBase implements IRegisterUtil {
+	@Override
+	public String getModId() {
+		return Inspirations.modID;
+	}
+
 	/* Loaded */
 	public static boolean isBuildingLoaded() {
 		return Inspirations.pulseManager.isPulseLoaded(InspirationsBuilding.pulseID);
@@ -48,7 +54,7 @@ public class PulseBase {
 	}
 
 	/* Normal registration */
-	protected static <T extends Block> T registerBlock(IForgeRegistry<Block> registry, T block, String name) {
+	protected <T extends Block> T registerBlock(IForgeRegistry<Block> registry, T block, String name) {
 		if (!name.equals(name.toLowerCase(Locale.US))) {
 			throw new IllegalArgumentException(
 					String.format("Unlocalized names need to be all lowercase! Block: %s", name));
@@ -60,7 +66,7 @@ public class PulseBase {
 	/**
 	 * Sets the correct registry name and registers the item.
 	 */
-	protected static <T extends Item> T registerItem(IForgeRegistry<Item> registry, T item, String name) {
+	protected <T extends Item> T registerItem(IForgeRegistry<Item> registry, T item, String name) {
 		if (!name.equals(name.toLowerCase(Locale.US))) {
 			throw new IllegalArgumentException(
 					String.format("Unlocalized names need to be all lowercase! Item: %s", name));
@@ -70,55 +76,46 @@ public class PulseBase {
 	}
 
 
-	/* Itemblocks */
-
-	protected static <T extends BlockItem> T registerItemBlock(IForgeRegistry<Item> registry, T itemBlock) {
-		register(registry, itemBlock, itemBlock.getBlock().getRegistryName());
-		return itemBlock;
-	}
-
-	protected static BlockItem registerItemBlock(IForgeRegistry<Item> registry, Block block, ItemGroup group) {
-		return registerItemBlock(registry, new HidableBlockItem(block, (new Item.Properties()).group(group)));
+	/**
+	 * Override BlockItem registration to use the Hidable version.
+	 * @param registry The item registry to register in.
+	 * @param block The block to register an item version for.
+	 * @param group The ItemGroup to assign the item to.
+	 * @return The created BlockItem.
+	 */
+	public BlockItem registerBlockItem(IForgeRegistry<Item> registry, Block block, ItemGroup group) {
+		return registerBlockItem(registry, new HidableBlockItem(block, (new Item.Properties()).group(group)));
 	}
 
 	/* Base methods */
-	protected static <C extends T, T extends IForgeRegistryEntry<T>> C register(IForgeRegistry<T> registry, C thing, String name) {
-		return register(registry, thing, Util.getResource(name));
-	}
 
-	protected static <C extends T, T extends IForgeRegistryEntry<T>> C register(IForgeRegistry<T> registry, C thing, ResourceLocation name) {
-		thing.setRegistryName(name);
-		registry.register(thing);
-		return thing;
-	}
-
-	protected static <X extends Entity> EntityType<X> buildEntity(EntityType.Builder<X> builder, String id) {
+	static protected <X extends Entity> EntityType<X> buildEntity(EntityType.Builder<X> builder, String id) {
 		EntityType<X> type = builder.build(id);
-		type.setRegistryName(new ResourceLocation(Inspirations.modID, id));
+		type.setRegistryName(Util.getResource(id));
 		return type;
 	}
 
 	/* Other */
-	protected static Fluid registerColoredFluid(String name, int color) {
+	protected Fluid registerColoredFluid(String name, int color) {
 		Fluid fluid = registerFluid(new Fluid(name, Util.getResource("blocks/fluid_colorless"), Util.getResource("blocks/fluid_colorless_flow"), color));
 //		FluidRegistry.addBucketForFluid(fluid);
 		return fluid;
 	}
 
-	protected static <T extends Fluid> T registerFluid(T fluid) {
+	protected <T extends Fluid> T registerFluid(T fluid) {
 		fluid.setUnlocalizedName(Util.prefix(fluid.getName()));
 //		FluidRegistry.registerFluid(fluid);
 
 		return fluid;
 	}
 
-	protected static void registerDispenserBehavior(Block block, IDispenseItemBehavior behavior) {
+	protected void registerDispenserBehavior(Block block, IDispenseItemBehavior behavior) {
 		if (block != null) {
 			registerDispenserBehavior(Item.getItemFromBlock(block), behavior);
 		}
 	}
 
-	protected static void registerDispenserBehavior(Item item, IDispenseItemBehavior behavior) {
+	protected void registerDispenserBehavior(Item item, IDispenseItemBehavior behavior) {
 		if (item != null) {
 			DispenserBlock.registerDispenseBehavior(item, behavior);
 		}

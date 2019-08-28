@@ -186,38 +186,38 @@ public class InspirationsBuilding extends PulseBase {
 
 		// itemblocks
 		Item.Properties deco_props = new Item.Properties().group(ItemGroup.DECORATIONS);
-		registerItemBlock(r, new ItemBlockTexture(shelf_normal, deco_props));
-		registerItemBlock(r, new ItemBlockTexture(shelf_ancient, deco_props));
-		registerItemBlock(r, new ItemBlockTexture(shelf_rainbow, deco_props));
-		registerItemBlock(r, new ItemBlockTexture(shelf_tomes, deco_props));
+		registerBlockItem(r, new ItemBlockTexture(shelf_normal, deco_props));
+		registerBlockItem(r, new ItemBlockTexture(shelf_ancient, deco_props));
+		registerBlockItem(r, new ItemBlockTexture(shelf_rainbow, deco_props));
+		registerBlockItem(r, new ItemBlockTexture(shelf_tomes, deco_props));
 
-		registerItemBlock(r, rope, ItemGroup.DECORATIONS);
-		registerItemBlock(r, vine, ItemGroup.DECORATIONS);
-		registerItemBlock(r, chain, ItemGroup.DECORATIONS);
+		registerBlockItem(r, rope, ItemGroup.DECORATIONS);
+		registerBlockItem(r, vine, ItemGroup.DECORATIONS);
+		registerBlockItem(r, chain, ItemGroup.DECORATIONS);
 
-		registerItemBlock(r, plainMulch, ItemGroup.BUILDING_BLOCKS);
-		registerItemBlock(r, brownMulch, ItemGroup.BUILDING_BLOCKS);
-		registerItemBlock(r, yellowMulch, ItemGroup.BUILDING_BLOCKS);
-		registerItemBlock(r, amberMulch, ItemGroup.BUILDING_BLOCKS);
-		registerItemBlock(r, rubyMulch, ItemGroup.BUILDING_BLOCKS);
-		registerItemBlock(r, redMulch, ItemGroup.BUILDING_BLOCKS);
-		registerItemBlock(r, blackMulch, ItemGroup.BUILDING_BLOCKS);
-		registerItemBlock(r, blueMulch, ItemGroup.BUILDING_BLOCKS);
+		registerBlockItem(r, plainMulch, ItemGroup.BUILDING_BLOCKS);
+		registerBlockItem(r, brownMulch, ItemGroup.BUILDING_BLOCKS);
+		registerBlockItem(r, yellowMulch, ItemGroup.BUILDING_BLOCKS);
+		registerBlockItem(r, amberMulch, ItemGroup.BUILDING_BLOCKS);
+		registerBlockItem(r, rubyMulch, ItemGroup.BUILDING_BLOCKS);
+		registerBlockItem(r, redMulch, ItemGroup.BUILDING_BLOCKS);
+		registerBlockItem(r, blackMulch, ItemGroup.BUILDING_BLOCKS);
+		registerBlockItem(r, blueMulch, ItemGroup.BUILDING_BLOCKS);
 
-		registerItemBlock(r, path_rock, ItemGroup.DECORATIONS);
-		registerItemBlock(r, path_round, ItemGroup.DECORATIONS);
-		registerItemBlock(r, path_tile, ItemGroup.DECORATIONS);
-		registerItemBlock(r, path_brick, ItemGroup.DECORATIONS);
+		registerBlockItem(r, path_rock, ItemGroup.DECORATIONS);
+		registerBlockItem(r, path_round, ItemGroup.DECORATIONS);
+		registerBlockItem(r, path_tile, ItemGroup.DECORATIONS);
+		registerBlockItem(r, path_brick, ItemGroup.DECORATIONS);
 
-		registerItemBlock(r, flower_cyan, ItemGroup.DECORATIONS);
-		registerItemBlock(r, flower_syringa, ItemGroup.DECORATIONS);
-		registerItemBlock(r, flower_paeonia, ItemGroup.DECORATIONS);
-		registerItemBlock(r, flower_rose, ItemGroup.DECORATIONS);
+		registerBlockItem(r, flower_cyan, ItemGroup.DECORATIONS);
+		registerBlockItem(r, flower_syringa, ItemGroup.DECORATIONS);
+		registerBlockItem(r, flower_paeonia, ItemGroup.DECORATIONS);
+		registerBlockItem(r, flower_rose, ItemGroup.DECORATIONS);
 
-//		registerItemBlock(r, new ItemBlockTexture(enlightenedBush, new Item.Properties().group(ItemGroup.DECORATIONS)));
+//		registerBlockItem(r, new ItemBlockTexture(enlightenedBush, new Item.Properties().group(ItemGroup.DECORATIONS)));
 
 		glassDoorItem = registerItem(r, new ItemGlassDoor(glassDoor, new Item.Properties().group(ItemGroup.REDSTONE)), "glass_door");
-		registerItemBlock(r, glassTrapdoor, ItemGroup.REDSTONE);
+		registerBlockItem(r, glassTrapdoor, ItemGroup.REDSTONE);
 
 	}
 
