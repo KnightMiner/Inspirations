@@ -1,5 +1,4 @@
 {
-	"parent": "minecraft:block/block",
 	"ambientocclusion": false,
 	"textures": {
 	"particle": "#wool"

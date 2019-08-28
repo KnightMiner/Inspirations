@@ -4,8 +4,7 @@
       "model": "inspirations:block/carpet/plate/white"
     },
     "powered=true": {
-      "model": "inspirations:block/carpet/plate/white_pressed",
-      "y": 180
+      "model": "inspirations:block/carpet/plate/white_pressed"
     }
   }
 }

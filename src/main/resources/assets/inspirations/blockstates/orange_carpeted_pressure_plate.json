@@ -4,8 +4,7 @@
       "model": "inspirations:block/carpet/plate/orange"
     },
     "powered=true": {
-      "model": "inspirations:block/carpet/plate/orange_pressed",
-      "y": 180
+      "model": "inspirations:block/carpet/plate/orange_pressed"
     }
   }
 }
