@@ -1,6 +1,13 @@
 package knightminer.inspirations.building;
 
-import knightminer.inspirations.building.block.*;
+import knightminer.inspirations.building.block.BlockBookshelf;
+import knightminer.inspirations.building.block.BlockChain;
+import knightminer.inspirations.building.block.BlockFlower;
+import knightminer.inspirations.building.block.BlockGlassDoor;
+import knightminer.inspirations.building.block.BlockGlassTrapdoor;
+import knightminer.inspirations.building.block.BlockMulch;
+import knightminer.inspirations.building.block.BlockPath;
+import knightminer.inspirations.building.block.BlockRope;
 import knightminer.inspirations.building.inventory.ContainerBookshelf;
 import knightminer.inspirations.building.item.ItemGlassDoor;
 import knightminer.inspirations.building.tileentity.TileBookshelf;
@@ -10,13 +17,17 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.common.item.HidableItem;
 import knightminer.inspirations.common.item.ItemBlockTexture;
-//import knightminer.inspirations.library.recipe.cauldron.CauldronDyeRecipe;
-//import knightminer.inspirations.utility.inventory.ContainerCollector;
-import net.minecraft.block.*;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.DoublePlantBlock;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
 import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.item.*;
+import net.minecraft.item.DyeColor;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.Items;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.ToolType;
@@ -28,9 +39,6 @@ import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.pulsar.pulse.Pulse;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Pulse(id = InspirationsBuilding.pulseID, description = "A collection of features to improve building")
 public class InspirationsBuilding extends PulseBase {
@@ -114,31 +122,22 @@ public class InspirationsBuilding extends PulseBase {
 		shelf_rainbow = registerBlock(r, new BlockBookshelf(), "rainbow_bookshelf");
 		shelf_tomes = registerBlock(r, new BlockBookshelf(), "tomes_bookshelf");
 
-		rope = registerBlock(r, new BlockRope(
-			Block.Properties.create(Material.CARPET)
+		rope = registerBlock(r, new BlockRope(Items.STICK, Block.Properties
+				.create(Material.CARPET)
 				.sound(SoundType.CLOTH)
-				.hardnessAndResistance(0.5F),
-				Items.STICK,
-				BlockRope.SHAPE_ROPE,
-				BlockRope.SHAPE_ROPE_BOTTOM
+				.hardnessAndResistance(0.5F)
 		), "rope");
-		vine = registerBlock(r, new BlockRope(
-			Block.Properties.create(Material.CARPET)
+		vine = registerBlock(r, new BlockRope(Items.BAMBOO, Block.Properties
+				.create(Material.CARPET)
 				.sound(SoundType.PLANT)
-				.hardnessAndResistance(0.5F),
-				Items.BAMBOO,
-				BlockRope.SHAPE_ROPE,
-				BlockRope.SHAPE_ROPE_BOTTOM
+				.hardnessAndResistance(0.5F)
 		), "vine");
-		chain = registerBlock(r, new BlockRope(
-				Block.Properties.create(Material.IRON)
+		chain = registerBlock(r, new BlockChain(Items.IRON_NUGGET, Block.Properties
+				.create(Material.IRON)
 				.sound(SoundType.METAL)
 				.hardnessAndResistance(5.0F)
 				.harvestTool(ToolType.PICKAXE)
-				.harvestLevel(0),
-				Items.IRON_NUGGET,
-				BlockRope.SHAPE_CHAIN,
-				BlockRope.SHAPE_CHAIN_BOTTOM
+				.harvestLevel(0)
 		), "chain");
 
 		glassDoor = registerBlock(r, new BlockGlassDoor(), "glass_door");

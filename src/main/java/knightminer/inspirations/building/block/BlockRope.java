@@ -38,11 +38,7 @@ public class BlockRope extends HidableBlock implements IWaterLoggable {
 
 	private Item rungsItem;
 
-	// Shape for collisions. Indexes are Rungs ordinals.
-	private final VoxelShape[] shape;
-	private final VoxelShape[] shape_bottom;
-
-	public BlockRope(Properties props, Item rungsItem, VoxelShape[] shape, VoxelShape[] shape_bottom) {
+	public BlockRope(Item rungsItem, Properties props) {
 		super(props, Config.enableRope::get);
 		this.setDefaultState(this.stateContainer.getBaseState()
 				.with(BOTTOM, false)
@@ -50,8 +46,6 @@ public class BlockRope extends HidableBlock implements IWaterLoggable {
 				.with(WATERLOGGED, false)
 		);
 		this.rungsItem = rungsItem;
-		this.shape = shape;
-		this.shape_bottom = shape_bottom;
 	}
 
 	protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
@@ -211,11 +205,9 @@ public class BlockRope extends HidableBlock implements IWaterLoggable {
 
 	/* Bounds */
 
-	// VoxelShape][Rungs]
-	public static final VoxelShape[] SHAPE_ROPE = new VoxelShape[3];
-	public static final VoxelShape[] SHAPE_ROPE_BOTTOM = new VoxelShape[3];
-	public static final VoxelShape[] SHAPE_CHAIN = new VoxelShape[3];
-	public static final VoxelShape[] SHAPE_CHAIN_BOTTOM = new VoxelShape[3];
+	// Shape for collisions. Indexes are Rungs ordinals.
+	public static final VoxelShape[] SHAPE = new VoxelShape[3];
+	public static final VoxelShape[] SHAPE_BOTTOM = new VoxelShape[3];
 
 	static {
 		VoxelShape rope_core = Block.makeCuboidShape(7, 0, 7, 9, 16, 9);
@@ -235,60 +227,24 @@ public class BlockRope extends HidableBlock implements IWaterLoggable {
 				Block.makeCuboidShape(7, 13, 1, 9, 15, 15)
 		);
 
-		SHAPE_ROPE[Rungs.NONE.ordinal()] = rope_core;
-		SHAPE_ROPE_BOTTOM[Rungs.NONE.ordinal()] = rope_core_bottom;
+		SHAPE[Rungs.NONE.ordinal()] = rope_core;
+		SHAPE_BOTTOM[Rungs.NONE.ordinal()] = rope_core_bottom;
 
-		SHAPE_ROPE[Rungs.X.ordinal()] = VoxelShapes.or(rope_core, rope_rungs_x,
+		SHAPE[Rungs.X.ordinal()] = VoxelShapes.or(rope_core, rope_rungs_x,
 				Block.makeCuboidShape(1, 1, 7, 15, 3, 9)
 		);
-		SHAPE_ROPE_BOTTOM[Rungs.X.ordinal()] = VoxelShapes.or(rope_core_bottom, rope_rungs_x);
+		SHAPE_BOTTOM[Rungs.X.ordinal()] = VoxelShapes.or(rope_core_bottom, rope_rungs_x);
 
-		SHAPE_ROPE[Rungs.Z.ordinal()] = VoxelShapes.or(rope_core, rope_rungs_z,
+		SHAPE[Rungs.Z.ordinal()] = VoxelShapes.or(rope_core, rope_rungs_z,
 				Block.makeCuboidShape(7, 1, 1, 9, 3, 15)
 		);
-		SHAPE_ROPE_BOTTOM[Rungs.Z.ordinal()] = VoxelShapes.or(rope_core_bottom, rope_rungs_z);
-
-		VoxelShape chain_core = VoxelShapes.or(
-				Block.makeCuboidShape(6.5, 0, 7.5, 9.5, 16, 8.5),
-				Block.makeCuboidShape(7.5, 0, 6.5, 8.5, 16, 9.5)
-		);
-		VoxelShape chain_core_bottom = VoxelShapes.or(
-				Block.makeCuboidShape(6.5, 4, 7.5, 9.5, 16, 8.5),
-				Block.makeCuboidShape(7.5, 4, 6.5, 8.5, 16, 9.5)
-		);
-
-		VoxelShape chain_rungs_x = VoxelShapes.or(
-				Block.makeCuboidShape(1, 4, 7.5, 15, 5, 8.5),
-				Block.makeCuboidShape(1, 8, 7.5, 15, 9, 8.5),
-				Block.makeCuboidShape(1, 12, 7.5, 15, 13, 8.5)
-		);
-		VoxelShape chain_rungs_z = VoxelShapes.or(
-				Block.makeCuboidShape(7.5, 4, 1, 8.5, 5, 15),
-				Block.makeCuboidShape(7.5, 8, 1, 8.5, 9, 15),
-				Block.makeCuboidShape(7.5, 12, 1, 8.5, 13, 15)
-		);
-
-		SHAPE_CHAIN[Rungs.NONE.ordinal()] = chain_core;
-		SHAPE_CHAIN_BOTTOM[Rungs.NONE.ordinal()] = chain_core_bottom;
-
-		SHAPE_CHAIN[Rungs.X.ordinal()] = VoxelShapes.or(chain_core, chain_rungs_x,
-				Block.makeCuboidShape(1, 0, 7.5, 15, 1, 8.5)
-		);
-		SHAPE_CHAIN_BOTTOM[Rungs.X.ordinal()] = VoxelShapes.or(chain_core_bottom, chain_rungs_x);
-
-		SHAPE_CHAIN[Rungs.Z.ordinal()] = VoxelShapes.or(chain_core, chain_rungs_z,
-				Block.makeCuboidShape(7.5, 0, 1, 8.5, 1, 15)
-		);
-		SHAPE_CHAIN_BOTTOM[Rungs.Z.ordinal()] = VoxelShapes.or(chain_core_bottom, chain_rungs_z);
+		SHAPE_BOTTOM[Rungs.Z.ordinal()] = VoxelShapes.or(rope_core_bottom, rope_rungs_z);
 	}
 
 	@Nonnull
 	@Override
 	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-		if (state.get(BOTTOM)) {
-			return shape_bottom[state.get(RUNGS).ordinal()];
-		}
-		return shape[state.get(RUNGS).ordinal()];
+		return (state.get(BOTTOM) ? SHAPE_BOTTOM: SHAPE)[state.get(RUNGS).ordinal()];
 	}
 
 	public enum Rungs implements IStringSerializable {
