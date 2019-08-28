@@ -29,6 +29,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.Items;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.event.RegistryEvent.Register;
@@ -44,7 +45,8 @@ import slimeknights.mantle.pulsar.pulse.Pulse;
 public class InspirationsBuilding extends PulseBase {
 	public static final String pulseID = "InspirationsBuilding";
 
-	public static CommonProxy proxy = DistExecutor.runForDist(()->()->new BuildingClientProxy(), ()->()-> new CommonProxy());
+	@SuppressWarnings("Convert2MethodRef")
+	public static Object proxy = DistExecutor.callWhenOn(Dist.CLIENT, ()->()->new BuildingClientProxy());
 
 	// blocks
 	public static BlockBookshelf shelf_normal;
@@ -91,11 +93,6 @@ public class InspirationsBuilding extends PulseBase {
 
 	// Container Types
 	public static ContainerType<ContainerBookshelf> contBookshelf;
-
-	@SubscribeEvent
-	public void preInit(FMLCommonSetupEvent event) {
-		proxy.preInit();
-	}
 
 	@SubscribeEvent
 	public void registerTE(Register<TileEntityType<?>> event) {
@@ -222,9 +219,7 @@ public class InspirationsBuilding extends PulseBase {
 	}
 
 	@SubscribeEvent
-	public void init(InterModEnqueueEvent event) {
-		proxy.init();
-
+	public void init(FMLCommonSetupEvent event) {
 		if(Config.enableFlowers.get() && Config.enableCauldronDyeing()) {
 //			InspirationsRegistry.addCauldronRecipe(new CauldronDyeRecipe(
 //				new ItemStack(flower_rose),
@@ -232,11 +227,6 @@ public class InspirationsBuilding extends PulseBase {
 //				new ItemStack(flower_cyan))
 //			);
 		}
-	}
-
-	@SubscribeEvent
-	public void postInit(InterModProcessEvent event) {
-		proxy.postInit();
 
 		MinecraftForge.EVENT_BUS.register(BuildingEvents.class);
 	}

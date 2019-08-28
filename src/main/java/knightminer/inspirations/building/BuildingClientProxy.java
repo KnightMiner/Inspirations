@@ -34,15 +34,15 @@ import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 import java.util.concurrent.CompletableFuture;
 
 public class BuildingClientProxy extends ClientProxy {
 	public static final Minecraft mc = Minecraft.getInstance();
 
-	@Override
-	public void preInit() {
-		super.preInit();
+	@SubscribeEvent
+	public void commonSetup(FMLCommonSetupEvent event) {
 
 		// listener to clear bookshelf model cache as its shared by all bookshelf model files
 		IResourceManager manager = Minecraft.getInstance().getResourceManager();

@@ -10,6 +10,7 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.RegistryEvent.Register;
@@ -26,7 +27,7 @@ public class InspirationsShared extends PulseBase {
 	public static final String pulseID = "InspirationsShared";
 
 	@SuppressWarnings("Convert2MethodRef")
-	public static CommonProxy proxy = DistExecutor.runForDist(() -> () -> new SharedClientProxy(), () -> () -> new CommonProxy());
+	public static Object proxy = DistExecutor.callWhenOn(Dist.CLIENT, ()->()->new SharedClientProxy());
 
 	// materials
 	public static Item lock;
@@ -39,11 +40,6 @@ public class InspirationsShared extends PulseBase {
 
 	// edibles
 	public static Item heartbeet;
-
-	@SubscribeEvent
-	public void preInit(FMLCommonSetupEvent event) {
-		proxy.preInit();
-	}
 
 	@SubscribeEvent
 	public void registerItems(Register<Item> event) {
@@ -95,14 +91,7 @@ public class InspirationsShared extends PulseBase {
 	}
 
 	@SubscribeEvent
-	public void init(InterModEnqueueEvent event) {
-		proxy.init();
-	}
-
-	@SubscribeEvent
-	public void postInit(InterModProcessEvent event) {
-		proxy.postInit();
-
+	public void setup(FMLCommonSetupEvent event) {
 		MinecraftForge.EVENT_BUS.addListener(SharedEvents::updateMilkCooldown);
 	}
 }

@@ -1,8 +1,5 @@
 package knightminer.inspirations.common;
 
-import javax.annotation.Nonnull;
-
-import knightminer.inspirations.library.client.ClientUtil;
 import knightminer.inspirations.shared.client.TextureModel;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.color.BlockColors;
@@ -13,29 +10,19 @@ import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.StringUtils;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.model.IModel;
-import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
-public class ClientProxy extends CommonProxy {
-	public static final String VARIANT_INVENTORY = "inventory";
+public class ClientProxy {
 
 	public ClientProxy() {
 		MinecraftForge.EVENT_BUS.register(this);
 		FMLJavaModLoadingContext.get().getModEventBus().register(this);
 	}
-
-
-	/* Fluids */
 
 	/*
 	 * Item and block color handlers
@@ -66,7 +53,6 @@ public class ClientProxy extends CommonProxy {
 			}
 		}
 	}
-
 
 	protected static void replaceTexturedModel(ModelBakeEvent event, ModelResourceLocation location, String key, boolean item) {
 		IModel model = ModelLoaderRegistry.getModelOrLogError(location, "Error loading model for " + location);

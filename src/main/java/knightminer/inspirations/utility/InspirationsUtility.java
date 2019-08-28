@@ -28,6 +28,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -40,7 +41,8 @@ import slimeknights.mantle.pulsar.pulse.Pulse;
 public class InspirationsUtility extends PulseBase {
 	public static final String pulseID = "InspirationsUtility";
 
-	public static CommonProxy proxy = DistExecutor.runForDist(()->()->new UtilityClientProxy(), ()->()-> new CommonProxy());
+	@SuppressWarnings("Convert2MethodRef")
+	public static Object proxy = DistExecutor.callWhenOn(Dist.CLIENT, ()->()->new UtilityClientProxy());
 
 	// blocks
 	public static Block torchLeverWall;
@@ -61,11 +63,6 @@ public class InspirationsUtility extends PulseBase {
 	// Inventory containers
 	public static ContainerType<ContainerCollector> contCollector;
 	public static ContainerType<ContainerPipe> contPipe;
-
-	@SubscribeEvent
-	public void preInit(FMLCommonSetupEvent event) {
-		proxy.preInit();
-	}
 
 	@SubscribeEvent
 	public void registerBlocks(Register<Block> event) {
@@ -148,7 +145,7 @@ public class InspirationsUtility extends PulseBase {
 	}
 
 	@SubscribeEvent
-	public void init(FMLCommonSetupEvent event) {
+	public void setup(FMLCommonSetupEvent event) {
 		registerDispenserBehavior();
 		MinecraftForge.EVENT_BUS.register(UtilityEvents.class);
 	}

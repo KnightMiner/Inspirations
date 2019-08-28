@@ -27,6 +27,7 @@ import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.PlantType;
 import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
@@ -34,7 +35,6 @@ import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.pulsar.pulse.Pulse;
 
@@ -43,7 +43,7 @@ public class InspirationsTweaks extends PulseBase {
 	public static final String pulseID = "InspirationsTweaks";
 
 	@SuppressWarnings("Convert2MethodRef")
-	public static CommonProxy proxy = DistExecutor.runForDist(() -> () -> new TweaksClientProxy(), () -> () -> new CommonProxy());
+	public static Object proxy = DistExecutor.callWhenOn(Dist.CLIENT, ()->()->new TweaksClientProxy());
 
 	// blocks
 	public static BlockFittedCarpet[] fitCarpets = new BlockFittedCarpet[16];
@@ -120,9 +120,6 @@ public class InspirationsTweaks extends PulseBase {
 
 	@SubscribeEvent
 	public void setup(FMLCommonSetupEvent event) {
-		proxy.preInit();
-		proxy.init();
-
 		// TODO: Forge needs to implement the ability to inject these into the loot tables.
 		// See MinecraftForge#
 		//if(Config.addGrassDrops()) {
@@ -142,11 +139,6 @@ public class InspirationsTweaks extends PulseBase {
 		registerDispenserBehavior();
 
 		MinecraftForge.EVENT_BUS.register(TweaksEvents.class);
-	}
-
-	@SubscribeEvent
-	public void postInit(InterModProcessEvent event) {
-		proxy.postInit();
 	}
 
 	private static final IDispenseItemBehavior DEFAULT = new DefaultDispenseItemBehavior();

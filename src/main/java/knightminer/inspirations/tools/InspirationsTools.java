@@ -16,6 +16,7 @@ import knightminer.inspirations.tools.enchantment.EnchantmentExtendedKnockback;
 import knightminer.inspirations.tools.enchantment.EnchantmentShieldProtection;
 import knightminer.inspirations.tools.enchantment.EnchantmentShieldThorns;
 import knightminer.inspirations.tools.entity.RedstoneArrow;
+import knightminer.inspirations.tools.item.ItemEnchantableShield;
 import knightminer.inspirations.tools.item.ItemRedstoneCharger;
 import knightminer.inspirations.tools.item.ItemWaypointCompass;
 import knightminer.inspirations.tools.item.RedstoneArrowItem;
@@ -28,20 +29,27 @@ import net.minecraft.dispenser.IPosition;
 import net.minecraft.dispenser.OptionalDispenseBehavior;
 import net.minecraft.dispenser.ProjectileDispenseBehavior;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentType;
+import net.minecraft.enchantment.Enchantments;
+import net.minecraft.enchantment.ProtectionEnchantment;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.IProjectile;
 import net.minecraft.entity.projectile.ArrowEntity;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ArrowItem;
 import net.minecraft.item.DirectionalPlaceContext;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -56,10 +64,8 @@ import javax.annotation.Nonnull;
 public class InspirationsTools extends PulseBase {
 	public static final String pulseID = "InspirationsTools";
 
-	public static CommonProxy proxy = DistExecutor.runForDist(
-		()->()->new ToolsClientProxy(),
-		()->()->new CommonProxy()
-	);
+	@SuppressWarnings("Convert2MethodRef")
+	public static Object proxy = DistExecutor.callWhenOn(Dist.CLIENT, ()->()->new ToolsClientProxy());
 
 	// items
 	public static Item redstoneCharger;
@@ -84,7 +90,6 @@ public class InspirationsTools extends PulseBase {
 
 	@SubscribeEvent
 	public void setup(FMLCommonSetupEvent event) {
-		proxy.preInit();
 		MinecraftForge.EVENT_BUS.register(ToolsEvents.class);
 		registerDispenserBehavior();
 	}
@@ -143,9 +148,13 @@ public class InspirationsTools extends PulseBase {
 		registerWaypointCompass(r, DyeColor.PINK,       0xF2BFCE);
 		registerWaypointCompass(r, DyeColor.BROWN,      0xA59072);
 
-//		if(Config.shieldEnchantmentTable) {
-//			register(r, new ItemEnchantableShield(), new ResourceLocation("shield"));
-//		}
+		if(Config.shieldEnchantmentTable()) {
+			register(r, new ItemEnchantableShield(new Item.Properties()
+					.maxDamage(Items.SHIELD.getMaxDamage())
+					.group(ItemGroup.COMBAT)),
+					Items.SHIELD.getRegistryName()
+			);
+		}
 	}
 
 	private void registerWaypointCompass(IForgeRegistry<Item> r, DyeColor body, int needle) {
@@ -172,39 +181,39 @@ public class InspirationsTools extends PulseBase {
 	public void registerEnchantments(Register<Enchantment> event) {
 		IForgeRegistry<Enchantment> r = event.getRegistry();
 
-//		if(Config.moreShieldEnchantments) {
-//			EntityEquipmentSlot[] slots = new EntityEquipmentSlot[] {EntityEquipmentSlot.HEAD, EntityEquipmentSlot.CHEST, EntityEquipmentSlot.LEGS, EntityEquipmentSlot.FEET};
-//			register(r, new EnchantmentShieldProtection(Enchantment.Rarity.COMMON, EnchantmentProtection.Type.ALL, slots), new ResourceLocation("protection"));
-//			register(r, new EnchantmentShieldProtection(Enchantment.Rarity.UNCOMMON, EnchantmentProtection.Type.FIRE, slots), new ResourceLocation("fire_protection"));
-//			register(r, new EnchantmentShieldProtection(Enchantment.Rarity.UNCOMMON, EnchantmentProtection.Type.PROJECTILE, slots), new ResourceLocation("projectile_protection"));
-//			register(r, new EnchantmentShieldProtection(Enchantment.Rarity.RARE, EnchantmentProtection.Type.EXPLOSION, slots), new ResourceLocation("blast_protection"));
-//			register(r, new EnchantmentShieldThorns(Enchantment.Rarity.VERY_RARE, slots), new ResourceLocation("thorns"));
-//		}
-//
-//		if(Config.moreShieldEnchantments || Config.axeWeaponEnchants) {
-//			EntityEquipmentSlot[] slots = new EntityEquipmentSlot[] {EntityEquipmentSlot.MAINHAND};
-//			register(r, new EnchantmentExtendedKnockback(Enchantment.Rarity.UNCOMMON, slots), new ResourceLocation("knockback"));
-//			register(r, new EnchantmentExtendedFire(Enchantment.Rarity.RARE, slots), new ResourceLocation("fire_aspect"));
-//			if(Config.axeWeaponEnchants) {
-//				register(r, new EnchantmentAxeLooting(Enchantment.Rarity.RARE, EnumEnchantmentType.WEAPON, slots), new ResourceLocation("looting"));
-//			}
-//		}
-//
-//		if(Config.axeEnchantmentTable) {
-//			EntityEquipmentSlot[] slots = new EntityEquipmentSlot[] {EntityEquipmentSlot.MAINHAND};
-//			register(r, new EnchantmentAxeDamage(Enchantment.Rarity.COMMON, 0, slots), new ResourceLocation("sharpness"));
-//			register(r, new EnchantmentAxeDamage(Enchantment.Rarity.UNCOMMON, 1, slots), new ResourceLocation("smite"));
-//			register(r, new EnchantmentAxeDamage(Enchantment.Rarity.UNCOMMON, 2, slots), new ResourceLocation("bane_of_arthropods"));
-//		}
-	}
-	@SubscribeEvent
-	public void init(FMLCommonSetupEvent event) {
-		proxy.init();
-	}
+		if(Config.moreShieldEnchantments.get()) {
+			EquipmentSlotType[] slots = new EquipmentSlotType[]{
+					EquipmentSlotType.HEAD,
+					EquipmentSlotType.CHEST,
+					EquipmentSlotType.LEGS,
+					EquipmentSlotType.FEET
+			};
+			for(ProtectionEnchantment ench: new ProtectionEnchantment[] {
+					(ProtectionEnchantment) Enchantments.PROTECTION,
+					(ProtectionEnchantment) Enchantments.FIRE_PROTECTION,
+					(ProtectionEnchantment) Enchantments.PROJECTILE_PROTECTION,
+					(ProtectionEnchantment) Enchantments.BLAST_PROTECTION
+			}) {
+				register(r, new EnchantmentShieldProtection(ench.getRarity(), ench.protectionType, slots), ench.getRegistryName());
+			}
+			register(r, new EnchantmentShieldThorns(Enchantments.THORNS.getRarity(), slots), Enchantments.THORNS.getRegistryName());
+		}
 
-	@SubscribeEvent
-	public void postInit(FMLCommonSetupEvent event) {
-		proxy.postInit();
+		if(Config.moreShieldEnchantments.get() || Config.axeWeaponEnchants.get()) {
+			EquipmentSlotType[] slots = new EquipmentSlotType[] {EquipmentSlotType.MAINHAND};
+			register(r, new EnchantmentExtendedKnockback(Enchantment.Rarity.UNCOMMON, slots), new ResourceLocation("knockback"));
+			register(r, new EnchantmentExtendedFire(Enchantment.Rarity.RARE, slots), new ResourceLocation("fire_aspect"));
+			if(Config.axeWeaponEnchants.get()) {
+				register(r, new EnchantmentAxeLooting(Enchantment.Rarity.RARE, EnchantmentType.WEAPON, slots), new ResourceLocation("looting"));
+			}
+		}
+
+		if(Config.axeEnchantmentTable.get()) {
+			EquipmentSlotType[] slots = new EquipmentSlotType[] {EquipmentSlotType.MAINHAND};
+			register(r, new EnchantmentAxeDamage(Enchantment.Rarity.COMMON, 0, slots), new ResourceLocation("sharpness"));
+			register(r, new EnchantmentAxeDamage(Enchantment.Rarity.UNCOMMON, 1, slots), new ResourceLocation("smite"));
+			register(r, new EnchantmentAxeDamage(Enchantment.Rarity.UNCOMMON, 2, slots), new ResourceLocation("bane_of_arthropods"));
+		}
 	}
 
 	private void registerDispenserBehavior() {

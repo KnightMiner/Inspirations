@@ -12,15 +12,13 @@ import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 import java.util.concurrent.CompletableFuture;
 
 public class SharedClientProxy extends ClientProxy {
 
-	@Override
-	public void preInit() {
-		super.preInit();
-
+	public void setup(FMLCommonSetupEvent event) {
 		// listener to clear color cache from client utils
 		IResourceManager manager = Minecraft.getInstance().getResourceManager();
 		// should always be true, but just in case
