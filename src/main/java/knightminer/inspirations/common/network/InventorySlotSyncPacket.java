@@ -5,7 +5,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.model.ModelDataManager;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import slimeknights.mantle.network.AbstractPacketThreadsafe;
@@ -37,8 +39,11 @@ public class InventorySlotSyncPacket extends AbstractPacketThreadsafe {
         throw new UnsupportedOperationException("Clientside only");
     }
 
-    // only ever sent to players in the same dimension as the position
-    TileEntity tileEntity = Minecraft.getInstance().player.getEntityWorld().getTileEntity(pos);
+    // Only ever sent to players in the same dimension as the position
+    // This should never be called on servers, but protect access to the clientside MC.
+    TileEntity tileEntity = DistExecutor.callWhenOn(Dist.CLIENT, () -> () ->
+            Minecraft.getInstance().player.getEntityWorld().getTileEntity(pos)
+    );
     if(!(tileEntity instanceof InventoryTileEntity)) {
       return;
     }

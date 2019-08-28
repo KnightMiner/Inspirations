@@ -5,6 +5,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.network.NetworkEvent;
 import slimeknights.mantle.network.AbstractPacketThreadsafe;
 
@@ -44,7 +46,8 @@ public class MilkablePacket extends AbstractPacketThreadsafe {
 			throw new UnsupportedOperationException("Clientside only");
 		}
 
-		Entity entity = Minecraft.getInstance().world.getEntityByID(entityID);
+		// This should never be called on servers, but protect access to the clientside MC.
+		Entity entity = DistExecutor.callWhenOn(Dist.CLIENT, () -> () -> Minecraft.getInstance().world.getEntityByID(entityID));
 		if(entity == null) {
 			return;
 		}
