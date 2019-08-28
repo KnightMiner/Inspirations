@@ -5,6 +5,7 @@ import java.util.List;
 import knightminer.inspirations.building.block.BlockFlower;
 import knightminer.inspirations.building.block.BlockRope;
 import knightminer.inspirations.common.Config;
+import knightminer.inspirations.library.InspirationsRegistry;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -23,7 +24,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 public class BuildingEvents {
-	private static ToolType shearsType = ToolType.get("shears");
 	@SubscribeEvent
 	public static void addFlowerDrop(HarvestDropsEvent event) {
 		if(!Config.enableFlowers.get() || event.isCanceled() || event.getWorld().isRemote()) {
@@ -31,7 +31,6 @@ public class BuildingEvents {
 		}
 
 		// check that its the right block
-		BlockState state = event.getState();
 		BlockFlower flower = BlockFlower.getFlowerFromBlock(event.getState().getBlock());
 		if(flower == null) {
 			return;
@@ -45,7 +44,7 @@ public class BuildingEvents {
 
 		ItemStack shears = player.getHeldItemMainhand();
 		Item item = shears.getItem();
-		if(!(item instanceof ShearsItem || item.getToolTypes(shears).contains(shearsType))) {
+		if(!(item instanceof ShearsItem || item.getToolTypes(shears).contains(InspirationsRegistry.SHEAR_TYPE))) {
 			return;
 		}
 
