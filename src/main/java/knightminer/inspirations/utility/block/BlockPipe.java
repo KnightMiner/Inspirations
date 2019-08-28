@@ -4,7 +4,11 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.IHidable;
 import knightminer.inspirations.utility.InspirationsUtility;
 import knightminer.inspirations.utility.tileentity.TilePipe;
-import net.minecraft.block.*;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.DropperBlock;
+import net.minecraft.block.HopperBlock;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -20,8 +24,13 @@ import net.minecraft.state.DirectionProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.*;
-import net.minecraft.util.math.*;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
+import net.minecraft.util.Mirror;
+import net.minecraft.util.NonNullList;
+import net.minecraft.util.Rotation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
@@ -107,16 +116,20 @@ public class BlockPipe extends InventoryBlock implements IHidable {
 	@Nonnull
 	@Override
 	public BlockState updatePostPlacement(@Nonnull BlockState state, Direction neighFacing, BlockState neighState, IWorld world, BlockPos pos, BlockPos neighPos) {
-		Direction facing = state.get(FACING);
-		BlockState offsetState = world.getBlockState(pos.offset(facing));
+		Direction outFacing = state.get(FACING);
 
 		// We only need to check the one side that updated.
-		return state
-				.with(HOPPER, offsetState.getBlock() instanceof HopperBlock &&
-						offsetState.get(HopperBlock.FACING) != facing.getOpposite()
-				)
-				.with(DIR_ENABLED[neighFacing.getIndex()], canConnectTo(world, pos, facing, neighFacing))
-				;
+		state = state.with(DIR_ENABLED[neighFacing.getIndex()], canConnectTo(world, pos, outFacing, neighFacing));
+
+		// Check if the output side is a hopper if that side was changed.
+		if (outFacing == neighFacing) {
+			BlockState offsetState = world.getBlockState(pos.offset(outFacing));
+			state = state.with(HOPPER,
+						offsetState.getBlock() instanceof HopperBlock &&
+						offsetState.get(HopperBlock.FACING) != outFacing.getOpposite()
+				);
+		}
+		return state;
 	}
 
 	@Nullable
