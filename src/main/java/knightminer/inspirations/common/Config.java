@@ -20,7 +20,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 
-import static net.minecraftforge.common.ForgeConfigSpec.*;
+import static net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
+import static net.minecraftforge.common.ForgeConfigSpec.Builder;
+import static net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
+import static net.minecraftforge.common.ForgeConfigSpec.DoubleValue;
+import static net.minecraftforge.common.ForgeConfigSpec.EnumValue;
+import static net.minecraftforge.common.ForgeConfigSpec.IntValue;
 
 @SuppressWarnings("WeakerAccess")
 public class Config {

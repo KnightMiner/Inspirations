@@ -3,10 +3,8 @@ package knightminer.inspirations.library.recipe.cauldron;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import net.minecraft.init.PotionTypes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionType;
 import net.minecraft.potion.Potions;
 import net.minecraftforge.fluids.FluidRegistry;
 import slimeknights.mantle.util.RecipeMatch;

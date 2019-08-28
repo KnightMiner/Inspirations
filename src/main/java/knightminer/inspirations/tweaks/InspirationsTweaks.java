@@ -1,13 +1,14 @@
 package knightminer.inspirations.tweaks;
 
-import java.util.*;
-
 import knightminer.inspirations.common.CommonProxy;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.common.item.HidableBlockItem;
 import knightminer.inspirations.shared.InspirationsShared;
-import knightminer.inspirations.tweaks.block.*;
+import knightminer.inspirations.tweaks.block.BlockCactusCrop;
+import knightminer.inspirations.tweaks.block.BlockFittedCarpet;
+import knightminer.inspirations.tweaks.block.BlockFlatCarpet;
+import knightminer.inspirations.tweaks.block.BlockSugarCaneCrop;
 import knightminer.inspirations.tweaks.item.ItemSeed;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -15,9 +16,13 @@ import net.minecraft.block.CropsBlock;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.dispenser.DefaultDispenseItemBehavior;
 import net.minecraft.dispenser.IDispenseItemBehavior;
-import net.minecraft.item.*;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.DirectionalPlaceContext;
+import net.minecraft.item.DyeColor;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.potion.*;
+import net.minecraft.potion.Potions;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;

@@ -2,7 +2,12 @@ package knightminer.inspirations.utility;
 
 import knightminer.inspirations.common.Config;
 import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.block.*;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.CarpetBlock;
+import net.minecraft.block.HopperBlock;
+import net.minecraft.block.SoundType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.DyeColor;

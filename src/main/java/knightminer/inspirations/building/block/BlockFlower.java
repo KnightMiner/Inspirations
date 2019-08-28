@@ -6,7 +6,12 @@ import java.util.Random;
 
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.IHidable;
-import net.minecraft.block.*;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.BushBlock;
+import net.minecraft.block.DoublePlantBlock;
+import net.minecraft.block.IGrowable;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
