@@ -1,6 +1,5 @@
 package knightminer.inspirations.library.recipe;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,7 +20,7 @@ import javax.annotation.Nonnull;
 
 public class ModItemList extends CompoundIngredient {
 
-	protected ModItemList(Collection<Ingredient> children) {
+	protected ModItemList(List<Ingredient> children) {
 		super(children);
 	}
 

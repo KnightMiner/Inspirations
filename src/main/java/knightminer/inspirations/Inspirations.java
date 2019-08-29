@@ -5,6 +5,8 @@ import com.electronwill.nightconfig.core.io.WritingMode;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.loot.FillBlockTexture;
 import knightminer.inspirations.common.network.InspirationsNetwork;
+import knightminer.inspirations.common.recipe.ConfigEnabled;
+import knightminer.inspirations.common.recipe.PulseLoaded;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.recipe.ModItemList;
@@ -114,11 +116,12 @@ public class Inspirations {
 		r.register(TextureRecipe.SERIALIZER);
 
 	}
+
 	@SubscribeEvent
 	public void registerMisc(FMLCommonSetupEvent event) {
 		// These don't have registry events yet.
-		CraftingHelper.register(Util.getResource("pulse_loaded"), new Config.PulseLoaded());
-		CraftingHelper.register(Util.getResource("config"), new Config.ConfigProperty());
+		CraftingHelper.register(new PulseLoaded.Serializer());
+		CraftingHelper.register(new ConfigEnabled.Serializer());
 		CraftingHelper.register(Util.getResource("mod_item_list"), ModItemList.SERIALIZER);
 
 		LootFunctionManager.registerFunction(new FillBlockTexture.Serializer(Util.getResource("fill_textured_block")));
