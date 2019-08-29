@@ -33,9 +33,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.loot.LootContext;
 import net.minecraft.world.storage.loot.LootParameters;
-import net.minecraft.world.storage.loot.LootTable;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
@@ -45,10 +43,6 @@ import net.minecraftforge.items.ItemHandlerHelper;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
-
-import static knightminer.inspirations.shared.InspirationsShared.key;
-import static knightminer.inspirations.shared.InspirationsShared.lock;
 
 public class ToolsEvents {
 
@@ -62,8 +56,8 @@ public class ToolsEvents {
 		PlayerEntity player = event.getEntityPlayer();
 		ItemStack stack = player.getHeldItem(event.getHand());
 
-		boolean isKey = stack.getItem() == key;
-		boolean isLock = stack.getItem() == lock;
+		boolean isKey = stack.getItem() == InspirationsTools.key;
+		boolean isLock = stack.getItem() == InspirationsTools.lock;
 
 		if(!isKey && !isLock) {
 			return;
@@ -103,7 +97,7 @@ public class ToolsEvents {
 						lockable.code = LockCode.EMPTY_CODE;
 						lockable.markDirty();
 						ItemHandlerHelper.giveItemToPlayer(player,
-								new ItemStack(lock).setDisplayName(new StringTextComponent(code.lock))
+								new ItemStack(InspirationsTools.lock).setDisplayName(new StringTextComponent(code.lock))
 						);
 						player.sendStatusMessage(new TranslationTextComponent(Util.prefix("unlock.success")), true);
 					} else {

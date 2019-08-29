@@ -262,7 +262,7 @@ public class TweaksEvents {
 							if(stack.isEmpty()) {
 								drops.remove(stack);
 							}
-							drops.add(new ItemStack(InspirationsShared.heartbeet));
+							drops.add(new ItemStack(InspirationsTweaks.heartbeet));
 							// cap at one heartroot in case we get extras, plus prevents concurrent modification
 							break iterator;
 						}
