@@ -3,8 +3,10 @@ package knightminer.inspirations;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.electronwill.nightconfig.core.io.WritingMode;
 import knightminer.inspirations.common.Config;
+import knightminer.inspirations.common.loot.FillBlockTexture;
 import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.library.InspirationsRegistry;
+import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.recipe.ModItemList;
 import knightminer.inspirations.library.recipe.ShapelessNoContainerRecipe;
 import knightminer.inspirations.library.recipe.TextureRecipe;
@@ -19,7 +21,7 @@ import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.storage.loot.functions.LootFunctionManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.RegistryEvent;
@@ -27,6 +29,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -110,9 +113,14 @@ public class Inspirations {
 		r.register(ShapelessNoContainerRecipe.SERIALIZER);
 		r.register(TextureRecipe.SERIALIZER);
 
-		// These don't have registries yet.
-		CraftingHelper.register(new ResourceLocation(Inspirations.modID, "pulse_loaded"), new Config.PulseLoaded());
-		CraftingHelper.register(new ResourceLocation(Inspirations.modID, "config"), new Config.ConfigProperty());
-		CraftingHelper.register(new ResourceLocation(Inspirations.modID, "mod_item_list"), ModItemList.SERIALIZER);
+	}
+	@SubscribeEvent
+	public void registerMisc(FMLCommonSetupEvent event) {
+		// These don't have registry events yet.
+		CraftingHelper.register(Util.getResource("pulse_loaded"), new Config.PulseLoaded());
+		CraftingHelper.register(Util.getResource("config"), new Config.ConfigProperty());
+		CraftingHelper.register(Util.getResource("mod_item_list"), ModItemList.SERIALIZER);
+
+		LootFunctionManager.registerFunction(new FillBlockTexture.Serializer(Util.getResource("fill_textured_block")));
 	}
 }

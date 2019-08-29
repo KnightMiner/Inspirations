@@ -345,14 +345,6 @@ public class BlockBookshelf extends InventoryBlock implements ITileEntityProvide
 		return false;
 	}
 
-	@Nonnull
-	@Override
-	public List<ItemStack> getDrops(@Nonnull BlockState state, LootContext.Builder builder) {
-		List<ItemStack> drops = new ArrayList<>(1);
-		drops.add(TextureBlockUtil.getBlockItemStack(builder.getWorld(), builder.get(LootParameters.POSITION), state));
-		return drops;
-	}
-
 	@Override
 	public float getEnchantPowerBonus(BlockState state, IWorldReader world, BlockPos pos) {
 		if(!Config.bookshelvesBoostEnchanting.get()) {
