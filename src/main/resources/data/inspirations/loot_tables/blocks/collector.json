@@ -6,7 +6,10 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "inspirations:collector"
+          "name": "inspirations:collector",
+          "functions": [
+            { "function": "minecraft:copy_name", "source": "block_entity" }
+          ]
         }
       ],
       "conditions": [

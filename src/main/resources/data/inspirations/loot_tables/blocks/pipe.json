@@ -6,7 +6,10 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "inspirations:pipe"
+          "name": "inspirations:pipe",
+          "functions": [
+            { "function": "minecraft:copy_name", "source": "block_entity" }
+          ]
         }
       ],
       "conditions": [
