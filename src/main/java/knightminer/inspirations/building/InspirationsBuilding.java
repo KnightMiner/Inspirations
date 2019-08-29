@@ -12,7 +12,6 @@ import knightminer.inspirations.building.inventory.ContainerBookshelf;
 import knightminer.inspirations.building.item.ItemGlassDoor;
 import knightminer.inspirations.building.tileentity.TileBookshelf;
 import knightminer.inspirations.building.tileentity.TileEnlightenedBush;
-import knightminer.inspirations.common.CommonProxy;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.common.item.HidableItem;
@@ -28,6 +27,7 @@ import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.Items;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
@@ -183,10 +183,10 @@ public class InspirationsBuilding extends PulseBase {
 
 		// itemblocks
 		Item.Properties deco_props = new Item.Properties().group(ItemGroup.DECORATIONS);
-		registerBlockItem(r, new ItemBlockTexture(shelf_normal, deco_props));
-		registerBlockItem(r, new ItemBlockTexture(shelf_ancient, deco_props));
-		registerBlockItem(r, new ItemBlockTexture(shelf_rainbow, deco_props));
-		registerBlockItem(r, new ItemBlockTexture(shelf_tomes, deco_props));
+		registerBlockItem(r, new ItemBlockTexture(shelf_normal, deco_props, BlockTags.WOODEN_SLABS));
+		registerBlockItem(r, new ItemBlockTexture(shelf_ancient, deco_props, BlockTags.WOODEN_SLABS));
+		registerBlockItem(r, new ItemBlockTexture(shelf_rainbow, deco_props, BlockTags.WOODEN_SLABS));
+		registerBlockItem(r, new ItemBlockTexture(shelf_tomes, deco_props, BlockTags.WOODEN_SLABS));
 
 		registerBlockItem(r, rope, ItemGroup.DECORATIONS);
 		registerBlockItem(r, vine, ItemGroup.DECORATIONS);

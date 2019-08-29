@@ -1,26 +1,37 @@
 package knightminer.inspirations.common.item;
 
 import java.util.List;
-import java.util.function.Supplier;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import knightminer.inspirations.common.IHidable;
 import knightminer.inspirations.library.util.TextureBlockUtil;
 import net.minecraft.block.Block;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tags.Tag;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 
 public class ItemBlockTexture extends HidableBlockItem {
 
-	public ItemBlockTexture(Block block, BlockItem.Properties props) {
+	private final Tag<Block> texTag;
+
+	public ItemBlockTexture(Block block, BlockItem.Properties props, Tag<Block> texTag) {
 		super(block, props);
+		this.texTag = texTag;
+	}
+
+	@Override
+	public void fillItemGroup(@Nonnull ItemGroup group, @Nonnull NonNullList<ItemStack> items) {
+		if (shouldAddtoItemGroup(group) && isInGroup(group)) {
+			for(Block texture: texTag.getAllElements()) {
+				items.add(TextureBlockUtil.createTexturedStack(getBlock(), texture));
+			}
+		}
 	}
 
 	@Override
