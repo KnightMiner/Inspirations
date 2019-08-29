@@ -68,6 +68,8 @@ public class InspirationsTools extends PulseBase {
 	public static Object proxy = DistExecutor.callWhenOn(Dist.CLIENT, ()->()->new ToolsClientProxy());
 
 	// items
+	public static Item lock;
+	public static Item key;
 	public static Item redstoneCharger;
 	public static Item northCompass;
 	public static Item barometer;
@@ -111,6 +113,15 @@ public class InspirationsTools extends PulseBase {
 		redstoneArrow = registerItem(r, new RedstoneArrowItem(toolProps), "charged_arrow");
 
 		redstoneCharger = registerItem(r, new ItemRedstoneCharger(), "redstone_charger");
+
+		lock = registerItem(r, new HidableItem(
+			new Item.Properties().group(ItemGroup.MATERIALS),
+			Config.enableLock::get
+		), "lock");
+		key = registerItem(r, new HidableItem(
+			new Item.Properties().group(ItemGroup.MATERIALS),
+			Config.enableLock::get
+		),  "key");
 
 		northCompass = registerItem(r, new HidableItem(toolProps, Config.enableNorthCompass::get), "north_compass");
 		northCompass.addPropertyOverride(Util.getResource("angle"), new NorthCompassGetter());

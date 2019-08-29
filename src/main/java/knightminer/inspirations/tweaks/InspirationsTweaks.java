@@ -4,6 +4,7 @@ import knightminer.inspirations.common.CommonProxy;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.common.item.HidableBlockItem;
+import knightminer.inspirations.common.item.HidableItem;
 import knightminer.inspirations.shared.InspirationsShared;
 import knightminer.inspirations.tweaks.block.BlockCactusCrop;
 import knightminer.inspirations.tweaks.block.BlockFittedCarpet;
@@ -19,9 +20,12 @@ import net.minecraft.dispenser.IDispenseItemBehavior;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.DirectionalPlaceContext;
 import net.minecraft.item.DyeColor;
+import net.minecraft.item.Food;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
 import net.minecraft.potion.Potions;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
@@ -56,6 +60,8 @@ public class InspirationsTweaks extends PulseBase {
 	public static Item carrotSeeds;
 	public static Item sugarCaneSeeds;
 	public static Item cactusSeeds;
+	public static Item silverfishPowder;
+	public static Item heartbeet;
 
 
 	@SubscribeEvent
@@ -116,6 +122,16 @@ public class InspirationsTweaks extends PulseBase {
 
 		carrotSeeds = registerItem(r, new ItemSeed((CropsBlock) Blocks.CARROTS, PlantType.Crop), "carrot_seeds");
 		potatoSeeds = registerItem(r, new ItemSeed((CropsBlock) Blocks.POTATOES, PlantType.Crop), "potato_seeds");
+
+		heartbeet = registerItem(r, new HidableItem(
+				new Item.Properties().group(ItemGroup.FOOD).food(
+				new Food.Builder().hunger(2).saturation(2.4f).effect(new EffectInstance(Effects.REGENERATION, 100), 1).build()),
+				Config.enableHeartbeet::get
+		), "heartbeet");
+		silverfishPowder = registerItem(r, new HidableItem(
+				new Item.Properties().group(ItemGroup.BREWING),
+				() -> false // TODO: Make this have a purpose...
+		),  "silverfish_powder");
 	}
 
 	@SubscribeEvent
@@ -128,7 +144,7 @@ public class InspirationsTweaks extends PulseBase {
 		//}
 
 		// brew heartbeets into regen potions
-		Ingredient heartbeet = Ingredient.fromItems(InspirationsShared.heartbeet);
+		Ingredient heartbeet = Ingredient.fromItems(InspirationsTweaks.heartbeet);
 		BrewingRecipeRegistry.addRecipe(
 				new NormalBrewingRecipe(Potions.WATER, heartbeet, Potions.MUNDANE, Config::brewHeartbeet)
 		);
