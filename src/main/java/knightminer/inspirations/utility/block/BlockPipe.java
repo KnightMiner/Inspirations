@@ -177,6 +177,7 @@ public class BlockPipe extends InventoryBlock implements IHidable {
 				InventoryHelper.dropInventoryItems(world, pos, (IInventory)te);
 			}
 		}
+		super.onReplaced(state, world, pos, newState, isMoving);
 	}
 
 	/* Model and shape */
