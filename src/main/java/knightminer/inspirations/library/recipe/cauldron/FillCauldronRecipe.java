@@ -4,11 +4,10 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import knightminer.inspirations.library.InspirationsRegistry;
-import net.minecraft.init.SoundEvents;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
-import net.minecraftforge.fluids.Fluid;
 import slimeknights.mantle.util.RecipeMatch;
 
 /**
@@ -21,12 +20,12 @@ public class FillCauldronRecipe extends CauldronFluidRecipe {
 
 	/**
 	 * Full constructor
-	 * @param input       Input container
-	 * @param fluid       Fluid produced and required in the current cauldron
-	 * @param amount      Amount of fluid produced
-	 * @param container   Resulting container after filling the cauldron
-	 * @param boiling     If true, the cauldron must be placed above lava for this recipe
-	 * @param sound       Sound to play when filling
+	 * @param input     Input container
+	 * @param fluid     Fluid produced and required in the current cauldron
+	 * @param amount    Amount of fluid produced
+	 * @param container Resulting container after filling the cauldron
+	 * @param boiling   If true, the cauldron must be placed above lava for this recipe
+	 * @param sound     Sound to play when filling
 	 */
 	public FillCauldronRecipe(RecipeMatch input, Fluid fluid, int amount, ItemStack container, @Nullable Boolean boiling, SoundEvent sound) {
 		super(input, fluid, container, boiling, 0, sound);
@@ -35,11 +34,11 @@ public class FillCauldronRecipe extends CauldronFluidRecipe {
 
 	/**
 	 * Full constructor
-	 * @param input       Input container
-	 * @param fluid       Fluid produced and required in the current cauldron
-	 * @param amount      Amount of fluid produced
-	 * @param container   Resulting container after filling the cauldron
-	 * @param sound       Sound to play when filling
+	 * @param input     Input container
+	 * @param fluid     Fluid produced and required in the current cauldron
+	 * @param amount    Amount of fluid produced
+	 * @param container Resulting container after filling the cauldron
+	 * @param sound     Sound to play when filling
 	 */
 	public FillCauldronRecipe(RecipeMatch input, Fluid fluid, int amount, ItemStack container, SoundEvent sound) {
 		this(input, fluid, amount, container, null, sound);
@@ -47,10 +46,10 @@ public class FillCauldronRecipe extends CauldronFluidRecipe {
 
 	/**
 	 * Constructor with default sound
-	 * @param input       Input container
-	 * @param fluid       Fluid produced and required in the current cauldron
-	 * @param amount      Amount of fluid produced
-	 * @param container   Resulting container after filling the cauldron
+	 * @param input     Input container
+	 * @param fluid     Fluid produced and required in the current cauldron
+	 * @param amount    Amount of fluid produced
+	 * @param container Resulting container after filling the cauldron
 	 */
 	public FillCauldronRecipe(RecipeMatch input, Fluid fluid, int amount, ItemStack container) {
 		this(input, fluid, amount, container, SoundEvents.ITEM_BOTTLE_EMPTY);
@@ -58,9 +57,9 @@ public class FillCauldronRecipe extends CauldronFluidRecipe {
 
 	/**
 	 * Constructor with default sound and empty container
-	 * @param input       Input container
-	 * @param fluid       Fluid produced and required in the current cauldron
-	 * @param amount      Amount of fluid produced
+	 * @param input  Input container
+	 * @param fluid  Fluid produced and required in the current cauldron
+	 * @param amount Amount of fluid produced
 	 */
 	public FillCauldronRecipe(RecipeMatch input, Fluid fluid, int amount) {
 		this(input, fluid, amount, ItemStack.EMPTY);
@@ -98,6 +97,6 @@ public class FillCauldronRecipe extends CauldronFluidRecipe {
 
 	@Override
 	public String toString() {
-		return String.format("FillCauldronRecipe: filling with %s", fluid.getFluid().getName());
+		return String.format("FillCauldronRecipe: filling with %s", fluid.getFluid().getAttributes().getTranslationKey());
 	}
 }

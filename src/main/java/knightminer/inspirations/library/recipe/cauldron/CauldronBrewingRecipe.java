@@ -7,13 +7,13 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import com.google.common.collect.ImmutableList;
 
 import knightminer.inspirations.library.InspirationsRegistry;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.Potions;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
-import net.minecraftforge.fluids.FluidRegistry;
 
 /**
  * Cauldron recipe to transform a potion into another potion. Used primarily with vanilla potion recipes from the brewing registry.
@@ -26,9 +26,9 @@ public class CauldronBrewingRecipe implements ISimpleCauldronRecipe {
 	private CauldronState output;
 
 	/**
-	 * @param input    Input potion type
-	 * @param reagent  Ingredient for transformation
-	 * @param output   Resulting potion type
+	 * @param input   Input potion type
+	 * @param reagent Ingredient for transformation
+	 * @param output  Resulting potion type
 	 */
 	public CauldronBrewingRecipe(Potion input, Ingredient reagent, Potion output) {
 		this.input = CauldronState.potion(input);
@@ -69,13 +69,13 @@ public class CauldronBrewingRecipe implements ISimpleCauldronRecipe {
 	@Override
 	public Object getInputState() {
 		Potion potion = input.getPotion();
-		return potion == Potions.WATER ? FluidRegistry.WATER : potion;
+		return potion == Potions.WATER ? Fluids.WATER : potion;
 	}
 
 	@Override
 	public Object getState() {
 		Potion potion = output.getPotion();
-		return potion == Potions.WATER ? FluidRegistry.WATER : potion;
+		return potion == Potions.WATER ? Fluids.WATER : potion;
 	}
 
 	@Override

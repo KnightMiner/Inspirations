@@ -22,11 +22,11 @@ public abstract class CauldronRecipeMatchRecipe implements ISimpleCauldronRecipe
 
 	/**
 	 * Base constructor
-	 * @param input    Input recipe match entry
-	 * @param result   Resulting item stack
-	 * @param boiling  If true, the cauldron must be above fire, if false it must not be above fire. Set to null to ignore fire
-	 * @param levels   Amount of levels consumed by the recipe, also determines how many levels are required to perform the recipe
-	 * @param sound    Sound to play when performing the recipe
+	 * @param input   Input recipe match entry
+	 * @param result  Resulting item stack
+	 * @param boiling If true, the cauldron must be above fire, if false it must not be above fire. Set to null to ignore fire
+	 * @param levels  Amount of levels consumed by the recipe, also determines how many levels are required to perform the recipe
+	 * @param sound   Sound to play when performing the recipe
 	 */
 	public CauldronRecipeMatchRecipe(RecipeMatch input, ItemStack result, @Nullable Boolean boiling, int levels, SoundEvent sound) {
 		this.input = input;
@@ -38,10 +38,10 @@ public abstract class CauldronRecipeMatchRecipe implements ISimpleCauldronRecipe
 
 	/**
 	 * Constructor which defaults sound
-	 * @param input    Input recipe match entry
-	 * @param result   Resulting item stack
-	 * @param boiling  If true, the cauldron must be above fire, if false it must not be above fire. Set to null to ignore fire
-	 * @param levels   Amount of levels consumed by the recipe, also determines how many levels are required to perform the recipe
+	 * @param input   Input recipe match entry
+	 * @param result  Resulting item stack
+	 * @param boiling If true, the cauldron must be above fire, if false it must not be above fire. Set to null to ignore fire
+	 * @param levels  Amount of levels consumed by the recipe, also determines how many levels are required to perform the recipe
 	 */
 	public CauldronRecipeMatchRecipe(RecipeMatch input, ItemStack result, @Nullable Boolean boiling, int levels) {
 		this(input, result, boiling, levels, SoundEvents.ENTITY_FISHING_BOBBER_SPLASH);
@@ -59,15 +59,15 @@ public abstract class CauldronRecipeMatchRecipe implements ISimpleCauldronRecipe
 
 	/**
 	 * Returns true if the state matches the given recipe
-	 * @param state  State to check
-	 * @return  True if the state matches
+	 * @param state State to check
+	 * @return True if the state matches
 	 */
 	protected abstract boolean matches(CauldronState state);
 
 	/**
 	 * Helper method to check if the recipe match matches the input stack
-	 * @param stack  stack to check
-	 * @return  true if it matches
+	 * @param stack stack to check
+	 * @return true if it matches
 	 */
 	protected boolean matches(ItemStack stack) {
 		return this.input.matches(Util.createNonNullList(stack)).isPresent();

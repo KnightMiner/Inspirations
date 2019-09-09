@@ -3,7 +3,6 @@ package knightminer.inspirations.library.recipe.cauldron;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import net.minecraft.item.DyeColor;
-import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
 import slimeknights.mantle.util.RecipeMatch;
 
