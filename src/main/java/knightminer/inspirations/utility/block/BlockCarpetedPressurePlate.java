@@ -25,6 +25,7 @@ public class BlockCarpetedPressurePlate extends PressurePlateBlock {
 	protected static final VoxelShape PRESSED_AABB = Block.makeCuboidShape(0, 0, 0, 16, 1.25, 16);
 	protected static final VoxelShape UNPRESSED_AABB = Block.makeCuboidShape(0, 0, 0, 16, 1.5, 16);
 	private final DyeColor color;
+	private final String transKey;
 
 	public BlockCarpetedPressurePlate(DyeColor color) {
 		super(Sensitivity.MOBS, Block.Properties.create(Material.CARPET, color)
@@ -32,6 +33,7 @@ public class BlockCarpetedPressurePlate extends PressurePlateBlock {
 				.sound(SoundType.CLOTH)
 		);
 		this.color = color;
+		this.transKey = String.format("block.minecraft.%s_carpet", color.getTranslationKey());
 	}
 
 	@Nonnull
@@ -39,6 +41,15 @@ public class BlockCarpetedPressurePlate extends PressurePlateBlock {
 	public VoxelShape getShape(@Nonnull BlockState state, @Nonnull IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
 		boolean flag = this.getRedstoneStrength(state) > 0;
 		return flag ? PRESSED_AABB : UNPRESSED_AABB;
+	}
+
+	// Use the name of the carpet on top for the translation key.
+	// This should never be seen normally, but other mods might display it
+	// so ensure it's a valid value.
+	@Nonnull
+	@Override
+	public String getTranslationKey() {
+		return transKey;
 	}
 
 	// Since fitted carpets may replace the original carpet, we need to lookup the item to make sure we get the right
