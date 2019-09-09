@@ -47,12 +47,13 @@ public class BlockCarpetedPressurePlate extends PressurePlateBlock {
 
 	@Override
 	public ItemStack getPickBlock(BlockState state, RayTraceResult target, IBlockReader world, BlockPos pos, PlayerEntity player) {
-		if (pickItem == Items.AIR) {
-			pickItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation(color.getTranslationKey() + "_carpets"));
-		}
 		if(pickItem == Items.AIR) {
-			Inspirations.log.warn("No carpet item registered under minecraft:{}_carpet!", color.getTranslationKey());
-			return ItemStack.EMPTY;
+			pickItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation(color.getTranslationKey() + "_carpet"));
+
+			if(pickItem == Items.AIR) {
+				Inspirations.log.warn("No carpet item registered under minecraft:{}_carpet!", color.getTranslationKey());
+				return ItemStack.EMPTY;
+			}
 		}
 		return new ItemStack(pickItem);
 	}
