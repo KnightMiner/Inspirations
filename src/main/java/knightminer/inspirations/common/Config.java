@@ -46,11 +46,11 @@ public class Config {
 
 
 	public static BooleanValue enableBookshelf;
-	private static BooleanValue enableColoredBooksRaw;
+	private static BooleanValue enableColoredBooks;
 	public static BooleanValue bookshelvesBoostEnchanting;
 	public static DoubleValue defaultEnchantingPower;
 	public static boolean enableColoredBooks() {
-		return enableColoredBooksRaw.get() && enableBookshelf.get();
+		return enableColoredBooks.get() && enableBookshelf.get();
 	}
 
 	public static ConfigValue<String> bookKeywords;
@@ -70,7 +70,7 @@ public class Config {
 	// utility
 	public static BooleanValue enableTorchLever;
 	public static BooleanValue enableRedstoneTorchLever;
-	private static BooleanValue enableRedstoneBookRaw;
+	private static BooleanValue enableRedstoneBook;
 	public static BooleanValue enableBricksButton;
 	public static BooleanValue enableRedstoneBarrel;
 	public static BooleanValue enableCarpetedTrapdoor;
@@ -82,26 +82,26 @@ public class Config {
 	public static BooleanValue milkSquids;
 	public static IntValue milkSquidCooldown;
 
-	public static boolean enableRedstoneBook() { return enableRedstoneBookRaw.get() && enableBookshelf.get(); }
+	public static boolean enableRedstoneBook() { return enableRedstoneBook.get() && enableBookshelf.get(); }
 
 	// recipes
 
 	// cauldron - extended
 	private static BooleanValue replaceCauldron;
-	private static BooleanValue enableCauldronRecipesRaw;
+	private static BooleanValue enableCauldronRecipes;
 
 	public static boolean enableCauldronRecipes() {
-		return enableCauldronRecipesRaw.get();
+		return enableCauldronRecipes.get();
 	}
 	public static boolean enableExtendedCauldron() {
 		return replaceCauldron.get() && replaceCauldron.get();
 	}
 
 	// cauldron - extended options
-	private static BooleanValue enableBiggerCauldronRaw;
-	private static BooleanValue fasterCauldronRainRaw;
-	public static boolean enableBiggerCauldron() { return enableBiggerCauldronRaw.get() && enableExtendedCauldron(); }
-	public static boolean fasterCauldronRain() { return fasterCauldronRainRaw.get() && enableExtendedCauldron(); }
+	private static BooleanValue enableBiggerCauldron;
+	private static BooleanValue fasterCauldronRain;
+	public static boolean enableBiggerCauldron() { return enableBiggerCauldron.get() && enableExtendedCauldron(); }
+	public static boolean fasterCauldronRain() { return fasterCauldronRain.get() && enableExtendedCauldron(); }
 
 
 	private enum SpongeEmptyCauldron {
@@ -121,54 +121,54 @@ public class Config {
 
 	public static BooleanValue cauldronObsidian;
 
-	public static BooleanValue dropCauldronContentsRaw;
+	public static BooleanValue dropCauldronContents;
 	public static boolean dropCauldronContents() {
-		return dropCauldronContentsRaw.get() && enableExtendedCauldron();
+		return dropCauldronContents.get() && enableExtendedCauldron();
 	}
 
 	// cauldron - fluids
-	private static BooleanValue enableCauldronFluidsRaw;
-	private static BooleanValue enableMilkRaw;
+	private static BooleanValue enableCauldronFluids;
+	private static BooleanValue enableMilk;
 
 	public static boolean enableCauldronFluids() {
-		return enableCauldronFluidsRaw.get() && enableExtendedCauldron();
+		return enableCauldronFluids.get() && enableExtendedCauldron();
 	}
 	public static boolean enableMilk() {
-		return enableMilkRaw.get() && enableExtendedCauldron();
+		return enableMilk.get() && enableExtendedCauldron();
 	}
 
 	// cauldron - dyeing
-	private static BooleanValue enableCauldronDyeingRaw;
-	private static BooleanValue patchVanillaDyeRecipesRaw;
-	private static BooleanValue extraBottleRecipesRaw;
+	private static BooleanValue enableCauldronDyeing;
+	private static BooleanValue patchVanillaDyeRecipes;
+	private static BooleanValue extraBottleRecipes;
 
 	public static boolean enableCauldronDyeing() {
-		return enableCauldronDyeingRaw.get() && enableExtendedCauldron();
+		return enableCauldronDyeing.get() && enableExtendedCauldron();
 	}
 	public static boolean patchVanillaDyeRecipes() {
-		return patchVanillaDyeRecipesRaw.get() && enableCauldronDyeing();
+		return patchVanillaDyeRecipes.get() && enableCauldronDyeing();
 	}
 	public static boolean extraBottleRecipes() {
-		return extraBottleRecipesRaw.get() && enableCauldronDyeing();
+		return extraBottleRecipes.get() && enableCauldronDyeing();
 	}
 
 	// cauldron - potions
-	private static BooleanValue enableCauldronPotionsRaw;
-	private static BooleanValue enableCauldronBrewingRaw;
-	private static BooleanValue expensiveCauldronBrewingRaw;
-	private static BooleanValue cauldronTipArrowsRaw;
+	private static BooleanValue enableCauldronPotions;
+	private static BooleanValue enableCauldronBrewing;
+	private static BooleanValue expensiveCauldronBrewing;
+	private static BooleanValue cauldronTipArrows;
 
 	public static boolean enableCauldronPotions() {
-		return enableCauldronPotionsRaw.get() && enableExtendedCauldron();
+		return enableCauldronPotions.get() && enableExtendedCauldron();
 	}
 	public static boolean enableCauldronBrewing() {
-		return enableCauldronBrewingRaw.get() && enableCauldronPotions();
+		return enableCauldronBrewing.get() && enableCauldronPotions();
 	}
 	public static boolean expensiveCauldronBrewing() {
-		return expensiveCauldronBrewingRaw.get() && enableCauldronPotions();
+		return expensiveCauldronBrewing.get() && enableCauldronPotions();
 	}
 	public static boolean cauldronTipArrows() {
-		return cauldronTipArrowsRaw.get() && enableCauldronPotions();
+		return cauldronTipArrows.get() && enableCauldronPotions();
 	}
 
 	// cauldron - recipes
@@ -177,9 +177,9 @@ public class Config {
 	};
 
 	// cauldron - fluid containers
-	private static BooleanValue enableCauldronDispenserRaw;
+	private static BooleanValue enableCauldronDispenser;
 	public static boolean enableCauldronDispenser() {
-		return enableCauldronDispenserRaw.get() && enableCauldronPotions();
+		return enableCauldronDispenser.get() && enableCauldronPotions();
 	}
 	// anvil smashing
 	public static BooleanValue enableAnvilSmashing;
@@ -250,26 +250,26 @@ public class Config {
 
 	// waypoint compass
 	public static BooleanValue enableWaypointCompass;
-	private static BooleanValue dyeWaypointCompassRaw;
-	private static BooleanValue craftWaypointCompassRaw;
-	private static BooleanValue copyWaypointCompassRaw;
+	private static BooleanValue dyeWaypointCompass;
+	private static BooleanValue craftWaypointCompass;
+	private static BooleanValue copyWaypointCompass;
 	public static BooleanValue waypointCompassAdvTooltip;
 	public static BooleanValue waypointCompassCrossDimension;
 	public static boolean dyeWaypointCompass () {
-		return dyeWaypointCompassRaw.get() && enableWaypointCompass.get();
+		return dyeWaypointCompass.get() && enableWaypointCompass.get();
 	}
 	public static boolean craftWaypointCompass () {
-		return craftWaypointCompassRaw.get() && enableWaypointCompass.get();
+		return craftWaypointCompass.get() && enableWaypointCompass.get();
 	}
 	public static boolean copyWaypointCompass () {
-		return copyWaypointCompassRaw.get() && enableWaypointCompass.get();
+		return copyWaypointCompass.get() && enableWaypointCompass.get();
 	}
 
 	// enchantments
 	public static BooleanValue moreShieldEnchantments;
-	private static BooleanValue shieldEnchantmentTableRaw;
+	private static BooleanValue shieldEnchantmentTable;
 	public static boolean shieldEnchantmentTable() {
-		return shieldEnchantmentTableRaw.get() && moreShieldEnchantments.get();
+		return shieldEnchantmentTable.get() && moreShieldEnchantments.get();
 	}
 	public static BooleanValue fixShieldTooltip;
 	public static BooleanValue axeWeaponEnchants;
@@ -290,21 +290,21 @@ public class Config {
 
 	// heartbeet
 	public static BooleanValue enableHeartbeet;
-	private static BooleanValue brewHeartbeetRaw;
+	private static BooleanValue brewHeartbeet;
 	public static boolean brewHeartbeet() {
-		return brewHeartbeetRaw.get() && enableHeartbeet.get();
+		return brewHeartbeet.get() && enableHeartbeet.get();
 	}
 	public static IntValue heartbeetChance;
 
 	// seeds
 	public static BooleanValue enableMoreSeeds;
-	private static BooleanValue addGrassDropsRaw;
-	private static BooleanValue nerfCarrotPotatoDropsRaw;
+	private static BooleanValue addGrassDrops;
+	private static BooleanValue nerfCarrotPotatoDrops;
 	public static boolean addGrassDrops() {
-		return addGrassDropsRaw.get() && enableMoreSeeds.get();
+		return addGrassDrops.get() && enableMoreSeeds.get();
 	}
 	public static boolean nerfCarrotPotatoDrops() {
-		return nerfCarrotPotatoDropsRaw.get() && enableMoreSeeds.get();
+		return nerfCarrotPotatoDrops.get() && enableMoreSeeds.get();
 	}
 	// bonemeal
 	public static BooleanValue bonemealMushrooms;
@@ -344,7 +344,7 @@ public class Config {
 			enableBookshelf = builder
 					.comment("Enables the bookshelf: a decorative block to display books")
 					.define("bookshelf.enable", true);
-			enableColoredBooksRaw = builder
+			enableColoredBooks = builder
 					.comment("Enables colored books: basically colored versions of the vanilla book to decorate bookshelves")
 					.define("bookshelf.coloredBooks", true );
 
@@ -404,7 +404,7 @@ public class Config {
 
 		builder.push("utility");
 		{
-			enableRedstoneBookRaw = builder
+			enableRedstoneBook = builder
 					.comment("Enables the trapped book: will emit redstone power when placed in a bookshelf. Requires bookshelf.")
 					.worldRestart()
 					.define("redstoneBook", true);
@@ -491,22 +491,22 @@ public class Config {
 					.comment("Replace the cauldron block to allow it to hold other liquids and perform recipes.")
 					.worldRestart()
 					.define("cauldron", true);
-			enableCauldronRecipesRaw = builder
+			enableCauldronRecipes = builder
 					.comment("Allows additional recipes to be performed in the cauldron. If the block replacement is disabled, functionality will be limited to water in cauldrons.")
 					.define("extendCauldron", true);
 
 			builder.push("cauldron");
 			{
 
-				enableBiggerCauldronRaw = builder
+				enableBiggerCauldron = builder
 						.comment("Makes the cauldron hold 4 bottle per bucket instead of 3. Translates better to modded fluids.")
 						.worldRestart()
 						.define("bigger", false);
 
-				fasterCauldronRainRaw = builder
+				fasterCauldronRain = builder
 						.comment("Cauldrons fill faster in the rain than vanilla painfully slow rate.")
 						.define("fasterRain", true);
-				dropCauldronContentsRaw = builder
+				dropCauldronContents = builder
 						.comment("Cauldrons will drop their contents when broken.")
 						.define("dropContents", true);
 
@@ -516,40 +516,40 @@ public class Config {
 						.define("obsidian", true);
 
 				// fluids
-				enableCauldronFluidsRaw = builder
+				enableCauldronFluids = builder
 						.comment("Allows cauldrons to be filled with any fluid and use them in recipes")
 						.define("fluids.enable", true);
-				enableMilkRaw = builder
+				enableMilk = builder
 						.comment("Registers milk as a fluid so it can be used in cauldron recipes.")
 						.define("fluids.milk", true);
 
 				// dyeing
-				enableCauldronDyeingRaw = builder
+				enableCauldronDyeing = builder
 						.comment("Allows cauldrons to be filled with dyes and dye items using cauldrons")
 						.define("dyeing.enable", true);
-				patchVanillaDyeRecipesRaw = builder
+				patchVanillaDyeRecipes = builder
 						.comment("Makes crafting two dyed water bottles together produce a dyed water bottle. Requires modifying vanilla recipes to prevent a conflict")
 						.define("dyeing.patchVanillaRecipes", true);
-				extraBottleRecipesRaw = builder
+				extraBottleRecipes = builder
 						.comment("Adds extra dyed bottle recipes to craft green and brown")
 						.define("dyeing.extraBottleRecipes", true);
 
 				// potions
-				enableCauldronPotionsRaw = builder
+				enableCauldronPotions = builder
 						.comment("Allows cauldrons to be filled with potions and support brewing")
 						.define("potions.enable", true);
-				enableCauldronBrewingRaw = builder
+				enableCauldronBrewing = builder
 						.comment("Allows cauldrons to perform brewing recipes.")
 						.define("potions.brewing", true);
-				expensiveCauldronBrewingRaw = builder
+				expensiveCauldronBrewing = builder
 						.comment("Caps brewing at 2 potions per ingredient, requiring 2 ingredients for a full cauldron. Makes the brewing stand still useful and balances better against the bigger cauldron.")
 						.define("potions.brewingExpensive", true);
-				cauldronTipArrowsRaw = builder
+				cauldronTipArrows = builder
 						.comment("Allows cauldrons to tip arrows with potions.")
 						.define("potions.tippedArrow", true);
 
 				// dispensers
-				enableCauldronDispenserRaw = builder
+				enableCauldronDispenser = builder
 						.comment("Allows dispensers to perform some recipes in the cauldron. Intended to be used for recipes to fill and empty fluid containers as droppers can already be used for recipes")
 						.define("dispenser", true);
 			}
@@ -613,10 +613,10 @@ public class Config {
 					.comment("Enables the waypoint compass: a compass which points towards a full beacon.")
 					.worldRestart()
 					.define("waypointCompass.enable", true);
-			dyeWaypointCompassRaw = builder
+			dyeWaypointCompass = builder
 					.comment("If true, waypoint compasses can be dyed all vanilla colors")
 					.define("waypointCompass.dye", true);
-			craftWaypointCompassRaw = builder
+			craftWaypointCompass = builder
 					.comment("If true, waypoint compasses can be crafted using iron and a blaze rod. If false, they are obtained by using a vanilla compass on a beacon.")
 					.define("waypointCompass.craft", true);
 			waypointCompassAdvTooltip = builder
@@ -625,7 +625,7 @@ public class Config {
 			waypointCompassCrossDimension = builder
 					.comment("If true, waypoint compasses work across dimensions. The coordinates between the overworld and nether will be adjusted, allowing for portal syncing.")
 					.define("waypointCompass.crossDimension", true);
-			copyWaypointCompassRaw = builder
+			copyWaypointCompass = builder
 					.comment("If true, you can copy the position of one waypoint compass to another in a crafting table, similarly to maps or compasses")
 					.define("waypointCompass.copy", true);
 
@@ -633,7 +633,7 @@ public class Config {
 			moreShieldEnchantments = builder_override
 					.comment("If true, shields can now be enchanted with enchantments such as protection, fire aspect, knockback, and thorns. This requires replacing these enchantments.")
 					.define("enchantments.moreShield", true);
-			shieldEnchantmentTableRaw = builder_override
+			shieldEnchantmentTable = builder_override
 					.comment("If true, shields can be enchanted in an enchantment table. Does not support modded shields as it requires a registry substitution")
 					.define("enchantments.shieldTable", true);
 			fixShieldTooltip = builder
@@ -681,7 +681,7 @@ public class Config {
 			enableHeartbeet = builder
 					.comment("Enables heartbeets: a rare drop from beetroots which can be eaten to restore a bit of health")
 					.define("heartbeet.enable", true);
-			brewHeartbeetRaw = builder
+			brewHeartbeet = builder
 					.comment("Allows heartbeets to be used as an alternative to ghast tears in making potions of regeneration")
 					.define("heartbeet.brewRegeneration", true);  // && enableHeartbeet;
 			heartbeetChance = builder
@@ -724,10 +724,10 @@ public class Config {
 					.comment("Adds seeds for additional vanilla plants, including cactus, sugar cane, carrots, and potatoes.")
 					.worldRestart()
 					.define("moreSeeds.enable", true);
-			addGrassDropsRaw = builder
+			addGrassDrops = builder
 					.comment("Makes carrot and potato seeds drop from grass")
 					.define("moreSeeds.grassDrops", true);
-			nerfCarrotPotatoDropsRaw = builder
+			nerfCarrotPotatoDrops = builder
 					.comment("Makes carrots and potatoes drop their respective seed if not fully grown")
 					.define("moreSeeds.nerfCarrotPotatoDrops", true);
 
