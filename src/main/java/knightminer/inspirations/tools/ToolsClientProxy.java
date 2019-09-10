@@ -1,7 +1,7 @@
 package knightminer.inspirations.tools;
 
 import knightminer.inspirations.common.ClientProxy;
-import knightminer.inspirations.tools.client.RenderModArrow;
+import knightminer.inspirations.tools.client.RedstoneArrowRenderer;
 import knightminer.inspirations.tools.entity.RedstoneArrow;
 import knightminer.inspirations.tools.item.ItemWaypointCompass;
 import net.minecraft.client.renderer.color.ItemColors;
@@ -14,7 +14,7 @@ public class ToolsClientProxy extends ClientProxy {
 
 	@SubscribeEvent
 	public void clientSetup(FMLClientSetupEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(RedstoneArrow.class, RenderModArrow::new);
+		RenderingRegistry.registerEntityRenderingHandler(RedstoneArrow.class, RedstoneArrowRenderer::new);
 	}
 
 	@SubscribeEvent

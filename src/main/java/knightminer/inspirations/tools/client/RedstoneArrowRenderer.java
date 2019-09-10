@@ -8,10 +8,10 @@ import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
 
-public class RenderModArrow extends ArrowRenderer<RedstoneArrow> {
+public class RedstoneArrowRenderer extends ArrowRenderer<RedstoneArrow> {
 
 	public static final ResourceLocation CHARGED_ARROW = Util.getResource("textures/entity/arrow/charged.png");
-	public RenderModArrow(EntityRendererManager renderManager) {
+	public RedstoneArrowRenderer(EntityRendererManager renderManager) {
 		super(renderManager);
 	}
 
