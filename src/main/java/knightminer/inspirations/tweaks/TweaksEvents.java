@@ -68,12 +68,6 @@ public class TweaksEvents {
 	}
 
 	@SubscribeEvent
-	public static void loadLoad(LootTableLoadEvent event) {
-		Util.addToLootTable(event, "entities/cave_spider");
-		Util.addToLootTable(event, "entities/skeleton");
-	}
-
-	@SubscribeEvent
 	public static void extraBonemeal(BonemealEvent event) {
 		if(!Config.bonemealMushrooms.get() && !Config.bonemealDeadBush.get() && !Config.bonemealGrassSpread.get() && !Config.bonemealMyceliumSpread.get()) {
 			return;

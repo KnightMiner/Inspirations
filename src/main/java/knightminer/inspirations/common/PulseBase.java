@@ -6,23 +6,22 @@ import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.item.HidableBlockItem;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.building.InspirationsBuilding;
-//import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraft.block.Block;
-import net.minecraft.block.DispenserBlock;
-import net.minecraft.dispenser.IDispenseItemBehavior;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.storage.loot.ConstantRange;
+import net.minecraft.world.storage.loot.LootPool;
+import net.minecraft.world.storage.loot.LootTable;
+import net.minecraft.world.storage.loot.TableLootEntry;
 import net.minecraftforge.event.LootTableLoadEvent;
-import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 import slimeknights.mantle.common.IRegisterUtil;
 
 public class PulseBase implements IRegisterUtil {
@@ -95,31 +94,6 @@ public class PulseBase implements IRegisterUtil {
 		return type;
 	}
 
-	/* Other */
-	protected Fluid registerColoredFluid(String name, int color) {
-		Fluid fluid = registerFluid(new Fluid(name, Util.getResource("blocks/fluid_colorless"), Util.getResource("blocks/fluid_colorless_flow"), color));
-//		FluidRegistry.addBucketForFluid(fluid);
-		return fluid;
-	}
-
-	protected <T extends Fluid> T registerFluid(T fluid) {
-		fluid.setUnlocalizedName(Util.prefix(fluid.getName()));
-//		FluidRegistry.registerFluid(fluid);
-
-		return fluid;
-	}
-
-	protected void registerDispenserBehavior(Block block, IDispenseItemBehavior behavior) {
-		if (block != null) {
-			registerDispenserBehavior(Item.getItemFromBlock(block), behavior);
-		}
-	}
-
-	protected void registerDispenserBehavior(Item item, IDispenseItemBehavior behavior) {
-		if (item != null) {
-			DispenserBlock.registerDispenseBehavior(item, behavior);
-		}
-	}
 
 	/**
 	 * Adds entries from a loot table in the inspirations directory to a vanilla loot table
@@ -128,13 +102,19 @@ public class PulseBase implements IRegisterUtil {
 	 * @param name  Name of vanilla table and the inspirations table
 	 */
 	protected static void addToVanillaLoot(LootTableLoadEvent event, String name) {
-//		ResourceLocation extra = Util.getResource(name);
-//		event.getTable().addPool(new LootPool(
-//				new LootEntry[]{new LootEntryTable(extra, 1, 0, new LootCondition[0], Inspirations.modID)},
-//				new LootCondition[0],
-//				new RandomValueRange(1.0f),
-//				new RandomValueRange(0.0F),
-//				Inspirations.modID
-//				));
+		if (!event.getName().getNamespace().equals("minecraft") || !event.getName().getPath().equals(name)) {
+			return;
+		}
+		ResourceLocation base = new ResourceLocation(name);
+		LootTable table = event.getTable();
+		if (table != LootTable.EMPTY_LOOT_TABLE) {
+			ResourceLocation location = Util.getResource(base.getPath());
+			table.addPool(new LootPool.Builder()
+					.name(location.toString())
+					.rolls(ConstantRange.of(1))
+					.addEntry(TableLootEntry.builder(location))
+					.build()
+			);
+		}
 	}
 }

@@ -89,28 +89,6 @@ public class Util {
 				&& aabb.minZ <= hit.z && hit.z <= aabb.maxZ;
 	}
 
-	/**
-	 * Append to the given minecraft: loot table our own table in the inspirations: namespace.
-	 * @param event The LootTableLoadEvent this was called from
-	 * @param name The path to the loot table in both namespaces.
-	 */
-	public static void addToLootTable(LootTableLoadEvent event, String name) {
-		if (!event.getName().getNamespace().equals("minecraft") || !event.getName().getPath().equals(name)) {
-			return;
-		}
-		ResourceLocation base = new ResourceLocation(name);
-		LootTable table = event.getTable();
-		if (table != LootTable.EMPTY_LOOT_TABLE) {
-			ResourceLocation location = Util.getResource(base.getPath());
-			table.addPool(new LootPool.Builder()
-					.name(location.toString())
-					.rolls(ConstantRange.of(1))
-					.addEntry(TableLootEntry.builder(location))
-					.build()
-			);
-		}
-	}
-
 	// An item with Silk Touch, to make blocks drop their silk touch items if they have any.
 	// Using a Stick makes sure it won't be damaged.
 	private static ItemStack silkTouchItem = new ItemStack(Items.STICK);

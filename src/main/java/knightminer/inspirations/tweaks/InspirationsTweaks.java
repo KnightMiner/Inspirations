@@ -5,6 +5,7 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.common.item.HidableBlockItem;
 import knightminer.inspirations.common.item.HidableItem;
+import knightminer.inspirations.library.Util;
 import knightminer.inspirations.shared.InspirationsShared;
 import knightminer.inspirations.tweaks.block.BlockCactusCrop;
 import knightminer.inspirations.tweaks.block.BlockFittedCarpet;
@@ -35,6 +36,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.PlantType;
 import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
+import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
@@ -155,6 +157,12 @@ public class InspirationsTweaks extends PulseBase {
 		registerDispenserBehavior();
 
 		MinecraftForge.EVENT_BUS.register(TweaksEvents.class);
+	}
+
+	@SubscribeEvent
+	public static void loadLoad(LootTableLoadEvent event) {
+		addToVanillaLoot(event, "entities/cave_spider");
+		addToVanillaLoot(event, "entities/skeleton");
 	}
 
 	private static final IDispenseItemBehavior DEFAULT = new DefaultDispenseItemBehavior();

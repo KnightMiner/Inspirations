@@ -228,7 +228,7 @@ public class InspirationsTools extends PulseBase {
 	}
 
 	private void registerDispenserBehavior() {
-		registerDispenserBehavior(redstoneArrow, new ProjectileDispenseBehavior() {
+		DispenserBlock.registerDispenseBehavior(redstoneArrow, new ProjectileDispenseBehavior() {
 			@Nonnull
 			@Override
 			protected IProjectile getProjectileEntity(@Nonnull World world, @Nonnull IPosition position, @Nonnull ItemStack stack) {
@@ -237,7 +237,7 @@ public class InspirationsTools extends PulseBase {
 				return arrow;
 			}
 		});
-		registerDispenserBehavior(redstoneCharger, new OptionalDispenseBehavior() {
+		DispenserBlock.registerDispenseBehavior(redstoneCharger, new OptionalDispenseBehavior() {
 			@Nonnull
 			@Override
 			protected ItemStack dispenseStack(IBlockSource source, ItemStack stack) {
