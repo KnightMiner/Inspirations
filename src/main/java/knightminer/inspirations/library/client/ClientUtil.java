@@ -46,12 +46,12 @@ public final class ClientUtil {
 	private static Map<Item, Integer> colorCache = new HashMap<>();
 
 	/**
-	 * Gets the color for an ItemStack
-	 * @param stack Input stack
+	 * Gets the color for an Item
+	 * @param item The item to check
 	 * @return Color for the stack
 	 */
-	public static int getStackColor(ItemStack stack) {
-		return colorCache.computeIfAbsent(stack.getItem(), ClientUtil::getStackColor);
+	public static int getItemColor(Item item) {
+		return colorCache.computeIfAbsent(item, ClientUtil::getItemColorRaw);
 	}
 
 	/**
@@ -60,7 +60,7 @@ public final class ClientUtil {
 	 * @return Color for the item meta combination
 	 * @author InsomniaKitten
 	 */
-	private static Integer getStackColor(Item key) {
+	private static Integer getItemColorRaw(Item key) {
 		IBakedModel model = mc.getItemRenderer().getItemModelWithOverrides(new ItemStack(key), null, null);
 		if (model == null) {
 			return -1;
@@ -107,9 +107,7 @@ public final class ClientUtil {
 
 
 	/**
-	 * Gets the sprite for the given texture location, or null if no sprite is found
-	 * @param location
-	 * @return
+	 * Gets the sprite for the given texture location, or Missing Texture if no sprite is found
 	 */
 	public static TextureAtlasSprite getSprite(ResourceLocation location) {
 		AtlasTexture textureMapBlocks = mc.getTextureMap();

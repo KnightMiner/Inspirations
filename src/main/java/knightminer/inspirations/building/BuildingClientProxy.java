@@ -11,7 +11,6 @@ import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.client.ClientUtil;
 import knightminer.inspirations.library.util.TextureBlockUtil;
 import knightminer.inspirations.shared.client.TextureModel;
-import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.renderer.color.BlockColors;
@@ -22,7 +21,6 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.DyeColor;
 import net.minecraft.resources.IReloadableResourceManager;
 import net.minecraft.resources.IResourceManager;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -74,10 +72,10 @@ public class BuildingClientProxy extends ClientProxy {
 				if(te instanceof TileBookshelf) {
 					ItemStack stack = ((TileBookshelf) te).getStackInSlot(tintIndex - 1);
 					if(!stack.isEmpty()) {
-						int color = ClientUtil.getStackColor(stack);
+						int color = ClientUtil.getItemColor(stack.getItem());
 						int itemColors = mc.getItemColors().getColor(stack, 0);
 						if(itemColors > -1) {
-							// combine twice to make sure the item colors result is cominant
+							// combine twice to make sure the item colors result is dominant
 							color = Util.combineColors(color, itemColors, 3);
 						}
 						return color;
