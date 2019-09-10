@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -18,6 +19,7 @@ import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemOverrideList;
 import net.minecraft.client.renderer.model.ModelRotation;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
@@ -62,16 +64,17 @@ public class TextureModel extends BakedModelWrapper<IBakedModel> {
 	protected IBakedModel getTexturedModel(ImmutableMap<String, String> textures) {
 		return model.retexture(textures).bake(
 				SharedClientProxy.modelLoader,
-				(x) -> Minecraft.getInstance().getTextureMap().getSprite((ResourceLocation) x),
+				(Function<ResourceLocation, TextureAtlasSprite>) Minecraft.getInstance().getTextureMap()::getSprite,
 				ModelRotation.X0_Y0,
 				this.format
 		);
 	}
 
-	protected IBakedModel getCachedTextureModel(String texture) {
+	private IBakedModel getCachedTextureModel(String texture) {
 		return cache.computeIfAbsent(texture, (tex) -> getTexturedModel(ImmutableMap.of(textureKey, tex)));
 	}
 
+	@Nonnull
 	@Override
 	public ItemOverrideList getOverrides() {
 		return item ? ItemTextureOverride.INSTANCE : super.getOverrides();

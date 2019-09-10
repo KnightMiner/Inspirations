@@ -36,7 +36,6 @@ public class SharedClientProxy extends ClientProxy {
 	// For the textured blocks, we need to rebake the blocks with the new texture.
 	// Those are private, so grab copies from these two events when they fire.
 	public static ModelLoader modelLoader;
-	public static AtlasTexture blocksTextureMap;
 
 	@SubscribeEvent
 	public void collectBakeParameters(ModelBakeEvent event) {
