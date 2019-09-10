@@ -6,14 +6,11 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.Tag;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.data.ModelProperty;
 
@@ -105,13 +102,13 @@ public final class TextureBlockUtil {
 	}
 
 	/**
-	 * Gets the itemstack that determines the leg's texture from the table
-	 * @param table  Input table
-	 * @return  The itemstack determining the leg's texture, or null if none exists
+	 * Gets the itemstack that determines the block's texture from the stack.
+	 * @param stack  Input stack
+	 * @return  The itemstack determining the block's texture, or EMPTY if none exists
 	 */
-	public static ItemStack getStackTexture(ItemStack table) {
-		CompoundNBT tag = TagUtil.getTagSafe(table).getCompound(TextureBlockUtil.TAG_TEXTURE);
-		return ItemStack.read(tag);
+	public static ItemStack getStackTexture(ItemStack stack) {
+		CompoundNBT tag = TagUtil.getTagSafe(stack).getCompound(TextureBlockUtil.TAG_TEXTURE);
+		return tag.size() > 0 ? ItemStack.read(tag) : ItemStack.EMPTY;
 	}
 
 	/**
