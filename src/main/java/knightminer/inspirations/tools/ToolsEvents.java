@@ -271,7 +271,9 @@ public class ToolsEvents {
 
 		DamageSource source = event.getSource();
 		Entity attacker = source.getImmediateSource();
-		if (attacker != null && !target.isInvulnerableTo(source) && !target.canBlockDamageSource(source)) {
+		// Apply shield enchantments if the player can be hurt by the source,
+		// and they are have blocked it.
+		if (attacker != null && !target.isInvulnerableTo(source) && target.canBlockDamageSource(source)) {
 			if (thorns > 0 && ThornsEnchantment.shouldHit(thorns, target.world.rand)) {
 				attacker.attackEntityFrom(DamageSource.causeThornsDamage(target), ThornsEnchantment.getDamage(thorns, target.world.rand));
 				stack.damageItem(1, target, (play) -> play.sendBreakAnimation(target.getActiveHand()));

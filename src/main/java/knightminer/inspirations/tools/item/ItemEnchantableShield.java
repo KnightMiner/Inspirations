@@ -7,7 +7,6 @@ import net.minecraft.item.ShieldItem;
 public class ItemEnchantableShield extends ShieldItem {
   public ItemEnchantableShield(Item.Properties props) {
     super(props);
-    this.setRegistryName("shield");
   }
 
   @Override

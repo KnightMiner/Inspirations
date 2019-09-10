@@ -1,7 +1,5 @@
 package knightminer.inspirations.common;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.util.RecipeUtil;
@@ -9,16 +7,12 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.JSONUtils;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.common.crafting.IConditionSerializer;
 import slimeknights.mantle.pulsar.config.PulsarConfig;
 
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import java.util.function.BooleanSupplier;
 
 import static net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 import static net.minecraftforge.common.ForgeConfigSpec.Builder;
@@ -636,8 +630,8 @@ public class Config {
 					.define("waypointCompass.copy", true);
 
 			// enchantments
-			moreShieldEnchantments = builder
-					.comment("If true, shields can now be enchanted with enchantments such as protection, fire aspect, knockback, and thorns")
+			moreShieldEnchantments = builder_override
+					.comment("If true, shields can now be enchanted with enchantments such as protection, fire aspect, knockback, and thorns. This requires replacing these enchantments.")
 					.define("enchantments.moreShield", true);
 			shieldEnchantmentTableRaw = builder_override
 					.comment("If true, shields can be enchanted in an enchantment table. Does not support modded shields as it requires a registry substitution")
@@ -646,10 +640,10 @@ public class Config {
 					.comment("If true, fixes the tooltip on shield items so it looks better with both patterns and enchantments")
 					.define("fixShieldTooltip", true);
 
-			axeWeaponEnchants = builder
+			axeWeaponEnchants = builder_override
 					.comment("If true, axes will be able to be enchanted with weapon enchants such as looting, fire aspect, and knockback")
 					.define("enchantments.axeWeapon", true);
-			axeEnchantmentTable = builder
+			axeEnchantmentTable = builder_override
 					.comment("If true, axes can receive available weapon enchantments at the enchantment table")
 					.define("enchantments.axeTable", true);
 		}
@@ -771,11 +765,6 @@ public class Config {
 //		Property property = configFile.get("building.bookshelf", "bookOverrides", bookOverrides,
 //				"List of itemstacks to override book behavior. Format is modid:name[:meta][->enchantingPower].\nUnset meta will default wildcard.\n0 is a valid enchanting power, if unset uses default. Set to 'false' to mark something as not a book.");
 //		bookOverrides = property.getStringList();
-//		// if before config version 0.3, update to new format and add enchanted book in
-//		if(version < 0.3) {
-//			bookOverrides = Stream.concat(Arrays.stream(bookOverrides).map(line -> updateConfig(line, "1.5", "false")), Stream.of("minecraft:enchanted_book->2.5", "quark:ancient_tome->3.0")).toArray(String[]::new);
-//			property.set(bookOverrides);
-//		}
 //		processBookOverrides(bookOverrides);
 
 		// anvil smashing
