@@ -1,0 +1,39 @@
+{
+  "_comment": "This overwrites minecraft:block/rose",
+  "type": "minecraft:block",
+  "pools": [{
+    "rolls": 1,
+    "entries": [{
+      "type": "minecraft:alternatives",
+      "children": [
+        {
+          "type": "minecraft:item",
+          "name": "inspirations:rose",
+          "_comment": "Each block will drop a flower...",
+          "conditions": [
+            { "condition": "inspirations:pulse_loaded", "pulse": "InspirationsBuilding" },
+            { "condition": "inspirations:config", "prop": "flowers" },
+            { 
+              "condition": "minecraft:match_tool",
+              "predicate": { "item": "minecraft:shears" }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:rose_bush",
+          "conditions": [
+            {
+              "condition": "minecraft:block_state_property",
+              "block": "minecraft:rose_bush",
+              "properties": { "half": "lower" }
+            }
+          ]
+        }
+      ]
+    }],
+    "conditions": [
+      { "condition": "minecraft:survives_explosion" }
+    ]
+  }]
+}

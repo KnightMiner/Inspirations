@@ -33,6 +33,7 @@ import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.ToolType;
+import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
@@ -74,10 +75,10 @@ public class InspirationsBuilding extends PulseBase {
 	public static BlockPath path_tile;
 	public static BlockPath path_brick;
 
-	public static Block flower_cyan;
-	public static Block flower_syringa;
-	public static Block flower_paeonia;
-	public static Block flower_rose;
+	public static BlockFlower flower_cyan;
+	public static BlockFlower flower_syringa;
+	public static BlockFlower flower_paeonia;
+	public static BlockFlower flower_rose;
 
 	public static BlockEnlightenedBush whiteEnlightenedBush;
 	public static BlockEnlightenedBush redEnlightenedBush;
@@ -239,6 +240,14 @@ public class InspirationsBuilding extends PulseBase {
 		glassDoorItem = registerItem(r, new ItemGlassDoor(glassDoor, new Item.Properties().group(ItemGroup.REDSTONE)), "glass_door");
 		registerBlockItem(r, glassTrapdoor, ItemGroup.REDSTONE);
 
+	}
+
+	@SubscribeEvent
+	public static void loadLoad(LootTableLoadEvent event) {
+		// Add the drops for the small flowers.
+		flower_paeonia.injectLoot(event);
+		flower_rose.injectLoot(event);
+		flower_syringa.injectLoot(event);
 	}
 
 	@SubscribeEvent
