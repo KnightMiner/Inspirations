@@ -1,22 +1,27 @@
-package knightminer.inspirations.common.recipe;
+package knightminer.inspirations.common.data;
 
+import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSyntaxException;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.Util;
-import net.minecraft.client.util.JSONException;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.storage.loot.LootContext;
+import net.minecraft.world.storage.loot.conditions.ILootCondition;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.crafting.conditions.IConditionSerializer;
 
+import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
 
-public class ConfigEnabled implements ICondition {
+// Reuse code for both a recipe and loot table condition.
+public class ConfigEnabled implements ICondition, ILootCondition {
 	public static final ResourceLocation ID = Util.getResource("config");
 
 	private final String configName;
@@ -39,7 +44,16 @@ public class ConfigEnabled implements ICondition {
 		return supplier.getAsBoolean();
 	}
 
-	public static class Serializer implements IConditionSerializer<ConfigEnabled> {
+	@Override
+	public boolean test(LootContext lootContext) {
+		return supplier.getAsBoolean();
+	}
+
+	public static class Serializer extends AbstractSerializer<ConfigEnabled> implements IConditionSerializer<ConfigEnabled>  {
+		public Serializer() {
+			super(ID, ConfigEnabled.class);
+		}
+
 		@Override
 		public void write(JsonObject json, ConfigEnabled value) {
 			json.addProperty("prop", value.configName);
@@ -58,6 +72,17 @@ public class ConfigEnabled implements ICondition {
 		@Override
 		public ResourceLocation getID() {
 			return ID;
+		}
+
+		@Override
+		public void serialize(@Nonnull JsonObject json, @Nonnull ConfigEnabled cond, @Nonnull JsonSerializationContext ctx) {
+			write(json, cond);
+		}
+
+		@Nonnull
+		@Override
+		public ConfigEnabled deserialize(@Nonnull JsonObject json, @Nonnull JsonDeserializationContext ctx) {
+			return read(json);
 		}
 	}
 
@@ -103,6 +128,8 @@ public class ConfigEnabled implements ICondition {
 		// tweaks
 		add("more_seeds", Config.enableMoreSeeds);
 		add("unstackable_alts", Config.unstackableRecipeAlts);
+		add("skeleton_skull", Config.skeletonSkull);
+		add("cave_spider_web", Config.caveSpiderDrops);
 
 		// recipes
 		add("cauldron_dyeing", Config::enableCauldronDyeing);

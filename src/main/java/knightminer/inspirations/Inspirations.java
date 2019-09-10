@@ -3,10 +3,10 @@ package knightminer.inspirations;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.electronwill.nightconfig.core.io.WritingMode;
 import knightminer.inspirations.common.Config;
-import knightminer.inspirations.common.loot.FillBlockTexture;
+import knightminer.inspirations.common.data.FillBlockTexture;
 import knightminer.inspirations.common.network.InspirationsNetwork;
-import knightminer.inspirations.common.recipe.ConfigEnabled;
-import knightminer.inspirations.common.recipe.PulseLoaded;
+import knightminer.inspirations.common.data.ConfigEnabled;
+import knightminer.inspirations.common.data.PulseLoaded;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.recipe.ModItemList;
@@ -23,6 +23,7 @@ import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraft.item.crafting.IRecipeSerializer;
+import net.minecraft.world.storage.loot.conditions.LootConditionManager;
 import net.minecraft.world.storage.loot.functions.LootFunctionManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.CraftingHelper;
@@ -120,10 +121,15 @@ public class Inspirations {
 	@SubscribeEvent
 	public void registerMisc(FMLCommonSetupEvent event) {
 		// These don't have registry events yet.
-		CraftingHelper.register(new PulseLoaded.Serializer());
-		CraftingHelper.register(new ConfigEnabled.Serializer());
+		PulseLoaded.Serializer pulseLoaded = new PulseLoaded.Serializer();
+		ConfigEnabled.Serializer confEnabled = new ConfigEnabled.Serializer();
+
+		CraftingHelper.register(pulseLoaded);
+		CraftingHelper.register(confEnabled);
 		CraftingHelper.register(Util.getResource("mod_item_list"), ModItemList.SERIALIZER);
 
+		LootConditionManager.registerCondition(pulseLoaded);
+		LootConditionManager.registerCondition(confEnabled);
 		LootFunctionManager.registerFunction(new FillBlockTexture.Serializer(Util.getResource("fill_textured_block")));
 	}
 }

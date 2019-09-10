@@ -1,4 +1,4 @@
-package knightminer.inspirations.common.loot;
+package knightminer.inspirations.common.data;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonDeserializationContext;
