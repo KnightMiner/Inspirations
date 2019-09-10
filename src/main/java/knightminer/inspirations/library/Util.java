@@ -17,8 +17,13 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.storage.loot.ConstantRange;
 import net.minecraft.world.storage.loot.LootContext;
 import net.minecraft.world.storage.loot.LootParameters;
+import net.minecraft.world.storage.loot.LootPool;
+import net.minecraft.world.storage.loot.LootTable;
+import net.minecraft.world.storage.loot.TableLootEntry;
+import net.minecraftforge.event.LootTableLoadEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -82,6 +87,28 @@ public class Util {
 		return aabb.minX <= hit.x && hit.x <= aabb.maxX
 				&& aabb.minY <= hit.y && hit.y <= aabb.maxY
 				&& aabb.minZ <= hit.z && hit.z <= aabb.maxZ;
+	}
+
+	/**
+	 * Append to the given minecraft: loot table our own table in the inspirations: namespace.
+	 * @param event The LootTableLoadEvent this was called from
+	 * @param name The path to the loot table in both namespaces.
+	 */
+	public static void addToLootTable(LootTableLoadEvent event, String name) {
+		if (!event.getName().getNamespace().equals("minecraft") || !event.getName().getPath().equals(name)) {
+			return;
+		}
+		ResourceLocation base = new ResourceLocation(name);
+		LootTable table = event.getTable();
+		if (table != LootTable.EMPTY_LOOT_TABLE) {
+			ResourceLocation location = Util.getResource(base.getPath());
+			table.addPool(new LootPool.Builder()
+					.name(location.toString())
+					.rolls(ConstantRange.of(1))
+					.addEntry(TableLootEntry.builder(location))
+					.build()
+			);
+		}
 	}
 
 	// An item with Silk Touch, to make blocks drop their silk touch items if they have any.

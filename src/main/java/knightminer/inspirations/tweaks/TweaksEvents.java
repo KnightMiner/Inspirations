@@ -4,7 +4,7 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.common.network.MilkablePacket;
 import knightminer.inspirations.library.InspirationsRegistry;
-import knightminer.inspirations.shared.InspirationsShared;
+import knightminer.inspirations.library.Util;
 import knightminer.inspirations.shared.SharedEvents;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Block;
@@ -12,9 +12,7 @@ import net.minecraft.block.BushBlock;
 import net.minecraft.block.CropsBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.passive.CowEntity;
 import net.minecraft.entity.passive.PigEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -31,7 +29,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
-import net.minecraftforge.event.entity.living.LivingDropsEvent;
+import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
@@ -43,7 +41,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 import java.util.List;
-import java.util.Random;
 
 public class TweaksEvents {
 
@@ -70,35 +67,10 @@ public class TweaksEvents {
 		}
 	}
 
-	// TODO: Replace this with loot table JSONS when Forge implements a system to add pools to existing tables.
 	@SubscribeEvent
-	public static void extraDrops(LivingDropsEvent event) {
-		final float chance = 0.025f;
-		final float lootingMultiplier = 0.01f;
-		Random rand = event.getEntity().getEntityWorld().getRandom();
-
-		if (event.getEntityLiving().getType() == EntityType.SKELETON && Config.skeletonSkull.get()) {
-			// Players only.
-			if (!(event.getSource().getTrueSource() instanceof PlayerEntity)) {
-				return;
-			}
-			// Replicate RandomChanceWithLooting(chance=0.025, multiplier=0.01)
-			if (rand.nextFloat() < chance + (float)event.getLootingLevel() * lootingMultiplier) {
-				event.getDrops().add(new ItemEntity(
-						event.getEntity().getEntityWorld(),
-						event.getEntity().posX, event.getEntity().posY, event.getEntity().posZ,
-						new ItemStack(Items.SKELETON_SKULL)
-				));
-			}
-		} else if (event.getEntityLiving().getType() == EntityType.CAVE_SPIDER && Config.caveSpiderDrops.get()) {
-			if (rand.nextFloat() < chance + (float)event.getLootingLevel() * lootingMultiplier) {
-				event.getDrops().add(new ItemEntity(
-						event.getEntity().getEntityWorld(),
-						event.getEntity().posX, event.getEntity().posY, event.getEntity().posZ,
-						new ItemStack(Items.COBWEB)
-				));
-			}
-		}
+	public static void loadLoad(LootTableLoadEvent event) {
+		Util.addToLootTable(event, "entities/cave_spider");
+		Util.addToLootTable(event, "entities/skeleton");
 	}
 
 	@SubscribeEvent
