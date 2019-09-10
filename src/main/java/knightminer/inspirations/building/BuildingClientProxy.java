@@ -36,6 +36,7 @@ import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 public class BuildingClientProxy extends ClientProxy {
@@ -96,22 +97,30 @@ public class BuildingClientProxy extends ClientProxy {
 		}, InspirationsBuilding.vine);
 
 		// bush block coloring
-//		blockColors.register((state, world, pos, tintIndex) -> {
-//			if(tintIndex != 0 || world == null || pos == null) {
-//				return -1;
-//			}
-//			int color = state.get(BlockEnlightenedBush.LIGHTS).getColor();
-//			if(color > -1) {
-//				return color;
-//			}
-//
-//			TileEntity te = world.getTileEntity(pos);
-//			if(te != null) {
-//				ItemStack stack = ItemStack.read(TextureBlockUtil.getTextureBlock(te));
-//				return ClientUtil.getStackBlockColorsSafe(stack, world, pos, 0);
-//			}
-//			return FoliageColors.getDefault();
-//		}, InspirationsBuilding.enlightenedBush);
+		// First the three which never change tint.
+		for (BlockEnlightenedBush bush: new BlockEnlightenedBush[] {
+				InspirationsBuilding.redEnlightenedBush,
+				InspirationsBuilding.blueEnlightenedBush,
+				InspirationsBuilding.greenEnlightenedBush
+		}) {
+			int color = bush.getColor(); // Make closure capture just the int.
+			blockColors.register((state, world, pos, tintIndex) -> tintIndex == 0 ? color : -1, bush);
+		}
+		blockColors.register((state, world, pos, tintIndex) -> {
+			if(tintIndex != 0 || world == null || pos == null) {
+				return -1;
+			}
+			TileEntity te = world.getTileEntity(pos);
+			if(te != null) {
+				ItemStack stack = ItemStack.read(TextureBlockUtil.getTextureBlock(te));
+				return ClientUtil.getStackBlockColorsSafe(stack, world, pos, 0);
+			}
+			return FoliageColors.getDefault();
+		},
+			InspirationsBuilding.whiteEnlightenedBush,
+			InspirationsBuilding.rainbowEnlightenedBush,
+			InspirationsBuilding.christmasEnlightenedBush
+		);
 	}
 
 	@SubscribeEvent
@@ -136,28 +145,33 @@ public class BuildingClientProxy extends ClientProxy {
 		}
 
 		// bush block colors
+		// First the three blocks which never change tint.
+		for (BlockEnlightenedBush bush: new BlockEnlightenedBush[] {
+				InspirationsBuilding.redEnlightenedBush,
+				InspirationsBuilding.blueEnlightenedBush,
+				InspirationsBuilding.greenEnlightenedBush
+		}) {
+			int color = bush.getColor(); // Make closure capture just the int.
+			itemColors.register((stack, tintIndex) -> tintIndex == 0 ? color : -1, bush);
+		}
+
+		// Then the other three which use the tint of the textured stack.
 		registerItemColors(itemColors, (stack, tintIndex) -> {
 			if(tintIndex != 0) {
 				return -1;
 			}
 
-			Block block = Block.getBlockFromItem(stack.getItem());
-			if (!(block instanceof BlockEnlightenedBush)) {
-				return -1;
-			}
-			
-			// if the type has it's own color, use that
-			int color = ((BlockEnlightenedBush) block).getColor();
-			if(color > -1) {
-				return color;
-			}
-
 			ItemStack textureStack = TextureBlockUtil.getStackTexture(stack);
-			if(!textureStack.isEmpty() && textureStack.getItem() != Item.getItemFromBlock(InspirationsBuilding.enlightenedBush)) {
+			if(!textureStack.isEmpty()) {
 				return itemColors.getColor(textureStack, 0);
+			} else {
+				return FoliageColors.getDefault();
 			}
-			return FoliageColors.getDefault();
-		}, InspirationsBuilding.enlightenedBush);
+		},
+			InspirationsBuilding.whiteEnlightenedBush,
+			InspirationsBuilding.rainbowEnlightenedBush,
+			InspirationsBuilding.christmasEnlightenedBush
+		);
 
 		// We can't get the world position of the item, so use the default tint.
 		registerItemColors(itemColors, (stack, tintIndex) -> FoliageColors.getDefault(), InspirationsBuilding.vine);
@@ -173,10 +187,24 @@ public class BuildingClientProxy extends ClientProxy {
 		replaceBookshelfModel(event, InspirationsBuilding.shelf_rainbow);
 		replaceBookshelfModel(event, InspirationsBuilding.shelf_tomes);
 
-		if(InspirationsBuilding.enlightenedBush != null) {
-			ResourceLocation location = InspirationsBuilding.enlightenedBush.getRegistryName();
-			replaceTexturedModel(event, new ModelResourceLocation(location, ""), "leaves", true);
-		}
+		replaceBushModel(event, InspirationsBuilding.whiteEnlightenedBush);
+		replaceBushModel(event, InspirationsBuilding.redEnlightenedBush);
+		replaceBushModel(event, InspirationsBuilding.blueEnlightenedBush);
+		replaceBushModel(event, InspirationsBuilding.greenEnlightenedBush);
+		replaceBushModel(event, InspirationsBuilding.rainbowEnlightenedBush);
+		replaceBushModel(event, InspirationsBuilding.christmasEnlightenedBush);
+	}
+
+	private static void replaceBushModel(ModelBakeEvent event, BlockEnlightenedBush bush) {
+		ResourceLocation bushLoc = Objects.requireNonNull(bush.getRegistryName());
+		replaceTexturedModel(event, new ModelResourceLocation(bushLoc, ""), "leaves", false);
+
+		ResourceLocation itemLoc = new ModelResourceLocation(bushLoc, "inventory");
+		IModel model = ModelLoaderRegistry.getModelOrLogError(itemLoc,"Error loading item model for " + itemLoc);
+		IBakedModel standard = event.getModelRegistry().get(itemLoc);
+		IBakedModel itemModel = new TextureModel(standard, model, DefaultVertexFormats.ITEM, "texture", true);
+
+		event.getModelRegistry().put(itemLoc, itemModel);
 	}
 
 	private static void replaceBookshelfModel(ModelBakeEvent event, BlockBookshelf shelf) {
@@ -188,7 +216,7 @@ public class BuildingClientProxy extends ClientProxy {
 
 			event.getModelRegistry().put(location, finalModel);
 		}
-		ResourceLocation itemLoc = Util.getResource("models/item/" + shelf.getRegistryName().getPath());
+		ResourceLocation itemLoc = new ModelResourceLocation(shelf.getRegistryName(), "inventory");
 		IModel model = ModelLoaderRegistry.getModelOrLogError(itemLoc,"Error loading item model for " + itemLoc);
 		IBakedModel standard = event.getModelRegistry().get(itemLoc);
 		IBakedModel itemModel = new TextureModel(standard, model, DefaultVertexFormats.ITEM, "texture", true);

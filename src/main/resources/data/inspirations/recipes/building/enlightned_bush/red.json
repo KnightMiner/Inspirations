@@ -24,7 +24,6 @@
     "D": { "tag": "forge:dyes/red" }
   },
   "result": {
-    "item": "inspirations:enlightened_bush",
-    "data": 1
+    "item": "inspirations:red_enlightened_bush"
   }
 }

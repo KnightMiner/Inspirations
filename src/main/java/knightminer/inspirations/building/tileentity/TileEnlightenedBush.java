@@ -2,18 +2,18 @@ package knightminer.inspirations.building.tileentity;
 
 import javax.annotation.Nonnull;
 
+import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.library.util.TextureBlockUtil;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
 
 public class TileEnlightenedBush extends TileEntity {
 
-	public TileEnlightenedBush(TileEntityType<?> tileEntityTypeIn) {
-		super(tileEntityTypeIn);
+	public TileEnlightenedBush() {
+		super(InspirationsBuilding.tileEnlightenedBush);
 	}
 
 	/*

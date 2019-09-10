@@ -2,6 +2,7 @@ package knightminer.inspirations.building;
 
 import knightminer.inspirations.building.block.BlockBookshelf;
 import knightminer.inspirations.building.block.BlockChain;
+import knightminer.inspirations.building.block.BlockEnlightenedBush;
 import knightminer.inspirations.building.block.BlockFlower;
 import knightminer.inspirations.building.block.BlockGlassDoor;
 import knightminer.inspirations.building.block.BlockGlassTrapdoor;
@@ -36,8 +37,6 @@ import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
-import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.pulsar.pulse.Pulse;
 
@@ -80,7 +79,12 @@ public class InspirationsBuilding extends PulseBase {
 	public static Block flower_paeonia;
 	public static Block flower_rose;
 
-	public static Block enlightenedBush;
+	public static BlockEnlightenedBush whiteEnlightenedBush;
+	public static BlockEnlightenedBush redEnlightenedBush;
+	public static BlockEnlightenedBush greenEnlightenedBush;
+	public static BlockEnlightenedBush blueEnlightenedBush;
+	public static BlockEnlightenedBush rainbowEnlightenedBush;
+	public static BlockEnlightenedBush christmasEnlightenedBush;
 
 	// items
 	public static Item glassDoorItem;
@@ -101,6 +105,16 @@ public class InspirationsBuilding extends PulseBase {
 		tileBookshelf = register(r, TileEntityType.Builder.create(
 				TileBookshelf::new, shelf_normal, shelf_tomes, shelf_rainbow, shelf_ancient
 		).build(null), "bookshelf");
+
+		tileEnlightenedBush = register(r, TileEntityType.Builder.create(
+				TileEnlightenedBush::new,
+				whiteEnlightenedBush,
+				redEnlightenedBush,
+				greenEnlightenedBush,
+				blueEnlightenedBush,
+				rainbowEnlightenedBush,
+				christmasEnlightenedBush
+		).build(null), "enlightened_bush");
 	}
 
 	@SubscribeEvent
@@ -160,9 +174,12 @@ public class InspirationsBuilding extends PulseBase {
 		flower_paeonia = registerBlock(r, new BlockFlower((DoublePlantBlock) Blocks.PEONY), "paeonia");
 		flower_rose = registerBlock(r, new BlockFlower((DoublePlantBlock) Blocks.ROSE_BUSH), "rose");
 
-
-//		enlightenedBush = registerBlock(r, new BlockEnlightenedBush(), "enlightened_bush");
-//		registerTE(TileEnlightenedBush.class, "enlightened_bush");
+		whiteEnlightenedBush = registerBlock(r, new BlockEnlightenedBush(-1), "white_enlightened_bush");
+		redEnlightenedBush = registerBlock(r, new BlockEnlightenedBush(0xBF0000), "red_enlightened_bush");
+		greenEnlightenedBush = registerBlock(r, new BlockEnlightenedBush(0x267F00), "green_enlightened_bush");
+		blueEnlightenedBush = registerBlock(r, new BlockEnlightenedBush(0x001CBF), "blue_enlightened_bush");
+		rainbowEnlightenedBush = registerBlock(r, new BlockEnlightenedBush(-1), "rainbow_enlightened_bush");
+		christmasEnlightenedBush = registerBlock(r, new BlockEnlightenedBush(-1), "christmas_enlightened_bush");
 	}
 
 	@SubscribeEvent
@@ -183,6 +200,7 @@ public class InspirationsBuilding extends PulseBase {
 
 		// itemblocks
 		Item.Properties deco_props = new Item.Properties().group(ItemGroup.DECORATIONS);
+
 		registerBlockItem(r, new ItemBlockTexture(shelf_normal, deco_props, BlockTags.WOODEN_SLABS));
 		registerBlockItem(r, new ItemBlockTexture(shelf_ancient, deco_props, BlockTags.WOODEN_SLABS));
 		registerBlockItem(r, new ItemBlockTexture(shelf_rainbow, deco_props, BlockTags.WOODEN_SLABS));
@@ -211,7 +229,12 @@ public class InspirationsBuilding extends PulseBase {
 		registerBlockItem(r, flower_paeonia, ItemGroup.DECORATIONS);
 		registerBlockItem(r, flower_rose, ItemGroup.DECORATIONS);
 
-//		registerBlockItem(r, new ItemBlockTexture(enlightenedBush, new Item.Properties().group(ItemGroup.DECORATIONS)));
+		registerBlockItem(r, new ItemBlockTexture(whiteEnlightenedBush, deco_props, BlockTags.LEAVES));
+		registerBlockItem(r, new ItemBlockTexture(redEnlightenedBush, deco_props, BlockTags.LEAVES));
+		registerBlockItem(r, new ItemBlockTexture(greenEnlightenedBush, deco_props, BlockTags.LEAVES));
+		registerBlockItem(r, new ItemBlockTexture(blueEnlightenedBush, deco_props, BlockTags.LEAVES));
+		registerBlockItem(r, new ItemBlockTexture(rainbowEnlightenedBush, deco_props, BlockTags.LEAVES));
+		registerBlockItem(r, new ItemBlockTexture(christmasEnlightenedBush, deco_props, BlockTags.LEAVES));
 
 		glassDoorItem = registerItem(r, new ItemGlassDoor(glassDoor, new Item.Properties().group(ItemGroup.REDSTONE)), "glass_door");
 		registerBlockItem(r, glassTrapdoor, ItemGroup.REDSTONE);

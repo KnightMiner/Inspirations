@@ -1,11 +1,7 @@
 {
   "variants": {
     "" : {
-      "model": "inspirations:enlightened_bush",
-      "textures": {
-        "leaves": "block/leaves_oak",
-        "lights": "inspirations:block/lights_christmas"
-      }
+      "model": "inspirations:block/enlightened_bush/christmas"
     }
   }
 }

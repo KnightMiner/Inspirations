@@ -26,7 +26,6 @@
     "g": { "tag": "forge:dyes/green" }
   },
   "result": {
-    "item": "inspirations:enlightened_bush",
-    "data": 5
+    "item": "inspirations:christmas_enlightened_bush"
   }
 }

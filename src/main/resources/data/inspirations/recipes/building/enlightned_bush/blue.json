@@ -24,7 +24,6 @@
     "D": { "tag": "forge:dyes/blue" }
   },
   "result": {
-    "item": "inspirations:enlightened_bush",
-    "data": 3
+    "item": "inspirations:blue_enlightened_bush"
   }
 }

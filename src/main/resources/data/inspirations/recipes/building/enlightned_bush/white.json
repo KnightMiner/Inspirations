@@ -22,7 +22,6 @@
     "G": { "tag": "forge:dusts/glowstone" }
   },
   "result": {
-    "item": "inspirations:enlightened_bush",
-    "data": 0
+    "item": "inspirations:white_enlightened_bush"
   }
 }
