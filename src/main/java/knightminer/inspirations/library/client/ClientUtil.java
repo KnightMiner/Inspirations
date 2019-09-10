@@ -21,8 +21,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IEnviromentBlockReader;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.text.WordUtils;
@@ -36,7 +34,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-@OnlyIn(Dist.CLIENT)
 public final class ClientUtil {
 	public static final String TAG_TEXTURE_PATH = "texture_path";
 	private static final Minecraft mc = Minecraft.getInstance();
