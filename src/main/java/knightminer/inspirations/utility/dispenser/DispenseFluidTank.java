@@ -49,10 +49,10 @@ public class DispenseFluidTank extends DefaultDispenseItemBehavior {
 				ItemStack resultStack = result.getResult();
 				// play sound
 				SoundEvent sound = optFluid.map(
-					(fluid) -> fluid.getFluid().getEmptySound(fluid)
+					(fluid) -> fluid.getFluid().getAttributes().getEmptySound(fluid)
 				).orElseGet(() -> {
 					FluidStack resultFluid = FluidUtil.getFluidContained(resultStack).orElseThrow(AssertionError::new);
-					return resultFluid.getFluid().getFillSound(resultFluid);
+					return resultFluid.getFluid().getAttributes().getFillSound(resultFluid);
 				});
 
 				world.playSound(null, pos, sound, SoundCategory.BLOCKS, 1.0F, 1.0F);
