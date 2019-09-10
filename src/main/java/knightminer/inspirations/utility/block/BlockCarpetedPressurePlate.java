@@ -16,14 +16,22 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
 
 public class BlockCarpetedPressurePlate extends PressurePlateBlock {
-	protected static final VoxelShape PRESSED_AABB = Block.makeCuboidShape(0, 0, 0, 16, 1.25, 16);
-	protected static final VoxelShape UNPRESSED_AABB = Block.makeCuboidShape(0, 0, 0, 16, 1.5, 16);
+	protected static final VoxelShape PRESSED_AABB = VoxelShapes.or(
+			Block.makeCuboidShape(0, 0, 0, 16, 1, 16),
+			Block.makeCuboidShape(1, 1, 1, 15, 1.25, 15)
+	);
+	protected static final VoxelShape UNPRESSED_AABB = VoxelShapes.or(
+			Block.makeCuboidShape(0, 0, 0, 16, 1, 16),
+			Block.makeCuboidShape(1, 1, 1, 15, 1.5, 15)
+	);
+
 	private final DyeColor color;
 	private final String transKey;
 
