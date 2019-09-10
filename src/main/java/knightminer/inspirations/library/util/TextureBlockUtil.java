@@ -116,6 +116,10 @@ public final class TextureBlockUtil {
 	 */
 	public static void addBlocksFromTag(Tag<Block> tag, Block block, NonNullList<ItemStack> list) {
 		for(Block textureBlock : tag.getAllElements()) {
+			// Don't add instances of the block itself, that would be wrong.
+			if (block.getClass().isInstance(textureBlock)) {
+				continue;
+			}
 			list.add(createTexturedStack(block, textureBlock));
 			if(!Config.showAllVariants.get()) {
 				return;

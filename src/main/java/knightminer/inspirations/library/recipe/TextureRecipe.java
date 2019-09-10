@@ -42,6 +42,13 @@ public class TextureRecipe extends ShapedRecipe {
 				ItemStack stack = craftMatrix.getStackInSlot(i);
 				if(potential.isItemEqual(stack) && Block.getBlockFromItem(stack.getItem()) != Blocks.AIR) {
 					Block outBlock = Block.getBlockFromItem(result.getItem());
+
+					// Special case for Enlightened Bushes - grab their underlying texture instead of the bush.
+					ItemStack recurTexture = TextureBlockUtil.getStackTexture(stack);
+					if (!recurTexture.isEmpty()) {
+						stack = recurTexture;
+					}
+
 					return TextureBlockUtil.createTexturedStack(outBlock, Block.getBlockFromItem(stack.getItem()));
 				}
 			}
