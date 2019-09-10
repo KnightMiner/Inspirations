@@ -25,13 +25,12 @@ public class ModItemList extends CompoundIngredient {
 	}
 
 	@Nonnull
-    @Override
-    public IIngredientSerializer<? extends Ingredient> getSerializer()
-    {
-    	return new Factory();
-    }
+	@Override
+	public IIngredientSerializer<? extends Ingredient> getSerializer() {
+		return new Factory();
+	}
 
-    public static final Factory SERIALIZER = new Factory();
+	public static final Factory SERIALIZER = new Factory();
 
 
 	public static class Factory implements IIngredientSerializer<ModItemList> {

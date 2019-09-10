@@ -11,6 +11,7 @@ import net.minecraft.item.crafting.ShapelessRecipe;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nonnull;
 
@@ -38,22 +39,22 @@ public class ShapelessNoContainerRecipe extends ShapelessRecipe {
 
 	public static final IRecipeSerializer<?> SERIALIZER = new Serializer().setRegistryName(new ResourceLocation(Inspirations.modID, "shapeless_no_container"));
 
-	private static class Serializer extends net.minecraftforge.registries.ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<ShapelessNoContainerRecipe> {
+	private static class Serializer extends ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<ShapelessNoContainerRecipe> {
 		// This recipe has the exact same options as the parent type, redirect to that code.
 		@Nonnull
 		@Override
-		public ShapelessNoContainerRecipe read(ResourceLocation recipeID, PacketBuffer buffer) {
+		public ShapelessNoContainerRecipe read(@Nonnull ResourceLocation recipeID, @Nonnull PacketBuffer buffer) {
 			return new ShapelessNoContainerRecipe(CRAFTING_SHAPELESS.read(recipeID, buffer));
 		}
 
 		@Nonnull
 		@Override
-		public ShapelessNoContainerRecipe read(ResourceLocation recipeID, JsonObject json) {
+		public ShapelessNoContainerRecipe read(@Nonnull ResourceLocation recipeID, @Nonnull JsonObject json) {
 			return new ShapelessNoContainerRecipe(CRAFTING_SHAPELESS.read(recipeID, json));
 		}
 
 		@Override
-		public void write(PacketBuffer buffer, ShapelessNoContainerRecipe recipe) {
+		public void write(@Nonnull PacketBuffer buffer, @Nonnull ShapelessNoContainerRecipe recipe) {
 			Serializer.CRAFTING_SHAPELESS.write(buffer, recipe);
 		}
 	}
