@@ -14,16 +14,13 @@ import net.minecraft.potion.EffectUtils;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraft.world.storage.loot.ConstantRange;
 import net.minecraft.world.storage.loot.LootContext;
 import net.minecraft.world.storage.loot.LootParameters;
-import net.minecraft.world.storage.loot.LootPool;
-import net.minecraft.world.storage.loot.LootTable;
-import net.minecraft.world.storage.loot.TableLootEntry;
-import net.minecraftforge.event.LootTableLoadEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -50,31 +47,6 @@ public class Util {
 
 	public static ResourceLocation getResource(String res) {
 		return new ResourceLocation(Inspirations.modID, res);
-	}
-
-	/**
-	 * Translate the string, insert parameters into the translation key
-	 */
-	@Deprecated
-	public static String translate(String key, Object... pars) {
-		// translates twice to allow rerouting/alias
-		String trans = new TranslationTextComponent(String.format(key, pars)).getUnformattedComponentText().trim();
-		return new TranslationTextComponent(trans).getUnformattedComponentText().trim();
-	}
-
-	/**
-	 * Translate the string, insert parameters into the result of the translation
-	 */
-	@Deprecated
-	public static String translateFormatted(String key, Object... pars) {
-		// translates twice to allow rerouting/alias
-		String trans = new TranslationTextComponent(key, pars).getUnformattedComponentText().trim();
-		return new TranslationTextComponent(trans).getUnformattedComponentText().trim();
-	}
-
-	@Deprecated
-	public static boolean canTranslate(String key) {
-		return true;
 	}
 
 	public static Logger getLogger(String type) {
@@ -205,26 +177,27 @@ public class Util {
 	 * @param potionType  Potion type input
 	 * @param lores       List to add the tooltips into
 	 */
-	public static void addPotionTooltip(Potion potionType, List<String> lores) {
+	public static void addPotionTooltip(Potion potionType, List<ITextComponent> lores) {
 		List<EffectInstance> effects = potionType.getEffects();
 
 		if (effects.isEmpty()) {
-			String s = translate("effect.none").trim();
-			lores.add(TextFormatting.GRAY + s);
+			lores.add(new TranslationTextComponent("effect.none").applyTextStyle(TextFormatting.GRAY));
 			return;
 		}
 
 		for (EffectInstance effect : effects) {
-			String effectString = translate(effect.getEffectName()).trim();
+			ITextComponent effectString = effect.getPotion().getDisplayName();
 			Effect potion = effect.getPotion();
 
 			if (effect.getAmplifier() > 0) {
-				effectString += " " + translate("potion.potency." + effect.getAmplifier()).trim();
+				effectString.appendText(" ");
+				effectString.appendSibling(new TranslationTextComponent("potion.potency." + effect.getAmplifier()));
 			}
 			if (effect.getDuration() > 20) {
-				effectString += " (" + EffectUtils.getPotionDurationString(effect, 1.0f) + ")";
+				effectString.appendSibling(new StringTextComponent(" (" + EffectUtils.getPotionDurationString(effect, 1.0f) + ")"));
 			}
-			lores.add((potion.isBeneficial() ? TextFormatting.BLUE : TextFormatting.RED) + effectString);
+			effectString.applyTextStyle(potion.isBeneficial() ? TextFormatting.BLUE : TextFormatting.RED);
+			lores.add(effectString);
 		}
 	}
 
