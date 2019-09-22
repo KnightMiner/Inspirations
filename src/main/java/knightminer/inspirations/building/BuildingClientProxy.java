@@ -10,31 +10,24 @@ import knightminer.inspirations.common.ClientProxy;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.client.ClientUtil;
 import knightminer.inspirations.library.util.TextureBlockUtil;
-import knightminer.inspirations.shared.client.TextureModel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.ItemColors;
-import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.DyeColor;
 import net.minecraft.resources.IReloadableResourceManager;
 import net.minecraft.resources.IResourceManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.FoliageColors;
 import net.minecraft.world.biome.BiomeColors;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
-import net.minecraftforge.client.model.IModel;
-import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 public class BuildingClientProxy extends ClientProxy {
@@ -185,40 +178,22 @@ public class BuildingClientProxy extends ClientProxy {
 		replaceBookshelfModel(event, InspirationsBuilding.shelf_rainbow);
 		replaceBookshelfModel(event, InspirationsBuilding.shelf_tomes);
 
-		replaceBushModel(event, InspirationsBuilding.whiteEnlightenedBush);
-		replaceBushModel(event, InspirationsBuilding.redEnlightenedBush);
-		replaceBushModel(event, InspirationsBuilding.blueEnlightenedBush);
-		replaceBushModel(event, InspirationsBuilding.greenEnlightenedBush);
-		replaceBushModel(event, InspirationsBuilding.rainbowEnlightenedBush);
-		replaceBushModel(event, InspirationsBuilding.christmasEnlightenedBush);
-	}
-
-	private static void replaceBushModel(ModelBakeEvent event, BlockEnlightenedBush bush) {
-		ResourceLocation bushLoc = Objects.requireNonNull(bush.getRegistryName());
-		replaceTexturedModel(event, new ModelResourceLocation(bushLoc, ""), "leaves", false);
-
-		ResourceLocation itemLoc = new ModelResourceLocation(bushLoc, "inventory");
-		IModel model = ModelLoaderRegistry.getModelOrLogError(itemLoc,"Error loading item model for " + itemLoc);
-		IBakedModel standard = event.getModelRegistry().get(itemLoc);
-		IBakedModel itemModel = new TextureModel(standard, model, DefaultVertexFormats.ITEM, "texture", true);
-
-		event.getModelRegistry().put(itemLoc, itemModel);
+		replaceBothTexturedModels(event, InspirationsBuilding.whiteEnlightenedBush.getRegistryName(), "leaves");
+		replaceBothTexturedModels(event, InspirationsBuilding.redEnlightenedBush.getRegistryName(), "leaves");
+		replaceBothTexturedModels(event, InspirationsBuilding.blueEnlightenedBush.getRegistryName(), "leaves");
+		replaceBothTexturedModels(event, InspirationsBuilding.greenEnlightenedBush.getRegistryName(), "leaves");
+		replaceBothTexturedModels(event, InspirationsBuilding.rainbowEnlightenedBush.getRegistryName(), "leaves");
+		replaceBothTexturedModels(event, InspirationsBuilding.christmasEnlightenedBush.getRegistryName(), "leaves");
 	}
 
 	private static void replaceBookshelfModel(ModelBakeEvent event, BlockBookshelf shelf) {
+		if (shelf.getRegistryName() == null) {
+			throw new AssertionError("Null registry name");
+		}
 		for(Direction facing : Direction.Plane.HORIZONTAL){
 			ModelResourceLocation location = new ModelResourceLocation(shelf.getRegistryName(), String.format("facing=%s", facing.getName()));
-			IModel model = ModelLoaderRegistry.getModelOrLogError(location,"Error loading model for " + location);
-			IBakedModel standard = event.getModelRegistry().get(location);
-			IBakedModel finalModel = new BookshelfModel(standard, model);
-
-			event.getModelRegistry().put(location, finalModel);
+			replaceModel(event, location, BookshelfModel::new);
 		}
-		ResourceLocation itemLoc = new ModelResourceLocation(shelf.getRegistryName(), "inventory");
-		IModel model = ModelLoaderRegistry.getModelOrLogError(itemLoc,"Error loading item model for " + itemLoc);
-		IBakedModel standard = event.getModelRegistry().get(itemLoc);
-		IBakedModel itemModel = new TextureModel(standard, model, DefaultVertexFormats.ITEM, "texture", true);
-
-		event.getModelRegistry().put(itemLoc, itemModel);
+		replaceTexturedModel(event, new ModelResourceLocation(shelf.getRegistryName(), "inventory"), "texture",true);
 	}
 }

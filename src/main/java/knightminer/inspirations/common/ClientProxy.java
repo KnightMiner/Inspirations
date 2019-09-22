@@ -11,11 +11,14 @@ import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+
+import java.util.function.BiFunction;
 
 public class ClientProxy {
 
@@ -54,11 +57,22 @@ public class ClientProxy {
 		}
 	}
 
-	protected static void replaceTexturedModel(ModelBakeEvent event, ModelResourceLocation location, String key, boolean item) {
+	protected static void replaceModel(ModelBakeEvent event, ModelResourceLocation location, BiFunction<IBakedModel, IModel, IBakedModel> modelMaker) {
 		IModel model = ModelLoaderRegistry.getModelOrLogError(location, "Error loading model for " + location);
 		IBakedModel standard = event.getModelRegistry().get(location);
-		IBakedModel finalModel = new TextureModel(standard, model, DefaultVertexFormats.BLOCK, key, item);
-
+		IBakedModel finalModel = modelMaker.apply(standard, model);
 		event.getModelRegistry().put(location, finalModel);
+	}
+
+	protected static void replaceTexturedModel(ModelBakeEvent event, ModelResourceLocation location, String key, boolean item) {
+		replaceModel(
+				event, location,
+				(orig, model) -> new TextureModel(orig, model, item ? DefaultVertexFormats.ITEM : DefaultVertexFormats.BLOCK, key, item)
+		);
+	}
+
+	protected static void replaceBothTexturedModels(ModelBakeEvent event, ResourceLocation loc, String key) {
+		replaceTexturedModel(event, new ModelResourceLocation(loc, ""), key, false);
+		replaceTexturedModel(event, new ModelResourceLocation(loc, "inventory"), "texture", true);
 	}
 }
