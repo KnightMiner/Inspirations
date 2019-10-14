@@ -1,6 +1,7 @@
 package knightminer.inspirations.tools;
 
 import knightminer.inspirations.common.Config;
+import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.tools.item.ItemWaypointCompass;
 import net.minecraft.block.Block;
@@ -11,6 +12,7 @@ import net.minecraft.enchantment.EnchantmentThorns;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Enchantments;
 import net.minecraft.init.Items;
@@ -18,6 +20,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemHoe;
 import net.minecraft.item.ItemShears;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.play.server.SPacketEntityVelocity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityBeacon;
 import net.minecraft.util.DamageSource;
@@ -358,6 +361,9 @@ public class ToolsEvents {
 			if (knockback > 0) {
 				if (attacker instanceof EntityLivingBase) {
 					((EntityLivingBase)attacker).knockBack(target, knockback * 0.5F, MathHelper.sin(target.rotationYaw * 0.017453292F), -MathHelper.cos(target.rotationYaw * 0.017453292F));
+					if (attacker instanceof EntityPlayerMP) {
+						InspirationsNetwork.sendPacket(attacker, new SPacketEntityVelocity(attacker));
+					}
 				} else {
 					attacker.addVelocity(-MathHelper.sin(target.rotationYaw * 0.017453292F) * knockback * 0.5f, 0.1D, MathHelper.cos(target.rotationYaw * 0.017453292F) * knockback * 0.5f);
 				}
