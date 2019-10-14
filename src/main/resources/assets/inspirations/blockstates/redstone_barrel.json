@@ -1,27 +1,69 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "inspirations:redstone_barrel"
-  },
-  "variants": {
-    "level": {
-       "0": {},
-       "1": { "textures": { "top": "inspirations:blocks/redstone_dust" }},
-       "2": { "submodel": { "contents": { "model": "inspirations:redstone_barrel_contents" }}},
-       "3": { "submodel": { "contents": { "model": "inspirations:redstone_barrel_contents", "transform": { "translation": [ 0, 0.0625, 0 ] } }}},
-       "4": { "submodel": { "contents": { "model": "inspirations:redstone_barrel_contents", "transform": { "translation": [ 0, 0.125,  0 ] } }}},
-       "5": { "submodel": { "contents": { "model": "inspirations:redstone_barrel_contents", "transform": { "translation": [ 0, 0.1875, 0 ] } }}},
-       "6": { "submodel": { "contents": { "model": "inspirations:redstone_barrel_contents", "transform": { "translation": [ 0, 0.25,   0 ] } }}},
-       "7": { "submodel": { "contents": { "model": "inspirations:redstone_barrel_contents", "transform": { "translation": [ 0, 0.3125, 0 ] } }}},
-       "8": { "submodel": { "contents": { "model": "inspirations:redstone_barrel_contents", "transform": { "translation": [ 0, 0.375,  0 ] } }}},
-       "9": { "submodel": { "contents": { "model": "inspirations:redstone_barrel_contents", "transform": { "translation": [ 0, 0.4375, 0 ] } }}},
-      "10": { "submodel": { "contents": { "model": "inspirations:redstone_barrel_contents", "transform": { "translation": [ 0, 0.5,    0 ] } }}},
-      "11": { "submodel": { "contents": { "model": "inspirations:redstone_barrel_contents", "transform": { "translation": [ 0, 0.5625, 0 ] } }}},
-      "12": { "submodel": { "contents": { "model": "inspirations:redstone_barrel_contents", "transform": { "translation": [ 0, 0.625,  0 ] } }}},
-      "13": { "submodel": { "contents": { "model": "inspirations:redstone_barrel_contents", "transform": { "translation": [ 0, 0.6875, 0 ] } }}},
-      "14": { "submodel": { "contents": { "model": "inspirations:redstone_barrel_contents", "transform": { "translation": [ 0, 0.75,   0 ] } }}},
-      "15": { "submodel": { "contents": { "model": "inspirations:redstone_barrel_contents", "transform": { "translation": [ 0, 0.8125, 0 ] } }}}
+  "multipart": [
+    { "apply": { "model": "inspirations:block/redstone_barrel" }},
+    {
+      "when": { "level": 0 },
+      "apply": { "model": "inspirations:block/redstone_barrel/empty" }
     },
-    "inventory": [{}]
-  }
+    {
+      "when": { "level": 1 },
+      "apply": { "model": "inspirations:block/redstone_barrel/rs_01" }
+    },
+    {
+      "when": { "level": 2 },
+      "apply": { "model": "inspirations:block/redstone_barrel/rs_02" }
+    },
+    {
+      "when": { "level": 3 },
+      "apply": { "model": "inspirations:block/redstone_barrel/rs_03" }
+    },
+    {
+      "when": { "level": 4 },
+      "apply": { "model": "inspirations:block/redstone_barrel/rs_04" }
+    },
+    {
+      "when": { "level": 5 },
+      "apply": { "model": "inspirations:block/redstone_barrel/rs_05" }
+    },
+    {
+      "when": { "level": 6 },
+      "apply": { "model": "inspirations:block/redstone_barrel/rs_06" }
+    },
+    {
+      "when": { "level": 7 },
+      "apply": { "model": "inspirations:block/redstone_barrel/rs_07" }
+    },
+    {
+      "when": { "level": 8},
+      "apply": { "model": "inspirations:block/redstone_barrel/rs_08" }
+    },
+    {
+      "when": { "level": 9 },
+      "apply": { "model": "inspirations:block/redstone_barrel/rs_09" }
+    },
+    {
+      "when": { "level": 10 },
+      "apply": { "model": "inspirations:block/redstone_barrel/rs_10" }
+    },
+    {
+      "when": { "level": 11 },
+      "apply": { "model": "inspirations:block/redstone_barrel/rs_11" }
+    },
+    {
+      "when": { "level": 12 },
+      "apply": { "model": "inspirations:block/redstone_barrel/rs_12" }
+    },
+    {
+      "when": { "level": 13 },
+      "apply": { "model": "inspirations:block/redstone_barrel/rs_13" }
+    },
+    {
+      "when": { "level": 14 },
+      "apply": { "model": "inspirations:block/redstone_barrel/rs_14" }
+    },
+    {
+      "when": { "level": 15 },
+      "apply": { "model": "inspirations:block/redstone_barrel/rs_15" }
+    }
+  ]
 }

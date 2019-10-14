@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "bottom=false,rungs=none": { "model": "inspirations:block/rope/chain" },
+    "bottom=false,rungs=x":    { "model": "inspirations:block/rope/chain_ladder_x" },
+    "bottom=false,rungs=z":    { "model": "inspirations:block/rope/chain_ladder_z" },
+    "bottom=true,rungs=none":  { "model": "inspirations:block/rope/chain_bottom" },
+    "bottom=true,rungs=x":     { "model": "inspirations:block/rope/chain_ladder_bottom_x" },
+    "bottom=true,rungs=z":     { "model": "inspirations:block/rope/chain_ladder_bottom_z" }
+  }
+}

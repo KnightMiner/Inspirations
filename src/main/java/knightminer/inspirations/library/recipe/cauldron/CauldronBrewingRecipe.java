@@ -7,13 +7,13 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import com.google.common.collect.ImmutableList;
 
 import knightminer.inspirations.library.InspirationsRegistry;
-import net.minecraft.init.PotionTypes;
-import net.minecraft.init.SoundEvents;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.potion.PotionType;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.Potions;
 import net.minecraft.util.SoundEvent;
-import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraft.util.SoundEvents;
 
 /**
  * Cauldron recipe to transform a potion into another potion. Used primarily with vanilla potion recipes from the brewing registry.
@@ -26,11 +26,11 @@ public class CauldronBrewingRecipe implements ISimpleCauldronRecipe {
 	private CauldronState output;
 
 	/**
-	 * @param input    Input potion type
-	 * @param reagent  Ingredient for transformation
-	 * @param output   Resulting potion type
+	 * @param input   Input potion type
+	 * @param reagent Ingredient for transformation
+	 * @param output  Resulting potion type
 	 */
-	public CauldronBrewingRecipe(PotionType input, Ingredient reagent, PotionType output) {
+	public CauldronBrewingRecipe(Potion input, Ingredient reagent, Potion output) {
 		this.input = CauldronState.potion(input);
 		this.reagent = reagent;
 		this.output = CauldronState.potion(output);
@@ -42,7 +42,7 @@ public class CauldronBrewingRecipe implements ISimpleCauldronRecipe {
 		return level > 0 && boiling
 				// if expensive brewing, level must be less than 3 or two inputs provided
 				&& (!InspirationsRegistry.expensiveCauldronBrewing() || level < 3 || stack.getCount() > 1)
-				&& state.matches(input) && reagent.apply(stack);
+				&& state.matches(input) && reagent.test(stack);
 	}
 
 	@Override
@@ -68,14 +68,14 @@ public class CauldronBrewingRecipe implements ISimpleCauldronRecipe {
 
 	@Override
 	public Object getInputState() {
-		PotionType potion = input.getPotion();
-		return potion == PotionTypes.WATER ? FluidRegistry.WATER : potion;
+		Potion potion = input.getPotion();
+		return potion == Potions.WATER ? Fluids.WATER : potion;
 	}
 
 	@Override
 	public Object getState() {
-		PotionType potion = output.getPotion();
-		return potion == PotionTypes.WATER ? FluidRegistry.WATER : potion;
+		Potion potion = output.getPotion();
+		return potion == Potions.WATER ? Fluids.WATER : potion;
 	}
 
 	@Override

@@ -1,0 +1,22 @@
+{
+  "replace": false,
+  "values": [
+    "#inspirations:carpeted_trapdoors",
+    "inspirations:white_fitted_carpet",
+    "inspirations:orange_fitted_carpet",
+    "inspirations:magenta_fitted_carpet",
+    "inspirations:light_blue_fitted_carpet",
+    "inspirations:yellow_fitted_carpet",
+    "inspirations:lime_fitted_carpet",
+    "inspirations:pink_fitted_carpet",
+    "inspirations:gray_fitted_carpet",
+    "inspirations:light_gray_fitted_carpet",
+    "inspirations:cyan_fitted_carpet",
+    "inspirations:purple_fitted_carpet",
+    "inspirations:blue_fitted_carpet",
+    "inspirations:brown_fitted_carpet",
+    "inspirations:green_fitted_carpet",
+    "inspirations:red_fitted_carpet",
+    "inspirations:black_fitted_carpet"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "_comment": "All items that can milk a cow when interacting should have this tag. Used to prevent milking and to apply the milked tag",
+  "values": [
+    "minecraft:bowl",
+    "minecraft:bucket"
+  ],
+  "optional": [
+    "ceramics:clay_bucket",
+    "simplytea:teapot"
+  ]
+}

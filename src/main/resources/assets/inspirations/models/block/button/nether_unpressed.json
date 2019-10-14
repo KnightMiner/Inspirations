@@ -1,7 +1,7 @@
 {
     "textures": {
-        "particle": "blocks/nether_brick",
-        "button": "blocks/nether_brick"
+        "particle": "block/nether_bricks",
+        "button": "block/nether_bricks"
     },
     "elements": [
         {
@@ -11,10 +11,17 @@
             "faces": {
                 "north": { "texture": "#button", "cullface": "north" },
                 "east":  { "texture": "#button", "cullface": "east"  },
-                "south": { "texture": "#button", "cullface": "south" },
                 "west":  { "texture": "#button", "cullface": "west"  },
                 "up":    { "texture": "#button", "cullface": "up"    },
                 "down":  { "texture": "#button", "cullface": "down"  }
+            }
+        },
+        {
+            "name": "Button",
+            "from": [ 1, 8, 14 ], 
+            "to": [ 8, 11, 15.9 ], 
+            "faces": {
+                "south": { "texture": "#button", "cullface": "south" }
             }
         },
         {
@@ -44,7 +51,7 @@
         {
             "name": "Left",
             "from": [ 0, 8, 15.9 ], 
-            "to": [ 3, 11, 16 ], 
+            "to": [ 1, 11, 16 ], 
             "faces": {
                 "east":  { "texture": "#button", "cullface": "south" },
                 "south": { "texture": "#button", "cullface": "south" },
@@ -53,7 +60,7 @@
         },
         {
             "name": "Right",
-            "from": [ 10, 8, 15.9 ], 
+            "from": [ 8, 8, 15.9 ], 
             "to": [ 16, 11, 16 ], 
             "faces": {
                 "east":  { "texture": "#button", "cullface": "east"  },

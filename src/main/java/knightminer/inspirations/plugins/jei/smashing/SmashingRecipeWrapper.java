@@ -15,12 +15,12 @@ import slimeknights.mantle.client.CreativeTab;
 
 public class SmashingRecipeWrapper implements IRecipeWrapper {
 
-	protected final List<List<ItemStack>> input;
-	protected final List<ItemStack> output;
+	protected final ItemStack input;
+	protected final ItemStack output;
 
 	public SmashingRecipeWrapper(ItemStack input, ItemStack output) {
-		this.input = ImmutableList.of(ImmutableList.of(input));
-		this.output = ImmutableList.of(output);
+		this.input = input;
+		this.output = output;
 	}
 
 	@SuppressWarnings("deprecation")

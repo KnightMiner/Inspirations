@@ -1,32 +1,43 @@
 package knightminer.inspirations.recipes.block;
 
 import knightminer.inspirations.library.InspirationsRegistry;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockAnvil;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
+import knightminer.inspirations.recipes.InspirationsRecipes;
+import net.minecraft.block.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class BlockSmashingAnvil extends BlockAnvil {
+import javax.annotation.Nullable;
+import java.util.Objects;
 
-	public BlockSmashingAnvil() {
-		this.setHardness(5.0F);
-		this.setSoundType(SoundType.ANVIL);
-		this.setResistance(2000.0F);
-		this.setUnlocalizedName("anvil");
+public class BlockSmashingAnvil extends AnvilBlock {
+
+	public BlockSmashingAnvil(Block original) {
+		super(Block.Properties.from(original));
+		setRegistryName(Objects.requireNonNull(original.getRegistryName()));
 	}
 
+	// Replace this to handle our different blocks.
+   @Nullable
+   public static BlockState damage(BlockState state) {
+      Block block = state.getBlock();
+      if (block == Blocks.ANVIL || block == InspirationsRecipes.fullAnvil) {
+         return InspirationsRecipes.chippedAnvil.getDefaultState().with(FACING, state.get(FACING));
+      } else {
+		  if (block == Blocks.CHIPPED_ANVIL || block == InspirationsRecipes.chippedAnvil)
+			  return InspirationsRecipes.damagedAnvil.getDefaultState().with(FACING, state.get(FACING));
+		  else return null;
+      }
+   }
+
 	@Override
-	public void onEndFalling(World world, BlockPos pos, IBlockState anvil, IBlockState state) {
+	public void onEndFalling(World world, BlockPos pos, BlockState anvil, BlockState state) {
 		BlockPos down = pos.down();
 		if(!smashBlock(world, down, world.getBlockState(down))) {
 			super.onEndFalling(world, pos, anvil, state);
 		}
 	}
 
-	public static boolean smashBlock(World world, BlockPos pos, IBlockState state) {
+	public static boolean smashBlock(World world, BlockPos pos, BlockState state) {
 		// if we started on air, just return true
 		if(state.getBlock() == Blocks.AIR) {
 			return true;
@@ -36,7 +47,7 @@ public class BlockSmashingAnvil extends BlockAnvil {
 			return false;
 		}
 
-		IBlockState transformation = InspirationsRegistry.getAnvilSmashResult(state);
+		BlockState transformation = InspirationsRegistry.getAnvilSmashResult(state);
 		if(transformation == null) {
 			return false;
 		}

@@ -1,0 +1,24 @@
+{
+  "conditions": [
+    {
+      "type": "inspirations:pulse_loaded",
+      "pulse": "InspirationsBuilding"
+    },
+    {
+      "type": "inspirations:config",
+      "prop": "mulch"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SS",
+    "SS"
+  ],
+  "key": {
+    "S": { "tag": "forge:rods/wooden" }
+  },
+  "result": {
+    "item": "inspirations:plain_mulch",
+    "count": 2
+  }
+}

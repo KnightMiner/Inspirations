@@ -1,30 +1,27 @@
 package knightminer.inspirations.library.client;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.InspirationsRegistry;
-import knightminer.inspirations.library.ItemMetaKey;
 import knightminer.inspirations.library.util.TextureBlockUtil;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.texture.AtlasTexture;
+import net.minecraft.client.renderer.texture.MissingTextureSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
-import net.minecraftforge.common.property.IExtendedBlockState;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.world.IEnviromentBlockReader;
+import net.minecraftforge.client.model.data.EmptyModelData;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.lwjgl.opengl.GL11;
@@ -37,53 +34,55 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-@SideOnly(Side.CLIENT)
 public final class ClientUtil {
 	public static final String TAG_TEXTURE_PATH = "texture_path";
-	private static final Minecraft mc = Minecraft.getMinecraft();
-	private ClientUtil() {}
+	private static final Minecraft mc = Minecraft.getInstance();
 
-	private static Map<ItemMetaKey, Integer> colorCache = new HashMap<>();
+	private ClientUtil() { }
+
+	private static Map<Item, Integer> colorCache = new HashMap<>();
 
 	/**
-	 * Gets the color for an ItemStack based on its item and metadata
-	 * @param stack  Input stack
-	 * @return  Color for the stack
+	 * Gets the color for an Item
+	 * @param item The item to check
+	 * @return Color for the stack
 	 */
-	public static int getStackColor(ItemStack stack) {
-		return colorCache.computeIfAbsent(new ItemMetaKey(stack), ClientUtil::getStackColor);
+	public static int getItemColor(Item item) {
+		return colorCache.computeIfAbsent(item, ClientUtil::getItemColorRaw);
 	}
 
 	/**
 	 * Gets the color for an item stack, used internally by colorCache. Licensed under http://www.apache.org/licenses/LICENSE-2.0
 	 * @param key Item meta cache combination
-	 * @return  Color for the item meta combination
+	 * @return Color for the item meta combination
 	 * @author InsomniaKitten
 	 */
-	private static Integer getStackColor(ItemMetaKey key) {
-		IBakedModel model = mc.getRenderItem().getItemModelWithOverrides(key.makeItemStack(), null, null);
-		if(model == null) {
+	private static Integer getItemColorRaw(Item key) {
+		IBakedModel model = mc.getItemRenderer().getItemModelWithOverrides(new ItemStack(key), null, null);
+		if (model == null) {
 			return -1;
 		}
-		TextureAtlasSprite sprite = model.getParticleTexture();
-		if(sprite == null) {
+		TextureAtlasSprite sprite = model.getParticleTexture(EmptyModelData.INSTANCE);
+		if (sprite == null) {
 			return -1;
 		}
-		int[] pixels = sprite.getFrameTextureData(0)[0];
 		float r = 0, g = 0, b = 0, count = 0;
 		float[] hsb = new float[3];
-		for (int argb : pixels) {
-			int ca = argb >> 24 & 0xFF;
-			int cr = argb >> 16 & 0xFF;
-			int cg = argb >> 8 & 0xFF;
-			int cb = argb & 0xFF;
-			if (ca > 0x7F && NumberUtils.max(cr, cg, cb) > 0x1F) {
-				Color.RGBtoHSB(ca, cr, cg, hsb);
-				float weight = hsb[1];
-				r += cr * weight;
-				g += cg * weight;
-				b += cb * weight;
-				count += weight;
+		for (int x = 0; x < sprite.getWidth(); x++) {
+			for (int y = 0; y < sprite.getHeight(); y++) {
+				int argb = sprite.getPixelRGBA(0, x, y);
+				int ca = argb >> 24 & 0xFF;
+				int cr = argb >> 16 & 0xFF;
+				int cg = argb >> 8 & 0xFF;
+				int cb = argb & 0xFF;
+				if (ca > 0x7F && NumberUtils.max(cr, cg, cb) > 0x1F) {
+					Color.RGBtoHSB(ca, cr, cg, hsb);
+					float weight = hsb[1];
+					r += cr * weight;
+					g += cg * weight;
+					b += cb * weight;
+					count += weight;
+				}
 			}
 		}
 		if (count > 0) {
@@ -96,25 +95,25 @@ public final class ClientUtil {
 
 	/**
 	 * Called on resource reload to clear any resource based cache
-	 * @param manager
 	 */
-	public static void onResourceReload(IResourceManager manager) {
+
+	public static void clearCache() {
 		colorCache.clear();
+		unsafe.clear();
 	}
 
+
 	/**
-	 * Gets the sprite for the given texture location, or null if no sprite is found
-	 * @param location
-	 * @return
+	 * Gets the sprite for the given texture location, or Missing Texture if no sprite is found
 	 */
 	public static TextureAtlasSprite getSprite(ResourceLocation location) {
-		TextureMap textureMapBlocks = mc.getTextureMapBlocks();
+		AtlasTexture textureMapBlocks = mc.getTextureMap();
 		TextureAtlasSprite sprite = null;
-		if(location != null) {
-			sprite = textureMapBlocks.getTextureExtry(location.toString());
+		if (location != null) {
+			sprite = textureMapBlocks.getSprite(location);
 		}
 		if (sprite == null) {
-			sprite = textureMapBlocks.getMissingSprite();
+			sprite = textureMapBlocks.getSprite(MissingTextureSprite.getLocation());
 		}
 		return sprite;
 	}
@@ -139,121 +138,104 @@ public final class ClientUtil {
 
 	/**
 	 * Gets the cached texture from the TileEntity, or stores it from the texture stack if none is cached
-	 * @param te  Tile Entity
-	 * @return  String of texture path, or empty string if none found
+	 * @param te Tile Entity
+	 * @return String of texture path, or empty string if none found
 	 */
 	public static String getTexturePath(TileEntity te) {
 		String texture = te.getTileData().getString(TAG_TEXTURE_PATH);
-		if(texture.isEmpty()) {
+		if (texture.isEmpty()) {
 			// load it from saved block
-			ItemStack stack = new ItemStack(te.getTileData().getCompoundTag(TextureBlockUtil.TAG_TEXTURE));
-			if(!stack.isEmpty()) {
+			ItemStack stack = ItemStack.read(te.getTileData().getCompound(TextureBlockUtil.TAG_TEXTURE));
+			if (!stack.isEmpty()) {
 				Block block = Block.getBlockFromItem(stack.getItem());
-				texture = ModelHelper.getTextureFromBlock(block, stack.getItem().getMetadata(stack)).getIconName();
-				te.getTileData().setString(TAG_TEXTURE_PATH, texture);
+				texture = ModelHelper.getTextureFromBlockstate(block.getDefaultState()).getName().toString();
+				te.getTileData().putString(TAG_TEXTURE_PATH, texture);
 			}
 		}
 		return texture;
 	}
 
 	/**
-	 * Writes the default extended blockstate for a texture block
-	 * @param world  World
-	 * @param pos    Pos
-	 * @param state  State
-	 * @return  The extended block state
+	 * Any items which have blockColors methods that throw an exception
 	 */
-	public static IBlockState writeTextureBlockState(IBlockAccess world, BlockPos pos, IBlockState state) {
-		TileEntity te = world.getTileEntity(pos);
-		if(te != null) {
-			String texture = getTexturePath(te);
-			if(!texture.isEmpty()) {
-				state = ((IExtendedBlockState)state).withProperty(TextureBlockUtil.TEXTURE_PROP, texture);
-			}
-		}
-		return state;
-	}
-
-	/** Any items which have blockColors methods that throw an exception */
 	private static Set<Item> unsafe = new HashSet<>();
 
 	/**
 	 * Gets the block colors for a block from an itemstack, logging an exception if it fails. Use this to get block colors when the implementation is unknown
-	 * @param stack  Stack to use
-	 * @param world  World
-	 * @param pos    Pos
-	 * @param index  Tint index
-	 * @return  color, or -1 for undefined
+	 * @param stack Stack to use
+	 * @param world World
+	 * @param pos   Pos
+	 * @param index Tint index
+	 * @return color, or -1 for undefined
 	 */
-	public static int getStackBlockColorsSafe(ItemStack stack, @Nullable IBlockAccess world, @Nullable BlockPos pos, int index) {
-		if(stack.isEmpty()) {
+	public static int getStackBlockColorsSafe(ItemStack stack, @Nullable IEnviromentBlockReader world, @Nullable BlockPos pos, int index) {
+		if (stack.isEmpty()) {
 			return -1;
 		}
 
 		// do not try if it failed before
 		Item item = stack.getItem();
-		if(!ClientUtil.unsafe.contains(item)) {
+		if (!unsafe.contains(item)) {
 			try {
 				return ClientUtil.getStackBlockColors(stack, world, pos, index);
 			} catch (Exception e) {
 				// catch and log possible exceptions. Most likely exception is ClassCastException if they do not perform safety checks
 				Inspirations.log.error(String.format("Caught exception getting block colors for %s", item.getRegistryName()), e);
-				ClientUtil.unsafe.add(item);
+				unsafe.add(item);
 			}
 		}
 
 		// fallback to item colors
-		return mc.getItemColors().colorMultiplier(stack, index);
+		return mc.getItemColors().getColor(stack, index);
 	}
 
 	/**
 	 * Gets the block colors from an item stack
-	 * @param stack  Stack to check
-	 * @param world  World
-	 * @param pos    Pos
-	 * @param index  Tint index
-	 * @return  color, or -1 for undefined
+	 * @param stack Stack to check
+	 * @param world World
+	 * @param pos   Pos
+	 * @param index Tint index
+	 * @return color, or -1 for undefined
 	 */
-	public static int getStackBlockColors(ItemStack stack, @Nullable IBlockAccess world, @Nullable BlockPos pos, int index) {
-		if(stack.isEmpty() || !(stack.getItem() instanceof ItemBlock)) {
+	public static int getStackBlockColors(ItemStack stack, @Nullable IEnviromentBlockReader world, @Nullable BlockPos pos, int index) {
+		if (stack.isEmpty() || !(stack.getItem() instanceof BlockItem)) {
 			return -1;
 		}
-		ItemBlock item = (ItemBlock) stack.getItem();
-		IBlockState iblockstate = item.getBlock().getStateFromMeta(item.getMetadata(stack));
-		return mc.getBlockColors().colorMultiplier(iblockstate, world, pos, index);
+		BlockItem item = (BlockItem) stack.getItem();
+		BlockState state = item.getBlock().getDefaultState();
+		return mc.getBlockColors().getColor(state, world, pos, index);
 	}
 
 	/**
 	 * Renders a colored sprite to display in JEI as cauldron contents
-	 * @param mc        Minecraft instance
-	 * @param x         Sprite X position
-	 * @param y         Sprite Y position
-	 * @param location  Sprite resource location
-	 * @param color     Sprite color
-	 * @param level     Cauldron level
+	 * @param x        Sprite X position
+	 * @param y        Sprite Y position
+	 * @param location Sprite resource location
+	 * @param color    Sprite color
+	 * @param level    Cauldron level
 	 */
-	public static void renderJEICauldronFluid(Minecraft mc, int x, int y, ResourceLocation location, float[] color, int level) {
+	public static void renderJEICauldronFluid(int x, int y, ResourceLocation location, float[] color, int level) {
 		GlStateManager.enableBlend();
-		mc.renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-		GlStateManager.color(color[0], color[1], color[2]);
+		mc.gameRenderer.enableLightmap();
+		GlStateManager.color3f(color[0], color[1], color[2]);
 		// 0 means JEI ingredient list
 		TextureAtlasSprite sprite = ClientUtil.getSprite(location);
-		if(level == 0) {
+		if (level == 0) {
 			ClientUtil.renderFilledSprite(sprite, x, y, 16, 16);
 		} else {
 			int height = ((10 * level) / InspirationsRegistry.getCauldronMax());
 			ClientUtil.renderFilledSprite(sprite, x, y, 10, height);
 		}
-		GlStateManager.color(1, 1, 1);
+		GlStateManager.color3f(1, 1, 1);
 		GlStateManager.disableBlend();
 	}
 
-	private static final Map<String,String> NORMALIZED_NAMES = new HashMap<>();
+	private static final Map<String, String> NORMALIZED_NAMES = new HashMap<>();
 
 	/**
 	 * Normalizes a name by replacing underscores with spaces and capitalizing first letters
-	 * @param name  Name to normalize
-	 * @return  Normalized name
+	 * @param name Name to normalize
+	 * @return Normalized name
 	 */
 	public static String normalizeName(String name) {
 		return NORMALIZED_NAMES.computeIfAbsent(name, (s) -> WordUtils.capitalizeFully(name.replace('_', ' ')));

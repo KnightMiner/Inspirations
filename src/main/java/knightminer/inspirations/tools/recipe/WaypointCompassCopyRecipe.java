@@ -1,20 +1,32 @@
 package knightminer.inspirations.tools.recipe;
 
+import knightminer.inspirations.common.Config;
 import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.tools.item.ItemWaypointCompass;
-import net.minecraft.init.Items;
-import net.minecraft.inventory.InventoryCrafting;
+import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.Items;
+import net.minecraft.item.crafting.IRecipeSerializer;
+import net.minecraft.item.crafting.SpecialRecipe;
+import net.minecraft.item.crafting.SpecialRecipeSerializer;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 
-public class WaypointCompassCopyRecipe extends IForgeRegistryEntry.Impl<IRecipe> implements IRecipe {
-  private ItemStack OUTPUT = new ItemStack(InspirationsTools.waypointCompass);
+import javax.annotation.Nonnull;
+import java.util.function.Function;
+
+public class WaypointCompassCopyRecipe extends SpecialRecipe {
+  public WaypointCompassCopyRecipe(ResourceLocation idIn) {
+    super(idIn);
+  }
 
   @Override
-  public boolean matches(InventoryCrafting inv, World world) {
+  public boolean matches(@Nonnull CraftingInventory inv, @Nonnull World world) {
+    if (!Config.enableWaypointCompass.get()) {
+      return false;
+    }
     boolean foundWaypoint = false;
     ItemStack blank = ItemStack.EMPTY;
     for (int i = 0; i < inv.getSizeInventory(); i++) {
@@ -36,7 +48,7 @@ public class WaypointCompassCopyRecipe extends IForgeRegistryEntry.Impl<IRecipe>
         foundWaypoint = true;
       } else {
         // can have multiple blanks if they all match
-        if (!blank.isEmpty() && blank.getMetadata() != stack.getMetadata()) {
+        if (!blank.isEmpty() && blank.getItem() != stack.getItem()) {
           return false;
         }
         blank = stack;
@@ -45,13 +57,15 @@ public class WaypointCompassCopyRecipe extends IForgeRegistryEntry.Impl<IRecipe>
     return foundWaypoint && !blank.isEmpty();
   }
 
+  @Nonnull
   @Override
   public ItemStack getRecipeOutput() {
-    return OUTPUT;
+    return ItemStack.EMPTY;
   }
 
+  @Nonnull
   @Override
-  public ItemStack getCraftingResult(InventoryCrafting inv) {
+  public ItemStack getCraftingResult(CraftingInventory inv) {
     ItemStack waypoint = ItemStack.EMPTY;
     ItemStack result = ItemStack.EMPTY;
     int count = 0;
@@ -73,10 +87,10 @@ public class WaypointCompassCopyRecipe extends IForgeRegistryEntry.Impl<IRecipe>
     }
 
     if (!result.isEmpty() && !waypoint.isEmpty()) {
-      if (result.getItem() == Items.COMPASS) {
-        result = new ItemStack(InspirationsTools.waypointCompass, 1, 0);
-      } else {
+      if (result.getItem() instanceof ItemWaypointCompass) {
         result = result.copy();
+      } else {
+        result = new ItemStack(InspirationsTools.waypointCompasses[DyeColor.WHITE.getId()]);
       }
       result.setCount(count);
       ItemWaypointCompass.copyNBT(result, waypoint);
@@ -85,12 +99,13 @@ public class WaypointCompassCopyRecipe extends IForgeRegistryEntry.Impl<IRecipe>
     return ItemStack.EMPTY;
   }
 
+  @Nonnull
   @Override
-  public NonNullList<ItemStack> getRemainingItems(InventoryCrafting inv) {
+  public NonNullList<ItemStack> getRemainingItems(CraftingInventory inv) {
     NonNullList<ItemStack> items = NonNullList.withSize(inv.getSizeInventory(), ItemStack.EMPTY);
     for (int i = 0; i < inv.getSizeInventory(); i++) {
       ItemStack stack = inv.getStackInSlot(i);
-      if (stack.getItem() == InspirationsTools.waypointCompass && ItemWaypointCompass.getDimension(stack) != null) {
+      if (stack.getItem() instanceof ItemWaypointCompass && ItemWaypointCompass.getDimension(stack) != null) {
         stack = stack.copy();
         stack.setCount(1);
         items.set(i, stack);
@@ -106,7 +121,21 @@ public class WaypointCompassCopyRecipe extends IForgeRegistryEntry.Impl<IRecipe>
   }
 
   @Override
-  public boolean isDynamic() {
-    return true;
+  public String getGroup() {
+    return "inspirations:waypoint_compass_copy";
+  }
+
+  @Nonnull
+  @Override
+  public IRecipeSerializer<?> getSerializer() {
+    return SERIALIZER;
+  }
+
+  public static Serializer SERIALIZER = new Serializer(WaypointCompassCopyRecipe::new);
+
+  public static class Serializer extends SpecialRecipeSerializer<WaypointCompassCopyRecipe> {
+    public Serializer(Function<ResourceLocation, WaypointCompassCopyRecipe> factory) {
+      super(factory);
+    }
   }
 }

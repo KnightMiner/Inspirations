@@ -1,207 +1,168 @@
 package knightminer.inspirations.building.block;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.properties.PropertyEnum;
-import net.minecraft.block.state.BlockFaceShape;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.IStringSerializable;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.Explosion;
-import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import slimeknights.mantle.block.EnumBlock;
-import slimeknights.mantle.client.CreativeTab;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import knightminer.inspirations.common.Config;
+import knightminer.inspirations.common.block.HidableBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.IWaterLoggable;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.Fluids;
+import net.minecraft.fluid.IFluidState;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.BlockItemUseContext;
+import net.minecraft.item.DirectionalPlaceContext;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.state.BooleanProperty;
+import net.minecraft.state.EnumProperty;
+import net.minecraft.state.StateContainer;
+import net.minecraft.state.properties.BlockStateProperties;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
+import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.shapes.IBooleanFunction;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorld;
+import net.minecraft.world.IWorldReader;
+import net.minecraft.world.World;
+
 import java.util.Locale;
 
-public class BlockRope extends EnumBlock<BlockRope.RopeType> {
+public class BlockRope extends HidableBlock implements IWaterLoggable {
 
-	public static final PropertyEnum<Rungs> RUNGS = PropertyEnum.create("rungs", Rungs.class);
-	public static final PropertyEnum<RopeType> TYPE = PropertyEnum.create("type", RopeType.class);
-	public static final PropertyBool BOTTOM = PropertyBool.create("bottom");
-	public BlockRope() {
-		super(Material.CARPET, TYPE, RopeType.class);
+	public static final EnumProperty<Rungs> RUNGS = EnumProperty.create("rungs", Rungs.class);
+	public static final BooleanProperty BOTTOM = BooleanProperty.create("bottom");
+	public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
-		this.setCreativeTab(CreativeTab.DECORATIONS);
-		this.setHardness(0.5f);
-		this.setDefaultState(this.getBlockState().getBaseState().withProperty(TYPE, RopeType.ROPE).withProperty(RUNGS, Rungs.NONE));
-		IBlockState chain = this.getDefaultState().withProperty(TYPE, RopeType.CHAIN);
-		for (Rungs rungs : Rungs.values()) {
-			this.setHarvestLevel("pickaxe", 0, chain.withProperty(RUNGS, rungs));
-		}
+	// Number of items used per block.
+	public static final int RUNG_ITEM_COUNT = 4;
+
+	private Item rungsItem;
+
+	public BlockRope(Item rungsItem, Properties props) {
+		super(props, Config.enableRope::get);
+		this.setDefaultState(this.stateContainer.getBaseState()
+				.with(BOTTOM, false)
+				.with(RUNGS, Rungs.NONE)
+				.with(WATERLOGGED, false)
+		);
+		this.rungsItem = rungsItem;
 	}
 
-	/* Blockstate */
-
-	@Override
-	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, TYPE, RUNGS, BOTTOM);
-	}
-
-	@Override
-	public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
-		BlockPos down = pos.down();
-		return state.withProperty(BOTTOM, !canConnectTo(world.getBlockState(down), world, down, EnumFacing.UP));
-	}
-
-	private boolean canConnectTo(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing side) {
-		if(state.getBlock() == this) {
-			return true;
-		}
-
-		BlockFaceShape shape = state.getBlockFaceShape(world, pos, side);
-		return shape == BlockFaceShape.CENTER || shape == BlockFaceShape.CENTER_BIG || shape == BlockFaceShape.SOLID;
+	protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+		builder.add(BOTTOM, RUNGS, WATERLOGGED);
 	}
 
 	@Nonnull
-	@Override
-	public IBlockState getStateFromMeta(int meta) {
-		return this.getDefaultState().withProperty(prop, fromMeta(meta & 0b0011)).withProperty(RUNGS, Rungs.fromMeta(meta >> 2));
+	public IFluidState getFluidState(BlockState state) {
+		return state.get(WATERLOGGED) ? Fluids.WATER.getStillFluidState(false) : super.getFluidState(state);
 	}
 
-	@Override
-	public int getMetaFromState(IBlockState state) {
-		return state.getValue(prop).getMeta() | (state.getValue(RUNGS).getMeta() << 2);
+	public Item getRungsItem() {
+		return rungsItem;
 	}
 
+	@Nullable
 	@Override
-	public int damageDropped(IBlockState state) {
-		return state.getValue(prop).getMeta();
+	public BlockState getStateForPlacement(BlockItemUseContext context) {
+		BlockPos down = context.getPos().down();
+		return getDefaultState()
+				.with(BOTTOM, !canConnectTo(context.getWorld().getBlockState(down), context.getWorld(), down))
+				.with(RUNGS, Rungs.NONE)
+				.with(WATERLOGGED, context.getWorld().getFluidState(context.getPos()).getFluid() == Fluids.WATER);
 	}
 
+	private static final VoxelShape ATTACH_TOP = Block.makeCuboidShape(6.0, 15, 6.0, 10.0, 16, 10.0);
+	private static final VoxelShape ATTACH_BOTTOM = Block.makeCuboidShape(6.0, 0, 6.0, 10.0, 1, 10.0);
 
-	/* Metal props */
-
-	@Override
-	@Deprecated
-	public Material getMaterial(IBlockState state){
-		if(state.getValue(TYPE) == RopeType.CHAIN) {
-			return Material.IRON;
+	private boolean canConnectTo(BlockState state, IBlockReader world, BlockPos pos) {
+		if (state.getBlock() == this) {
+			return true;
 		}
-		return super.getMaterial(state);
+		// Check if the top of the block is able to attach to the rope - the center 4x4 must
+		// all be present.
+		return !state.isIn(BlockTags.LEAVES) && !VoxelShapes.compare(
+				state.getCollisionShape(world, pos).project(Direction.UP), ATTACH_TOP, IBooleanFunction.ONLY_SECOND
+		);
 	}
-
-	@Override
-	public SoundType getSoundType(IBlockState state, World world, BlockPos pos, @Nullable Entity entity) {
-		switch(state.getValue(TYPE)) {
-			case ROPE:
-				return SoundType.CLOTH;
-			case CHAIN:
-				return SoundType.METAL;
-			case VINE:
-				return SoundType.PLANT;
-		}
-		return super.getSoundType(state, world, pos, entity);
-	}
-
-	@Override
-	@Deprecated
-	public float getBlockHardness(IBlockState state, World worldIn, BlockPos pos) {
-		if(state.getValue(TYPE) == RopeType.CHAIN) {
-			return 5.0f;
-		}
-		return super.getBlockHardness(state, worldIn, pos);
-	}
-
-	@Override
-	public float getExplosionResistance(World world, BlockPos pos, @Nullable Entity exploder, Explosion explosion) {
-		if(world.getBlockState(pos).getValue(TYPE) == RopeType.CHAIN) {
-			return 30f;
-		}
-		return super.getExplosionResistance(world, pos, exploder, explosion);
-	}
-
 
 	/* Ropey logic */
 
-	/**
-	 * Checks if this block can be placed exactly at the given position.
-	 */
 	@Override
-	public boolean canPlaceBlockAt(World world, BlockPos pos) {
-		return super.canPlaceBlockAt(world, pos) && isValidRope(world, pos);
+	public boolean isValidPosition(BlockState state, IWorldReader world, BlockPos pos) {
+		return super.isValidPosition(state, world, pos) && isValidRope(world, pos);
 	}
 
-	private boolean isValidRope(World world, BlockPos pos) {
+	private boolean isValidRope(IWorldReader world, BlockPos pos) {
 		BlockPos up = pos.up();
-		IBlockState state = world.getBlockState(up);
-		return canConnectTo(state, world, pos, EnumFacing.DOWN);
+		BlockState state = world.getBlockState(up);
+		if (state.getBlock() == this) {
+			return true;
+		}
+		// Check if the bottom of the block is able to attach to the rope - the center 4x4 must
+		// all be present.
+		return !state.isIn(BlockTags.LEAVES) && !VoxelShapes.compare(
+				state.getCollisionShape(world, pos).project(Direction.DOWN), ATTACH_BOTTOM, IBooleanFunction.ONLY_SECOND
+		);
 	}
 
 	/**
-	 * Called when a neighboring block was changed and marks that this state should perform any checks during a neighbor
-	 * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
-	 * block, etc.
+	 * Update the provided state given the provided neighbor facing and neighbor state, returning a new state.
+	 * For example, fences make their connections to the passed in state if possible, and wet concrete powder immediately
+	 * returns its solidified counterpart.
+	 * Note that this method should ideally consider only the specific face passed in.
 	 */
-	@Override
-	@Deprecated
-	public void neighborChanged(IBlockState state, World world, BlockPos pos, Block blockIn, BlockPos fromPos) {
+	@Nonnull
+	public BlockState updatePostPlacement(@Nonnull BlockState state, Direction facing, BlockState facingState, IWorld world, BlockPos pos, BlockPos facingPos) {
 		// if the rope is not valid, break it
 		if (!this.isValidRope(world, pos)) {
-			this.dropBlockAsItem(world, pos, state, 0);
-			world.setBlockToAir(pos);
+			return Blocks.AIR.getDefaultState();
 		}
-
-		super.neighborChanged(state, world, pos, blockIn, fromPos);
+		if (facing == Direction.DOWN) {
+			BlockPos down = pos.down();
+			return state.with(BOTTOM, !canConnectTo(world.getBlockState(down), world, down));
+		}
+		return state;
 	}
 
 	// right click with a rope to extend downwards
 	@Override
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float clickX, float clickY, float clickZ) {
-		ItemStack stack = player.getHeldItem(hand);
-
-		// if rope, extend
-		if(Block.getBlockFromItem(stack.getItem()) == this) {
-			return extendRope(world, pos, state, side, player, stack, clickX, clickY, clickZ);
+	public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+		// no need to check verticals, one is not possible and the other normal block placement
+		if (hit.getFace().getAxis().isVertical()) {
+			return false;
 		}
 
-		return false;
-	}
-
-	private boolean extendRope(World world, BlockPos pos, IBlockState state, EnumFacing side, EntityPlayer player, ItemStack stack, float clickX, float clickY, float clickZ) {
-		// no need to check verticals, one is not possible and the other normal block placement
-		// also skip if wrong rope type
-		RopeType type = state.getValue(TYPE);
-		if(stack.getMetadata() != type.getMeta()) {
+		ItemStack stack = player.getHeldItem(hand);
+		// check if the item is the same type as us
+		if (Block.getBlockFromItem(stack.getItem()) != this) {
 			return false;
 		}
 
 		// find the first block at the bottom of the rope
 		BlockPos next = pos.down();
-		IBlockState below = world.getBlockState(next);
-		while(below.getBlock() == this && below.getValue(TYPE) == type) {
+		while (world.getBlockState(next).getBlock() == this) {
 			next = next.down();
-			below = world.getBlockState(next);
 		}
-		if(this.canPlaceBlockAt(world, next)) {
-			ItemBlock itemBlock = (ItemBlock)stack.getItem();
-			IBlockState newState = this.getDefaultState().withProperty(TYPE, type);
-			if(itemBlock.placeBlockAt(stack, player, world, next, side, clickX, clickY, clickZ, newState)) {
-				SoundType soundtype = newState.getBlock().getSoundType(newState, world, pos, player);
-				world.playSound(player, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
-				if(!player.capabilities.isCreativeMode) {
-					stack.shrink(1);
+		if (this.isValidPosition(state, world, next)) {
+			BlockItem itemBlock = (BlockItem) stack.getItem();
+			if (itemBlock.tryPlace(new DirectionalPlaceContext(world, next, hit.getFace(), stack, hit.getFace())) == ActionResultType.SUCCESS) {
+				if (player.isCreative()) {
+					// Refund the item.
+					stack.grow(1);
 				}
 			}
 		}
@@ -209,164 +170,113 @@ public class BlockRope extends EnumBlock<BlockRope.RopeType> {
 		return true;
 	}
 
-
+	// when breaking, place all items from ropes below at the position of this rope
 	@Override
-	public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
-		// drop sticks if rungs
-		super.getDrops(drops, world, pos, state, fortune);
-		if (state.getValue(RUNGS) != Rungs.NONE) {
-			drops.add(new ItemStack(state.getValue(TYPE).getItem(), 4));
-		}
-	}
-
-	@Override
-	public void onBlockHarvested(World world, BlockPos pos, IBlockState state, EntityPlayer player) {
-		// when breaking, place all items from ropes below at the position of this rope
+	public void onBlockHarvested(World world, BlockPos pos, BlockState state, @Nonnull PlayerEntity player) {
 		// break all blocks below that are ropes
-		RopeType type = state.getValue(TYPE);
 		BlockPos next = pos.down();
-		IBlockState below = world.getBlockState(next);
 		int count = 0;
-		int extra = 0;
+		int rungs = 0;
 		// go down to the bottom
-		while(below.getBlock() == this && below.getValue(TYPE) == type) {
+		BlockState below = world.getBlockState(next);
+		while (below.getBlock() == this) {
 			count++;
-			if (below.getValue(RUNGS) != Rungs.NONE) {
-				extra++;
+			if (below.get(RUNGS) != Rungs.NONE) {
+				rungs++;
 			}
 			next = next.down();
 			below = world.getBlockState(next);
 		}
 		// then break them coming back up
-		for(int i = 0; i < count; i++) {
+		for (int i = 0; i < count; i++) {
 			next = next.up();
 			world.destroyBlock(next, false);
 		}
 
 		// then spawn their items up here
-		ItemStack drops = new ItemStack(this, count, type.getMeta());
+		ItemStack drops = new ItemStack(this, count);
 		spawnAsEntity(world, pos, drops);
-		if (extra > 0) {
-			ItemStack extraDrop = new ItemStack(type.getItem(), extra*4);
-			spawnAsEntity(world, pos, extraDrop);
+		if (rungs > 0) {
+			spawnAsEntity(world, pos, new ItemStack(rungsItem, rungs * RUNG_ITEM_COUNT));
 		}
-	}
 
+		super.onBlockHarvested(world, pos, state, player);
+	}
 
 	/* Block properties */
 
 	@Override
-	public boolean isLadder(IBlockState state, IBlockAccess world, BlockPos pos, EntityLivingBase entity) {
+	public boolean isLadder(BlockState state, IWorldReader world, BlockPos pos, LivingEntity entity) {
 		return true;
 	}
 
+	@Nonnull
 	@Override
-	public boolean isFullCube(IBlockState state) {
-		return false;
-	}
-
-	@Override
-	public boolean isOpaqueCube(IBlockState state) {
-		return false;
-	}
-
-	@Override
-	@Deprecated
-	public BlockFaceShape getBlockFaceShape(IBlockAccess world, IBlockState state, BlockPos pos, EnumFacing side) {
-		return BlockFaceShape.UNDEFINED;
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public BlockRenderLayer getBlockLayer() {
+	public BlockRenderLayer getRenderLayer() {
 		return BlockRenderLayer.CUTOUT;
 	}
 
 
 	/* Bounds */
 
-	// order is X, Y, Z
-	protected static final AxisAlignedBB[] BOUNDS = {
-			new AxisAlignedBB(0.375,  0, 0.375,  0.625, 1,  0.625),
-			new AxisAlignedBB(0.0625, 0, 0.375,  0.9375, 1, 0.625),
-			new AxisAlignedBB(0.375,  0, 0.0625, 0.625, 1,  0.9375)
-	};
-	protected static final AxisAlignedBB[] BOUNDS_BOTTOM = {
-			new AxisAlignedBB(0.375,  0.25, 0.375,  0.625,  1, 0.625),
-			new AxisAlignedBB(0.0625, 0.25, 0.375,  0.9375, 1, 0.625),
-			new AxisAlignedBB(0.375,  0.25, 0.0625, 0.625,  1, 0.9375)
-	};
+	// Shape for collisions. Indexes are Rungs ordinals.
+	public static final VoxelShape[] SHAPE = new VoxelShape[3];
+	public static final VoxelShape[] SHAPE_BOTTOM = new VoxelShape[3];
+
+	static {
+		VoxelShape rope_core = Block.makeCuboidShape(7, 0, 7, 9, 16, 9);
+		VoxelShape rope_core_bottom = VoxelShapes.or(
+				Block.makeCuboidShape(7, 7, 7, 9, 16, 9),
+				Block.makeCuboidShape(6.5, 4, 6.5, 9.5, 7, 9.5)
+		);
+
+		VoxelShape rope_rungs_x = VoxelShapes.or(
+				Block.makeCuboidShape(1, 5, 7, 15, 7, 9),
+				Block.makeCuboidShape(1, 9, 7, 15, 11, 9),
+				Block.makeCuboidShape(1, 13, 7, 15, 15, 9)
+		);
+		VoxelShape rope_rungs_z = VoxelShapes.or(
+				Block.makeCuboidShape(7, 5, 1, 9, 7, 15),
+				Block.makeCuboidShape(7, 9, 1, 9, 11, 15),
+				Block.makeCuboidShape(7, 13, 1, 9, 15, 15)
+		);
+
+		SHAPE[Rungs.NONE.ordinal()] = rope_core;
+		SHAPE_BOTTOM[Rungs.NONE.ordinal()] = rope_core_bottom;
+
+		SHAPE[Rungs.X.ordinal()] = VoxelShapes.or(rope_core, rope_rungs_x,
+				Block.makeCuboidShape(1, 1, 7, 15, 3, 9)
+		);
+		SHAPE_BOTTOM[Rungs.X.ordinal()] = VoxelShapes.or(rope_core_bottom, rope_rungs_x);
+
+		SHAPE[Rungs.Z.ordinal()] = VoxelShapes.or(rope_core, rope_rungs_z,
+				Block.makeCuboidShape(7, 1, 1, 9, 3, 15)
+		);
+		SHAPE_BOTTOM[Rungs.Z.ordinal()] = VoxelShapes.or(rope_core_bottom, rope_rungs_z);
+	}
 
 	@Nonnull
 	@Override
-	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-		int rungs = state.getValue(RUNGS).getMeta();
-		if(state.getActualState(source, pos).getValue(BOTTOM)) {
-			return BOUNDS_BOTTOM[rungs];
-		}
-		return BOUNDS[rungs];
+	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+		return (state.get(BOTTOM) ? SHAPE_BOTTOM: SHAPE)[state.get(RUNGS).ordinal()];
 	}
 
-	public enum RopeType implements IStringSerializable, EnumBlock.IEnumMeta {
-		ROPE,
-		CHAIN,
-		VINE;
-
-		private int meta;
-		RopeType() {
-			this.meta = ordinal();
-		}
-
-		@Override
-		public int getMeta() {
-			return meta;
-		}
-
-		@Override
-		public String getName() {
-			return this.name().toLowerCase(Locale.US);
-		}
-
-		public Item getItem() {
-			// TODO: in 1.14, use bamboo for vines
-			if(this == CHAIN) {
-				return Items.IRON_NUGGET;
-			}
-			return Items.STICK;
-		}
-	}
-
-	public enum Rungs implements IStringSerializable, EnumBlock.IEnumMeta {
+	public enum Rungs implements IStringSerializable {
 		NONE,
 		X,
 		Z;
 
-		private int meta;
-		Rungs() {
-			this.meta = ordinal();
-		}
-
-		@Override
-		public int getMeta() {
-			return meta;
-		}
-
 		@Override
 		public String getName() {
 			return this.name().toLowerCase(Locale.US);
 		}
 
-		public static Rungs fromMeta(int meta) {
-			if (meta < 0 || meta > values().length) {
-				return NONE;
-			}
-			return values()[meta];
-		}
-
-		public static Rungs fromAxis(EnumFacing.Axis axis) {
-			switch(axis) {
-				case X: return X;
-				case Z: return Z;
+		public static Rungs fromAxis(Direction.Axis axis) {
+			switch (axis) {
+				case X:
+					return X;
+				case Z:
+					return Z;
 			}
 			return NONE;
 		}

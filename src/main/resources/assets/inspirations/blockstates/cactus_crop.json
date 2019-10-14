@@ -2,13 +2,13 @@
   "forge_marker": 1,
   "variants": {
     "age": {
-      "0": { "model": "inspirations:cactus/0" },
-      "1": { "model": "inspirations:cactus/1" },
-      "2": { "model": "inspirations:cactus/2" },
-      "3": { "model": "inspirations:cactus/3" },
-      "4": { "model": "inspirations:cactus/4" },
-      "5": { "model": "inspirations:cactus/5" },
-      "6": { "model": "inspirations:cactus/6" }
+      "0": { "model": "inspirations:block/cactus/0" },
+      "1": { "model": "inspirations:block/cactus/1" },
+      "2": { "model": "inspirations:block/cactus/2" },
+      "3": { "model": "inspirations:block/cactus/3" },
+      "4": { "model": "inspirations:block/cactus/4" },
+      "5": { "model": "inspirations:block/cactus/5" },
+      "6": { "model": "inspirations:block/cactus/6" }
     }
   }
 }

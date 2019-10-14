@@ -1,0 +1,7 @@
+{
+  "parent": "inspirations:block/bookshelf/tomes",
+  "textures": {
+    "texture": "minecraft:block/oak_planks",
+    "books":   "inspirations:block/books_tomes"
+  }
+}

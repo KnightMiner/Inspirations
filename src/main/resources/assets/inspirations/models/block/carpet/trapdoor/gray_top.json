@@ -1,0 +1,6 @@
+{
+  "parent": "inspirations:block/trapdoor/carpeted_top",
+  "textures": {
+    "wool": "minecraft:block/gray_wool"
+  }
+}

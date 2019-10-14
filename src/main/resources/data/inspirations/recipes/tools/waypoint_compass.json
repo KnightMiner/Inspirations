@@ -1,0 +1,25 @@
+{
+  "conditions": [
+    {
+      "type": "inspirations:pulse_loaded",
+      "pulse": "InspirationsTools"
+    },
+    {
+      "type": "inspirations:config",
+      "prop": "craft_waypoint_compass"
+    }
+  ],
+  "result": {
+    "item": "inspirations:waypoint_compass"
+  },
+  "pattern": [
+    " I ",
+    "IBI",
+    " I "
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "B": { "tag": "forge:rods/blaze" },
+    "I": { "tag": "forge:ingots/iron" }
+  }
+}

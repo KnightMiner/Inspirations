@@ -11,8 +11,8 @@
     },
     "contents": {
       "fluid": {},
-      "dye": { "textures": { "water": "inspirations:blocks/fluid_colorless" }},
-      "potion": { "textures": { "water": "inspirations:blocks/fluid_potion" }}
+      "dye": { "textures": { "water": "inspirations:block/fluid_colorless" }},
+      "potion": { "textures": { "water": "inspirations:block/fluid_potion" }}
     },
     "boiling": {
       "true": {},

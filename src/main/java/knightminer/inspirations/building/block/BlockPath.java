@@ -1,116 +1,96 @@
 package knightminer.inspirations.building.block;
 
-import java.util.Locale;
-
+import knightminer.inspirations.common.Config;
+import knightminer.inspirations.common.block.HidableBlock;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyEnum;
-import net.minecraft.block.state.BlockFaceShape;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.IStringSerializable;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.block.material.MaterialColor;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
-import slimeknights.mantle.block.EnumBlock;
-import slimeknights.mantle.client.CreativeTab;
+import net.minecraftforge.common.ToolType;
 
-public class BlockPath extends EnumBlock<BlockPath.PathType> {
+import javax.annotation.Nonnull;
 
-	public static final PropertyEnum<PathType> TYPE = PropertyEnum.create("type", PathType.class);
-	public BlockPath() {
-		super(Material.ROCK, TYPE, PathType.class);
+public class BlockPath extends HidableBlock {
 
-		this.setCreativeTab(CreativeTab.DECORATIONS);
-		this.setHardness(1.5f);
-		this.setResistance(10f);
-		this.setHarvestLevel("pickaxe", 0);
+	private final VoxelShape shape;
+	private final VoxelShape collShape;
+
+	public BlockPath(VoxelShape shape, MaterialColor mapColor) {
+		super(Block.Properties.create(Material.ROCK, mapColor)
+			.hardnessAndResistance(1.5F, 10F)
+			.harvestTool(ToolType.PICKAXE).harvestLevel(0),
+			Config.enablePath::get
+		);
+		// Each path has a different shape, but use the bounding box for collisions.
+		this.shape = shape;
+		this.collShape = VoxelShapes.create(shape.getBoundingBox());
 	}
 
 	/* Block Shape */
 
-	protected static final AxisAlignedBB BOUNDS = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.0625D, 1.0D);
+	public static final VoxelShape SHAPE_ROUND = VoxelShapes.or(
+		Block.makeCuboidShape(1, 0, 5, 15, 1, 11),
+		Block.makeCuboidShape(5, 0, 1, 11, 1, 15),
+		Block.makeCuboidShape(2, 0, 3, 14, 1, 13),
+		Block.makeCuboidShape(3, 0, 2, 13, 1, 14)
+	).simplify();
+	public static final VoxelShape SHAPE_TILE = VoxelShapes.or(
+		Block.makeCuboidShape(1, 0, 1, 7, 1, 7),
+		Block.makeCuboidShape(9, 0, 1, 15, 1, 7),
+		Block.makeCuboidShape(9, 0, 9, 15, 1, 15),
+		Block.makeCuboidShape(1, 0, 9, 7, 1, 15)
+	);
+	public static final VoxelShape SHAPE_BRICK = VoxelShapes.or(
+			Block.makeCuboidShape(0, 0, 0, 3, 1, 3),
+			Block.makeCuboidShape(4, 0, 0, 7, 1, 7),
+			Block.makeCuboidShape(0, 0, 4, 3, 1, 11),
+			Block.makeCuboidShape(12, 0, 8, 15, 1, 15),
+			Block.makeCuboidShape(8, 0, 0, 11, 1, 3),
+			Block.makeCuboidShape(8, 0, 12, 11, 1, 16),
+			Block.makeCuboidShape(12, 0, 0, 16, 1, 3),
+			Block.makeCuboidShape(8, 0, 4, 15, 1, 7),
+			Block.makeCuboidShape(4, 0, 8, 11, 1, 11),
+			Block.makeCuboidShape(0, 0, 12, 7, 1, 15)
+	);
+	// There's multiple variants for these, just use a square.
+	public static final VoxelShape SHAPE_ROCK = Block.makeCuboidShape(.5, 0, .5, 15.5, 1, 15.5);
+
+	@Nonnull
 	@Override
-	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-		return BOUNDS;
+	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+		return shape;
 	}
 
-	/**
-	 * Used to determine ambient occlusion and culling when rebuilding chunks for render
-	 */
+	@Nonnull
 	@Override
-	public boolean isOpaqueCube(IBlockState state) {
-		return false;
+	public VoxelShape getCollisionShape(@Nonnull BlockState state, @Nonnull IBlockReader world, @Nonnull BlockPos pos, ISelectionContext context) {
+		return collShape;
 	}
-
-	@Override
-	public boolean isFullCube(IBlockState state) {
-		return false;
-	}
-
-	/**
-	 * Get the geometry of the queried face at the given position and state. This is used to decide whether things like
-	 * buttons are allowed to be placed on the face, or how glass panes connect to the face, among other things.
-	 * <p>
-	 * Common values are {@code SOLID}, which is the default, and {@code UNDEFINED}, which represents something that
-	 * does not fit the other descriptions and will generally cause other things not to connect to the face.
-	 *
-	 * @return an approximation of the form of the given face
-	 */
-	@Override
-	public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
-		return face == EnumFacing.DOWN ? BlockFaceShape.SOLID : BlockFaceShape.UNDEFINED;
-	}
-
 
 	/* Solid surface below */
 
-	/**
-	 * Checks if this block can be placed exactly at the given position.
-	 */
 	@Override
-	public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
-		return super.canPlaceBlockAt(worldIn, pos) && this.canBlockStay(worldIn, pos);
+	public boolean isValidPosition(BlockState state, IWorldReader world, BlockPos pos) {
+		return super.isValidPosition(state, world, pos) && this.canBlockStay(world, pos);
 	}
 
-	private boolean canBlockStay(World world, BlockPos pos) {
+	private boolean canBlockStay(IWorldReader world, BlockPos pos) {
 		BlockPos down = pos.down();
-		return world.getBlockState(down).getBlockFaceShape(world, down, EnumFacing.UP) == BlockFaceShape.SOLID;
+		return Block.hasSolidSide(world.getBlockState(down), world, pos, Direction.UP);
 	}
 
-	/**
-	 * Called when a neighboring block was changed and marks that this state should perform any checks during a neighbor
-	 * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
-	 * block, etc.
-	 */
 	@Override
-	public void neighborChanged(IBlockState state, World world, BlockPos pos, Block blockIn, BlockPos fromPos) {
+	public void neighborChanged(BlockState state, World world, BlockPos pos, Block blockIn, BlockPos fromPos, boolean p_220069_6_) {
 		if (!this.canBlockStay(world, pos)) {
-			this.dropBlockAsItem(world, pos, state, 0);
-			world.setBlockToAir(pos);
-		}
-	}
-
-	public static enum PathType implements IStringSerializable, EnumBlock.IEnumMeta {
-		ROCKS,
-		ROUND,
-		TILES,
-		BRICKS;
-
-		private int meta;
-		PathType() {
-			this.meta = ordinal();
-		}
-
-		@Override
-		public int getMeta() {
-			return meta;
-		}
-
-		@Override
-		public String getName() {
-			return this.name().toLowerCase(Locale.US);
+			world.destroyBlock(pos, true);
 		}
 	}
 }

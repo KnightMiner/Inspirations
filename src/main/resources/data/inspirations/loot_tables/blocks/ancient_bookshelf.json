@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "inspirations:ancient_bookshelf",
+          "functions": [
+            { "function": "inspirations:fill_textured_block" },
+            { "function": "minecraft:copy_name", "source": "block_entity" }
+          ]
+        }
+      ],
+      "conditions": [
+        { "condition": "minecraft:survives_explosion" }
+      ]
+    }
+  ]
+}

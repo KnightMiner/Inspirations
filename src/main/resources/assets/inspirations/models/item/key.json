@@ -1,0 +1,28 @@
+{
+    "parent": "item/generated",
+    "textures": {
+        "layer0": "inspirations:item/key"
+    },
+	"display": {
+		"thirdperson_righthand": {
+			"rotation": [0, 0, -90],
+			"translation": [0, 1.25, 0],
+			"scale": [0.55, 0.55, 0.55]
+		},
+		"thirdperson_lefthand": {
+			"rotation": [0, -180, 90],
+			"translation": [0, 1.25, -0.25],
+			"scale": [0.55, 0.55, 0.55]
+		},
+		"firstperson_righthand": {
+			"rotation": [0, -21.5, -88.5],
+			"translation": [2.25, 2, 0],
+			"scale": [0.68, 0.68, 0.68]
+		},
+		"firstperson_lefthand": {
+			"rotation": [-4.75, 133.5, -265.75],
+			"translation": [2.25, 2, 0],
+			"scale": [0.68, 0.68, 0.68]
+		}
+	}
+}

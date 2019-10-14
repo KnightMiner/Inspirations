@@ -1,16 +1,19 @@
 package knightminer.inspirations.common.network;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.NetHandlerPlayServer;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.model.ModelDataManager;
+import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-import io.netty.buffer.ByteBuf;
 import slimeknights.mantle.network.AbstractPacketThreadsafe;
-import slimeknights.mantle.tileentity.TileInventory;
+import slimeknights.mantle.tileentity.InventoryTileEntity;
+
+import java.util.function.Supplier;
 
 public class InventorySlotSyncPacket extends AbstractPacketThreadsafe {
 
@@ -18,7 +21,7 @@ public class InventorySlotSyncPacket extends AbstractPacketThreadsafe {
   public int slot;
   public BlockPos pos;
 
-  public InventorySlotSyncPacket() {
+  private InventorySlotSyncPacket() {
   }
 
   public InventorySlotSyncPacket(ItemStack itemStack, int slot, BlockPos pos) {
@@ -28,35 +31,39 @@ public class InventorySlotSyncPacket extends AbstractPacketThreadsafe {
   }
 
   @Override
-  public void handleClientSafe(NetHandlerPlayClient netHandler) {
-    // only ever sent to players in the same dimension as the position
-    TileEntity tileEntity = Minecraft.getMinecraft().player.getEntityWorld().getTileEntity(pos);
-    if(tileEntity == null || !(tileEntity instanceof TileInventory)) {
+  public void handle(Supplier<NetworkEvent.Context> context) {
+    // only send to clients.
+    switch (context.get().getDirection()) {
+      case LOGIN_TO_SERVER:
+      case PLAY_TO_SERVER:
+        throw new UnsupportedOperationException("Clientside only");
+    }
+
+    // Only ever sent to players in the same dimension as the position
+    // This should never be called on servers, but protect access to the clientside MC.
+    TileEntity tileEntity = DistExecutor.callWhenOn(Dist.CLIENT, () -> () ->
+            Minecraft.getInstance().player.getEntityWorld().getTileEntity(pos)
+    );
+    if(!(tileEntity instanceof InventoryTileEntity)) {
       return;
     }
 
-    TileInventory tile = (TileInventory) tileEntity;
+    InventoryTileEntity tile = (InventoryTileEntity) tileEntity;
     tile.setInventorySlotContents(slot, itemStack);
-    Minecraft.getMinecraft().renderGlobal.notifyBlockUpdate(null, pos, null, null, 0);
+    ModelDataManager.requestModelDataRefresh(tile);
   }
 
-  @Override
-  public void handleServerSafe(NetHandlerPlayServer netHandler) {
-    // only send to clients
-    throw new UnsupportedOperationException("Clientside only");
+  public static InventorySlotSyncPacket decode(PacketBuffer buf) {
+    InventorySlotSyncPacket packet = new InventorySlotSyncPacket();
+    packet.pos = packet.readPos(buf);
+    packet.slot = buf.readShort();
+    packet.itemStack = buf.readItemStack();
+    return packet;
   }
 
-  @Override
-  public void fromBytes(ByteBuf buf) {
-    this.pos = readPos(buf);
-    this.slot = buf.readShort();
-    this.itemStack = ByteBufUtils.readItemStack(buf);
-  }
-
-  @Override
-  public void toBytes(ByteBuf buf) {
+  public void encode(PacketBuffer buf) {
     writePos(pos, buf);
     buf.writeShort(slot);
-    ByteBufUtils.writeItemStack(buf, itemStack);
+    buf.writeItemStack(itemStack, false);
   }
 }

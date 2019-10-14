@@ -1,5 +1,7 @@
 package knightminer.inspirations.plugins.jei.cauldron;
 
+import java.util.ArrayList;
+import java.util.List;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
@@ -10,12 +12,9 @@ import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.BannerPattern;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class CauldronRecipeChecker {
 	public static List<ICauldronRecipeWrapper> getRecipes() {
@@ -32,7 +31,7 @@ public class CauldronRecipeChecker {
 			if(recipe instanceof ISimpleCauldronRecipe) {
 				ISimpleCauldronRecipe simpleRecipe = (ISimpleCauldronRecipe) recipe;
 				if(simpleRecipe.getState() != null && simpleRecipe.getInputState() != null
-						&& inputValid(simpleRecipe.getInput())) {
+						&& simpleRecipe.getInput() != null && !simpleRecipe.getInput().isEmpty()) {
 					recipes.add(new CauldronRecipeWrapper(simpleRecipe));
 				}
 			}
@@ -53,15 +52,6 @@ public class CauldronRecipeChecker {
 		}
 
 		return recipes;
-	}
-
-	private static boolean inputValid(List<ItemStack> input) {
-		if (input == null || input.isEmpty()) {
-			return false;
-		}
-		// hide legacy recipes
-		return !input.stream().anyMatch((s)->ItemStack.areItemsEqual(s, InspirationsShared.mushrooms)
-																  || ItemStack.areItemsEqual(s, InspirationsShared.rabbitStewMix));
 	}
 
 	private static CauldronRecipeWrapper makeArmorWashRecipe(ItemArmor item) {
@@ -86,11 +76,11 @@ public class CauldronRecipeChecker {
 					continue;
 				}
 				ItemStack stack = output.copy();
-				NBTTagCompound entityTag = stack.getOrCreateSubCompound("BlockEntityTag");
+				CompoundNBT entityTag = stack.getOrCreateSubCompound("BlockEntityTag");
 				NBTTagList patternList = new NBTTagList();
 				entityTag.setTag("Patterns", patternList);
 
-				NBTTagCompound patternTag = new NBTTagCompound();
+				CompoundNBT patternTag = new CompoundNBT();
 				patternTag.setString("Pattern", pattern.getHashname());
 				patternTag.setInteger("Color", patternColor.getDyeDamage());
 				patternList.appendTag(patternTag);

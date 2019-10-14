@@ -1,19 +1,20 @@
 package knightminer.inspirations.tools.enchantment;
 
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentThorns;
-import net.minecraft.init.Enchantments;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.enchantment.ThornsEnchantment;
+import net.minecraft.enchantment.Enchantments;
+import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.item.ShieldItem;
 import net.minecraft.item.ItemStack;
 
-public class EnchantmentShieldThorns extends EnchantmentThorns {
-  public EnchantmentShieldThorns(Rarity rarityIn, EntityEquipmentSlot... slots) {
+public class EnchantmentShieldThorns extends ThornsEnchantment {
+  public EnchantmentShieldThorns(Rarity rarityIn, EquipmentSlotType... slots) {
     super(rarityIn, slots);
   }
 
   @Override
   public boolean canApplyAtEnchantingTable(ItemStack stack) {
-    return stack.getItem().isShield(stack, null) || super.canApplyAtEnchantingTable(stack);
+    return stack.isShield(null) || super.canApplyAtEnchantingTable(stack);
   }
 
   @Override

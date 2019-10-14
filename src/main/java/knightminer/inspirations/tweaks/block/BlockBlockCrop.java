@@ -1,44 +1,70 @@
 package knightminer.inspirations.tweaks.block;
 
+import knightminer.inspirations.common.Config;
+import knightminer.inspirations.common.IHidable;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockCrops;
-import net.minecraft.block.properties.PropertyInteger;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.item.Item;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.CropsBlock;
+import net.minecraft.state.IntegerProperty;
+import net.minecraft.state.StateContainer;
+import net.minecraft.util.Direction;
+import net.minecraft.util.IItemProvider;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
-import net.minecraftforge.common.EnumPlantType;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorldReader;
+import net.minecraft.world.World;
+import net.minecraftforge.common.IPlantable;
+import net.minecraftforge.common.PlantType;
 import net.minecraftforge.registries.IRegistryDelegate;
 
-public abstract class BlockBlockCrop extends BlockCrops {
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-	private IRegistryDelegate<Block> block;
-	private EnumPlantType type;
-	private final AxisAlignedBB[] bounds;
-	public static final PropertyInteger SMALL_AGE = PropertyInteger.create("age", 0, 6);
-	public BlockBlockCrop(Block block, EnumPlantType type, AxisAlignedBB[] bounds) {
-		super();
+public abstract class BlockBlockCrop extends CropsBlock implements IHidable, IPlantable {
+	protected IRegistryDelegate<Block> block;
+	protected PlantType type;
+	protected final VoxelShape[] shape;
+	public static final IntegerProperty SMALL_AGE = IntegerProperty.create("age", 0, 6);
+
+	public BlockBlockCrop(Block block, PlantType type, VoxelShape[] shape, Block.Properties props) {
+		super(props);
 		this.block = block.delegate;
-		this.bounds = bounds;
+		this.shape = shape;
 		this.type = type;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return Config.enableMoreSeeds.get();
+	}
+
+	@Override
+	public boolean isValidPosition(@Nonnull BlockState state, IWorldReader world, BlockPos pos) {
+		BlockState soil = world.getBlockState(pos.down());
+		return soil.canSustainPlant(world, pos, Direction.UP, this);
 	}
 
 	/* Age logic */
 
 	@Override
-	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, getAgeProperty());
+	protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+		builder.add(getAgeProperty());
+		// No super, we want a different age size!
 	}
 
+	@Nonnull
 	@Override
-	protected PropertyInteger getAgeProperty() {
+	public IntegerProperty getAgeProperty() {
 		return SMALL_AGE;
 	}
 
+	@Nonnull
 	@Override
-	public IBlockState withAge(int age) {
+	public BlockState withAge(int age) {
 		if(age == getMaxAge()) {
 			return block.get().getDefaultState();
 		}
@@ -46,29 +72,31 @@ public abstract class BlockBlockCrop extends BlockCrops {
 	}
 
 	@Override
-	public boolean isMaxAge(IBlockState state) {
+	public boolean isMaxAge(BlockState state) {
 		// never get to max age, our max is the block
 		return false;
 	}
 
+	@Nonnull
 	@Override
-	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-		return bounds[this.getAge(state)];
+	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+		return shape[this.getAge(state)];
 	}
 
+	@Nonnull
+	@Override
+	public VoxelShape getRaytraceShape(@Nonnull BlockState state, @Nonnull IBlockReader world, @Nonnull BlockPos pos) {
+		return shape[this.getAge(state)];
+	}
 
 	/* Crop drops */
 
+	@Nonnull
 	@Override
-	public abstract Item getSeed();
+	protected abstract IItemProvider getSeedsItem();
 
 	@Override
-	protected Item getCrop() {
-		return Item.getItemFromBlock(block.get());
-	}
-
-	@Override
-	public EnumPlantType getPlantType(IBlockAccess world, BlockPos pos) {
+	public PlantType getPlantType(IBlockReader world, BlockPos pos) {
 		return type;
 	}
 }

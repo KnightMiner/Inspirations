@@ -1,36 +1,36 @@
 package knightminer.inspirations.utility;
 
-import com.google.common.eventbus.Subscribe;
 
-import knightminer.inspirations.common.CommonProxy;
-import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.utility.block.BlockBricksButton;
 import knightminer.inspirations.utility.block.BlockCarpetedPressurePlate;
-import knightminer.inspirations.utility.block.BlockCarpetedPressurePlate.BlockCarpetedPressurePlate2;
-import knightminer.inspirations.utility.tileentity.TileCollector;
-import knightminer.inspirations.utility.tileentity.TilePipe;
 import knightminer.inspirations.utility.block.BlockCarpetedTrapdoor;
 import knightminer.inspirations.utility.block.BlockCollector;
 import knightminer.inspirations.utility.block.BlockPipe;
 import knightminer.inspirations.utility.block.BlockRedstoneBarrel;
-import knightminer.inspirations.utility.block.BlockRedstoneTorchLever;
 import knightminer.inspirations.utility.block.BlockTorchLever;
-import knightminer.inspirations.utility.dispenser.DispenseFluidTank;
+import knightminer.inspirations.utility.block.BlockWallTorchLever;
+import knightminer.inspirations.utility.inventory.ContainerCollector;
+import knightminer.inspirations.utility.inventory.ContainerPipe;
+import knightminer.inspirations.utility.item.TorchLeverItem;
+import knightminer.inspirations.utility.tileentity.TileCollector;
+import knightminer.inspirations.utility.tileentity.TilePipe;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockDispenser;
-import net.minecraft.init.Items;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.block.DispenserBlock;
+import net.minecraft.block.material.Material;
+import net.minecraft.dispenser.IDispenseItemBehavior;
+import net.minecraft.inventory.container.ContainerType;
+import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntityType;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent.Register;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.pulsar.pulse.Pulse;
 
@@ -38,63 +38,68 @@ import slimeknights.mantle.pulsar.pulse.Pulse;
 public class InspirationsUtility extends PulseBase {
 	public static final String pulseID = "InspirationsUtility";
 
-	@SidedProxy(clientSide = "knightminer.inspirations.utility.UtilityClientProxy", serverSide = "knightminer.inspirations.common.CommonProxy")
-	public static CommonProxy proxy;
+	@SuppressWarnings("Convert2MethodRef")
+	public static Object proxy = DistExecutor.callWhenOn(Dist.CLIENT, ()->()->new UtilityClientProxy());
 
 	// blocks
-	public static Block torchLever;
+	public static Block torchLeverWall;
+	public static Block torchLeverFloor;
 	public static Block redstoneBarrel;
-	public static BlockBricksButton bricksButton;
-	public static Block redstoneTorchLever;
-	public static Block redstoneTorchLeverPowered;
-	public static Block[] carpetedTrapdoors;
-	public static Block carpetedPressurePlate1;
-	public static Block carpetedPressurePlate2;
+	public static Block bricksButton;
+	public static Block netherBricksButton;
+	public static Block[] carpetedTrapdoors = new Block[16];
+	public static Block[] carpetedPressurePlates = new Block[16];
 	public static Block collector;
 	public static Block pipe;
 	public static Item pipeItem;
 
-	@Subscribe
-	public void preInit(FMLPreInitializationEvent event) {
-		proxy.preInit();
-	}
+	// Tile entities
+	public static TileEntityType<TileCollector> tileCollector;
+	public static TileEntityType<TilePipe> tilePipe;
+
+	// Inventory containers
+	public static ContainerType<ContainerCollector> contCollector;
+	public static ContainerType<ContainerPipe> contPipe;
 
 	@SubscribeEvent
 	public void registerBlocks(Register<Block> event) {
 		IForgeRegistry<Block> r = event.getRegistry();
 
-		if(Config.enableTorchLever) {
-			torchLever = registerBlock(r, new BlockTorchLever(), "torch_lever");
-		}
+		torchLeverFloor = registerBlock(r, new BlockTorchLever(), "torch_lever");
+		torchLeverWall = registerBlock(r, new BlockWallTorchLever(), "wall_torch_lever");
 
-		if(Config.enableBricksButton) {
-			bricksButton = registerBlock(r, new BlockBricksButton(), "bricks_button");
+		bricksButton = registerBlock(r, new BlockBricksButton(BlockBricksButton.BRICK_BUTTON), "bricks_button");
+		netherBricksButton = registerBlock(r, new BlockBricksButton(BlockBricksButton.NETHER_BUTTON), "nether_bricks_button");
+
+		redstoneBarrel = registerBlock(r, new BlockRedstoneBarrel(), "redstone_barrel");
+
+		for(DyeColor color : DyeColor.values()) {
+			carpetedTrapdoors[color.getId()] = registerBlock(r, new BlockCarpetedTrapdoor(color),  color.getName() + "_carpeted_trapdoor");
+			carpetedPressurePlates[color.getId()] = registerBlock(r, new BlockCarpetedPressurePlate(color), color.getName() + "_carpeted_pressure_plate");
 		}
-		if(Config.enableRedstoneBarrel) {
-			redstoneBarrel = registerBlock(r, new BlockRedstoneBarrel(), "redstone_barrel");
-		}
-		if(Config.enableRedstoneTorchLever) {
-			redstoneTorchLever = registerBlock(r, new BlockRedstoneTorchLever(false), "redstone_torch_lever");
-			redstoneTorchLeverPowered = registerBlock(r, new BlockRedstoneTorchLever(true), "redstone_torch_lever_powered");
-		}
-		if(Config.enableCarpetedTrapdoor) {
-			carpetedTrapdoors = new Block[16];
-			for(EnumDyeColor color : EnumDyeColor.values()) {
-				carpetedTrapdoors[color.getMetadata()] = registerBlock(r, new BlockCarpetedTrapdoor(), "carpeted_trapdoor_" + color.getName());
-			}
-		}
-		if(Config.enableCarpetedPressurePlate) {
-			carpetedPressurePlate1 = registerBlock(r, new BlockCarpetedPressurePlate(false), "carpeted_pressure_plate_1");
-			carpetedPressurePlate2 = registerBlock(r, new BlockCarpetedPressurePlate2(), "carpeted_pressure_plate_2");
-		}
-		if(Config.enableCollector) {
-			collector = registerBlock(r, new BlockCollector(), "collector");
-			registerTE(TileCollector.class, "collector");
-		}
-		if(Config.enablePipe) {
-			pipe = registerBlock(r, new BlockPipe(), "pipe");
-			registerTE(TilePipe.class, "pipe");
-		}
+		collector = registerBlock(r, new BlockCollector(), "collector");
+		pipe = registerBlock(r, new BlockPipe(), "pipe");
+	}
+
+	@SubscribeEvent
+	public void registerTEs(Register<TileEntityType<?>> event) {
+		IForgeRegistry<TileEntityType<?>> r = event.getRegistry();
+
+		tileCollector = register(r, TileEntityType.Builder.create(
+				TileCollector::new, collector
+		).build(null), "collector");
+
+		tilePipe = register(r, TileEntityType.Builder.create(
+				TilePipe::new, pipe
+		).build(null), "pipe");
+	}
+
+	@SubscribeEvent
+	public void registerContainers(Register<ContainerType<?>> event) {
+		IForgeRegistry<ContainerType<?>> r = event.getRegistry();
+
+		contCollector = register(r, new ContainerType<>(new ContainerCollector.Factory()), "collector");
+		contPipe = register(r, new ContainerType<>(new ContainerPipe.Factory()), "pipe");
 	}
 
 	@SubscribeEvent
@@ -102,55 +107,39 @@ public class InspirationsUtility extends PulseBase {
 		IForgeRegistry<Item> r = event.getRegistry();
 
 		// itemblocks
-		if(torchLever != null) {
-			registerItemBlock(r, torchLever);
+		register(r, new TorchLeverItem(), "torch_lever");
+		registerBlockItem(r, bricksButton, ItemGroup.REDSTONE);
+		registerBlockItem(r, netherBricksButton, ItemGroup.REDSTONE);
+		registerBlockItem(r, redstoneBarrel, ItemGroup.REDSTONE);
+		for(Block trapdoor : carpetedTrapdoors) {
+			registerBlockItem(r, trapdoor, ItemGroup.REDSTONE);
 		}
-		if(bricksButton != null) {
-			registerEnumItemBlock(r, bricksButton);
-		}
-		if(redstoneBarrel != null) {
-			registerItemBlock(r, redstoneBarrel);
-		}
-		if(redstoneTorchLever != null) {
-			registerItemBlock(r, redstoneTorchLever);
-		}
-		if(carpetedTrapdoors != null) {
-			for(Block trapdoor : carpetedTrapdoors) {
-				registerItemBlock(r, trapdoor);
-			}
-		}
-		if(collector != null) {
-			registerItemBlock(r, collector);
-		}
-		if(pipe != null) {
-			pipeItem = registerItemBlock(r, pipe);
-		}
+		registerBlockItem(r, collector, ItemGroup.REDSTONE);
+		pipeItem = registerBlockItem(r, pipe, ItemGroup.REDSTONE);
 	}
 
-	@Subscribe
-	public void init(FMLInitializationEvent event) {
-		proxy.init();
+	@SubscribeEvent
+	public void setup(FMLCommonSetupEvent event) {
 		registerDispenserBehavior();
-	}
-
-	@Subscribe
-	public void postInit(FMLPostInitializationEvent event) {
-		proxy.postInit();
 		MinecraftForge.EVENT_BUS.register(UtilityEvents.class);
 	}
 
-	private void registerDispenserBehavior() {
-		if(Config.enableDispenserFluidTanks) {
-			for(String container : Config.fluidContainers) {
-				Item item = GameRegistry.findRegistry(Item.class).getValue(new ResourceLocation(container));
-				if(item != null && item != Items.AIR) {
-					registerDispenseTankLogic(item);
-				}
-			}
+	// Get access to the existing behaviours.
+	private static class DispenserRegAccess extends DispenserBlock {
+		DispenserRegAccess() { super(Block.Properties.create(Material.AIR));}
+		IDispenseItemBehavior getRegisteredBehaviour(Item item) {
+			return super.getBehavior(new ItemStack(item));
 		}
 	}
+	private DispenserRegAccess dispenserReg = new DispenserRegAccess();
 
-	private static void registerDispenseTankLogic(Item item) {
-		registerDispenserBehavior(item, new DispenseFluidTank(BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.getObject(item)));
+	private void registerDispenserBehavior() {
+//		if(Config.enableDispenserFluidTanks.get()) {
+//			for(Item item : InspirationsRegistry.TAG_DISP_FLUID_TANKS.getAllElements()) {
+//				if(item != null) {
+//					DispenserBlock.registerDispenseBehavior(item, new DispenseFluidTank(dispenserReg.getRegisteredBehaviour(item)));
+//				}
+//			}
+//		}
 	}
 }

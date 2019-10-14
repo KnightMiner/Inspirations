@@ -1,31 +1,28 @@
 package knightminer.inspirations.building.block;
 
-import java.util.Random;
-
-import net.minecraft.block.BlockTrapDoor;
+import knightminer.inspirations.common.Config;
+import knightminer.inspirations.common.IHidable;
+import net.minecraft.block.Block;
+import net.minecraft.block.TrapDoorBlock;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 
-public class BlockGlassTrapdoor extends BlockTrapDoor {
+import javax.annotation.Nonnull;
+
+public class BlockGlassTrapdoor extends TrapDoorBlock implements IHidable {
 
 	public BlockGlassTrapdoor() {
-		super(Material.GLASS);
-		this.setHardness(0.3F);
-		this.setSoundType(SoundType.GLASS);
-		this.disableStats();
-	}
-
-	/**
-	 * Returns the quantity of items to drop on block destruction.
-	 */
-	@Override
-	public int quantityDropped(Random random) {
-		return 0;
+		super(Block.Properties.create(Material.GLASS)
+				.hardnessAndResistance(0.3F)
+				.sound(SoundType.GLASS)
+		);
 	}
 
 	@Override
-	protected boolean canSilkHarvest() {
-		return true;
+	public boolean isEnabled() {
+		return Config.enableGlassDoor.get();
 	}
-
 }

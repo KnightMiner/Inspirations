@@ -4,8 +4,8 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import knightminer.inspirations.library.InspirationsRegistry;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fluids.Fluid;
 import slimeknights.mantle.util.RecipeMatch;
 
 /**
@@ -19,24 +19,24 @@ public class CauldronFluidTransformRecipe extends CauldronFluidRecipe {
 
 	/**
 	 * Constructor with default max level of 3
-	 * @param input     Input item stack for transformation
-	 * @param fluid     Input fluid. Use null for any "water
-	 * @param result    Resulting fluid
-	 * @param boiling   If true, cauldron must be above fire. If false, cauldron must not be above fire. Use null to ignore fire
+	 * @param input   Input item stack for transformation
+	 * @param fluid   Input fluid. Use EMPTY for any "water"
+	 * @param result  Resulting fluid
+	 * @param boiling If true, cauldron must be above fire. If false, cauldron must not be above fire. Use null to ignore fire
 	 */
-	public CauldronFluidTransformRecipe(RecipeMatch input, @Nullable Fluid fluid, Fluid result, @Nullable Boolean boiling) {
+	public CauldronFluidTransformRecipe(RecipeMatch input, Fluid fluid, Fluid result, @Nullable Boolean boiling) {
 		this(input, fluid, result, boiling, InspirationsRegistry.getCauldronMax());
 	}
 
 	/**
 	 * Full constructor
-	 * @param input     Input item stack for transformation
-	 * @param fluid     Input fluid. Use null for any "water"
-	 * @param result    Resulting fluid
-	 * @param boiling   If true, cauldron must be above fire. If false, cauldron must not be above fire. Use null to ignore fire
-	 * @param maxLevel  Maximum level at which this recipe works. Used for some recipes which cost more for more full cauldrons
+	 * @param input    Input item stack for transformation
+	 * @param fluid    Input fluid. Use EMPTY for any "water"
+	 * @param result   Resulting fluid
+	 * @param boiling  If true, cauldron must be above fire. If false, cauldron must not be above fire. Use null to ignore fire
+	 * @param maxLevel Maximum level at which this recipe works. Used for some recipes which cost more for more full cauldrons
 	 */
-	public CauldronFluidTransformRecipe(RecipeMatch input, @Nullable Fluid fluid, Fluid result, @Nullable Boolean boiling, int maxLevel) {
+	public CauldronFluidTransformRecipe(RecipeMatch input, Fluid fluid, Fluid result, @Nullable Boolean boiling, int maxLevel) {
 		super(input, fluid, ItemStack.EMPTY, boiling);
 		this.result = CauldronState.fluid(result);
 		this.maxLevel = maxLevel;
@@ -69,6 +69,10 @@ public class CauldronFluidTransformRecipe extends CauldronFluidRecipe {
 
 	@Override
 	public String toString() {
-		return String.format("CauldronFluidTransformRecipe: %s from %s", result.getFluid().getName(), fluid == null ? "water" : fluid.getFluid().getName());
+		return String.format(
+				"CauldronFluidTransformRecipe: %s from %s",
+				result.getFluid().getRegistryName(),
+				fluid == CauldronState.WATER ? "water" : fluid.getFluid().getRegistryName()
+		);
 	}
 }

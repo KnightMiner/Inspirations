@@ -1,38 +1,39 @@
 package knightminer.inspirations.tools.recipe;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import knightminer.inspirations.tools.InspirationsTools;
-import net.minecraft.inventory.InventoryCrafting;
+import knightminer.inspirations.tools.item.ItemWaypointCompass;
+import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.util.JsonUtils;
+import net.minecraft.item.crafting.ShapelessRecipe;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.common.crafting.IRecipeFactory;
-import net.minecraftforge.common.crafting.JsonContext;
-import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 import javax.annotation.Nonnull;
 
-public class WaypointCompassDyeingRecipe extends ShapelessOreRecipe {
+public class WaypointCompassDyeingRecipe extends ShapelessRecipe {
 
-	public WaypointCompassDyeingRecipe(ResourceLocation group, NonNullList<Ingredient> input, ItemStack result) {
-		super(group, input, result);
+	public WaypointCompassDyeingRecipe(ResourceLocation id, String group, ItemStack output, NonNullList<Ingredient> inputs) {
+		super(id, group, output, inputs);
+	}
+
+	public WaypointCompassDyeingRecipe(ShapelessRecipe recipe) {
+		super(recipe.getId(), recipe.getGroup(),
+			recipe.getRecipeOutput(),
+			recipe.getIngredients()
+		);
 	}
 
 	@Override
 	@Nonnull
-	public ItemStack getCraftingResult(@Nonnull InventoryCrafting crafting){
-		ItemStack output = this.output.copy();
+	public ItemStack getCraftingResult(@Nonnull CraftingInventory crafting){
+		ItemStack output = this.getRecipeOutput().copy();
 		for (int i = 0; i < crafting.getSizeInventory(); i++) {
 			ItemStack stack = crafting.getStackInSlot(i);
-			if(stack.getItem() == InspirationsTools.waypointCompass) {
-				if (stack.hasTagCompound()) {
-					output.setTagCompound(stack.getTagCompound().copy());
+			if(stack.getItem() instanceof ItemWaypointCompass) {
+				if (stack.hasTag()) {
+					output.setTag(stack.getOrCreateTag().copy());
 				}
 				break;
 			}
@@ -40,22 +41,25 @@ public class WaypointCompassDyeingRecipe extends ShapelessOreRecipe {
 		return output;
 	}
 
-	public static class Factory implements IRecipeFactory {
+	public static Serializer SERIALIZER = new Serializer();
+
+	public static class Serializer extends ShapelessRecipe.Serializer {
+		// This recipe has the exact same options as the parent type, redirect to that code.
+		@Nonnull
 		@Override
-		public IRecipe parse(JsonContext context, JsonObject json) {
-			String group = JsonUtils.getString(json, "group", "");
+		public WaypointCompassDyeingRecipe read(@Nonnull ResourceLocation recipeID, PacketBuffer buffer) {
+			return new WaypointCompassDyeingRecipe(CRAFTING_SHAPELESS.read(recipeID, buffer));
+		}
 
-			NonNullList<Ingredient> ings = NonNullList.create();
-			for (JsonElement ele : JsonUtils.getJsonArray(json, "ingredients")) {
-				ings.add(CraftingHelper.getIngredient(ele, context));
-			}
+		@Nonnull
+		@Override
+		public WaypointCompassDyeingRecipe read(@Nonnull ResourceLocation recipeID, JsonObject json) {
+			return new WaypointCompassDyeingRecipe(CRAFTING_SHAPELESS.read(recipeID, json));
+		}
 
-			if (ings.isEmpty()) {
-				throw new JsonParseException("No ingredients for shapeless recipe");
-			}
-
-			ItemStack itemstack = CraftingHelper.getItemStack(JsonUtils.getJsonObject(json, "result"), context);
-			return new WaypointCompassDyeingRecipe(group.isEmpty() ? null : new ResourceLocation(group), ings, itemstack);
+		@Override
+		public void write(PacketBuffer buffer, ShapelessRecipe recipe) {
+			Serializer.CRAFTING_SHAPELESS.write(buffer, recipe);
 		}
 	}
 }

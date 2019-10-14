@@ -1,0 +1,72 @@
+{
+  "variants": {
+    "facing=north,half=bottom,open=false": {
+      "model": "inspirations:block/carpet/trapdoor/brown_bottom",
+      "uvlock": true
+    },
+    "facing=south,half=bottom,open=false": {
+      "model": "inspirations:block/carpet/trapdoor/brown_bottom",
+      "uvlock": true,
+      "y": 180
+    },
+    "facing=east,half=bottom,open=false": {
+      "model": "inspirations:block/carpet/trapdoor/brown_bottom",
+      "uvlock": true,
+      "y": 90
+    },
+    "facing=west,half=bottom,open=false": {
+      "model": "inspirations:block/carpet/trapdoor/brown_bottom",
+      "uvlock": true,
+      "y": 270
+    },
+    "facing=north,half=top,open=false": {
+      "model": "inspirations:block/carpet/trapdoor/brown_top",
+      "uvlock": true,
+      "y": 180
+    },
+    "facing=south,half=top,open=false": {
+      "model": "inspirations:block/carpet/trapdoor/brown_top",
+      "uvlock": true,
+      "y": 90
+    },
+    "facing=east,half=top,open=false": {
+      "model": "inspirations:block/carpet/trapdoor/brown_top",
+      "uvlock": true,
+      "y": 270
+    },
+    "facing=west,half=top,open=false": {
+      "model": "inspirations:block/carpet/trapdoor/brown_top",
+      "uvlock": true
+    },
+    "facing=north,half=bottom,open=true": {
+      "model": "inspirations:block/carpet/trapdoor/brown_bottom_open"
+    },
+    "facing=south,half=bottom,open=true": {
+      "model": "inspirations:block/carpet/trapdoor/brown_bottom_open",
+      "y": 180
+    },
+    "facing=east,half=bottom,open=true": {
+      "model": "inspirations:block/carpet/trapdoor/brown_bottom_open",
+      "y": 90
+    },
+    "facing=west,half=bottom,open=true": {
+      "model": "inspirations:block/carpet/trapdoor/brown_bottom_open",
+      "y": 270
+    },
+    "facing=north,half=top,open=true": {
+      "model": "inspirations:block/carpet/trapdoor/brown_top_open"
+    },
+    "facing=south,half=top,open=true": {
+      "model": "inspirations:block/carpet/trapdoor/brown_top_open",
+      "y": 180
+    },
+    "facing=east,half=top,open=true": {
+      "model": "inspirations:block/carpet/trapdoor/brown_top_open",
+      "y": 90
+    },
+    "facing=west,half=top,open=true": {
+      "model": "inspirations:block/carpet/trapdoor/brown_top_open",
+      "y": 270
+    }
+  }
+}

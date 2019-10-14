@@ -2,13 +2,13 @@ package knightminer.inspirations.recipes.recipe;
 
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
-import net.minecraft.init.PotionTypes;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.potion.PotionType;
+import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtils;
+import net.minecraft.potion.Potions;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.SoundEvents;
 
 public class FillCauldronFromPotion implements ICauldronRecipe {
 
@@ -41,13 +41,13 @@ public class FillCauldronFromPotion implements ICauldronRecipe {
 	@Override
 	public CauldronState getState(ItemStack stack, boolean boiling, int level, CauldronState state) {
 		// if the level was 0, we need to add the potion state
-		PotionType inputType = PotionUtils.getPotionFromItem(stack);
+		Potion inputType = PotionUtils.getPotionFromItem(stack);
 		if(level == 0) {
 			return CauldronState.potion(inputType);
 		}
 		// if the types differ, it just turns black
 		if(state.getPotion() != inputType) {
-			return CauldronState.potion(PotionTypes.THICK);
+			return CauldronState.potion(Potions.THICK);
 		}
 
 		return state;

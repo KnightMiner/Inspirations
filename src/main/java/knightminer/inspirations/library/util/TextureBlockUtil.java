@@ -2,41 +2,37 @@ package knightminer.inspirations.library.util;
 
 import knightminer.inspirations.common.Config;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tags.Tag;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import net.minecraftforge.oredict.OreDictionary;
-import slimeknights.mantle.property.PropertyString;
+import net.minecraftforge.client.model.data.ModelProperty;
 
 public final class TextureBlockUtil {
 
 	public static final String TAG_TEXTURE = "texture";
-	public static final PropertyString TEXTURE_PROP = new PropertyString("TEXTURE");
+	public static final ModelProperty<String> TEXTURE_PROP = new ModelProperty<>();
 
 	private TextureBlockUtil() {}
 
 	/**
-	 * Call in {@link Block#onBlockPlacedBy(World, BlockPos, IBlockState, net.minecraft.entity.EntityLivingBase, ItemStack)}
+	 * Call in {@link Block#onBlockPlacedBy(World, BlockPos, BlockState, LivingEntity, ItemStack)}
 	 * to set the texture tag to the Tile Entity
 	 * @param world  World where the block was placed
 	 * @param pos    Block position
 	 * @param stack  Item stack
 	 */
 	public static void placeTextureBlock(World world, BlockPos pos, ItemStack stack) {
-		NBTTagCompound tag = TagUtil.getTagSafe(stack);
+		CompoundNBT tag = TagUtil.getTagSafe(stack);
 		TileEntity te = world.getTileEntity(pos);
 		if(te != null) {
-			NBTTagCompound textureTag = tag.getCompoundTag(TextureBlockUtil.TAG_TEXTURE);
-			if(textureTag == null) {
-				textureTag = new NBTTagCompound();
-			}
-
+			CompoundNBT textureTag = tag.getCompound(TextureBlockUtil.TAG_TEXTURE);
 			updateTextureBlock(te, textureTag);
 		}
 	}
@@ -48,16 +44,16 @@ public final class TextureBlockUtil {
 	 * @param state  State
 	 * @return
 	 */
-	public static ItemStack getBlockItemStack(IBlockAccess world, BlockPos pos, IBlockState state) {
+	public static ItemStack getBlockItemStack(IBlockReader world, BlockPos pos, BlockState state) {
 		Block block = state.getBlock();
-		ItemStack stack = new ItemStack(block, 1, block.damageDropped(state));
+		ItemStack stack = new ItemStack(block);
 		TileEntity te = world.getTileEntity(pos);
 		if(te != null) {
-			NBTTagCompound texture = getTextureBlock(te);
-			if(texture.getSize() > 0) {
-				NBTTagCompound tags = new NBTTagCompound();
-				tags.setTag(TextureBlockUtil.TAG_TEXTURE, texture);
-				stack.setTagCompound(tags);
+			CompoundNBT texture = getTextureBlock(te);
+			if(texture.size() > 0) {
+				CompoundNBT tags = new CompoundNBT();
+				tags.put(TextureBlockUtil.TAG_TEXTURE, texture);
+				stack.setTag(tags);
 			}
 		}
 		return stack;
@@ -67,9 +63,9 @@ public final class TextureBlockUtil {
 	 * Updates the current texture block in the TE
 	 * @param tag
 	 */
-	public static void updateTextureBlock(TileEntity te, NBTTagCompound tag) {
+	public static void updateTextureBlock(TileEntity te, CompoundNBT tag) {
 		if(te != null) {
-			te.getTileData().setTag(TextureBlockUtil.TAG_TEXTURE, tag);
+			te.getTileData().put(TextureBlockUtil.TAG_TEXTURE, tag);
 		}
 	}
 
@@ -77,69 +73,56 @@ public final class TextureBlockUtil {
 	 * Gets the current texture block from the TE
 	 * @return
 	 */
-	public static NBTTagCompound getTextureBlock(TileEntity te) {
+	public static CompoundNBT getTextureBlock(TileEntity te) {
 		if(te == null) {
-			return new NBTTagCompound();
+			return new CompoundNBT();
 		}
-		return te.getTileData().getCompoundTag(TextureBlockUtil.TAG_TEXTURE);
+		return te.getTileData().getCompound(TextureBlockUtil.TAG_TEXTURE);
 	}
 
 	/**
 	 * Creates a new item stack with the given block as it's texture tag
 	 * @param texturable  Base block to texture
-	 * @param texMeta     Base meta
 	 * @param block       Block to use as the texture
-	 * @param blockMeta   Meta for the texture
 	 * @return  The item stack with the proper NBT
 	 */
-	public static ItemStack createTexturedStack(Block texturable, int texMeta, Block block, int blockMeta) {
-		ItemStack stack = new ItemStack(texturable, 1, texMeta);
+	public static ItemStack createTexturedStack(Block texturable, Block block) {
+		ItemStack stack = new ItemStack(texturable);
 
 		if(block != null) {
-			ItemStack blockStack = new ItemStack(block, 1, blockMeta);
-			NBTTagCompound tag = new NBTTagCompound();
-			NBTTagCompound subTag = new NBTTagCompound();
-			blockStack.writeToNBT(subTag);
-			tag.setTag(TextureBlockUtil.TAG_TEXTURE, subTag);
-			stack.setTagCompound(tag);
+			ItemStack blockStack = new ItemStack(block);
+			CompoundNBT tag = new CompoundNBT();
+			CompoundNBT subTag = new CompoundNBT();
+			blockStack.write(subTag);
+			tag.put(TextureBlockUtil.TAG_TEXTURE, subTag);
+			stack.setTag(tag);
 		}
 
 		return stack;
 	}
 
 	/**
-	 * Gets the itemstack that determines the leg's texture from the table
-	 * @param table  Input table
-	 * @return  The itemstack determining the leg's texture, or null if none exists
+	 * Gets the itemstack that determines the block's texture from the stack.
+	 * @param stack  Input stack
+	 * @return  The itemstack determining the block's texture, or EMPTY if none exists
 	 */
-	public static ItemStack getStackTexture(ItemStack table) {
-		NBTTagCompound tag = TagUtil.getTagSafe(table).getCompoundTag(TextureBlockUtil.TAG_TEXTURE);
-		return new ItemStack(tag);
+	public static ItemStack getStackTexture(ItemStack stack) {
+		CompoundNBT tag = TagUtil.getTagSafe(stack).getCompound(TextureBlockUtil.TAG_TEXTURE);
+		return tag.size() > 0 ? ItemStack.read(tag) : ItemStack.EMPTY;
 	}
 
 	/**
-	 * Adds all blocks from the oredict to the specified block for getSubBlocks
+	 * Adds all blocks from the block tag to the specified block for fillItemGroup
 	 */
-	public static void addBlocksFromOredict(String oredict, Block block, int meta, NonNullList<ItemStack> list) {
-		for(ItemStack stack : OreDictionary.getOres(oredict, false)) {
-			Block textureBlock = Block.getBlockFromItem(stack.getItem());
-			int textureMeta = stack.getMetadata();
-
-			if(textureMeta == OreDictionary.WILDCARD_VALUE) {
-				NonNullList<ItemStack> subBlocks = NonNullList.create();
-				textureBlock.getSubBlocks(CreativeTabs.SEARCH, subBlocks);
-				for(ItemStack subBlock : subBlocks) {
-					list.add(createTexturedStack(block, meta, Block.getBlockFromItem(subBlock.getItem()), subBlock.getMetadata()));
-					if(!Config.showAllVariants) {
-						return;
-					}
-				}
+	public static void addBlocksFromTag(Tag<Block> tag, Block block, NonNullList<ItemStack> list) {
+		for(Block textureBlock : tag.getAllElements()) {
+			// Don't add instances of the block itself, that would be wrong.
+			if (block.getClass().isInstance(textureBlock)) {
+				continue;
 			}
-			else {
-				list.add(createTexturedStack(block, meta, textureBlock, textureMeta));
-				if(!Config.showAllVariants) {
-					return;
-				}
+			list.add(createTexturedStack(block, textureBlock));
+			if(!Config.showAllVariants.get()) {
+				return;
 			}
 		}
 	}

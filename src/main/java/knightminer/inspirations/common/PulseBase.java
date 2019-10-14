@@ -3,41 +3,33 @@ package knightminer.inspirations.common;
 import java.util.Locale;
 
 import knightminer.inspirations.Inspirations;
-import knightminer.inspirations.building.InspirationsBuilding;
+import knightminer.inspirations.common.item.HidableBlockItem;
 import knightminer.inspirations.library.Util;
-import knightminer.inspirations.recipes.InspirationsRecipes;
+import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockDispenser;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.dispenser.IBehaviorDispenseItem;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IStringSerializable;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.storage.loot.LootEntry;
-import net.minecraft.world.storage.loot.LootEntryTable;
+import net.minecraft.world.storage.loot.ConstantRange;
 import net.minecraft.world.storage.loot.LootPool;
-import net.minecraft.world.storage.loot.RandomValueRange;
-import net.minecraft.world.storage.loot.conditions.LootCondition;
+import net.minecraft.world.storage.loot.LootTable;
+import net.minecraft.world.storage.loot.TableLootEntry;
 import net.minecraftforge.event.LootTableLoadEvent;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.IForgeRegistryEntry;
-import slimeknights.mantle.block.BlockStairsBase;
-import slimeknights.mantle.block.EnumBlock;
-import slimeknights.mantle.block.EnumBlockSlab;
-import slimeknights.mantle.item.ItemBlockMeta;
-import slimeknights.mantle.item.ItemBlockSlab;
+import slimeknights.mantle.common.IRegisterUtil;
 
-public class PulseBase {
+public class PulseBase implements IRegisterUtil {
+	@Override
+	public String getModId() {
+		return Inspirations.modID;
+	}
+
 	/* Loaded */
 	public static boolean isBuildingLoaded() {
 		return Inspirations.pulseManager.isPulseLoaded(InspirationsBuilding.pulseID);
@@ -52,7 +44,8 @@ public class PulseBase {
 	}
 
 	public static boolean isRecipesLoaded() {
-		return Inspirations.pulseManager.isPulseLoaded(InspirationsRecipes.pulseID);
+		return false;
+//		return Inspirations.pulseManager.isPulseLoaded(InspirationsRecipes.pulseID);
 	}
 
 	public static boolean isToolsLoaded() {
@@ -60,135 +53,68 @@ public class PulseBase {
 	}
 
 	/* Normal registration */
-	protected static <T extends Block> T registerBlock(IForgeRegistry<Block> registry, T block, String name) {
-		if(!name.equals(name.toLowerCase(Locale.US))) {
+	protected <T extends Block> T registerBlock(IForgeRegistry<Block> registry, T block, String name) {
+		if (!name.equals(name.toLowerCase(Locale.US))) {
 			throw new IllegalArgumentException(
 					String.format("Unlocalized names need to be all lowercase! Block: %s", name));
 		}
-
-		String prefixedName = Util.prefix(name);
-		block.setUnlocalizedName(prefixedName);
-
 		register(registry, block, name);
 		return block;
 	}
 
 	/**
-	 * Sets the correct unlocalized name and registers the item.
+	 * Sets the correct registry name and registers the item.
 	 */
-	protected static <T extends Item> T registerItem(IForgeRegistry<Item> registry, T item, String name) {
-		if(!name.equals(name.toLowerCase(Locale.US))) {
+	protected <T extends Item> T registerItem(IForgeRegistry<Item> registry, T item, String name) {
+		if (!name.equals(name.toLowerCase(Locale.US))) {
 			throw new IllegalArgumentException(
 					String.format("Unlocalized names need to be all lowercase! Item: %s", name));
 		}
-		item.setUnlocalizedName(Util.prefix(name));
-
 		register(registry, item, name);
 		return item;
 	}
 
-	// stairs
-	protected static <E extends Enum<E> & EnumBlock.IEnumMeta & IStringSerializable> BlockStairsBase registerBlockStairsFrom(
-			IForgeRegistry<Block> registry, EnumBlock<E> block, E value, String name) {
-		return registerBlock(registry, new BlockStairsBase(block.getDefaultState().withProperty(block.prop, value)), name);
-	}
 
-
-	/* Itemblocks */
-	protected static ItemBlockMeta registerItemBlock(IForgeRegistry<Item> registry, Block block) {
-		return registerItemBlock(registry, new ItemBlockMeta(block));
-	}
-
-	protected static ItemBlockMeta registerEnumItemBlock(IForgeRegistry<Item> registry, EnumBlock<?> block) {
-		return registerItemBlock(registry, block, block.prop);
-	}
-
-	protected static <T extends ItemBlockMeta> T registerItemBlock(IForgeRegistry<Item> registry, T itemBlock, IProperty<?> property) {
-		registerItemBlock(registry, itemBlock);
-		ItemBlockMeta.setMappingProperty(itemBlock.getBlock(), property);
-		return itemBlock;
-	}
-
-	protected static <T extends ItemBlock> T registerItemBlock(IForgeRegistry<Item> registry, T itemBlock) {
-		itemBlock.setUnlocalizedName(itemBlock.getBlock().getUnlocalizedName());
-		register(registry, itemBlock, itemBlock.getBlock().getRegistryName());
-		return itemBlock;
-	}
-
-	protected static ItemBlockMeta registerItemBlock(IForgeRegistry<Item> registry, Block block, IProperty<?> property) {
-		return registerItemBlock(registry, new ItemBlockMeta(block), property);
-	}
-
-	protected static <T extends Enum<T> &EnumBlock.IEnumMeta & IStringSerializable> ItemBlockSlab<T> registerEnumItemBlockSlab(IForgeRegistry<Item> registry, EnumBlockSlab<T> block) {
-		return registerItemBlock(registry, new ItemBlockSlab<T>(block), block.prop);
+	/**
+	 * Override BlockItem registration to use the Hidable version.
+	 * @param registry The item registry to register in.
+	 * @param block The block to register an item version for.
+	 * @param group The ItemGroup to assign the item to.
+	 * @return The created BlockItem.
+	 */
+	public BlockItem registerBlockItem(IForgeRegistry<Item> registry, Block block, ItemGroup group) {
+		return registerBlockItem(registry, new HidableBlockItem(block, (new Item.Properties()).group(group)));
 	}
 
 	/* Base methods */
-	protected static <C extends T, T extends IForgeRegistryEntry<T>> C register(IForgeRegistry<T> registry, C thing, String name) {
-		return register(registry, thing, Util.getResource(name));
+
+	static protected <X extends Entity> EntityType<X> buildEntity(EntityType.Builder<X> builder, String id) {
+		EntityType<X> type = builder.build(id);
+		type.setRegistryName(Util.getResource(id));
+		return type;
 	}
 
-	protected static <C extends T, T extends IForgeRegistryEntry<T>> C register(IForgeRegistry<T> registry, C thing, ResourceLocation name) {
-		thing.setRegistryName(name);
-		registry.register(thing);
-		return thing;
-	}
-
-
-	/* Tile Entity & Entity */
-	protected static <T extends Entity> EntityEntryBuilder<T> getEntityBuilder(Class<T> clazz, String name, int id) {
-		return EntityEntryBuilder.<T>create()
-				.entity(clazz)
-				.id(Util.getResource(name), id)
-				.name(Util.prefix(name));
-	}
-
-	protected static void registerTE(Class<? extends TileEntity> teClazz, String name) {
-		if(!name.equals(name.toLowerCase(Locale.US))) {
-			throw new IllegalArgumentException(
-					String.format("Unlocalized names need to be all lowercase! TE: %s", name));
-		}
-
-		GameRegistry.registerTileEntity(teClazz, Util.getResource(name));
-	}
-
-	/* Other */
-	protected static Fluid registerColoredFluid(String name, int color) {
-		Fluid fluid = registerFluid(new Fluid(name, Util.getResource("blocks/fluid_colorless"), Util.getResource("blocks/fluid_colorless_flow"), color));
-		FluidRegistry.addBucketForFluid(fluid);
-		return fluid;
-	}
-	protected static <T extends Fluid> T registerFluid(T fluid) {
-		fluid.setUnlocalizedName(Util.prefix(fluid.getName()));
-		FluidRegistry.registerFluid(fluid);
-
-		return fluid;
-	}
-
-	protected static void registerDispenserBehavior(Block block, IBehaviorDispenseItem behavior) {
-		if(block != null) {
-			registerDispenserBehavior(Item.getItemFromBlock(block), behavior);
-		}
-	}
-	protected static void registerDispenserBehavior(Item item, IBehaviorDispenseItem behavior) {
-		if(item != null) {
-			BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(item, behavior);
-		}
-	}
 
 	/**
 	 * Adds entries from a loot table in the inspirations directory to a vanilla loot table
-	 * @param event  LootTableLoadEvent
-	 * @param name   Name of vanilla table and the inspirations table
+	 *
+	 * @param event LootTableLoadEvent
+	 * @param name  Name of vanilla table and the inspirations table
 	 */
 	protected static void addToVanillaLoot(LootTableLoadEvent event, String name) {
-		ResourceLocation extra = Util.getResource(name);
-		event.getTable().addPool(new LootPool(
-				new LootEntry[]{new LootEntryTable(extra, 1, 0, new LootCondition[0], Inspirations.modID)},
-				new LootCondition[0],
-				new RandomValueRange(1.0f),
-				new RandomValueRange(0.0F),
-				Inspirations.modID
-				));
+		if (!event.getName().getNamespace().equals("minecraft") || !event.getName().getPath().equals(name)) {
+			return;
+		}
+		ResourceLocation base = new ResourceLocation(name);
+		LootTable table = event.getTable();
+		if (table != LootTable.EMPTY_LOOT_TABLE) {
+			ResourceLocation location = Util.getResource(base.getPath());
+			table.addPool(new LootPool.Builder()
+					.name(location.toString())
+					.rolls(ConstantRange.of(1))
+					.addEntry(TableLootEntry.builder(location))
+					.build()
+			);
+		}
 	}
 }

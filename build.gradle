@@ -1,16 +1,17 @@
 buildscript {
     repositories {
-        jcenter()
         maven { url = "https://files.minecraftforge.net/maven" }
+        jcenter()
+        mavenCentral()
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
     }
 }
 plugins {
   id "com.wynprice.cursemaven" version "1.1.0"
 }
-apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'maven'
 apply plugin: 'maven-publish'
 
@@ -36,10 +37,61 @@ if (System.getenv().BUILD_NUMBER != null) {
 }
 
 minecraft {
-    version = config.minecraft_version + "-" + config.forge_version
-	mappings = config.mappings
-    runDir = "run"
-    replace '${version}', project.version
+	mappings channel: 'snapshot', version: config.mappings_version
+
+    accessTransformer project.file("src/main/resources/META-INF/accesstransformer.cfg")
+
+     runs {
+         client {
+             workingDirectory project.file('run')
+
+             // Recommended logging data for a userdev environment
+             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+
+             // Recommended logging level for the console
+             property 'forge.logging.console.level', 'debug'
+
+             mods {
+                 inspirations {
+                     source sourceSets.main
+                 }
+             }
+         }
+
+         server {
+             workingDirectory project.file('run')
+
+             // Recommended logging data for a userdev environment
+             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+
+             // Recommended logging level for the console
+             property 'forge.logging.console.level', 'debug'
+
+             mods {
+                 inspirations {
+                     source sourceSets.main
+                 }
+             }
+         }
+
+         data {
+             workingDirectory project.file('run')
+
+             // Recommended logging data for a userdev environment
+             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+
+             // Recommended logging level for the console
+             property 'forge.logging.console.level', 'debug'
+
+             args '--mod', 'inspirations', '--all', '--output', file('src/generated/resources/')
+
+             mods {
+                 inspirations {
+                     source sourceSets.main
+                 }
+             }
+         }
+     }
 }
 
 sourceCompatibility = targetCompatibility = "1.8" // Need this here so eclipse task generates correctly.
@@ -66,45 +118,36 @@ repositories {
 }
 
 dependencies {
-    deobfCompile "mezz.jei:jei_${config.minecraft_version}:${config.jei_version}"
-    deobfCompile "slimeknights.mantle:Mantle:${config.minecraft_base_version}-${config.mantle_version}"
-    deobfCompile "mcp.mobius.waila:Hwyla:${config.hwyla_version}"
-    deobfCompile("mcjty.theoneprobe:TheOneProbe-1.12:${config.probe_version}") {
-        exclude group: 'cofh' // don't grab redstone flux too, don't use it
-    }
+    minecraft "net.minecraftforge:forge:${config.minecraft_version}-${config.forge_version}"
+    
+    // compile against the JEI API but do not include it at runtime
+    compileOnly fg.deobf("mezz.jei:jei-${config.minecraft_version}:${config.jei_version}:api")
+    // at runtime, use the full JEI jar
+    runtimeOnly fg.deobf("mezz.jei:jei-${config.minecraft_version}:${config.jei_version}")
+
+    compile fg.deobf("slimeknights.mantle:Mantle:${config.minecraft_version}-${config.mantle_version}")
+    //deobfCompile "mcp.mobius.waila:Hwyla:${config.hwyla_version}"
+    //deobfCompile("mcjty.theoneprobe:TheOneProbe-1.12:${config.probe_version}") {
+    //    exclude group: 'cofh' // don't grab redstone flux too, don't use it
+    //}
     //deobfCompile curse.resolve("leather-works", "2695934")
-    //deobfCompile curse.resolve("tough-as-nails", "2644652")
 	//deobfCompile "net.ilexiconn:llibrary:1.7.9-1.12.2"
     //deobfCompile curse.resolve("rats", "2732516")
     //deobfCompile curse.resolve("the-twilight-forest", "2618264")
 }
 
-processResources {
-    // this will ensure that this task is redone when the versions change.
-    inputs.property "version", project.version
-    inputs.property "mcversion", project.minecraft.version
-
-    // replace stuff in mcmod.info, nothing else
-    from(sourceSets.main.resources.srcDirs) {
-        include 'mcmod.info'
-                
-        // replace version and mcversion
-        expand 'version':project.version, 'mcversion':project.minecraft.version
-    }
-        
-    // copy everything else, thats not the mcmod.info
-    from(sourceSets.main.resources.srcDirs) {
-        exclude 'mcmod.info'
-    }
-}
-
-// Add Access Transformers Manifest
 jar {
     manifest {
-        attributes 'FMLAT': 'inspirations_at.cfg'
+        attributes([
+            "Specification-Title": "Inspirations",
+            "Specification-Vendor": "KnightMiner",
+            "Specification-Version": "1", // We are version 1 of ourselves
+            "Implementation-Title": project.name,
+            "Implementation-Version": "${version}",
+            "Implementation-Vendor": "KnightMiner",
+            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
     }
-    
-    finalizedBy reobfJar
 }
 
 // because the normal output has been made to be obfuscated

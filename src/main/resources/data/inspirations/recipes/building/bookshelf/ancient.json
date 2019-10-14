@@ -1,0 +1,30 @@
+{
+  "conditions": [
+    {
+      "type": "inspirations:pulse_loaded",
+      "pulse": "InspirationsBuilding"
+    },
+    {
+      "type": "inspirations:config",
+      "prop": "bookshelf"
+    }
+  ],
+  "type": "inspirations:texture_recipe",
+  "group": "inspirations:bookshelf",
+  "texture": {
+    "tag": "minecraft:wooden_slabs"
+  },
+  "pattern": [
+    "SSS",
+    "PPP",
+    "SSS"
+  ],
+  "key": {
+    "S": { "tag": "minecraft:wooden_slabs" },
+    "P": { "item": "minecraft:paper" }
+  },
+  "result": {
+    "item": "inspirations:ancient_bookshelf",
+    "count": 2
+  }
+}

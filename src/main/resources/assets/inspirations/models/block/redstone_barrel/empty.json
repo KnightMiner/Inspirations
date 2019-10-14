@@ -1,0 +1,14 @@
+{
+  "textures": {
+    "floor": "minecraft:block/smooth_stone"
+  },
+  "elements": [
+    {
+      "from": [2, 1, 2],
+      "to": [14, 1, 14],
+      "faces": {
+        "up": { "texture": "#floor" }
+      }
+    }
+  ]
+}

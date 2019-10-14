@@ -1,0 +1,22 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+      "uvlock": true
+  },
+  "variants": {
+     "":  [
+         { "model": "inspirations:block/path/rocks_1" },
+         { "model": "inspirations:block/path/rocks_1", "y": 90 },
+         { "model": "inspirations:block/path/rocks_1", "y": 180 },
+         { "model": "inspirations:block/path/rocks_1", "y": 270 },
+         { "model": "inspirations:block/path/rocks_2" },
+         { "model": "inspirations:block/path/rocks_2", "y": 90 },
+         { "model": "inspirations:block/path/rocks_2", "y": 180 },
+         { "model": "inspirations:block/path/rocks_2", "y": 270 },
+         { "model": "inspirations:block/path/rocks_3" },
+         { "model": "inspirations:block/path/rocks_3", "y": 90 },
+         { "model": "inspirations:block/path/rocks_3", "y": 180 },
+         { "model": "inspirations:block/path/rocks_3", "y": 270 }
+     ]
+  }
+}

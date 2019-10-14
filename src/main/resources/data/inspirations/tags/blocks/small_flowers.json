@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [],
+  "optional": [
+    "inspirations:rose",
+    "inspirations:lilac",
+    "inspirations:peony",
+    "inspirations:cyan_flower"
+  ]
+}

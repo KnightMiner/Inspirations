@@ -1,0 +1,33 @@
+{
+  "conditions": [
+    {
+      "type": "inspirations:pulse_loaded",
+      "pulse": "InspirationsBuilding"
+    },
+    {
+      "type": "inspirations:config",
+      "prop": "bookshelf"
+    }
+  ],
+  "type": "inspirations:texture_recipe",
+  "group": "inspirations:bookshelf",
+  "texture": {
+    "tag": "minecraft:wooden_slabs"
+  },
+  "mirrored": true,
+  "pattern": [
+    "SSS",
+    "RGB",
+    "SSS"
+  ],
+  "key": {
+    "S": { "tag": "minecraft:wooden_slabs" },
+    "R": { "tag": "forge:dyes/red" },
+    "G": { "tag": "forge:dyes/green" },
+    "B": { "tag": "forge:dyes/blue" }
+  },
+  "result": {
+    "item": "inspirations:rainbow_bookshelf",
+    "count": 2
+  }
+}

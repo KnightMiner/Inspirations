@@ -1,23 +1,14 @@
 {
   "forge_marker": 1,
   "defaults": {
+    "model": "inspirations:block/bookshelf/normal",
     "textures": {
-      "texture": "blocks/planks_oak"
+      "texture": "block/planks_oak",
+      "books": "inspirations:block/books",
+      "bookLabels": "inspirations:block/books_overlay"
     }
   },
   "variants": {
-    "type": {
-      "normal":  { "model": "inspirations:bookshelf/normal", "textures": {
-        "books": "inspirations:blocks/books",
-        "bookLabels": "inspirations:blocks/books_overlay"
-      }},
-      "rainbow": { "model": "inspirations:bookshelf/normal", "textures": {
-        "books":      "inspirations:blocks/books_rainbow",
-        "bookLabels": "inspirations:blocks/books_rainbow"
-      }},
-      "tomes":   { "model": "inspirations:bookshelf/tomes",   "textures": { "books": "inspirations:blocks/books_tomes" } },
-      "ancient": { "model": "inspirations:bookshelf/ancient", "textures": { "books": "inspirations:blocks/books_ancient" } }
-    },
     "facing": {
       "south": {},
       "west":  { "y":  90 },

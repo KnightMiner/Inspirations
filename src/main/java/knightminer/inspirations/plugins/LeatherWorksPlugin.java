@@ -1,19 +1,19 @@
 package knightminer.inspirations.plugins;
 
-import com.google.common.eventbus.Subscribe;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.recipe.cauldron.CauldronFluidRecipe;
 import knightminer.inspirations.library.recipe.cauldron.CauldronFluidTransformRecipe;
 import knightminer.inspirations.recipes.InspirationsRecipes;
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.registries.ObjectHolder;
 import slimeknights.mantle.pulsar.pulse.Pulse;
 import slimeknights.mantle.util.RecipeMatch;
 
@@ -27,21 +27,22 @@ public class LeatherWorksPlugin extends PulseBase{
     public static final String pulseID = "LeatherWorks";
 
     public static final String requiredModID = "leatherworks";
-    @GameRegistry.ObjectHolder(LeatherWorksPlugin.requiredModID + ":tannin_ball")
+
+    @ObjectHolder(LeatherWorksPlugin.requiredModID + ":tannin_ball")
     public static final Item tanninBall = null;
-    @GameRegistry.ObjectHolder(LeatherWorksPlugin.requiredModID + ":tannin_bottle")
+    @ObjectHolder(LeatherWorksPlugin.requiredModID + ":tannin_bottle")
     public static final Item tanninBottle = null;
-    @GameRegistry.ObjectHolder(LeatherWorksPlugin.requiredModID + ":crafting_leather_scraped")
+    @ObjectHolder(LeatherWorksPlugin.requiredModID + ":crafting_leather_scraped")
     public static final Item preparedHide = null;
-    @GameRegistry.ObjectHolder(LeatherWorksPlugin.requiredModID + ":crafting_leather_soaked")
+    @ObjectHolder(LeatherWorksPlugin.requiredModID + ":crafting_leather_soaked")
     public static final Item soakedHide = null;
-    @GameRegistry.ObjectHolder(LeatherWorksPlugin.requiredModID + ":crafting_leather_washed")
+    @ObjectHolder(LeatherWorksPlugin.requiredModID + ":crafting_leather_washed")
     public static final Item washedHide = null;
 
-    @Subscribe
-    public void init(FMLInitializationEvent e){
+    @SubscribeEvent
+    public void init(FMLCommonSetupEvent e){
         // we need cauldron fluids for this to work
-        if(!Config.enableCauldronFluids){
+        if(!Config.enableCauldronFluids()){
             return;
         }
 

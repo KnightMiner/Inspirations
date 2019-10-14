@@ -1,0 +1,29 @@
+{
+  "conditions": [
+    {
+      "type": "inspirations:pulse_loaded",
+      "pulse": "InspirationsTools"
+    },
+    {
+      "type": "inspirations:config",
+      "prop": "barometer"
+    }
+  ],
+  "result": {
+    "item": "inspirations:barometer"
+  },
+  "pattern": [
+    " W",
+    "BR"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "W": {
+      "type": "forge:nbt",
+      "item": "minecraft:potion",
+      "nbt": { "Potion": "minecraft:water" }
+    },
+    "B": { "item": "minecraft:glass_bottle" },
+    "R": { "tag": "forge:dusts/redstone" }
+  }
+}

@@ -1,200 +1,164 @@
 package knightminer.inspirations.tweaks.block;
 
-import knightminer.inspirations.library.Util;
-import net.minecraft.block.BlockCarpet;
-import net.minecraft.block.BlockStairs;
-import net.minecraft.block.BlockStairs.EnumHalf;
-import net.minecraft.block.BlockStairs.EnumShape;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.item.EnumDyeColor;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
-
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.ArrayList;
+
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.item.DyeColor;
+import net.minecraft.state.StateContainer;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.world.IBlockReader;
+
 import java.util.List;
 
-public class BlockFittedCarpet extends BlockCarpet {
-
-	public static final PropertyBool NORTHWEST = PropertyBool.create("northwest");
-	public static final PropertyBool NORTHEAST = PropertyBool.create("northeast");
-	public static final PropertyBool SOUTHWEST = PropertyBool.create("southwest");
-	public static final PropertyBool SOUTHEAST = PropertyBool.create("southeast");
-
-	public BlockFittedCarpet() {
-		super();
-		this.setHardness(0.1F);
-		this.setSoundType(SoundType.CLOTH);
-		this.setUnlocalizedName("woolCarpet");
-		this.setLightOpacity(0);
-
-		this.setDefaultState(this.getDefaultState().withProperty(COLOR, EnumDyeColor.WHITE)
-				.withProperty(NORTHWEST, false)
-				.withProperty(NORTHEAST, false)
-				.withProperty(SOUTHWEST, false)
-				.withProperty(SOUTHEAST, false));
+public class BlockFittedCarpet extends BlockFlatCarpet {
+	public BlockFittedCarpet(DyeColor color, Block original) {
+		super(color, original);
+		this.setDefaultState(this.getStateContainer().getBaseState()
+			.with(NORTHWEST, false)
+			.with(NORTHEAST, false)
+			.with(SOUTHWEST, false)
+			.with(SOUTHEAST, false)
+		);
 	}
 
 	@Override
-	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, COLOR, NORTHWEST, NORTHEAST, SOUTHWEST, SOUTHEAST);
+	protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+		builder.add(NORTHWEST, NORTHEAST, SOUTHWEST, SOUTHEAST);
 	}
 
-	/**
-	 * Get the actual Block state of this Block at the given position. This applies properties not visible in the
-	 * metadata, such as fence connections.
-	 */
-	@Override
-	public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
-		return setProperties(state, getStairShape(world, pos.down()));
-	}
 
-	@Override
-	@Deprecated
-	@Nullable
-	public AxisAlignedBB getCollisionBoundingBox(IBlockState state, IBlockAccess world, BlockPos pos) {
-		// if any of the parts are lowered, no collision box
-		if(getStairShape(world, pos) > 0) {
-			return NULL_AABB;
-		}
-		return super.getCollisionBoundingBox(state, world, pos);
-	}
-
-	private static final AxisAlignedBB[] BOUNDS;
-	private static final AxisAlignedBB BOUNDS_NW = new AxisAlignedBB(0.0,    0.0, 0.0,    0.5625, 0.0625, 0.5625);
-	private static final AxisAlignedBB BOUNDS_NE = new AxisAlignedBB(0.4375, 0.0, 0.0,    1.0,    0.0625, 0.5625);
-	private static final AxisAlignedBB BOUNDS_SW = new AxisAlignedBB(0.0,    0.0, 0.4375, 0.5625, 0.0625, 1.0);
-	private static final AxisAlignedBB BOUNDS_SE = new AxisAlignedBB(0.4375, 0.0, 0.4375, 1.0,    0.0625, 1.0);
+	private static final VoxelShape[] BOUNDS = new VoxelShape[16];
+	private static final VoxelShape[] COLLISION = new VoxelShape[16];
 	static {
-		// bits are NW NE SW SE
-		BOUNDS = new AxisAlignedBB[]{
-				CARPET_AABB, // 0000
-				CARPET_AABB, // SE: 0001
-				CARPET_AABB, // SW: 0010
-				new AxisAlignedBB(0.0, 0.0, 0.0, 1.0,    0.0625, 0.5625), // 0011, NORTH
-				CARPET_AABB, // NE: 0100
-				new AxisAlignedBB(0.0, 0.0, 0.0, 0.5625, 0.0625, 1.0), // 0101, WEST
-				CARPET_AABB, // 0110
-				BOUNDS_NW,   // 0111
-				CARPET_AABB, // 1000
-				CARPET_AABB, // 1001
-				new AxisAlignedBB(0.4375, 0.0, 0.0,    1.0, 0.0625, 1.0), // 1010, EAST
-				BOUNDS_NE, // 1011
-				new AxisAlignedBB(0.0,    0.0, 0.4375, 1.0, 0.0625, 1.0), // 1100, SOUTH
-				BOUNDS_SW, // 1101
-				BOUNDS_SE, // 1110
-				CARPET_AABB, // 1111
-		};
+		// Compute all the different possible shapes.
+		int HIGH = 0;
+		int LOW = -8;
+		for(int i = 0; i < 16; i++) {
+			boolean NW = (i & 0b1000) == 0; // -X -Z
+			boolean NE = (i & 0b0100) == 0; // +X -Z
+			boolean SW = (i & 0b0010) == 0; // -X +Z
+			boolean SE = (i & 0b0001) == 0; // +X +Z
+
+			if (!NW && !NE && !SW && !SE) {
+				// Fully lowered, bit of a special case.
+				BOUNDS[i] = VoxelShapes.or(
+						makeCuboidShape(0, -7, 0, 17, -8, 17),
+						makeCuboidShape(-1, -16, -1, 0, -7, 17),
+						makeCuboidShape(-1, -16, -1, 16, -7, 0),
+						makeCuboidShape(16, -16, -1, 17, -7, 17),
+						makeCuboidShape(-1, -16, 16, 16, -7, 17)
+				);
+				COLLISION[i] = makeCuboidShape(0, -7, 0, 17, -8, 17);
+				continue;
+			}
+
+			// First each flat segment, high or low.
+			VoxelShape shape = VoxelShapes.or(
+					makeCuboidShape(0, NW ? HIGH : LOW, 0,  8, (NW ? HIGH : LOW) + 1,  8),
+					makeCuboidShape(8, NE ? HIGH : LOW, 0, 16, (NE ? HIGH : LOW) + 1,  8),
+					makeCuboidShape(0, SW ? HIGH : LOW, 8,  8, (SW ? HIGH : LOW) + 1, 16),
+					makeCuboidShape(8, SE ? HIGH : LOW, 8, 16, (SE ? HIGH : LOW) + 1, 16)
+			);
+
+			// Only provide collision within our own block, any further down messes up the player's movement.
+			COLLISION[i] = shape;
+
+			// Add the lowermost shapes around the base.
+			if (!NE & !NW) {
+				shape = VoxelShapes.or(shape, makeCuboidShape(0, -16, -1, 16, -7, 0));
+			}
+			if (!SE && !SW) {
+				shape = VoxelShapes.or(shape, makeCuboidShape(0, -16, 16, 16, -7, 17));
+			}
+			if (!NW && !SW) {
+				shape = VoxelShapes.or(shape, makeCuboidShape(-1, -16, 0, 0, -7, 16));
+			}
+			if (!NE && !SE) {
+				shape = VoxelShapes.or(shape, makeCuboidShape(16, -16, 0, 17, -7, 16));
+			}
+
+			// Then, for each of the spaces between generate verticals if they're different.
+			if (NW && !NE) {
+				shape = VoxelShapes.or(shape, makeCuboidShape(8, LOW, 0, 9, 1, 8));
+			}
+			if (!NW && NE) {
+				shape = VoxelShapes.or(shape, makeCuboidShape(7, LOW, 0, 8, 1, 8));
+			}
+
+			if (SW && !SE) {
+				shape = VoxelShapes.or(shape, makeCuboidShape(8, LOW, 8, 9, 1, 16));
+			}
+			if (!SW && SE) {
+				shape = VoxelShapes.or(shape, makeCuboidShape(7, LOW, 8, 8, 1, 16));
+			}
+
+			if (NW && !SW) {
+				shape = VoxelShapes.or(shape, makeCuboidShape(0, LOW, 8, 8, 1, 9));
+			}
+			if (!NW && SW) {
+				shape = VoxelShapes.or(shape, makeCuboidShape(0, LOW, 7, 8, 1, 8));
+			}
+
+			if (NE && !SE) {
+				shape = VoxelShapes.or(shape, makeCuboidShape(8, LOW, 8, 16, 1, 9));
+			}
+			if (!NE && SE) {
+				shape = VoxelShapes.or(shape, makeCuboidShape(8, LOW, 7, 16, 1, 8));
+			}
+
+			// Last, a the missing 1x1 post for both heights in outer corners.
+			if (!NW & !SE && !SW) { // NE
+				shape = VoxelShapes.or(shape,
+						makeCuboidShape(7, -8, 8, 8, 1, 9),
+						makeCuboidShape(-1, -16, 16, 0, -7, 17)
+				);
+			}
+			if (!NE & !SE && !SW) { // NW
+				shape = VoxelShapes.or(shape,
+						makeCuboidShape(8, -8, 8, 9, 1, 9),
+						makeCuboidShape(16, -16, 16, 17, -7, 17)
+				);
+			}
+			if (!NE && !NW && !SW) { // SE
+				shape = VoxelShapes.or(shape,
+						makeCuboidShape(7, -8, 7, 8, 1, 8),
+						makeCuboidShape(-1, -16, -1, 0, -7, 0)
+				);
+			}
+			if (!NE && !NW & !SE) { // SW
+				shape = VoxelShapes.or(shape,
+						makeCuboidShape(8, -8, 7, 9, 1, 8),
+						makeCuboidShape(16, -16, -1, 17, -7, 0)
+				);
+			}
+			BOUNDS[i] = shape;
+		}
 	}
+
+
+	@Nonnull
 	@Override
-	@Deprecated
-	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-		return BOUNDS[getStairShape(source, pos.down())];
+	public VoxelShape getShape(BlockState state, @Nonnull IBlockReader world, @Nonnull BlockPos pos, ISelectionContext context) {
+		return BOUNDS[
+				(state.get(NORTHWEST) ? 8 : 0) |
+				(state.get(NORTHEAST) ? 4 : 0) |
+				(state.get(SOUTHWEST) ? 2 : 0) |
+				(state.get(SOUTHEAST) ? 1 : 0)
+				];
 	}
 
-	@Deprecated
+	@Nonnull
 	@Override
-	public RayTraceResult collisionRayTrace(IBlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull Vec3d start, @Nonnull Vec3d end) {
-		int shape = getStairShape(world, pos.down());
-		// if three corners up or checkerboard, run on just up
-		switch(shape) {
-			case 0b0001:
-			case 0b0010:
-			case 0b0100:
-			case 0b0110:
-			case 0b1000:
-			case 0b1001:
-				break;
-			default:
-				return super.collisionRayTrace(state, world, pos, start, end);
-		}
-
-		// basically the same BlockStairs does
-		// Raytrace through all AABBs (plate, legs) and return the nearest one
-		List<RayTraceResult> list = new ArrayList<>();
-		if ((shape & 0b1000) == 0) list.add(rayTrace(pos, start, end, BOUNDS_NW));
-		if ((shape & 0b0100) == 0) list.add(rayTrace(pos, start, end, BOUNDS_NE));
-		if ((shape & 0b0010) == 0) list.add(rayTrace(pos, start, end, BOUNDS_SW));
-		if ((shape & 0b0001) == 0) list.add(rayTrace(pos, start, end, BOUNDS_SE));
-
-		return Util.closestResult(list, end);
-	}
-
-
-	/* Utils */
-
-	/**
-	 * Gets the shape for the carpet from the given stairs
-	 * @param world  World access
-	 * @param pos    Stairs position
-	 * @return  4 bit integer with bits in order NW, NE, SW, SE. If the bit is set, the carpet is down
-	 */
-	private int getStairShape(IBlockAccess world, BlockPos pos) {
-		IBlockState stairs = world.getBlockState(pos);
-		if (!(stairs.getBlock() instanceof BlockStairs) || stairs.getValue(BlockStairs.HALF) == EnumHalf.TOP) {
-			return 0b0000;
-		}
-
-		// seemed like the simplest way, convert each shape to four bits
-		// bits are NW NE SW SE
-		stairs = stairs.getActualState(world, pos);
-		EnumShape shape = stairs.getValue(BlockStairs.SHAPE);
-		switch(stairs.getValue(BlockStairs.FACING)) {
-			case NORTH:
-				switch(shape) {
-					case STRAIGHT:    return 0b0011;
-					case INNER_LEFT:  return 0b0001;
-					case INNER_RIGHT: return 0b0010;
-					case OUTER_LEFT:  return 0b0111;
-					case OUTER_RIGHT: return 0b1011;
-				}
-			case SOUTH:
-				switch(shape) {
-					case STRAIGHT:    return 0b1100;
-					case INNER_LEFT:  return 0b1000;
-					case INNER_RIGHT: return 0b0100;
-					case OUTER_LEFT:  return 0b1110;
-					case OUTER_RIGHT: return 0b1101;
-				}
-			case WEST:
-				switch(shape) {
-					case STRAIGHT:    return 0b0101;
-					case INNER_LEFT:  return 0b0100;
-					case INNER_RIGHT: return 0b0001;
-					case OUTER_LEFT:  return 0b1101;
-					case OUTER_RIGHT: return 0b0111;
-				}
-			case EAST:
-				switch(shape) {
-					case STRAIGHT:    return 0b1010;
-					case INNER_LEFT:  return 0b0010;
-					case INNER_RIGHT: return 0b1000;
-					case OUTER_LEFT:  return 0b1011;
-					case OUTER_RIGHT: return 0b1110;
-				}
-		}
-		return 0b0000;
-	}
-
-	/**
-	 * Sets the state properties based on the given shape
-	 * @param state  Carpet block state
-	 * @param i Shape integer from {@link #getStairShape(IBlockAccess, BlockPos)}
-	 * @return  New stairs shape
-	 */
-	private IBlockState setProperties(IBlockState state, int i) {
-		return state
-				.withProperty(NORTHWEST, (i & 8) > 0)
-				.withProperty(NORTHEAST, (i & 4) > 0)
-				.withProperty(SOUTHWEST, (i & 2) > 0)
-				.withProperty(SOUTHEAST, (i & 1) > 0);
+	public VoxelShape getCollisionShape(BlockState state, @Nonnull IBlockReader world, @Nonnull BlockPos pos, ISelectionContext context) {
+		return COLLISION[
+				(state.get(NORTHWEST) ? 8 : 0) |
+				(state.get(NORTHEAST) ? 4 : 0) |
+				(state.get(SOUTHWEST) ? 2 : 0) |
+				(state.get(SOUTHEAST) ? 1 : 0)
+				];
 	}
 }

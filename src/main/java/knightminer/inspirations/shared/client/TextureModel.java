@@ -3,27 +3,34 @@ package knightminer.inspirations.shared.client;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.function.Function;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import knightminer.inspirations.library.util.TagUtil;
 import knightminer.inspirations.library.util.TextureBlockUtil;
+import knightminer.inspirations.shared.SharedClientProxy;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.IBakedModel;
-import net.minecraft.client.renderer.block.model.ItemOverrideList;
+import net.minecraft.block.BlockState;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.model.BakedQuad;
+import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.model.ItemOverrideList;
+import net.minecraft.client.renderer.model.ModelRotation;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.VertexFormat;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.BakedModelWrapper;
 import net.minecraftforge.client.model.IModel;
-import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.common.property.IExtendedBlockState;
+import net.minecraftforge.client.model.data.IModelData;
+import net.minecraftforge.client.model.data.ModelProperty;
 import slimeknights.mantle.client.ModelHelper;
 
 public class TextureModel extends BakedModelWrapper<IBakedModel> {
@@ -32,6 +39,9 @@ public class TextureModel extends BakedModelWrapper<IBakedModel> {
 	private final VertexFormat format;
 	private final String textureKey;
 	private boolean item;
+
+	ModelProperty<String> TEXTURE = new ModelProperty<>();
+
 	public TextureModel(IBakedModel originalModel, IModel model, VertexFormat format, String textureKey, boolean item) {
 		super(originalModel);
 		this.model = model;
@@ -40,26 +50,27 @@ public class TextureModel extends BakedModelWrapper<IBakedModel> {
 		this.item = item;
 	}
 
+	@Nonnull
 	@Override
-	public List<BakedQuad> getQuads(IBlockState state, EnumFacing side, long rand) {
+	public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
 		IBakedModel bakedModel = this.originalModel;
-		if(state instanceof IExtendedBlockState) {
-			IExtendedBlockState extendedState = (IExtendedBlockState) state;
-
-			String texture = extendedState.getValue(TextureBlockUtil.TEXTURE_PROP);
-			if(texture != null) {
-				bakedModel = getCachedTextureModel(texture);
-			}
+		String texture = extraData.getData(TEXTURE);
+		if(texture != null) {
+			bakedModel = getCachedTextureModel(texture);
 		}
 		return bakedModel.getQuads(state, side, rand);
 	}
 
 	protected IBakedModel getTexturedModel(ImmutableMap<String, String> textures) {
-		IModel retextured = model.retexture(textures);
-		return retextured.bake(retextured.getDefaultState(), format, ModelLoader.defaultTextureGetter());
+		return model.retexture(textures).bake(
+				SharedClientProxy.modelLoader,
+				(Function<ResourceLocation, TextureAtlasSprite>) Minecraft.getInstance().getTextureMap()::getSprite,
+				ModelRotation.X0_Y0,
+				this.format
+		);
 	}
 
-	protected IBakedModel getCachedTextureModel(String texture) {
+	private IBakedModel getCachedTextureModel(String texture) {
 		return cache.computeIfAbsent(texture, (tex) -> getTexturedModel(ImmutableMap.of(textureKey, tex)));
 	}
 
@@ -74,22 +85,22 @@ public class TextureModel extends BakedModelWrapper<IBakedModel> {
 		static ItemTextureOverride INSTANCE = new ItemTextureOverride();
 
 		private ItemTextureOverride() {
-			super(ImmutableList.of());
+			super();
 		}
 
-		@Nonnull
+		@Nullable
 		@Override
-		public IBakedModel handleItemState(@Nonnull IBakedModel originalModel, ItemStack stack, World world, EntityLivingBase entity) {
+		public IBakedModel getModelWithOverrides(@Nonnull IBakedModel originalModel, @Nonnull ItemStack stack, @Nullable World world, @Nullable LivingEntity entity) {
 			if(originalModel instanceof TextureModel) {
 				// read out the data on the itemstack
-				ItemStack blockStack = new ItemStack(TagUtil.getTagSafe(stack).getCompoundTag(TextureBlockUtil.TAG_TEXTURE));
+				ItemStack blockStack = ItemStack.read(TagUtil.getTagSafe(stack).getCompound(TextureBlockUtil.TAG_TEXTURE));
 				if(!blockStack.isEmpty()) {
 					// get model from data
 					Item item = blockStack.getItem();
 					Block block = Block.getBlockFromItem(item);
-					String texture = ModelHelper.getTextureFromBlock(block, item.getMetadata(blockStack)).getIconName();
+					ResourceLocation texture = ModelHelper.getTextureFromBlockstate(block.getDefaultState()).getName();
 					TextureModel textureModel = (TextureModel) originalModel;
-					return textureModel.getCachedTextureModel(texture);
+					return textureModel.getCachedTextureModel(texture.toString());
 				}
 			}
 

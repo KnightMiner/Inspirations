@@ -1,8 +1,8 @@
 {
 	"ambientocclusion": false,
-  "textures": {
-    "particle": "#wool"
-  },
+	"textures": {
+	"particle": "#wool"
+	},
 	"elements": [
 		{
 			"name": "plate",

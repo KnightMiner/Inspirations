@@ -1,6 +1,0 @@
-{
-    "parent": "inspirations:block/carpet/wall_post/base",
-    "textures": {
-        "wool": "blocks/wool_colored_silver"
-    }
-}

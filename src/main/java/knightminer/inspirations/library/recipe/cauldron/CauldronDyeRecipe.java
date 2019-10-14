@@ -2,7 +2,7 @@ package knightminer.inspirations.library.recipe.cauldron;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
 import slimeknights.mantle.util.RecipeMatch;
 
@@ -12,19 +12,19 @@ import slimeknights.mantle.util.RecipeMatch;
 @ParametersAreNonnullByDefault
 public class CauldronDyeRecipe extends CauldronRecipeMatchRecipe {
 
-	private EnumDyeColor color;
+	private DyeColor color;
 
 	/**
 	 * @param input  Input recipe match entry
 	 * @param color  Color to test for in the cauldron
 	 * @param result Resulting item stack
 	 */
-	public CauldronDyeRecipe(RecipeMatch input, EnumDyeColor color, ItemStack result, int levels) {
+	public CauldronDyeRecipe(RecipeMatch input, DyeColor color, ItemStack result, int levels) {
 		super(input, result, null, levels);
 		this.color = color;
 	}
 
-	public CauldronDyeRecipe(RecipeMatch input, EnumDyeColor color, ItemStack result) {
+	public CauldronDyeRecipe(RecipeMatch input, DyeColor color, ItemStack result) {
 		this(input, color, result, 1);
 	}
 
@@ -33,7 +33,7 @@ public class CauldronDyeRecipe extends CauldronRecipeMatchRecipe {
 	 * @param color  Color to test for in the cauldron
 	 * @param result Resulting item stack
 	 */
-	public CauldronDyeRecipe(ItemStack input, EnumDyeColor color, ItemStack result) {
+	public CauldronDyeRecipe(ItemStack input, DyeColor color, ItemStack result) {
 		this(RecipeMatch.of(input), color, result);
 	}
 

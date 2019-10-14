@@ -1,10 +1,9 @@
 {
   "parent": "block/block",
-	"ambientocclusion": false,
+	"ambientocclusion": true,
 	"textures": {
-		"particle": "blocks/stone_slab_top",
-		"top":      "blocks/stone_slab_top",
-		"stone":    "blocks/stone_slab_top"
+		"particle": "block/smooth_stone",
+		"stone":    "block/smooth_stone"
 	},
 	"elements": [
 		{
@@ -16,7 +15,6 @@
 				"east":  { "texture": "#stone" },
 				"south": { "texture": "#stone" },
 				"west":  { "texture": "#stone" },
-				"up":    { "texture": "#top", "tintindex": 1 },
 				"down":  { "texture": "#stone", "cullface": "down" }
 			}
 		},

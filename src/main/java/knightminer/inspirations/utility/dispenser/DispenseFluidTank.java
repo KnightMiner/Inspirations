@@ -1,38 +1,45 @@
 package knightminer.inspirations.utility.dispenser;
 
-import net.minecraft.block.BlockDispenser;
-import net.minecraft.dispenser.BehaviorDefaultDispenseItem;
-import net.minecraft.dispenser.IBehaviorDispenseItem;
+import knightminer.inspirations.library.InspirationsRegistry;
+import net.minecraft.block.DispenserBlock;
+import net.minecraft.dispenser.DefaultDispenseItemBehavior;
 import net.minecraft.dispenser.IBlockSource;
+import net.minecraft.dispenser.IDispenseItemBehavior;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntityDispenser;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.tileentity.DispenserTileEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidActionResult;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.capability.IFluidHandler;
 
-public class DispenseFluidTank extends BehaviorDefaultDispenseItem {
-	private static final BehaviorDefaultDispenseItem DEFAULT = new BehaviorDefaultDispenseItem();
-	private IBehaviorDispenseItem fallback;
-	public DispenseFluidTank(IBehaviorDispenseItem fallback) {
+import javax.annotation.Nonnull;
+
+public class DispenseFluidTank extends DefaultDispenseItemBehavior {
+	private static final DefaultDispenseItemBehavior DEFAULT = new DefaultDispenseItemBehavior();
+	private IDispenseItemBehavior fallback;
+	public DispenseFluidTank(IDispenseItemBehavior fallback) {
 		this.fallback = fallback;
 	}
 
+	@Nonnull
 	@Override
 	protected ItemStack dispenseStack(IBlockSource source, ItemStack stack){
-		EnumFacing side = source.getBlockState().getValue(BlockDispenser.FACING);
+		if(!stack.getItem().isIn(InspirationsRegistry.TAG_DISP_FLUID_TANKS)) {
+			return fallback.dispense(source, stack);
+		}
+
+		Direction side = source.getBlockState().get(DispenserBlock.FACING);
 		BlockPos pos = source.getBlockPos().offset(side);
 		World world = source.getWorld();
-		IFluidHandler handler = FluidUtil.getFluidHandler(world, pos, side.getOpposite());
-		if(handler != null) {
+		return FluidUtil.getFluidHandler(world, pos, side.getOpposite()).map((handler) -> {
 			FluidActionResult result;
-			FluidStack fluid = FluidUtil.getFluidContained(stack);
-			if(fluid != null) {
+			LazyOptional<FluidStack> optFluid = FluidUtil.getFluidContained(stack);
+			if(optFluid.isPresent()) {
 				result = FluidUtil.tryEmptyContainer(stack, handler, Integer.MAX_VALUE, null, true);
 			} else {
 				result = FluidUtil.tryFillContainer(stack, handler, Integer.MAX_VALUE, null, true);
@@ -41,20 +48,20 @@ public class DispenseFluidTank extends BehaviorDefaultDispenseItem {
 			if(result.isSuccess()) {
 				ItemStack resultStack = result.getResult();
 				// play sound
-				SoundEvent sound;
-				if(fluid != null) {
-					sound = fluid.getFluid().getEmptySound(fluid);
-				} else {
-					FluidStack resultFluid = FluidUtil.getFluidContained(resultStack);
-					sound = resultFluid.getFluid().getFillSound(resultFluid);
-				}
+				SoundEvent sound = optFluid.map(
+					(fluid) -> fluid.getFluid().getAttributes().getEmptySound(fluid)
+				).orElseGet(() -> {
+					FluidStack resultFluid = FluidUtil.getFluidContained(resultStack).orElseThrow(AssertionError::new);
+					return resultFluid.getFluid().getAttributes().getFillSound(resultFluid);
+				});
+
 				world.playSound(null, pos, sound, SoundCategory.BLOCKS, 1.0F, 1.0F);
 
 				if(stack.getCount() == 1) {
 					return resultStack;
 				}
 
-				if(!resultStack.isEmpty() && ((TileEntityDispenser)source.getBlockTileEntity()).addItemStack(resultStack) < 0) {
+				if(!resultStack.isEmpty() && ((DispenserTileEntity)source.getBlockTileEntity()).addItemStack(resultStack) < 0) {
 					DEFAULT.dispense(source, resultStack);
 				}
 
@@ -64,8 +71,6 @@ public class DispenseFluidTank extends BehaviorDefaultDispenseItem {
 			}
 			// TODO: fallback?
 			return DEFAULT.dispense(source, stack);
-		}
-
-		return fallback.dispense(source, stack);
+		}).orElseGet(() -> fallback.dispense(source, stack));
 	}
 }

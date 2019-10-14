@@ -1,7 +1,11 @@
 package knightminer.inspirations.plugins.jei;
 
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
+import knightminer.inspirations.library.Util;
+import mezz.jei.api.helpers.IJeiHelpers;
+import mezz.jei.api.recipe.IRecipeManager;
+import mezz.jei.api.registration.IModIngredientRegistration;
+import mezz.jei.api.registration.IRecipeRegistration;
+import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import javax.annotation.Nonnull;
@@ -22,19 +26,14 @@ import knightminer.inspirations.plugins.jei.smashing.SmashingRecipeCategory;
 import knightminer.inspirations.plugins.jei.smashing.SmashingRecipeChecker;
 import knightminer.inspirations.plugins.jei.texture.TextureRecipeHandler;
 import knightminer.inspirations.plugins.jei.texture.TextureSubtypeInterpreter;
-import mezz.jei.api.IGuiHelper;
-import mezz.jei.api.IJeiHelpers;
-import mezz.jei.api.IJeiRuntime;
+import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.IModPlugin;
-import mezz.jei.api.IModRegistry;
-import mezz.jei.api.IRecipeRegistry;
-import mezz.jei.api.ISubtypeRegistry;
-import mezz.jei.api.gui.ICraftingGridHelper;
-import mezz.jei.api.ingredients.IModIngredientRegistration;
-import mezz.jei.api.recipe.IRecipeCategoryRegistration;
-import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
+import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
+import mezz.jei.api.registration.IRecipeCategoryRegistration;
+import mezz.jei.api.registration.ISubtypeRegistration;
+import net.minecraft.util.ResourceLocation;
 
-@mezz.jei.api.JEIPlugin
+@mezz.jei.api.JeiPlugin
 public class JEIPlugin implements IModPlugin {
 	public static IJeiHelpers jeiHelpers;
 	// crafting grid slots, integer constants from the default crafting grid implementation
@@ -42,19 +41,26 @@ public class JEIPlugin implements IModPlugin {
 	private static final int craftInputSlot1 = 1;
 
 	public static ICraftingGridHelper craftingGridHelper;
-	public static IRecipeRegistry recipeRegistry;
+	public static IRecipeManager recipeRegistry;
 	public static CauldronRecipeCategory cauldron;
 
+	@Nonnull
 	@Override
-	public void registerItemSubtypes(ISubtypeRegistry registry) {
+	public ResourceLocation getPluginUid() {
+		return Util.getResource("jeiPlugin");
+	}
+
+	@Override
+	public void registerItemSubtypes(ISubtypeRegistration registry) {
 		TextureSubtypeInterpreter texture = new TextureSubtypeInterpreter();
 
 		// tools
 		if(PulseBase.isBuildingLoaded()) {
 			// bookshelves
-			if(InspirationsBuilding.bookshelf != null) {
-				registry.registerSubtypeInterpreter(Item.getItemFromBlock(InspirationsBuilding.bookshelf), texture);
-			}
+			registry.registerSubtypeInterpreter(Item.getItemFromBlock(InspirationsBuilding.shelf_normal), texture);
+			registry.registerSubtypeInterpreter(Item.getItemFromBlock(InspirationsBuilding.shelf_ancient), texture);
+			registry.registerSubtypeInterpreter(Item.getItemFromBlock(InspirationsBuilding.shelf_rainbow), texture);
+			registry.registerSubtypeInterpreter(Item.getItemFromBlock(InspirationsBuilding.shelf_tomes), texture);
 
 			// enlightened bush
 			if(InspirationsBuilding.enlightenedBush != null) {
@@ -69,18 +75,14 @@ public class JEIPlugin implements IModPlugin {
 
 		if(PulseBase.isRecipesLoaded()) {
 			// Anvil
-			if(Config.enableAnvilSmashing) {
-				registry.addRecipeCategories(new SmashingRecipeCategory(guiHelper));
-			}
+			registry.addRecipeCategories(new SmashingRecipeCategory(guiHelper));
 			// cauldron
-			if(Config.enableCauldronRecipes) {
-				registry.addRecipeCategories(cauldron = new CauldronRecipeCategory(guiHelper));
-			}
+			registry.addRecipeCategories(cauldron = new CauldronRecipeCategory(guiHelper));
 		}
 	}
 
 	@Override
-	public void register(@Nonnull IModRegistry registry) {
+	public void registerRecipes(IRecipeRegistration registry) {
 		jeiHelpers = registry.getJeiHelpers();
 		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
 
@@ -90,11 +92,11 @@ public class JEIPlugin implements IModPlugin {
 
 		// tweaks
 		if(PulseBase.isRecipesLoaded()) {
-			if(Config.enableAnvilSmashing) {
+			if(Config.enableAnvilSmashing.get()) {
 				registry.addRecipes(SmashingRecipeChecker.getRecipes(), SmashingRecipeCategory.CATEGORY);
 				registry.addRecipeCatalyst(new ItemStack(Blocks.ANVIL), SmashingRecipeCategory.CATEGORY);
 			}
-			if(Config.enableCauldronRecipes) {
+			if(Config.enableCauldronRecipes()) {
 				registry.addRecipes(CauldronRecipeChecker.getRecipes(), CauldronRecipeCategory.CATEGORY);
 				registry.addRecipeCatalyst(new ItemStack(Items.CAULDRON), CauldronRecipeCategory.CATEGORY);
 			}
@@ -102,19 +104,17 @@ public class JEIPlugin implements IModPlugin {
 	}
 
 	@Override
-	public void registerIngredients(IModIngredientRegistration registry) {
+	public void registerIngredients(IModIngredientRegistration registration) {
 		if(PulseBase.isRecipesLoaded()) {
-			if(Config.enableCauldronRecipes) {
-				// dye ingredients
-				registry.register(DyeIngredient.class, DyeIngredientHelper.ALL_DYES, DyeIngredientHelper.INSTANCE, DyeIngredientRenderer.INVENTORY);
-				// potion ingredients
-				registry.register(PotionIngredient.class, PotionIngredientHelper.ALL_POTIONS, PotionIngredientHelper.INSTANCE, PotionIngredientRenderer.INVENTORY);
-			}
+			// dye ingredients
+			registration.register(() -> DyeIngredient.class, DyeIngredientHelper.ALL_DYES, DyeIngredientHelper.INSTANCE, DyeIngredientRenderer.INVENTORY);
+			// potion ingredients
+			registration.register(() -> PotionIngredient.class, PotionIngredientHelper.ALL_POTIONS, PotionIngredientHelper.INSTANCE, PotionIngredientRenderer.INVENTORY);
 		}
 	}
 
 	@Override
-	public void onRuntimeAvailable(@Nonnull IJeiRuntime jeiRuntime) {
-		recipeRegistry = jeiRuntime.getRecipeRegistry();
+	public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
+		recipeRegistry = jeiRuntime.getRecipeManager();
 	}
 }

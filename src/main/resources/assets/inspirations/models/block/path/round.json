@@ -1,8 +1,8 @@
 {
     "parent": "block/thin_block",
     "textures": {
-        "particle": "blocks/stone",
-        "texture": "blocks/stone"
+        "particle": "block/stone",
+        "texture": "block/stone"
     },
     "elements": [
         {

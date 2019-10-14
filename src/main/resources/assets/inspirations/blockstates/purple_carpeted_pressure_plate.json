@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "powered=false": {
+      "model": "inspirations:block/carpet/plate/purple"
+    },
+    "powered=true": {
+      "model": "inspirations:block/carpet/plate/purple_pressed"
+    }
+  }
+}

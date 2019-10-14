@@ -2,121 +2,65 @@ package knightminer.inspirations.building.block;
 
 import java.util.Locale;
 
-import net.minecraft.block.BlockFalling;
-import net.minecraft.block.BlockSapling;
+import knightminer.inspirations.common.Config;
+import knightminer.inspirations.common.IHidable;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.SaplingBlock;
+import net.minecraft.block.FallingBlock;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyEnum;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.block.material.MaterialColor;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
-import net.minecraftforge.common.EnumPlantType;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.world.IBlockReader;
+import net.minecraftforge.common.PlantType;
+import net.minecraftforge.common.ToolType;
 
-public class BlockMulch extends BlockFalling {
+import javax.annotation.Nonnull;
 
-	protected static final AxisAlignedBB BOUNDS = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.9375D, 1.0D);
+public class BlockMulch extends FallingBlock implements IHidable {
 
-	public static final PropertyEnum<MulchColor> COLOR = PropertyEnum.create("color", MulchColor.class);
+	protected static final VoxelShape SHAPE = Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 15.0D, 16.0D);
 
-	public BlockMulch() {
-		super(Material.WOOD);
-
-		this.setHarvestLevel("shovel", -1);
-		this.setSoundType(SoundType.GROUND);
-		this.setHardness(0.6f);
-		this.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
+	public BlockMulch(MaterialColor color) {
+		super(Properties.create(Material.WOOD, color)
+				.harvestTool(ToolType.SHOVEL)
+				.sound(SoundType.WET_GRASS)
+				.hardnessAndResistance(0.6F)
+		);
 	}
 
-	/*
-	 * Types
-	 */
-
 	@Override
-	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, COLOR);
+	public boolean isEnabled() {
+		return Config.enableMulch.get();
 	}
 
-	/**
-	 * Convert the given metadata into a BlockState for this Block
-	 */
 	@Override
-	public IBlockState getStateFromMeta(int meta) {
-		return this.getDefaultState()
-				.withProperty(COLOR, MulchColor.fromMeta(meta));
-	}
-
-	/**
-	 * Convert the BlockState into the correct metadata value
-	 */
-	@Override
-	public int getMetaFromState(IBlockState state) {
-		return state.getValue(COLOR).getMeta();
-	}
-
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void getSubBlocks(CreativeTabs tab, NonNullList<ItemStack> list) {
-		for(MulchColor type : MulchColor.values()) {
-			list.add(new ItemStack(this, 1, type.getMeta()));
+	public void fillItemGroup(@Nonnull ItemGroup group, @Nonnull NonNullList<ItemStack> items) {
+		if(shouldAddtoItemGroup(group)) {
+			super.fillItemGroup(group, items);
 		}
 	}
 
+	@Nonnull
 	@Override
-	public int damageDropped(IBlockState state) {
-		return getMetaFromState(state);
+	public VoxelShape getCollisionShape(@Nonnull BlockState state, @Nonnull IBlockReader worldIn, @Nonnull BlockPos pos, ISelectionContext context) {
+		return SHAPE;
 	}
-
 
 	/*
 	 * Plants
 	 */
-
 	@Override
-	public boolean canSustainPlant(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing direction, net.minecraftforge.common.IPlantable plantable) {
+	public boolean canSustainPlant(@Nonnull BlockState state, @Nonnull IBlockReader world, BlockPos pos, @Nonnull Direction direction, net.minecraftforge.common.IPlantable plantable) {
 		// we are fine with most plants, but saplings are a bit much
 		// this is mostly cop out since I have no way of stopping sapling growth
-		return plantable.getPlantType(world, pos.offset(direction)) == EnumPlantType.Plains && !(plantable instanceof BlockSapling);
-	}
-
-
-	public static enum MulchColor implements IStringSerializable {
-		PLAIN,
-		BROWN,
-		YELLOW,
-		AMBER,
-		RUBY,
-		RED,
-		BLACK,
-		BLUE;
-
-		private int meta;
-		MulchColor() {
-			this.meta = ordinal();
-		}
-
-		public int getMeta() {
-			return meta;
-		}
-
-		@Override
-		public String getName() {
-			return this.name().toLowerCase(Locale.US);
-		}
-
-		public static MulchColor fromMeta(int i) {
-			if(i < 0 || i >= values().length) {
-				i = 0;
-			}
-			return values()[i];
-		}
+		return plantable.getPlantType(world, pos.offset(direction)) == PlantType.Plains && !(plantable instanceof SaplingBlock);
 	}
 }

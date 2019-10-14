@@ -1,0 +1,22 @@
+{
+  "conditions": [
+    {
+      "type": "inspirations:pulse_loaded",
+      "pulse": "InspirationsBuilding"
+    },
+    {
+      "type": "inspirations:config",
+      "prop": "colored_books"
+    }
+  ],
+  "type": "minecraft:crafting_shapeless",
+  "group": "inspirations:colored_book",
+  "result": {
+    "item": "inspirations:light_blue_book",
+    "count": 1
+  },
+  "ingredients": [
+    { "tag": "forge:dyes/light_blue" },
+    { "item": "minecraft:book" }
+  ]
+}

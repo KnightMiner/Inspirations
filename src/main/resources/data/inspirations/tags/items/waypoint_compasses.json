@@ -1,0 +1,21 @@
+{
+  "values": [],
+  "optional": [
+    "inspirations:waypoint_compass",
+    "inspirations:orange_waypoint_compass", 
+    "inspirations:magenta_waypoint_compass", 
+    "inspirations:light_blue_waypoint_compass", 
+    "inspirations:yellow_dyed_waypoint_compass", 
+    "inspirations:lime_waypoint_compass", 
+    "inspirations:pink_waypoint_compass", 
+    "inspirations:gray_waypoint_compass", 
+    "inspirations:silver_waypoint_compass", 
+    "inspirations:cyan_waypoint_compass", 
+    "inspirations:purple_waypoint_compass", 
+    "inspirations:blue_waypoint_compass", 
+    "inspirations:brown_waypoint_compass", 
+    "inspirations:green_waypoint_compass", 
+    "inspirations:red_waypoint_compass", 
+    "inspirations:black_waypoint_compass"
+    ]
+  }

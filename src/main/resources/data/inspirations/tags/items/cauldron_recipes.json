@@ -1,0 +1,20 @@
+{
+  "_comment": "Items with this tag can be used to perform cauldron recipes in a dispenser",
+  "values": [
+      "minecraft:beetroot_soup",
+      "minecraft:bowl",
+      "minecraft:glass_bottle",
+      "minecraft:lingering_potion",
+      "minecraft:mushroom_stew",
+      "minecraft:potion",
+      "minecraft:rabbit_stew",
+      "minecraft:splash_potion"
+  ],
+  "optional": [
+    "#inspirations:dyed_bottles",
+    "inspirations:splash_bottle",
+    "inspirations:lingering_bottle",
+    "toughasnails:fruit_juice",
+    "toughasnails:purified_water_bottle"
+  ]
+}

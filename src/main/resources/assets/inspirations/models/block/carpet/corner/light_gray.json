@@ -1,0 +1,6 @@
+{
+    "parent": "inspirations:block/carpet/corner/base",
+    "textures": {
+        "wool": "block/light_gray_wool"
+    }
+}

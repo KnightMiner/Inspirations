@@ -1,0 +1,39 @@
+{
+  "_comment": "This overwrites minecraft:block/syringa",
+  "type": "minecraft:block",
+  "pools": [{
+    "rolls": 1,
+    "entries": [{
+      "type": "minecraft:alternatives",
+      "children": [
+        {
+          "type": "minecraft:item",
+          "name": "inspirations:syringa",
+          "_comment": "Each block will drop a flower...",
+          "conditions": [
+            { "condition": "inspirations:pulse_loaded", "pulse": "InspirationsBuilding" },
+            { "condition": "inspirations:config", "prop": "flowers" },
+            { 
+              "condition": "minecraft:match_tool",
+              "predicate": { "item": "minecraft:shears" }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:lilac",
+          "conditions": [
+            {
+              "condition": "minecraft:block_state_property",
+              "block": "minecraft:lilac",
+              "properties": { "half": "lower" }
+            }
+          ]
+        }
+      ]
+    }],
+    "conditions": [
+      { "condition": "minecraft:survives_explosion" }
+    ]
+  }]
+}

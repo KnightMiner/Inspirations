@@ -1,0 +1,26 @@
+{
+  "conditions": [
+    {
+      "type": "inspirations:pulse_loaded",
+      "pulse": "InspirationsBuilding"
+    },
+    {
+      "type": "inspirations:config",
+      "prop": "path"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "group": "inspirations:path",
+  "pattern": [
+    "BB"
+  ],
+  "key": {
+    "B": {
+      "item": "minecraft:bricks"
+    }
+  },
+  "result": {
+    "item": "inspirations:brick_path",
+    "count": 3
+  }
+}

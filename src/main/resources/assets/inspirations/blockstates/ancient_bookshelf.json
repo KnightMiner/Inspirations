@@ -1,0 +1,18 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "inspirations:block/bookshelf/ancient",
+    "textures": {
+      "texture": "block/planks_oak",
+      "books": "inspirations:block/books_ancient"
+    }
+  },
+  "variants": {
+    "facing": {
+      "south": {},
+      "west":  { "y":  90 },
+      "north": { "y": 180 },
+      "east":  { "y": 270 }
+    }
+  }
+}

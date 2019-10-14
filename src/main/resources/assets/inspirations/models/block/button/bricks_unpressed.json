@@ -1,7 +1,7 @@
 {
     "textures": {
-        "particle": "blocks/brick",
-        "button":   "blocks/brick"
+        "particle": "block/bricks",
+        "button":   "block/bricks"
     },
     "elements": [
         {

@@ -1,9 +1,9 @@
 package knightminer.inspirations.recipes.recipe;
 
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
-import knightminer.inspirations.recipes.InspirationsRecipes;
-import net.minecraft.init.Items;
-import net.minecraft.init.SoundEvents;
+import knightminer.inspirations.recipes.item.ItemMixedDyedWaterBottle;
+import net.minecraft.item.Items;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundEvent;
 
@@ -17,7 +17,7 @@ public enum FillDyedBottleFromCauldron implements ICauldronRecipe {
 
 	@Override
 	public ItemStack getResult(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		return InspirationsRecipes.dyedWaterBottle.getStackWithColor(state.getColor());
+		return ItemMixedDyedWaterBottle.bottleFromDye(state.getColor());
 	}
 
 	@Override

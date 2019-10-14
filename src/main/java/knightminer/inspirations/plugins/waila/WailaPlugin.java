@@ -1,17 +1,23 @@
 package knightminer.inspirations.plugins.waila;
 
-import com.google.common.eventbus.Subscribe;
+import knightminer.inspirations.Inspirations;
+import knightminer.inspirations.library.Util;
+import knightminer.inspirations.recipes.tileentity.TileCauldron;
+import mcp.mobius.waila.api.IRegistrar;
+import mcp.mobius.waila.api.IWailaPlugin;
+import mcp.mobius.waila.api.TooltipPosition;
+import net.minecraft.util.ResourceLocation;
 
-import net.minecraftforge.fml.common.event.FMLInterModComms;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import slimeknights.mantle.pulsar.pulse.Pulse;
+@mcp.mobius.waila.api.WailaPlugin(Inspirations.modID)
+public class WailaPlugin implements IWailaPlugin {
+	static final ResourceLocation CONFIG_CAULDRON = Util.getResource("cauldron");
 
-@Pulse(id = "WailaPlugin", modsRequired = WailaPlugin.modid, defaultEnable = true)
-public class WailaPlugin {
-	public static final String modid = "waila";
+	@Override
+	public void register(IRegistrar registrar) {
+		// config entries
+		registrar.addConfig(CONFIG_CAULDRON, true);
 
-	@Subscribe
-	public void preInit(FMLPreInitializationEvent event) {
-		FMLInterModComms.sendMessage(modid, "register", "knightminer.inspirations.plugins.waila.WailaRegistrar.registerWaila");
+		// cauldron info
+		registrar.registerComponentProvider(new CauldronProvider(), TooltipPosition.BODY, TileCauldron.class);
 	}
 }

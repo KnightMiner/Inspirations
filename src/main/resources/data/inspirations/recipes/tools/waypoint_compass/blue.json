@@ -1,0 +1,21 @@
+{
+  "conditions": [
+    {
+      "type": "inspirations:pulse_loaded",
+      "pulse": "InspirationsUtility"
+    },
+    {
+      "type": "inspirations:config",
+      "prop": "dye_waypoint_compass"
+    }
+  ],
+  "type": "inspirations:dye_waypoint_compass",
+  "group": "inspirations:dye_waypoint_compass",
+  "result": {
+    "item": "inspirations:blue_waypoint_compass"
+  },
+  "ingredients": [
+    { "tag": "inspirations:waypoint_compasses" },
+    { "tag": "forge:dyes/blue" }
+  ]
+}

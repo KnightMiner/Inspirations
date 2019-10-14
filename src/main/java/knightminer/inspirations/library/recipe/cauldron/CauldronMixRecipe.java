@@ -5,11 +5,12 @@ import java.util.List;
 import com.google.common.collect.ImmutableList;
 
 import knightminer.inspirations.library.InspirationsRegistry;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.capability.IFluidHandlerItem;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 
 /**
  * Recipe to combine two fluids into an item output
@@ -21,9 +22,9 @@ public class CauldronMixRecipe implements ISimpleCauldronRecipe {
 
 	/**
 	 * Combines two inputs into an item output. Input order does not matter, both can be either the container or in the cauldron
-	 * @param result  Item result
-	 * @param input1  First fluid for either container or cauldron, will show in JEI as the cauldron contents
-	 * @param input2  Second fluid for either container or cauldron, will show in JEI as a bucket
+	 * @param result Item result
+	 * @param input1 First fluid for either container or cauldron, will show in JEI as the cauldron contents
+	 * @param input2 Second fluid for either container or cauldron, will show in JEI as a bucket
 	 */
 	public CauldronMixRecipe(Fluid input1, Fluid input2, ItemStack result) {
 		this.result = result;
@@ -34,26 +35,23 @@ public class CauldronMixRecipe implements ISimpleCauldronRecipe {
 	@Override
 	public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {
 		// cauldron must be full of a fluid
-		if(level != InspirationsRegistry.getCauldronMax() || state.getFluid() == null) {
+		if(level != InspirationsRegistry.getCauldronMax() || state.getFluid() == Fluids.EMPTY) {
 			return false;
 		}
 
 		// stack must be a fluid container
-		IFluidHandlerItem fluidHandler = FluidUtil.getFluidHandler(stack);
-		if(fluidHandler == null) {
-			return false;
-		}
+		return FluidUtil.getFluidHandler(stack).map((fluidHandler) -> {
+			// fluid in stack must be a cauldron fluid
+			FluidStack fluidStack = fluidHandler.drain(1000, IFluidHandler.FluidAction.SIMULATE);
+			if(!CauldronState.fluidValid(fluidStack)) {
+				return false;
+			}
 
-		// fluid in stack must be a cauldron fluid
-		FluidStack fluidStack = fluidHandler.drain(1000, false);
-		if(!CauldronState.fluidValid(fluidStack)) {
-			return false;
-		}
-
-		// either input must be in the cauldron
-		Fluid fluid = fluidStack.getFluid();
-		return input1.matches(state) && input2.getFluid() == fluid
-				|| input2.matches(state) && input1.getFluid() == fluid;
+			// either input must be in the cauldron
+			Fluid fluid = fluidStack.getFluid();
+			return input1.matches(state) && input2.getFluid() == fluid
+					|| input2.matches(state) && input1.getFluid() == fluid;
+		}).orElse(false);
 	}
 
 	@Override
@@ -79,6 +77,11 @@ public class CauldronMixRecipe implements ISimpleCauldronRecipe {
 
 	@Override
 	public String toString() {
-		return String.format("CauldronMixRecipe: %s from %s and %s", getResult().toString(), input1.getFluid().getName(), input2.getFluid().getName());
+		return String.format(
+				"CauldronMixRecipe: %s from %s and %s",
+				getResult().toString(),
+				input1.getFluid().getRegistryName(),
+				input2.getFluid().getRegistryName()
+		);
 	}
 }

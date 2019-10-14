@@ -1,0 +1,26 @@
+{
+  "conditions": [
+    {
+      "type": "inspirations:pulse_loaded",
+      "pulse": "InspirationsBuilding"
+    },
+    {
+      "type": "inspirations:config",
+      "prop": "mulch"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " S ",
+    "SDS",
+    " S "
+  ],
+  "key": {
+    "S": { "tag": "forge:rods/wooden" },
+    "D": { "tag": "forge:dyes/blue" }
+  },
+  "result": {
+    "item": "inspirations:blue_mulch",
+    "count": 2
+  }
+}

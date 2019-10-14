@@ -10,10 +10,7 @@ import knightminer.inspirations.plugins.jei.cauldron.ingredient.PotionIngredient
 import knightminer.inspirations.plugins.jei.cauldron.ingredient.PotionIngredientRenderer;
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.recipes.block.BlockEnhancedCauldron.CauldronContents;
-import net.minecraft.init.PotionTypes;
-import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemStack;
-import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;

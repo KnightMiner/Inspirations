@@ -4,43 +4,45 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.recipe.cauldron.ISimpleCauldronRecipe;
-import knightminer.inspirations.recipes.InspirationsRecipes;
-import knightminer.inspirations.shared.InspirationsOredict;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
-import net.minecraftforge.oredict.OreIngredient;
 
 public class DyeCauldronWater implements ISimpleCauldronRecipe {
 
-	private EnumDyeColor color;
+	private DyeColor color;
 	private Ingredient dye;
-	public DyeCauldronWater(EnumDyeColor color) {
+	public DyeCauldronWater(DyeColor color) {
 		this.color = color;
-		this.dye = new OreIngredient(InspirationsOredict.dyeNameFor(color));
+		this.dye = Ingredient.fromTag(ItemTags.getCollection().getOrCreate(
+				new ResourceLocation("forge", "dyes/" + color.getName()
+		)));
 	}
 
 	@Override
 	public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {
 		// special case water bottles
-		if(level == 0 || stack.getItem() == InspirationsRecipes.dyedWaterBottle) {
+		if(level == 0 || stack.getItem().isIn(InspirationsRegistry.TAG_DYE_BOTTLES)) {
 			return false;
 		}
 
 		// type must be water or dye
 		// input must not be the same color as the original dye
 		return (state.isWater() || state.getColor() > -1)
-				&& dye.apply(stack) && color.colorValue != state.getColor();
+				&& dye.test(stack) && color.colorValue != state.getColor();
 	}
 
 	@Override
 	public List<ItemStack> getInput() {
 		// we want to ignore the dyed water bottle as that has special behavior
 		return Arrays.stream(dye.getMatchingStacks())
-				.filter(stack->stack.getItem() != InspirationsRecipes.dyedWaterBottle)
+				.filter(stack->!stack.getItem().isIn(InspirationsRegistry.TAG_DYE_BOTTLES))
 				.collect(Collectors.toList());
 	}
 

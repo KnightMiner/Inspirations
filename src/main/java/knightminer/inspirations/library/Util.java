@@ -1,34 +1,42 @@
 package knightminer.inspirations.library;
 
-import knightminer.inspirations.Inspirations;
-import knightminer.inspirations.library.util.ReflectionUtil;
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.EnumDyeColor;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionEffect;
-import net.minecraft.potion.PotionType;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.translation.I18n;
-import net.minecraftforge.oredict.OreDictionary;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import net.minecraft.enchantment.Enchantments;
+import net.minecraft.potion.Effect;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.EffectUtils;
+import net.minecraft.potion.Potion;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.storage.loot.LootContext;
+import net.minecraft.world.storage.loot.LootParameters;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import knightminer.inspirations.Inspirations;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.item.DyeColor;
+import net.minecraft.item.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.AxisAlignedBB;
+
+@SuppressWarnings("deprecation")
 public class Util {
 	public static String resource(String name) {
 		return String.format("%s:%s", Inspirations.modID, name.toLowerCase(Locale.US));
@@ -41,69 +49,63 @@ public class Util {
 		return new ResourceLocation(Inspirations.modID, res);
 	}
 
-	/**
-	 * Translate the string, insert parameters into the translation key
-	 */
-	public static String translate(String key, Object... pars) {
-		// translates twice to allow rerouting/alias
-		return I18n.translateToLocal(I18n.translateToLocal(String.format(key, pars)).trim()).trim();
-	}
-
-	/**
-	 * Translate the string, insert parameters into the result of the translation
-	 */
-	public static String translateFormatted(String key, Object... pars) {
-		// translates twice to allow rerouting/alias
-		return I18n.translateToLocal(I18n.translateToLocalFormatted(key, pars).trim()).trim();
-	}
-
-	public static boolean canTranslate(String key) {
-		return I18n.canTranslate(key);
-	}
-
 	public static Logger getLogger(String type) {
 		String log = Inspirations.modID;
 
 		return LogManager.getLogger(log + "-" + type);
 	}
 
-	public static boolean clickedAABB(AxisAlignedBB aabb, float hitX, float hitY, float hitZ) {
-		return aabb.minX <= hitX && hitX <= aabb.maxX
-				&& aabb.minY <= hitY && hitY <= aabb.maxY
-				&& aabb.minZ <= hitZ && hitZ <= aabb.maxZ;
+	public static boolean clickedAABB(AxisAlignedBB aabb, Vec3d hit) {
+		return aabb.minX <= hit.x && hit.x <= aabb.maxX
+				&& aabb.minY <= hit.y && hit.y <= aabb.maxY
+				&& aabb.minZ <= hit.z && hit.z <= aabb.maxZ;
+	}
+
+	// An item with Silk Touch, to make blocks drop their silk touch items if they have any.
+	// Using a Stick makes sure it won't be damaged.
+	private static ItemStack silkTouchItem = new ItemStack(Items.STICK);
+	static {
+		silkTouchItem.addEnchantment(Enchantments.SILK_TOUCH, 1);
 	}
 
 	/**
-	 * Gets an item stack from a block state. Uses Block::getSilkTouchDrop
+	 * Gets an item stack from a block state. Uses Silk Touch drops
 	 * @param state  Input state
 	 * @return  ItemStack for the state, or ItemStack.EMPTY if a valid item cannot be found
 	 */
-	public static ItemStack getStackFromState(@Nullable IBlockState state) {
+	public static ItemStack getStackFromState(ServerWorld world, @Nullable BlockState state) {
 		if (state == null) {
 			return ItemStack.EMPTY;
 		}
 		Block block = state.getBlock();
+
 		// skip air
 		if(block == Blocks.AIR) {
 			return ItemStack.EMPTY;
 		}
 
-		// first try getSilkTouchDrop, which just has to be protected
-		ItemStack drop = ReflectionUtil.invokeGetSilkTouchDrop(block, state);
-		if( drop != null ) { // stack is null if reflection fails
-			return drop;
+		// Fill a fake context in to get Silk Touch drops.
+		// From LootParameterSets.Block,
+		// BLOCK_STATE, POSITION and TOOL is required and
+		// THIS_ENTITY, BLOCK_ENTITY and EXPLOSION_RADIUS are optional.
+		// BLOCK_STATE is provided by getDrops().
+		List<ItemStack> drops = state.getDrops(new LootContext.Builder(world)
+				.withParameter(LootParameters.POSITION, new BlockPos(0, 0, 64))
+				.withParameter(LootParameters.TOOL, silkTouchItem)
+		);
+		if( drops.size() > 0 ) {
+			return drops.get(0);
 		}
 
-		// if it fails, do a fallback of damageDropped and item.getItemFromBlock
+		// if it fails, do a fallback of item.getItemFromBlock
 		InspirationsRegistry.log.error("Failed to get silk touch drop for {}, using fallback", state);
 
-		// fallback, use item and damage dropped
+		// fallback, use item dropped
 		Item item = Item.getItemFromBlock(block);
 		if(item == Items.AIR) {
 			return ItemStack.EMPTY;
 		}
-		int meta = block.damageDropped(state);
-		return new ItemStack(item, 1, meta);
+		return new ItemStack(item);
 	}
 
 	/**
@@ -160,7 +162,7 @@ public class Util {
 	}
 
 	/**
-	 * Splits a hex color integer into three float color components between 0 and 1
+	 * Merge three float color components between 0 and 1 into a hex color integer
 	 * @param component  float color component array, must be length 3
 	 * @return  Color integer value
 	 */
@@ -175,26 +177,27 @@ public class Util {
 	 * @param potionType  Potion type input
 	 * @param lores       List to add the tooltips into
 	 */
-	public static void addPotionTooltip(PotionType potionType, List<String> lores) {
-		List<PotionEffect> effects = potionType.getEffects();
+	public static void addPotionTooltip(Potion potionType, List<ITextComponent> lores) {
+		List<EffectInstance> effects = potionType.getEffects();
 
 		if (effects.isEmpty()) {
-			String s = translate("effect.none").trim();
-			lores.add(TextFormatting.GRAY + s);
+			lores.add(new TranslationTextComponent("effect.none").applyTextStyle(TextFormatting.GRAY));
 			return;
 		}
 
-		for (PotionEffect effect : effects) {
-			String effectString = translate(effect.getEffectName()).trim();
-			Potion potion = effect.getPotion();
+		for (EffectInstance effect : effects) {
+			ITextComponent effectString = effect.getPotion().getDisplayName();
+			Effect potion = effect.getPotion();
 
 			if (effect.getAmplifier() > 0) {
-				effectString += " " + translate("potion.potency." + effect.getAmplifier()).trim();
+				effectString.appendText(" ");
+				effectString.appendSibling(new TranslationTextComponent("potion.potency." + effect.getAmplifier()));
 			}
 			if (effect.getDuration() > 20) {
-				effectString += " (" + Potion.getPotionDurationString(effect, 1.0f) + ")";
+				effectString.appendSibling(new StringTextComponent(" (" + EffectUtils.getPotionDurationString(effect, 1.0f) + ")"));
 			}
-			lores.add((potion.isBadEffect() ? TextFormatting.RED : TextFormatting.BLUE) + effectString);
+			effectString.applyTextStyle(potion.isBeneficial() ? TextFormatting.BLUE : TextFormatting.RED);
+			lores.add(effectString);
 		}
 	}
 
@@ -203,47 +206,12 @@ public class Util {
 	 * @param color  Dye color input
 	 * @return  EnumDyeColor matching, or null for no match
 	 */
-	public static EnumDyeColor getDyeForColor(int color) {
-		for(EnumDyeColor dyeColor : EnumDyeColor.values()) {
-			if(dyeColor.colorValue == color) {
+	public static DyeColor getDyeForColor(int color) {
+		for(DyeColor dyeColor : DyeColor.values()) {
+			if(dyeColor.getId() == color) {
 				return dyeColor;
 			}
 		}
 		return null;
-	}
-
-	/**
-	 * Returns the closest raytrace result from a list
-	 * @param list  List of ray traces
-	 * @param end   Ending vector of the trace
-	 * @return  Cloest result
-	 */
-	public static RayTraceResult closestResult(List<RayTraceResult> list, Vec3d end) {
-		RayTraceResult closest = null;
-		double max = 0.0D;
-		for(RayTraceResult raytraceresult : list) {
-			if(raytraceresult != null) {
-				double distance = raytraceresult.hitVec.squareDistanceTo(end);
-				if(distance > max) {
-					closest = raytraceresult;
-					max = distance;
-				}
-			}
-		}
-
-		return closest;
-	}
-
-	/** Checks if the given stack matches the given oredict name */
-	public static boolean oreMatches(ItemStack stack, @Nonnull String ore) {
-		if (stack.isEmpty()) {
-			return false;
-		}
-		for (int id : OreDictionary.getOreIDs(stack)) {
-			if (ore.equals(OreDictionary.getOreName(id))) {
-				return true;
-			}
-		}
-		return false;
 	}
 }

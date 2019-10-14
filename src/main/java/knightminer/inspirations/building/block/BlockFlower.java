@@ -1,157 +1,121 @@
 package knightminer.inspirations.building.block;
 
-import java.util.Locale;
 import java.util.Random;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
+import knightminer.inspirations.common.Config;
+import knightminer.inspirations.common.IHidable;
+import knightminer.inspirations.library.Util;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockBush;
-import net.minecraft.block.BlockDoublePlant.EnumPlantType;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.BushBlock;
+import net.minecraft.block.DoublePlantBlock;
 import net.minecraft.block.IGrowable;
 import net.minecraft.block.SoundType;
-import net.minecraft.block.properties.PropertyEnum;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.init.Blocks;
+import net.minecraft.block.material.Material;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraft.world.storage.loot.ConstantRange;
+import net.minecraft.world.storage.loot.LootPool;
+import net.minecraft.world.storage.loot.LootTable;
+import net.minecraft.world.storage.loot.TableLootEntry;
+import net.minecraftforge.event.LootTableLoadEvent;
 
-public class BlockFlower extends BlockBush implements IGrowable {
-	public static final PropertyEnum<FlowerType> TYPE = PropertyEnum.create("type", FlowerType.class);
-
-	public BlockFlower() {
-		this.setDefaultState(this.blockState.getBaseState().withProperty(TYPE, FlowerType.ROSE));
-		this.setHardness(0F);
-		this.setSoundType(SoundType.PLANT);
-	}
+public class BlockFlower extends BushBlock implements IGrowable, IHidable {
+	private static final VoxelShape SHAPE = Block.makeCuboidShape(5.0D, 0.0D, 5.0D, 11.0D, 10.0D, 11.0D);
+	private final DoublePlantBlock largePlant;
 
 
-	/* Blockstate */
-
-	@Override
-	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, TYPE);
-	}
-
-	@Override
-	public IBlockState getStateFromMeta(int meta) {
-		return this.getDefaultState().withProperty(TYPE, FlowerType.fromMeta(meta));
+	public BlockFlower(DoublePlantBlock largePlant) {
+		super(Block.Properties.create(Material.PLANTS).hardnessAndResistance(0F).sound(SoundType.PLANT));
+		this.largePlant = largePlant;
 	}
 
 	@Override
-	public int getMetaFromState(IBlockState state) {
-		return state.getValue(TYPE).getMeta();
-	}
-
-	/**
-	 * Gets the metadata of the item this Block can drop. This method is called when the block gets destroyed. It
-	 * returns the metadata of the dropped item based on the old metadata of the block.
-	 */
-	@Override
-	public int damageDropped(IBlockState state) {
-		return state.getValue(TYPE).getMeta();
+	public boolean isEnabled() {
+		return Config.enableFlowers.get();
 	}
 
 	@Override
-	public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items)  {
-		for (FlowerType type : FlowerType.values()) {
-			items.add(new ItemStack(this, 1, type.getMeta()));
+	public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
+		if(shouldAddtoItemGroup(group)) {
+			super.fillItemGroup(group, items);
 		}
 	}
-
 
 	/* Planty stuff */
 
 	@Override
-	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-		return super.getBoundingBox(state, source, pos).offset(state.getOffset(source, pos));
+	public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
+		Vec3d off = state.getOffset(world, pos);
+		return SHAPE.withOffset(off.x, off.y, off.z);
 	}
 
 	@Override
-	public Block.EnumOffsetType getOffsetType() {
-		return Block.EnumOffsetType.XZ;
+	public VoxelShape getCollisionShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+		return VoxelShapes.empty();
 	}
 
+	@Override
+	public OffsetType getOffsetType() {
+		return OffsetType.XZ;
+	}
 
 	/* Doubling up */
 
 	@Override
-	public boolean canGrow(World world, BlockPos pos, IBlockState state, boolean isClient) {
-		return state.getValue(TYPE) != FlowerType.CYAN;
+	public boolean canGrow(IBlockReader world, BlockPos pos, BlockState state, boolean isClient) {
+		return largePlant != null;
 	}
 
 
 	@Override
-	public boolean canUseBonemeal(World world, Random rand, BlockPos pos, IBlockState state) {
+	public boolean canUseBonemeal(World worldIn, Random rand, BlockPos pos, BlockState state) {
 		return true;
 	}
 
 
 	@Override
-	public void grow(World worldIn, Random rand, BlockPos pos, IBlockState state) {
-		EnumPlantType type = state.getValue(TYPE).getDouble();
+	public void grow(World world, Random rand, BlockPos pos, BlockState state) {
 		// should not happen, but catch anyways
-		if(type == null) {
+		if(largePlant == null) {
 			return;
 		}
 
-		if (worldIn.isAirBlock(pos.up())) {
-			Blocks.DOUBLE_PLANT.placeAt(worldIn, pos, type, 2);
+		if (world.isAirBlock(pos.up())) {
+			largePlant.placeAt(world, pos, 2);
 		}
 	}
 
-	public static enum FlowerType implements IStringSerializable {
-		ROSE(EnumPlantType.ROSE),
-		SYRINGA(EnumPlantType.SYRINGA),
-		PAEONIA(EnumPlantType.PAEONIA),
-		CYAN(null);
-
-		private final EnumPlantType big;
-		private final int meta;
-		FlowerType(EnumPlantType big) {
-			this.meta = ordinal();
-			this.big = big;
+	// Inject the ability to drop this flower into the loot table for the large version.
+	public void injectLoot(LootTableLoadEvent event) {
+		if (largePlant == null ||
+				!event.getName().getNamespace().equals("minecraft") ||
+				!event.getName().getPath().equals("blocks/" + largePlant.getRegistryName().getPath())
+		) {
+			return;
 		}
-
-		public int getMeta() {
-			return this.meta;
+		// We have the right table. Now we want to find the pool which drops the item, and
+		// replace it with an alternatives check to drop us if hit by shears.
+		// If anything doesn't match what we expect, don't change anything.
+		LootTable table = event.getTable();
+		if (table.removePool("main") == null) {
+			return; // Wasn't removed.
 		}
-
-		public static FlowerType fromMeta(int meta) {
-			if(meta < 0 || meta >= values().length) {
-				meta = 0;
-			}
-
-			return values()[meta];
-		}
-
-		@Nullable
-		public EnumPlantType getDouble() {
-			return this.big;
-		}
-
-		@Nullable
-		public static FlowerType fromDouble(@Nonnull EnumPlantType big) {
-			for(FlowerType type : FlowerType.values()) {
-				if(big == type.getDouble()) {
-					return type;
-				}
-			}
-
-			return null;
-		}
-
-		@Override
-		public String getName() {
-			return name().toLowerCase(Locale.US);
-		}
+		ResourceLocation location = Util.getResource("blocks/inject/" + getRegistryName().getPath());
+		table.addPool(new LootPool.Builder()
+				.name(location.toString())
+				.rolls(ConstantRange.of(1))
+				.addEntry(TableLootEntry.builder(location))
+				.build()
+		);
 	}
 }

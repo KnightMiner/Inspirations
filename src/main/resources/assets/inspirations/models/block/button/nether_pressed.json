@@ -1,15 +1,37 @@
 {
     "parent": "block/block",
     "display": {
+        "thirdperson_righthand": {
+            "rotation": [75, -135, 0],
+            "scale": [0.375, 0.375, 0.375]
+        },
+        "thirdperson_lefthand": {
+            "rotation": [75, -135, 0],
+            "scale": [0.375, 0.375, 0.375]
+        },
+        "firstperson_righthand": {
+            "rotation": [-90, 0, -135],
+            "scale": [0.4, 0.4, 0.4]
+        },
+        "firstperson_lefthand": {
+            "rotation": [-90, 0, -135],
+            "scale": [0.4, 0.4, 0.4]
+        },
+        "ground": {
+            "scale": [0.5, 0.5, 0.5]
+        },
         "gui": {
-            "rotation": [ 30, 45, 0 ],
-            "translation": [ 0, 0, 0],
-            "scale":[ 0.625, 0.625, 0.625 ]
+            "rotation": [30, 45, 0],
+            "scale": [0.625, 0.625, 0.625]
+        },
+        "fixed": {
+            "rotation": [0, -180, 0],
+            "scale": [0.5, 0.5, 0.5]
         }
     },
     "textures": {
-        "particle": "blocks/nether_brick",
-        "button": "blocks/nether_brick"
+        "particle": "block/nether_bricks",
+        "button": "block/nether_bricks"
     },
     "elements": [
         {
@@ -19,10 +41,17 @@
             "faces": {
                 "north": { "texture": "#button", "cullface": "north" },
                 "east":  { "texture": "#button", "cullface": "east"  },
-                "south": { "texture": "#button", "cullface": "south" },
                 "west":  { "texture": "#button", "cullface": "west"  },
                 "up":    { "texture": "#button", "cullface": "up"    },
                 "down":  { "texture": "#button", "cullface": "down"  }
+            }
+        },
+        {
+            "name": "Button",
+            "from": [ 1, 8, 14 ], 
+            "to": [ 8, 11, 15 ], 
+            "faces": {
+                "south": { "texture": "#button", "cullface": "south" }
             }
         },
         {
@@ -52,7 +81,7 @@
         {
             "name": "Left",
             "from": [ 0, 8, 15 ], 
-            "to": [ 3, 11, 16 ], 
+            "to": [ 1, 11, 16 ], 
             "faces": {
                 "east":  { "texture": "#button", "cullface": "south" },
                 "south": { "texture": "#button", "cullface": "south" },
@@ -61,7 +90,7 @@
         },
         {
             "name": "Right",
-            "from": [ 10, 8, 15 ], 
+            "from": [ 8, 8, 15 ], 
             "to": [ 16, 11, 16 ], 
             "faces": {
                 "east":  { "texture": "#button", "cullface": "east"  },

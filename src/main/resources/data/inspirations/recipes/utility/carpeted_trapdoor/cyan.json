@@ -1,0 +1,26 @@
+
+{
+  "conditions": [
+    {
+      "type": "inspirations:pulse_loaded",
+      "pulse": "InspirationsUtility"
+    },
+    {
+      "type": "inspirations:config",
+      "prop": "carpeted_trapdoor"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "group": "inspirations:carpeted_trapdoor",
+  "result": {
+    "item": "inspirations:cyan_carpeted_trapdoor"
+  },
+  "pattern": [
+    "C",
+    "T"
+  ],
+  "key": {
+    "C": { "item": "minecraft:cyan_carpet" },
+    "T": { "tag": "minecraft:wooden_trapdoors" }
+  }
+}

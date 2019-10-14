@@ -1,128 +1,140 @@
 package knightminer.inspirations.building.block;
 
 import com.google.common.collect.ImmutableMap;
-import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.building.tileentity.TileBookshelf;
 import knightminer.inspirations.common.Config;
+import knightminer.inspirations.common.IHidable;
 import knightminer.inspirations.library.InspirationsRegistry;
-import knightminer.inspirations.library.PropertyUnlistedInteger;
-import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.util.TextureBlockUtil;
-import net.minecraft.block.BlockHorizontal;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.properties.PropertyDirection;
-import net.minecraft.block.properties.PropertyEnum;
-import net.minecraft.block.state.BlockFaceShape;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.fluid.IFluidState;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.InventoryHelper;
+import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.item.BlockItemUseContext;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.state.DirectionProperty;
+import net.minecraft.state.StateContainer;
+import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.Rotation;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.math.shapes.IBooleanFunction;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorld;
+import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
-import net.minecraftforge.common.property.ExtendedBlockState;
-import net.minecraftforge.common.property.IExtendedBlockState;
-import net.minecraftforge.common.property.IUnlistedProperty;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import slimeknights.mantle.block.BlockInventory;
-import slimeknights.mantle.property.PropertyString;
+import net.minecraft.world.storage.loot.LootContext;
+import net.minecraft.world.storage.loot.LootParameters;
+import net.minecraftforge.client.model.data.ModelProperty;
+import net.minecraftforge.fml.network.NetworkHooks;
+import slimeknights.mantle.block.InventoryBlock;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
-public class BlockBookshelf extends BlockInventory implements ITileEntityProvider {
+public class BlockBookshelf extends InventoryBlock implements ITileEntityProvider, IHidable {
 
-	public static final PropertyEnum<BookshelfType> TYPE = PropertyEnum.create("type", BookshelfType.class);
-	public static final PropertyDirection FACING = BlockHorizontal.FACING;
-	public static final PropertyString TEXTURE = TextureBlockUtil.TEXTURE_PROP;
-	public static final IUnlistedProperty<Integer> BOOKS = new PropertyUnlistedInteger("books");
+	public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+	public static final ModelProperty<String> TEXTURE = TextureBlockUtil.TEXTURE_PROP;
+	public static final ModelProperty<Integer> BOOKS = new ModelProperty<>();
 
 	public BlockBookshelf() {
-		super(Material.WOOD);
-		this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
-		this.setCreativeTab(CreativeTabs.DECORATIONS);
-		this.setHardness(2.0F);
-		this.setResistance(5.0F);
-		this.setSoundType(SoundType.WOOD);
+		super(Block.Properties.create(Material.WOOD)
+				.hardnessAndResistance(2.0F, 5.0F)
+				.sound(SoundType.WOOD)
+		);
+		this.setDefaultState(this.getStateContainer().getBaseState().with(FACING, Direction.NORTH));
 	}
 
 	@Override
-	protected ExtendedBlockState createBlockState() {
-		return new ExtendedBlockState(this, new IProperty<?>[]{TYPE, FACING}, new IUnlistedProperty[]{TEXTURE, BOOKS});
+	protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+		builder.add(FACING);
 	}
 
-	/**
-	 * Convert the given metadata into a BlockState for this Block
-	 */
+	@Nonnull
 	@Override
-	public IBlockState getStateFromMeta(int meta) {
-		return this.getDefaultState()
-				.withProperty(TYPE, BookshelfType.fromMeta(meta & 3))
-				.withProperty(FACING, EnumFacing.getHorizontal(meta >> 2));
+	public TileEntity createTileEntity(BlockState state, IBlockReader world) {
+		return new TileBookshelf();
 	}
 
-	/**
-	 * Convert the BlockState into the correct metadata value
-	 */
+	@Nullable
 	@Override
-	public int getMetaFromState(IBlockState state) {
-		return state.getValue(FACING).getHorizontalIndex() << 2
-				| state.getValue(TYPE).getMeta();
-	}
-
-	/**
-	 * Called by ItemBlocks just before a block is actually set in the world, to allow for adjustments to the
-	 * IBlockstate
-	 */
-	@Override
-	public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
-		return this.getStateFromMeta(meta).withProperty(FACING, placer.getHorizontalFacing().getOpposite());
+	public BlockState getStateForPlacement(BlockItemUseContext context) {
+		return getDefaultState().with(FACING, context.getPlacementHorizontalFacing().getOpposite());
 	}
 
 	@Override
-	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
+	public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
 		super.onBlockPlacedBy(world, pos, state, placer, stack);
 		TextureBlockUtil.placeTextureBlock(world, pos, stack);
 	}
 
+	@Nullable
 	@Override
-	public TileEntity createNewTileEntity(World worldIn, int meta) {
+	public TileEntity createNewTileEntity(@Nonnull IBlockReader world) {
 		return new TileBookshelf();
 	}
 
 	@Override
-	protected boolean openGui(EntityPlayer player, World world, BlockPos pos) {
-		player.openGui(Inspirations.instance, 0, world, pos.getX(), pos.getY(), pos.getZ());
-		return true;
+	protected boolean openGui(PlayerEntity player, World world, BlockPos pos) {
+		if(!(player instanceof ServerPlayerEntity)) {
+			throw new AssertionError("Needs to be server!");
+		}
+		TileEntity te = world.getTileEntity(pos);
+		if(te instanceof TileBookshelf) {
+			NetworkHooks.openGui((ServerPlayerEntity) player, (INamedContainerProvider) te, pos);
+			return true;
+		}
+		return false;
+	}
+
+	/* Enable/Disabling */
+
+	@Override
+	public boolean isEnabled() {
+		return Config.enableBookshelf.get();
+	}
+
+	@Override
+	public void fillItemGroup(@Nonnull ItemGroup group, @Nonnull NonNullList<ItemStack> items) {
+		if(shouldAddtoItemGroup(group)) {
+			super.fillItemGroup(group, items);
+		}
 	}
 
 
 	/* Activation */
+
 	@Override
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float clickX, float clickY, float clickZ) {
-		EnumFacing facing = state.getValue(FACING);
+	public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) {
+		Direction facing = state.get(FACING);
 
 		// skip sides, we don't need them
-		if(facing != side) {
+		if(facing != trace.getFace()) {
 			return false;
 		}
 
@@ -132,7 +144,7 @@ public class BlockBookshelf extends BlockInventory implements ITileEntityProvide
 		}
 
 		// if we did not click a book, just do the GUI as well
-		int book = bookClicked(facing, clickX, clickY, clickZ);
+		int book = bookClicked(facing, trace.getHitVec());
 		if(book == -1) {
 			return world.isRemote || openGui(player, world, pos);
 		}
@@ -140,12 +152,12 @@ public class BlockBookshelf extends BlockInventory implements ITileEntityProvide
 		TileEntity te = world.getTileEntity(pos);
 		if(te instanceof TileBookshelf) {
 			// try interacting
-			if (((TileBookshelf) te).interact(player, hand, book)) {
+			if(((TileBookshelf) te).interact(player, hand, book)) {
 				return true;
 			}
 
 			// if the offhand can interact, return false so we can process it later
-			if (InspirationsRegistry.isBook(player.getHeldItemOffhand())) {
+			if(InspirationsRegistry.isBook(player.getHeldItemOffhand())) {
 				return false;
 			}
 		}
@@ -153,129 +165,122 @@ public class BlockBookshelf extends BlockInventory implements ITileEntityProvide
 		return true;
 	}
 
-	private static int bookClicked(EnumFacing facing, float clickX, float clickY, float clickZ) {
+	private static int bookClicked(Direction facing, Vec3d click) {
 		// if we did not click between the shelves, ignore
-		if(clickY < 0.0625 || clickY > 0.9375) {
+		if(click.y < 0.0625 || click.y > 0.9375) {
 			return -1;
 		}
 		int shelf = 0;
 		// if we clicked below the middle shelf, add 7 to the book
-		if(clickY <= 0.4375) {
+		if(click.y <= 0.4375) {
 			shelf = 7;
 			// if we clicked below the top shelf but not quite in the middle shelf, no book
-		} else if(clickY < 0.5625) {
+		} else if(click.y < 0.5625) {
 			return -1;
 		}
 
-		int offX = facing.getFrontOffsetX();
-		int offZ = facing.getFrontOffsetZ();
+		int offX = facing.getXOffset();
+		int offZ = facing.getZOffset();
 		double x1 = offX == -1 ? 0.625 : 0.0625;
 		double z1 = offZ == -1 ? 0.625 : 0.0625;
-		double x2 = offX ==  1 ? 0.375 : 0.9375;
-		double z2 = offZ ==  1 ? 0.375 : 0.9375;
+		double x2 = offX == +1 ? 0.375 : 0.9375;
+		double z2 = offZ == +1 ? 0.375 : 0.9375;
 		// ensure we clicked within a shelf, not outside one
-		if(clickX < x1 || clickX > x2 || clickZ < z1 || clickZ > z2) {
+		if(click.x < x1 || click.x > x2 || click.z < z1 || click.z > z2) {
 			return -1;
 		}
 
 		// okay, so now we know we clicked in the book area, so just take the position clicked to determine where
-		EnumFacing dir = facing.rotateYCCW();
+		Direction dir = facing.rotateYCCW();
 		// subtract one pixel and multiply by our direction
-		double clicked = (dir.getFrontOffsetX() * clickX) + (dir.getFrontOffsetZ() * clickZ) - 0.0625;
+		double clicked = (dir.getXOffset() * click.x) + (dir.getZOffset() * click.z) - 0.0625;
 		// if negative, just add one to wrap back around
 		if(clicked < 0) {
 			clicked = 1 + clicked;
 		}
 
 		// multiply by 8 to account for extra 2 pixels
-		return shelf + Math.min((int)(clicked * 8), 7);
+		return shelf + Math.min((int) (clicked * 8), 7);
 	}
 
 	/*
 	 * Bounds
 	 */
-	private static final ImmutableMap<EnumFacing, AxisAlignedBB> BOUNDS;
-	private static final ImmutableMap<EnumFacing, AxisAlignedBB[]> TRACE_BOUNDS;
-	static {
-		// main bounds for collision and bounding box
-		ImmutableMap.Builder<EnumFacing, AxisAlignedBB> bounds = ImmutableMap.builder();
+	private static final ImmutableMap<Direction, VoxelShape> BOUNDS;
 
+	static {
 		// shelf bounds
-		ImmutableMap.Builder<EnumFacing, AxisAlignedBB[]> builder = ImmutableMap.builder();
-		for(EnumFacing side : EnumFacing.HORIZONTALS) {
-			int offX = side.getFrontOffsetX();
-			int offZ = side.getFrontOffsetZ();
+		ImmutableMap.Builder<Direction, VoxelShape> builder = ImmutableMap.builder();
+		for(Direction side : Direction.Plane.HORIZONTAL) {
+			// Construct the shelf by constructing a half slab, then cutting out the two shelves.
+
+			// Exterior slab shape. For each direction, do 0.1 if the side is pointing that way.
+			int offX = side.getXOffset();
+			int offZ = side.getZOffset();
 			double x1 = offX == -1 ? 0.5 : 0;
 			double z1 = offZ == -1 ? 0.5 : 0;
-			double x2 = offX ==  1 ? 0.5 : 1;
-			double z2 = offZ ==  1 ? 0.5 : 1;
+			double x2 = offX == 1 ? 0.5 : 1;
+			double z2 = offZ == 1 ? 0.5 : 1;
 
-			bounds.put(side, new AxisAlignedBB(x1, 0, z1, x2, 1, z2));
-			builder.put(side, new AxisAlignedBB[] {
-					new AxisAlignedBB(x1,  0,      z1,  x2,  0.0625, z2), // bottom shelf
-					new AxisAlignedBB(x1,  0.4375, z1,  x2,  0.5625, z2), // middle shelf
-					new AxisAlignedBB(x1,  0.9375, z1,  x2,  1,      z2), // top shelf
+			// Rotate the 2 X-Z points correctly for the inset shelves.
+			Vec3d min = new Vec3d(-7 / 16.0, 0, -7 / 16.0).rotateYaw(-(float) Math.PI / 2F * side.getHorizontalIndex());
+			Vec3d max = new Vec3d(7 / 16.0, 1, 0).rotateYaw(-(float) Math.PI / 2F * side.getHorizontalIndex());
 
-					new AxisAlignedBB(offX == -1 ? 0.625 : 0, 0, offZ == -1 ? 0.625 : 0, offX ==  1 ? 0.375 : 1, 1, offZ ==  1 ? 0.375 : 1), // back wall
-					new AxisAlignedBB(x1, 0, z1, offX == 0 ? 0.0625 : x2, 1, offZ == 0 ? 0.0625 : z2), // side wall 1
-					new AxisAlignedBB(offX == 0 ? 0.9375 : x1, 0, offZ == 0 ? 0.9375 : z1, x2, 1, z2), // side wall 2
-			});
+			// Then assemble.
+			builder.put(side, VoxelShapes.combineAndSimplify(
+					VoxelShapes.create(x1, 0, z1, x2, 1, z2), // Full half slab
+					VoxelShapes.or( // Then the two shelves.
+							VoxelShapes.create(0.5 + min.x, 1 / 16.0, 0.5 + min.z, 0.5 + max.x, 7 / 16.0, 0.5 + max.z),
+							VoxelShapes.create(0.5 + min.x, 9 / 16.0, 0.5 + min.z, 0.5 + max.x, 15 / 16.0, 0.5 + max.z)
+					),
+					IBooleanFunction.ONLY_FIRST
+			));
 		}
-		BOUNDS = bounds.build();
-		TRACE_BOUNDS = builder.build();
+		BOUNDS = builder.build();
 	}
 
 	@Nonnull
 	@Override
-	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-		return BOUNDS.get(state.getValue(FACING));
-	}
-
-	@Deprecated
-	@Override
-	public RayTraceResult collisionRayTrace(IBlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull Vec3d start, @Nonnull Vec3d end) {
-		List<RayTraceResult> list = new ArrayList<>(6);
-		for(AxisAlignedBB bound : TRACE_BOUNDS.get(state.getValue(FACING))) {
-			list.add(rayTrace(pos, start, end, bound));
-		}
-
-		return Util.closestResult(list, end);
+	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+		return BOUNDS.get(state.get(FACING));
 	}
 
 	/*
 	 * Redstone
 	 */
 
-	/**
-	 * Called serverside after this block is replaced with another in Chunk, but before the Tile Entity is updated
-	 */
 	@Override
-	public void breakBlock(World world, BlockPos pos, IBlockState state) {
-		// if powered, send updates for power
-		if (getPower(state, world, pos) > 0) {
-			world.notifyNeighborsOfStateChange(pos, this, false);
-			world.notifyNeighborsOfStateChange(pos.offset(state.getValue(FACING).getOpposite()), this, false);
+	public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
+		if(state.getBlock() != newState.getBlock()) {
+			// if powered, send updates for power
+			if(getPower(world, pos) > 0) {
+				world.notifyNeighborsOfStateChange(pos, this);
+				world.notifyNeighborsOfStateChange(pos.offset(state.get(FACING).getOpposite()), this);
+			}
+			TileEntity tileentity = world.getTileEntity(pos);
+			if(tileentity instanceof IInventory) {
+				InventoryHelper.dropInventoryItems(world, pos, (IInventory) tileentity);
+			}
 		}
-
-		super.breakBlock(world, pos, state);
+		super.onReplaced(state, world, pos, newState, isMoving);
 	}
 
 	@Override
-	public int getWeakPower(IBlockState state, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
-		return getPower(state, blockAccess, pos);
+	public int getWeakPower(BlockState state, IBlockReader blockAccess, BlockPos pos, Direction side) {
+		return getPower(blockAccess, pos);
 	}
 
 	@Override
-	public int getStrongPower(IBlockState state, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
-		if (state.getValue(FACING) != side) {
+	public int getStrongPower(BlockState state, IBlockReader blockAccess, BlockPos pos, Direction side) {
+		if(state.get(FACING) != side) {
 			return 0;
 		}
 
-		return getPower(state, blockAccess, pos);
+		return getPower(blockAccess, pos);
 
 	}
 
-	private int getPower(IBlockState state, IBlockAccess blockAccess, BlockPos pos) {
+	private int getPower(IBlockReader blockAccess, BlockPos pos) {
 		if(InspirationsBuilding.redstoneBook == null) {
 			return 0;
 		}
@@ -291,7 +296,7 @@ public class BlockBookshelf extends BlockInventory implements ITileEntityProvide
 	 * Can this block provide power. Only wire currently seems to have this change based on its state.
 	 */
 	@Override
-	public boolean canProvidePower(IBlockState state) {
+	public boolean canProvidePower(BlockState state) {
 		// ensure we have the redstone book, since it comes from the redstone module
 		return InspirationsBuilding.redstoneBook != null;
 	}
@@ -300,95 +305,49 @@ public class BlockBookshelf extends BlockInventory implements ITileEntityProvide
 	/*
 	 * Block properties
 	 */
+
+	@Nonnull
 	@Override
-	@SideOnly(Side.CLIENT)
-	public BlockRenderLayer getBlockLayer() {
+	public BlockRenderLayer getRenderLayer() {
 		return BlockRenderLayer.CUTOUT;
+	}
+
+	@Override
+	public BlockState rotate(BlockState state, IWorld world, BlockPos pos, Rotation direction) {
+		return state.with(FACING, direction.rotate(state.get(FACING)));
 	}
 
 	@Nonnull
 	@Override
-	public IBlockState getExtendedState(@Nonnull IBlockState state, IBlockAccess world, BlockPos pos) {
-		IExtendedBlockState extendedState = (IExtendedBlockState) state;
-
-		TileEntity te = world.getTileEntity(pos);
-		if(te instanceof TileBookshelf) {
-			return ((TileBookshelf)te).writeExtendedBlockState(extendedState);
-		}
-
-		return super.getExtendedState(state, world, pos);
-	}
-
-	@Override
-	@Deprecated
-	public BlockFaceShape getBlockFaceShape(IBlockAccess world, IBlockState state, BlockPos pos, EnumFacing side) {
-		// allows placing stuff on the back
-		return side == state.getValue(FACING).getOpposite() ? BlockFaceShape.SOLID : BlockFaceShape.UNDEFINED;
-	}
-
-	@Override
-	public boolean isFullCube(IBlockState state) {
-		return false;
-	}
-
-	@Override
-	public boolean isOpaqueCube(IBlockState state) {
-		return false;
-	}
-
-	@Override
-	public IBlockState withRotation(IBlockState state, Rotation rot) {
-		return state.withProperty(FACING, rot.rotate(state.getValue(FACING)));
-	}
-
-	@Override
-	public IBlockState withMirror(IBlockState state, Mirror mirror) {
-		return state.withRotation(mirror.toRotation(state.getValue(FACING)));
+	public BlockState mirror(BlockState state, Mirror mirror) {
+		return state.with(FACING, mirror.mirror(state.get(FACING)));
 	}
 
 	/* Drops */
 
 	@Override
-	public void getSubBlocks(CreativeTabs tab, NonNullList<ItemStack> list) {
-		for(BookshelfType type : BookshelfType.values()) {
-			TextureBlockUtil.addBlocksFromOredict("slabWood", this, type.getMeta(), list);
-		}
-	}
-
-	@Override
-	public int damageDropped(IBlockState state) {
-		return state.getValue(TYPE).getMeta();
-	}
-
-	@Nonnull
-	@Override
-	public ItemStack getPickBlock(@Nonnull IBlockState state, RayTraceResult target, @Nonnull World world, @Nonnull BlockPos pos, EntityPlayer player) {
+	public ItemStack getPickBlock(BlockState state, RayTraceResult target, IBlockReader world, BlockPos pos, PlayerEntity player) {
 		return TextureBlockUtil.getBlockItemStack(world, pos, state);
 	}
 
 	@Override
-	public boolean removedByPlayer(@Nonnull IBlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull EntityPlayer player, boolean willHarvest) {
+	public boolean removedByPlayer(BlockState state, World world, BlockPos pos, PlayerEntity player, boolean willHarvest, IFluidState fluid) {
 		// we pull up a few calls to this point in time because we still have the TE here
 		// the execution otherwise is equivalent to vanilla order
-		this.onBlockDestroyedByPlayer(world, pos, state);
+		this.onBlockHarvested(world, pos, state, player);
 		if(willHarvest) {
 			this.harvestBlock(world, player, pos, state, world.getTileEntity(pos), player.getHeldItemMainhand());
 		}
 
-		world.setBlockToAir(pos);
+		world.setBlockState(pos, Blocks.AIR.getDefaultState());
 		// return false to prevent the above called functions to be called again
 		// side effect of this is that no xp will be dropped. but it shoudln't anyway from a bookshelf :P
 		return false;
 	}
 
 	@Override
-	public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune){
-		drops.add(TextureBlockUtil.getBlockItemStack(world, pos, state));
-	}
-
-	@Override
-	public float getEnchantPowerBonus(World world, BlockPos pos) {
-		if (!Config.bookshelvesBoostEnchanting) {
+	public float getEnchantPowerBonus(BlockState state, IWorldReader world, BlockPos pos) {
+		if(!Config.bookshelvesBoostEnchanting.get()) {
 			return 0;
 		}
 		TileEntity te = world.getTileEntity(pos);
@@ -396,34 +355,5 @@ public class BlockBookshelf extends BlockInventory implements ITileEntityProvide
 			return ((TileBookshelf) te).getEnchantPower();
 		}
 		return 0;
-	}
-
-	public static enum BookshelfType implements IStringSerializable {
-		NORMAL,
-		RAINBOW,
-		TOMES,
-		ANCIENT;
-
-		private int meta;
-		BookshelfType() {
-			this.meta = ordinal();
-		}
-
-		@Override
-		public String getName() {
-			return this.name().toLowerCase(Locale.US);
-		}
-
-		public int getMeta() {
-			return meta;
-		}
-
-		public static BookshelfType fromMeta(int meta) {
-			if(meta < 0 || meta >= values().length) {
-				meta = 0;
-			}
-
-			return values()[meta];
-		}
 	}
 }

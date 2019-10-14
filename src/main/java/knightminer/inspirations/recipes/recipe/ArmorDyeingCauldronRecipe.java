@@ -1,9 +1,9 @@
 package knightminer.inspirations.recipes.recipe;
 
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
+import net.minecraft.item.ArmorMaterial;
+import net.minecraft.item.DyeableArmorItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemArmor;
-import net.minecraft.item.ItemArmor.ArmorMaterial;
 import net.minecraft.item.ItemStack;
 
 public class ArmorDyeingCauldronRecipe implements ICauldronRecipe {
@@ -19,19 +19,19 @@ public class ArmorDyeingCauldronRecipe implements ICauldronRecipe {
 			return false;
 		}
 		Item item = stack.getItem();
-		if(!(item instanceof ItemArmor)) {
+		if(!(item instanceof DyeableArmorItem)) {
 			return false;
 		}
 
 		// only color leather, and ensure we are changing the color
-		ItemArmor armor = (ItemArmor) item;
+		DyeableArmorItem armor = (DyeableArmorItem) item;
 		return armor.getArmorMaterial() == material && armor.getColor(stack) != state.getColor();
 	}
 
 	@Override
 	public ItemStack getResult(ItemStack stack, boolean boiling, int level, CauldronState state) {
 		stack = stack.copy();
-		((ItemArmor) stack.getItem()).setColor(stack, state.getColor());
+		((DyeableArmorItem) stack.getItem()).setColor(stack, state.getColor());
 		return stack;
 	}
 

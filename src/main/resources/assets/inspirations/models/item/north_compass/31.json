@@ -1,6 +1,6 @@
 {
     "parent": "item/generated",
     "textures": {
-        "layer0": "inspirations:items/north_compass/31"
+        "layer0": "inspirations:item/north_compass/31"
     }
 }

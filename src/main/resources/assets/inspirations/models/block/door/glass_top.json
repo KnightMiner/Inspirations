@@ -1,7 +1,9 @@
 {
     "ambientocclusion": false,
     "textures": {
-        "particle": "#top"
+        "top": "inspirations:block/glass_door_upper",
+        "bottom": "inspirations:block/glass_door_lower",
+        "particle": "inspirations:block/glass_door_upper"
     },
     "elements": [
         {
