@@ -12,9 +12,6 @@ import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.recipe.ModItemList;
 import knightminer.inspirations.library.recipe.ShapelessNoContainerRecipe;
 import knightminer.inspirations.library.recipe.TextureRecipe;
-//import knightminer.inspirations.plugins.LeatherWorksPlugin;
-//import knightminer.inspirations.plugins.RatsPlugin;
-//import knightminer.inspirations.plugins.TwilightForestPlugin;
 //import knightminer.inspirations.plugins.top.TheOneProbePlugin;
 import knightminer.inspirations.building.InspirationsBuilding;
 //import knightminer.inspirations.recipes.InspirationsRecipes;
@@ -80,16 +77,6 @@ public class Inspirations {
 		pulseManager.registerPulse(new InspirationsTools());
 //		pulseManager.registerPulse(new InspirationsRecipes());
 		pulseManager.registerPulse(new InspirationsTweaks());
-		// plugins
-//		pulseManager.registerPulse(new TheOneProbePlugin());
-//		pulseManager.registerPulse(new LeatherWorksPlugin());
-//		pulseManager.registerPulse(new RatsPlugin());
-//		pulseManager.registerPulse(new TwilightForestPlugin());
-
-//		// needs to be done statically, but only the recipes module uses it
-//		if(pulseManager.isPulseLoaded(InspirationsRecipes.pulseID) && Config.INSTANCE.enableCauldronFluids.get()) {
-//			FluidRegistry.enableUniversalBucket();
-//		}
 		pulseManager.enablePulses();
 
 		InspirationsNetwork.instance.setup();
