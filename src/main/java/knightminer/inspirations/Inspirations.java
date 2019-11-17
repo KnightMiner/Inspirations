@@ -82,6 +82,7 @@ public class Inspirations {
 		InspirationsNetwork.instance.setup();
 	}
 
+	@SuppressWarnings("deprecation")
 	@SubscribeEvent
 	public void configChanged(final ModConfig.ModConfigEvent configEvent) {
 		configLoaded = true;

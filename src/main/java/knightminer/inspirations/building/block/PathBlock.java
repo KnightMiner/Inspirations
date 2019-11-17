@@ -63,12 +63,14 @@ public class PathBlock extends HidableBlock {
 	// There's multiple variants for these, just use a square.
 	public static final VoxelShape SHAPE_ROCK = Block.makeCuboidShape(.5, 0, .5, 15.5, 1, 15.5);
 
+	@Deprecated
 	@Nonnull
 	@Override
 	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
 		return shape;
 	}
 
+	@Deprecated
 	@Nonnull
 	@Override
 	public VoxelShape getCollisionShape(@Nonnull BlockState state, @Nonnull IBlockReader world, @Nonnull BlockPos pos, ISelectionContext context) {
@@ -77,6 +79,7 @@ public class PathBlock extends HidableBlock {
 
 	/* Solid surface below */
 
+	@Deprecated
 	@Override
 	public boolean isValidPosition(BlockState state, IWorldReader world, BlockPos pos) {
 		return super.isValidPosition(state, world, pos) && this.canBlockStay(world, pos);
@@ -87,6 +90,7 @@ public class PathBlock extends HidableBlock {
 		return Block.hasSolidSide(world.getBlockState(down), world, pos, Direction.UP);
 	}
 
+	@Deprecated
 	@Override
 	public void neighborChanged(BlockState state, World world, BlockPos pos, Block blockIn, BlockPos fromPos, boolean p_220069_6_) {
 		if (!this.canBlockStay(world, pos)) {

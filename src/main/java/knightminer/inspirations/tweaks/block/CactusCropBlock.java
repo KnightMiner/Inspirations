@@ -52,6 +52,7 @@ public class CactusCropBlock extends BlockCropBlock {
 		return InspirationsTweaks.cactusSeeds;
 	}
 
+	@Deprecated
 	@Override
 	public boolean isValidPosition(@Nonnull BlockState state, IWorldReader world, @Nonnull BlockPos pos) {
 		return Blocks.CACTUS.isValidPosition(Blocks.CACTUS.getDefaultState(), world, pos);
@@ -60,6 +61,7 @@ public class CactusCropBlock extends BlockCropBlock {
 
 	/* spiky! */
 
+	@Deprecated
 	@Override
 	public VoxelShape getCollisionShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
 		return getShape(state, world, pos, context);

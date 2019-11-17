@@ -77,6 +77,7 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
 		return state.with(FACING, direction.rotate(state.get(FACING)));
 	}
 
+	@Deprecated
 	@Nonnull
 	@Override
 	public BlockState mirror(BlockState state, Mirror mirror) {
@@ -136,6 +137,7 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
 
 	/* Comparator logic */
 
+	@Deprecated
 	@Override
 	public int getComparatorInputOverride(BlockState blockState, World world, BlockPos pos) {
 		TileEntity te = world.getTileEntity(pos);
@@ -147,6 +149,7 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
 		return 0;
 	}
 
+	@Deprecated
 	@Override
 	public boolean hasComparatorInputOverride(BlockState state) {
 		return true;
@@ -155,6 +158,7 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
 
 	/* Collecting logic */
 
+	@Deprecated
 	@Override
 	public void neighborChanged(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
 		boolean powered = world.isBlockPowered(pos) || world.isBlockPowered(pos.up());
@@ -173,6 +177,7 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
 		return 4;
 	}
 
+	@Deprecated
 	@Override
 	public void tick(BlockState state, World world, BlockPos pos, Random random) {
 		if (world.isRemote) {

@@ -68,6 +68,7 @@ public class EnlightenedBushBlock extends Block implements IHidable {
 	 * Properties
 	 */
 
+	@Deprecated
 	@Override
 	public boolean causesSuffocation(@Nonnull BlockState state, @Nonnull IBlockReader worldIn, @Nonnull BlockPos pos) {
 		return false;
@@ -79,10 +80,12 @@ public class EnlightenedBushBlock extends Block implements IHidable {
 		return BlockRenderLayer.CUTOUT_MIPPED;
 	}
 
-   @Override
-	 public boolean canEntitySpawn(BlockState state, @Nonnull IBlockReader worldIn, @Nonnull BlockPos pos, EntityType<?> type) {
+	@Deprecated
+  @Override
+	public boolean canEntitySpawn(BlockState state, @Nonnull IBlockReader worldIn, @Nonnull BlockPos pos, EntityType<?> type) {
 		return type == EntityType.OCELOT || type == EntityType.PARROT;
-   }
+  }
+
 
 	/*
 	 * Texturing

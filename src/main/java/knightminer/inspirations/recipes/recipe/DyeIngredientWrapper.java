@@ -47,6 +47,7 @@ public class DyeIngredientWrapper extends Ingredient {
 		if (this.itemIds == null || this.lastSizeL != oreList.size()) {
 			int[] dyedBottle = new int[16];
 			for (Map.Entry<DyeColor,SimpleDyedBottleItem> entry: InspirationsRecipes.simpleDyedWaterBottle.entrySet()) {
+				// TODO: better way to do this?
 				dyedBottle[entry.getKey().colorValue] = Registry.ITEM.getId(entry.getValue());
 			}
 			this.itemIds = new IntArrayList(oreList);

@@ -53,7 +53,7 @@ public class ToolsEvents {
 		}
 
 		// first, ensure we have a valid item to use
-		PlayerEntity player = event.getEntityPlayer();
+		PlayerEntity player = event.getPlayer();
 		ItemStack stack = player.getHeldItem(event.getHand());
 
 		boolean isKey = stack.getItem() == InspirationsTools.key;
@@ -240,7 +240,7 @@ public class ToolsEvents {
 
 				// handle stacks of compasses
 				stack.shrink(1);
-				PlayerEntity player = event.getEntityPlayer();
+				PlayerEntity player = event.getPlayer();
 				if (stack.isEmpty()) {
 					player.setHeldItem(event.getHand(), newStack);
 				} else {

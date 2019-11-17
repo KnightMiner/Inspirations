@@ -149,6 +149,7 @@ public class FittedCarpetBlock extends FlatCarpetBlock {
 				];
 	}
 
+	@Deprecated
 	@Nonnull
 	@Override
 	public VoxelShape getCollisionShape(BlockState state, @Nonnull IBlockReader world, @Nonnull BlockPos pos, ISelectionContext context) {

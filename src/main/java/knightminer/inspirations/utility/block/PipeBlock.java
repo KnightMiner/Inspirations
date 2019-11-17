@@ -102,18 +102,21 @@ public class PipeBlock extends InventoryBlock implements IHidable {
 		builder.add(FACING, NORTH, EAST, SOUTH, WEST, UP, DOWN, HOPPER);
 	}
 
+	@Deprecated
 	@Nonnull
 	@Override
 	public BlockState rotate(@Nonnull BlockState state, Rotation rot) {
 		return state.with(FACING, rot.rotate(state.get(FACING)));
 	}
 
+	@Deprecated
 	@Nonnull
 	@Override
 	public BlockState mirror(@Nonnull BlockState state, Mirror mirror) {
 		return state.with(FACING, mirror.mirror(state.get(FACING)));
 	}
 
+	@Deprecated
 	@Nonnull
 	@Override
 	public BlockState updatePostPlacement(@Nonnull BlockState state, Direction neighFacing, BlockState neighState, IWorld world, BlockPos pos, BlockPos neighPos) {
@@ -269,6 +272,7 @@ public class PipeBlock extends InventoryBlock implements IHidable {
 		}
 	}
 
+	@Deprecated
 	@Nonnull
 	@Override
 	public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {

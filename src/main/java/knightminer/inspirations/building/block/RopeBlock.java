@@ -66,6 +66,7 @@ public class RopeBlock extends HidableBlock implements IWaterLoggable {
 		builder.add(BOTTOM, RUNGS, WATERLOGGED);
 	}
 
+	@Deprecated
 	@Override
 	@Nonnull
 	public IFluidState getFluidState(BlockState state) {
@@ -102,6 +103,7 @@ public class RopeBlock extends HidableBlock implements IWaterLoggable {
 
 	/* Ropey logic */
 
+	@Deprecated
 	@Override
 	public boolean isValidPosition(BlockState state, IWorldReader world, BlockPos pos) {
 		return super.isValidPosition(state, world, pos) && isValidRope(world, pos);
@@ -120,12 +122,7 @@ public class RopeBlock extends HidableBlock implements IWaterLoggable {
 		);
 	}
 
-	/**
-	 * Update the provided state given the provided neighbor facing and neighbor state, returning a new state.
-	 * For example, fences make their connections to the passed in state if possible, and wet concrete powder immediately
-	 * returns its solidified counterpart.
-	 * Note that this method should ideally consider only the specific face passed in.
-	 */
+	@Deprecated
 	@Override
 	@Nonnull
 	public BlockState updatePostPlacement(@Nonnull BlockState state, Direction facing, BlockState facingState, IWorld world, BlockPos pos, BlockPos facingPos) {
@@ -141,6 +138,7 @@ public class RopeBlock extends HidableBlock implements IWaterLoggable {
 	}
 
 	// right click with a rope to extend downwards
+	@Deprecated
 	@Override
 	public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
 		// no need to check verticals, one is not possible and the other normal block placement
@@ -257,6 +255,7 @@ public class RopeBlock extends HidableBlock implements IWaterLoggable {
 		SHAPE_BOTTOM[Rungs.Z.ordinal()] = VoxelShapes.or(rope_core_bottom, rope_rungs_z);
 	}
 
+	@Deprecated
 	@Nonnull
 	@Override
 	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {

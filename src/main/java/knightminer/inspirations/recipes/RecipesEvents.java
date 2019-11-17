@@ -36,7 +36,7 @@ public class RecipesEvents {
 			return;
 		}
 
-		PlayerEntity player = event.getEntityPlayer();
+		PlayerEntity player = event.getPlayer();
 		if(player.isSneaking()) {
 			return;
 		}
@@ -73,7 +73,7 @@ public class RecipesEvents {
 		}
 
 		// must be holding a glass bottle
-		PlayerEntity player = event.getEntityPlayer();
+		PlayerEntity player = event.getPlayer();
 		ItemStack stack = player.getHeldItem(event.getHand());
 		if(stack.getItem() == Items.GLASS_BOTTLE) {
 			// if has tag, cannot be milked

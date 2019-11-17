@@ -38,6 +38,7 @@ public abstract class BlockCropBlock extends CropsBlock implements IHidable, IPl
 		return Config.enableMoreSeeds.get();
 	}
 
+	@Deprecated
 	@Override
 	public boolean isValidPosition(@Nonnull BlockState state, IWorldReader world, BlockPos pos) {
 		BlockState soil = world.getBlockState(pos.down());
@@ -79,6 +80,7 @@ public abstract class BlockCropBlock extends CropsBlock implements IHidable, IPl
 		return shape[this.getAge(state)];
 	}
 
+	@Deprecated
 	@Nonnull
 	@Override
 	public VoxelShape getRaytraceShape(@Nonnull BlockState state, @Nonnull IBlockReader world, @Nonnull BlockPos pos) {

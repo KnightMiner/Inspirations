@@ -52,11 +52,13 @@ public class RedstoneChargeBlock extends Block {
 		return true;
 	}
 
+	@Deprecated
 	@Override
 	public boolean isReplaceable(BlockState p_196253_1_, BlockItemUseContext p_196253_2_) {
 		return true;
 	}
 
+	@Deprecated
 	@Override
 	public PushReaction getPushReaction(BlockState p_149656_1_) {
 		return PushReaction.DESTROY;
@@ -87,6 +89,7 @@ public class RedstoneChargeBlock extends Block {
 		super.onBlockPlacedBy(world, pos, state, entity, stack);
 	}
 
+	@Deprecated
 	@Override
 	public void onReplaced(BlockState state, @Nonnull World worldIn, @Nonnull BlockPos pos, @Nonnull BlockState newState, boolean isMoving) {
 		if (!isMoving && state.getBlock() != newState.getBlock()) {
@@ -96,7 +99,7 @@ public class RedstoneChargeBlock extends Block {
       }
 	}
 
-
+	@Deprecated
 	@Override
 	public void tick(BlockState state, World world, BlockPos pos, Random random) {
 		if (!world.isRemote) {
@@ -108,16 +111,19 @@ public class RedstoneChargeBlock extends Block {
 
 	/* Powering */
 
+	@Deprecated
 	@Override
 	public int getWeakPower(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
 		return 15;
 	}
 
+	@Deprecated
 	@Override
 	public int getStrongPower(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
 		return state.get(FACING).getOpposite() == side ? 15 : 0;
 	}
 
+	@Deprecated
 	@Override
 	public boolean canProvidePower(BlockState state) {
 		return true;
@@ -132,13 +138,14 @@ public class RedstoneChargeBlock extends Block {
 	/* Bounds */
 	private static final VoxelShape BOUNDS = Block.makeCuboidShape(6, 6, 6, 10, 10, 10);
 
-
+	@Deprecated
 	@Nonnull
 	@Override
 	public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
 		return BOUNDS;
 	}
 
+	@Deprecated
 	@Nonnull
 	@Override
 	public VoxelShape getCollisionShape(@Nonnull BlockState state, @Nonnull IBlockReader world, @Nonnull BlockPos pos, ISelectionContext context) {
@@ -148,11 +155,13 @@ public class RedstoneChargeBlock extends Block {
 
 	/* Properties */
 
+	@Deprecated
 	@Override
 	public boolean isValidPosition(BlockState state, IWorldReader world, BlockPos pos) {
 		return !world.getBlockState(pos).getFluidState().isEmpty();
 	}
 
+	@Deprecated
 	@Nullable
 	@Override
 	public BlockState getStateForPlacement(BlockItemUseContext context) {
@@ -176,6 +185,7 @@ public class RedstoneChargeBlock extends Block {
 		}
 	}
 
+	@Deprecated
 	@Nonnull
 	@Override
 	public BlockRenderType getRenderType(BlockState state) {

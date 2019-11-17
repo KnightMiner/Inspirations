@@ -53,12 +53,14 @@ public class FlowerBlock extends BushBlock implements IGrowable, IHidable {
 
 	/* Planty stuff */
 
+	@Deprecated
 	@Override
 	public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
 		Vec3d off = state.getOffset(world, pos);
 		return SHAPE.withOffset(off.x, off.y, off.z);
 	}
 
+	@Deprecated
 	@Override
 	public VoxelShape getCollisionShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
 		return VoxelShapes.empty();

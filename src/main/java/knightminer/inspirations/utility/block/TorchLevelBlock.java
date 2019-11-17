@@ -67,6 +67,7 @@ public class TorchLevelBlock extends TorchBlock {
 	 * Powering
 	 */
 
+	@Deprecated
 	@Override
 	public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) {
 		if (world.isRemote) {
@@ -97,6 +98,7 @@ public class TorchLevelBlock extends TorchBlock {
 	 * Called serverside after this block is replaced with another in Chunk, but before the Tile Entity is updated
 	 */
 
+	@Deprecated
 	@Override
 	public void onReplaced(BlockState state, @Nonnull World world, @Nonnull BlockPos pos, BlockState newState, boolean isMoving) {
 		// if powered, send updates for power
@@ -107,11 +109,13 @@ public class TorchLevelBlock extends TorchBlock {
 		super.onReplaced(state, world, pos, newState, isMoving);
 	}
 
+	@Deprecated
 	@Override
 	public int getWeakPower(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
 		return isPowered(state) ? 15 : 0;
 	}
 
+	@Deprecated
 	@Override
 	public int getStrongPower(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
 		if (!isPowered(state)) {
@@ -120,9 +124,7 @@ public class TorchLevelBlock extends TorchBlock {
 		return side == Direction.DOWN ? 15 : 0;
 	}
 
-	/**
-	 * Can this block provide power. Only wire currently seems to have this change based on its state.
-	 */
+	@Deprecated
 	@Override
 	public boolean canProvidePower(BlockState state) {
 		return true;

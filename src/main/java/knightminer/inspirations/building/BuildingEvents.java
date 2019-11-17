@@ -30,7 +30,7 @@ public class BuildingEvents {
 			return;
 		}
 
-		PlayerEntity player = event.getEntityPlayer();
+		PlayerEntity player = event.getPlayer();
 		if (state.get(RopeBlock.RUNGS) != RopeBlock.Rungs.NONE) {
 			if (removeRopeLadder(world, pos, state, player)) {
 				event.setCanceled(true);

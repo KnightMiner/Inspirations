@@ -34,6 +34,7 @@ public class BlockSugarCaneCrop extends BlockCropBlock {
 		return "item.inspirations.sugar_cane_seeds";
 	}
 
+	@Deprecated
 	@Override
 	public boolean isValidPosition(@Nonnull BlockState state, IWorldReader world, @Nonnull BlockPos pos) {
 		return Blocks.SUGAR_CANE.isValidPosition(Blocks.SUGAR_CANE.getDefaultState(), world, pos);

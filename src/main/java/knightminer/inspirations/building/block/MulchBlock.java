@@ -46,6 +46,7 @@ public class MulchBlock extends FallingBlock implements IHidable {
 		}
 	}
 
+	@Deprecated
 	@Nonnull
 	@Override
 	public VoxelShape getCollisionShape(@Nonnull BlockState state, @Nonnull IBlockReader worldIn, @Nonnull BlockPos pos, ISelectionContext context) {

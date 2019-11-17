@@ -112,6 +112,7 @@ public class EnhancedCauldronBlock extends CauldronBlock {
 		}
 	}
 
+	@Deprecated
 	@Override
 	public void onReplaced(BlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull BlockState newState, boolean isMoving) {
 		if (newState.getBlock() != state.getBlock() && !isMoving) {
@@ -144,6 +145,7 @@ public class EnhancedCauldronBlock extends CauldronBlock {
 		}
 	}
 
+	@Deprecated
 	@Nonnull
 	@Override
 	public BlockState updatePostPlacement(@Nonnull BlockState state, Direction facing, BlockState facingState, IWorld world, BlockPos pos, BlockPos facingPos) {
@@ -162,6 +164,7 @@ public class EnhancedCauldronBlock extends CauldronBlock {
 
 	/* boiling */
 
+	@Deprecated
 	@Override
 	public void neighborChanged(BlockState state, World world, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
 		setBoiling(world, pos, state);
@@ -173,6 +176,7 @@ public class EnhancedCauldronBlock extends CauldronBlock {
 		));
 	}
 
+	@Deprecated
 	@Override
 	public void randomTick(BlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull Random rand) {
 		if(!state.get(BOILING)) {

@@ -81,6 +81,7 @@ public class BricksButtonBlock extends HidableBlock {
 	 * Returns the blockstate with the given rotation from the passed blockstate. If inapplicable, returns the passed
 	 * blockstate.
 	 */
+	@Deprecated
 	@Nonnull
 	@Override
 	public BlockState rotate(BlockState state, Rotation rot) {
@@ -91,6 +92,7 @@ public class BricksButtonBlock extends HidableBlock {
 	 * Returns the blockstate with the given mirror of the passed blockstate. If inapplicable, returns the passed
 	 * blockstate.
 	 */
+	@Deprecated
 	@Nonnull
 	@Override
 	public BlockState mirror(BlockState state, Mirror mirror) {
@@ -99,17 +101,12 @@ public class BricksButtonBlock extends HidableBlock {
 
 	/* Pressing the button */
 
-	/**
-	 * How many world ticks before ticking
-	 */
 	@Override
 	public int tickRate(IWorldReader p_149738_1_) {
 		return 20;
 	}
 
-	/**
-	 * Called when the block is right clicked by a player.
-	 */
+	@Deprecated
 	@Override
 	public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) {
 		// if you did not click the secret button, no button for you
@@ -129,11 +126,11 @@ public class BricksButtonBlock extends HidableBlock {
 		return true;
 	}
 
-
+	@Deprecated
 	@Override
-	public void randomTick(@Nonnull BlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull Random rand) {
-	}
+	public void randomTick(@Nonnull BlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull Random rand) {}
 
+	@Deprecated
 	@Override
 	public void tick(BlockState state, World world, BlockPos pos, Random random) {
 		if (world.isRemote) {
@@ -171,11 +168,7 @@ public class BricksButtonBlock extends HidableBlock {
 
 	/* Redstone logic */
 
-
-	/**
-	 * Called serverside after this block is replaced with another in Chunk, but before the Tile Entity is updated
-	 */
-
+	@Deprecated
 	@Override
 	public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
 		if (state.getBlock() != newState.getBlock() && state.get(POWERED)) {
@@ -185,21 +178,20 @@ public class BricksButtonBlock extends HidableBlock {
 		super.onReplaced(state, world, pos, newState, isMoving);
 	}
 
+	@Deprecated
 	@Override
 	public int getWeakPower(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
 		return state.get(POWERED) ? 15 : 0;
 	}
 
+	@Deprecated
 	@Override
 	public int getStrongPower(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
 		// we may be a button, but we act as though ourself is the block that is powered
 		return 0;
 	}
 
-	/**
-	 * Can this block provide power. Only wire currently seems to have this change based on its state.
-	 */
-
+	@Deprecated
 	@Override
 	public boolean canProvidePower(BlockState state) {
 		return true;
@@ -209,5 +201,4 @@ public class BricksButtonBlock extends HidableBlock {
 	public boolean canConnectRedstone(BlockState state, IBlockReader world, BlockPos pos, @Nullable Direction side) {
 		return false;
 	}
-
 }
