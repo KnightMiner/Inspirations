@@ -3,7 +3,7 @@ package knightminer.inspirations.tools;
 import knightminer.inspirations.common.ClientProxy;
 import knightminer.inspirations.tools.client.RedstoneArrowRenderer;
 import knightminer.inspirations.tools.entity.RedstoneArrow;
-import knightminer.inspirations.tools.item.ItemWaypointCompass;
+import knightminer.inspirations.tools.item.WaypointCompassItem;
 import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -22,7 +22,7 @@ public class ToolsClientProxy extends ClientProxy {
 		ItemColors itemColors = event.getItemColors();
 
 		// Dyed waypoint compasses. This implements IItemColor itself.
-		for(ItemWaypointCompass compass : InspirationsTools.waypointCompasses) {
+		for(WaypointCompassItem compass : InspirationsTools.waypointCompasses) {
 			itemColors.register(compass, compass);
 		}
 	}

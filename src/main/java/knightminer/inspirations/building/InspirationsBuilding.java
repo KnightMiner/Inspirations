@@ -1,22 +1,22 @@
 package knightminer.inspirations.building;
 
-import knightminer.inspirations.building.block.BlockBookshelf;
-import knightminer.inspirations.building.block.BlockChain;
-import knightminer.inspirations.building.block.BlockEnlightenedBush;
-import knightminer.inspirations.building.block.BlockFlower;
-import knightminer.inspirations.building.block.BlockGlassDoor;
-import knightminer.inspirations.building.block.BlockGlassTrapdoor;
-import knightminer.inspirations.building.block.BlockMulch;
-import knightminer.inspirations.building.block.BlockPath;
-import knightminer.inspirations.building.block.BlockRope;
-import knightminer.inspirations.building.inventory.ContainerBookshelf;
-import knightminer.inspirations.building.item.ItemGlassDoor;
-import knightminer.inspirations.building.tileentity.TileBookshelf;
-import knightminer.inspirations.building.tileentity.TileEnlightenedBush;
+import knightminer.inspirations.building.block.BookshelfBlock;
+import knightminer.inspirations.building.block.ChainBlock;
+import knightminer.inspirations.building.block.EnlightenedBushBlock;
+import knightminer.inspirations.building.block.FlowerBlock;
+import knightminer.inspirations.building.block.GlassDoorBlock;
+import knightminer.inspirations.building.block.GlassTrapdoorBlock;
+import knightminer.inspirations.building.block.MulchBlock;
+import knightminer.inspirations.building.block.PathBlock;
+import knightminer.inspirations.building.block.RopeBlock;
+import knightminer.inspirations.building.inventory.BookshelfContainer;
+import knightminer.inspirations.building.item.GlassDoorBlockItem;
+import knightminer.inspirations.building.tileentity.BookshelfTileEntity;
+import knightminer.inspirations.building.tileentity.EnlightenedBushTileEntity;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.common.item.HidableItem;
-import knightminer.inspirations.common.item.ItemBlockTexture;
+import knightminer.inspirations.common.item.TextureBlockItem;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.DoublePlantBlock;
@@ -45,18 +45,17 @@ import slimeknights.mantle.pulsar.pulse.Pulse;
 public class InspirationsBuilding extends PulseBase {
 	public static final String pulseID = "InspirationsBuilding";
 
-	@SuppressWarnings("Convert2MethodRef")
 	public static Object proxy = DistExecutor.callWhenOn(Dist.CLIENT, ()->()->new BuildingClientProxy());
 
 	// blocks
-	public static BlockBookshelf shelf_normal;
-	public static BlockBookshelf shelf_rainbow;
-	public static BlockBookshelf shelf_tomes;
-	public static BlockBookshelf shelf_ancient;
+	public static BookshelfBlock shelf_normal;
+	public static BookshelfBlock shelf_rainbow;
+	public static BookshelfBlock shelf_tomes;
+	public static BookshelfBlock shelf_ancient;
 
-	public static BlockRope rope;
-	public static BlockRope vine;
-	public static BlockRope chain;
+	public static RopeBlock rope;
+	public static RopeBlock vine;
+	public static RopeBlock chain;
 
 	public static Block glassDoor;
 	public static Block glassTrapdoor;
@@ -70,22 +69,22 @@ public class InspirationsBuilding extends PulseBase {
 	public static Block blackMulch;
 	public static Block blueMulch;
 
-	public static BlockPath path_rock;
-	public static BlockPath path_round;
-	public static BlockPath path_tile;
-	public static BlockPath path_brick;
+	public static PathBlock path_rock;
+	public static PathBlock path_round;
+	public static PathBlock path_tile;
+	public static PathBlock path_brick;
 
-	public static BlockFlower flower_cyan;
-	public static BlockFlower flower_syringa;
-	public static BlockFlower flower_paeonia;
-	public static BlockFlower flower_rose;
+	public static FlowerBlock flower_cyan;
+	public static FlowerBlock flower_syringa;
+	public static FlowerBlock flower_paeonia;
+	public static FlowerBlock flower_rose;
 
-	public static BlockEnlightenedBush whiteEnlightenedBush;
-	public static BlockEnlightenedBush redEnlightenedBush;
-	public static BlockEnlightenedBush greenEnlightenedBush;
-	public static BlockEnlightenedBush blueEnlightenedBush;
-	public static BlockEnlightenedBush rainbowEnlightenedBush;
-	public static BlockEnlightenedBush christmasEnlightenedBush;
+	public static EnlightenedBushBlock whiteEnlightenedBush;
+	public static EnlightenedBushBlock redEnlightenedBush;
+	public static EnlightenedBushBlock greenEnlightenedBush;
+	public static EnlightenedBushBlock blueEnlightenedBush;
+	public static EnlightenedBushBlock rainbowEnlightenedBush;
+	public static EnlightenedBushBlock christmasEnlightenedBush;
 
 	// items
 	public static Item glassDoorItem;
@@ -93,22 +92,22 @@ public class InspirationsBuilding extends PulseBase {
 	public static Item redstoneBook;
 
 	// Tile Entities
-	public static TileEntityType<TileBookshelf> tileBookshelf;
-	public static TileEntityType<TileEnlightenedBush> tileEnlightenedBush;
+	public static TileEntityType<BookshelfTileEntity> tileBookshelf;
+	public static TileEntityType<EnlightenedBushTileEntity> tileEnlightenedBush;
 
 	// Container Types
-	public static ContainerType<ContainerBookshelf> contBookshelf;
+	public static ContainerType<BookshelfContainer> contBookshelf;
 
 	@SubscribeEvent
 	public void registerTE(Register<TileEntityType<?>> event) {
 		IForgeRegistry<TileEntityType<?>> r = event.getRegistry();
 
 		tileBookshelf = register(r, TileEntityType.Builder.create(
-				TileBookshelf::new, shelf_normal, shelf_tomes, shelf_rainbow, shelf_ancient
+				BookshelfTileEntity::new, shelf_normal, shelf_tomes, shelf_rainbow, shelf_ancient
 		).build(null), "bookshelf");
 
 		tileEnlightenedBush = register(r, TileEntityType.Builder.create(
-				TileEnlightenedBush::new,
+				EnlightenedBushTileEntity::new,
 				whiteEnlightenedBush,
 				redEnlightenedBush,
 				greenEnlightenedBush,
@@ -122,29 +121,29 @@ public class InspirationsBuilding extends PulseBase {
 	public void registerContainers(Register<ContainerType<?>> event) {
 		IForgeRegistry<ContainerType<?>> r = event.getRegistry();
 
-		contBookshelf = register(r, new ContainerType<>(new ContainerBookshelf.Factory()), "bookshelf");
+		contBookshelf = register(r, new ContainerType<>(new BookshelfContainer.Factory()), "bookshelf");
 	}
 
 	@SubscribeEvent
 	public void registerBlocks(Register<Block> event) {
 		IForgeRegistry<Block> r = event.getRegistry();
 
-		shelf_normal = registerBlock(r, new BlockBookshelf(), "bookshelf");
-		shelf_ancient = registerBlock(r, new BlockBookshelf(), "ancient_bookshelf");
-		shelf_rainbow = registerBlock(r, new BlockBookshelf(), "rainbow_bookshelf");
-		shelf_tomes = registerBlock(r, new BlockBookshelf(), "tomes_bookshelf");
+		shelf_normal = registerBlock(r, new BookshelfBlock(), "bookshelf");
+		shelf_ancient = registerBlock(r, new BookshelfBlock(), "ancient_bookshelf");
+		shelf_rainbow = registerBlock(r, new BookshelfBlock(), "rainbow_bookshelf");
+		shelf_tomes = registerBlock(r, new BookshelfBlock(), "tomes_bookshelf");
 
-		rope = registerBlock(r, new BlockRope(Items.STICK, Block.Properties
+		rope = registerBlock(r, new RopeBlock(Items.STICK, Block.Properties
 				.create(Material.CARPET, MaterialColor.OBSIDIAN)
 				.sound(SoundType.CLOTH)
 				.hardnessAndResistance(0.5F)
 		), "rope");
-		vine = registerBlock(r, new BlockRope(Items.BAMBOO, Block.Properties
+		vine = registerBlock(r, new RopeBlock(Items.BAMBOO, Block.Properties
 				.create(Material.CARPET, MaterialColor.FOLIAGE)
 				.sound(SoundType.PLANT)
 				.hardnessAndResistance(0.5F)
 		), "vine");
-		chain = registerBlock(r, new BlockChain(Items.IRON_NUGGET, Block.Properties
+		chain = registerBlock(r, new ChainBlock(Items.IRON_NUGGET, Block.Properties
 				.create(Material.IRON, MaterialColor.STONE)
 				.sound(SoundType.METAL)
 				.hardnessAndResistance(5.0F)
@@ -152,35 +151,35 @@ public class InspirationsBuilding extends PulseBase {
 				.harvestLevel(0)
 		), "chain");
 
-		glassDoor = registerBlock(r, new BlockGlassDoor(), "glass_door");
-		glassTrapdoor = registerBlock(r, new BlockGlassTrapdoor(), "glass_trapdoor");
+		glassDoor = registerBlock(r, new GlassDoorBlock(), "glass_door");
+		glassTrapdoor = registerBlock(r, new GlassTrapdoorBlock(), "glass_trapdoor");
 
-		plainMulch  = registerBlock(r, new BlockMulch(MaterialColor.LIGHT_GRAY), "plain_mulch");
-		brownMulch  = registerBlock(r, new BlockMulch(MaterialColor.DIRT),       "brown_mulch");
-		yellowMulch = registerBlock(r, new BlockMulch(MaterialColor.YELLOW),     "yellow_mulch");
-		amberMulch  = registerBlock(r, new BlockMulch(MaterialColor.OBSIDIAN),   "amber_mulch");
-		rubyMulch   = registerBlock(r, new BlockMulch(MaterialColor.RED),        "ruby_mulch");
-		redMulch    = registerBlock(r, new BlockMulch(MaterialColor.NETHERRACK), "red_mulch");
-		blackMulch  = registerBlock(r, new BlockMulch(MaterialColor.GRAY),       "black_mulch");
-		blueMulch   = registerBlock(r, new BlockMulch(MaterialColor.BLUE),       "blue_mulch");
+		plainMulch  = registerBlock(r, new MulchBlock(MaterialColor.LIGHT_GRAY), "plain_mulch");
+		brownMulch  = registerBlock(r, new MulchBlock(MaterialColor.DIRT), "brown_mulch");
+		yellowMulch = registerBlock(r, new MulchBlock(MaterialColor.YELLOW), "yellow_mulch");
+		amberMulch  = registerBlock(r, new MulchBlock(MaterialColor.OBSIDIAN), "amber_mulch");
+		rubyMulch   = registerBlock(r, new MulchBlock(MaterialColor.RED), "ruby_mulch");
+		redMulch    = registerBlock(r, new MulchBlock(MaterialColor.NETHERRACK), "red_mulch");
+		blackMulch  = registerBlock(r, new MulchBlock(MaterialColor.GRAY), "black_mulch");
+		blueMulch   = registerBlock(r, new MulchBlock(MaterialColor.BLUE), "blue_mulch");
 
-		path_rock  = registerBlock(r, new BlockPath(BlockPath.SHAPE_ROCK,  MaterialColor.STONE), "rock_path");
-		path_round = registerBlock(r, new BlockPath(BlockPath.SHAPE_ROUND, MaterialColor.STONE), "round_path");
-		path_tile  = registerBlock(r, new BlockPath(BlockPath.SHAPE_TILE,  MaterialColor.STONE), "tile_path");
-		path_brick = registerBlock(r, new BlockPath(BlockPath.SHAPE_BRICK, MaterialColor.RED),  "brick_path");
+		path_rock  = registerBlock(r, new PathBlock(PathBlock.SHAPE_ROCK, MaterialColor.STONE), "rock_path");
+		path_round = registerBlock(r, new PathBlock(PathBlock.SHAPE_ROUND, MaterialColor.STONE), "round_path");
+		path_tile  = registerBlock(r, new PathBlock(PathBlock.SHAPE_TILE, MaterialColor.STONE), "tile_path");
+		path_brick = registerBlock(r, new PathBlock(PathBlock.SHAPE_BRICK, MaterialColor.RED), "brick_path");
 
 
-		flower_cyan = registerBlock(r, new BlockFlower(null), "cyan_flower");
-		flower_syringa = registerBlock(r, new BlockFlower((DoublePlantBlock) Blocks.LILAC), "syringa");
-		flower_paeonia = registerBlock(r, new BlockFlower((DoublePlantBlock) Blocks.PEONY), "paeonia");
-		flower_rose = registerBlock(r, new BlockFlower((DoublePlantBlock) Blocks.ROSE_BUSH), "rose");
+		flower_cyan = registerBlock(r, new FlowerBlock(null), "cyan_flower");
+		flower_syringa = registerBlock(r, new FlowerBlock((DoublePlantBlock) Blocks.LILAC), "syringa");
+		flower_paeonia = registerBlock(r, new FlowerBlock((DoublePlantBlock) Blocks.PEONY), "paeonia");
+		flower_rose = registerBlock(r, new FlowerBlock((DoublePlantBlock) Blocks.ROSE_BUSH), "rose");
 
-		whiteEnlightenedBush = registerBlock(r, new BlockEnlightenedBush(-1), "white_enlightened_bush");
-		redEnlightenedBush = registerBlock(r, new BlockEnlightenedBush(0xBF0000), "red_enlightened_bush");
-		greenEnlightenedBush = registerBlock(r, new BlockEnlightenedBush(0x267F00), "green_enlightened_bush");
-		blueEnlightenedBush = registerBlock(r, new BlockEnlightenedBush(0x001CBF), "blue_enlightened_bush");
-		rainbowEnlightenedBush = registerBlock(r, new BlockEnlightenedBush(-1), "rainbow_enlightened_bush");
-		christmasEnlightenedBush = registerBlock(r, new BlockEnlightenedBush(-1), "christmas_enlightened_bush");
+		whiteEnlightenedBush = registerBlock(r, new EnlightenedBushBlock(-1), "white_enlightened_bush");
+		redEnlightenedBush = registerBlock(r, new EnlightenedBushBlock(0xBF0000), "red_enlightened_bush");
+		greenEnlightenedBush = registerBlock(r, new EnlightenedBushBlock(0x267F00), "green_enlightened_bush");
+		blueEnlightenedBush = registerBlock(r, new EnlightenedBushBlock(0x001CBF), "blue_enlightened_bush");
+		rainbowEnlightenedBush = registerBlock(r, new EnlightenedBushBlock(-1), "rainbow_enlightened_bush");
+		christmasEnlightenedBush = registerBlock(r, new EnlightenedBushBlock(-1), "christmas_enlightened_bush");
 	}
 
 	@SubscribeEvent
@@ -202,10 +201,10 @@ public class InspirationsBuilding extends PulseBase {
 		// itemblocks
 		Item.Properties deco_props = new Item.Properties().group(ItemGroup.DECORATIONS);
 
-		registerBlockItem(r, new ItemBlockTexture(shelf_normal, deco_props, BlockTags.WOODEN_SLABS));
-		registerBlockItem(r, new ItemBlockTexture(shelf_ancient, deco_props, BlockTags.WOODEN_SLABS));
-		registerBlockItem(r, new ItemBlockTexture(shelf_rainbow, deco_props, BlockTags.WOODEN_SLABS));
-		registerBlockItem(r, new ItemBlockTexture(shelf_tomes, deco_props, BlockTags.WOODEN_SLABS));
+		registerBlockItem(r, new TextureBlockItem(shelf_normal, deco_props, BlockTags.WOODEN_SLABS));
+		registerBlockItem(r, new TextureBlockItem(shelf_ancient, deco_props, BlockTags.WOODEN_SLABS));
+		registerBlockItem(r, new TextureBlockItem(shelf_rainbow, deco_props, BlockTags.WOODEN_SLABS));
+		registerBlockItem(r, new TextureBlockItem(shelf_tomes, deco_props, BlockTags.WOODEN_SLABS));
 
 		registerBlockItem(r, rope, ItemGroup.DECORATIONS);
 		registerBlockItem(r, vine, ItemGroup.DECORATIONS);
@@ -230,14 +229,14 @@ public class InspirationsBuilding extends PulseBase {
 		registerBlockItem(r, flower_paeonia, ItemGroup.DECORATIONS);
 		registerBlockItem(r, flower_rose, ItemGroup.DECORATIONS);
 
-		registerBlockItem(r, new ItemBlockTexture(whiteEnlightenedBush, deco_props, BlockTags.LEAVES));
-		registerBlockItem(r, new ItemBlockTexture(redEnlightenedBush, deco_props, BlockTags.LEAVES));
-		registerBlockItem(r, new ItemBlockTexture(greenEnlightenedBush, deco_props, BlockTags.LEAVES));
-		registerBlockItem(r, new ItemBlockTexture(blueEnlightenedBush, deco_props, BlockTags.LEAVES));
-		registerBlockItem(r, new ItemBlockTexture(rainbowEnlightenedBush, deco_props, BlockTags.LEAVES));
-		registerBlockItem(r, new ItemBlockTexture(christmasEnlightenedBush, deco_props, BlockTags.LEAVES));
+		registerBlockItem(r, new TextureBlockItem(whiteEnlightenedBush, deco_props, BlockTags.LEAVES));
+		registerBlockItem(r, new TextureBlockItem(redEnlightenedBush, deco_props, BlockTags.LEAVES));
+		registerBlockItem(r, new TextureBlockItem(greenEnlightenedBush, deco_props, BlockTags.LEAVES));
+		registerBlockItem(r, new TextureBlockItem(blueEnlightenedBush, deco_props, BlockTags.LEAVES));
+		registerBlockItem(r, new TextureBlockItem(rainbowEnlightenedBush, deco_props, BlockTags.LEAVES));
+		registerBlockItem(r, new TextureBlockItem(christmasEnlightenedBush, deco_props, BlockTags.LEAVES));
 
-		glassDoorItem = registerItem(r, new ItemGlassDoor(glassDoor, new Item.Properties().group(ItemGroup.REDSTONE)), "glass_door");
+		glassDoorItem = registerItem(r, new GlassDoorBlockItem(glassDoor, new Item.Properties().group(ItemGroup.REDSTONE)), "glass_door");
 		registerBlockItem(r, glassTrapdoor, ItemGroup.REDSTONE);
 
 	}
@@ -253,7 +252,7 @@ public class InspirationsBuilding extends PulseBase {
 	@SubscribeEvent
 	public void init(FMLCommonSetupEvent event) {
 		if(Config.enableFlowers.get() && Config.enableCauldronDyeing()) {
-//			InspirationsRegistry.addCauldronRecipe(new CauldronDyeRecipe(
+//			InspirationsRegistry.addCauldronRecipe(new DyeCauldronRecipe(
 //				new ItemStack(flower_rose),
 //				DyeColor.CYAN,
 //				new ItemStack(flower_cyan))

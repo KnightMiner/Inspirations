@@ -2,19 +2,19 @@ package knightminer.inspirations.utility;
 
 
 import knightminer.inspirations.common.PulseBase;
-import knightminer.inspirations.utility.block.BlockBricksButton;
-import knightminer.inspirations.utility.block.BlockCarpetedPressurePlate;
-import knightminer.inspirations.utility.block.BlockCarpetedTrapdoor;
-import knightminer.inspirations.utility.block.BlockCollector;
-import knightminer.inspirations.utility.block.BlockPipe;
-import knightminer.inspirations.utility.block.BlockRedstoneBarrel;
-import knightminer.inspirations.utility.block.BlockTorchLever;
-import knightminer.inspirations.utility.block.BlockWallTorchLever;
-import knightminer.inspirations.utility.inventory.ContainerCollector;
-import knightminer.inspirations.utility.inventory.ContainerPipe;
+import knightminer.inspirations.utility.block.BricksButtonBlock;
+import knightminer.inspirations.utility.block.CarpetedPressurePlateBlock;
+import knightminer.inspirations.utility.block.CarpetedTrapdoorBlock;
+import knightminer.inspirations.utility.block.CollectorBlock;
+import knightminer.inspirations.utility.block.PipeBlock;
+import knightminer.inspirations.utility.block.RedstoneBarrelBlock;
+import knightminer.inspirations.utility.block.TorchLevelBlock;
+import knightminer.inspirations.utility.block.TorchLeverWallBlock;
+import knightminer.inspirations.utility.inventory.CollectorContainer;
+import knightminer.inspirations.utility.inventory.PipeContainer;
 import knightminer.inspirations.utility.item.TorchLeverItem;
-import knightminer.inspirations.utility.tileentity.TileCollector;
-import knightminer.inspirations.utility.tileentity.TilePipe;
+import knightminer.inspirations.utility.tileentity.CollectorTileEntity;
+import knightminer.inspirations.utility.tileentity.PipeTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.material.Material;
@@ -38,7 +38,6 @@ import slimeknights.mantle.pulsar.pulse.Pulse;
 public class InspirationsUtility extends PulseBase {
 	public static final String pulseID = "InspirationsUtility";
 
-	@SuppressWarnings("Convert2MethodRef")
 	public static Object proxy = DistExecutor.callWhenOn(Dist.CLIENT, ()->()->new UtilityClientProxy());
 
 	// blocks
@@ -54,31 +53,31 @@ public class InspirationsUtility extends PulseBase {
 	public static Item pipeItem;
 
 	// Tile entities
-	public static TileEntityType<TileCollector> tileCollector;
-	public static TileEntityType<TilePipe> tilePipe;
+	public static TileEntityType<CollectorTileEntity> tileCollector;
+	public static TileEntityType<PipeTileEntity> tilePipe;
 
 	// Inventory containers
-	public static ContainerType<ContainerCollector> contCollector;
-	public static ContainerType<ContainerPipe> contPipe;
+	public static ContainerType<CollectorContainer> contCollector;
+	public static ContainerType<PipeContainer> contPipe;
 
 	@SubscribeEvent
 	public void registerBlocks(Register<Block> event) {
 		IForgeRegistry<Block> r = event.getRegistry();
 
-		torchLeverFloor = registerBlock(r, new BlockTorchLever(), "torch_lever");
-		torchLeverWall = registerBlock(r, new BlockWallTorchLever(), "wall_torch_lever");
+		torchLeverFloor = registerBlock(r, new TorchLevelBlock(), "torch_lever");
+		torchLeverWall = registerBlock(r, new TorchLeverWallBlock(), "wall_torch_lever");
 
-		bricksButton = registerBlock(r, new BlockBricksButton(BlockBricksButton.BRICK_BUTTON), "bricks_button");
-		netherBricksButton = registerBlock(r, new BlockBricksButton(BlockBricksButton.NETHER_BUTTON), "nether_bricks_button");
+		bricksButton = registerBlock(r, new BricksButtonBlock(BricksButtonBlock.BRICK_BUTTON), "bricks_button");
+		netherBricksButton = registerBlock(r, new BricksButtonBlock(BricksButtonBlock.NETHER_BUTTON), "nether_bricks_button");
 
-		redstoneBarrel = registerBlock(r, new BlockRedstoneBarrel(), "redstone_barrel");
+		redstoneBarrel = registerBlock(r, new RedstoneBarrelBlock(), "redstone_barrel");
 
 		for(DyeColor color : DyeColor.values()) {
-			carpetedTrapdoors[color.getId()] = registerBlock(r, new BlockCarpetedTrapdoor(color),  color.getName() + "_carpeted_trapdoor");
-			carpetedPressurePlates[color.getId()] = registerBlock(r, new BlockCarpetedPressurePlate(color), color.getName() + "_carpeted_pressure_plate");
+			carpetedTrapdoors[color.getId()] = registerBlock(r, new CarpetedTrapdoorBlock(color), color.getName() + "_carpeted_trapdoor");
+			carpetedPressurePlates[color.getId()] = registerBlock(r, new CarpetedPressurePlateBlock(color), color.getName() + "_carpeted_pressure_plate");
 		}
-		collector = registerBlock(r, new BlockCollector(), "collector");
-		pipe = registerBlock(r, new BlockPipe(), "pipe");
+		collector = registerBlock(r, new CollectorBlock(), "collector");
+		pipe = registerBlock(r, new PipeBlock(), "pipe");
 	}
 
 	@SubscribeEvent
@@ -86,11 +85,11 @@ public class InspirationsUtility extends PulseBase {
 		IForgeRegistry<TileEntityType<?>> r = event.getRegistry();
 
 		tileCollector = register(r, TileEntityType.Builder.create(
-				TileCollector::new, collector
+				CollectorTileEntity::new, collector
 		).build(null), "collector");
 
 		tilePipe = register(r, TileEntityType.Builder.create(
-				TilePipe::new, pipe
+				PipeTileEntity::new, pipe
 		).build(null), "pipe");
 	}
 
@@ -98,8 +97,8 @@ public class InspirationsUtility extends PulseBase {
 	public void registerContainers(Register<ContainerType<?>> event) {
 		IForgeRegistry<ContainerType<?>> r = event.getRegistry();
 
-		contCollector = register(r, new ContainerType<>(new ContainerCollector.Factory()), "collector");
-		contPipe = register(r, new ContainerType<>(new ContainerPipe.Factory()), "pipe");
+		contCollector = register(r, new ContainerType<>(new CollectorContainer.Factory()), "collector");
+		contPipe = register(r, new ContainerType<>(new PipeContainer.Factory()), "pipe");
 	}
 
 	@SubscribeEvent

@@ -1,9 +1,7 @@
 package knightminer.inspirations.tools.entity;
 
-import static knightminer.inspirations.tools.InspirationsTools.redstoneCharge;
-
 import knightminer.inspirations.tools.InspirationsTools;
-import knightminer.inspirations.tools.block.BlockRedstoneCharge;
+import knightminer.inspirations.tools.block.RedstoneChargeBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -27,6 +25,8 @@ import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nonnull;
+
+import static knightminer.inspirations.tools.InspirationsTools.redstoneCharge;
 
 public class RedstoneArrow extends AbstractArrowEntity implements IEntityAdditionalSpawnData {
 	public RedstoneArrow(EntityType<RedstoneArrow> entType, World world) {
@@ -105,7 +105,7 @@ public class RedstoneArrow extends AbstractArrowEntity implements IEntityAdditio
 			}
 
 			world.playSound(null, pos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0F, world.rand.nextFloat() * 0.4F + 0.8F);
-			BlockState state = redstoneCharge.getDefaultState().with(BlockRedstoneCharge.FACING, sideHit.getOpposite());
+			BlockState state = redstoneCharge.getDefaultState().with(RedstoneChargeBlock.FACING, sideHit.getOpposite());
 			world.setBlockState(pos, state, Constants.BlockFlags.DEFAULT_AND_RERENDER);
 			redstoneCharge.onBlockPlacedBy(world, pos, state, null, ItemStack.EMPTY);
 

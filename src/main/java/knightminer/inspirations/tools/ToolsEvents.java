@@ -3,7 +3,7 @@ package knightminer.inspirations.tools;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.Util;
-import knightminer.inspirations.tools.item.ItemWaypointCompass;
+import knightminer.inspirations.tools.item.WaypointCompassItem;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -218,22 +218,22 @@ public class ToolsEvents {
 	public static void setWaypoint(RightClickBlock event) {
 		ItemStack stack = event.getItemStack();
 
-		if (!ItemWaypointCompass.isWaypointCompass(stack)) {
+		if (!WaypointCompassItem.isWaypointCompass(stack)) {
 			return;
 		}
 		World world = event.getWorld();
 		BlockPos pos = event.getPos();
 		TileEntity te = world.getTileEntity(pos);
-		if (ItemWaypointCompass.beaconIsComplete(te)) {
+		if (WaypointCompassItem.beaconIsComplete(te)) {
 			if (!world.isRemote) {
 				// give the player the linked compass
 				ItemStack newStack;
-				if (stack.getItem() instanceof ItemWaypointCompass) {
+				if (stack.getItem() instanceof WaypointCompassItem) {
 					newStack = stack.copy();
 				} else {
 					newStack = new ItemStack(InspirationsTools.waypointCompasses[DyeColor.WHITE.getId()]);
 				}
-				ItemWaypointCompass.setNBT(newStack, world, pos);
+				WaypointCompassItem.setNBT(newStack, world, pos);
 				if (stack.hasDisplayName()) {
 					newStack.setDisplayName(stack.getDisplayName());
 				}

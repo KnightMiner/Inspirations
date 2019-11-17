@@ -1,27 +1,26 @@
 package knightminer.inspirations.tools;
 
-import knightminer.inspirations.common.CommonProxy;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.common.item.HidableItem;
 import knightminer.inspirations.library.Util;
-import knightminer.inspirations.tools.block.BlockRedstoneCharge;
-import knightminer.inspirations.tools.client.BarometerGetter;
-import knightminer.inspirations.tools.client.NorthCompassGetter;
-import knightminer.inspirations.tools.client.PhotometerGetter;
-import knightminer.inspirations.tools.enchantment.EnchantmentAxeDamage;
-import knightminer.inspirations.tools.enchantment.EnchantmentAxeLooting;
-import knightminer.inspirations.tools.enchantment.EnchantmentExtendedFire;
-import knightminer.inspirations.tools.enchantment.EnchantmentExtendedKnockback;
-import knightminer.inspirations.tools.enchantment.EnchantmentShieldProtection;
-import knightminer.inspirations.tools.enchantment.EnchantmentShieldThorns;
+import knightminer.inspirations.tools.block.RedstoneChargeBlock;
+import knightminer.inspirations.tools.client.BarometerPropertyGetter;
+import knightminer.inspirations.tools.client.NorthCompassPropertyGetter;
+import knightminer.inspirations.tools.client.PhotometerPropertyGetter;
+import knightminer.inspirations.tools.enchantment.AxeDamageEnchantment;
+import knightminer.inspirations.tools.enchantment.AxeLootBonusEnchantment;
+import knightminer.inspirations.tools.enchantment.ExtendedFireAspectEnchantment;
+import knightminer.inspirations.tools.enchantment.ExtendedKnockbackEnchantment;
+import knightminer.inspirations.tools.enchantment.ShieldProtectionEnchantment;
+import knightminer.inspirations.tools.enchantment.ShieldThornsEnchantment;
 import knightminer.inspirations.tools.entity.RedstoneArrow;
-import knightminer.inspirations.tools.item.ItemEnchantableShield;
-import knightminer.inspirations.tools.item.ItemRedstoneCharger;
-import knightminer.inspirations.tools.item.ItemWaypointCompass;
+import knightminer.inspirations.tools.item.EnchantableShieldItem;
 import knightminer.inspirations.tools.item.RedstoneArrowItem;
-import knightminer.inspirations.tools.recipe.WaypointCompassCopyRecipe;
-import knightminer.inspirations.tools.recipe.WaypointCompassDyeingRecipe;
+import knightminer.inspirations.tools.item.RedstoneChargerItem;
+import knightminer.inspirations.tools.item.WaypointCompassItem;
+import knightminer.inspirations.tools.recipe.CopyWaypointCompassRecipe;
+import knightminer.inspirations.tools.recipe.DyeWaypointCompassRecipe;
 import net.minecraft.block.Block;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.dispenser.IBlockSource;
@@ -64,7 +63,6 @@ import javax.annotation.Nonnull;
 public class InspirationsTools extends PulseBase {
 	public static final String pulseID = "InspirationsTools";
 
-	@SuppressWarnings("Convert2MethodRef")
 	public static Object proxy = DistExecutor.callWhenOn(Dist.CLIENT, ()->()->new ToolsClientProxy());
 
 	// items
@@ -77,7 +75,7 @@ public class InspirationsTools extends PulseBase {
 	public static ArrowItem redstoneArrow;
 
 	// The "undyed" compass is White.
-	public static ItemWaypointCompass[] waypointCompasses = new ItemWaypointCompass[16];
+	public static WaypointCompassItem[] waypointCompasses = new WaypointCompassItem[16];
 
 	// blocks
 	public static Block redstoneCharge;
@@ -100,7 +98,7 @@ public class InspirationsTools extends PulseBase {
 	public void registerBlocks(Register<Block> event) {
 		IForgeRegistry<Block> r = event.getRegistry();
 
-		redstoneCharge = registerBlock(r, new BlockRedstoneCharge(), "redstone_charge");
+		redstoneCharge = registerBlock(r, new RedstoneChargeBlock(), "redstone_charge");
 	}
 
 	@SubscribeEvent
@@ -112,7 +110,7 @@ public class InspirationsTools extends PulseBase {
 
 		redstoneArrow = registerItem(r, new RedstoneArrowItem(toolProps), "charged_arrow");
 
-		redstoneCharger = registerItem(r, new ItemRedstoneCharger(), "redstone_charger");
+		redstoneCharger = registerItem(r, new RedstoneChargerItem(), "redstone_charger");
 
 		lock = registerItem(r, new HidableItem(
 			new Item.Properties().group(ItemGroup.MATERIALS),
@@ -124,25 +122,25 @@ public class InspirationsTools extends PulseBase {
 		),  "key");
 
 		northCompass = registerItem(r, new HidableItem(toolProps, Config.enableNorthCompass::get), "north_compass");
-		northCompass.addPropertyOverride(Util.getResource("angle"), new NorthCompassGetter());
+		northCompass.addPropertyOverride(Util.getResource("angle"), new NorthCompassPropertyGetter());
 
 //		if(Config.renameVanillaCompass.get()) {
 //				Items.COMPASS.translationKey = Util.prefix("origin_compass");
 //		}
 		barometer = registerItem(r, new HidableItem(toolProps, Config.enableBarometer::get), "barometer");
-		barometer.addPropertyOverride(Util.getResource("height"), new BarometerGetter());
+		barometer.addPropertyOverride(Util.getResource("height"), new BarometerPropertyGetter());
 
 		photometer = registerItem(r, new HidableItem(toolProps, Config.enablePhotometer::get), "photometer");
-		photometer.addPropertyOverride(Util.getResource("light"), new PhotometerGetter());
+		photometer.addPropertyOverride(Util.getResource("light"), new PhotometerPropertyGetter());
 
 
 		// White is the undyed version, so it's available without Config.dyeWaypointCompass() and has no color
 		// in the name.
 		waypointCompasses[DyeColor.WHITE.getId()] = registerItem(r,
-				new ItemWaypointCompass(0xDDDDDD, 0xFFC100, Config.enableWaypointCompass::get
+				new WaypointCompassItem(0xDDDDDD, 0xFFC100, Config.enableWaypointCompass::get
 		), "waypoint_compass");
 		waypointCompasses[DyeColor.BLACK.getId()] = registerItem(r,
-				new ItemWaypointCompass(0x444444, DyeColor.RED.colorValue), "black_waypoint_compass");
+																														 new WaypointCompassItem(0x444444, DyeColor.RED.colorValue), "black_waypoint_compass");
 
 		registerWaypointCompass(r, DyeColor.LIGHT_GRAY, DyeColor.WHITE.colorValue);
 		registerWaypointCompass(r, DyeColor.GRAY,       DyeColor.LIGHT_GRAY.colorValue);
@@ -160,7 +158,7 @@ public class InspirationsTools extends PulseBase {
 		registerWaypointCompass(r, DyeColor.BROWN,      0xA59072);
 
 		if(Config.shieldEnchantmentTable()) {
-			register(r, new ItemEnchantableShield(new Item.Properties()
+			register(r, new EnchantableShieldItem(new Item.Properties()
 					.maxDamage(Items.SHIELD.getMaxDamage())
 					.group(ItemGroup.COMBAT)),
 					Items.SHIELD.getRegistryName()
@@ -170,7 +168,7 @@ public class InspirationsTools extends PulseBase {
 
 	private void registerWaypointCompass(IForgeRegistry<Item> r, DyeColor body, int needle) {
 		waypointCompasses[body.getId()] = registerItem(r,
-				new ItemWaypointCompass(body.colorValue, needle),
+				new WaypointCompassItem(body.colorValue, needle),
 				body.getTranslationKey() + "_waypoint_compass"
 		);
 	}
@@ -184,8 +182,8 @@ public class InspirationsTools extends PulseBase {
 	@SubscribeEvent
 	public void registerRecipes(Register<IRecipeSerializer<?>> event) {
 		IForgeRegistry<IRecipeSerializer<?>> r = event.getRegistry();
-		register(r, WaypointCompassCopyRecipe.SERIALIZER, "copy_waypoint_compass");
-		register(r, WaypointCompassDyeingRecipe.SERIALIZER, "dye_waypoint_compass");
+		register(r, CopyWaypointCompassRecipe.SERIALIZER, "copy_waypoint_compass");
+		register(r, DyeWaypointCompassRecipe.SERIALIZER, "dye_waypoint_compass");
 	}
 
 	@SubscribeEvent
@@ -205,25 +203,25 @@ public class InspirationsTools extends PulseBase {
 					(ProtectionEnchantment) Enchantments.PROJECTILE_PROTECTION,
 					(ProtectionEnchantment) Enchantments.BLAST_PROTECTION
 			}) {
-				register(r, new EnchantmentShieldProtection(ench.getRarity(), ench.protectionType, slots), ench.getRegistryName());
+				register(r, new ShieldProtectionEnchantment(ench.getRarity(), ench.protectionType, slots), ench.getRegistryName());
 			}
-			register(r, new EnchantmentShieldThorns(Enchantments.THORNS.getRarity(), slots), Enchantments.THORNS.getRegistryName());
+			register(r, new ShieldThornsEnchantment(Enchantments.THORNS.getRarity(), slots), Enchantments.THORNS.getRegistryName());
 		}
 
 		if(Config.moreShieldEnchantments.get() || Config.axeWeaponEnchants.get()) {
 			EquipmentSlotType[] slots = new EquipmentSlotType[] {EquipmentSlotType.MAINHAND};
-			register(r, new EnchantmentExtendedKnockback(Enchantment.Rarity.UNCOMMON, slots), new ResourceLocation("knockback"));
-			register(r, new EnchantmentExtendedFire(Enchantment.Rarity.RARE, slots), new ResourceLocation("fire_aspect"));
+			register(r, new ExtendedKnockbackEnchantment(Enchantment.Rarity.UNCOMMON, slots), new ResourceLocation("knockback"));
+			register(r, new ExtendedFireAspectEnchantment(Enchantment.Rarity.RARE, slots), new ResourceLocation("fire_aspect"));
 			if(Config.axeWeaponEnchants.get()) {
-				register(r, new EnchantmentAxeLooting(Enchantment.Rarity.RARE, EnchantmentType.WEAPON, slots), new ResourceLocation("looting"));
+				register(r, new AxeLootBonusEnchantment(Enchantment.Rarity.RARE, EnchantmentType.WEAPON, slots), new ResourceLocation("looting"));
 			}
 		}
 
 		if(Config.axeEnchantmentTable.get()) {
 			EquipmentSlotType[] slots = new EquipmentSlotType[] {EquipmentSlotType.MAINHAND};
-			register(r, new EnchantmentAxeDamage(Enchantment.Rarity.COMMON, 0, slots), new ResourceLocation("sharpness"));
-			register(r, new EnchantmentAxeDamage(Enchantment.Rarity.UNCOMMON, 1, slots), new ResourceLocation("smite"));
-			register(r, new EnchantmentAxeDamage(Enchantment.Rarity.UNCOMMON, 2, slots), new ResourceLocation("bane_of_arthropods"));
+			register(r, new AxeDamageEnchantment(Enchantment.Rarity.COMMON, 0, slots), new ResourceLocation("sharpness"));
+			register(r, new AxeDamageEnchantment(Enchantment.Rarity.UNCOMMON, 1, slots), new ResourceLocation("smite"));
+			register(r, new AxeDamageEnchantment(Enchantment.Rarity.UNCOMMON, 2, slots), new ResourceLocation("bane_of_arthropods"));
 		}
 	}
 
@@ -249,7 +247,7 @@ public class InspirationsTools extends PulseBase {
 				if (world.getBlockState(pos).isReplaceable(new DirectionalPlaceContext(
 					world, pos, facing, ItemStack.EMPTY, facing
 				))) {
-					world.setBlockState(pos, redstoneCharge.getDefaultState().with(BlockRedstoneCharge.FACING, facing));
+					world.setBlockState(pos, redstoneCharge.getDefaultState().with(RedstoneChargeBlock.FACING, facing));
 					if (stack.attemptDamageItem(1, world.rand, null)) {
 						stack.setCount(0);
 					}

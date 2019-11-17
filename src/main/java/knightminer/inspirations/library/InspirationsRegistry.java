@@ -3,9 +3,9 @@ package knightminer.inspirations.library;
 import com.google.common.collect.ImmutableList;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.event.RegisterEvent.RegisterCauldronRecipe;
-import knightminer.inspirations.library.recipe.cauldron.CauldronFluidRecipe;
-import knightminer.inspirations.library.recipe.cauldron.CauldronFluidTransformRecipe;
 import knightminer.inspirations.library.recipe.cauldron.FillCauldronRecipe;
+import knightminer.inspirations.library.recipe.cauldron.FluidCauldronRecipe;
+import knightminer.inspirations.library.recipe.cauldron.FluidTransformCauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe.CauldronState;
 import net.minecraft.block.Block;
@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-@SuppressWarnings("unused") // This is an API.
+// This is an API.
 public class InspirationsRegistry {
 	public static final Logger log = Util.getLogger("api");
 
@@ -321,7 +321,7 @@ public class InspirationsRegistry {
 	 * @param boiling Whether the cauldron must be boiling or not
 	 */
 	public static void addCauldronRecipe(ItemStack input, ItemStack output, Boolean boiling) {
-		addCauldronRecipe(new CauldronFluidRecipe(RecipeMatch.of(input), output, boiling));
+		addCauldronRecipe(new FluidCauldronRecipe(RecipeMatch.of(input), output, boiling));
 	}
 
 	/**
@@ -332,16 +332,16 @@ public class InspirationsRegistry {
 	 * @param boiling Whether the cauldron must be boiling or not. If null, the cauldron being boiling is ignored
 	 */
 	public static void addCauldronScaledTransformRecipe(ItemStack stack, Fluid input, Fluid output, Boolean boiling) {
-		addCauldronRecipe(new CauldronFluidTransformRecipe(RecipeMatch.of(stack, stack.getCount(), 1), input, output, boiling, 1));
+		addCauldronRecipe(new FluidTransformCauldronRecipe(RecipeMatch.of(stack, stack.getCount(), 1), input, output, boiling, 1));
 		stack = stack.copy();
 		int count = stack.getCount();
 		stack.setCount(count * 2);
 		if (cauldronBigger) {
-			addCauldronRecipe(new CauldronFluidTransformRecipe(RecipeMatch.of(stack, stack.getCount(), 1), input, output, boiling, 2));
+			addCauldronRecipe(new FluidTransformCauldronRecipe(RecipeMatch.of(stack, stack.getCount(), 1), input, output, boiling, 2));
 			stack = stack.copy();
 			stack.setCount(count * 3);
 		}
-		addCauldronRecipe(new CauldronFluidTransformRecipe(RecipeMatch.of(stack, stack.getCount(), 1), input, output, boiling, cauldronBigger ? 4 : 3));
+		addCauldronRecipe(new FluidTransformCauldronRecipe(RecipeMatch.of(stack, stack.getCount(), 1), input, output, boiling, cauldronBigger ? 4 : 3));
 	}
 
 	/**
@@ -353,7 +353,7 @@ public class InspirationsRegistry {
 	 */
 	public static void addCauldronFluidItem(ItemStack filled, ItemStack container, Fluid fluid, int amount) {
 		addCauldronRecipe(new FillCauldronRecipe(RecipeMatch.of(filled), fluid, amount, container.copy()));
-		addCauldronRecipe(new CauldronFluidRecipe(RecipeMatch.of(container), fluid, filled.copy(), null, amount, SoundEvents.ITEM_BOTTLE_FILL));
+		addCauldronRecipe(new FluidCauldronRecipe(RecipeMatch.of(container), fluid, filled.copy(), null, amount, SoundEvents.ITEM_BOTTLE_FILL));
 	}
 
 	/**

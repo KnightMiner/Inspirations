@@ -23,8 +23,8 @@ public class RecipesClientProxy extends ClientProxy {
 		registerBlockColors(blockColors, (state, world, pos, tintIndex) -> {
 			if(tintIndex == 1) {
 				TileEntity te = world.getTileEntity(pos);
-				if(te instanceof TileCauldron) {
-					return ((TileCauldron) te).getColor();
+				if(te instanceof CauldronTileEntity) {
+					return ((CauldronTileEntity) te).getColor();
 				}
 			}
 
@@ -86,9 +86,9 @@ public class RecipesClientProxy extends ClientProxy {
 		protected ModelResourceLocation getModelResourceLocation(@Nonnull IBlockState state) {
 			LinkedHashMap<IProperty<?>, Comparable<?>> map = Maps.newLinkedHashMap(state.getProperties());
 			if(Config.enableBiggerCauldron) {
-				map.put(LEVEL, CauldronLevel.forLevel(state.getValue(BlockEnhancedCauldron.LEVELS)));
+				map.put(LEVEL, CauldronLevel.forLevel(state.getValue(EnhancedCauldronBlock.LEVELS)));
 				map.remove(BlockCauldron.LEVEL);
-				map.remove(BlockEnhancedCauldron.LEVELS);
+				map.remove(EnhancedCauldronBlock.LEVELS);
 			} else {
 				map.put(LEVEL, CauldronLevel.forLevel(state.getValue(BlockCauldron.LEVEL)));
 				map.remove(BlockCauldron.LEVEL);

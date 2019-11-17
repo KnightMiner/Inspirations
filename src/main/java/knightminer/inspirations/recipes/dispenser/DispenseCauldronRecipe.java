@@ -4,9 +4,13 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe.CauldronState;
-import knightminer.inspirations.recipes.block.BlockEnhancedCauldron;
-import knightminer.inspirations.recipes.tileentity.TileCauldron;
-import net.minecraft.block.*;
+import knightminer.inspirations.recipes.block.EnhancedCauldronBlock;
+import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.CauldronBlock;
+import net.minecraft.block.DispenserBlock;
 import net.minecraft.dispenser.DefaultDispenseItemBehavior;
 import net.minecraft.dispenser.IBlockSource;
 import net.minecraft.dispenser.IDispenseItemBehavior;
@@ -45,16 +49,16 @@ public class DispenseCauldronRecipe extends DefaultDispenseItemBehavior {
 		}
 
 		// grab the TE if extended
-		TileCauldron cauldron = null;
+		CauldronTileEntity cauldron = null;
 		CauldronState cauldronState = CauldronState.WATER;
 		boolean boiling = false;
 		Block block = state.getBlock();
-		if(Config.enableExtendedCauldron() && block instanceof BlockEnhancedCauldron) {
+		if(Config.enableExtendedCauldron() && block instanceof EnhancedCauldronBlock) {
 			TileEntity te = world.getTileEntity(pos);
-			if(te instanceof TileCauldron) {
-				cauldron = (TileCauldron) te;
+			if(te instanceof CauldronTileEntity) {
+				cauldron = (CauldronTileEntity) te;
 				cauldronState = cauldron.getState();
-				boiling = state.get(BlockEnhancedCauldron.BOILING);
+				boiling = state.get(EnhancedCauldronBlock.BOILING);
 			}
 		} else {
 			cauldronState = InspirationsRegistry.getCauldronState(state);
@@ -62,7 +66,7 @@ public class DispenseCauldronRecipe extends DefaultDispenseItemBehavior {
 		}
 
 		// other properties
-		int level = BlockEnhancedCauldron.getCauldronLevel(state);
+		int level = EnhancedCauldronBlock.getCauldronLevel(state);
 
 		// grab recipe
 		ICauldronRecipe recipe = InspirationsRegistry.getCauldronResult(stack, boiling, level, cauldronState);
@@ -97,8 +101,8 @@ public class DispenseCauldronRecipe extends DefaultDispenseItemBehavior {
 					// missing the tile entity
 					if(Config.enableExtendedCauldron()) {
 						TileEntity te = world.getTileEntity(pos);
-						if(te instanceof TileCauldron) {
-							cauldron = (TileCauldron)te;
+						if(te instanceof CauldronTileEntity) {
+							cauldron = (CauldronTileEntity)te;
 						}
 					}
 				} else {

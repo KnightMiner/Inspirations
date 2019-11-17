@@ -1,11 +1,11 @@
 package knightminer.inspirations.building;
 
 import knightminer.inspirations.Inspirations;
-import knightminer.inspirations.building.block.BlockBookshelf;
-import knightminer.inspirations.building.block.BlockEnlightenedBush;
+import knightminer.inspirations.building.block.BookshelfBlock;
+import knightminer.inspirations.building.block.EnlightenedBushBlock;
 import knightminer.inspirations.building.client.BookshelfModel;
-import knightminer.inspirations.building.client.GuiBookshelf;
-import knightminer.inspirations.building.tileentity.TileBookshelf;
+import knightminer.inspirations.building.client.BookshelfScreen;
+import knightminer.inspirations.building.tileentity.BookshelfTileEntity;
 import knightminer.inspirations.common.ClientProxy;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.client.ClientUtil;
@@ -16,9 +16,9 @@ import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.item.DyeColor;
+import net.minecraft.item.ItemStack;
 import net.minecraft.resources.IReloadableResourceManager;
 import net.minecraft.resources.IResourceManager;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.world.FoliageColors;
@@ -50,7 +50,7 @@ public class BuildingClientProxy extends ClientProxy {
 		}
 
 		// Register GUIs.
-		ScreenManager.registerFactory(InspirationsBuilding.contBookshelf, GuiBookshelf::new);
+		ScreenManager.registerFactory(InspirationsBuilding.contBookshelf, BookshelfScreen::new);
 	}
 
 
@@ -62,8 +62,8 @@ public class BuildingClientProxy extends ClientProxy {
 		blockColors.register((state, world, pos, tintIndex) -> {
 			if(tintIndex > 0 && tintIndex <= 14 && world != null && pos != null) {
 				TileEntity te = world.getTileEntity(pos);
-				if(te instanceof TileBookshelf) {
-					ItemStack stack = ((TileBookshelf) te).getStackInSlot(tintIndex - 1);
+				if(te instanceof BookshelfTileEntity) {
+					ItemStack stack = ((BookshelfTileEntity) te).getStackInSlot(tintIndex - 1);
 					if(!stack.isEmpty()) {
 						int color = ClientUtil.getItemColor(stack.getItem());
 						int itemColors = mc.getItemColors().getColor(stack, 0);
@@ -89,7 +89,7 @@ public class BuildingClientProxy extends ClientProxy {
 
 		// bush block coloring
 		// First the three which never change tint.
-		for (BlockEnlightenedBush bush: new BlockEnlightenedBush[] {
+		for (EnlightenedBushBlock bush: new EnlightenedBushBlock[] {
 				InspirationsBuilding.redEnlightenedBush,
 				InspirationsBuilding.blueEnlightenedBush,
 				InspirationsBuilding.greenEnlightenedBush
@@ -137,7 +137,7 @@ public class BuildingClientProxy extends ClientProxy {
 
 		// bush block colors
 		// First the three blocks which never change tint.
-		for (BlockEnlightenedBush bush: new BlockEnlightenedBush[] {
+		for (EnlightenedBushBlock bush: new EnlightenedBushBlock[] {
 				InspirationsBuilding.redEnlightenedBush,
 				InspirationsBuilding.blueEnlightenedBush,
 				InspirationsBuilding.greenEnlightenedBush
@@ -186,7 +186,7 @@ public class BuildingClientProxy extends ClientProxy {
 		replaceBothTexturedModels(event, InspirationsBuilding.christmasEnlightenedBush.getRegistryName(), "leaves");
 	}
 
-	private static void replaceBookshelfModel(ModelBakeEvent event, BlockBookshelf shelf) {
+	private static void replaceBookshelfModel(ModelBakeEvent event, BookshelfBlock shelf) {
 		if (shelf.getRegistryName() == null) {
 			throw new AssertionError("Null registry name");
 		}

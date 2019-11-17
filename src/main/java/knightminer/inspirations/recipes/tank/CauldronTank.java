@@ -3,7 +3,7 @@ package knightminer.inspirations.recipes.tank;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe.CauldronState;
-import knightminer.inspirations.recipes.tileentity.TileCauldron;
+import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -12,8 +12,8 @@ import javax.annotation.Nonnull;
 
 public class CauldronTank implements IFluidHandler {
 
-	private TileCauldron cauldron;
-	public CauldronTank(TileCauldron cauldron) {
+	private CauldronTileEntity cauldron;
+	public CauldronTank(CauldronTileEntity cauldron) {
 		this.cauldron = cauldron;
 	}
 

@@ -1,17 +1,15 @@
 package knightminer.inspirations.tweaks;
 
-import knightminer.inspirations.common.CommonProxy;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.common.item.HidableBlockItem;
 import knightminer.inspirations.common.item.HidableItem;
-import knightminer.inspirations.library.Util;
-import knightminer.inspirations.shared.InspirationsShared;
-import knightminer.inspirations.tweaks.block.BlockCactusCrop;
-import knightminer.inspirations.tweaks.block.BlockFittedCarpet;
-import knightminer.inspirations.tweaks.block.BlockFlatCarpet;
 import knightminer.inspirations.tweaks.block.BlockSugarCaneCrop;
-import knightminer.inspirations.tweaks.item.ItemSeed;
+import knightminer.inspirations.tweaks.block.CactusCropBlock;
+import knightminer.inspirations.tweaks.block.FittedCarpetBlock;
+import knightminer.inspirations.tweaks.block.FlatCarpetBlock;
+import knightminer.inspirations.tweaks.item.SeedItem;
+import knightminer.inspirations.tweaks.recipe.NormalBrewingRecipe;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CropsBlock;
@@ -48,12 +46,11 @@ import slimeknights.mantle.pulsar.pulse.Pulse;
 public class InspirationsTweaks extends PulseBase {
 	public static final String pulseID = "InspirationsTweaks";
 
-	@SuppressWarnings("Convert2MethodRef")
 	public static Object proxy = DistExecutor.callWhenOn(Dist.CLIENT, ()->()->new TweaksClientProxy());
 
 	// blocks
-	public static BlockFittedCarpet[] fitCarpets = new BlockFittedCarpet[16];
-	public static BlockFlatCarpet[] flatCarpets = new BlockFlatCarpet[16];
+	public static FittedCarpetBlock[] fitCarpets = new FittedCarpetBlock[16];
+	public static FlatCarpetBlock[] flatCarpets = new FlatCarpetBlock[16];
 	public static CropsBlock cactusCrop;
 	public static CropsBlock sugarCaneCrop;
 
@@ -88,7 +85,7 @@ public class InspirationsTweaks extends PulseBase {
 		registerCarpet(r, DyeColor.BLACK, Blocks.BLACK_CARPET);
 
 
-		cactusCrop = register(r, new BlockCactusCrop(), "cactus_crop");
+		cactusCrop = register(r, new CactusCropBlock(), "cactus_crop");
 		sugarCaneCrop = register(r, new BlockSugarCaneCrop(), "sugar_cane_crop");
 	}
 
@@ -96,8 +93,8 @@ public class InspirationsTweaks extends PulseBase {
 		// The flat version overrides vanilla (with no blockstate values).
 		// The fitted version goes in our mod namespace.
 
-		BlockFlatCarpet flatCarpet = flatCarpets[color.getId()] = new BlockFlatCarpet(color, origCarpet);
-		BlockFittedCarpet fitCarpet = fitCarpets[color.getId()] = new BlockFittedCarpet(color, origCarpet);
+		FlatCarpetBlock flatCarpet = flatCarpets[color.getId()] = new FlatCarpetBlock(color, origCarpet);
+		FittedCarpetBlock fitCarpet = fitCarpets[color.getId()] = new FittedCarpetBlock(color, origCarpet);
 		register(r, flatCarpet, origCarpet.getRegistryName());
 		register(r, fitCarpet, color.getName() + "_fitted_carpet");
 	}
@@ -106,7 +103,7 @@ public class InspirationsTweaks extends PulseBase {
 	public void registerItem(Register<Item> event) {
 		IForgeRegistry<Item> r = event.getRegistry();
 
-		for (BlockFlatCarpet carpet : flatCarpets) {
+		for (FlatCarpetBlock carpet : flatCarpets) {
 			BlockItem item = register(r, new BlockItem(carpet, new Item.Properties().group(ItemGroup.DECORATIONS)), carpet.getRegistryName());
 			Item.BLOCK_TO_ITEM.put(carpet, item);
 			Item.BLOCK_TO_ITEM.put(fitCarpets[carpet.getColor().getId()], item);
@@ -122,8 +119,8 @@ public class InspirationsTweaks extends PulseBase {
 				new Item.Properties().group(ItemGroup.FOOD)
 		), "sugar_cane_seeds");
 
-		carrotSeeds = registerItem(r, new ItemSeed((CropsBlock) Blocks.CARROTS, PlantType.Crop), "carrot_seeds");
-		potatoSeeds = registerItem(r, new ItemSeed((CropsBlock) Blocks.POTATOES, PlantType.Crop), "potato_seeds");
+		carrotSeeds = registerItem(r, new SeedItem((CropsBlock) Blocks.CARROTS, PlantType.Crop), "carrot_seeds");
+		potatoSeeds = registerItem(r, new SeedItem((CropsBlock) Blocks.POTATOES, PlantType.Crop), "potato_seeds");
 
 		heartbeet = registerItem(r, new HidableItem(
 				new Item.Properties().group(ItemGroup.FOOD).food(

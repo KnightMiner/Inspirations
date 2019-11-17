@@ -2,19 +2,17 @@ package knightminer.inspirations;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.electronwill.nightconfig.core.io.WritingMode;
+import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.common.Config;
-import knightminer.inspirations.common.data.FillBlockTexture;
+import knightminer.inspirations.common.data.ConfigEnabledCondition;
+import knightminer.inspirations.common.data.FillTexturedBlockLootFunction;
+import knightminer.inspirations.common.data.PulseLoadedCondition;
 import knightminer.inspirations.common.network.InspirationsNetwork;
-import knightminer.inspirations.common.data.ConfigEnabled;
-import knightminer.inspirations.common.data.PulseLoaded;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.recipe.ModItemList;
 import knightminer.inspirations.library.recipe.ShapelessNoContainerRecipe;
 import knightminer.inspirations.library.recipe.TextureRecipe;
-//import knightminer.inspirations.plugins.top.TheOneProbePlugin;
-import knightminer.inspirations.building.InspirationsBuilding;
-//import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.shared.InspirationsShared;
 import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
@@ -39,6 +37,8 @@ import slimeknights.mantle.pulsar.control.PulseManager;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
+
+//import knightminer.inspirations.recipes.InspirationsRecipes;
 
 @Mod(Inspirations.modID)
 public class Inspirations {
@@ -108,8 +108,8 @@ public class Inspirations {
 	@SubscribeEvent
 	public void registerMisc(FMLCommonSetupEvent event) {
 		// These don't have registry events yet.
-		PulseLoaded.Serializer pulseLoaded = new PulseLoaded.Serializer();
-		ConfigEnabled.Serializer confEnabled = new ConfigEnabled.Serializer();
+		PulseLoadedCondition.Serializer pulseLoaded = new PulseLoadedCondition.Serializer();
+		ConfigEnabledCondition.Serializer confEnabled = new ConfigEnabledCondition.Serializer();
 
 		CraftingHelper.register(pulseLoaded);
 		CraftingHelper.register(confEnabled);
@@ -117,6 +117,6 @@ public class Inspirations {
 
 		LootConditionManager.registerCondition(pulseLoaded);
 		LootConditionManager.registerCondition(confEnabled);
-		LootFunctionManager.registerFunction(new FillBlockTexture.Serializer(Util.getResource("fill_textured_block")));
+		LootFunctionManager.registerFunction(new FillTexturedBlockLootFunction.Serializer(Util.getResource("fill_textured_block")));
 	}
 }

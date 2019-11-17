@@ -4,7 +4,7 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.common.network.MilkablePacket;
 import knightminer.inspirations.library.InspirationsRegistry;
-import knightminer.inspirations.recipes.tileentity.TileCauldron;
+import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
 import knightminer.inspirations.shared.SharedEvents;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -53,7 +53,7 @@ public class RecipesEvents {
 			return;
 		}
 
-		boolean result = TileCauldron.interact(world, pos, state, player, event.getHand());
+		boolean result = CauldronTileEntity.interact(world, pos, state, player, event.getHand());
 		if(result || InspirationsRegistry.isCauldronBlacklist(stack)) {
 			event.setCanceled(true);
 			event.setCancellationResult(ActionResultType.SUCCESS);

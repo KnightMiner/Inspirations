@@ -1,17 +1,17 @@
 package knightminer.inspirations.utility.client;
 
-import knightminer.inspirations.utility.inventory.ContainerCollector;
+import knightminer.inspirations.utility.inventory.CollectorContainer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import slimeknights.mantle.client.screen.MultiModuleScreen;
 
-public class CollectorScreen extends MultiModuleScreen<ContainerCollector> {
+public class CollectorScreen extends MultiModuleScreen<CollectorContainer> {
 
 	private static final ResourceLocation BACKGROUND = new ResourceLocation("textures/gui/container/dispenser.png");
 
-	public CollectorScreen(ContainerCollector container, PlayerInventory playerInv, ITextComponent title) {
+	public CollectorScreen(CollectorContainer container, PlayerInventory playerInv, ITextComponent title) {
 		super(container, playerInv, title);
 	}
 

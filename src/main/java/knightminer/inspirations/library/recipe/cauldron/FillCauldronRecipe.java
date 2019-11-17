@@ -1,8 +1,5 @@
 package knightminer.inspirations.library.recipe.cauldron;
 
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-
 import knightminer.inspirations.library.InspirationsRegistry;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
@@ -10,11 +7,14 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
 import slimeknights.mantle.util.RecipeMatch;
 
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+
 /**
  * Cauldron recipe to fill the cauldron from a fluid container
  */
 @ParametersAreNonnullByDefault
-public class FillCauldronRecipe extends CauldronFluidRecipe {
+public class FillCauldronRecipe extends FluidCauldronRecipe {
 
 	private int amount;
 

@@ -1,7 +1,7 @@
 package knightminer.inspirations.utility;
 
 import knightminer.inspirations.common.ClientProxy;
-import knightminer.inspirations.utility.block.BlockRedstoneBarrel;
+import knightminer.inspirations.utility.block.RedstoneBarrelBlock;
 import knightminer.inspirations.utility.client.CollectorScreen;
 import knightminer.inspirations.utility.client.PipeScreen;
 import net.minecraft.block.RedstoneWireBlock;
@@ -29,7 +29,7 @@ public class UtilityClientProxy extends ClientProxy {
 		// coloring redstone inside the barrel
 		blockColors.register((state, world, pos, tintIndex) -> {
 			if(tintIndex == 1) {
-				int level = state.get(BlockRedstoneBarrel.LEVEL);
+				int level = state.get(RedstoneBarrelBlock.LEVEL);
 				if(level > 0) {
 					return RedstoneWireBlock.colorMultiplier(level);
 				}

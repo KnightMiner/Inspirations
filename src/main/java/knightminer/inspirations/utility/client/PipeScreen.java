@@ -1,18 +1,18 @@
 package knightminer.inspirations.utility.client;
 
 import knightminer.inspirations.library.Util;
-import knightminer.inspirations.utility.inventory.ContainerPipe;
+import knightminer.inspirations.utility.inventory.PipeContainer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import slimeknights.mantle.client.screen.MultiModuleScreen;
 
-public class PipeScreen extends MultiModuleScreen<ContainerPipe> {
+public class PipeScreen extends MultiModuleScreen<PipeContainer> {
 
 	private static final ResourceLocation BACKGROUND = Util.getResource("textures/gui/pipe.png");
 
-	public PipeScreen(ContainerPipe container, PlayerInventory playerInventory, ITextComponent title) {
+	public PipeScreen(PipeContainer container, PlayerInventory playerInventory, ITextComponent title) {
 		super(container, playerInventory, title);
 	}
 
