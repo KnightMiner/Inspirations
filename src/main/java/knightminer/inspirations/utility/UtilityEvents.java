@@ -54,7 +54,7 @@ public class UtilityEvents {
 		state = state.updatePostPlacement(Direction.DOWN, world.getBlockState(pos.down()), world, pos, pos.down());
 
 		// play sound
-		PlayerEntity player = event.getEntityPlayer();
+		PlayerEntity player = event.getPlayer();
 		SoundType sound = state.getBlock().getSoundType(state, world, pos, player);
 		world.playSound(player, pos, sound.getPlaceSound(), SoundCategory.BLOCKS, (sound.getVolume() + 1.0F) / 2.0F, sound.getPitch() * 0.8F);
 

@@ -1,13 +1,5 @@
 package knightminer.inspirations.shared.client;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.function.Function;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import com.google.common.collect.ImmutableMap;
 import knightminer.inspirations.library.util.TagUtil;
 import knightminer.inspirations.library.util.TextureBlockUtil;
@@ -32,6 +24,14 @@ import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelProperty;
 import slimeknights.mantle.client.ModelHelper;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.function.Function;
 
 public class TextureModel extends BakedModelWrapper<IBakedModel> {
 	private final Map<String, IBakedModel> cache = new HashMap<>();
@@ -58,7 +58,7 @@ public class TextureModel extends BakedModelWrapper<IBakedModel> {
 		if(texture != null) {
 			bakedModel = getCachedTextureModel(texture);
 		}
-		return bakedModel.getQuads(state, side, rand);
+		return bakedModel.getQuads(state, side, rand, extraData);
 	}
 
 	protected IBakedModel getTexturedModel(ImmutableMap<String, String> textures) {

@@ -57,6 +57,7 @@ public class ChainBlock extends RopeBlock {
 		SHAPE_BOTTOM[Rungs.Z.ordinal()] = VoxelShapes.or(chain_core_bottom, chain_rungs_z);
 	}
 
+	@Deprecated
 	@Nonnull
 	@Override
 	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {

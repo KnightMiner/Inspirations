@@ -4,13 +4,12 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.common.network.MilkablePacket;
 import knightminer.inspirations.library.InspirationsRegistry;
-import knightminer.inspirations.library.Util;
 import knightminer.inspirations.shared.SharedEvents;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.BushBlock;
 import net.minecraft.block.CropsBlock;
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.CowEntity;
@@ -29,7 +28,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
-import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
@@ -50,7 +48,7 @@ public class TweaksEvents {
 			return;
 		}
 
-		PlayerEntity player = event.getEntityPlayer();
+		PlayerEntity player = event.getPlayer();
 		ItemStack stack = player.getHeldItem(event.getHand());
 		// must be sneaking and holding nothing
 		if(player.isSneaking() && stack.isEmpty()) {
@@ -337,7 +335,7 @@ public class TweaksEvents {
 		}
 
 		// must be holding a milk container
-		ItemStack stack = event.getEntityPlayer().getHeldItem(event.getHand());
+		ItemStack stack = event.getPlayer().getHeldItem(event.getHand());
 		if(stack.getItem().isIn(InspirationsRegistry.TAG_MILK_CONTAINERS)) {
 			// if has tag, cannot be milked
 			CompoundNBT tags = target.getPersistentData();

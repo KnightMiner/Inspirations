@@ -232,6 +232,7 @@ public class EnhancedCauldronBlock extends CauldronBlock {
 		return state.get(LEVEL);
 	}
 
+	@Deprecated
 	@Override
 	public int getComparatorInputOverride(BlockState state, World world, BlockPos pos) {
 		return getLevel(state);
