@@ -1,17 +1,8 @@
 package knightminer.inspirations.building.client;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
-import java.util.concurrent.ExecutionException;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableMap;
-
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.block.BlockBookshelf;
 import knightminer.inspirations.shared.client.TextureModel;
@@ -22,6 +13,13 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.Direction;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.data.IModelData;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Objects;
+import java.util.Random;
+import java.util.concurrent.ExecutionException;
 
 public class BookshelfModel extends TextureModel {
 
@@ -58,7 +56,7 @@ public class BookshelfModel extends TextureModel {
 		} catch(ExecutionException e) {
 			Inspirations.log.error(e);
 		}
-		return bakedModel.getQuads(state, side, rand);
+		return bakedModel.getQuads(state, side, rand, extraData);
 	}
 
 	private static class BookshelfCacheKey {

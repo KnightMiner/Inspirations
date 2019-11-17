@@ -1,8 +1,8 @@
 package knightminer.inspirations.recipes.recipe;
 
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.potion.PotionUtils;
 
 public enum TippedArrowCauldronRecipe implements ICauldronRecipe {

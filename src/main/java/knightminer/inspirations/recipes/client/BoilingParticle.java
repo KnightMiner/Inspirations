@@ -1,9 +1,9 @@
 package knightminer.inspirations.recipes.client;
 
-import net.minecraft.client.particle.ParticleBubble;
+import net.minecraft.client.particle.BubbleParticle;
 import net.minecraft.world.World;
 
-public class BoilingParticle extends ParticleBubble {
+public class BoilingParticle extends BubbleParticle {
 
 	public BoilingParticle(World world, double xCoord, double yCoord, double zCoord, double xSpeed, double ySpeed, double zSpeed) {
 		super(world, xCoord, yCoord, zCoord, xSpeed, ySpeed, zSpeed);
@@ -12,7 +12,7 @@ public class BoilingParticle extends ParticleBubble {
 	}
 
 	@Override
-	public void onUpdate() {
+	public void tick() {
 		this.prevPosX = this.posX;
 		this.prevPosY = this.posY;
 		this.prevPosZ = this.posZ;
@@ -21,7 +21,7 @@ public class BoilingParticle extends ParticleBubble {
 		this.motionY *= 0.8500000238418579D;
 		this.motionZ *= 0.8500000238418579D;
 
-		if (this.particleMaxAge-- <= 0) {
+		if (this.maxAge-- <= 0) {
 			this.setExpired();
 		}
 	}

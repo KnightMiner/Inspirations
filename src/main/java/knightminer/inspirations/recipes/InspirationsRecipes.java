@@ -1,13 +1,9 @@
 package knightminer.inspirations.recipes;
 
-import knightminer.inspirations.Inspirations;
-import knightminer.inspirations.common.CommonProxy;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.library.InspirationsRegistry;
-import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.recipe.cauldron.CauldronBrewingRecipe;
-import knightminer.inspirations.library.recipe.cauldron.CauldronDyeRecipe;
 import knightminer.inspirations.library.recipe.cauldron.CauldronFluidRecipe;
 import knightminer.inspirations.library.recipe.cauldron.CauldronMixRecipe;
 import knightminer.inspirations.library.recipe.cauldron.FillCauldronRecipe;
@@ -15,14 +11,12 @@ import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
 import knightminer.inspirations.library.util.ReflectionUtil;
 import knightminer.inspirations.recipes.block.BlockEnhancedCauldron;
 import knightminer.inspirations.recipes.block.BlockSmashingAnvil;
-import knightminer.inspirations.recipes.dispenser.DispenseCauldronRecipe;
 import knightminer.inspirations.recipes.item.ItemMixedDyedWaterBottle;
 import knightminer.inspirations.recipes.item.ItemSimpleDyedWaterBottle;
 import knightminer.inspirations.recipes.recipe.ArmorClearRecipe;
 import knightminer.inspirations.recipes.recipe.ArmorDyeingCauldronRecipe;
 import knightminer.inspirations.recipes.recipe.BannerClearRecipe;
 import knightminer.inspirations.recipes.recipe.DyeCauldronWater;
-import knightminer.inspirations.recipes.recipe.DyeIngredientWrapper;
 import knightminer.inspirations.recipes.recipe.FillCauldronFromDyedBottle;
 import knightminer.inspirations.recipes.recipe.FillCauldronFromFluidContainer;
 import knightminer.inspirations.recipes.recipe.FillCauldronFromPotion;
@@ -32,34 +26,31 @@ import knightminer.inspirations.recipes.recipe.FillPotionFromCauldron;
 import knightminer.inspirations.recipes.recipe.SpongeEmptyCauldron;
 import knightminer.inspirations.recipes.recipe.TippedArrowCauldronRecipe;
 import knightminer.inspirations.shared.InspirationsShared;
-import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.material.Material;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.Fluids;
+import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.crafting.ICraftingRecipe;
-import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.item.crafting.ShapelessRecipe;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionBrewing;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.potion.Potions;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvents;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.brewing.BrewingRecipe;
 import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 import net.minecraftforge.common.brewing.IBrewingRecipe;
 import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
@@ -73,10 +64,7 @@ import java.util.Map;
 public class InspirationsRecipes extends PulseBase {
 	public static final String pulseID = "InspirationsRecipes";
 
-	public static CommonProxy proxy = DistExecutor.runForDist(
-			() -> () -> new RecipesClientProxy(),
-			() -> () -> new CommonProxy()
-			);
+	public static Object proxy = DistExecutor.callWhenOn(Dist.CLIENT, ()->()->new RecipesClientProxy());
 
 	// blocks
 	public static Block fullAnvil;
@@ -98,8 +86,6 @@ public class InspirationsRecipes extends PulseBase {
 
 	@SubscribeEvent
 	public void preInit(FMLCommonSetupEvent event) {
-		proxy.preInit();
-
 		if(Config.enableCauldronFluids()) {
 			mushroomStew = registerColoredFluid("mushroom_stew", 0xFFCD8C6F);
 			beetrootSoup = registerColoredFluid("beetroot_soup", 0xFFB82A30);
@@ -177,8 +163,6 @@ public class InspirationsRecipes extends PulseBase {
 
 	@SubscribeEvent
 	public void init(FMLCommonSetupEvent event) {
-		proxy.init();
-
 		InspirationsRegistry.registerAnvilBreaking(Material.GLASS);
 		if(Config.enableCauldronRecipes()) {
 			registerCauldronRecipes();
@@ -188,14 +172,13 @@ public class InspirationsRecipes extends PulseBase {
 
 	@SubscribeEvent
 	public void postInit(InterModProcessEvent event) {
-		proxy.postInit();
 		MinecraftForge.EVENT_BUS.register(RecipesEvents.class);
 		registerPostCauldronRecipes();
 	}
 
 	private void registerCauldronRecipes() {
 		InspirationsRegistry.registerDefaultCauldron();
-		InspirationsRegistry.addCauldronRecipe(new FillCauldronRecipe(RecipeMatch.of(Blocks.ICE), FluidRegistry.WATER, InspirationsRegistry.getCauldronMax(), ItemStack.EMPTY, true, SoundEvents.ITEM_BUCKET_EMPTY_LAVA));
+		InspirationsRegistry.addCauldronRecipe(new FillCauldronRecipe(RecipeMatch.of(Blocks.ICE), Fluids.WATER, InspirationsRegistry.getCauldronMax(), ItemStack.EMPTY, true, SoundEvents.ITEM_BUCKET_EMPTY_LAVA));
 		if(Config.canSpongeEmptyCauldron()) {
 			InspirationsRegistry.addCauldronRecipe(SpongeEmptyCauldron.INSTANCE);
 		}
@@ -205,9 +188,9 @@ public class InspirationsRecipes extends PulseBase {
 			// else show water in the cauldron as lava is not allowed
 			// in either case both are supported
 			if(Config.enableCauldronFluids()) {
-				recipe = new CauldronMixRecipe(FluidRegistry.LAVA, FluidRegistry.WATER, new ItemStack(Blocks.OBSIDIAN));
+				recipe = new CauldronMixRecipe(Fluids.LAVA, Fluids.WATER, new ItemStack(Blocks.OBSIDIAN));
 			} else {
-				recipe = new CauldronMixRecipe(FluidRegistry.WATER, FluidRegistry.LAVA, new ItemStack(Blocks.OBSIDIAN));
+				recipe = new CauldronMixRecipe(Fluids.WATER, Fluids.LAVA, new ItemStack(Blocks.OBSIDIAN));
 			}
 			InspirationsRegistry.addCauldronRecipe(recipe);
 		}
@@ -217,17 +200,17 @@ public class InspirationsRecipes extends PulseBase {
 		}
 
 		// reimplemented vanilla recipes
-		InspirationsRegistry.addCauldronRecipe(new ArmorClearRecipe(ItemArmor.ArmorMaterial.LEATHER));
+		InspirationsRegistry.addCauldronRecipe(new ArmorClearRecipe(ArmorMaterial.LEATHER));
 		InspirationsRegistry.addCauldronRecipe(BannerClearRecipe.INSTANCE);
 		// fill from water bottle, does not use the shortcut as we need NBT matching
-		ItemStack waterBottle = PotionUtils.addPotionToItemStack(new ItemStack(Items.POTIONITEM), PotionTypes.WATER);
-		InspirationsRegistry.addCauldronRecipe(new CauldronFluidRecipe(RecipeMatch.of(Items.GLASS_BOTTLE), FluidRegistry.WATER, waterBottle, null, SoundEvents.ITEM_BOTTLE_FILL));
-		InspirationsRegistry.addCauldronRecipe(new FillCauldronRecipe(RecipeMatch.ofNBT(waterBottle), FluidRegistry.WATER, 1, new ItemStack(Items.GLASS_BOTTLE)));
+		ItemStack waterBottle = PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), Potions.WATER);
+		InspirationsRegistry.addCauldronRecipe(new CauldronFluidRecipe(RecipeMatch.of(Items.GLASS_BOTTLE), Fluids.WATER, waterBottle, null, SoundEvents.ITEM_BOTTLE_FILL));
+		InspirationsRegistry.addCauldronRecipe(new FillCauldronRecipe(RecipeMatch.ofNBT(waterBottle), Fluids.WATER, 1, new ItemStack(Items.GLASS_BOTTLE)));
 
 		if(Config.enableCauldronDyeing()) {
 			InspirationsRegistry.addCauldronRecipe(FillDyedBottleFromCauldron.INSTANCE);
 			InspirationsRegistry.addCauldronRecipe(FillCauldronFromDyedBottle.INSTANCE);
-			InspirationsRegistry.addCauldronRecipe(new ArmorDyeingCauldronRecipe(ItemArmor.ArmorMaterial.LEATHER));
+			InspirationsRegistry.addCauldronRecipe(new ArmorDyeingCauldronRecipe(ArmorMaterial.LEATHER));
 
 			for(DyeColor color : DyeColor.values()) {
 				InspirationsRegistry.addCauldronRecipe(new DyeCauldronWater(color));
@@ -277,7 +260,7 @@ public class InspirationsRecipes extends PulseBase {
 			addStewRecipes(new ItemStack(Items.RABBIT_STEW), rabbitStew, new ItemStack(InspirationsShared.rabbitStewMix));
 		} else {
 			// above relied on for bucket filling cauldron
-			InspirationsRegistry.addCauldronFluidItem(new ItemStack(Items.WATER_BUCKET), new ItemStack(Items.BUCKET), FluidRegistry.WATER, 3);
+			InspirationsRegistry.addCauldronFluidItem(new ItemStack(Items.WATER_BUCKET), new ItemStack(Items.BUCKET), Fluids.WATER, 3);
 		}
 	}
 
@@ -286,7 +269,7 @@ public class InspirationsRecipes extends PulseBase {
 	 */
 	private void registerPostCauldronRecipes() {
 		if(Config.enableCauldronBrewing()) {
-			for(Object recipe : PotionUtils.POTION_TYPE_CONVERSIONS) {
+			for(PotionBrewing.MixPredicate<Potion> recipe : PotionBrewing.POTION_TYPE_CONVERSIONS) {
 				Potion input = ReflectionUtil.getMixPredicateInput(recipe);
 				Ingredient reagent = ReflectionUtil.getMixPredicateReagent(recipe);
 				Potion output = ReflectionUtil.getMixPredicateOutput(recipe);
@@ -309,7 +292,7 @@ public class InspirationsRecipes extends PulseBase {
 	}
 
 	private static void addStewRecipes(ItemStack stew, Fluid fluid, ItemStack ingredient) {
-		InspirationsRegistry.addCauldronScaledTransformRecipe(ingredient, FluidRegistry.WATER, fluid, true);
+		InspirationsRegistry.addCauldronScaledTransformRecipe(ingredient, Fluids.WATER, fluid, true);
 		// filling and emptying bowls
 		InspirationsRegistry.addCauldronRecipe(new CauldronFluidRecipe(RecipeMatch.of(Items.BOWL), fluid, stew, null, SoundEvents.ITEM_BOTTLE_FILL));
 		InspirationsRegistry.addCauldronRecipe(new FillCauldronRecipe(RecipeMatch.of(stew), fluid, 1, new ItemStack(Items.BOWL)));

@@ -4,7 +4,11 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.recipes.client.BoilingParticle;
 import knightminer.inspirations.recipes.tileentity.TileCauldron;
-import net.minecraft.block.*;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.CauldronBlock;
+import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.entity.Entity;
@@ -22,13 +26,10 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.data.ModelProperty;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
@@ -37,7 +38,7 @@ public class BlockEnhancedCauldron extends CauldronBlock implements ITileEntityP
 	public static final EnumProperty<CauldronContents> CONTENTS = EnumProperty.create("contents", CauldronContents.class);
 	public static final IntegerProperty LEVEL_EXT = IntegerProperty.create("levels", 0, 4);
 	public static final BooleanProperty BOILING = BooleanProperty.create("boiling");
-	public static final ModelProperty<String> TEXTURE = new ModelProperty<String>();
+	public static final ModelProperty<String> TEXTURE = new ModelProperty<>();
 
 	public BlockEnhancedCauldron() {
 		super(Block.Properties.from(Blocks.CAULDRON));
@@ -46,7 +47,7 @@ public class BlockEnhancedCauldron extends CauldronBlock implements ITileEntityP
 				.with(LEVEL, 0)
 				.with(BOILING, false)
 				.with(CONTENTS, CauldronContents.FLUID);
-		if (Config.enableBiggerCauldron.get()) {
+		if (Config.enableBiggerCauldron()) {
 			state = state.with(LEVEL_EXT, 0);
 		}
 		this.setDefaultState(state);
@@ -74,11 +75,11 @@ public class BlockEnhancedCauldron extends CauldronBlock implements ITileEntityP
 		}
 
 		// allow disabling the random 1/20 chance
-		if((Config.fasterCauldronRain.get() || world.rand.nextInt(20) == 0)
+		if((Config.fasterCauldronRain() || world.rand.nextInt(20) == 0)
 				&& world.getBiome(pos).getTemperature(pos) >= 0.15F) {
 			BlockState state = world.getBlockState(pos);
 			int level = getLevel(state);
-			if(level < (Config.enableBiggerCauldron.get() ? 4 : 3)) {
+			if(level < (Config.enableBiggerCauldron() ? 4 : 3)) {
 				setWaterLevel(world, pos, state, level+1);
 			}
 		}
@@ -88,7 +89,7 @@ public class BlockEnhancedCauldron extends CauldronBlock implements ITileEntityP
 	 * Called When an Entity Collided with the Block
 	 */
 	@Override
-	public void onEntityCollidedWithBlock(World world, BlockPos pos, BlockState state, Entity entity) {
+	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
 		TileEntity te = world.getTileEntity(pos);
 		// do not estinguish unless the current contents are water
 		if(!(te instanceof TileCauldron)) {
@@ -100,7 +101,7 @@ public class BlockEnhancedCauldron extends CauldronBlock implements ITileEntityP
 
 		// ensure the entity is touching the fluid inside
 		int level = getLevel(state);
-		float f = pos.getY() + ((Config.enableBiggerCauldron.get() ? 2.5F : 5.5F) + 3 * Math.max(level, 1)) / 16.0F;
+		float f = pos.getY() + ((Config.enableBiggerCauldron() ? 2.5F : 5.5F) + 3 * Math.max(level, 1)) / 16.0F;
 		if (entity.getBoundingBox().minY <= f) {
 			// if so, have the TE handle it
 			int newLevel = ((TileCauldron)te).onEntityCollide(entity, level, state);
@@ -138,7 +139,7 @@ public class BlockEnhancedCauldron extends CauldronBlock implements ITileEntityP
 	@Override
 	protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
 		builder.add(CONTENTS, BOILING, LEVEL);
-		if(Config.enableBiggerCauldron.get()) {
+		if(Config.enableBiggerCauldron()) {
 			builder.add(LEVEL_EXT);
 		}
 	}
@@ -186,7 +187,7 @@ public class BlockEnhancedCauldron extends CauldronBlock implements ITileEntityP
 		ParticleManager manager = Minecraft.getInstance().particles;
 		for(int i = 0; i < 2; i++) {
 			double x = pos.getX() + 0.1875D + (rand.nextFloat() * 0.625D);
-			double y = pos.getY() + (Config.enableBiggerCauldron.get() ? 0.1875 : 0.375D) + (level * 0.1875D);
+			double y = pos.getY() + (Config.enableBiggerCauldron() ? 0.1875 : 0.375D) + (level * 0.1875D);
 			double z = pos.getZ() + 0.1875D + (rand.nextFloat() * 0.625D);
 			manager.addEffect(new BoilingParticle(world, x, y, z, 0, 0, 0));
 		}
@@ -197,7 +198,7 @@ public class BlockEnhancedCauldron extends CauldronBlock implements ITileEntityP
 	@Override
 	public void setWaterLevel(World worldIn, @Nonnull BlockPos pos, BlockState state, int level) {
 		// if 4, set 4 prop
-		if(Config.enableBiggerCauldron.get()) {
+		if(Config.enableBiggerCauldron()) {
 			state = state.with(LEVEL_EXT, MathHelper.clamp(level, 0, 4));
 		}
 		worldIn.setBlockState(pos, state.with(LEVEL, MathHelper.clamp(level, 0, 3)), 2);
@@ -221,7 +222,7 @@ public class BlockEnhancedCauldron extends CauldronBlock implements ITileEntityP
 	}
 
 	public int getLevel(BlockState state) {
-		if(Config.enableBiggerCauldron.get()) {
+		if(Config.enableBiggerCauldron()) {
 			return state.get(LEVEL_EXT);
 		}
 		return state.get(LEVEL);

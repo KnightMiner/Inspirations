@@ -10,7 +10,6 @@ import knightminer.inspirations.library.util.TextureBlockUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.LivingEntity;
@@ -45,18 +44,14 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
-import net.minecraft.world.storage.loot.LootContext;
-import net.minecraft.world.storage.loot.LootParameters;
 import net.minecraftforge.client.model.data.ModelProperty;
 import net.minecraftforge.fml.network.NetworkHooks;
 import slimeknights.mantle.block.InventoryBlock;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
 
-public class BlockBookshelf extends InventoryBlock implements ITileEntityProvider, IHidable {
+public class BlockBookshelf extends InventoryBlock implements IHidable {
 
 	public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
 	public static final ModelProperty<String> TEXTURE = TextureBlockUtil.TEXTURE_PROP;
@@ -71,6 +66,11 @@ public class BlockBookshelf extends InventoryBlock implements ITileEntityProvide
 	}
 
 	@Override
+	public boolean hasTileEntity(BlockState state) {
+		return true;
+	}
+
+	@Override
 	protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
 		builder.add(FACING);
 	}
@@ -78,6 +78,13 @@ public class BlockBookshelf extends InventoryBlock implements ITileEntityProvide
 	@Nonnull
 	@Override
 	public TileEntity createTileEntity(BlockState state, IBlockReader world) {
+		return new TileBookshelf();
+	}
+
+	@Deprecated
+	@Nullable
+	@Override
+	public TileEntity createNewTileEntity(@Nonnull IBlockReader world) {
 		return new TileBookshelf();
 	}
 
@@ -91,12 +98,6 @@ public class BlockBookshelf extends InventoryBlock implements ITileEntityProvide
 	public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
 		super.onBlockPlacedBy(world, pos, state, placer, stack);
 		TextureBlockUtil.placeTextureBlock(world, pos, stack);
-	}
-
-	@Nullable
-	@Override
-	public TileEntity createNewTileEntity(@Nonnull IBlockReader world) {
-		return new TileBookshelf();
 	}
 
 	@Override
@@ -239,6 +240,7 @@ public class BlockBookshelf extends InventoryBlock implements ITileEntityProvide
 		BOUNDS = builder.build();
 	}
 
+	@Deprecated
 	@Nonnull
 	@Override
 	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
@@ -265,11 +267,13 @@ public class BlockBookshelf extends InventoryBlock implements ITileEntityProvide
 		super.onReplaced(state, world, pos, newState, isMoving);
 	}
 
+	@Deprecated
 	@Override
 	public int getWeakPower(BlockState state, IBlockReader blockAccess, BlockPos pos, Direction side) {
 		return getPower(blockAccess, pos);
 	}
 
+	@Deprecated
 	@Override
 	public int getStrongPower(BlockState state, IBlockReader blockAccess, BlockPos pos, Direction side) {
 		if(state.get(FACING) != side) {
@@ -292,9 +296,7 @@ public class BlockBookshelf extends InventoryBlock implements ITileEntityProvide
 		return 0;
 	}
 
-	/**
-	 * Can this block provide power. Only wire currently seems to have this change based on its state.
-	 */
+	@Deprecated
 	@Override
 	public boolean canProvidePower(BlockState state) {
 		// ensure we have the redstone book, since it comes from the redstone module
@@ -317,6 +319,7 @@ public class BlockBookshelf extends InventoryBlock implements ITileEntityProvide
 		return state.with(FACING, direction.rotate(state.get(FACING)));
 	}
 
+	@Deprecated
 	@Nonnull
 	@Override
 	public BlockState mirror(BlockState state, Mirror mirror) {

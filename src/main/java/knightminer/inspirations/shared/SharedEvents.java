@@ -26,7 +26,7 @@ public class SharedEvents {
 				|| (Config.milkSquids.get() && entity instanceof SquidEntity)) {
 
 			// if not already cooled down, cool down
-			CompoundNBT tags = entity.getEntityData();
+			CompoundNBT tags = entity.getPersistentData();
 			short cooldown = tags.getShort(TAG_MILKCOOLDOWN);
 			if(cooldown > 0) {
 				tags.putShort(TAG_MILKCOOLDOWN, (short)(cooldown - 1));

@@ -52,7 +52,7 @@ public class MilkablePacket extends AbstractPacketThreadsafe {
 			return;
 		}
 
-		CompoundNBT tags = entity.getEntityData();
+		CompoundNBT tags = entity.getPersistentData();
 		// value for not milkable does not matter as long as its greater than 0
 		tags.putShort(SharedEvents.TAG_MILKCOOLDOWN, (short)(milkable ? 0 : 100));
 	}

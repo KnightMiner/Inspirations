@@ -4,45 +4,49 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe.CauldronState;
 import knightminer.inspirations.recipes.tileentity.TileCauldron;
-import net.minecraftforge.fluids.Fluid;
+import net.minecraft.fluid.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidTankProperties;
+
+import javax.annotation.Nonnull;
 
 public class CauldronTank implements IFluidHandler {
 
 	private TileCauldron cauldron;
-	private Properties[] properties;
 	public CauldronTank(TileCauldron cauldron) {
 		this.cauldron = cauldron;
-		this.properties = new Properties[] {new Properties(cauldron)};
 	}
+
+	/* Properties */
+  @Override
+  public int getTanks() {
+    return 1;
+  }
+
+  @Override
+  public int getTankCapacity(int tank) {
+    return 1000;
+  }
+
+  @Override
+  public boolean isFluidValid(int tank, @Nonnull FluidStack stack) {
+    return !stack.hasTag();
+  }
+
+  @Nonnull
+  @Override
+  public FluidStack getFluidInTank(int tank) {
+    Fluid fluid = cauldron.getState().getFluid();
+    return fluid == null ? null : new FluidStack(fluid, 1000);
+  }
+
+
+	/* Filling and draining */
 
 	@Override
-	public IFluidTankProperties[] getTankProperties() {
-		return properties;
-	}
-
-	private static int getLevels(int amount) {
-		// if bigger, we got between 0 and 4
-		if(Config.enableBiggerCauldron) {
-			return amount / 250;
-		}
-		// regular is just 3 or 0
-		return amount >= 1000 ? 3 : 0;
-	}
-
-	private static int getAmount(int levels) {
-		if(Config.enableBiggerCauldron) {
-			return levels * 250;
-		}
-		return levels == 3 ? 1000 : 0;
-	}
-
-	@Override
-	public int fill(FluidStack stack, boolean doFill) {
+	public int fill(FluidStack stack, FluidAction action) {
 		// cannot fill with NBT stacks
-		if(stack.tag != null) {
+		if(stack.hasTag()) {
 			return 0;
 		}
 
@@ -61,12 +65,12 @@ public class CauldronTank implements IFluidHandler {
 		}
 
 		// determine how much fluid we can insert
-		int toInsert = Math.min(getLevels(stack.amount), max - level);
+		int toInsert = Math.min(getLevels(stack.getAmount()), max - level);
 		if(toInsert == 0) {
 			return 0;
 		}
 
-		if(doFill) {
+		if(action == FluidAction.EXECUTE) {
 			cauldron.setState(CauldronState.fluid(stack.getFluid()), false);
 			cauldron.setFluidLevel(toInsert + level);
 		}
@@ -75,9 +79,9 @@ public class CauldronTank implements IFluidHandler {
 	}
 
 	@Override
-	public FluidStack drain(FluidStack stack, boolean doDrain) {
+	public FluidStack drain(FluidStack stack, FluidAction action) {
 		// cannot drain with NBT stacks
-		if(stack.tag != null) {
+		if(stack.hasTag()) {
 			return null;
 		}
 
@@ -86,11 +90,11 @@ public class CauldronTank implements IFluidHandler {
 			return null;
 		}
 
-		return drain(stack.amount, doDrain);
+		return drain(stack.getAmount(), action);
 	}
 
 	@Override
-	public FluidStack drain(int maxDrain, boolean doDrain) {
+	public FluidStack drain(int maxDrain, FluidAction action) {
 		CauldronState state = cauldron.getState();
 		if(state.getFluid() == null) {
 			return null;
@@ -108,58 +112,29 @@ public class CauldronTank implements IFluidHandler {
 			return null;
 		}
 
-		if(doDrain) {
+		if(action == FluidAction.EXECUTE) {
 			cauldron.setFluidLevel(level - toDrain);
 		}
 
 		return new FluidStack(state.getFluid(), getAmount(toDrain));
 	}
 
-	private static class Properties implements IFluidTankProperties {
-		private TileCauldron cauldron;
-		public Properties(TileCauldron cauldron) {
-			this.cauldron = cauldron;
-		}
 
-		@Override
-		public FluidStack getContents() {
-			Fluid fluid = cauldron.getState().getFluid();
-			if(fluid == null) {
-				return null;
-			}
+  /* Helpers */
 
-			// determine fluid amount
-			int amount = cauldron.getFluidLevel();
-			if(amount == 0) {
-				return null;
-			}
+  private static int getLevels(int amount) {
+    // if bigger, we got between 0 and 4
+    if(Config.enableBiggerCauldron()) {
+      return amount / 250;
+    }
+    // regular is just 3 or 0
+    return amount >= 1000 ? 3 : 0;
+  }
 
-			return new FluidStack(fluid, getAmount(amount));
-		}
-
-		@Override
-		public int getCapacity() {
-			return 1000;
-		}
-
-		@Override
-		public boolean canFill() {
-			return true;
-		}
-
-		@Override
-		public boolean canDrain() {
-			return true;
-		}
-
-		@Override
-		public boolean canFillFluidType(FluidStack fluidStack) {
-			return fluidStack.tag == null;
-		}
-
-		@Override
-		public boolean canDrainFluidType(FluidStack fluidStack) {
-			return fluidStack.tag == null;
-		}
-	}
+  private static int getAmount(int levels) {
+    if(Config.enableBiggerCauldron()) {
+      return levels * 250;
+    }
+    return levels == 3 ? 1000 : 0;
+  }
 }

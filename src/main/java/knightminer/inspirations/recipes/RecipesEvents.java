@@ -77,7 +77,7 @@ public class RecipesEvents {
 		ItemStack stack = player.getHeldItem(event.getHand());
 		if(stack.getItem() == Items.GLASS_BOTTLE) {
 			// if has tag, cannot be milked
-			CompoundNBT tags = target.getEntityData();
+			CompoundNBT tags = target.getPersistentData();
 			if (tags.getShort(SharedEvents.TAG_MILKCOOLDOWN) == 0) {
 				// give ink bottle to player
 				if (!player.isCreative()) {

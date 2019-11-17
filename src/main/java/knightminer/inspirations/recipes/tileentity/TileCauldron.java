@@ -13,21 +13,20 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CauldronBlock;
-import net.minecraft.entity.AreaEffectCloudEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.item.Items;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.potion.EffectInstance;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
+import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.tileentity.TileEntity;
@@ -109,7 +108,7 @@ public class TileCauldron extends TileEntity {
 
 		Fluid fluid = state.getFluid();
 		if(fluid != null) {
-			return state.getFluid().getColor();
+			return fluid.getAttributes().getColor();
 		}
 
 		return -1;
@@ -123,7 +122,7 @@ public class TileCauldron extends TileEntity {
 			Fluid fluid = this.state.getFluid();
 			if(fluid != null) {
 				return new ModelDataMap.Builder()
-						.withInitial(BlockEnhancedCauldron.TEXTURE, fluid.getStill().toString())
+						.withInitial(BlockEnhancedCauldron.TEXTURE, fluid.getAttributes().getStillTexture().toString())
 						.build();
 			}
 		}
@@ -149,7 +148,7 @@ public class TileCauldron extends TileEntity {
 		CauldronState state = CauldronState.WATER;
 		boolean boiling = false;
 		Block block = blockState.getBlock();
-		if(Config.enableExtendedCauldron.get() && block instanceof BlockEnhancedCauldron) {
+		if(Config.enableExtendedCauldron() && block instanceof BlockEnhancedCauldron) {
 			TileEntity te = world.getTileEntity(pos);
 			if(te instanceof TileCauldron) {
 				cauldron = (TileCauldron) te;
@@ -173,7 +172,7 @@ public class TileCauldron extends TileEntity {
 				CauldronState newState = recipe.getState(stack, boiling, level, state);
 
 				// if its not a TE, stop right here and disallow any recipes which do not return water
-				if(!Config.enableExtendedCauldron.get() && !CauldronState.WATER.matches(newState)) {
+				if(!Config.enableExtendedCauldron() && !CauldronState.WATER.matches(newState)) {
 					return true;
 				}
 
@@ -196,7 +195,7 @@ public class TileCauldron extends TileEntity {
 							((CauldronBlock)Blocks.CAULDRON).setWaterLevel(world, pos, Blocks.CAULDRON.getDefaultState(), newLevel);
 
 							// missing the tile entity
-							if(Config.enableExtendedCauldron.get()) {
+							if(Config.enableExtendedCauldron()) {
 								TileEntity te = world.getTileEntity(pos);
 								if(te instanceof TileCauldron) {
 									cauldron = (TileCauldron)te;
@@ -273,7 +272,7 @@ public class TileCauldron extends TileEntity {
 		if(entity instanceof ItemEntity) {
 			// skip items that we have already processed
 			ItemEntity entityItem = (ItemEntity) entity;
-			CompoundNBT entityTags = entity.getEntityData();
+			CompoundNBT entityTags = entity.getPersistentData();
 			// if it was tagged, skip it
 			if(entityTags.getBoolean(TAG_CAULDRON_CRAFTED)) {
 				return level;
@@ -373,7 +372,7 @@ public class TileCauldron extends TileEntity {
 					} else {
 						// hot fluids set fire to the entity
 						Fluid fluid = state.getFluid();
-						if(fluid.getTemperature() > 450 && !entity.isImmuneToFire()) {
+						if(fluid.getAttributes().getTemperature() > 450 && !entity.isImmuneToFire()) {
 							entity.attackEntityFrom(DamageSource.LAVA, 4.0F);
 							entity.setFire(15);
 							break;
@@ -414,7 +413,7 @@ public class TileCauldron extends TileEntity {
 
 		// tag the entity so it does not craft again
 		// prevents something like a water bottle from emptying and filling constantly
-		entityItem.getEntityData().putBoolean(TAG_CAULDRON_CRAFTED, true);
+		entityItem.getPersistentData().putBoolean(TAG_CAULDRON_CRAFTED, true);
 		world.addEntity(entityItem);
 	}
 
@@ -426,18 +425,11 @@ public class TileCauldron extends TileEntity {
 	public void onBreak(BlockPos pos, int level) {
 		switch(getContentType()) {
 			case FLUID:
-				Block block = state.getFluid().getBlock();
+				BlockState block = state.getFluid().getAttributes().getBlock(null, null, state.getFluid().getDefaultState());
 				if(block != null) {
-					// switch to flowing states
-					if(block == Blocks.WATER) {
-						block = Fluids.FLOWING_WATER;
-					} else if(block == Blocks.LAVA) {
-						block = Blocks.FLOWING_LAVA;
-					}
-
 					// height varies based on what is left. Will place a source if the cauldron is full
-					if(level == (Config.enableBiggerCauldron.get() ? 4 : 3)) {
-						world.setBlockState(pos, block.getDefaultState());
+					if(level == (Config.enableBiggerCauldron() ? 4 : 3)) {
+						world.setBlockState(pos, block);
 					}
 				}
 				break;

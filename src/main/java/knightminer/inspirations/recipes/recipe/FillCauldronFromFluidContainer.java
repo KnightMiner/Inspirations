@@ -2,12 +2,13 @@ package knightminer.inspirations.recipes.recipe;
 
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundEvent;
-import net.minecraftforge.fluids.Fluid;
+import net.minecraft.util.SoundEvents;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.capability.IFluidHandlerItem;
+import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 
 public enum FillCauldronFromFluidContainer implements ICauldronRecipe {
 	INSTANCE;
@@ -18,20 +19,18 @@ public enum FillCauldronFromFluidContainer implements ICauldronRecipe {
 			return false;
 		}
 
-		IFluidHandlerItem fluidHandler = FluidUtil.getFluidHandler(stack);
-		if(fluidHandler == null) {
-			return false;
-		}
-
-		FluidStack fluidStack = fluidHandler.drain(1000, false);
-		return CauldronState.fluidValid(fluidStack) && (level == 0 || fluidStack.getFluid() == state.getFluid());
+		return FluidUtil.getFluidHandler(stack).map(handler -> {
+			FluidStack fluidStack = handler.drain(1000, FluidAction.SIMULATE);
+			return CauldronState.fluidValid(fluidStack) && (level == 0 || fluidStack.getFluid() == state.getFluid());
+		}).orElse(false);
 	}
 
 	@Override
 	public ItemStack getResult(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		IFluidHandlerItem handler = FluidUtil.getFluidHandler(stack.copy());
-		handler.drain(1000, true);
-		return handler.getContainer();
+		return FluidUtil.getFluidHandler(stack.copy()).map(handler -> {
+			handler.drain(1000, FluidAction.EXECUTE);
+			return handler.getContainer();
+		}).orElse(ItemStack.EMPTY);
 	}
 
 	@Override
@@ -41,8 +40,8 @@ public enum FillCauldronFromFluidContainer implements ICauldronRecipe {
 
 	@Override
 	public CauldronState getState(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		Fluid fluid = FluidUtil.getFluidHandler(stack).drain(1000, false).getFluid();
-		if(fluid == state.getFluid()) {
+		Fluid fluid = FluidUtil.getFluidHandler(stack).map(h -> h.drain(1000, FluidAction.SIMULATE).getFluid()).orElse(null);
+		if(fluid == null || fluid == state.getFluid()) {
 			return state;
 		}
 
@@ -51,7 +50,10 @@ public enum FillCauldronFromFluidContainer implements ICauldronRecipe {
 
 	@Override
 	public SoundEvent getSound(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		return FluidUtil.getFluidHandler(stack).drain(1000, false).getFluid().getFillSound();
+		return FluidUtil.getFluidHandler(stack).map(h-> {
+			FluidStack fluid = h.drain(1000, FluidAction.SIMULATE);
+			return fluid.getFluid().getAttributes().getFillSound(fluid);
+		}).orElse(SoundEvents.ITEM_BUCKET_FILL);
 	}
 
 	@Override

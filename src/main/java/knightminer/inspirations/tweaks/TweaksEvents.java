@@ -340,7 +340,7 @@ public class TweaksEvents {
 		ItemStack stack = event.getEntityPlayer().getHeldItem(event.getHand());
 		if(stack.getItem().isIn(InspirationsRegistry.TAG_MILK_CONTAINERS)) {
 			// if has tag, cannot be milked
-			CompoundNBT tags = target.getEntityData();
+			CompoundNBT tags = target.getPersistentData();
 			if (tags.getShort(SharedEvents.TAG_MILKCOOLDOWN) > 0) {
 				event.setCancellationResult(ActionResultType.PASS);
 				event.setCanceled(true);
