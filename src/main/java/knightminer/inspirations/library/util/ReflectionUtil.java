@@ -2,7 +2,6 @@ package knightminer.inspirations.library.util;
 
 import knightminer.inspirations.library.InspirationsRegistry;
 import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.potion.PotionBrewing;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper.UnableToFindFieldException;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper.UnableToFindMethodException;
@@ -22,23 +21,24 @@ public final class ReflectionUtil {
 
 	private static final Map<String, Field> FIELDS = new HashMap<>();
 	private static final Map<String, Method> METHODS = new HashMap<>();
+	private static final Map<String, Class<?>> CLASS = new HashMap<>();
 
 	/* PotionBrewing.MixPredicate */
 
 	@Nullable
-	public static <T extends ForgeRegistryEntry<T>> T getMixPredicateInput(@Nonnull PotionBrewing.MixPredicate<T> mixPredicate) {
-		IRegistryDelegate<T> effect = getPrivateValue(PotionBrewing.MixPredicate.class, mixPredicate, "field_185198_a");
+	public static <T extends ForgeRegistryEntry<T>> T getMixPredicateInput(@Nonnull Object mixPredicate) {
+		IRegistryDelegate<T> effect = getPrivateValue(getClass("net.minecraft.potion.PotionBrewing$MixPredicate"), mixPredicate, "field_185198_a");
 		return effect.get();
 	}
 
 	@Nullable
-	public static Ingredient getMixPredicateReagent(@Nonnull PotionBrewing.MixPredicate mixPredicate) {
-		return getPrivateValue(PotionBrewing.MixPredicate.class, mixPredicate, "field_185199_b");
+	public static Ingredient getMixPredicateReagent(@Nonnull Object mixPredicate) {
+		return getPrivateValue(getClass("net.minecraft.potion.PotionBrewing$MixPredicate"), mixPredicate, "field_185199_b");
 	}
 
 	@Nullable
-	public static <T extends ForgeRegistryEntry<T>> T getMixPredicateOutput(@Nonnull PotionBrewing.MixPredicate<T> mixPredicate) {
-		IRegistryDelegate<T> effect = getPrivateValue(PotionBrewing.MixPredicate.class, mixPredicate, "field_185200_c");
+	public static <T extends ForgeRegistryEntry<T>> T getMixPredicateOutput(@Nonnull Object mixPredicate) {
+		IRegistryDelegate<T> effect = getPrivateValue(getClass("net.minecraft.potion.PotionBrewing$MixPredicate"), mixPredicate, "field_185200_c");
 		return effect.get();
 	}
 
@@ -69,6 +69,24 @@ public final class ReflectionUtil {
 	}
 
 	/**
+	 * Looks up a class by its name, caches it for further use and returns it.<br>
+	 * If it can't find the class, it will be logged and <tt>null</tt> is returned.
+	 *
+	 * @param className The class name to be searched for
+	 * @return The class found or <tt>null</tt>, if the class is unavailable
+	 */
+	public static Class<? super Object> getClass(String className) {
+		return (Class<? super Object>) CLASS.computeIfAbsent(className, key -> {
+			try {
+				return Class.forName(key, false, InspirationsRegistry.class.getClassLoader());
+			} catch (ClassNotFoundException e) {
+				InspirationsRegistry.log.error(e);
+				return null;
+			}
+		});
+	}
+
+	/**
 	 * Searches the class for the occurrence of a field either named by its SRG name (obfuscated) or MCP name (development),
 	 * caches the reference for further use and returns the value of the field from the instance (or statically, if the instance is <tt>null</tt>.<br>
 	 * If it can't find the field or something went wrong with getting the value, it will be logged and <tt>null</tt> is returned.
@@ -80,9 +98,12 @@ public final class ReflectionUtil {
 	 * @return The value of the field or <tt>null</tt>, if it fails
 	 */
 	@Nullable
-	private static <C, T> T getPrivateValue(final Class<? super C> classToSearch, final Object instance, final String name) {
+	private static <C, T> T getPrivateValue(final Class<? super C> clazz, final Object instance, final String name) {
+		if(clazz == null) {
+			return null;
+		}
 		try {
-			Field f = FIELDS.computeIfAbsent(name, key -> ObfuscationReflectionHelper.findField(classToSearch, name));
+			Field f = FIELDS.computeIfAbsent(name, key -> ObfuscationReflectionHelper.findField(clazz, name));
 			return f != null ? (T) f.get(instance) : null;
 		} catch(IllegalAccessException | UnableToFindFieldException | ClassCastException e) {
 			InspirationsRegistry.log.error(e);
