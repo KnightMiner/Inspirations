@@ -86,12 +86,13 @@ public class InspirationsRecipes extends PulseBase {
 
 	@SubscribeEvent
 	public void preInit(FMLCommonSetupEvent event) {
+		//TODO: reimplement
 		if(Config.enableCauldronFluids()) {
-			mushroomStew = registerColoredFluid("mushroom_stew", 0xFFCD8C6F);
-			beetrootSoup = registerColoredFluid("beetroot_soup", 0xFFB82A30);
-			rabbitStew = registerColoredFluid("rabbit_stew", 0xFF984A2C);
+			//mushroomStew = registerColoredFluid("mushroom_stew", 0xFFCD8C6F);
+			//beetrootSoup = registerColoredFluid("beetroot_soup", 0xFFB82A30);
+			//rabbitStew = registerColoredFluid("rabbit_stew", 0xFF984A2C);
 			if(Config.enableMilk()) {
-				milk = registerFluid(new Fluid("milk", Util.getResource("blocks/milk"), Util.getResource("blocks/milk_flow")));
+				///milk = registerFluid(new Fluid("milk", Util.getResource("blocks/milk"), Util.getResource("blocks/milk_flow")));
 			}
 		}
 	}
@@ -124,6 +125,7 @@ public class InspirationsRecipes extends PulseBase {
 		mixedDyedWaterBottle = registerItem(r, new ItemMixedDyedWaterBottle(), "mixed_dyed_bottle");
 	}
 
+	/* TODO: reimplement
 	@SubscribeEvent
 	public void registerRecipes(Register<IRecipe<ICraftingRecipe>> event) {
 		if(!Config.patchVanillaDyeRecipes()) {
@@ -159,7 +161,7 @@ public class InspirationsRecipes extends PulseBase {
 				Inspirations.log.warn("Error modifying dye recipe '{}', {}", recipeName, error);
 			}
 		}
-	}
+	}*/
 
 	@SubscribeEvent
 	public void init(FMLCommonSetupEvent event) {
@@ -214,6 +216,7 @@ public class InspirationsRecipes extends PulseBase {
 
 			for(DyeColor color : DyeColor.values()) {
 				InspirationsRegistry.addCauldronRecipe(new DyeCauldronWater(color));
+				/* TODO: reimplement
 				InspirationsRegistry.addCauldronRecipe(new CauldronDyeRecipe(
 						new ItemStack(Blocks.WOOL, 1, OreDictionary.WILDCARD_VALUE),
 						color,
@@ -230,8 +233,9 @@ public class InspirationsRecipes extends PulseBase {
 						new ItemStack(Items.BED, 1, OreDictionary.WILDCARD_VALUE),
 						color,
 						new ItemStack(Items.BED, 1, color.getMetadata())
-						));
+						));*/
 			}
+			/* TODO: reimplement
 			if(InspirationsUtility.carpetedTrapdoors != null) {
 				RecipeMatch anyTrapdoor = RecipeMatch.of("trapdoorCarpeted");
 				for(DyeColor color : DyeColor.values()) {
@@ -240,7 +244,7 @@ public class InspirationsRecipes extends PulseBase {
 							new ItemStack(InspirationsUtility.carpetedTrapdoors[color.getId()])
 							));
 				}
-			}
+			}*/
 		}
 
 		if(Config.enableCauldronPotions()) {
@@ -332,6 +336,7 @@ public class InspirationsRecipes extends PulseBase {
 	}
 
 	private void registerDispenserBehavior() {
+		/* TODO: reimplement
 		if(Config.enableCauldronDispenser()) {
 			for(Item item : InspirationsRegistry.TAG_DISP_FLUID_TANKS.getAllElements()) {
 				registerDispenserBehavior(
@@ -339,6 +344,6 @@ public class InspirationsRecipes extends PulseBase {
 						new DispenseCauldronRecipe(DispenserBlock.DISPENSE_BEHAVIOR_REGISTRY.get(item))
 				);
 			}
-		}
+		}*/
 	}
 }

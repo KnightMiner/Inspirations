@@ -1,34 +1,9 @@
 package knightminer.inspirations.recipes;
 
-import java.util.LinkedHashMap;
-import javax.annotation.Nonnull;
-
-import com.google.common.collect.Maps;
-
 import knightminer.inspirations.common.ClientProxy;
-import knightminer.inspirations.common.Config;
-import knightminer.inspirations.library.Util;
-import knightminer.inspirations.recipes.block.BlockEnhancedCauldron;
-import knightminer.inspirations.recipes.tileentity.TileCauldron;
-import net.minecraft.block.BlockCauldron;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.properties.PropertyEnum;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.client.renderer.block.statemap.StateMapperBase;
-import net.minecraft.client.renderer.color.BlockColors;
-import net.minecraft.client.renderer.color.ItemColors;
-import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IStringSerializable;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.event.ColorHandlerEvent;
-import net.minecraftforge.client.event.ModelBakeEvent;
-import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.client.event.TextureStitchEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class RecipesClientProxy extends ClientProxy {
+	/* TODO: reimplement
 	private static final ResourceLocation POTION_MODEL = new ResourceLocation("bottle_drinkable");
 	public static final ResourceLocation CAULDRON_MODEL = Util.getResource("cauldron");
 
@@ -73,7 +48,7 @@ public class RecipesClientProxy extends ClientProxy {
 
 	/**
 	 * Replaces the bookshelf models with the dynamic texture model, which also handles books
-	 */
+	 * /
 	@SubscribeEvent
 	public void onModelBake(ModelBakeEvent event) {
 		if(InspirationsRecipes.cauldron == null) {
@@ -98,7 +73,7 @@ public class RecipesClientProxy extends ClientProxy {
 
 	/**
 	 * Mapper for redstone torch levers, to combine the two blocks as if its all one block
-	 */
+	 * /
 	public static class CauldronStateMapper extends StateMapperBase {
 		private static final PropertyEnum<CauldronLevel> LEVEL = PropertyEnum.create("level", CauldronLevel.class);
 		private ResourceLocation location;
@@ -150,5 +125,5 @@ public class RecipesClientProxy extends ClientProxy {
 				return "" + (this.ordinal() - 1);
 			}
 		}
-	}
+	}*/
 }

@@ -127,12 +127,13 @@ public class BlockEnhancedCauldron extends CauldronBlock implements ITileEntityP
 		super.onReplaced(state, world, pos, newState, isMoving);
 	}
 
+	/* TODO: reimplement
 	@Override
 	public boolean removedByPlayer(BlockState state, World world, BlockPos pos, PlayerEntity player, boolean willHarvest) {
 		this.onBlockHarvested(world, pos, state, player);
 		world.setBlockState(pos, Blocks.AIR.getDefaultState(), world.isRemote ? 11 : 3);
 		return world.getBlockState(pos).getBlock() != Blocks.CAULDRON;
-	}
+	}*/
 
 	/* Content texture */
 
