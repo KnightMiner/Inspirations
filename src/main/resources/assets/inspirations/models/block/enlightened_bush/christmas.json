@@ -1,7 +1,7 @@
 {
 	"parent": "inspirations:block/enlightened_bush/template",
     "textures": {
-        "leaves": "minecraft:block/leaves_oak",
+        "leaves": "minecraft:block/oak_leaves",
         "lights": "inspirations:block/lights_christmas"
     }
 }

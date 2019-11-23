@@ -1,12 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "inspirations:block/bookshelf/normal",
-    "textures": {
-      "texture": "block/planks_oak",
-      "books": "inspirations:block/books",
-      "bookLabels": "inspirations:block/books_overlay"
-    }
+    "model": "inspirations:block/bookshelf/normal"
   },
   "variants": {
     "facing": {
