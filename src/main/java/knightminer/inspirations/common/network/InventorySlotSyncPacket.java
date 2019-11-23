@@ -9,13 +9,12 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.model.ModelDataManager;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.network.NetworkEvent;
-
-import slimeknights.mantle.network.AbstractPacketThreadsafe;
+import slimeknights.mantle.network.AbstractPacket;
 import slimeknights.mantle.tileentity.InventoryTileEntity;
 
 import java.util.function.Supplier;
 
-public class InventorySlotSyncPacket extends AbstractPacketThreadsafe {
+public class InventorySlotSyncPacket extends AbstractPacket {
 
   public ItemStack itemStack;
   public int slot;
@@ -38,6 +37,7 @@ public class InventorySlotSyncPacket extends AbstractPacketThreadsafe {
       case PLAY_TO_SERVER:
         throw new UnsupportedOperationException("Clientside only");
     }
+    context.get().setPacketHandled(true);
 
     // Only ever sent to players in the same dimension as the position
     // This should never be called on servers, but protect access to the clientside MC.
@@ -61,6 +61,7 @@ public class InventorySlotSyncPacket extends AbstractPacketThreadsafe {
     return packet;
   }
 
+  @Override
   public void encode(PacketBuffer buf) {
     writePos(pos, buf);
     buf.writeShort(slot);

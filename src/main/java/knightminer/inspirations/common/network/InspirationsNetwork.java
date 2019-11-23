@@ -15,7 +15,7 @@ public class InspirationsNetwork extends NetworkWrapper {
 	public static InspirationsNetwork instance = new InspirationsNetwork();
 
 	private InspirationsNetwork() {
-		super(Inspirations.modID);
+		super(Inspirations.modID+":"+"network");
 	}
 
 	public void setup() {
