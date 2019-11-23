@@ -14,7 +14,6 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.util.Hand;
@@ -195,24 +194,7 @@ public class BookshelfTileEntity extends InventoryTileEntity {
 	@Override
 	public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
 		CompoundNBT tag = pkt.getNbtCompound();
-		INBT texture = tag.get(TextureBlockUtil.TAG_TEXTURE);
-		if(texture != null) {
-			getTileData().put(TextureBlockUtil.TAG_TEXTURE, texture);
-		}
+		TextureBlockUtil.updateTextureBlock(this, tag);
 		read(tag);
-	}
-
-	/* NBT */
-
-	@Override
-	public void read(CompoundNBT tags) {
-		super.read(tags);
-
-		// pull the old texture string into the proper location if found
-		CompoundNBT forgeData = tags.getCompound("ForgeData");
-		if(forgeData.contains(TextureBlockUtil.TAG_TEXTURE, 8)) {
-			forgeData.putString("texture_path", forgeData.getString(TextureBlockUtil.TAG_TEXTURE));
-			forgeData.remove(TextureBlockUtil.TAG_TEXTURE);
-		}
 	}
 }

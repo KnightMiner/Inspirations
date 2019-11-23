@@ -97,7 +97,7 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
 	@Override
 	public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
 		super.onBlockPlacedBy(world, pos, state, placer, stack);
-		TextureBlockUtil.placeTextureBlock(world, pos, stack);
+		TextureBlockUtil.updateTextureBlock(world, pos, stack);
 	}
 
 	@Override
@@ -331,7 +331,7 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
 
 	@Override
 	public ItemStack getPickBlock(BlockState state, RayTraceResult target, IBlockReader world, BlockPos pos, PlayerEntity player) {
-		return TextureBlockUtil.getBlockItemStack(world, pos, state);
+		return TextureBlockUtil.getPickBlock(world, pos, state);
 	}
 
 	@Override

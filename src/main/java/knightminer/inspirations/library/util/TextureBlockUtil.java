@@ -9,17 +9,25 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tags.Tag;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.data.ModelProperty;
+import net.minecraftforge.registries.ForgeRegistries;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public final class TextureBlockUtil {
 
-	public static final String TAG_TEXTURE = "texture";
+	/** Tag name for texture blocks. Should not be used directly, use the utils to interact */
+	private static final String TAG_TEXTURE = "texture";
 	public static final ModelProperty<String> TEXTURE_PROP = new ModelProperty<>();
 
 	private TextureBlockUtil() {}
+
+	/* Tile Entity Setting */
 
 	/**
 	 * Call in {@link Block#onBlockPlacedBy(World, BlockPos, BlockState, LivingEntity, ItemStack)}
@@ -28,14 +36,28 @@ public final class TextureBlockUtil {
 	 * @param pos    Block position
 	 * @param stack  Item stack
 	 */
-	public static void placeTextureBlock(World world, BlockPos pos, ItemStack stack) {
-		CompoundNBT tag = TagUtil.getTagSafe(stack);
+	public static void updateTextureBlock(World world, BlockPos pos, ItemStack stack) {
 		TileEntity te = world.getTileEntity(pos);
-		if(te != null) {
-			CompoundNBT textureTag = tag.getCompound(TextureBlockUtil.TAG_TEXTURE);
-			updateTextureBlock(te, textureTag);
+		if(te != null && stack.hasTag()) {
+			updateTextureBlock(te, stack.getTag());
 		}
 	}
+
+	/**
+	 * Updates the current texture block in the TE
+	 * @param tags  NBT tags containing update information
+	 */
+	public static void updateTextureBlock(TileEntity te, CompoundNBT tags) {
+		if(te != null) {
+			String texture = tags.getString(TAG_TEXTURE);
+			if (!texture.isEmpty()) {
+				te.getTileData().putString(TAG_TEXTURE, texture);
+			}
+		}
+	}
+
+
+	/* Tile Entity Getting */
 
 	/**
 	 * Called in blocks to get the item stack for the current block
@@ -44,15 +66,15 @@ public final class TextureBlockUtil {
 	 * @param state  State
 	 * @return
 	 */
-	public static ItemStack getBlockItemStack(IBlockReader world, BlockPos pos, BlockState state) {
+	public static ItemStack getPickBlock(IBlockReader world, BlockPos pos, BlockState state) {
 		Block block = state.getBlock();
 		ItemStack stack = new ItemStack(block);
 		TileEntity te = world.getTileEntity(pos);
 		if(te != null) {
-			CompoundNBT texture = getTextureBlock(te);
-			if(texture.size() > 0) {
+			String texture = getTextureBlockName(te);
+			if(!texture.isEmpty()) {
 				CompoundNBT tags = new CompoundNBT();
-				tags.put(TextureBlockUtil.TAG_TEXTURE, texture);
+				tags.putString(TAG_TEXTURE, texture);
 				stack.setTag(tags);
 			}
 		}
@@ -60,25 +82,33 @@ public final class TextureBlockUtil {
 	}
 
 	/**
-	 * Updates the current texture block in the TE
-	 * @param tag
+	 * Gets the current texture block from the TE
+	 * @return
 	 */
-	public static void updateTextureBlock(TileEntity te, CompoundNBT tag) {
-		if(te != null) {
-			te.getTileData().put(TextureBlockUtil.TAG_TEXTURE, tag);
+	public static Block getTextureBlock(TileEntity te) {
+		if(te == null) {
+			return null;
 		}
+		String blockName = getTextureBlockName(te);
+		if (blockName.isEmpty()) {
+			return null;
+		}
+		return ForgeRegistries.BLOCKS.getValue(new ResourceLocation(blockName));
 	}
 
 	/**
 	 * Gets the current texture block from the TE
 	 * @return
 	 */
-	public static CompoundNBT getTextureBlock(TileEntity te) {
+	public static String getTextureBlockName(TileEntity te) {
 		if(te == null) {
-			return new CompoundNBT();
+			return "";
 		}
-		return te.getTileData().getCompound(TextureBlockUtil.TAG_TEXTURE);
+		return te.getTileData().getString(TextureBlockUtil.TAG_TEXTURE);
 	}
+
+
+	/* Item Stack Setting */
 
 	/**
 	 * Creates a new item stack with the given block as it's texture tag
@@ -90,25 +120,26 @@ public final class TextureBlockUtil {
 		ItemStack stack = new ItemStack(texturable);
 
 		if(block != null) {
-			ItemStack blockStack = new ItemStack(block);
-			CompoundNBT tag = new CompoundNBT();
-			CompoundNBT subTag = new CompoundNBT();
-			blockStack.write(subTag);
-			tag.put(TextureBlockUtil.TAG_TEXTURE, subTag);
-			stack.setTag(tag);
+			setStackTexture(stack, block.getRegistryName().toString());
 		}
 
 		return stack;
 	}
 
 	/**
-	 * Gets the itemstack that determines the block's texture from the stack.
-	 * @param stack  Input stack
-	 * @return  The itemstack determining the block's texture, or EMPTY if none exists
+	 * Creates a new item stack with the given block as it's texture tag
+	 * @param stack      Stack to modify
+	 * @param blockName  Block name to set
+	 * @return  The item stack with the proper NBT
 	 */
-	public static ItemStack getStackTexture(ItemStack stack) {
-		CompoundNBT tag = TagUtil.getTagSafe(stack).getCompound(TextureBlockUtil.TAG_TEXTURE);
-		return tag.size() > 0 ? ItemStack.read(tag) : ItemStack.EMPTY;
+	public static ItemStack setStackTexture(ItemStack stack, @Nonnull String blockName) {
+		if(!blockName.isEmpty()) {
+			CompoundNBT tag = stack.getOrCreateTag();
+			tag.putString(TextureBlockUtil.TAG_TEXTURE, blockName);
+			stack.setTag(tag);
+		}
+
+		return stack;
 	}
 
 	/**
@@ -125,5 +156,22 @@ public final class TextureBlockUtil {
 				return;
 			}
 		}
+	}
+
+
+	/* Item Stack Getting */
+
+	/**
+	 * Gets the itemstack that determines the block's texture from the stack.
+	 * @param stack  Input stack
+	 * @return  The itemstack determining the block's texture, or EMPTY if none exists
+	 */
+	@Nullable
+	public static Block getTextureBlock(ItemStack stack) {
+		String texture = TagUtil.getTagSafe(stack).getString(TextureBlockUtil.TAG_TEXTURE);
+		if (texture.isEmpty()) {
+			return null;
+		}
+		return ForgeRegistries.BLOCKS.getValue(new ResourceLocation(texture));
 	}
 }

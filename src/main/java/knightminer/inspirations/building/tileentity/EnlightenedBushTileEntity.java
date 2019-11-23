@@ -3,7 +3,6 @@ package knightminer.inspirations.building.tileentity;
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.library.util.TextureBlockUtil;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
@@ -37,10 +36,7 @@ public class EnlightenedBushTileEntity extends TileEntity {
 	@Override
 	public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
 		CompoundNBT tag = pkt.getNbtCompound();
-		INBT texture = tag.get(TextureBlockUtil.TAG_TEXTURE);
-		if(texture != null) {
-			getTileData().put(TextureBlockUtil.TAG_TEXTURE, texture);
-		}
+		TextureBlockUtil.updateTextureBlock(this, tag);
 		read(tag);
 	}
 }

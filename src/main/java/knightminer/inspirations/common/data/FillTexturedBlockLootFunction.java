@@ -5,7 +5,6 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import knightminer.inspirations.library.util.TextureBlockUtil;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.storage.loot.LootContext;
@@ -31,8 +30,7 @@ public class FillTexturedBlockLootFunction extends LootFunction {
 	protected ItemStack doApply(@Nonnull ItemStack stack, @Nonnull LootContext context) {
 		TileEntity te = context.get(LootParameters.BLOCK_ENTITY);
 		if (te != null) {
-			CompoundNBT nbt = TextureBlockUtil.getTextureBlock(te);
-			stack.getOrCreateTag().put(TextureBlockUtil.TAG_TEXTURE, nbt.copy());
+			stack = TextureBlockUtil.setStackTexture(stack, TextureBlockUtil.getTextureBlockName(te));
 		}
 		return stack;
 	}

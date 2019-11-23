@@ -27,9 +27,7 @@ public class TextureBlockItem extends HidableBlockItem {
 	@Override
 	public void fillItemGroup(@Nonnull ItemGroup group, @Nonnull NonNullList<ItemStack> items) {
 		if (shouldAddtoItemGroup(group) && isInGroup(group)) {
-			for(Block texture: texTag.getAllElements()) {
-				items.add(TextureBlockUtil.createTexturedStack(getBlock(), texture));
-			}
+			TextureBlockUtil.addBlocksFromTag(texTag, this.getBlock(), items);
 		}
 	}
 
@@ -40,9 +38,9 @@ public class TextureBlockItem extends HidableBlockItem {
 			return;
 		}
 
-		ItemStack texture = TextureBlockUtil.getStackTexture(stack);
-		if(!texture.isEmpty()) {
-			tooltip.add(texture.getDisplayName());
+		Block block = TextureBlockUtil.getTextureBlock(stack);
+		if(block != null) {
+			tooltip.add(block.getNameTextComponent());
 		}
 	}
 }

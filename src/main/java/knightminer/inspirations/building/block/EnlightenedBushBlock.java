@@ -11,12 +11,9 @@ import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.IBlockReader;
@@ -57,13 +54,6 @@ public class EnlightenedBushBlock extends Block implements IHidable {
 		return Config.enableEnlightenedBush.get();
 	}
 
-	@Override
-	public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
-		if(shouldAddtoItemGroup(group)) {
-			TextureBlockUtil.addBlocksFromTag(BlockTags.LEAVES, this, items);
-		}
-	}
-
 	/*
 	 * Properties
 	 */
@@ -94,12 +84,12 @@ public class EnlightenedBushBlock extends Block implements IHidable {
 	@Override
 	public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
 		super.onBlockPlacedBy(world, pos, state, placer, stack);
-		TextureBlockUtil.placeTextureBlock(world, pos, stack);
+		TextureBlockUtil.updateTextureBlock(world, pos, stack);
 	}
 
 	@Nonnull
 	@Override
 	public ItemStack getPickBlock(BlockState state, RayTraceResult target, IBlockReader world, BlockPos pos, PlayerEntity player) {
-		return TextureBlockUtil.getBlockItemStack(world, pos, state);
+		return TextureBlockUtil.getPickBlock(world, pos, state);
 	}
 }

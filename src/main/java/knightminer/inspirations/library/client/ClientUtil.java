@@ -14,8 +14,8 @@ import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.MissingTextureSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.item.Item;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
@@ -145,9 +145,8 @@ public final class ClientUtil {
 		String texture = te.getTileData().getString(TAG_TEXTURE_PATH);
 		if (texture.isEmpty()) {
 			// load it from saved block
-			ItemStack stack = ItemStack.read(te.getTileData().getCompound(TextureBlockUtil.TAG_TEXTURE));
-			if (!stack.isEmpty()) {
-				Block block = Block.getBlockFromItem(stack.getItem());
+			Block block = TextureBlockUtil.getTextureBlock(te);
+			if (block != null) {
 				texture = ModelHelper.getTextureFromBlockstate(block.getDefaultState()).getName().toString();
 				te.getTileData().putString(TAG_TEXTURE_PATH, texture);
 			}

@@ -93,11 +93,8 @@ public class TextureModel extends BakedModelWrapper<IBakedModel> {
 		public IBakedModel getModelWithOverrides(@Nonnull IBakedModel originalModel, @Nonnull ItemStack stack, @Nullable World world, @Nullable LivingEntity entity) {
 			if(originalModel instanceof TextureModel) {
 				// read out the data on the itemstack
-				ItemStack blockStack = ItemStack.read(TagUtil.getTagSafe(stack).getCompound(TextureBlockUtil.TAG_TEXTURE));
-				if(!blockStack.isEmpty()) {
-					// get model from data
-					Item item = blockStack.getItem();
-					Block block = Block.getBlockFromItem(item);
+				Block block = TextureBlockUtil.getTextureBlock(stack);
+				if(block != null) {
 					ResourceLocation texture = ModelHelper.getTextureFromBlockstate(block.getDefaultState()).getName();
 					TextureModel textureModel = (TextureModel) originalModel;
 					return textureModel.getCachedTextureModel(texture.toString());

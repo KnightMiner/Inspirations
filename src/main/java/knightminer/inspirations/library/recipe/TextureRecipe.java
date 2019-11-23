@@ -1,9 +1,6 @@
 package knightminer.inspirations.library.recipe;
 
-import javax.annotation.Nonnull;
-
 import com.google.gson.JsonObject;
-
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.util.TagUtil;
 import knightminer.inspirations.library.util.TextureBlockUtil;
@@ -18,6 +15,8 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper;
+
+import javax.annotation.Nonnull;
 
 public class TextureRecipe extends ShapedRecipe {
 
@@ -44,9 +43,9 @@ public class TextureRecipe extends ShapedRecipe {
 					Block outBlock = Block.getBlockFromItem(result.getItem());
 
 					// Special case for Enlightened Bushes - grab their underlying texture instead of the bush.
-					ItemStack recurTexture = TextureBlockUtil.getStackTexture(stack);
-					if (!recurTexture.isEmpty()) {
-						stack = recurTexture;
+					Block recurBlock = TextureBlockUtil.getTextureBlock(stack);
+					if (recurBlock != null) {
+						stack = new ItemStack(recurBlock);
 					}
 
 					return TextureBlockUtil.createTexturedStack(outBlock, Block.getBlockFromItem(stack.getItem()));
