@@ -135,7 +135,7 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
 		Direction facing = state.get(FACING);
 
 		// skip sides, we don't need them
-		if(facing != trace.getFace()) {
+		if(facing != trace.getFace() && trace.getFace().getAxis() != Direction.Axis.Y) {
 			return false;
 		}
 
@@ -145,7 +145,7 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
 		}
 
 		// if we did not click a book, just do the GUI as well
-		int book = bookClicked(facing, trace.getHitVec());
+		int book = bookClicked(facing, pos, trace.getHitVec());
 		if(book == -1) {
 			return world.isRemote || openGui(player, world, pos);
 		}
@@ -166,7 +166,8 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
 		return true;
 	}
 
-	private static int bookClicked(Direction facing, Vec3d click) {
+	private static int bookClicked(Direction facing, BlockPos pos, Vec3d clickWorld) {
+		Vec3d click = new Vec3d(clickWorld.x - pos.getX(), clickWorld.y - pos.getY(), clickWorld.z - pos.getZ());
 		// if we did not click between the shelves, ignore
 		if(click.y < 0.0625 || click.y > 0.9375) {
 			return -1;
