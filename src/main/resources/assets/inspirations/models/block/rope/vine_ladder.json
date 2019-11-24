@@ -3,7 +3,7 @@
   "textures": {
     "rope": "inspirations:block/vine",
     "particle": "inspirations:block/vine_bottom",
-    "rung": "inspirations:block/rope_ladder"
+    "rung": "inspirations:block/vine_ladder"
   },
   "elements": [
     {
