@@ -85,8 +85,8 @@ public class InspirationsTools extends PulseBase {
 		.size(0.5F, 0.5F)
 		.setTrackingRange(4)
 		.setUpdateInterval(20)
-		.setCustomClientFactory((packet, world) -> new RedstoneArrow(InspirationsTools.entRSArrow, world))
-	,"redstone_arrow");
+		.setCustomClientFactory((packet, world) -> new RedstoneArrow(InspirationsTools.entRSArrow, world)),
+		"redstone_arrow");
 
 	@SubscribeEvent
 	public void setup(FMLCommonSetupEvent event) {

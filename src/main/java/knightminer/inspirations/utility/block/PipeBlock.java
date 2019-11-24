@@ -165,7 +165,7 @@ public class PipeBlock extends InventoryBlock implements IHidable {
 	public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) {
 		// return false if holding a pipe to make easier to place
 		Item item = player.getHeldItem(hand).getItem();
-		if(item == Item.getItemFromBlock(InspirationsUtility.pipe) || Block.getBlockFromItem(item) instanceof HopperBlock) {
+		if(item == InspirationsUtility.pipe.asItem() || Block.getBlockFromItem(item) instanceof HopperBlock) {
 			return false;
 		}
 		return super.onBlockActivated(state, world, pos, player, hand, trace);

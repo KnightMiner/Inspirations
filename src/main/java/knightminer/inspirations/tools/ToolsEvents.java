@@ -151,7 +151,7 @@ public class ToolsEvents {
 		int count = 0;
 		while(state.getBlock() == block && vine.isShearable(shears, world, pos) && !vineCanStay(world, state, pos)) {
 			count++;
-			for(ItemStack stack : vine.getDrops(state, new LootContext.Builder(world)
+			for(ItemStack stack : state.getDrops(new LootContext.Builder(world)
 					.withParameter(LootParameters.TOOL, shears)
 					.withParameter(LootParameters.POSITION, pos)
 					.withParameter(LootParameters.THIS_ENTITY, player)

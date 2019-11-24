@@ -102,6 +102,9 @@ public final class ReflectionUtil {
 		if(clazz == null) {
 			return null;
 		}
+		if (!clazz.isInstance(instance)) {
+			return null;
+		}
 		try {
 			Field f = FIELDS.computeIfAbsent(name, key -> ObfuscationReflectionHelper.findField(clazz, name));
 			return f != null ? (T) f.get(instance) : null;
