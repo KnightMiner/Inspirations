@@ -53,15 +53,15 @@ public class Inspirations {
 
 	public Inspirations() {
 		pulseManager = new PulseManager(Config.pulseConfig);
-		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, Config.SPEC);
 
 		log.info("Loading replacements config file...");
 		CommentedFileConfig repl_config = CommentedFileConfig
 				.builder(FMLPaths.CONFIGDIR.get().resolve(modID + "-replacements.toml"))
-				.sync().
-				preserveInsertionOrder().
-				writingMode(WritingMode.REPLACE).
-				build();
+				.sync()
+				.preserveInsertionOrder()
+				.writingMode(WritingMode.REPLACE)
+				.build();
 		repl_config.load();
 		repl_config.save();
 		Config.SPEC_OVERRIDE.setConfig(repl_config);
@@ -87,8 +87,8 @@ public class Inspirations {
 	public void configChanged(final ModConfig.ModConfigEvent configEvent) {
 		configLoaded = true;
 
-		InspirationsRegistry.setConfig("biggerCauldron", Config.enableBiggerCauldron());
-		InspirationsRegistry.setConfig("expensiveCauldronBrewing", Config.expensiveCauldronBrewing());
+		//InspirationsRegistry.setConfig("biggerCauldron", Config.enableBiggerCauldron());
+		//InspirationsRegistry.setConfig("expensiveCauldronBrewing", Config.expensiveCauldronBrewing());
 		InspirationsRegistry.setBookKeywords(Arrays
 				.stream(Config.bookKeywords.get().split(","))
 				.map(String::trim)

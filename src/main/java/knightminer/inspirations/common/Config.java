@@ -1,18 +1,7 @@
 package knightminer.inspirations.common;
 
-import knightminer.inspirations.Inspirations;
-import knightminer.inspirations.library.InspirationsRegistry;
-import knightminer.inspirations.library.util.RecipeUtil;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.ForgeConfigSpec;
 import slimeknights.mantle.pulsar.config.PulsarConfig;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
 
 import static net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 import static net.minecraftforge.common.ForgeConfigSpec.Builder;
@@ -26,6 +15,7 @@ public class Config {
 
 	public static PulsarConfig pulseConfig = new PulsarConfig("inspirationsModules", "Modules");
 
+	// TODO: add client config
 	public static Builder BUILDER;
 	public static ForgeConfigSpec SPEC;
 	public static Builder BUILDER_OVERRIDE;
@@ -56,21 +46,9 @@ public class Config {
 
 	public static ConfigValue<String> bookKeywords;
 	private static String bookKeywordsDefault = "almanac, atlas, book, catalogue, concordance, dictionary, directory, encyclopedia, guide, journal, lexicon, manual, thesaurus, tome";
-	public static ConfigValue<List<String>> bookOverrides;
-	private static List<String> bookOverridesDefault = Arrays.asList(
-			"defiledlands:book_wyrm_raw->false",
-			"defiledlands:book_wyrm_cooked->false",
-			"defiledlands:book_wyrm_scale->false",
-			"defiledlands:book_wyrm_scale_golden->false",
-			"defiledlands:book_wyrm_analyzer->false",
-			"minecraft:enchanted_book->2.5",
-			"quark:ancient_tome->3.0",
-			"theoneprobe:probenote->1.0"
-	);
 
 	// utility
 	public static BooleanValue enableTorchLever;
-	public static BooleanValue enableRedstoneTorchLever;
 	private static BooleanValue enableRedstoneBook;
 	public static BooleanValue enableBricksButton;
 	public static BooleanValue enableCarpetedTrapdoor;
@@ -78,9 +56,9 @@ public class Config {
 	public static BooleanValue enableCollector;
 	public static BooleanValue enablePipe;
 	public static BooleanValue pipeUpwards;
-	public static BooleanValue enableDispenserFluidTanks;
-	public static BooleanValue milkSquids;
-	public static IntValue milkSquidCooldown;
+	//public static BooleanValue enableDispenserFluidTanks;
+	//public static BooleanValue milkSquids;
+	//public static IntValue milkSquidCooldown;
 
 	public static boolean enableRedstoneBook() { return enableRedstoneBook.get() && enableBookshelf.get(); }
 
@@ -171,11 +149,6 @@ public class Config {
 		return cauldronTipArrows.get() && enableCauldronPotions();
 	}
 
-	// cauldron - recipes
-	private static String[] cauldronRecipes = {
-			"minecraft:sticky_piston->minecraft:piston"
-	};
-
 	// cauldron - fluid containers
 	private static BooleanValue enableCauldronDispenser;
 	public static boolean enableCauldronDispenser() {
@@ -183,68 +156,15 @@ public class Config {
 	}
 	// anvil smashing
 	public static BooleanValue enableAnvilSmashing;
-	private static String[] anvilSmashing = {
-			"# Stone",
-			"minecraft:stone:0->minecraft:cobblestone",
-			"minecraft:stonebrick->minecraft:cobblestone",
-			"minecraft:stonebrick:1->minecraft:mossy_cobblestone",
-			"minecraft:cobblestone->minecraft:gravel",
-			"minecraft:stone:2->minecraft:stone:1",
-			"minecraft:stone:4->minecraft:stone:3",
-			"minecraft:stone:6->minecraft:stone:5",
-
-			"# Sandstone",
-			"minecraft:sandstone->minecraft:sand:0",
-			"minecraft:red_sandstone->minecraft:sand:1",
-
-			"# Ice",
-			"minecraft:packed_ice->minecraft:ice",
-			"minecraft:ice",
-			"minecraft:frosted_ice",
-
-			"# Plants",
-			"minecraft:brown_mushroom_block",
-			"minecraft:red_mushroom_block",
-			"minecraft:leaves",
-			"minecraft:leaves2",
-			"minecraft:melon_block",
-			"minecraft:pumpkin",
-			"minecraft:lit_pumpkin",
-
-			"# Concrete",
-			"minecraft:concrete:0->minecraft:concrete_powder:0",
-			"minecraft:concrete:1->minecraft:concrete_powder:1",
-			"minecraft:concrete:2->minecraft:concrete_powder:2",
-			"minecraft:concrete:3->minecraft:concrete_powder:3",
-			"minecraft:concrete:4->minecraft:concrete_powder:4",
-			"minecraft:concrete:5->minecraft:concrete_powder:5",
-			"minecraft:concrete:6->minecraft:concrete_powder:6",
-			"minecraft:concrete:7->minecraft:concrete_powder:7",
-			"minecraft:concrete:8->minecraft:concrete_powder:8",
-			"minecraft:concrete:9->minecraft:concrete_powder:9",
-			"minecraft:concrete:10->minecraft:concrete_powder:10",
-			"minecraft:concrete:11->minecraft:concrete_powder:11",
-			"minecraft:concrete:12->minecraft:concrete_powder:12",
-			"minecraft:concrete:13->minecraft:concrete_powder:13",
-			"minecraft:concrete:14->minecraft:concrete_powder:14",
-			"minecraft:concrete:15->minecraft:concrete_powder:15",
-
-			"# Misc",
-			"minecraft:planks->inspirations:mulch:0",
-			"minecraft:prismarine:1->minecraft:prismarine:0",
-			"minecraft:end_bricks->minecraft:end_stone",
-			"minecraft:monster_egg"
-	};
-
 
 	// tools
 	public static BooleanValue enableLock;
-	public static BooleanValue enableRedstoneCharge;
+	public static BooleanValue enableRedstoneCharger;
 	public static BooleanValue enableChargedArrow;
 	public static BooleanValue harvestHangingVines;
 	public static BooleanValue shearsReclaimMelons;
 	public static BooleanValue enableNorthCompass;
-	public static BooleanValue renameVanillaCompass;
+	//public static BooleanValue renameVanillaCompass;
 	public static BooleanValue enableBarometer;
 	public static BooleanValue enablePhotometer;
 
@@ -298,14 +218,14 @@ public class Config {
 
 	// seeds
 	public static BooleanValue enableMoreSeeds;
-	private static BooleanValue addGrassDrops;
-	private static BooleanValue nerfCarrotPotatoDrops;
-	public static boolean addGrassDrops() {
-		return addGrassDrops.get() && enableMoreSeeds.get();
-	}
-	public static boolean nerfCarrotPotatoDrops() {
-		return nerfCarrotPotatoDrops.get() && enableMoreSeeds.get();
-	}
+//	private static BooleanValue addGrassDrops;
+//	private static BooleanValue nerfCarrotPotatoDrops;
+//	public static boolean addGrassDrops() {
+//		return addGrassDrops.get() && enableMoreSeeds.get();
+//	}
+//	public static boolean nerfCarrotPotatoDrops() {
+//		return nerfCarrotPotatoDrops.get() && enableMoreSeeds.get();
+//	}
 	// bonemeal
 	public static BooleanValue bonemealMushrooms;
 	public static BooleanValue bonemealDeadBush;
@@ -314,14 +234,6 @@ public class Config {
 
 	public static BooleanValue caveSpiderDrops;
 	public static BooleanValue skeletonSkull;
-
-	private static String[] milkContainersDefault = {
-			"ceramics:clay_bucket",
-			"minecraft:bowl", // mushroom stew from mooshrooms
-			"minecraft:bucket",
-			"simplytea:teapot"
-	};
-	public static Set<Item> milkContainers;
 
 	static {
 		BUILDER = new Builder();
@@ -343,9 +255,11 @@ public class Config {
 			// bookshelves
 			enableBookshelf = builder
 					.comment("Enables the bookshelf: a decorative block to display books")
+					.worldRestart()
 					.define("bookshelf.enable", true);
 			enableColoredBooks = builder
 					.comment("Enables colored books: basically colored versions of the vanilla book to decorate bookshelves")
+					.worldRestart()
 					.define("bookshelf.coloredBooks", true );
 
 			bookshelvesBoostEnchanting = builder
@@ -421,16 +335,12 @@ public class Config {
 					.define("torchLever", true);
 
 			// bricks button
+			/*
 			enableBricksButton = builder
 					.comment("Enables button blocks disguised as a full bricks or nether bricks block")
 					.worldRestart()
 					.define("bricksButton", true);
-
-			// redstone torch lever
-			enableRedstoneTorchLever = builder
-					.comment("Enables the redstone torch lever: a lever that toggles its state when the block it's on gets powered")
-					.worldRestart()
-					.define("redstoneTorchLever", true);
+			 */
 
 			// carpeted trapdoor
 			enableCarpetedTrapdoor = builder
@@ -457,18 +367,20 @@ public class Config {
 					.define("pipe.enable", true);
 			pipeUpwards = builder
 					.comment("Allows pipes to output upwards. This removes a limitation on not being able to pipe items up without dropper elevators, but should be balanced alongside modded pipes.")
-					.worldRestart()
 					.define("pipe.upwards", true);
 
 			// dispenser fluid containers
+			/*
 			enableDispenserFluidTanks = builder
 					.comment("Allows dispensers to fill and empty fluid tanks using fluid containers")
 					.worldRestart()
 					.define("dispenserFluidTanks", true);
+			*/
 		}
 		builder.pop();
 
 		// recipes
+		/*
 		builder.push("recipes");
 		{
 			// anvil smashing
@@ -555,14 +467,15 @@ public class Config {
 			builder.pop();
 		}
 		builder.pop();
+		 */
 
 		builder.push("tools");
 		{
 			// redstone charge
-			enableRedstoneCharge = builder
+			enableRedstoneCharger = builder
 					.comment("Enables the redstone charger: a quick pulse created with a flint and steel like item")
 					.worldRestart()
-					.define("redstoneCharge", true);
+					.define("redstoneCharger", true);
 
 			enableChargedArrow = builder
 					.comment("Enables the charged arrow: places a redstone pulse where it lands")
@@ -590,10 +503,12 @@ public class Config {
 					.comment("Enables the north compass: a cheaper compass that always points north. Intended to either allow packs to replace the compass or as an alternative for F3 navigation")
 					.worldRestart()
 					.define("northCompass.enable", true);
+			/*
 			renameVanillaCompass = builder
 					.comment("Renames the vanilla compass to 'origin compass' to help clarify the difference between the two compasses.")
 					.worldRestart()
 					.define("northCompass.renameVanilla", true);
+			 */
 
 			// barometer
 			enableBarometer = builder
@@ -614,9 +529,11 @@ public class Config {
 					.define("waypointCompass.enable", true);
 			dyeWaypointCompass = builder
 					.comment("If true, waypoint compasses can be dyed all vanilla colors")
+					.worldRestart()
 					.define("waypointCompass.dye", true);
 			craftWaypointCompass = builder
 					.comment("If true, waypoint compasses can be crafted using iron and a blaze rod. If false, they are obtained by using a vanilla compass on a beacon.")
+					.worldRestart()
 					.define("waypointCompass.craft", true);
 			waypointCompassAdvTooltip = builder
 					.comment("If true, waypoint compasses show the position target in the advanced item tooltip. Disable for packs that disable coordinates.")
@@ -626,24 +543,31 @@ public class Config {
 					.define("waypointCompass.crossDimension", true);
 			copyWaypointCompass = builder
 					.comment("If true, you can copy the position of one waypoint compass to another in a crafting table, similarly to maps or compasses")
+					.worldRestart()
 					.define("waypointCompass.copy", true);
 
+			// TODO: consider a way to allow the registry sub, but still have these props set by the server
 			// enchantments
 			moreShieldEnchantments = builder_override
 					.comment("If true, shields can now be enchanted with enchantments such as protection, fire aspect, knockback, and thorns. This requires replacing these enchantments.")
+					.worldRestart()
 					.define("enchantments.moreShield", true);
 			shieldEnchantmentTable = builder_override
 					.comment("If true, shields can be enchanted in an enchantment table. Does not support modded shields as it requires a registry substitution")
+					.worldRestart()
 					.define("enchantments.shieldTable", true);
 			fixShieldTooltip = builder
 					.comment("If true, fixes the tooltip on shield items so it looks better with both patterns and enchantments")
-					.define("fixShieldTooltip", true);
+					.worldRestart()
+					.define("enchantments.fixShieldTooltip", true);
 
 			axeWeaponEnchants = builder_override
 					.comment("If true, axes will be able to be enchanted with weapon enchants such as looting, fire aspect, and knockback")
+					.worldRestart()
 					.define("enchantments.axeWeapon", true);
 			axeEnchantmentTable = builder_override
 					.comment("If true, axes can receive available weapon enchantments at the enchantment table")
+					.worldRestart()
 					.define("enchantments.axeTable", true);
 		}
 		builder.pop();
@@ -658,6 +582,7 @@ public class Config {
 			// fitted carpets
 			enableFittedCarpets = builder_override
 					.comment("Replace carpet blocks, allowing them to fit to stairs below them.")
+					.worldRestart()
 					.define("fittedCarpets", true);
 
 			// bonemeal
@@ -679,10 +604,13 @@ public class Config {
 			// heartroot
 			enableHeartbeet = builder
 					.comment("Enables heartbeets: a rare drop from beetroots which can be eaten to restore a bit of health")
+					.worldRestart()
 					.define("heartbeet.enable", true);
 			brewHeartbeet = builder
 					.comment("Allows heartbeets to be used as an alternative to ghast tears in making potions of regeneration")
+					.worldRestart()
 					.define("heartbeet.brewRegeneration", true);  // && enableHeartbeet;
+			// TODO: move to loot tables
 			heartbeetChance = builder
 					.comment("Chance of a heartbeet to drop instead of a normal drop. Formula is two 1 in [chance] chances for it to drop each harvest")
 					.defineInRange("heartbeet.chance", 75, 10, 1000);
@@ -690,11 +618,13 @@ public class Config {
 			// dispensers place anvils
 			dispensersPlaceAnvils = builder
 					.comment("Dispensers will place anvils instead of dropping them. Plays well with anvil smashing.")
+					.worldRestart()
 					.define("dispensersPlaceAnvils", true);
 
 			// better cauldron item
 			betterCauldronItem = builder
 					.comment("Replaces the flat cauldron sprite with the 3D cauldron block model")
+					.worldRestart()
 					.define("betterCauldronItemModel", true);
 
 			// colored enchanted book ribbons
@@ -706,6 +636,7 @@ public class Config {
 			// colored fireworks
 			coloredFireworkItems = builder
 					.comment("Colors the fireworks item based on the colors of the stars")
+					.worldRestart()
 					.define("coloredFireworkItems", true);
 
 			// lilypad fall breaking
@@ -716,9 +647,11 @@ public class Config {
 			// stackable alternative recipes
 			unstackableRecipeAlts = builder
 					.comment("Adds stackable recipes to some vanilla or Inspriations items that require unstackable items to craft")
+					.worldRestart()
 					.define("unstackableRecipeAlts", true);
 
 			// seeds
+			/*
 			enableMoreSeeds = builder
 					.comment("Adds seeds for additional vanilla plants, including cactus, sugar cane, carrots, and potatoes.")
 					.worldRestart()
@@ -729,6 +662,7 @@ public class Config {
 			nerfCarrotPotatoDrops = builder
 					.comment("Makes carrots and potatoes drop their respective seed if not fully grown")
 					.define("moreSeeds.nerfCarrotPotatoDrops", true);
+			 */
 
 			// milk cooldown
 			milkCooldown = builder
@@ -737,214 +671,31 @@ public class Config {
 			milkCooldownTime = builder
 					.comment("Delay in seconds after milking a cow before it can be milked again.")
 					.defineInRange("milkCooldown.time", 600, 1, Short.MAX_VALUE);
+
+			// milk squids
+			/*
+			milkSquids = builder
+					.comment("Allows milking squids with a glass bottle to get black dyed water.")
+					.define("milkSquids.enable", true);
+			milkSquidCooldown = builder
+					.comment("Delay in seconds after milking a squid before it can be milked again.")
+					.defineInRange("milkSquids.cooldown", 300, 1, Short.MAX_VALUE);
+
+			 */
+
+			// portal color
 			customPortalColor = builder
 					.comment( "Allows the portal color to be changed by placing colored blocks under the portal. Any block that tints a beacon beam will work for the color.")
 					.define("customPortalColor", true);
+
+			// drops
+			caveSpiderDrops = builder
+					.comment("If true, cave spiders will rarely drop webs, giving them an advantage to farm over regular spiders")
+					.define("caveSpiderWeb", true);
+			skeletonSkull = builder
+					.comment("If true, skeletons will rarely drop their skull for consistency with wither skeletons. Does not affect creeper or zombie heads.")
+					.define("skeletonSkull", true);
 		}
 		builder.pop();
-
-		// milk squids
-		milkSquids = builder
-				.comment("Allows milking squids with a glass bottle to get black dyed water.")
-				.define("tweaks.milkSquids.enable", true);
-		milkSquidCooldown = builder
-				.comment("Delay in seconds after milking a squid before it can be milked again.")
-				.defineInRange("tweaks.milkSquids.cooldown", 300, 1, Short.MAX_VALUE);
-
-
-		// drops
-		caveSpiderDrops = builder
-				.comment("If true, cave spiders will rarely drop webs, giving them an advantage to farm over regular spiders")
-				.define("caveSpiderWeb", true);
-		skeletonSkull = builder
-				.comment("If true, skeletons will rarely drop their skull for consistency with wither skeletons. Does not affect creeper or zombie heads.")
-				.define("skeletonSkull", true);
-
-		// building
-//		Property property = configFile.get("building.bookshelf", "bookOverrides", bookOverrides,
-//				"List of itemstacks to override book behavior. Format is modid:name[:meta][->enchantingPower].\nUnset meta will default wildcard.\n0 is a valid enchanting power, if unset uses default. Set to 'false' to mark something as not a book.");
-//		bookOverrides = property.getStringList();
-//		processBookOverrides(bookOverrides);
-
-		// anvil smashing
-		// skip the helper method so the defaults are not put in the comment
-//		configFile.moveProperty("tweaks.anvilSmashing", "recipes.anvilSmashing", "smashing");
-//		anvilSmashing = configFile.get("recipes.anvilSmashing", "smashing", anvilSmashing,
-//				"List of blocks to add to anvil smashing. Format is modid:input[:meta][->modid:output[:meta]]. If the output is excluded, it will default to air (breaking the block). If the meta is excluded, it will check all states for input and use the default for output").getStringList();
-//		processAnvilSmashing(anvilSmashing);
-
-		// cauldron uses
-//		configFile.moveProperty("recipes.cauldronRecipes", "recipes", "recipes.cauldron");
-//		cauldronRecipes = configFile.get("recipes.cauldron", "recipes", cauldronRecipes,
-//				"List of recipes to add to the cauldron on right click. Format is (modid:input:meta|oreString)->modid:output:meta[->isBoiling]. If isBoiling is excluded, it defaults to false.").getStringList();
-//		processCauldronRecipes(cauldronRecipes);
-
-	}
-
-	/**
-	 * Updates a config file from a bunch of colons to the new -> format
-	 * @param line  Old line
-	 * @param t  True string
-	 * @param f  False string
-	 * @return  New line
-	 */
-	private static String updateConfig(String line, String t, String f) {
-		String[] parts = line.split(":");
-		switch(parts.length) {
-			// 'modid:name' -> 'modid:name->1.5
-			case 2:
-				return line + "->" + t;
-				// 'modid:name:meta' -> 'modid:name:meta->7
-			case 3:
-				// if meta -1, remove as wildcard is just none now
-				if(parts[2].equals("-1")) {
-					return String.format("%s:%s->%s", parts[0], parts[1], t);
-				}
-				return line + "->" + t;
-			case 4:
-				// first, determine power
-				String power = "false".equals(parts[3]) ? f : t;
-				// if meta -1, remove as wildcard is just none now
-				if(parts[2].equals("-1")) {
-					return String.format("%s:%s->%s", parts[0], parts[1], power);
-				}
-				return String.format("%s:%s:%s->%s", parts[0], parts[1], parts[2], power);
-		}
-
-		return line;
-	}
-
-	/**
-	 * Parses the book overrides from the string array
-	 * @param overrides  Input string array
-	 */
-	private static void processBookOverrides(String[] overrides) {
-		if(!enableBookshelf.get()) {
-			return;
-		}
-
-		String[] parts;
-		// simply look through each entry
-		for(String override : overrides) {
-			// skip blank lines
-			if("".equals(override) || override.startsWith("#")) {
-				continue;
-			}
-
-			parts = override.split("->");
-			if(parts.length > 2) {
-				Inspirations.log.error("Invalid book override {}: must be in format modid:name[:meta][->power]. ", override);
-				continue;
-			}
-
-			// finally, parse the isBook boolean. Pretty lazy here, just check if its not the string false
-			float power = defaultEnchantingPower.get().floatValue();
-			if (parts.length > 1) {
-				try {
-					power = Float.parseFloat(parts[1]);
-				} catch(NumberFormatException e) {
-					if (parts[1].equals("false")) {
-						power = -1;
-					} else {
-						Inspirations.log.error("Invalid book override {}: power must be a number. ", override);
-						continue;
-					}
-				}
-			}
-			// normalize not a book
-			if (power < 0) {
-				power = -1;
-			}
-			final float enchPower = power;
-			RecipeUtil.forStackInString(parts[0], stack -> InspirationsRegistry.registerBook(stack.getItem(), enchPower));
-		}
-	}
-
-	/**
-	 * Parses the anvil smashing array into the registry
-	 * @param transformations  Input array
-	 */
-	private static void processAnvilSmashing(String[] transformations) {
-		if(!enableAnvilSmashing.get()) {
-			return;
-		}
-
-		for(String transformation : transformations) {
-			// skip blank lines
-			if("".equals(transformation) || transformation.startsWith("#")) {
-				continue;
-			}
-
-			// first, ensure we have the right number of inputs
-			// it should be 1 for plain old smashing or two for a transformation
-			String[] transformParts = transformation.split("->");
-			if(transformParts.length > 2 || transformParts.length < 1) {
-				Inspirations.log.error("Invalid anvil smashing {}: must be in the format of modid:input[:meta][->modid:output[:meta]]", transformation);
-				continue;
-			}
-
-			// if the length is 1, this is block breaking, so use air for the output
-			BlockState output;
-			if(transformParts.length == 1) {
-				output = Blocks.AIR.getDefaultState();
-			} else {
-				output = RecipeUtil.getBlockStateFromString(transformParts[1]);
-				if (output == null) {
-					Inspirations.log.info("Skipping anvil smashing {}: unable to find output {}", transformation, transformParts[1]);
-					continue;
-				}
-			}
-
-			RecipeUtil.forBlockInString(transformParts[0],
-					state -> InspirationsRegistry.registerAnvilSmashing(state, output),
-					block -> InspirationsRegistry.registerAnvilSmashing(block, output));
-		}
-	}
-
-	/**
-	 * Processes the simple cauldron recipes from the config
-	 * @param cauldronRecipes  List of recipe strings
-	 */
-	private static void processCauldronRecipes(String[] cauldronRecipes) {
-		if(!enableCauldronRecipes()) {
-			return;
-		}
-
-		for(String recipe : cauldronRecipes) {
-			// skip blank lines
-			if("".equals(recipe) || recipe.startsWith("#")) {
-				continue;
-			}
-
-			String[] parts = recipe.split("->");
-			if(parts.length < 2 || parts.length > 3) {
-				Inspirations.log.error("Invalid cauldron recipe {}: must be in format input->output[->isBoiling]", recipe);
-				continue;
-			}
-
-			// input
-			ItemStack input = null;
-			if(parts[0].contains(":")) {
-				input = RecipeUtil.getItemStackFromString(parts[0], true);
-				if(input.isEmpty()) {
-					continue;
-				}
-			}
-
-			// output
-			ItemStack output = RecipeUtil.getItemStackFromString(parts[1], false);
-			if(output.isEmpty()) {
-				continue;
-			}
-
-			// add recipe
-			Boolean boiling = parts.length > 2 ? parts[2].equals("true") : null;
-			// if the input is empty, we are using an oreString
-			if(input == null) {
-//				InspirationsRegistry.addCauldronRecipe(parts[0], output, boiling);
-			} else {
-//				InspirationsRegistry.addCauldronRecipe(input, output, boiling);
-			}
-		}
 	}
 }

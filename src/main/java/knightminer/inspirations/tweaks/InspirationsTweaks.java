@@ -2,13 +2,9 @@ package knightminer.inspirations.tweaks;
 
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
-import knightminer.inspirations.common.item.HidableBlockItem;
 import knightminer.inspirations.common.item.HidableItem;
-import knightminer.inspirations.tweaks.block.BlockSugarCaneCrop;
-import knightminer.inspirations.tweaks.block.CactusCropBlock;
 import knightminer.inspirations.tweaks.block.FittedCarpetBlock;
 import knightminer.inspirations.tweaks.block.FlatCarpetBlock;
-import knightminer.inspirations.tweaks.item.SeedItem;
 import knightminer.inspirations.tweaks.recipe.NormalBrewingRecipe;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -32,7 +28,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.PlantType;
 import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.RegistryEvent.Register;
@@ -59,7 +54,7 @@ public class InspirationsTweaks extends PulseBase {
 	public static Item carrotSeeds;
 	public static Item sugarCaneSeeds;
 	public static Item cactusSeeds;
-	public static Item silverfishPowder;
+	//public static Item silverfishPowder;
 	public static Item heartbeet;
 
 
@@ -85,8 +80,8 @@ public class InspirationsTweaks extends PulseBase {
 		registerCarpet(r, DyeColor.BLACK, Blocks.BLACK_CARPET);
 
 
-		cactusCrop = register(r, new CactusCropBlock(), "cactus_crop");
-		sugarCaneCrop = register(r, new BlockSugarCaneCrop(), "sugar_cane_crop");
+		//cactusCrop = register(r, new CactusCropBlock(), "cactus_crop");
+		//sugarCaneCrop = register(r, new BlockSugarCaneCrop(), "sugar_cane_crop");
 	}
 
 	private void registerCarpet(IForgeRegistry<Block> r, DyeColor color, Block origCarpet) {
@@ -109,6 +104,7 @@ public class InspirationsTweaks extends PulseBase {
 			Item.BLOCK_TO_ITEM.put(fitCarpets[carpet.getColor().getId()], item);
 		}
 
+		/*
 		cactusSeeds = registerItem(r, new HidableBlockItem(
 				InspirationsTweaks.cactusCrop,
 				new Item.Properties().group(ItemGroup.FOOD)
@@ -121,16 +117,17 @@ public class InspirationsTweaks extends PulseBase {
 
 		carrotSeeds = registerItem(r, new SeedItem((CropsBlock) Blocks.CARROTS, PlantType.Crop), "carrot_seeds");
 		potatoSeeds = registerItem(r, new SeedItem((CropsBlock) Blocks.POTATOES, PlantType.Crop), "potato_seeds");
+		*/
 
 		heartbeet = registerItem(r, new HidableItem(
 				new Item.Properties().group(ItemGroup.FOOD).food(
 				new Food.Builder().hunger(2).saturation(2.4f).effect(new EffectInstance(Effects.REGENERATION, 100), 1).build()),
 				Config.enableHeartbeet::get
 		), "heartbeet");
-		silverfishPowder = registerItem(r, new HidableItem(
-				new Item.Properties().group(ItemGroup.BREWING),
-				() -> false // TODO: Make this have a purpose...
-		),  "silverfish_powder");
+//		silverfishPowder = registerItem(r, new HidableItem(
+//				new Item.Properties().group(ItemGroup.BREWING),
+//				() -> false // TODO: Make this have a purpose...
+//		),  "silverfish_powder");
 	}
 
 	@SubscribeEvent

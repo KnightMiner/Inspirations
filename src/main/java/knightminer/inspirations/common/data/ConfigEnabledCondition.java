@@ -105,12 +105,11 @@ public class ConfigEnabledCondition implements ICondition, ILootCondition {
 		add("rope", Config.enableRope);
 
 		// utility
-		add("bricks_button", Config.enableBricksButton);
+		add("bricks_button", ()->false/*TODO: Config.enableBricksButton*/);
 		add("carpeted_trapdoor", Config.enableCarpetedTrapdoor);
 		add("collector", Config.enableCollector);
 		add("pipe", Config.enablePipe);
 		add("redstone_book", Config::enableRedstoneBook);
-		add("redstone_torch_lever", Config.enableRedstoneTorchLever);
 		add("torch_lever", Config.enableTorchLever);
 
 		// tools
@@ -122,19 +121,19 @@ public class ConfigEnabledCondition implements ICondition, ILootCondition {
 		add("lock", Config.enableLock);
 		add("north_compass", Config.enableNorthCompass);
 		add("photometer", Config.enablePhotometer);
-		add("redstone_charge", Config.enableRedstoneCharge);
+		add("redstone_charger", Config.enableRedstoneCharger);
 
 		// tweaks
-		add("more_seeds", Config.enableMoreSeeds);
+		add("more_seeds", ()->false/* TODO: Config.enableMoreSeeds */);
 		add("unstackable_alts", Config.unstackableRecipeAlts);
 		add("skeleton_skull", Config.skeletonSkull);
 		add("cave_spider_web", Config.caveSpiderDrops);
 
 		// recipes
-		add("cauldron_dyeing", Config::enableCauldronDyeing);
-		add("cauldron_fluids", Config::enableCauldronFluids);
-		add("cauldron_potions", Config::enableCauldronPotions);
-		add("extra_dyed_bottle_recipes", Config::extraBottleRecipes);
-		add("patch_vanilla_dye_recipes", Config::patchVanillaDyeRecipes);
+		add("cauldron_dyeing", ()->false/* TODO: Config::enableCauldronDyeing */);
+		add("cauldron_fluids", ()->false/* TODO: Config::enableCauldronFluids */);
+		add("cauldron_potions", ()->false/* TODO: Config::enableCauldronPotions */);
+		add("extra_dyed_bottle_recipes", ()->false/* TODO: Config::extraBottleRecipes */);
+		add("patch_vanilla_dye_recipes", ()->false/* TODO: Config::patchVanillaDyeRecipes */);
 	}
 }

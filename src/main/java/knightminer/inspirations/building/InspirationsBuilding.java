@@ -255,13 +255,13 @@ public class InspirationsBuilding extends PulseBase {
 
 	@SubscribeEvent
 	public void init(FMLCommonSetupEvent event) {
-		if(Config.enableFlowers.get() && Config.enableCauldronDyeing()) {
-//			InspirationsRegistry.addCauldronRecipe(new DyeCauldronRecipe(
-//				new ItemStack(flower_rose),
-//				DyeColor.CYAN,
-//				new ItemStack(flower_cyan))
-//			);
-		}
+		/*if(Config.enableFlowers.get() && Config.enableCauldronDyeing()) {
+			InspirationsRegistry.addCauldronRecipe(new DyeCauldronRecipe(
+				new ItemStack(flower_rose),
+				DyeColor.CYAN,
+				new ItemStack(flower_cyan))
+			);
+		}*/
 
 		MinecraftForge.EVENT_BUS.register(BuildingEvents.class);
 	}

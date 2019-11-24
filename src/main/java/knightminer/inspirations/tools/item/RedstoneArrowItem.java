@@ -1,10 +1,7 @@
 package knightminer.inspirations.tools.item;
 
-import javax.annotation.Nonnull;
-
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.IHidable;
-import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.tools.entity.RedstoneArrow;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -14,6 +11,8 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
+
+import javax.annotation.Nonnull;
 
 public class RedstoneArrowItem extends ArrowItem implements IHidable {
 
@@ -34,7 +33,7 @@ public class RedstoneArrowItem extends ArrowItem implements IHidable {
 
 	@Override
 	public boolean isEnabled() {
-		return Config.enableRedstoneCharge.get();
+		return Config.enableRedstoneCharger.get();
 	}
 
 	@Override

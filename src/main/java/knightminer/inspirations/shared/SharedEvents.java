@@ -5,7 +5,6 @@ import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.common.network.MilkablePacket;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.CowEntity;
-import net.minecraft.entity.passive.SquidEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
@@ -23,7 +22,7 @@ public class SharedEvents {
 
 		// runs for both adult cows and squids, based on config
 		if ((Config.milkCooldown.get() && entity instanceof CowEntity && !entity.isChild())
-				|| (Config.milkSquids.get() && entity instanceof SquidEntity)) {
+				/*|| (Config.milkSquids.get() && entity instanceof SquidEntity)*/) {
 
 			// if not already cooled down, cool down
 			CompoundNBT tags = entity.getPersistentData();

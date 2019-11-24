@@ -232,6 +232,7 @@ public class TweaksEvents {
 			}
 	}
 
+	/* TODO: reconsider feature
 	@SubscribeEvent
 	public static void dropCarrotsPotatos(HarvestDropsEvent event) {
 		if(!Config.nerfCarrotPotatoDrops()) {
@@ -249,6 +250,7 @@ public class TweaksEvents {
 		event.getDrops().clear();
 		event.getDrops().add(new ItemStack(block == Blocks.CARROTS ? InspirationsTweaks.carrotSeeds : InspirationsTweaks.potatoSeeds));
 	}
+	*/
 
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public static void onFall(LivingFallEvent event) {

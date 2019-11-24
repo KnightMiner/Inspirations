@@ -2,7 +2,6 @@ package knightminer.inspirations.utility;
 
 
 import knightminer.inspirations.common.PulseBase;
-import knightminer.inspirations.utility.block.BricksButtonBlock;
 import knightminer.inspirations.utility.block.CarpetedPressurePlateBlock;
 import knightminer.inspirations.utility.block.CarpetedTrapdoorBlock;
 import knightminer.inspirations.utility.block.CollectorBlock;
@@ -42,8 +41,8 @@ public class InspirationsUtility extends PulseBase {
 	// blocks
 	public static Block torchLeverWall;
 	public static Block torchLeverFloor;
-	public static Block bricksButton;
-	public static Block netherBricksButton;
+	//public static Block bricksButton;
+	//public static Block netherBricksButton;
 	public static Block[] carpetedTrapdoors = new Block[16];
 	public static Block[] carpetedPressurePlates = new Block[16];
 	public static Block collector;
@@ -65,8 +64,8 @@ public class InspirationsUtility extends PulseBase {
 		torchLeverFloor = registerBlock(r, new TorchLevelBlock(), "torch_lever");
 		torchLeverWall = registerBlock(r, new TorchLeverWallBlock(), "wall_torch_lever");
 
-		bricksButton = registerBlock(r, new BricksButtonBlock(BricksButtonBlock.BRICK_BUTTON), "bricks_button");
-		netherBricksButton = registerBlock(r, new BricksButtonBlock(BricksButtonBlock.NETHER_BUTTON), "nether_bricks_button");
+		//bricksButton = registerBlock(r, new BricksButtonBlock(BricksButtonBlock.BRICK_BUTTON), "bricks_button");
+		//netherBricksButton = registerBlock(r, new BricksButtonBlock(BricksButtonBlock.NETHER_BUTTON), "nether_bricks_button");
 
 		for(DyeColor color : DyeColor.values()) {
 			carpetedTrapdoors[color.getId()] = registerBlock(r, new CarpetedTrapdoorBlock(color), color.getName() + "_carpeted_trapdoor");
@@ -103,8 +102,8 @@ public class InspirationsUtility extends PulseBase {
 
 		// itemblocks
 		register(r, new TorchLeverItem(), "torch_lever");
-		registerBlockItem(r, bricksButton, ItemGroup.REDSTONE);
-		registerBlockItem(r, netherBricksButton, ItemGroup.REDSTONE);
+		//registerBlockItem(r, bricksButton, ItemGroup.REDSTONE);
+		//registerBlockItem(r, netherBricksButton, ItemGroup.REDSTONE);
 		for(Block trapdoor : carpetedTrapdoors) {
 			registerBlockItem(r, trapdoor, ItemGroup.REDSTONE);
 		}

@@ -1,28 +1,17 @@
 package knightminer.inspirations.recipes;
 
 import knightminer.inspirations.common.Config;
-import knightminer.inspirations.common.network.InspirationsNetwork;
-import knightminer.inspirations.common.network.MilkablePacket;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
-import knightminer.inspirations.shared.SharedEvents;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.passive.SquidEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResultType;
-import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.items.ItemHandlerHelper;
 
 public class RecipesEvents {
 
@@ -60,6 +49,7 @@ public class RecipesEvents {
 		}
 	}
 
+	/* TODO: bottle does not exist
 	@SubscribeEvent
 	public static void milkSquid(EntityInteract event) {
 		if(!Config.milkSquids.get()) {
@@ -99,4 +89,5 @@ public class RecipesEvents {
 			}
 		}
 	}
+	 */
 }
