@@ -131,8 +131,8 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
 	public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) {
 		Direction facing = state.get(FACING);
 
-		// skip sides, we don't need them
-		if(facing != trace.getFace() && trace.getFace().getAxis() != Direction.Axis.Y) {
+		// skip opposite, not needed as the back is never clicked for books
+		if(facing.getOpposite() == trace.getFace()) {
 			return false;
 		}
 
@@ -199,7 +199,7 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
 		}
 
 		// multiply by 8 to account for extra 2 pixels
-		return shelf + Math.min((int) (clicked * 8), 7);
+		return shelf + Math.min((int) (clicked * 8), 6);
 	}
 
 	/*
