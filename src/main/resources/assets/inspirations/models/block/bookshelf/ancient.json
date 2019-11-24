@@ -1,5 +1,5 @@
 {
-  "parent": "inspirations:block/bookshelf/model/normal",
+  "parent": "inspirations:block/bookshelf/model/ancient",
   "textures": {
     "texture":    "minecraft:block/oak_planks",
     "books":      "inspirations:block/books_ancient",
