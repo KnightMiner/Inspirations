@@ -2,6 +2,7 @@ package knightminer.inspirations.recipes;
 
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
+import knightminer.inspirations.common.item.HidableItem;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.recipe.cauldron.BrewingCauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.FillCauldronRecipe;
@@ -25,7 +26,6 @@ import knightminer.inspirations.recipes.recipe.cauldron.empty.SpongeEmptyCauldro
 import knightminer.inspirations.recipes.recipe.cauldron.fill.DyedBottleFillCauldron;
 import knightminer.inspirations.recipes.recipe.cauldron.fill.FluidContainerFillCauldron;
 import knightminer.inspirations.recipes.recipe.cauldron.fill.PotionFillCauldron;
-import knightminer.inspirations.shared.InspirationsShared;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.material.Material;
@@ -34,6 +34,7 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.crafting.Ingredient;
@@ -74,6 +75,8 @@ public class InspirationsRecipes extends PulseBase {
 	public static EnhancedCauldronBlock cauldron;
 
 	// items
+	public static Item splashBottle;
+	public static Item lingeringBottle;
 	public static Map<DyeColor,SimpleDyedBottleItem> simpleDyedWaterBottle;
 	public static MixedDyedBottleItem mixedDyedWaterBottle;
 
@@ -115,6 +118,15 @@ public class InspirationsRecipes extends PulseBase {
 	@SubscribeEvent
 	public void registerItems(Register<Item> event) {
 		IForgeRegistry<Item> r = event.getRegistry();
+
+		splashBottle = registerItem(r, new HidableItem(
+				new Item.Properties().group(ItemGroup.BREWING),
+				Config::enableCauldronPotions
+		), "splash_bottle");
+		lingeringBottle = registerItem(r, new HidableItem(
+				new Item.Properties().group(ItemGroup.BREWING),
+				Config::enableCauldronPotions
+		), "lingering_bottle");
 
 		for(DyeColor color: DyeColor.values()) {
 			simpleDyedWaterBottle.put(color, registerItem(r,
@@ -249,8 +261,8 @@ public class InspirationsRecipes extends PulseBase {
 
 		if(Config.enableCauldronPotions()) {
 			addPotionBottle(Items.POTION, new ItemStack(Items.GLASS_BOTTLE), "bottles/normal");
-			addPotionBottle(Items.SPLASH_POTION, new ItemStack(InspirationsShared.splashBottle), "bottles/splash");
-			addPotionBottle(Items.LINGERING_POTION, new ItemStack(InspirationsShared.lingeringBottle), "bottles/lingering");
+			addPotionBottle(Items.SPLASH_POTION, new ItemStack(splashBottle), "bottles/splash");
+			addPotionBottle(Items.LINGERING_POTION, new ItemStack(lingeringBottle), "bottles/lingering");
 			if (Config.cauldronTipArrows()) {
 				InspirationsRegistry.addCauldronRecipe(TippedArrowCauldronRecipe.INSTANCE);
 			}
