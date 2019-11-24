@@ -57,10 +57,14 @@ public class ClientProxy {
 		}
 	}
 
-	protected static void replaceModel(ModelBakeEvent event, ModelResourceLocation location, BiFunction<IBakedModel, IModel, IBakedModel> modelMaker) {
+	protected static void replaceModel(ModelBakeEvent event, ModelResourceLocation location, BiFunction<IBakedModel, IModel, TextureModel> modelMaker) {
+		// model to be retextured
 		IModel model = ModelLoaderRegistry.getModelOrLogError(location, "Error loading model for " + location);
+		// model for rendering properties
 		IBakedModel standard = event.getModelRegistry().get(location);
-		IBakedModel finalModel = modelMaker.apply(standard, model);
+		// model to replace standard
+		TextureModel finalModel = modelMaker.apply(standard, model);
+		finalModel.fetchChildren(event.getModelLoader());
 		event.getModelRegistry().put(location, finalModel);
 	}
 
@@ -73,6 +77,6 @@ public class ClientProxy {
 
 	protected static void replaceBothTexturedModels(ModelBakeEvent event, ResourceLocation loc, String key) {
 		replaceTexturedModel(event, new ModelResourceLocation(loc, ""), key, false);
-		replaceTexturedModel(event, new ModelResourceLocation(loc, "inventory"), "texture", true);
+		replaceTexturedModel(event, new ModelResourceLocation(loc, "inventory"), key, true);
 	}
 }

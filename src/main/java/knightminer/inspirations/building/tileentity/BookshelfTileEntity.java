@@ -23,6 +23,7 @@ import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.client.model.ModelDataManager;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelDataMap;
+import net.minecraftforge.client.model.data.ModelProperty;
 import net.minecraftforge.items.ItemHandlerHelper;
 import slimeknights.mantle.tileentity.InventoryTileEntity;
 
@@ -30,6 +31,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class BookshelfTileEntity extends InventoryTileEntity {
+
+	public static final ModelProperty<String> TEXTURE = TextureBlockUtil.TEXTURE_PROP;
+	public static final ModelProperty<Integer> BOOKS = new ModelProperty<>();
 
 	/** Cached enchantment bonus, so we are not constantly digging the inventory */
 	private float enchantBonus;
@@ -161,11 +165,11 @@ public class BookshelfTileEntity extends InventoryTileEntity {
 				books |= 1 << i;
 			}
 		}
-		ModelDataMap.Builder data = new ModelDataMap.Builder().withInitial(BookshelfBlock.BOOKS, books);
+		ModelDataMap.Builder data = new ModelDataMap.Builder().withInitial(BOOKS, books);
 		// texture not loaded
 		String texture = ClientUtil.getTexturePath(this);
 		if(!texture.isEmpty()) {
-			data = data.withInitial(BookshelfBlock.TEXTURE, texture);
+			data = data.withInitial(TEXTURE, texture);
 		}
 		return data.build();
 	}

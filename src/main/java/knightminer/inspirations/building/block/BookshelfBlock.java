@@ -44,7 +44,6 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
-import net.minecraftforge.client.model.data.ModelProperty;
 import net.minecraftforge.fml.network.NetworkHooks;
 import slimeknights.mantle.block.InventoryBlock;
 
@@ -54,8 +53,6 @@ import javax.annotation.Nullable;
 public class BookshelfBlock extends InventoryBlock implements IHidable {
 
 	public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
-	public static final ModelProperty<String> TEXTURE = TextureBlockUtil.TEXTURE_PROP;
-	public static final ModelProperty<Integer> BOOKS = new ModelProperty<>();
 
 	public BookshelfBlock() {
 		super(Block.Properties.create(Material.WOOD)

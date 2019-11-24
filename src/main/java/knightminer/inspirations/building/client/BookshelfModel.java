@@ -4,7 +4,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableMap;
 import knightminer.inspirations.Inspirations;
-import knightminer.inspirations.building.block.BookshelfBlock;
+import knightminer.inspirations.building.tileentity.BookshelfTileEntity;
 import knightminer.inspirations.shared.client.TextureModel;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.model.BakedQuad;
@@ -33,8 +33,8 @@ public class BookshelfModel extends TextureModel {
 	@Override
 	public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
 		IBakedModel bakedModel = this.originalModel;
-		String texture = extraData.getData(BookshelfBlock.TEXTURE);
-		Integer booksValue = extraData.getData(BookshelfBlock.BOOKS);
+		String texture = extraData.getData(BookshelfTileEntity.TEXTURE);
+		Integer booksValue = extraData.getData(BookshelfTileEntity.BOOKS);
 		int books = booksValue != null ? booksValue : 0;
 		try {
 			// grab the model from cache if present
