@@ -109,7 +109,6 @@ public class ConfigEnabledCondition implements ICondition, ILootCondition {
 		add("carpeted_trapdoor", Config.enableCarpetedTrapdoor);
 		add("collector", Config.enableCollector);
 		add("pipe", Config.enablePipe);
-		add("redstone_barrel", Config.enableRedstoneBarrel);
 		add("redstone_book", Config::enableRedstoneBook);
 		add("redstone_torch_lever", Config.enableRedstoneTorchLever);
 		add("torch_lever", Config.enableTorchLever);

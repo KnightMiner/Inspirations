@@ -7,7 +7,6 @@ import knightminer.inspirations.utility.block.CarpetedPressurePlateBlock;
 import knightminer.inspirations.utility.block.CarpetedTrapdoorBlock;
 import knightminer.inspirations.utility.block.CollectorBlock;
 import knightminer.inspirations.utility.block.PipeBlock;
-import knightminer.inspirations.utility.block.RedstoneBarrelBlock;
 import knightminer.inspirations.utility.block.TorchLevelBlock;
 import knightminer.inspirations.utility.block.TorchLeverWallBlock;
 import knightminer.inspirations.utility.inventory.CollectorContainer;
@@ -43,7 +42,6 @@ public class InspirationsUtility extends PulseBase {
 	// blocks
 	public static Block torchLeverWall;
 	public static Block torchLeverFloor;
-	public static Block redstoneBarrel;
 	public static Block bricksButton;
 	public static Block netherBricksButton;
 	public static Block[] carpetedTrapdoors = new Block[16];
@@ -69,8 +67,6 @@ public class InspirationsUtility extends PulseBase {
 
 		bricksButton = registerBlock(r, new BricksButtonBlock(BricksButtonBlock.BRICK_BUTTON), "bricks_button");
 		netherBricksButton = registerBlock(r, new BricksButtonBlock(BricksButtonBlock.NETHER_BUTTON), "nether_bricks_button");
-
-		redstoneBarrel = registerBlock(r, new RedstoneBarrelBlock(), "redstone_barrel");
 
 		for(DyeColor color : DyeColor.values()) {
 			carpetedTrapdoors[color.getId()] = registerBlock(r, new CarpetedTrapdoorBlock(color), color.getName() + "_carpeted_trapdoor");
@@ -109,7 +105,6 @@ public class InspirationsUtility extends PulseBase {
 		register(r, new TorchLeverItem(), "torch_lever");
 		registerBlockItem(r, bricksButton, ItemGroup.REDSTONE);
 		registerBlockItem(r, netherBricksButton, ItemGroup.REDSTONE);
-		registerBlockItem(r, redstoneBarrel, ItemGroup.REDSTONE);
 		for(Block trapdoor : carpetedTrapdoors) {
 			registerBlockItem(r, trapdoor, ItemGroup.REDSTONE);
 		}

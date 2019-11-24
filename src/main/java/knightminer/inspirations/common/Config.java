@@ -73,7 +73,6 @@ public class Config {
 	public static BooleanValue enableRedstoneTorchLever;
 	private static BooleanValue enableRedstoneBook;
 	public static BooleanValue enableBricksButton;
-	public static BooleanValue enableRedstoneBarrel;
 	public static BooleanValue enableCarpetedTrapdoor;
 	public static BooleanValue enableCarpetedPressurePlate;
 	public static BooleanValue enableCollector;
@@ -426,12 +425,6 @@ public class Config {
 					.comment("Enables button blocks disguised as a full bricks or nether bricks block")
 					.worldRestart()
 					.define("bricksButton", true);
-
-			// redstone barrel
-			enableRedstoneBarrel = builder
-					.comment("Enables the redstone barrel: a block that gives a configurable comparator output and can be pushed by pistons")
-					.worldRestart()
-					.define("redstoneBarrel", true);
 
 			// redstone torch lever
 			enableRedstoneTorchLever = builder

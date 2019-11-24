@@ -260,8 +260,8 @@ public class InspirationsRecipes extends PulseBase {
 			InspirationsRegistry.addCauldronRecipe(ContainerEmptyCauldron.INSTANCE);
 
 			addStewRecipes(new ItemStack(Items.BEETROOT_SOUP), beetrootSoup, new ItemStack(Items.BEETROOT, 6));
-			addStewRecipes(new ItemStack(Items.MUSHROOM_STEW), mushroomStew, new ItemStack(InspirationsShared.mushrooms));
-			addStewRecipes(new ItemStack(Items.RABBIT_STEW), rabbitStew, new ItemStack(InspirationsShared.rabbitStewMix));
+			//addStewRecipes(new ItemStack(Items.MUSHROOM_STEW), mushroomStew, new ItemStack(InspirationsShared.mushrooms));
+			//addStewRecipes(new ItemStack(Items.RABBIT_STEW), rabbitStew, new ItemStack(InspirationsShared.rabbitStewMix));
 		} else {
 			// above relied on for bucket filling cauldron
 			InspirationsRegistry.addCauldronFluidItem(new ItemStack(Items.WATER_BUCKET), new ItemStack(Items.BUCKET), Fluids.WATER, 3);
