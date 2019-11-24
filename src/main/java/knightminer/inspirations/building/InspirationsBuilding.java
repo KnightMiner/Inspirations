@@ -70,6 +70,7 @@ public class InspirationsBuilding extends PulseBase {
 	public static Block redMulch;
 	public static Block blackMulch;
 	public static Block blueMulch;
+	public static Block ironBars;
 
 	public static PathBlock path_rock;
 	public static PathBlock path_round;
@@ -153,7 +154,9 @@ public class InspirationsBuilding extends PulseBase {
 				.harvestLevel(0)
 		), "chain");
 		// iron bars override
-		register(r, new ClimbablePaneBlock(Block.Properties.create(Material.IRON, MaterialColor.AIR).hardnessAndResistance(5.0F, 6.0F).sound(SoundType.METAL)), new ResourceLocation("iron_bars"));
+		if (Config.climbableIronBars.get()) {
+			ironBars = register(r, new ClimbablePaneBlock(Block.Properties.create(Material.IRON, MaterialColor.AIR).hardnessAndResistance(5.0F, 6.0F).sound(SoundType.METAL)), new ResourceLocation("iron_bars"));
+		}
 
 		glassDoor = registerBlock(r, new GlassDoorBlock(), "glass_door");
 		glassTrapdoor = registerBlock(r, new GlassTrapdoorBlock(), "glass_trapdoor");
@@ -171,7 +174,6 @@ public class InspirationsBuilding extends PulseBase {
 		path_round = registerBlock(r, new PathBlock(PathBlock.SHAPE_ROUND, MaterialColor.STONE), "round_path");
 		path_tile  = registerBlock(r, new PathBlock(PathBlock.SHAPE_TILE, MaterialColor.STONE), "tile_path");
 		path_brick = registerBlock(r, new PathBlock(PathBlock.SHAPE_BRICK, MaterialColor.RED), "brick_path");
-
 
 		flower_cyan = registerBlock(r, new FlowerBlock(null), "cyan_flower");
 		flower_syringa = registerBlock(r, new FlowerBlock((DoublePlantBlock) Blocks.LILAC), "syringa");
@@ -213,6 +215,7 @@ public class InspirationsBuilding extends PulseBase {
 		registerBlockItem(r, rope, ItemGroup.DECORATIONS);
 		registerBlockItem(r, vine, ItemGroup.DECORATIONS);
 		registerBlockItem(r, chain, ItemGroup.DECORATIONS);
+		registerBlockItem(r, ironBars, ItemGroup.DECORATIONS);
 
 		registerBlockItem(r, plainMulch, ItemGroup.BUILDING_BLOCKS);
 		registerBlockItem(r, brownMulch, ItemGroup.BUILDING_BLOCKS);

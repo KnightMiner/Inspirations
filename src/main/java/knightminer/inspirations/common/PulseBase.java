@@ -1,11 +1,9 @@
 package knightminer.inspirations.common;
 
-import java.util.Locale;
-
 import knightminer.inspirations.Inspirations;
+import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.common.item.HidableBlockItem;
 import knightminer.inspirations.library.Util;
-import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import knightminer.inspirations.utility.InspirationsUtility;
@@ -23,6 +21,8 @@ import net.minecraft.world.storage.loot.TableLootEntry;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.common.IRegisterUtil;
+
+import java.util.Locale;
 
 public class PulseBase implements IRegisterUtil {
 	@Override
@@ -82,7 +82,11 @@ public class PulseBase implements IRegisterUtil {
 	 * @param group The ItemGroup to assign the item to.
 	 * @return The created BlockItem.
 	 */
+	@Override
 	public BlockItem registerBlockItem(IForgeRegistry<Item> registry, Block block, ItemGroup group) {
+		if (block == null) {
+			return null;
+		}
 		return registerBlockItem(registry, new HidableBlockItem(block, (new Item.Properties()).group(group)));
 	}
 
