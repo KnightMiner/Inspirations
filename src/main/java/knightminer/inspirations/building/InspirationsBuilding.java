@@ -2,6 +2,7 @@ package knightminer.inspirations.building;
 
 import knightminer.inspirations.building.block.BookshelfBlock;
 import knightminer.inspirations.building.block.ChainBlock;
+import knightminer.inspirations.building.block.ClimbablePaneBlock;
 import knightminer.inspirations.building.block.EnlightenedBushBlock;
 import knightminer.inspirations.building.block.FlowerBlock;
 import knightminer.inspirations.building.block.GlassDoorBlock;
@@ -30,6 +31,7 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.Items;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.ToolType;
@@ -150,6 +152,8 @@ public class InspirationsBuilding extends PulseBase {
 				.harvestTool(ToolType.PICKAXE)
 				.harvestLevel(0)
 		), "chain");
+		// iron bars override
+		register(r, new ClimbablePaneBlock(Block.Properties.create(Material.IRON, MaterialColor.AIR).hardnessAndResistance(5.0F, 6.0F).sound(SoundType.METAL)), new ResourceLocation("iron_bars"));
 
 		glassDoor = registerBlock(r, new GlassDoorBlock(), "glass_door");
 		glassTrapdoor = registerBlock(r, new GlassTrapdoorBlock(), "glass_trapdoor");

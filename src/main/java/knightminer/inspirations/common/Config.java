@@ -38,6 +38,7 @@ public class Config {
 	public static BooleanValue enableRope;
 	private static BooleanValue enableRopeLadder;
 	public static boolean enableRopeLadder() { return enableRopeLadder.get() && enableRope.get(); }
+	public static BooleanValue climbableIronBars;
 	public static BooleanValue enableGlassDoor;
 	public static BooleanValue enableMulch;
 	public static BooleanValue enablePath;
@@ -369,6 +370,11 @@ public class Config {
 			enableRopeLadder = builder
 					.comment("Enables rope ladders: right click ropes with sticks to extend the hitbox")
 					.define("ropeLadder", true);
+
+			climbableIronBars = builder_override
+					.comment("Makes iron bars climbale if a rope is below them.")
+					.worldRestart()
+					.define("rope.climbaleBars", true);
 
 			// glass door
 			enableGlassDoor = builder

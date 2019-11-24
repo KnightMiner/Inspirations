@@ -87,14 +87,14 @@ public class RopeBlock extends HidableBlock implements IWaterLoggable {
 				.with(WATERLOGGED, context.getWorld().getFluidState(context.getPos()).getFluid() == Fluids.WATER);
 	}
 
-	private static final VoxelShape ATTACH_TOP = Block.makeCuboidShape(6.0, 15, 6.0, 10.0, 16, 10.0);
-	private static final VoxelShape ATTACH_BOTTOM = Block.makeCuboidShape(6.0, 0, 6.0, 10.0, 1, 10.0);
+	private static final VoxelShape ATTACH_TOP = Block.makeCuboidShape(7, 15, 7, 9, 16, 9);
+	private static final VoxelShape ATTACH_BOTTOM = Block.makeCuboidShape(7, 0, 7, 9, 1, 9);
 
 	private boolean canConnectTo(BlockState state, IBlockReader world, BlockPos pos) {
 		if (state.getBlock() == this) {
 			return true;
 		}
-		// Check if the top of the block is able to attach to the rope - the center 4x4 must
+		// Check if the top of the block is able to attach to the rope - the center 2x2 must
 		// all be present.
 		return !state.isIn(BlockTags.LEAVES) && !VoxelShapes.compare(
 				state.getCollisionShape(world, pos).project(Direction.UP), ATTACH_TOP, IBooleanFunction.ONLY_SECOND
