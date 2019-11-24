@@ -50,6 +50,7 @@ public class InventorySlotSyncPacket extends AbstractPacket {
 
     InventoryTileEntity tile = (InventoryTileEntity) tileEntity;
     tile.setInventorySlotContents(slot, itemStack);
+    Minecraft.getInstance().worldRenderer.notifyBlockUpdate(null, pos, null, null, 3);
     ModelDataManager.requestModelDataRefresh(tile);
   }
 
