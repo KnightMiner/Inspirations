@@ -71,10 +71,11 @@ public final class ClientUtil {
 		for (int x = 0; x < sprite.getWidth(); x++) {
 			for (int y = 0; y < sprite.getHeight(); y++) {
 				int argb = sprite.getPixelRGBA(0, x, y);
-				int ca = argb >> 24 & 0xFF;
-				int cr = argb >> 16 & 0xFF;
+				// integer is in format of 0xAABBGGRR
+				int cr = argb & 0xFF;
 				int cg = argb >> 8 & 0xFF;
-				int cb = argb & 0xFF;
+				int cb = argb >> 16 & 0xFF;
+				int ca = argb >> 24 & 0xFF;
 				if (ca > 0x7F && NumberUtils.max(cr, cg, cb) > 0x1F) {
 					Color.RGBtoHSB(ca, cr, cg, hsb);
 					float weight = hsb[1];

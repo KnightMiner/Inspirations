@@ -1,7 +1,7 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "inspirations:item/book_pages",
-    "layer1": "inspirations:item/book_cover"
+    "layer0": "inspirations:item/book_cover",
+    "layer1": "inspirations:item/book_pages"
   }
 }

@@ -133,7 +133,7 @@ public class BuildingClientProxy extends ClientProxy {
 		for (DyeColor color: DyeColor.values()) {
 			int hexColor = color.colorValue;
 			itemColors.register(
-					(stack, tintIndex) -> (tintIndex == 1) ? hexColor : -1,
+					(stack, tintIndex) -> (tintIndex == 0) ? hexColor : -1,
 					InspirationsBuilding.coloredBooks[color.getId()]
 			);
 		}
