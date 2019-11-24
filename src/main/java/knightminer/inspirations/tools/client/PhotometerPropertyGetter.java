@@ -11,11 +11,14 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 
 public class PhotometerPropertyGetter implements IItemPropertyGetter {
 
+	@OnlyIn(Dist.CLIENT)
 	@Override
 	public float call(ItemStack stack, @Nullable World world, @Nullable LivingEntity entityIn) {
 		Entity entity = entityIn != null ? entityIn : stack.getItemFrame();

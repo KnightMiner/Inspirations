@@ -23,7 +23,7 @@ public class ToolsClientProxy extends ClientProxy {
 
 		// Dyed waypoint compasses. This implements IItemColor itself.
 		for(WaypointCompassItem compass : InspirationsTools.waypointCompasses) {
-			itemColors.register(compass, compass);
+			itemColors.register(compass::getColor, compass);
 		}
 	}
 }

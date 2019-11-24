@@ -11,19 +11,21 @@ import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.EnchantedBookItem;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.biome.BiomeColors;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Map;
@@ -179,5 +181,21 @@ public class TweaksClientProxy extends ClientProxy {
 
 			return -1;
 		}, Items.FIREWORK_ROCKET);
+	}
+
+	@SubscribeEvent
+	public static void fixShieldTooltip(ItemTooltipEvent event) {
+		if (!Config.fixShieldTooltip.get()) {
+			return;
+		}
+		ItemStack stack = event.getItemStack();
+		if (stack.getItem() != Items.SHIELD) {
+			return;
+		}
+		CompoundNBT tags = stack.getChildTag("BlockEntityTag");
+		if (tags != null && tags.contains("Patterns") && stack.isEnchanted()) {
+			ListNBT patterns = tags.getList("Patterns", 10);
+			event.getToolTip().add(patterns.size() + 1, new StringTextComponent(""));
+		}
 	}
 }

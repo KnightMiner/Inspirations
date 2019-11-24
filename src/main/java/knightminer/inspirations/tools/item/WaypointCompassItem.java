@@ -8,7 +8,6 @@ import knightminer.inspirations.library.client.ClientUtil;
 import knightminer.inspirations.library.util.TagUtil;
 import knightminer.inspirations.tools.client.WaypointCompassPropertyGetter;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.color.IItemColor;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.DyeColor;
@@ -35,7 +34,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class WaypointCompassItem extends HidableItem implements IItemColor {
+public class WaypointCompassItem extends HidableItem {
 
   public static final String TAG_POS = "pos";
   public static final String TAG_DIMENSION = "dimension";
@@ -57,7 +56,6 @@ public class WaypointCompassItem extends HidableItem implements IItemColor {
     this.addPropertyOverride(Util.getResource("angle"), new WaypointCompassPropertyGetter());
   }
 
-  @Override
   public int getColor(ItemStack stack, int tintIndex) {
     switch(tintIndex) {
       case 0:
