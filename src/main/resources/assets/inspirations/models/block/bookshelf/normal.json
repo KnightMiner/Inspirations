@@ -1,7 +1,7 @@
 {
   "parent": "inspirations:block/bookshelf/model/normal",
   "textures": {
-    "texture":    "minecraft:block/oak_planks",
+    "texture":    "inspirations:block/mixed_planks",
     "books":      "inspirations:block/books",
     "bookLabels": "inspirations:block/books_overlay"
   }

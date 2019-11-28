@@ -12,7 +12,6 @@ import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.item.crafting.ShapedRecipe;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper;
 
@@ -21,52 +20,59 @@ import javax.annotation.Nonnull;
 public class TextureRecipe extends ShapedRecipe {
 
 	public final Ingredient texture; // first one found of these determines the output block used
+	public final boolean matchFirst;
 
-	public TextureRecipe(ResourceLocation id, String group, int width, int height, Ingredient texture, NonNullList<Ingredient> inputs, ItemStack output) {
-		super(id, group, width, height, inputs, output);
-		this.texture = texture;
-	}
-
-	private TextureRecipe(ShapedRecipe orig, Ingredient texture) {
+	/**
+	 * Creates a new recipe using an existing shaped recipe
+	 * @param orig        Shaped recipe to copy
+	 * @param texture     Ingredient to use for the texture
+	 * @param matchFirst  If true, the first ingredient match
+	 */
+	protected TextureRecipe(ShapedRecipe orig, Ingredient texture, boolean matchFirst) {
 		super(orig.getId(), orig.getGroup(), orig.getWidth(), orig.getHeight(), orig.getIngredients(), orig.getRecipeOutput());
 		this.texture = texture;
+		this.matchFirst = matchFirst;
 	}
 
 	@Nonnull
 	@Override
 	public ItemStack getCraftingResult(CraftingInventory craftMatrix) {
 		ItemStack result = super.getCraftingResult(craftMatrix);
+		Block texBlock = null;
 		for(int i = 0; i < craftMatrix.getSizeInventory(); i++) {
-			for(ItemStack potential : texture.getMatchingStacks()) {
-				ItemStack stack = craftMatrix.getStackInSlot(i);
-				if(potential.isItemEqual(stack) && Block.getBlockFromItem(stack.getItem()) != Blocks.AIR) {
-					Block outBlock = Block.getBlockFromItem(result.getItem());
+			ItemStack stack = craftMatrix.getStackInSlot(i);
+			if(!stack.isEmpty() && texture.test(stack)) {
+				Block block;
+				// special case for enlightened bushes: get the stored texture rather than the bush itself
+				if (stack.getItem() == result.getItem()) {
+					block = TextureBlockUtil.getTextureBlock(stack);
+				} else {
+					 block = Block.getBlockFromItem(stack.getItem());
+				}
+				// if no texture, skip
+				if (block == Blocks.AIR) {
+					continue;
+				}
 
-					// Special case for Enlightened Bushes - grab their underlying texture instead of the bush.
-					Block recurBlock = TextureBlockUtil.getTextureBlock(stack);
-					if (recurBlock != null) {
-						stack = new ItemStack(recurBlock);
+				// if we have not found one yet, store it
+				if(texBlock == null) {
+					texBlock = block;
+					if (matchFirst) {
+						break;
 					}
 
-					return TextureBlockUtil.createTexturedStack(outBlock, Block.getBlockFromItem(stack.getItem()));
+					// if we found one, ensure it matches
+				} else if (texBlock != block) {
+					texBlock = null;
+					break;
 				}
 			}
 		}
 
-		return result;
-	}
-
-	@Nonnull
-	@Override
-	public ItemStack getRecipeOutput() {
-		ItemStack output = super.getRecipeOutput();
-		if(!(texture.getMatchingStacks().length == 0) && !output.isEmpty()) {
-			ItemStack stack = texture.getMatchingStacks()[0];
-			Block block = Block.getBlockFromItem(output.getItem());
-			return TextureBlockUtil.createTexturedStack(block, Block.getBlockFromItem(stack.getItem()));
+		if (texBlock != null) {
+			return TextureBlockUtil.setStackTexture(result, texBlock);
 		}
-
-		return super.getRecipeOutput();
+		return result;
 	}
 
 	public static final IRecipeSerializer<?> SERIALIZER = new TextureRecipe.Serializer().setRegistryName(new ResourceLocation(Inspirations.modID, "texture_recipe"));
@@ -78,20 +84,25 @@ public class TextureRecipe extends ShapedRecipe {
 			ShapedRecipe recipe = CRAFTING_SHAPED.read(recipeId, json);
 
 			Ingredient texture = CraftingHelper.getIngredient(TagUtil.getElement(json, "texture"));
+			boolean matchFirst = false;
+			if (json.has("match_first")) {
+				matchFirst = json.get("match_first").getAsBoolean();
+			};
 
-			return new TextureRecipe(recipe, texture);
+			return new TextureRecipe(recipe, texture, matchFirst);
 		}
 
 		@Override
 		public TextureRecipe read(ResourceLocation recipeId, PacketBuffer buffer) {
 			ShapedRecipe recipe = CRAFTING_SHAPED.read(recipeId, buffer);
-			return new TextureRecipe(recipe, Ingredient.read(buffer));
+			return new TextureRecipe(recipe, Ingredient.read(buffer), buffer.readBoolean());
 		}
 
 		@Override
 		public void write(PacketBuffer buffer, TextureRecipe recipe) {
 			CRAFTING_SHAPED.write(buffer, recipe);
 			recipe.texture.write(buffer);
+			buffer.writeBoolean(recipe.matchFirst);
 		}
 	}
 }

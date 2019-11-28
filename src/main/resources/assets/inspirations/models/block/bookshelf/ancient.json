@@ -1,8 +1,7 @@
 {
   "parent": "inspirations:block/bookshelf/model/ancient",
   "textures": {
-    "texture":    "minecraft:block/oak_planks",
-    "books":      "inspirations:block/books_ancient",
-    "bookLabels": "inspirations:block/books_overlay"
+    "texture":    "inspirations:block/mixed_planks",
+    "books":      "inspirations:block/books_ancient"
   }
 }
