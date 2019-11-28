@@ -9,6 +9,7 @@ import knightminer.inspirations.library.util.TextureBlockUtil;
 import knightminer.inspirations.shared.SharedClientProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.BlockModel;
@@ -266,7 +267,7 @@ public class TextureModel extends BakedModelWrapper<IBakedModel> {
 			if(originalModel instanceof TextureModel) {
 				// read out the data on the itemstack
 				Block block = TextureBlockUtil.getTextureBlock(stack);
-				if(block != null) {
+				if(block != Blocks.AIR) {
 					ResourceLocation texture = ModelHelper.getTextureFromBlockstate(block.getDefaultState()).getName();
 					TextureModel textureModel = (TextureModel) originalModel;
 					return textureModel.getCachedTextureModel(texture.toString());

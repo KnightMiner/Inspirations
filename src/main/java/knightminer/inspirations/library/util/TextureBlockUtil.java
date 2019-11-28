@@ -17,7 +17,6 @@ import net.minecraftforge.client.model.data.ModelProperty;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public final class TextureBlockUtil {
 
@@ -83,15 +82,15 @@ public final class TextureBlockUtil {
 
 	/**
 	 * Gets the current texture block from the TE
-	 * @return
+	 * @return  Block, or AIR if none is set
 	 */
 	public static Block getTextureBlock(TileEntity te) {
 		if(te == null) {
-			return null;
+			return Blocks.AIR;
 		}
 		String blockName = getTextureBlockName(te);
 		if (blockName.isEmpty()) {
-			return null;
+			return Blocks.AIR;
 		}
 		return ForgeRegistries.BLOCKS.getValue(new ResourceLocation(blockName));
 	}
@@ -119,7 +118,7 @@ public final class TextureBlockUtil {
 	public static ItemStack createTexturedStack(Block texturable, Block block) {
 		ItemStack stack = new ItemStack(texturable);
 
-		if(block != null) {
+		if(block != null && block != Blocks.AIR) {
 			setStackTexture(stack, block.getRegistryName().toString());
 		}
 
@@ -164,13 +163,12 @@ public final class TextureBlockUtil {
 	/**
 	 * Gets the itemstack that determines the block's texture from the stack.
 	 * @param stack  Input stack
-	 * @return  The itemstack determining the block's texture, or EMPTY if none exists
+	 * @return  The block determining the blocks texture, or AIR if none
 	 */
-	@Nullable
 	public static Block getTextureBlock(ItemStack stack) {
 		String texture = TagUtil.getTagSafe(stack).getString(TextureBlockUtil.TAG_TEXTURE);
 		if (texture.isEmpty()) {
-			return null;
+			return Blocks.AIR;
 		}
 		return ForgeRegistries.BLOCKS.getValue(new ResourceLocation(texture));
 	}

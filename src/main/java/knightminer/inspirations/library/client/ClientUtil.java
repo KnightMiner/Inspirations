@@ -6,6 +6,7 @@ import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.util.TextureBlockUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
@@ -147,7 +148,7 @@ public final class ClientUtil {
 		if (texture.isEmpty()) {
 			// load it from saved block
 			Block block = TextureBlockUtil.getTextureBlock(te);
-			if (block != null) {
+			if (block != Blocks.AIR) {
 				texture = ModelHelper.getTextureFromBlockstate(block.getDefaultState()).getName().toString();
 				te.getTileData().putString(TAG_TEXTURE_PATH, texture);
 			}

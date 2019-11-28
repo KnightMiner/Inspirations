@@ -11,6 +11,7 @@ import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.client.ClientUtil;
 import knightminer.inspirations.library.util.TextureBlockUtil;
 import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.renderer.color.BlockColors;
@@ -105,7 +106,7 @@ public class BuildingClientProxy extends ClientProxy {
 			TileEntity te = world.getTileEntity(pos);
 			if(te != null) {
 				Block block = TextureBlockUtil.getTextureBlock(te);
-				if (block != null) {
+				if (block != Blocks.AIR) {
 					return ClientUtil.getStackBlockColorsSafe(new ItemStack(block), world, pos, 0);
 				}
 			}
@@ -156,7 +157,7 @@ public class BuildingClientProxy extends ClientProxy {
 			}
 
 			Block block = TextureBlockUtil.getTextureBlock(stack);
-			if(block != null) {
+			if(block != Blocks.AIR) {
 				return itemColors.getColor(new ItemStack(block), 0);
 			} else {
 				return FoliageColors.getDefault();
