@@ -27,7 +27,7 @@ public class TextureBlockItem extends HidableBlockItem {
 	@Override
 	public void fillItemGroup(@Nonnull ItemGroup group, @Nonnull NonNullList<ItemStack> items) {
 		if (shouldAddtoItemGroup(group) && isInGroup(group)) {
-			TextureBlockUtil.addBlocksFromTag(texTag, this.getBlock(), items);
+			TextureBlockUtil.addBlocksFromTag(this.getBlock(), texTag, items);
 		}
 	}
 

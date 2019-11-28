@@ -3,6 +3,7 @@ package knightminer.inspirations.library.util;
 import knightminer.inspirations.common.Config;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -142,18 +143,37 @@ public final class TextureBlockUtil {
 	}
 
 	/**
+	 * Creates a new item stack with the given block as it's texture tag
+	 * @param stack  Stack to modify
+	 * @param block  Block to set
+	 * @return  The item stack with the proper NBT
+	 */
+	public static ItemStack setStackTexture(ItemStack stack, Block block) {
+		if (block == null || block == Blocks.AIR) {
+			return stack;
+		}
+		return setStackTexture(stack, block.getRegistryName().toString());
+	}
+
+	/**
 	 * Adds all blocks from the block tag to the specified block for fillItemGroup
 	 */
-	public static void addBlocksFromTag(Tag<Block> tag, Block block, NonNullList<ItemStack> list) {
+	public static void addBlocksFromTag(Block block, Tag<Block> tag, NonNullList<ItemStack> list) {
+		boolean added = false;
 		for(Block textureBlock : tag.getAllElements()) {
-			// Don't add instances of the block itself, that would be wrong.
+			// Don't add instances of the block itself, see enlightened bushes
 			if (block.getClass().isInstance(textureBlock)) {
 				continue;
 			}
+			added = true;
 			list.add(createTexturedStack(block, textureBlock));
 			if(!Config.showAllVariants.get()) {
 				return;
 			}
+		}
+		// if we never got one, just add the textureless one
+		if (!added) {
+			list.add(new ItemStack(block));
 		}
 	}
 
