@@ -38,7 +38,7 @@ Adds many small features with a vareity of inspirations.
     # Does this dependency have to exist - if not, ordering below must be specified
     mandatory=true #mandatory
     # The version range of the dependency
-    versionRange="[27,)" #mandatory
+    versionRange="[28.1.0,)" #mandatory
     # An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
     ordering="AFTER"
     # Side this dependency is applied on - BOTH, CLIENT or SERVER
@@ -47,12 +47,12 @@ Adds many small features with a vareity of inspirations.
 [[dependencies.inspirations]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.14.0,]"
+    versionRange="[1.14.4,]"
     ordering="NONE"
     side="BOTH"
 [[dependencies.inspirations]]
     modId="mantle"
     mandatory=true
-    versionRange="[1.4,]"
+    versionRange="[1.4.32,]"
     ordering="AFTER"
     side="BOTH"
