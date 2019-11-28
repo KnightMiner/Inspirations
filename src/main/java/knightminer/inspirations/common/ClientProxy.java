@@ -7,13 +7,13 @@ import net.minecraft.client.renderer.color.IBlockColor;
 import net.minecraft.client.renderer.color.IItemColor;
 import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.model.IUnbakedModel;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelBakeEvent;
-import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -57,9 +57,9 @@ public class ClientProxy {
 		}
 	}
 
-	protected static void replaceModel(ModelBakeEvent event, ModelResourceLocation location, BiFunction<IBakedModel, IModel, TextureModel> modelMaker) {
+	protected static void replaceModel(ModelBakeEvent event, ModelResourceLocation location, BiFunction<IBakedModel, IUnbakedModel, TextureModel> modelMaker) {
 		// model to be retextured
-		IModel model = ModelLoaderRegistry.getModelOrLogError(location, "Error loading model for " + location);
+		IUnbakedModel model = ModelLoaderRegistry.getModelOrLogError(location, "Error loading model for " + location);
 		// model for rendering properties
 		IBakedModel standard = event.getModelRegistry().get(location);
 		// model to replace standard

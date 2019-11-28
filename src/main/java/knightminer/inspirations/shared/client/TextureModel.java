@@ -15,6 +15,7 @@ import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.BlockModel;
 import net.minecraft.client.renderer.model.BlockPart;
 import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.model.IUnbakedModel;
 import net.minecraft.client.renderer.model.ItemOverrideList;
 import net.minecraft.client.renderer.model.ModelRotation;
 import net.minecraft.client.renderer.model.Variant;
@@ -46,7 +47,7 @@ import java.util.function.Function;
 
 public class TextureModel extends BakedModelWrapper<IBakedModel> {
 	private final Map<String, IBakedModel> cache = new HashMap<>();
-	private IModel unbakedModel;
+	private IUnbakedModel unbakedModel;
 	private final VertexFormat format;
 	private final String textureKey;
 	private boolean item;
@@ -62,7 +63,7 @@ public class TextureModel extends BakedModelWrapper<IBakedModel> {
 	 * @param textureKey     Name of the primary key to retexture
 	 * @param item           If true, add logic to retexture the item model too
 	 */
-	public TextureModel(IBakedModel originalModel, IModel unbakedModel, VertexFormat format, String textureKey, boolean item) {
+	public TextureModel(IBakedModel originalModel, IUnbakedModel unbakedModel, VertexFormat format, String textureKey, boolean item) {
 		super(originalModel);
 		this.unbakedModel = unbakedModel;
 		this.format = format;
@@ -75,7 +76,12 @@ public class TextureModel extends BakedModelWrapper<IBakedModel> {
 	 * @param loader  Forge Model Loader
 	 */
 	public void fetchChildren(ModelLoader loader) {
-		// only variant lists have children that we need to fetch at this time
+		// needed for getTextures, though we just discard it these are printed elsewhere in loading
+		Set<String> missingTextures = new HashSet<>();
+		// load the parent of the main model
+		unbakedModel.getTextures(loader::getUnbakedModel, missingTextures);
+
+		// variant lists have children that we need to fetch at this time
 		if (unbakedModel instanceof VariantList) {
 			VariantList list = (VariantList)unbakedModel;
 			// nothing to do if empty
@@ -88,8 +94,6 @@ public class TextureModel extends BakedModelWrapper<IBakedModel> {
 			ImmutableMap.Builder<ResourceLocation, IModel> builder = new ImmutableMap.Builder<>();
 			// skip loading the same unbakedModel multiple times, it will fail again
 			Set<ResourceLocation> loaded = new HashSet<>();
-			// needed for getTextures, though we will just discard it when done
-			Set<String> missingTextures = new HashSet<>();
 			for(Variant variant : list.getVariantList()) {
 				ResourceLocation location = variant.getModelLocation();
 				if (loaded.contains(location)) {
@@ -97,9 +101,12 @@ public class TextureModel extends BakedModelWrapper<IBakedModel> {
 				}
 				loaded.add(location);
 				try {
-					// using getUnbakedModel as it fetches models with the parent already loaded
-					// plus, already needed to be able to retexture BlockModel for the sake of item models
-					builder.put(location, loader.getUnbakedModel(location));
+					// using getUnbakedModel as its much simplier, and typically the parent is already loaded
+					IUnbakedModel model = loader.getUnbakedModel(location);
+					// run getTextures to ensure the parent is loaded
+					model.getTextures(loader::getUnbakedModel, missingTextures);
+					// store it to fetch when texturing
+					builder.put(location, model);
 				} catch (Exception e) {
 					Inspirations.log.error("Error loading unbaked model for " + location, e);
 				}
