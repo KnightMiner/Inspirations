@@ -9,16 +9,8 @@
       "prop": "mulch"
     }
   ],
-  "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "SS",
-    "SS"
-  ],
-  "key": {
-    "S": { "tag": "forge:rods/wooden" }
-  },
-  "result": {
-    "item": "inspirations:plain_mulch",
-    "count": 2
-  }
+  "type": "minecraft:stonecutting",
+  "ingredient": { "tag": "minecraft:planks" },
+  "result": "inspirations:plain_mulch",
+  "count": 1
 }

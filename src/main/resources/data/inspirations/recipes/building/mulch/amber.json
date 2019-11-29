@@ -9,18 +9,10 @@
       "prop": "mulch"
     }
   ],
-  "type": "minecraft:crafting_shaped",
-  "pattern": [
-    " S ",
-    "SDS",
-    " S "
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "tag": "inspirations:mulch" },
+    { "tag": "forge:dyes/orange" }
   ],
-  "key": {
-    "S": { "tag": "forge:rods/wooden" },
-    "D": { "tag": "forge:dyes/orange" }
-  },
-  "result": {
-    "item": "inspirations:amber_mulch",
-    "count": 2
-  }
+  "result": { "item": "inspirations:amber_mulch" }
 }

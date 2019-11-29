@@ -1,0 +1,14 @@
+{
+  "replace": false,
+  "values": [],
+  "optional": [
+    "inspirations:plain_mulch",
+    "inspirations:amber_mulch",
+    "inspirations:black_mulch",
+    "inspirations:blue_mulch",
+    "inspirations:brown_mulch",
+    "inspirations:red_mulch",
+    "inspirations:ruby_mulch",
+    "inspirations:yellow_mulch"
+  ]
+}
