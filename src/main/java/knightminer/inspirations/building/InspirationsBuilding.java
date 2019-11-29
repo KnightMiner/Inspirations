@@ -86,8 +86,6 @@ public class InspirationsBuilding extends PulseBase {
 	public static EnlightenedBushBlock redEnlightenedBush;
 	public static EnlightenedBushBlock greenEnlightenedBush;
 	public static EnlightenedBushBlock blueEnlightenedBush;
-	public static EnlightenedBushBlock rainbowEnlightenedBush;
-	public static EnlightenedBushBlock christmasEnlightenedBush;
 
 	// items
 	public static Item glassDoorItem;
@@ -114,9 +112,7 @@ public class InspirationsBuilding extends PulseBase {
 				whiteEnlightenedBush,
 				redEnlightenedBush,
 				greenEnlightenedBush,
-				blueEnlightenedBush,
-				rainbowEnlightenedBush,
-				christmasEnlightenedBush
+				blueEnlightenedBush
 		).build(null), "enlightened_bush");
 	}
 
@@ -184,8 +180,6 @@ public class InspirationsBuilding extends PulseBase {
 		redEnlightenedBush = registerBlock(r, new EnlightenedBushBlock(0xBF0000), "red_enlightened_bush");
 		greenEnlightenedBush = registerBlock(r, new EnlightenedBushBlock(0x267F00), "green_enlightened_bush");
 		blueEnlightenedBush = registerBlock(r, new EnlightenedBushBlock(0x001CBF), "blue_enlightened_bush");
-		rainbowEnlightenedBush = registerBlock(r, new EnlightenedBushBlock(-1), "rainbow_enlightened_bush");
-		christmasEnlightenedBush = registerBlock(r, new EnlightenedBushBlock(-1), "christmas_enlightened_bush");
 	}
 
 	@SubscribeEvent
@@ -240,8 +234,6 @@ public class InspirationsBuilding extends PulseBase {
 		registerBlockItem(r, new TextureBlockItem(redEnlightenedBush, deco_props, BlockTags.LEAVES));
 		registerBlockItem(r, new TextureBlockItem(greenEnlightenedBush, deco_props, BlockTags.LEAVES));
 		registerBlockItem(r, new TextureBlockItem(blueEnlightenedBush, deco_props, BlockTags.LEAVES));
-		registerBlockItem(r, new TextureBlockItem(rainbowEnlightenedBush, deco_props, BlockTags.LEAVES));
-		registerBlockItem(r, new TextureBlockItem(christmasEnlightenedBush, deco_props, BlockTags.LEAVES));
 
 		glassDoorItem = registerItem(r, new GlassDoorBlockItem(glassDoor, new Item.Properties().group(ItemGroup.REDSTONE)), "glass_door");
 		registerBlockItem(r, glassTrapdoor, ItemGroup.REDSTONE);

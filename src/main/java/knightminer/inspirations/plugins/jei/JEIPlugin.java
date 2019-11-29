@@ -45,8 +45,6 @@ public class JEIPlugin implements IModPlugin {
 			registry.registerSubtypeInterpreter(InspirationsBuilding.redEnlightenedBush.asItem(), texture);
 			registry.registerSubtypeInterpreter(InspirationsBuilding.greenEnlightenedBush.asItem(), texture);
 			registry.registerSubtypeInterpreter(InspirationsBuilding.blueEnlightenedBush.asItem(), texture);
-			registry.registerSubtypeInterpreter(InspirationsBuilding.rainbowEnlightenedBush.asItem(), texture);
-			registry.registerSubtypeInterpreter(InspirationsBuilding.christmasEnlightenedBush.asItem(), texture);
 		}
 	}
 

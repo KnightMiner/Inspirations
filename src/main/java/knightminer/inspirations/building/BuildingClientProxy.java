@@ -111,11 +111,7 @@ public class BuildingClientProxy extends ClientProxy {
 				}
 			}
 			return FoliageColors.getDefault();
-		},
-			InspirationsBuilding.whiteEnlightenedBush,
-			InspirationsBuilding.rainbowEnlightenedBush,
-			InspirationsBuilding.christmasEnlightenedBush
-		);
+		}, InspirationsBuilding.whiteEnlightenedBush);
 	}
 
 	@SubscribeEvent
@@ -150,7 +146,7 @@ public class BuildingClientProxy extends ClientProxy {
 			itemColors.register((stack, tintIndex) -> tintIndex == 0 ? color : -1, bush);
 		}
 
-		// Then the other three which use the tint of the textured stack.
+		// The main one uses the tint of the textured stack
 		registerItemColors(itemColors, (stack, tintIndex) -> {
 			if(tintIndex != 0) {
 				return -1;
@@ -162,11 +158,7 @@ public class BuildingClientProxy extends ClientProxy {
 			} else {
 				return FoliageColors.getDefault();
 			}
-		},
-			InspirationsBuilding.whiteEnlightenedBush,
-			InspirationsBuilding.rainbowEnlightenedBush,
-			InspirationsBuilding.christmasEnlightenedBush
-		);
+		}, InspirationsBuilding.whiteEnlightenedBush);
 
 		// We can't get the world position of the item, so use the default tint.
 		registerItemColors(itemColors, (stack, tintIndex) -> FoliageColors.getDefault(), InspirationsBuilding.vine);
@@ -186,8 +178,6 @@ public class BuildingClientProxy extends ClientProxy {
 		replaceBothTexturedModels(event, InspirationsBuilding.redEnlightenedBush.getRegistryName(), "leaves");
 		replaceBothTexturedModels(event, InspirationsBuilding.blueEnlightenedBush.getRegistryName(), "leaves");
 		replaceBothTexturedModels(event, InspirationsBuilding.greenEnlightenedBush.getRegistryName(), "leaves");
-		replaceBothTexturedModels(event, InspirationsBuilding.rainbowEnlightenedBush.getRegistryName(), "leaves");
-		replaceBothTexturedModels(event, InspirationsBuilding.christmasEnlightenedBush.getRegistryName(), "leaves");
 	}
 
 	private static void replaceBookshelfModel(ModelBakeEvent event, BookshelfBlock shelf) {
