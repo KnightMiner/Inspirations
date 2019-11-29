@@ -1,14 +1,12 @@
 package knightminer.inspirations.building.tileentity;
 
 import knightminer.inspirations.building.InspirationsBuilding;
-import knightminer.inspirations.building.block.BookshelfBlock;
 import knightminer.inspirations.building.inventory.BookshelfContainer;
 import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.common.network.InventorySlotSyncPacket;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.client.ClientUtil;
 import knightminer.inspirations.library.util.TextureBlockUtil;
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -61,12 +59,9 @@ public class BookshelfTileEntity extends InventoryTileEntity {
 				ModelDataManager.requestModelDataRefresh(this);
 			}
 
-			// if we have redstone books and either the old stack or the new one is a book, update
-			if(InspirationsBuilding.redstoneBook != null
-					&& (oldStack.getItem() == InspirationsBuilding.redstoneBook ^ itemstack.getItem() == InspirationsBuilding.redstoneBook)) {
-				BlockState state = world.getBlockState(pos);
-				world.notifyNeighbors(pos, state.getBlock());
-				world.notifyNeighbors(pos.offset(state.get(BookshelfBlock.FACING).getOpposite()), state.getBlock());
+			// if we have redstone books and either the old stack xor the new one is a book, update
+			if(oldStack.getItem() == InspirationsBuilding.redstoneBook ^ itemstack.getItem() == InspirationsBuilding.redstoneBook) {
+				world.updateComparatorOutputLevel(pos, this.getBlockState().getBlock());
 			}
 		}
 
@@ -118,10 +113,7 @@ public class BookshelfTileEntity extends InventoryTileEntity {
 	 * Extra logic
 	 */
 
-	public int getPower() {
-		if(InspirationsBuilding.redstoneBook == null) {
-			return 0;
-		}
+	public int getComparatorPower() {
 		for(int i = 0; i < 14; i++) {
 			if(getStackInSlot(i).getItem() == InspirationsBuilding.redstoneBook) {
 				// we do plus two so a book in slot 13 (last one) gives 15

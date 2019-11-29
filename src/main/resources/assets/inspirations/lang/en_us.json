@@ -78,6 +78,7 @@
     "block.inspirations.redstone_barrel": "Redstone Barrel",
 
     "item.inspirations.redstone_book": "Trapped Book",
+    "item.inspirations.redstone_book.tooltip": "Place on a bookshelf to change the comparator output",
 
     "inspirations.lock.success": "Container locked",
     "inspirations.lock.fail.locked": "This container is already locked",

@@ -1,7 +1,6 @@
 package knightminer.inspirations.building.block;
 
 import com.google.common.collect.ImmutableMap;
-import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.building.tileentity.BookshelfTileEntity;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.IHidable;
@@ -246,17 +245,12 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
 	}
 
 	/*
-	 * Redstone
+	 * Comparators
 	 */
 
 	@Override
 	public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
 		if(state.getBlock() != newState.getBlock()) {
-			// if powered, send updates for power
-			if(getPower(world, pos) > 0) {
-				world.notifyNeighborsOfStateChange(pos, this);
-				world.notifyNeighborsOfStateChange(pos.offset(state.get(FACING).getOpposite()), this);
-			}
 			TileEntity tileentity = world.getTileEntity(pos);
 			if(tileentity instanceof IInventory) {
 				InventoryHelper.dropInventoryItems(world, pos, (IInventory) tileentity);
@@ -265,40 +259,18 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
 		super.onReplaced(state, world, pos, newState, isMoving);
 	}
 
-	@Deprecated
 	@Override
-	public int getWeakPower(BlockState state, IBlockReader blockAccess, BlockPos pos, Direction side) {
-		return getPower(blockAccess, pos);
+	public boolean hasComparatorInputOverride(BlockState p_149740_1_) {
+		return true;
 	}
 
-	@Deprecated
 	@Override
-	public int getStrongPower(BlockState state, IBlockReader blockAccess, BlockPos pos, Direction side) {
-		if(state.get(FACING) != side) {
-			return 0;
-		}
-
-		return getPower(blockAccess, pos);
-
-	}
-
-	private int getPower(IBlockReader blockAccess, BlockPos pos) {
-		if(InspirationsBuilding.redstoneBook == null) {
-			return 0;
-		}
-
-		TileEntity te = blockAccess.getTileEntity(pos);
-		if(te instanceof BookshelfTileEntity) {
-			return ((BookshelfTileEntity) te).getPower();
+	public int getComparatorInputOverride(BlockState state, World world, BlockPos pos) {
+		TileEntity te = world.getTileEntity(pos);
+		if (te instanceof BookshelfTileEntity) {
+			return ((BookshelfTileEntity)te).getComparatorPower();
 		}
 		return 0;
-	}
-
-	@Deprecated
-	@Override
-	public boolean canProvidePower(BlockState state) {
-		// ensure we have the redstone book, since it comes from the redstone module
-		return InspirationsBuilding.redstoneBook != null;
 	}
 
 
