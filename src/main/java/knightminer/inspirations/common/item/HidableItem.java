@@ -1,11 +1,10 @@
 package knightminer.inspirations.common.item;
 
 import knightminer.inspirations.common.IHidable;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
-import net.minecraftforge.common.ForgeConfigSpec;
+import slimeknights.mantle.item.TooltipItem;
 
 import javax.annotation.Nonnull;
 import java.util.function.Supplier;
@@ -13,7 +12,7 @@ import java.util.function.Supplier;
 /**
  * Item which is hidden if the config value is disabled.
  */
-public class HidableItem extends Item implements IHidable {
+public class HidableItem extends TooltipItem implements IHidable {
     private final Supplier<Boolean> enabled;
 
     public HidableItem(Properties properties, Supplier<Boolean> isEnabled) {

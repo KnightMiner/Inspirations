@@ -180,7 +180,7 @@
     "item.inspirations.charged_arrow": "Charged Arrow",
 
     "item.inspirations.lock": "Blank Lock",
-    "item.inspirations.lock.tooltip": "Used to lock containers\\nMust first be named in an anvil",
+    "item.inspirations.lock.tooltip": "Used to lock containers\nMust first be named in an anvil",
     "item.inspirations.key": "Blank Key",
     "item.inspirations.key.tooltip": "Used to remove matching locks",
 
