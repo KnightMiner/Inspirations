@@ -58,19 +58,16 @@ public class InspirationsBuilding extends PulseBase {
 	public static RopeBlock rope;
 	public static RopeBlock vine;
 	public static RopeBlock chain;
+	public static Block ironBars;
 
 	public static Block glassDoor;
 	public static Block glassTrapdoor;
 
 	public static Block plainMulch;
 	public static Block brownMulch;
-	public static Block yellowMulch;
-	public static Block amberMulch;
-	public static Block rubyMulch;
 	public static Block redMulch;
 	public static Block blackMulch;
 	public static Block blueMulch;
-	public static Block ironBars;
 
 	public static PathBlock path_rock;
 	public static PathBlock path_round;
@@ -159,9 +156,6 @@ public class InspirationsBuilding extends PulseBase {
 
 		plainMulch  = registerBlock(r, new MulchBlock(MaterialColor.LIGHT_GRAY), "plain_mulch");
 		brownMulch  = registerBlock(r, new MulchBlock(MaterialColor.DIRT), "brown_mulch");
-		yellowMulch = registerBlock(r, new MulchBlock(MaterialColor.YELLOW), "yellow_mulch");
-		amberMulch  = registerBlock(r, new MulchBlock(MaterialColor.OBSIDIAN), "amber_mulch");
-		rubyMulch   = registerBlock(r, new MulchBlock(MaterialColor.RED), "ruby_mulch");
 		redMulch    = registerBlock(r, new MulchBlock(MaterialColor.NETHERRACK), "red_mulch");
 		blackMulch  = registerBlock(r, new MulchBlock(MaterialColor.GRAY), "black_mulch");
 		blueMulch   = registerBlock(r, new MulchBlock(MaterialColor.BLUE), "blue_mulch");
@@ -213,9 +207,6 @@ public class InspirationsBuilding extends PulseBase {
 
 		registerBlockItem(r, plainMulch, ItemGroup.BUILDING_BLOCKS);
 		registerBlockItem(r, brownMulch, ItemGroup.BUILDING_BLOCKS);
-		registerBlockItem(r, yellowMulch, ItemGroup.BUILDING_BLOCKS);
-		registerBlockItem(r, amberMulch, ItemGroup.BUILDING_BLOCKS);
-		registerBlockItem(r, rubyMulch, ItemGroup.BUILDING_BLOCKS);
 		registerBlockItem(r, redMulch, ItemGroup.BUILDING_BLOCKS);
 		registerBlockItem(r, blackMulch, ItemGroup.BUILDING_BLOCKS);
 		registerBlockItem(r, blueMulch, ItemGroup.BUILDING_BLOCKS);
