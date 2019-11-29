@@ -185,8 +185,17 @@ public final class TextureBlockUtil {
 	 * @param stack  Input stack
 	 * @return  The block determining the blocks texture, or AIR if none
 	 */
+	public static String getTextureBlockName(ItemStack stack) {
+		return TagUtil.getTagSafe(stack).getString(TextureBlockUtil.TAG_TEXTURE);
+	}
+
+	/**
+	 * Gets the itemstack that determines the block's texture from the stack.
+	 * @param stack  Input stack
+	 * @return  The block determining the blocks texture, or AIR if none
+	 */
 	public static Block getTextureBlock(ItemStack stack) {
-		String texture = TagUtil.getTagSafe(stack).getString(TextureBlockUtil.TAG_TEXTURE);
+		String texture = getTextureBlockName(stack);
 		if (texture.isEmpty()) {
 			return Blocks.AIR;
 		}
