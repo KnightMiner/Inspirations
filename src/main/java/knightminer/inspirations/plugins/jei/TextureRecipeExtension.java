@@ -16,7 +16,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
@@ -43,11 +42,11 @@ public class TextureRecipeExtension implements ICraftingCategoryExtension, ICust
 
 		// gets the outputs of this recipe
 		ItemStack output = this.recipe.getRecipeOutput();
-		// fetch all stacks from the ingredient
+		// fetch all stacks from the ingredient, note any variants that are not blocks will get a blank shelf
 		List<ItemStack> displayVariants = Arrays.stream(recipe.texture.getMatchingStacks())
-		                                        .filter((s) -> s.getItem() instanceof BlockItem)
-		                                        .map((s) -> TextureBlockUtil.setStackTexture(output.copy(), ((BlockItem)s.getItem()).getBlock()))
+		                                        .map((s) -> TextureBlockUtil.setStackTexture(output.copy(), Block.getBlockFromItem(s.getItem())))
 		                                        .collect(Collectors.toList());
+		// all variants needs blank specifically added so recipe lookup works right
 		ImmutableList.Builder<ItemStack> builder = new ImmutableList.Builder<>();
 		builder.addAll(displayVariants);
 		builder.add(output);

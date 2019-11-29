@@ -4,6 +4,7 @@ import knightminer.inspirations.library.util.TextureBlockUtil;
 import net.minecraft.block.Block;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tags.Tag;
@@ -17,9 +18,9 @@ import java.util.List;
 
 public class TextureBlockItem extends HidableBlockItem {
 
-	private final Tag<Block> texTag;
+	private final Tag<Item> texTag;
 
-	public TextureBlockItem(Block block, BlockItem.Properties props, Tag<Block> texTag) {
+	public TextureBlockItem(Block block, BlockItem.Properties props, Tag<Item> texTag) {
 		super(block, props);
 		this.texTag = texTag;
 	}

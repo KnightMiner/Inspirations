@@ -29,7 +29,7 @@ import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.Items;
-import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
@@ -195,10 +195,10 @@ public class InspirationsBuilding extends PulseBase {
 		// itemblocks
 		Item.Properties deco_props = new Item.Properties().group(ItemGroup.DECORATIONS);
 
-		registerBlockItem(r, new TextureBlockItem(shelf_normal, deco_props, BlockTags.WOODEN_SLABS));
-		registerBlockItem(r, new TextureBlockItem(shelf_ancient, deco_props, BlockTags.WOODEN_SLABS));
-		registerBlockItem(r, new TextureBlockItem(shelf_rainbow, deco_props, BlockTags.WOODEN_SLABS));
-		registerBlockItem(r, new TextureBlockItem(shelf_tomes, deco_props, BlockTags.WOODEN_SLABS));
+		registerBlockItem(r, new TextureBlockItem(shelf_normal, deco_props, ItemTags.WOODEN_SLABS));
+		registerBlockItem(r, new TextureBlockItem(shelf_ancient, deco_props, ItemTags.WOODEN_SLABS));
+		registerBlockItem(r, new TextureBlockItem(shelf_rainbow, deco_props, ItemTags.WOODEN_SLABS));
+		registerBlockItem(r, new TextureBlockItem(shelf_tomes, deco_props, ItemTags.WOODEN_SLABS));
 
 		registerBlockItem(r, rope, ItemGroup.DECORATIONS);
 		registerBlockItem(r, vine, ItemGroup.DECORATIONS);
@@ -221,10 +221,10 @@ public class InspirationsBuilding extends PulseBase {
 		registerBlockItem(r, flower_paeonia, ItemGroup.DECORATIONS);
 		registerBlockItem(r, flower_rose, ItemGroup.DECORATIONS);
 
-		registerBlockItem(r, new TextureBlockItem(whiteEnlightenedBush, deco_props, BlockTags.LEAVES));
-		registerBlockItem(r, new TextureBlockItem(redEnlightenedBush, deco_props, BlockTags.LEAVES));
-		registerBlockItem(r, new TextureBlockItem(greenEnlightenedBush, deco_props, BlockTags.LEAVES));
-		registerBlockItem(r, new TextureBlockItem(blueEnlightenedBush, deco_props, BlockTags.LEAVES));
+		registerBlockItem(r, new TextureBlockItem(whiteEnlightenedBush, deco_props, ItemTags.LEAVES));
+		registerBlockItem(r, new TextureBlockItem(redEnlightenedBush, deco_props, ItemTags.LEAVES));
+		registerBlockItem(r, new TextureBlockItem(greenEnlightenedBush, deco_props, ItemTags.LEAVES));
+		registerBlockItem(r, new TextureBlockItem(blueEnlightenedBush, deco_props, ItemTags.LEAVES));
 
 		glassDoorItem = registerItem(r, new GlassDoorBlockItem(glassDoor, new Item.Properties().group(ItemGroup.REDSTONE)), "glass_door");
 		registerBlockItem(r, glassTrapdoor, ItemGroup.REDSTONE);

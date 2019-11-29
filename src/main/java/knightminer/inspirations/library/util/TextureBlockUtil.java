@@ -5,6 +5,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tags.Tag;
@@ -158,9 +160,15 @@ public final class TextureBlockUtil {
 	/**
 	 * Adds all blocks from the block tag to the specified block for fillItemGroup
 	 */
-	public static void addBlocksFromTag(Block block, Tag<Block> tag, NonNullList<ItemStack> list) {
+	public static void addBlocksFromTag(Block block, Tag<Item> tag, NonNullList<ItemStack> list) {
 		boolean added = false;
-		for(Block textureBlock : tag.getAllElements()) {
+		// using item tags as that is what will be present in the recipe
+		for(Item candidate : tag.getAllElements()) {
+			// non-block items don't have the textures we need
+			if (!(candidate instanceof BlockItem)) {
+				continue;
+			}
+			Block textureBlock = ((BlockItem)candidate).getBlock();
 			// Don't add instances of the block itself, see enlightened bushes
 			if (block.getClass().isInstance(textureBlock)) {
 				continue;
