@@ -4,6 +4,7 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.CarpetBlock;
 import net.minecraft.block.StairsBlock;
 import net.minecraft.entity.LivingEntity;
@@ -39,6 +40,9 @@ public class FlatCarpetBlock extends CarpetBlock {
 	@Nonnull
 	@Override
 	public BlockState updatePostPlacement(BlockState state, Direction facing, BlockState facingState, IWorld world, BlockPos pos, BlockPos facingPos) {
+		if (!state.isValidPosition(world, pos)) {
+			return Blocks.AIR.getDefaultState();
+		}
 		int shape = getStairShape(world.getBlockState(pos.down()));
 
 		if (shape != SHAPE_FLAT) {
