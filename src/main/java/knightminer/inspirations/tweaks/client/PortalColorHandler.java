@@ -7,6 +7,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.IBeaconBeamColorProvider;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.chunk.ChunkRenderCache;
 import net.minecraft.client.renderer.color.IBlockColor;
 import net.minecraft.util.math.BlockPos;
@@ -40,6 +41,15 @@ public class PortalColorHandler implements IBlockColor {
     // Get the real world, not the fake one so we can look at the blocks far enough below us.
     if (world instanceof ChunkRenderCache) {
       world = ((ChunkRenderCache) world).world;
+    }
+
+    // if we are at the top of the chunk, notify the portal above that it needs to update
+    if (pos.getY() % 16 == 15) {
+      BlockPos above = pos.up();
+      if (world.getBlockState(above).getBlock() == Blocks.NETHER_PORTAL) {
+        Minecraft mc = Minecraft.getInstance();
+        mc.deferTask(() -> mc.worldRenderer.notifyBlockUpdate(null, above, null, null, 8));
+      }
     }
 
     // iterate down until the first non-portal block
