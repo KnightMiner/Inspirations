@@ -69,23 +69,31 @@ public final class ClientUtil {
 		}
 		float r = 0, g = 0, b = 0, count = 0;
 		float[] hsb = new float[3];
-		for (int x = 0; x < sprite.getWidth(); x++) {
-			for (int y = 0; y < sprite.getHeight(); y++) {
-				int argb = sprite.getPixelRGBA(0, x, y);
-				// integer is in format of 0xAABBGGRR
-				int cr = argb & 0xFF;
-				int cg = argb >> 8 & 0xFF;
-				int cb = argb >> 16 & 0xFF;
-				int ca = argb >> 24 & 0xFF;
-				if (ca > 0x7F && NumberUtils.max(cr, cg, cb) > 0x1F) {
-					Color.RGBtoHSB(ca, cr, cg, hsb);
-					float weight = hsb[1];
-					r += cr * weight;
-					g += cg * weight;
-					b += cb * weight;
-					count += weight;
+		try {
+			for(int x = 0; x < sprite.getWidth(); x++) {
+				for(int y = 0; y < sprite.getHeight(); y++) {
+					// TODO: apparently want a try/catch here, just return 0x00000000 if it fails I guess
+					int argb = sprite.getPixelRGBA(0, x, y);
+					// integer is in format of 0xAABBGGRR
+					int cr = argb & 0xFF;
+					int cg = argb >> 8 & 0xFF;
+					int cb = argb >> 16 & 0xFF;
+					int ca = argb >> 24 & 0xFF;
+					if(ca > 0x7F && NumberUtils.max(cr, cg, cb) > 0x1F) {
+						Color.RGBtoHSB(ca, cr, cg, hsb);
+						float weight = hsb[1];
+						r += cr * weight;
+						g += cg * weight;
+						b += cb * weight;
+						count += weight;
+					}
 				}
 			}
+		} catch (NullPointerException e) {
+			// there is a random bug where models do not properly load, leading to a null frame data
+			// so just catch that and treat it as another error state
+			InspirationsRegistry.log.error("Caught exception reading sprite for " + key.getRegistryName(), e);
+			return -1;
 		}
 		if (count > 0) {
 			r /= count;

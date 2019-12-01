@@ -1,5 +1,6 @@
 package knightminer.inspirations.common;
 
+import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.shared.client.TextureModel;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.color.BlockColors;
@@ -58,14 +59,18 @@ public class ClientProxy {
 	}
 
 	protected static void replaceModel(ModelBakeEvent event, ModelResourceLocation location, BiFunction<IBakedModel, IUnbakedModel, TextureModel> modelMaker) {
-		// model to be retextured
-		IUnbakedModel model = ModelLoaderRegistry.getModelOrLogError(location, "Error loading model for " + location);
-		// model for rendering properties
-		IBakedModel standard = event.getModelRegistry().get(location);
-		// model to replace standard
-		TextureModel finalModel = modelMaker.apply(standard, model);
-		finalModel.fetchChildren(event.getModelLoader());
-		event.getModelRegistry().put(location, finalModel);
+		try {
+			// model to be retextured
+			IUnbakedModel model = ModelLoaderRegistry.getModel(location);
+			// model for rendering properties
+			IBakedModel standard = event.getModelRegistry().get(location);
+			// model to replace standard
+			TextureModel finalModel = modelMaker.apply(standard, model);
+			finalModel.fetchChildren(event.getModelLoader());
+			event.getModelRegistry().put(location, finalModel);
+		} catch(Exception e) {
+			Inspirations.log.error("Caught exception trying to replace model for " + location, e);
+		}
 	}
 
 	protected static void replaceTexturedModel(ModelBakeEvent event, ModelResourceLocation location, String key, boolean item) {
