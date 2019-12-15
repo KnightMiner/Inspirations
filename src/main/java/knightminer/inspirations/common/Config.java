@@ -648,8 +648,12 @@ public class Config {
 	 * @return Config version
 	 */
 	private static double getConfigVersion() {
+		String version = configFile.getLoadedConfigVersion();
+		if(version == null) {
+			return Double.NaN;
+		}
 		try {
-			return Double.parseDouble(configFile.getLoadedConfigVersion());
+			return Double.parseDouble(version);
 		} catch (NumberFormatException e) {
 			return Double.NaN;
 		}
