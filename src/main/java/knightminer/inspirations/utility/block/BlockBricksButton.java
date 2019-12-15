@@ -1,12 +1,6 @@
 package knightminer.inspirations.utility.block;
 
-import java.util.Locale;
-import java.util.Random;
-
-import javax.annotation.Nullable;
-
 import com.google.common.collect.ImmutableMap;
-
 import knightminer.inspirations.library.Util;
 import net.minecraft.block.BlockButton;
 import net.minecraft.block.BlockHorizontal;
@@ -33,6 +27,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import slimeknights.mantle.block.EnumBlock;
+
+import javax.annotation.Nullable;
+import java.util.Locale;
+import java.util.Random;
 
 public class BlockBricksButton extends EnumBlock<BlockBricksButton.BrickType> {
 
@@ -61,9 +59,6 @@ public class BlockBricksButton extends EnumBlock<BlockBricksButton.BrickType> {
 		return new BlockStateContainer(this, TYPE, FACING, POWERED);
 	}
 
-	/**
-	 * Convert the given metadata into a BlockState for this Block
-	 */
 	@Override
 	public IBlockState getStateFromMeta(int meta) {
 		return this.getDefaultState()
@@ -72,9 +67,6 @@ public class BlockBricksButton extends EnumBlock<BlockBricksButton.BrickType> {
 				.withProperty(POWERED, (meta & 8) > 0);
 	}
 
-	/**
-	 * Convert the BlockState into the correct metadata value
-	 */
 	@Override
 	public int getMetaFromState(IBlockState state) {
 		return state.getValue(TYPE).getMeta()
@@ -82,28 +74,19 @@ public class BlockBricksButton extends EnumBlock<BlockBricksButton.BrickType> {
 				| (state.getValue(POWERED) ? 8 : 0);
 	}
 
-	/**
-	 * Called by ItemBlocks just before a block is actually set in the world, to allow for adjustments to the
-	 * IBlockstate
-	 */
+	@Deprecated
 	@Override
 	public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
 		return this.getStateFromMeta(meta).withProperty(FACING, placer.getHorizontalFacing().getOpposite());
 	}
 
-	/**
-	 * Returns the blockstate with the given rotation from the passed blockstate. If inapplicable, returns the passed
-	 * blockstate.
-	 */
+	@Deprecated
 	@Override
 	public IBlockState withRotation(IBlockState state, Rotation rot) {
 		return state.withProperty(FACING, rot.rotate(state.getValue(FACING)));
 	}
 
-	/**
-	 * Returns the blockstate with the given mirror of the passed blockstate. If inapplicable, returns the passed
-	 * blockstate.
-	 */
+	@Deprecated
 	@Override
 	public IBlockState withMirror(IBlockState state, Mirror mirrorIn) {
 		return state.withRotation(mirrorIn.toRotation(state.getValue(FACING)));
@@ -121,17 +104,11 @@ public class BlockBricksButton extends EnumBlock<BlockBricksButton.BrickType> {
 
 	/* Pressing the button */
 
-	/**
-	 * How many world ticks before ticking
-	 */
 	@Override
 	public int tickRate(World worldIn) {
 		return 20;
 	}
 
-	/**
-	 * Called when the block is right clicked by a player.
-	 */
 	@Override
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		// if you did not click the secret button, no button for you
@@ -152,9 +129,6 @@ public class BlockBricksButton extends EnumBlock<BlockBricksButton.BrickType> {
 		return true;
 	}
 
-	/**
-	 * Called randomly when setTickRandomly is set to true (used by e.g. crops to grow, etc.)
-	 */
 	@Override
 	public void randomTick(World worldIn, BlockPos pos, IBlockState state, Random random) {}
 
@@ -201,9 +175,6 @@ public class BlockBricksButton extends EnumBlock<BlockBricksButton.BrickType> {
 
 	/* Redstone logic */
 
-	/**
-	 * Called serverside after this block is replaced with another in Chunk, but before the Tile Entity is updated
-	 */
 	@Override
 	public void breakBlock(World world, BlockPos pos, IBlockState state) {
 		if (state.getValue(POWERED)) {
@@ -213,20 +184,20 @@ public class BlockBricksButton extends EnumBlock<BlockBricksButton.BrickType> {
 		super.breakBlock(world, pos, state);
 	}
 
+	@Deprecated
 	@Override
 	public int getWeakPower(IBlockState state, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
 		return state.getValue(POWERED) ? 15 : 0;
 	}
 
+	@Deprecated
 	@Override
 	public int getStrongPower(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
 		// we may be a button, but we act as though ourself is the block that is powered
 		return 0;
 	}
 
-	/**
-	 * Can this block provide power. Only wire currently seems to have this change based on its state.
-	 */
+	@Deprecated
 	@Override
 	public boolean canProvidePower(IBlockState state) {
 		return true;
@@ -236,7 +207,6 @@ public class BlockBricksButton extends EnumBlock<BlockBricksButton.BrickType> {
 	public boolean canConnectRedstone(IBlockState state, IBlockAccess world, BlockPos pos, @Nullable EnumFacing side) {
 		return false;
 	}
-
 
 	public enum BrickType implements IStringSerializable, EnumBlock.IEnumMeta {
 		BRICKS,
@@ -264,5 +234,4 @@ public class BlockBricksButton extends EnumBlock<BlockBricksButton.BrickType> {
 			return values()[i];
 		}
 	}
-
 }

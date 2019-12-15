@@ -1,7 +1,5 @@
 package knightminer.inspirations.utility.block;
 
-import java.util.Random;
-
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.utility.tileentity.TileCollector;
 import net.minecraft.block.Block;
@@ -26,6 +24,8 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import slimeknights.mantle.block.BlockInventory;
 
+import java.util.Random;
+
 public class BlockCollector extends BlockInventory {
 
 	public static final PropertyDirection FACING = BlockDirectional.FACING;
@@ -48,6 +48,7 @@ public class BlockCollector extends BlockInventory {
 		return new BlockStateContainer(this, FACING, TRIGGERED);
 	}
 
+	@Deprecated
 	@Override
 	public IBlockState getStateFromMeta(int meta) {
 		return this.getDefaultState()
@@ -65,16 +66,19 @@ public class BlockCollector extends BlockInventory {
 		return meta;
 	}
 
+	@Deprecated
 	@Override
 	public IBlockState withRotation(IBlockState state, Rotation rot) {
 		return state.withProperty(FACING, rot.rotate(state.getValue(FACING)));
 	}
 
+	@Deprecated
 	@Override
 	public IBlockState withMirror(IBlockState state, Mirror mirror) {
 		return state.withRotation(mirror.toRotation(state.getValue(FACING)));
 	}
 
+	@Deprecated
 	@Override
 	public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
 		// place opposite since its more useful to face into what you clicked
@@ -107,6 +111,7 @@ public class BlockCollector extends BlockInventory {
 
 	/* Comparator logic */
 
+	@Deprecated
 	@Override
 	public int getComparatorInputOverride(IBlockState blockState, World world, BlockPos pos) {
 		TileEntity te = world.getTileEntity(pos);
@@ -119,6 +124,7 @@ public class BlockCollector extends BlockInventory {
 		return 0;
 	}
 
+	@Deprecated
 	@Override
 	public boolean hasComparatorInputOverride(IBlockState state) {
 		return true;
@@ -127,6 +133,7 @@ public class BlockCollector extends BlockInventory {
 
 	/* Collecting logic */
 
+	@Deprecated
 	@Override
 	public void neighborChanged(IBlockState state, World world, BlockPos pos, Block blockIn, BlockPos fromPos) {
 		boolean powered = world.isBlockPowered(pos) || world.isBlockPowered(pos.up());

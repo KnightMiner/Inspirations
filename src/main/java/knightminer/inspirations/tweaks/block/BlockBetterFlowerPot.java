@@ -139,11 +139,13 @@ public class BlockBetterFlowerPot extends BlockFlowerPot {
 	 * Comparator
 	 */
 
+	@Deprecated
 	@Override
 	public boolean hasComparatorInputOverride(IBlockState state) {
 		return Config.flowerPotComparator;
 	}
 
+	@Deprecated
 	@Override
 	public int getComparatorInputOverride(IBlockState blockState, World world, BlockPos pos) {
 		if(!Config.flowerPotComparator) {

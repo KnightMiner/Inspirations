@@ -1,10 +1,10 @@
 package knightminer.inspirations.building.block;
 
-import java.util.Random;
-
 import net.minecraft.block.BlockTrapDoor;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
+
+import java.util.Random;
 
 public class BlockGlassTrapdoor extends BlockTrapDoor {
 
@@ -23,6 +23,7 @@ public class BlockGlassTrapdoor extends BlockTrapDoor {
 		return 0;
 	}
 
+	@Deprecated
 	@Override
 	protected boolean canSilkHarvest() {
 		return true;

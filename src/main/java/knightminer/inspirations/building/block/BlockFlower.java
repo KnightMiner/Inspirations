@@ -1,11 +1,5 @@
 package knightminer.inspirations.building.block;
 
-import java.util.Locale;
-import java.util.Random;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBush;
 import net.minecraft.block.BlockDoublePlant.EnumPlantType;
@@ -24,6 +18,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Locale;
+import java.util.Random;
+
 public class BlockFlower extends BlockBush implements IGrowable {
 	public static final PropertyEnum<FlowerType> TYPE = PropertyEnum.create("type", FlowerType.class);
 
@@ -41,6 +40,7 @@ public class BlockFlower extends BlockBush implements IGrowable {
 		return new BlockStateContainer(this, TYPE);
 	}
 
+	@Deprecated
 	@Override
 	public IBlockState getStateFromMeta(int meta) {
 		return this.getDefaultState().withProperty(TYPE, FlowerType.fromMeta(meta));
@@ -51,10 +51,6 @@ public class BlockFlower extends BlockBush implements IGrowable {
 		return state.getValue(TYPE).getMeta();
 	}
 
-	/**
-	 * Gets the metadata of the item this Block can drop. This method is called when the block gets destroyed. It
-	 * returns the metadata of the dropped item based on the old metadata of the block.
-	 */
 	@Override
 	public int damageDropped(IBlockState state) {
 		return state.getValue(TYPE).getMeta();

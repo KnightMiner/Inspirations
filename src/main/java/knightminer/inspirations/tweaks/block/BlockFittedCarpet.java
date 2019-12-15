@@ -48,10 +48,7 @@ public class BlockFittedCarpet extends BlockCarpet {
 		return new BlockStateContainer(this, COLOR, NORTHWEST, NORTHEAST, SOUTHWEST, SOUTHEAST);
 	}
 
-	/**
-	 * Get the actual Block state of this Block at the given position. This applies properties not visible in the
-	 * metadata, such as fence connections.
-	 */
+	@Deprecated
 	@Override
 	public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
 		return setProperties(state, getStairShape(world, pos.down()));

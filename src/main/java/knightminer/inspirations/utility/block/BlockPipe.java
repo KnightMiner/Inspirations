@@ -73,6 +73,7 @@ public class BlockPipe extends BlockInventory {
 		return new BlockStateContainer(this, FACING, NORTH, EAST, SOUTH, WEST, UP, DOWN, HOPPER);
 	}
 
+	@Deprecated
 	@Override
 	public IBlockState getStateFromMeta(int meta) {
 		return this.getDefaultState().withProperty(FACING, EnumFacing.getFront(meta & 7));
@@ -83,11 +84,13 @@ public class BlockPipe extends BlockInventory {
 		return state.getValue(FACING).getIndex();
 	}
 
+	@Deprecated
 	@Override
 	public IBlockState withRotation(IBlockState state, Rotation rot) {
 		return state.withProperty(FACING, rot.rotate(state.getValue(FACING)));
 	}
 
+	@Deprecated
 	@Override
 	public IBlockState withMirror(IBlockState state, Mirror mirror) {
 		return state.withRotation(mirror.toRotation(state.getValue(FACING)));
@@ -121,6 +124,7 @@ public class BlockPipe extends BlockInventory {
 
 	/* Model and shape */
 
+	@Deprecated
 	@Override
 	public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
 		EnumFacing facing = state.getValue(FACING);
@@ -161,11 +165,13 @@ public class BlockPipe extends BlockInventory {
 		return true;
 	}
 
+	@Deprecated
 	@Override
 	public boolean isFullCube(IBlockState state) {
 		return false;
 	}
 
+	@Deprecated
 	@Override
 	public boolean isOpaqueCube(IBlockState state) {
 		return false;
@@ -183,6 +189,7 @@ public class BlockPipe extends BlockInventory {
 		}
 	}
 
+	@Deprecated
 	@Nonnull
 	@Override
 	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
@@ -221,6 +228,7 @@ public class BlockPipe extends BlockInventory {
 			BOUNDS_DOWN, BOUNDS_UP, BOUNDS_NORTH, BOUNDS_SOUTH, BOUNDS_WEST, BOUNDS_EAST
 	};
 
+	@Deprecated
 	@Override
 	public void addCollisionBoxToList(IBlockState state, World world, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entity, boolean p_185477_7_) {
 		state = state.getActualState(world, pos);

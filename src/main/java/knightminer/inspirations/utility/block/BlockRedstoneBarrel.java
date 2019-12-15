@@ -1,7 +1,5 @@
 package knightminer.inspirations.utility.block;
 
-import javax.annotation.Nonnull;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -21,6 +19,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.items.ItemHandlerHelper;
+
+import javax.annotation.Nonnull;
 
 public class BlockRedstoneBarrel extends Block {
 
@@ -43,14 +43,12 @@ public class BlockRedstoneBarrel extends Block {
 		return new BlockStateContainer(this, LEVEL);
 	}
 
+	@Deprecated
 	@Override
 	public IBlockState getStateFromMeta(int meta) {
 		return this.getDefaultState().withProperty(LEVEL, meta);
 	}
 
-	/**
-	 * Convert the BlockState into the correct metadata value
-	 */
 	@Override
 	public int getMetaFromState(IBlockState state) {
 		return state.getValue(LEVEL);
@@ -68,20 +66,20 @@ public class BlockRedstoneBarrel extends Block {
 		}
 	}
 
+	@Deprecated
 	@Nonnull
 	@Override
 	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
 		return BOUNDS;
 	}
 
-	/**
-	 * Used to determine ambient occlusion and culling when rebuilding chunks for render
-	 */
+	@Deprecated
 	@Override
 	public boolean isOpaqueCube(IBlockState state) {
 		return false;
 	}
 
+	@Deprecated
 	@Override
 	public boolean isFullCube(IBlockState state) {
 		return false;
@@ -89,19 +87,18 @@ public class BlockRedstoneBarrel extends Block {
 
 
 	/* Redstone */
+	@Deprecated
 	@Override
 	public boolean hasComparatorInputOverride(IBlockState state) {
 		return true;
 	}
 
+	@Deprecated
 	@Override
 	public int getComparatorInputOverride(IBlockState blockState, World worldIn, BlockPos pos) {
 		return blockState.getValue(LEVEL);
 	}
 
-	/**
-	 * Called when the block is right clicked by a player.
-	 */
 	@Override
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		int level = state.getValue(LEVEL);
@@ -132,6 +129,13 @@ public class BlockRedstoneBarrel extends Block {
 		return false;
 	}
 
+	/**
+	 * Sets the level of the redstone barrel
+	 * @param world  World setting
+	 * @param pos    Position to set the barre;
+	 * @param state  Original redstone barrel state
+	 * @param level  New level to set
+	 */
 	public void setLevel(World world, BlockPos pos, IBlockState state, int level) {
 		world.setBlockState(pos, state.withProperty(LEVEL, Integer.valueOf(MathHelper.clamp(level, 0, 15))), 2);
 		world.updateComparatorOutputLevel(pos, this);

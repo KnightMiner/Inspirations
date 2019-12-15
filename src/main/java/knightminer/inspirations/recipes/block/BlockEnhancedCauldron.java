@@ -151,6 +151,7 @@ public class BlockEnhancedCauldron extends BlockCauldron implements ITileEntityP
 		return new ExtendedBlockState(this, new IProperty[]{LEVEL, CONTENTS, BOILING}, new IUnlistedProperty[]{TEXTURE});
 	}
 
+	@Deprecated
 	@Override
 	public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
 		TileEntity te = world.getTileEntity(pos);
@@ -180,6 +181,7 @@ public class BlockEnhancedCauldron extends BlockCauldron implements ITileEntityP
 
 
 	/* boiling */
+	@Deprecated
 	@Override
 	public void neighborChanged(IBlockState state, World world, BlockPos pos, Block blockIn, BlockPos fromPos) {
 		setBoiling(world, pos, state);

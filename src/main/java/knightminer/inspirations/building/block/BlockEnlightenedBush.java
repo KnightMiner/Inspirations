@@ -1,9 +1,5 @@
 package knightminer.inspirations.building.block;
 
-import java.util.Locale;
-
-import javax.annotation.Nonnull;
-
 import knightminer.inspirations.building.tileentity.TileEnlightenedBush;
 import knightminer.inspirations.library.client.ClientUtil;
 import knightminer.inspirations.library.util.TextureBlockUtil;
@@ -31,6 +27,9 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import slimeknights.mantle.block.EnumBlock;
 import slimeknights.mantle.property.PropertyString;
+
+import javax.annotation.Nonnull;
+import java.util.Locale;
 
 public class BlockEnlightenedBush extends EnumBlock<BlockEnlightenedBush.LightsType> implements ITileEntityProvider {
 
@@ -68,11 +67,13 @@ public class BlockEnlightenedBush extends EnumBlock<BlockEnlightenedBush.LightsT
 	/*
 	 * Properties
 	 */
+	@Deprecated
 	@Override
 	public boolean isOpaqueCube(IBlockState state) {
 		return false;
 	}
 
+	@Deprecated
 	@Override
 	public boolean causesSuffocation(IBlockState state) {
 		return false;

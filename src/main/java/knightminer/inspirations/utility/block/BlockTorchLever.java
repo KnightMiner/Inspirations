@@ -1,7 +1,5 @@
 package knightminer.inspirations.utility.block;
 
-import java.util.Random;
-
 import net.minecraft.block.BlockLever;
 import net.minecraft.block.BlockTorch;
 import net.minecraft.block.properties.IProperty;
@@ -21,6 +19,8 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.util.Random;
 
 public class BlockTorchLever extends BlockTorch {
 
@@ -78,9 +78,6 @@ public class BlockTorchLever extends BlockTorch {
 	 * Powering
 	 */
 
-	/**
-	 * Called when the block is right clicked by a player.
-	 */
 	@Override
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing sideHit, float hitX, float hitY, float hitZ) {
 		if (world.isRemote) {
@@ -105,10 +102,6 @@ public class BlockTorchLever extends BlockTorch {
 		return true;
 	}
 
-
-	/**
-	 * Called serverside after this block is replaced with another in Chunk, but before the Tile Entity is updated
-	 */
 	@Override
 	public void breakBlock(World world, BlockPos pos, IBlockState state) {
 		// if powered, send updates for power
@@ -120,11 +113,13 @@ public class BlockTorchLever extends BlockTorch {
 		super.breakBlock(world, pos, state);
 	}
 
+	@Deprecated
 	@Override
 	public int getWeakPower(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
 		return blockState.getValue(POWERED) ? 15 : 0;
 	}
 
+	@Deprecated
 	@Override
 	public int getStrongPower(IBlockState state, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
 		if (!state.getValue(POWERED)) {
@@ -133,9 +128,7 @@ public class BlockTorchLever extends BlockTorch {
 		return state.getValue(FACING) == side ? 15 : 0;
 	}
 
-	/**
-	 * Can this block provide power. Only wire currently seems to have this change based on its state.
-	 */
+	@Deprecated
 	@Override
 	public boolean canProvidePower(IBlockState state) {
 		return true;
@@ -146,9 +139,6 @@ public class BlockTorchLever extends BlockTorch {
 	 * Metadata
 	 */
 
-	/**
-	 * Convert the given metadata into a BlockState for this Block
-	 */
 	@Override
 	public IBlockState getStateFromMeta(int meta) {
 		EnumFacing facing = EnumFacing.getHorizontal(meta & 3);
@@ -160,9 +150,6 @@ public class BlockTorchLever extends BlockTorch {
 		return state.withProperty(FACING, facing);
 	}
 
-	/**
-	 * Convert the BlockState into the correct metadata value
-	 */
 	@Override
 	public int getMetaFromState(IBlockState state) {
 		int i = 0;

@@ -1,7 +1,5 @@
 package knightminer.inspirations.building.block;
 
-import java.util.Locale;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyEnum;
@@ -15,6 +13,8 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import slimeknights.mantle.block.EnumBlock;
 import slimeknights.mantle.client.CreativeTab;
+
+import java.util.Locale;
 
 public class BlockPath extends EnumBlock<BlockPath.PathType> {
 
@@ -31,33 +31,26 @@ public class BlockPath extends EnumBlock<BlockPath.PathType> {
 	/* Block Shape */
 
 	protected static final AxisAlignedBB BOUNDS = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.0625D, 1.0D);
+
+	@Deprecated
 	@Override
 	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
 		return BOUNDS;
 	}
 
-	/**
-	 * Used to determine ambient occlusion and culling when rebuilding chunks for render
-	 */
+	@Deprecated
 	@Override
 	public boolean isOpaqueCube(IBlockState state) {
 		return false;
 	}
 
+	@Deprecated
 	@Override
 	public boolean isFullCube(IBlockState state) {
 		return false;
 	}
 
-	/**
-	 * Get the geometry of the queried face at the given position and state. This is used to decide whether things like
-	 * buttons are allowed to be placed on the face, or how glass panes connect to the face, among other things.
-	 * <p>
-	 * Common values are {@code SOLID}, which is the default, and {@code UNDEFINED}, which represents something that
-	 * does not fit the other descriptions and will generally cause other things not to connect to the face.
-	 *
-	 * @return an approximation of the form of the given face
-	 */
+	@Deprecated
 	@Override
 	public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
 		return face == EnumFacing.DOWN ? BlockFaceShape.SOLID : BlockFaceShape.UNDEFINED;
@@ -66,9 +59,6 @@ public class BlockPath extends EnumBlock<BlockPath.PathType> {
 
 	/* Solid surface below */
 
-	/**
-	 * Checks if this block can be placed exactly at the given position.
-	 */
 	@Override
 	public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
 		return super.canPlaceBlockAt(worldIn, pos) && this.canBlockStay(worldIn, pos);
@@ -79,11 +69,7 @@ public class BlockPath extends EnumBlock<BlockPath.PathType> {
 		return world.getBlockState(down).getBlockFaceShape(world, down, EnumFacing.UP) == BlockFaceShape.SOLID;
 	}
 
-	/**
-	 * Called when a neighboring block was changed and marks that this state should perform any checks during a neighbor
-	 * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
-	 * block, etc.
-	 */
+	@Deprecated
 	@Override
 	public void neighborChanged(IBlockState state, World world, BlockPos pos, Block blockIn, BlockPos fromPos) {
 		if (!this.canBlockStay(world, pos)) {

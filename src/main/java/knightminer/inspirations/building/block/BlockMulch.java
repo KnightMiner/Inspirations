@@ -1,7 +1,5 @@
 package knightminer.inspirations.building.block;
 
-import java.util.Locale;
-
 import net.minecraft.block.BlockFalling;
 import net.minecraft.block.BlockSapling;
 import net.minecraft.block.SoundType;
@@ -21,6 +19,8 @@ import net.minecraftforge.common.EnumPlantType;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.Locale;
+
 public class BlockMulch extends BlockFalling {
 
 	protected static final AxisAlignedBB BOUNDS = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.9375D, 1.0D);
@@ -36,6 +36,7 @@ public class BlockMulch extends BlockFalling {
 		this.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
 	}
 
+
 	/*
 	 * Types
 	 */
@@ -45,18 +46,13 @@ public class BlockMulch extends BlockFalling {
 		return new BlockStateContainer(this, COLOR);
 	}
 
-	/**
-	 * Convert the given metadata into a BlockState for this Block
-	 */
+	@Deprecated
 	@Override
 	public IBlockState getStateFromMeta(int meta) {
 		return this.getDefaultState()
 				.withProperty(COLOR, MulchColor.fromMeta(meta));
 	}
 
-	/**
-	 * Convert the BlockState into the correct metadata value
-	 */
 	@Override
 	public int getMetaFromState(IBlockState state) {
 		return state.getValue(COLOR).getMeta();
@@ -86,7 +82,6 @@ public class BlockMulch extends BlockFalling {
 		// this is mostly cop out since I have no way of stopping sapling growth
 		return plantable.getPlantType(world, pos.offset(direction)) == EnumPlantType.Plains && !(plantable instanceof BlockSapling);
 	}
-
 
 	public static enum MulchColor implements IStringSerializable {
 		PLAIN,

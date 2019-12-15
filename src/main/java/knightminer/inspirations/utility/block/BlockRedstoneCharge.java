@@ -1,10 +1,5 @@
 package knightminer.inspirations.utility.block;
 
-import java.util.Random;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.material.Material;
@@ -24,6 +19,10 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Random;
 
 public class BlockRedstoneCharge extends Block {
 
@@ -45,9 +44,7 @@ public class BlockRedstoneCharge extends Block {
 		return new BlockStateContainer(this, FACING, QUICK);
 	}
 
-	/**
-	 * Convert the given metadata into a BlockState for this Block
-	 */
+	@Deprecated
 	@Override
 	public IBlockState getStateFromMeta(int meta) {
 		return this.getDefaultState()
@@ -55,9 +52,6 @@ public class BlockRedstoneCharge extends Block {
 				.withProperty(FACING, EnumFacing.getFront(meta & 7));
 	}
 
-	/**
-	 * Convert the BlockState into the correct metadata value
-	 */
 	@Override
 	public int getMetaFromState(IBlockState state) {
 		return state.getValue(FACING).getIndex() | (state.getValue(QUICK) ? 8 : 0);
@@ -65,17 +59,12 @@ public class BlockRedstoneCharge extends Block {
 
 
 	/* Fading */
-	/**
-	 * How many world ticks before ticking
-	 */
+
 	@Override
 	public int tickRate(World world) {
 		return 20;
 	}
 
-	/**
-	 * Called after the block is set in the Chunk data, but before the Tile Entity is set
-	 */
 	@Override
 	public void onBlockAdded(World world, BlockPos pos, IBlockState state) {
 		if (!world.isRemote) {
@@ -84,9 +73,6 @@ public class BlockRedstoneCharge extends Block {
 		}
 	}
 
-	/**
-	 * Called serverside after this block is replaced with another in Chunk, but before the Tile Entity is updated
-	 */
 	@Override
 	public void breakBlock(World world, BlockPos pos, IBlockState state) {
 		world.notifyNeighborsOfStateChange(pos, this, false);
@@ -95,9 +81,6 @@ public class BlockRedstoneCharge extends Block {
 		super.breakBlock(world, pos, state);
 	}
 
-	/**
-	 * Called randomly when setTickRandomly is set to true (used by e.g. crops to grow, etc.)
-	 */
 	@Override
 	public void randomTick(World worldIn, BlockPos pos, IBlockState state, Random random) {}
 
@@ -112,16 +95,19 @@ public class BlockRedstoneCharge extends Block {
 
 	/* Powering */
 
+	@Deprecated
 	@Override
 	public int getWeakPower(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
 		return 15;
 	}
 
+	@Deprecated
 	@Override
 	public int getStrongPower(IBlockState state, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
 		return state.getValue(FACING).getOpposite() == side ? 15 : 0;
 	}
 
+	@Deprecated
 	@Override
 	public boolean canProvidePower(IBlockState state) {
 		return true;
@@ -136,6 +122,8 @@ public class BlockRedstoneCharge extends Block {
 	/* Bounds */
 
 	protected static final AxisAlignedBB BOUNDS = new AxisAlignedBB(0.375, 0.375, 0.375, 0.625, 0.625, 0.625);
+
+	@Deprecated
 	@Nonnull
 	@Override
 	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
@@ -152,9 +140,6 @@ public class BlockRedstoneCharge extends Block {
 
 	/* Properties */
 
-	/**
-	 * Checks if this block can be placed exactly at the given position.
-	 */
 	@Override
 	public boolean canPlaceBlockAt(World world, BlockPos pos) {
 		return super.canPlaceBlockAt(world, pos) && !world.getBlockState(pos).getMaterial().isLiquid();
@@ -167,11 +152,13 @@ public class BlockRedstoneCharge extends Block {
 		return BlockFaceShape.UNDEFINED;
 	}
 
+	@Deprecated
 	@Override
 	public boolean isFullCube(IBlockState state) {
 		return false;
 	}
 
+	@Deprecated
 	@Override
 	public boolean isOpaqueCube(IBlockState state) {
 		return false;
@@ -194,6 +181,7 @@ public class BlockRedstoneCharge extends Block {
 		}
 	}
 
+	@Deprecated
 	@Nonnull
 	@Override
 	public EnumBlockRenderType getRenderType(IBlockState state) {

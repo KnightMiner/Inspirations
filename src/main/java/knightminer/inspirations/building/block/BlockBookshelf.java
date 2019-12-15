@@ -70,9 +70,7 @@ public class BlockBookshelf extends BlockInventory implements ITileEntityProvide
 		return new ExtendedBlockState(this, new IProperty<?>[]{TYPE, FACING}, new IUnlistedProperty[]{TEXTURE, BOOKS});
 	}
 
-	/**
-	 * Convert the given metadata into a BlockState for this Block
-	 */
+	@Deprecated
 	@Override
 	public IBlockState getStateFromMeta(int meta) {
 		return this.getDefaultState()
@@ -80,19 +78,13 @@ public class BlockBookshelf extends BlockInventory implements ITileEntityProvide
 				.withProperty(FACING, EnumFacing.getHorizontal(meta >> 2));
 	}
 
-	/**
-	 * Convert the BlockState into the correct metadata value
-	 */
 	@Override
 	public int getMetaFromState(IBlockState state) {
 		return state.getValue(FACING).getHorizontalIndex() << 2
 				| state.getValue(TYPE).getMeta();
 	}
 
-	/**
-	 * Called by ItemBlocks just before a block is actually set in the world, to allow for adjustments to the
-	 * IBlockstate
-	 */
+	@Deprecated
 	@Override
 	public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
 		return this.getStateFromMeta(meta).withProperty(FACING, placer.getHorizontalFacing().getOpposite());
@@ -153,6 +145,14 @@ public class BlockBookshelf extends BlockInventory implements ITileEntityProvide
 		return true;
 	}
 
+	/**
+	 * Called when the shelf is clicked to determine the clicked book
+	 * @param facing  Side clicked
+	 * @param clickX  Click X coordinate, block reletive
+	 * @param clickY  Click Y coordinate, block relative
+	 * @param clickZ  Click Z coordinate, block relative
+	 * @return Clicked book index
+	 */
 	private static int bookClicked(EnumFacing facing, float clickX, float clickY, float clickZ) {
 		// if we did not click between the shelves, ignore
 		if(clickY < 0.0625 || clickY > 0.9375) {
@@ -225,6 +225,7 @@ public class BlockBookshelf extends BlockInventory implements ITileEntityProvide
 		TRACE_BOUNDS = builder.build();
 	}
 
+	@Deprecated
 	@Nonnull
 	@Override
 	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
@@ -242,13 +243,11 @@ public class BlockBookshelf extends BlockInventory implements ITileEntityProvide
 		return Util.closestResult(list, end);
 	}
 
+
 	/*
 	 * Redstone
 	 */
 
-	/**
-	 * Called serverside after this block is replaced with another in Chunk, but before the Tile Entity is updated
-	 */
 	@Override
 	public void breakBlock(World world, BlockPos pos, IBlockState state) {
 		// if powered, send updates for power
@@ -260,11 +259,13 @@ public class BlockBookshelf extends BlockInventory implements ITileEntityProvide
 		super.breakBlock(world, pos, state);
 	}
 
+	@Deprecated
 	@Override
 	public int getWeakPower(IBlockState state, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
 		return getPower(state, blockAccess, pos);
 	}
 
+	@Deprecated
 	@Override
 	public int getStrongPower(IBlockState state, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
 		if (state.getValue(FACING) != side) {
@@ -275,6 +276,13 @@ public class BlockBookshelf extends BlockInventory implements ITileEntityProvide
 
 	}
 
+	/**
+	 * Gets the powered state of the block
+	 * @param state        Existing state
+	 * @param blockAccess  World access
+	 * @param pos          Position to check
+	 * @return Power level between 0 and 15
+	 */
 	private int getPower(IBlockState state, IBlockAccess blockAccess, BlockPos pos) {
 		if(InspirationsBuilding.redstoneBook == null) {
 			return 0;
@@ -287,9 +295,7 @@ public class BlockBookshelf extends BlockInventory implements ITileEntityProvide
 		return 0;
 	}
 
-	/**
-	 * Can this block provide power. Only wire currently seems to have this change based on its state.
-	 */
+	@Deprecated
 	@Override
 	public boolean canProvidePower(IBlockState state) {
 		// ensure we have the redstone book, since it comes from the redstone module
@@ -300,6 +306,7 @@ public class BlockBookshelf extends BlockInventory implements ITileEntityProvide
 	/*
 	 * Block properties
 	 */
+
 	@Override
 	@SideOnly(Side.CLIENT)
 	public BlockRenderLayer getBlockLayer() {
@@ -319,28 +326,32 @@ public class BlockBookshelf extends BlockInventory implements ITileEntityProvide
 		return super.getExtendedState(state, world, pos);
 	}
 
-	@Override
 	@Deprecated
+	@Override
 	public BlockFaceShape getBlockFaceShape(IBlockAccess world, IBlockState state, BlockPos pos, EnumFacing side) {
 		// allows placing stuff on the back
 		return side == state.getValue(FACING).getOpposite() ? BlockFaceShape.SOLID : BlockFaceShape.UNDEFINED;
 	}
 
+	@Deprecated
 	@Override
 	public boolean isFullCube(IBlockState state) {
 		return false;
 	}
 
+	@Deprecated
 	@Override
 	public boolean isOpaqueCube(IBlockState state) {
 		return false;
 	}
 
+	@Deprecated
 	@Override
 	public IBlockState withRotation(IBlockState state, Rotation rot) {
 		return state.withProperty(FACING, rot.rotate(state.getValue(FACING)));
 	}
 
+	@Deprecated
 	@Override
 	public IBlockState withMirror(IBlockState state, Mirror mirror) {
 		return state.withRotation(mirror.toRotation(state.getValue(FACING)));

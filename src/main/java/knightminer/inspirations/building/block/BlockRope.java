@@ -59,12 +59,21 @@ public class BlockRope extends EnumBlock<BlockRope.RopeType> {
 		return new BlockStateContainer(this, TYPE, RUNGS, BOTTOM);
 	}
 
+	@Deprecated
 	@Override
 	public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
 		BlockPos down = pos.down();
 		return state.withProperty(BOTTOM, !canConnectTo(world.getBlockState(down), world, down, EnumFacing.UP));
 	}
 
+	/**
+	 * Returns true if the block can connect to the given state
+	 * @param state  State to check
+	 * @param world  World access
+	 * @param pos    Block position
+	 * @param side   Side to connect
+	 * @return  True if it can connect
+	 */
 	private boolean canConnectTo(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing side) {
 		if(state.getBlock() == this) {
 			return true;
@@ -260,18 +269,20 @@ public class BlockRope extends EnumBlock<BlockRope.RopeType> {
 		return true;
 	}
 
+	@Deprecated
 	@Override
 	public boolean isFullCube(IBlockState state) {
 		return false;
 	}
 
+	@Deprecated
 	@Override
 	public boolean isOpaqueCube(IBlockState state) {
 		return false;
 	}
 
-	@Override
 	@Deprecated
+	@Override
 	public BlockFaceShape getBlockFaceShape(IBlockAccess world, IBlockState state, BlockPos pos, EnumFacing side) {
 		return BlockFaceShape.UNDEFINED;
 	}
@@ -297,6 +308,7 @@ public class BlockRope extends EnumBlock<BlockRope.RopeType> {
 			new AxisAlignedBB(0.375,  0.25, 0.0625, 0.625,  1, 0.9375)
 	};
 
+	@Deprecated
 	@Nonnull
 	@Override
 	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
