@@ -43,7 +43,7 @@ public class ClientProxy {
 	protected static void registerItemColors(ItemColors itemColors, IItemColor handler, Block ... blocks) {
 		for(Block block : blocks) {
 			if(block != null) {
-				Item item = Item.getItemFromBlock(block);
+				Item item = block.asItem();
 				if(item != Items.AIR) {
 					itemColors.register(handler, item);
 				}

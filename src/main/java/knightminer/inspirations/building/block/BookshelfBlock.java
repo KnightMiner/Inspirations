@@ -259,11 +259,13 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
 		super.onReplaced(state, world, pos, newState, isMoving);
 	}
 
+	@Deprecated
 	@Override
 	public boolean hasComparatorInputOverride(BlockState p_149740_1_) {
 		return true;
 	}
 
+	@Deprecated
 	@Override
 	public int getComparatorInputOverride(BlockState state, World world, BlockPos pos) {
 		TileEntity te = world.getTileEntity(pos);
