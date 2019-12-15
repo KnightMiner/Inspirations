@@ -1,6 +1,7 @@
 package knightminer.inspirations.tools;
 
 import knightminer.inspirations.common.Config;
+import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.tools.item.WaypointCompassItem;
@@ -14,11 +15,13 @@ import net.minecraft.enchantment.ThornsEnchantment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.ShearsItem;
+import net.minecraft.network.play.server.SEntityVelocityPacket;
 import net.minecraft.tileentity.LockableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
@@ -284,6 +287,9 @@ public class ToolsEvents {
 			if (knockback > 0) {
 				if (attacker instanceof LivingEntity) {
 					((LivingEntity)attacker).knockBack(target, knockback * 0.5F, MathHelper.sin(target.rotationYaw * 0.017453292F), -MathHelper.cos(target.rotationYaw * 0.017453292F));
+					if (attacker instanceof ServerPlayerEntity) {
+						InspirationsNetwork.sendPacket(attacker, new SEntityVelocityPacket(attacker));
+					}
 				} else {
 					attacker.addVelocity(-MathHelper.sin(target.rotationYaw * 0.017453292F) * knockback * 0.5f, 0.1D, MathHelper.cos(target.rotationYaw * 0.017453292F) * knockback * 0.5f);
 				}
