@@ -12,9 +12,13 @@ assignees: ''
 <!--Describe the feature you would like in detail-->
 
 
-**Why should this feature be added?*
+**Why should this feature be added?**
 <!-- Describe why you want this feature and why it fits in Inspirations.-->
 
+
+**Versions:**
+* Minecraft: 1.14.4
+* Inspirations: 
 
 **Attachments**
 <!--Add any screenshots relevant to your issue-->
