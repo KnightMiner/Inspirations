@@ -11,6 +11,7 @@ import knightminer.inspirations.building.block.MulchBlock;
 import knightminer.inspirations.building.block.PathBlock;
 import knightminer.inspirations.building.block.RopeBlock;
 import knightminer.inspirations.building.inventory.BookshelfContainer;
+import knightminer.inspirations.building.item.BookshelfItem;
 import knightminer.inspirations.building.item.GlassDoorBlockItem;
 import knightminer.inspirations.building.tileentity.BookshelfTileEntity;
 import knightminer.inspirations.building.tileentity.EnlightenedBushTileEntity;
@@ -193,12 +194,10 @@ public class InspirationsBuilding extends PulseBase {
 		), "redstone_book");
 
 		// itemblocks
-		Item.Properties deco_props = new Item.Properties().group(ItemGroup.DECORATIONS);
-
-		registerBlockItem(r, new TextureBlockItem(shelf_normal, deco_props, ItemTags.WOODEN_SLABS));
-		registerBlockItem(r, new TextureBlockItem(shelf_ancient, deco_props, ItemTags.WOODEN_SLABS));
-		registerBlockItem(r, new TextureBlockItem(shelf_rainbow, deco_props, ItemTags.WOODEN_SLABS));
-		registerBlockItem(r, new TextureBlockItem(shelf_tomes, deco_props, ItemTags.WOODEN_SLABS));
+		registerBlockItem(r, new BookshelfItem(shelf_normal));
+		registerBlockItem(r, new BookshelfItem(shelf_ancient));
+		registerBlockItem(r, new BookshelfItem(shelf_rainbow));
+		registerBlockItem(r, new BookshelfItem(shelf_tomes));
 
 		registerBlockItem(r, rope, ItemGroup.DECORATIONS);
 		registerBlockItem(r, vine, ItemGroup.DECORATIONS);
@@ -221,6 +220,7 @@ public class InspirationsBuilding extends PulseBase {
 		registerBlockItem(r, flower_paeonia, ItemGroup.DECORATIONS);
 		registerBlockItem(r, flower_rose, ItemGroup.DECORATIONS);
 
+		Item.Properties deco_props = new Item.Properties().group(ItemGroup.DECORATIONS);
 		registerBlockItem(r, new TextureBlockItem(whiteEnlightenedBush, deco_props, ItemTags.LEAVES));
 		registerBlockItem(r, new TextureBlockItem(redEnlightenedBush, deco_props, ItemTags.LEAVES));
 		registerBlockItem(r, new TextureBlockItem(greenEnlightenedBush, deco_props, ItemTags.LEAVES));
