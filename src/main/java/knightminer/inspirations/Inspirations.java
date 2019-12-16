@@ -17,13 +17,16 @@ import knightminer.inspirations.shared.InspirationsShared;
 import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import knightminer.inspirations.utility.InspirationsUtility;
+import net.minecraft.client.Minecraft;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.world.storage.loot.conditions.LootConditionManager;
 import net.minecraft.world.storage.loot.functions.LootFunctionManager;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
@@ -50,6 +53,12 @@ public class Inspirations {
 
 	// We can't read the config very early on.
 	public static boolean configLoaded = false;
+
+	/**
+	 * To avoid classloading, the function to call to update JEI for config changes.
+	 * If non-null, this will be {@link knightminer.inspirations.plugins.jei.JEIPlugin updateHiddenItems()}.
+	 */
+	public static Runnable updateJEI = null;
 
 	public Inspirations() {
 		pulseManager = new PulseManager(Config.pulseConfig);
@@ -95,6 +104,11 @@ public class Inspirations {
 				.collect(Collectors.toList())
 		);
 		InspirationsRegistry.setDefaultEnchantingPower(Config.defaultEnchantingPower.get().floatValue());
+
+		// If we have JEI, this will be set. It needs to run on the main thread...
+		if (updateJEI != null) {
+			DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> Minecraft.getInstance().deferTask(updateJEI));
+		}
 	}
 
 	@SubscribeEvent
