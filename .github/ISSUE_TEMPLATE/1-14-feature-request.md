@@ -1,6 +1,6 @@
 ---
 name: 1.14 Feature request
-about: Suggest a feature for 1.14 Inspirations
+about: Suggest a feature for 1.14 Inspirations. 1.12 Inspirations is no longer getting new features
 title: ''
 labels: 1.14, enhancement
 assignees: ''
