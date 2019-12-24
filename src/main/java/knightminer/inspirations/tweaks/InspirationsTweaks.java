@@ -3,13 +3,17 @@ package knightminer.inspirations.tweaks;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.common.item.HidableItem;
+import knightminer.inspirations.library.Util;
+import knightminer.inspirations.tweaks.block.DryHopperBlock;
 import knightminer.inspirations.tweaks.block.FittedCarpetBlock;
 import knightminer.inspirations.tweaks.block.FlatCarpetBlock;
+import knightminer.inspirations.tweaks.block.WetHopperBlock;
 import knightminer.inspirations.tweaks.recipe.NormalBrewingRecipe;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CropsBlock;
 import net.minecraft.block.DispenserBlock;
+import net.minecraft.block.HopperBlock;
 import net.minecraft.dispenser.DefaultDispenseItemBehavior;
 import net.minecraft.dispenser.IDispenseItemBehavior;
 import net.minecraft.item.BlockItem;
@@ -48,6 +52,8 @@ public class InspirationsTweaks extends PulseBase {
 	public static FlatCarpetBlock[] flatCarpets = new FlatCarpetBlock[16];
 	public static CropsBlock cactusCrop;
 	public static CropsBlock sugarCaneCrop;
+	public static HopperBlock wetHopper;
+	public static HopperBlock dryHopper;
 
 	// items
 	public static Item potatoSeeds;
@@ -79,6 +85,10 @@ public class InspirationsTweaks extends PulseBase {
 		registerCarpet(r, DyeColor.RED, Blocks.RED_CARPET);
 		registerCarpet(r, DyeColor.BLACK, Blocks.BLACK_CARPET);
 
+		if (Config.waterlogHopper.get()) {
+			dryHopper = register(r, new DryHopperBlock(Block.Properties.from(Blocks.HOPPER)), Blocks.HOPPER.getRegistryName());
+			wetHopper = register(r, new WetHopperBlock(Block.Properties.from(Blocks.HOPPER)), Util.getResource("wet_hopper"));
+		}
 
 		//cactusCrop = register(r, new CactusCropBlock(), "cactus_crop");
 		//sugarCaneCrop = register(r, new BlockSugarCaneCrop(), "sugar_cane_crop");
@@ -102,6 +112,10 @@ public class InspirationsTweaks extends PulseBase {
 			BlockItem item = register(r, new BlockItem(carpet, new Item.Properties().group(ItemGroup.DECORATIONS)), carpet.getRegistryName());
 			Item.BLOCK_TO_ITEM.put(carpet, item);
 			Item.BLOCK_TO_ITEM.put(fitCarpets[carpet.getColor().getId()], item);
+		}
+
+		if (Config.waterlogHopper.get()) {
+			register(r, new BlockItem(dryHopper, new Item.Properties().group(ItemGroup.REDSTONE)), Items.HOPPER.getRegistryName());
 		}
 
 		/*
