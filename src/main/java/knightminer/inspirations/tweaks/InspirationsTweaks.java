@@ -1,5 +1,6 @@
 package knightminer.inspirations.tweaks;
 
+import com.google.common.collect.ImmutableSet;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.common.item.HidableItem;
@@ -22,10 +23,12 @@ import net.minecraft.item.DyeColor;
 import net.minecraft.item.Food;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.item.Items;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.potion.Potions;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
@@ -142,6 +145,20 @@ public class InspirationsTweaks extends PulseBase {
 //				new Item.Properties().group(ItemGroup.BREWING),
 //				() -> false // TODO: Make this have a purpose...
 //		),  "silverfish_powder");
+	}
+
+	@SubscribeEvent
+	public void registerTileEntities(Register<TileEntityType<?>> event) {
+		if (Config.waterlogHopper.get()) {
+			// We need to inject our replacement hopper blocks into the valid ones for the TE type.
+			// It's an immutable set, so we need to replace it entirely.
+			// TODO: This isn't thread-safe with any other mods doing the same!
+			TileEntityType.HOPPER.validBlocks = new ImmutableSet.Builder<Block>()
+					.addAll(TileEntityType.HOPPER.validBlocks)
+					.add(dryHopper)
+					.add(wetHopper)
+					.build();
+		}
 	}
 
 	@SubscribeEvent
