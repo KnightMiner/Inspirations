@@ -8,11 +8,14 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.DropperBlock;
 import net.minecraft.block.HopperBlock;
+import net.minecraft.block.IWaterLoggable;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.fluid.Fluids;
+import net.minecraft.fluid.IFluidState;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.inventory.container.INamedContainerProvider;
@@ -44,7 +47,7 @@ import slimeknights.mantle.block.InventoryBlock;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class PipeBlock extends InventoryBlock implements IHidable {
+public class PipeBlock extends InventoryBlock implements IHidable, IWaterLoggable {
 	// Facing is the direction we output to.
 	public static final DirectionProperty FACING = BlockStateProperties.FACING;
 	// These six values specify if another pipe/hopper is in this direction for us
@@ -58,6 +61,8 @@ public class PipeBlock extends InventoryBlock implements IHidable {
 	// If this is set, there is a hopper on our output side which isn't facing towards us.
 	// We then render a longer pipe to connect with the spout model.
 	public static final BooleanProperty HOPPER = BooleanProperty.create("hopper");
+
+	public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
 	// Direction.getIndex() -> Property. Order is D-U-N-S-W-E
 	public static final BooleanProperty[] DIR_ENABLED = new BooleanProperty[] {
@@ -78,7 +83,9 @@ public class PipeBlock extends InventoryBlock implements IHidable {
 				.with(WEST, false)
 				.with(UP, false)
 				.with(DOWN, false)
-				.with(HOPPER, false));
+				.with(HOPPER, false)
+				.with(WATERLOGGED, false)
+		);
 	}
 
 	/* IHidable */
@@ -99,7 +106,7 @@ public class PipeBlock extends InventoryBlock implements IHidable {
 
 	@Override
 	protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-		builder.add(FACING, NORTH, EAST, SOUTH, WEST, UP, DOWN, HOPPER);
+		builder.add(WATERLOGGED, FACING, NORTH, EAST, SOUTH, WEST, UP, DOWN, HOPPER);
 	}
 
 	@Deprecated
@@ -153,12 +160,19 @@ public class PipeBlock extends InventoryBlock implements IHidable {
 		return this.getDefaultState()
 				.with(FACING, facing)
 				.with(HOPPER, offsetState.getBlock() instanceof HopperBlock && offsetState.get(HopperBlock.FACING) != facing.getOpposite())
+				.with(WATERLOGGED, context.getWorld().getFluidState(context.getPos()).getFluid() == Fluids.WATER)
 				.with(UP,    canConnectTo(world, pos, facing, Direction.UP))
 				.with(DOWN,  canConnectTo(world, pos, facing, Direction.DOWN))
 				.with(NORTH, canConnectTo(world, pos, facing, Direction.NORTH))
 				.with(EAST,  canConnectTo(world, pos, facing, Direction.EAST))
 				.with(SOUTH, canConnectTo(world, pos, facing, Direction.SOUTH))
 				.with(WEST,  canConnectTo(world, pos, facing, Direction.WEST));
+	}
+
+	@Override
+	@Nonnull
+	public IFluidState getFluidState(BlockState state) {
+		return state.get(WATERLOGGED) ? Fluids.WATER.getStillFluidState(false) : super.getFluidState(state);
 	}
 
 	@Override
