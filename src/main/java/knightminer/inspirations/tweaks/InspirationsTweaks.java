@@ -62,23 +62,24 @@ public class InspirationsTweaks extends PulseBase {
 	public void registerBlocks(Register<Block> event) {
 		IForgeRegistry<Block> r = event.getRegistry();
 
-		registerCarpet(r, DyeColor.WHITE, Blocks.WHITE_CARPET);
-		registerCarpet(r, DyeColor.ORANGE, Blocks.ORANGE_CARPET);
-		registerCarpet(r, DyeColor.MAGENTA, Blocks.MAGENTA_CARPET);
-		registerCarpet(r, DyeColor.LIGHT_BLUE, Blocks.LIGHT_BLUE_CARPET);
-		registerCarpet(r, DyeColor.YELLOW, Blocks.YELLOW_CARPET);
-		registerCarpet(r, DyeColor.LIME, Blocks.LIME_CARPET);
-		registerCarpet(r, DyeColor.PINK, Blocks.PINK_CARPET);
-		registerCarpet(r, DyeColor.GRAY, Blocks.GRAY_CARPET);
-		registerCarpet(r, DyeColor.LIGHT_GRAY, Blocks.LIGHT_GRAY_CARPET);
-		registerCarpet(r, DyeColor.CYAN, Blocks.CYAN_CARPET);
-		registerCarpet(r, DyeColor.PURPLE, Blocks.PURPLE_CARPET);
-		registerCarpet(r, DyeColor.BLUE, Blocks.BLUE_CARPET);
-		registerCarpet(r, DyeColor.BROWN, Blocks.BROWN_CARPET);
-		registerCarpet(r, DyeColor.GREEN, Blocks.GREEN_CARPET);
-		registerCarpet(r, DyeColor.RED, Blocks.RED_CARPET);
-		registerCarpet(r, DyeColor.BLACK, Blocks.BLACK_CARPET);
-
+		if (Config.enableFittedCarpets.get()) {
+			registerCarpet(r, DyeColor.WHITE, Blocks.WHITE_CARPET);
+			registerCarpet(r, DyeColor.ORANGE, Blocks.ORANGE_CARPET);
+			registerCarpet(r, DyeColor.MAGENTA, Blocks.MAGENTA_CARPET);
+			registerCarpet(r, DyeColor.LIGHT_BLUE, Blocks.LIGHT_BLUE_CARPET);
+			registerCarpet(r, DyeColor.YELLOW, Blocks.YELLOW_CARPET);
+			registerCarpet(r, DyeColor.LIME, Blocks.LIME_CARPET);
+			registerCarpet(r, DyeColor.PINK, Blocks.PINK_CARPET);
+			registerCarpet(r, DyeColor.GRAY, Blocks.GRAY_CARPET);
+			registerCarpet(r, DyeColor.LIGHT_GRAY, Blocks.LIGHT_GRAY_CARPET);
+			registerCarpet(r, DyeColor.CYAN, Blocks.CYAN_CARPET);
+			registerCarpet(r, DyeColor.PURPLE, Blocks.PURPLE_CARPET);
+			registerCarpet(r, DyeColor.BLUE, Blocks.BLUE_CARPET);
+			registerCarpet(r, DyeColor.BROWN, Blocks.BROWN_CARPET);
+			registerCarpet(r, DyeColor.GREEN, Blocks.GREEN_CARPET);
+			registerCarpet(r, DyeColor.RED, Blocks.RED_CARPET);
+			registerCarpet(r, DyeColor.BLACK, Blocks.BLACK_CARPET);
+		}
 
 		//cactusCrop = register(r, new CactusCropBlock(), "cactus_crop");
 		//sugarCaneCrop = register(r, new BlockSugarCaneCrop(), "sugar_cane_crop");
@@ -98,10 +99,12 @@ public class InspirationsTweaks extends PulseBase {
 	public void registerItem(Register<Item> event) {
 		IForgeRegistry<Item> r = event.getRegistry();
 
-		for (FlatCarpetBlock carpet : flatCarpets) {
-			BlockItem item = register(r, new BlockItem(carpet, new Item.Properties().group(ItemGroup.DECORATIONS)), carpet.getRegistryName());
-			Item.BLOCK_TO_ITEM.put(carpet, item);
-			Item.BLOCK_TO_ITEM.put(fitCarpets[carpet.getColor().getId()], item);
+		if (Config.enableFittedCarpets.get()) {
+			for(FlatCarpetBlock carpet : flatCarpets) {
+				BlockItem item = register(r, new BlockItem(carpet, new Item.Properties().group(ItemGroup.DECORATIONS)), carpet.getRegistryName());
+				Item.BLOCK_TO_ITEM.put(carpet, item);
+				Item.BLOCK_TO_ITEM.put(fitCarpets[carpet.getColor().getId()], item);
+			}
 		}
 
 		/*
@@ -154,7 +157,7 @@ public class InspirationsTweaks extends PulseBase {
 	}
 
 	@SubscribeEvent
-	public static void loadLoad(LootTableLoadEvent event) {
+	public static void loadLoot(LootTableLoadEvent event) {
 		addToVanillaLoot(event, "entities/cave_spider");
 		addToVanillaLoot(event, "entities/skeleton");
 	}
