@@ -5,11 +5,13 @@ import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.common.item.HidableItem;
 import knightminer.inspirations.tweaks.block.FittedCarpetBlock;
 import knightminer.inspirations.tweaks.block.FlatCarpetBlock;
+import knightminer.inspirations.tweaks.datagen.TweaksRecipeProvider;
 import knightminer.inspirations.tweaks.recipe.NormalBrewingRecipe;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CropsBlock;
 import net.minecraft.block.DispenserBlock;
+import net.minecraft.data.DataGenerator;
 import net.minecraft.dispenser.DefaultDispenseItemBehavior;
 import net.minecraft.dispenser.IDispenseItemBehavior;
 import net.minecraft.item.BlockItem;
@@ -34,6 +36,7 @@ import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.pulsar.pulse.Pulse;
 
@@ -155,6 +158,15 @@ public class InspirationsTweaks extends PulseBase {
 
 		MinecraftForge.EVENT_BUS.register(TweaksEvents.class);
 	}
+
+	@SubscribeEvent
+	public void gatherData(GatherDataEvent event) {
+		DataGenerator gen = event.getGenerator();
+		if (event.includeServer()) {
+			gen.addProvider(new TweaksRecipeProvider(gen));
+		}
+	}
+
 
 	@SubscribeEvent
 	public static void loadLoot(LootTableLoadEvent event) {
