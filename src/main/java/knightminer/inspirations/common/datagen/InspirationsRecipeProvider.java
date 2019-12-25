@@ -95,6 +95,7 @@ public class InspirationsRecipeProvider extends RecipeProvider implements ICondi
 
 		buildingRope();
 		buildingPath();
+		buildingBookshelf();
 	private void buildingRope() {
 		CondRecipe.shaped(InspirationsBuilding.rope, 3)
 				.addCondition(BUILDING)
@@ -163,4 +164,68 @@ public class InspirationsRecipeProvider extends RecipeProvider implements ICondi
 				.build(consumer);
 	}
 
+
+	private void buildingBookshelf() {
+		String group = Util.resource("bookshelf");
+
+		CondRecipe.shaped(InspirationsBuilding.shelf_normal, 2)
+				.textureSource(ItemTags.WOODEN_SLABS)
+				.addCondition(BUILDING)
+				.addCondition(ConfigEnabledCondition.BOOKSHELF)
+				.setGroup(group)
+				.addCriterion("has_slabs", hasItem(ItemTags.WOODEN_SLABS))
+				.addCriterion("has_book", hasItem(Items.BOOK))
+				.key('S', ItemTags.WOODEN_SLABS)
+				.patternLine("SSS")
+				.patternLine(" S ")
+				.patternLine("SSS")
+				.build(consumer);
+
+		CondRecipe.shaped(InspirationsBuilding.shelf_ancient, 2)
+				.textureSource(ItemTags.WOODEN_SLABS)
+				.addCondition(BUILDING)
+				.addCondition(ConfigEnabledCondition.BOOKSHELF)
+				.setGroup(group)
+				.addCriterion("has_slabs", hasItem(ItemTags.WOODEN_SLABS))
+				.addCriterion("has_book", hasItem(Items.BOOK))
+				.key('S', ItemTags.WOODEN_SLABS)
+				.key('P', Items.PAPER)
+				.patternLine("SSS")
+				.patternLine("PPP")
+				.patternLine("SSS")
+				.build(consumer);
+
+		CondRecipe.shaped(InspirationsBuilding.shelf_tomes, 2)
+				.textureSource(ItemTags.WOODEN_SLABS)
+				.addCondition(BUILDING)
+				.addCondition(ConfigEnabledCondition.BOOKSHELF)
+				.setGroup(group)
+				.addCriterion("has_slabs", hasItem(ItemTags.WOODEN_SLABS))
+				.addCriterion("has_book", hasItem(Items.BOOK))
+				.key('S', ItemTags.WOODEN_SLABS)
+				.key('B', Items.BOOK)
+				.patternLine("SSS")
+				.patternLine(" B ")
+				.patternLine("SSS")
+				.build(consumer);
+
+		// Allow any order for these.
+		for (String dyeRow: new String[]{"RGB", "RBG", "GRB", "GBR", "BRG", "BGR"}) {
+			CondRecipe.shaped(InspirationsBuilding.shelf_rainbow, 2)
+					.textureSource(ItemTags.WOODEN_SLABS)
+					.addCondition(BUILDING)
+					.addCondition(ConfigEnabledCondition.BOOKSHELF)
+					.setGroup(group)
+					.addCriterion("has_slabs", hasItem(ItemTags.WOODEN_SLABS))
+					.addCriterion("has_book", hasItem(Items.BOOK))
+					.key('S', ItemTags.WOODEN_SLABS)
+					.key('R', Tags.Items.DYES_RED)
+					.key('G', Tags.Items.DYES_GREEN)
+					.key('B', Tags.Items.DYES_BLUE)
+					.patternLine("SSS")
+					.patternLine(dyeRow)
+					.patternLine("SSS")
+					.build(consumer, "rainbow_bookshelf_" + dyeRow.toLowerCase());
+		}
+	}
 }
