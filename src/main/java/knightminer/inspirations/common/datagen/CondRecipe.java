@@ -17,7 +17,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.conditions.ICondition;
-import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -47,11 +46,13 @@ public class CondRecipe {
 	 */
 	private static class Finished implements IFinishedRecipe {
 		private final IFinishedRecipe recipe;
+		private final boolean mirror;
 		private final List<ICondition> condList;
 		private final ResourceLocation id;
 
-		private Finished(ResourceLocation id, IFinishedRecipe recipe, List<ICondition> cond) {
+		private Finished(ResourceLocation id, IFinishedRecipe recipe, boolean mirror, List<ICondition> cond) {
 			this.recipe = recipe;
+			this.mirror = mirror;
 			this.condList = cond;
 			this.id = id;
 		}
@@ -71,6 +72,9 @@ public class CondRecipe {
 				jsonCond.add(CraftingHelper.serialize(cond));
 			}
 			json.add("conditions", jsonCond);
+			if (mirror) {
+				json.addProperty("mirrored", true);
+			}
 			recipe.serialize(json);
 		}
 
@@ -110,8 +114,8 @@ public class CondRecipe {
 		private final Ingredient texSource;
 		private final boolean matchFirst;
 
-		private FinishedTexture(ResourceLocation id, IFinishedRecipe recipe, Ingredient texSource, boolean matchFirst, List<ICondition> cond) {
-			super(id, recipe, cond);
+		private FinishedTexture(ResourceLocation id, IFinishedRecipe recipe, boolean mirror, Ingredient texSource, boolean matchFirst, List<ICondition> cond) {
+			super(id, recipe, mirror, cond);
 			this.texSource = texSource;
 			this.matchFirst = matchFirst;
 			assert recipe.getSerializer() == ShapedRecipe.Serializer.CRAFTING_SHAPED;
@@ -133,12 +137,22 @@ public class CondRecipe {
 		@Nullable
 		private Ingredient textureSource;
 		private boolean textureMatchFirst;
+		private boolean mirror;
 
 		private ShapedBuilder(IItemProvider result, int count) {
 			super(result, count);
 			conditions = new ArrayList<>();
 			textureSource = null;
 			textureMatchFirst = false;
+			mirror = false;
+		}
+
+		/**
+		 * Vanilla option, whether the items can be horizontally mirrored.
+		 */
+		public ShapedBuilder canMirror() {
+			mirror = true;
+			return this;
 		}
 
 		public ShapedBuilder addCondition(ICondition cond) {
@@ -174,8 +188,8 @@ public class CondRecipe {
 			assert output[0] != null;
 			// Then wrap.
 			consumer.accept(textureSource != null ?
-					new FinishedTexture(recipeLoc, output[0], textureSource, textureMatchFirst, conditions) :
-					new Finished(recipeLoc, output[0], conditions)
+					new FinishedTexture(recipeLoc, output[0], mirror, textureSource, textureMatchFirst, conditions) :
+					new Finished(recipeLoc, output[0], mirror, conditions)
 			);
 		}
 
@@ -194,8 +208,8 @@ public class CondRecipe {
 			assert output[0] != null;
 			// Then wrap.
 			consumer.accept(textureSource != null ?
-					new FinishedTexture(output[0].getID(), output[0], textureSource, textureMatchFirst, conditions) :
-					new Finished(output[0].getID(), output[0], conditions)
+					new FinishedTexture(output[0].getID(), output[0], mirror, textureSource, textureMatchFirst, conditions) :
+					new Finished(output[0].getID(), output[0], mirror, conditions)
 			);
 		}
 	}
@@ -222,7 +236,7 @@ public class CondRecipe {
 			// It should have been called immediately.
 			assert output[0] != null;
 			// Then wrap.
-			consumer.accept(new Finished(recipeLoc, output[0], conditions));
+			consumer.accept(new Finished(recipeLoc, output[0], false, conditions));
 		}
 
 		@Override
