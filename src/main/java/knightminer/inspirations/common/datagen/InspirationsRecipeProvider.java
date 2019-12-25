@@ -96,6 +96,10 @@ public class InspirationsRecipeProvider extends RecipeProvider implements ICondi
 		buildingRope();
 		buildingPath();
 		buildingBookshelf();
+		buildingMulch(InspirationsBuilding.blackMulch, Tags.Items.DYES_BLACK);
+		buildingMulch(InspirationsBuilding.blueMulch, Tags.Items.DYES_BLUE);
+		buildingMulch(InspirationsBuilding.brownMulch, Tags.Items.DYES_BROWN);
+		buildingMulch(InspirationsBuilding.redMulch, Tags.Items.DYES_RED);
 
 		buildingFlowerDye(InspirationsBuilding.flower_rose, Items.RED_DYE);
 		buildingFlowerDye(InspirationsBuilding.flower_paeonia, Items.PINK_DYE);
@@ -170,6 +174,15 @@ public class InspirationsRecipeProvider extends RecipeProvider implements ICondi
 				.build(consumer);
 	}
 
+	private void buildingMulch(Block block, Tag<Item> dye) {
+		CondRecipe.shapeless(block)
+				.addCondition(BUILDING)
+				.addCondition(ConfigEnabledCondition.MULCH)
+				.addCriterion("has_mulch", hasItem(InspirationsBuilding.plainMulch))
+				.addIngredient(InspirationsBuilding.plainMulch)
+				.addIngredient(dye)
+				.build(consumer);
+	}
 
 	private void buildingBookshelf() {
 		String group = Util.resource("bookshelf");
