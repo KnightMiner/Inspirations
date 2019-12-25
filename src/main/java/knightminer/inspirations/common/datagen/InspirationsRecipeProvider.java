@@ -92,6 +92,39 @@ public class InspirationsRecipeProvider extends RecipeProvider implements ICondi
 				.patternLine("GGG")
 				.patternLine("GGG")
 				.build(consumer);
+
+		buildingRope();
+	private void buildingRope() {
+		CondRecipe.shaped(InspirationsBuilding.rope, 3)
+				.addCondition(BUILDING)
+				.addCondition(ConfigEnabledCondition.ROPE)
+				.addCriterion("has_string", hasItem(Tags.Items.STRING))
+				.key('S', Items.STRING)
+				.patternLine("SS")
+				.patternLine("SS")
+				.patternLine("SS")
+				.build(consumer);
+
+		CondRecipe.shaped(InspirationsBuilding.vine, 3)
+				.addCondition(BUILDING)
+				.addCondition(ConfigEnabledCondition.ROPE)
+				.addCriterion("has_vines", hasItem(Items.VINE))
+				.key('V', Items.VINE)
+				.patternLine("V")
+				.patternLine("V")
+				.patternLine("V")
+				.build(consumer);
+
+		CondRecipe.shaped(InspirationsBuilding.chain, 6)
+				.addCondition(BUILDING)
+				.addCondition(ConfigEnabledCondition.ROPE)
+				.addCriterion("has_bars", hasItem(Items.IRON_BARS))
+				.key('B', Items.IRON_BARS)
+				.patternLine("B")
+				.patternLine("B")
+				.patternLine("B")
+				.build(consumer);
+	}
 	}
 
 }
