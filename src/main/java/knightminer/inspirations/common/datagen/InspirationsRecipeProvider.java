@@ -12,8 +12,8 @@ import net.minecraft.block.Block;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.IFinishedRecipe;
 import net.minecraft.data.RecipeProvider;
+import net.minecraft.data.ShapedRecipeBuilder;
 import net.minecraft.item.DyeColor;
-import net.minecraft.item.DyeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.tags.ItemTags;
@@ -89,25 +89,33 @@ public class InspirationsRecipeProvider extends RecipeProvider implements ICondi
 		buildingFlowerDye(InspirationsBuilding.flower_syringa, Items.MAGENTA_DYE);
 		buildingFlowerDye(InspirationsBuilding.flower_cyan, Items.CYAN_DYE);
 		buildingCyanFlower();
-		buildingEnlightnedBush();
+
+		buildingEnlightnedBush(InspirationsBuilding.whiteEnlightenedBush, DyeColor.WHITE);
+		buildingEnlightnedBush(InspirationsBuilding.redEnlightenedBush, DyeColor.RED);
+		buildingEnlightnedBush(InspirationsBuilding.greenEnlightenedBush, DyeColor.GREEN);
+		buildingEnlightnedBush(InspirationsBuilding.blueEnlightenedBush, DyeColor.BLUE);
 	}
 
-	private void buildingEnlightnedBush() {
-		String group = Util.resource("enlightened_bush");
-
-		CondRecipe.shaped(InspirationsBuilding.whiteEnlightenedBush)
+	private void buildingEnlightnedBush(Block bush, DyeColor dye) {
+		ShapedRecipeBuilder builder = CondRecipe.shaped(bush)
 				.textureSource(ItemTags.LEAVES)
 				.textureMatchFirst()
 				.addCondition(BUILDING)
 				.addCondition(ConfigEnabledCondition.ENLIGHTENED_BUSH)
-				.setGroup(group)
+				.setGroup(Util.resource("enlightened_bush"))
 				.addCriterion("has_leaves", hasItem(ItemTags.LEAVES))
 				.addCriterion("has_glowstone", hasItem(Tags.Items.DUSTS_GLOWSTONE))
 				.key('L', ItemTags.LEAVES)
-				.key('G', Tags.Items.DUSTS_GLOWSTONE)
+				.key('G', Tags.Items.DUSTS_GLOWSTONE);
+
+		if (dye != DyeColor.WHITE) {
+			// First line, dye above.
+			builder = builder.key('D', getDyeTag(dye))
+				.patternLine(" D ");
+		}
+			builder
 				.patternLine("GLG")
 				.build(consumer);
-
 	}
 
 	private void buildingRope() {
