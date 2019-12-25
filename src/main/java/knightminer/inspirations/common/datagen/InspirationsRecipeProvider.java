@@ -94,6 +94,7 @@ public class InspirationsRecipeProvider extends RecipeProvider implements ICondi
 				.build(consumer);
 
 		buildingRope();
+		buildingPath();
 	private void buildingRope() {
 		CondRecipe.shaped(InspirationsBuilding.rope, 3)
 				.addCondition(BUILDING)
@@ -125,6 +126,41 @@ public class InspirationsRecipeProvider extends RecipeProvider implements ICondi
 				.patternLine("B")
 				.build(consumer);
 	}
+
+	private void buildingPath() {
+		CondRecipe.shaped(InspirationsBuilding.path_brick, 6)
+				.addCondition(BUILDING)
+				.addCondition(ConfigEnabledCondition.PATH)
+				.addCriterion("has_brick", hasItem(Items.BRICKS))
+				.key('B', Items.BRICKS)
+				.patternLine("BB")
+				.build(consumer);
+
+		CondRecipe.shaped(InspirationsBuilding.path_rock, 6)
+				.addCondition(BUILDING)
+				.addCondition(ConfigEnabledCondition.PATH)
+				.addCriterion("has_cobble", hasItem(Tags.Items.COBBLESTONE))
+				.key('C', Tags.Items.COBBLESTONE)
+				.patternLine("CC")
+				.build(consumer);
+
+		CondRecipe.shaped(InspirationsBuilding.path_round, 6)
+				.addCondition(BUILDING)
+				.addCondition(ConfigEnabledCondition.PATH)
+				.addCriterion("has_stone", hasItem(Tags.Items.STONE))
+				.key('S', Tags.Items.STONE)
+				.patternLine(" S ")
+				.patternLine("S S")
+				.patternLine(" S ")
+				.build(consumer);
+
+		CondRecipe.shaped(InspirationsBuilding.path_tile, 6)
+				.addCondition(BUILDING)
+				.addCondition(ConfigEnabledCondition.PATH)
+				.addCriterion("has_stone", hasItem(Items.STONE_BRICKS))
+				.key('C', Items.STONE_BRICKS)
+				.patternLine("CC")
+				.build(consumer);
 	}
 
 }
