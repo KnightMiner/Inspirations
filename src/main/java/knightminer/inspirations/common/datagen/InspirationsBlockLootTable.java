@@ -3,9 +3,17 @@ package knightminer.inspirations.common.datagen;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.building.block.RopeBlock;
+import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.data.FillTexturedBlockLootFunction;
+import knightminer.inspirations.recipes.InspirationsRecipes;
+import knightminer.inspirations.tools.InspirationsTools;
+import knightminer.inspirations.tweaks.InspirationsTweaks;
+import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraft.block.Block;
 import net.minecraft.data.loot.BlockLootTables;
+import net.minecraft.item.DyeColor;
+import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.world.storage.loot.ConstantRange;
 import net.minecraft.world.storage.loot.ItemLootEntry;
 import net.minecraft.world.storage.loot.LootPool;
@@ -33,6 +41,10 @@ public class InspirationsBlockLootTable extends BlockLootTables {
 	@Override
 	protected void addTables() {
 		addIf(InspirationsBuilding.pulseID, this::addBuilding);
+		addIf(InspirationsTools.pulseID, this::addTools);
+		addIf(InspirationsTweaks.pulseID, this::addTweaks);
+		addIf(InspirationsRecipes.pulseID, this::addRecipes);
+		addIf(InspirationsUtility.pulseID, this::addUtility);
 	}
 
 	private void addIf(String pulseID, Runnable registrar) {
@@ -106,4 +118,49 @@ public class InspirationsBlockLootTable extends BlockLootTables {
 				));
 	}
 
+
+	private void addTools() {
+		// func_218482 = droppingNothing()
+		this.registerLootTable(InspirationsTools.redstoneCharge, func_218482_a());
+	}
+
+	private void addTweaks() {
+		if (Config.enableFittedCarpets.get()) {
+			for(DyeColor color : DyeColor.values()) {
+				this.registerRedirect(
+						InspirationsTweaks.fitCarpets[color.getId()],
+						InspirationsTweaks.flatCarpets[color.getId()]
+				);
+			}
+		}
+		// this.registerDropping(InspirationsTweaks.sugarCaneCrop, InspirationsTweaks.sugarCaneSeeds);
+		// this.registerDropping(InspirationsTweaks.cactusCrop, InspirationsTweaks.cactusSeeds);
+	}
+
+	private void addRecipes() {
+
+	}
+
+	private void addUtility() {
+		for(DyeColor color : DyeColor.values()) {
+			this.registerDropSelfLootTable(InspirationsUtility.carpetedTrapdoors[color.getId()]);
+
+			Block trapdoor = InspirationsUtility.carpetedPressurePlates[color.getId()];
+			// We don't use these values.
+			Item carpet = trapdoor.getPickBlock(null, null, null, null, null).getItem();
+			this.registerLootTable(trapdoor, LootTable.builder()
+				.addLootPool(withExplosionDecay(trapdoor, LootPool.builder()
+						.addEntry(ItemLootEntry.builder(Items.STONE_PRESSURE_PLATE))
+				))
+				.addLootPool(withExplosionDecay(carpet, LootPool.builder()
+						.addEntry(ItemLootEntry.builder(carpet))
+				))
+			);
+		}
+
+		this.registerDropSelfLootTable(InspirationsUtility.pipe);
+		this.registerDropSelfLootTable(InspirationsUtility.collector);
+		this.registerDropping(InspirationsUtility.torchLeverFloor, InspirationsUtility.torchLeverItem);
+		this.registerDropping(InspirationsUtility.torchLeverWall, InspirationsUtility.torchLeverItem);
+	}
 }
