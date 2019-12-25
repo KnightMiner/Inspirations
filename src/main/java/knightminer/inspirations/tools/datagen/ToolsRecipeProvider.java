@@ -30,6 +30,12 @@ public class ToolsRecipeProvider extends RecipeProvider implements IConditionBui
 		super(gen);
 	}
 
+	@Nonnull
+	@Override
+	public String getName() {
+		return "Inspirations Recipes - Tools";
+	}
+
 	@Override
 	protected void registerRecipes(@Nonnull Consumer<IFinishedRecipe> consumer) {
 		CondRecipe.shaped(InspirationsTools.photometer)

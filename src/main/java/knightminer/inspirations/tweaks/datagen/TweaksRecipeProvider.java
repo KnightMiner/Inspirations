@@ -26,6 +26,11 @@ public class TweaksRecipeProvider extends RecipeProvider implements IConditionBu
 		super(gen);
 	}
 
+	@Nonnull
+	@Override
+	public String getName() {
+		return "Inspirations Recipes - Tweaks";
+	}
 	@Override
 	protected void registerRecipes(@Nonnull Consumer<IFinishedRecipe> consumer) {
 

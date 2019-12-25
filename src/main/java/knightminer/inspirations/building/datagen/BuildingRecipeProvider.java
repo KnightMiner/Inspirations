@@ -39,6 +39,12 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
 		super(gen);
 	}
 
+	@Nonnull
+	@Override
+	public String getName() {
+		return "Inspirations Recipes - Building";
+	}
+
 	@Override
 	protected void registerRecipes(@Nonnull Consumer<IFinishedRecipe> consumer) {
 		this.consumer = consumer;
