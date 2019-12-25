@@ -7,6 +7,8 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.data.ConfigEnabledCondition;
 import knightminer.inspirations.common.data.FillTexturedBlockLootFunction;
 import knightminer.inspirations.common.data.PulseLoadedCondition;
+import knightminer.inspirations.common.datagen.InspirationsBlockTagsProvider;
+import knightminer.inspirations.common.datagen.InspirationsItemTagsProvider;
 import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.Util;
@@ -18,6 +20,7 @@ import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraft.client.Minecraft;
+import net.minecraft.data.DataGenerator;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.world.storage.loot.conditions.LootConditionManager;
 import net.minecraft.world.storage.loot.functions.LootFunctionManager;
@@ -30,6 +33,7 @@ import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -88,6 +92,15 @@ public class Inspirations {
 		pulseManager.enablePulses();
 
 		InspirationsNetwork.instance.setup();
+	}
+
+	@SubscribeEvent
+	public void gatherData(GatherDataEvent event) {
+		DataGenerator gen = event.getGenerator();
+		if (event.includeServer()) {
+			gen.addProvider(new InspirationsBlockTagsProvider(gen));
+			gen.addProvider(new InspirationsItemTagsProvider(gen));
+		}
 	}
 
 	@SuppressWarnings("deprecation")
