@@ -10,6 +10,7 @@ import knightminer.inspirations.building.block.GlassTrapdoorBlock;
 import knightminer.inspirations.building.block.MulchBlock;
 import knightminer.inspirations.building.block.PathBlock;
 import knightminer.inspirations.building.block.RopeBlock;
+import knightminer.inspirations.building.datagen.BuildingRecipeProvider;
 import knightminer.inspirations.building.inventory.BookshelfContainer;
 import knightminer.inspirations.building.item.BookshelfItem;
 import knightminer.inspirations.building.item.GlassDoorBlockItem;
@@ -25,6 +26,7 @@ import net.minecraft.block.DoublePlantBlock;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
+import net.minecraft.data.DataGenerator;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
@@ -41,6 +43,7 @@ import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.pulsar.pulse.Pulse;
 
@@ -229,6 +232,14 @@ public class InspirationsBuilding extends PulseBase {
 		glassDoorItem = registerItem(r, new GlassDoorBlockItem(glassDoor, new Item.Properties().group(ItemGroup.REDSTONE)), "glass_door");
 		registerBlockItem(r, glassTrapdoor, ItemGroup.REDSTONE);
 
+	}
+
+	@SubscribeEvent
+	public void gatherData(GatherDataEvent event) {
+		DataGenerator gen = event.getGenerator();
+		if (event.includeServer()) {
+			gen.addProvider(new BuildingRecipeProvider(gen));
+		}
 	}
 
 	@SubscribeEvent

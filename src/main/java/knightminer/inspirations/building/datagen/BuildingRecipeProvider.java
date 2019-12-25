@@ -1,13 +1,11 @@
-package knightminer.inspirations.common.datagen;
+package knightminer.inspirations.building.datagen;
 
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.common.data.ConfigEnabledCondition;
 import knightminer.inspirations.common.data.PulseLoadedCondition;
+import knightminer.inspirations.common.datagen.CondRecipe;
 import knightminer.inspirations.library.Util;
-import knightminer.inspirations.tools.InspirationsTools;
-import knightminer.inspirations.tweaks.InspirationsTweaks;
-import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraft.block.Block;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.IFinishedRecipe;
@@ -27,11 +25,8 @@ import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
 import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
-public class InspirationsRecipeProvider extends RecipeProvider implements IConditionBuilder {
+public class BuildingRecipeProvider extends RecipeProvider implements IConditionBuilder {
 	ICondition BUILDING = new PulseLoadedCondition(InspirationsBuilding.pulseID);
-	ICondition TWEAKS = new PulseLoadedCondition(InspirationsTweaks.pulseID);
-	ICondition UTILITY = new PulseLoadedCondition(InspirationsUtility.pulseID);
-	ICondition TOOLS = new PulseLoadedCondition(InspirationsTools.pulseID);
 
 	// Prevent needing to pass this into every method.
 	private Consumer<IFinishedRecipe> consumer = null;
@@ -40,21 +35,16 @@ public class InspirationsRecipeProvider extends RecipeProvider implements ICondi
 		return new ItemTags.Wrapper(new ResourceLocation("forge", "dyes/" + dye.getName()));
 	}
 
-	public InspirationsRecipeProvider(DataGenerator gen) {
+	public BuildingRecipeProvider(DataGenerator gen) {
 		super(gen);
 	}
 
 	@Override
 	protected void registerRecipes(@Nonnull Consumer<IFinishedRecipe> consumer) {
 		this.consumer = consumer;
-		if (Inspirations.pulseManager.isPulseLoaded(InspirationsBuilding.pulseID)) {
-			addBuilding();
+		if (!Inspirations.pulseManager.isPulseLoaded(InspirationsBuilding.pulseID)) {
+			return;
 		}
-
-		this.consumer = null;
-	}
-
-	private void addBuilding() {
 		// First several one-off recipes.
 		CondRecipe.shaped(InspirationsBuilding.glassDoor)
 				.addCondition(BUILDING)
