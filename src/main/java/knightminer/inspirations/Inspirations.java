@@ -9,6 +9,7 @@ import knightminer.inspirations.common.data.FillTexturedBlockLootFunction;
 import knightminer.inspirations.common.data.PulseLoadedCondition;
 import knightminer.inspirations.common.datagen.InspirationsBlockTagsProvider;
 import knightminer.inspirations.common.datagen.InspirationsItemTagsProvider;
+import knightminer.inspirations.common.datagen.InspirationsLootTableProvider;
 import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.Util;
@@ -100,6 +101,7 @@ public class Inspirations {
 		if (event.includeServer()) {
 			gen.addProvider(new InspirationsBlockTagsProvider(gen));
 			gen.addProvider(new InspirationsItemTagsProvider(gen));
+			gen.addProvider(new InspirationsLootTableProvider(gen));
 		}
 	}
 
