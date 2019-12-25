@@ -1,6 +1,6 @@
 package knightminer.inspirations.utility.dispenser;
 
-import knightminer.inspirations.library.InspirationsRegistry;
+import knightminer.inspirations.library.InspirationsTags;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.dispenser.DefaultDispenseItemBehavior;
 import net.minecraft.dispenser.IBlockSource;
@@ -29,7 +29,7 @@ public class DispenseFluidTank extends DefaultDispenseItemBehavior {
 	@Nonnull
 	@Override
 	protected ItemStack dispenseStack(IBlockSource source, ItemStack stack){
-		if(!stack.getItem().isIn(InspirationsRegistry.TAG_DISP_FLUID_TANKS)) {
+		if(!stack.getItem().isIn(InspirationsTags.Items.DISP_FLUID_TANKS)) {
 			return fallback.dispense(source, stack);
 		}
 

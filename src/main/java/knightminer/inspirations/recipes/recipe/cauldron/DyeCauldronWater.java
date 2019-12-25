@@ -1,6 +1,6 @@
 package knightminer.inspirations.recipes.recipe.cauldron;
 
-import knightminer.inspirations.library.InspirationsRegistry;
+import knightminer.inspirations.library.InspirationsTags;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.recipe.cauldron.ISimpleCauldronRecipe;
 import net.minecraft.item.DyeColor;
@@ -28,7 +28,7 @@ public class DyeCauldronWater implements ISimpleCauldronRecipe {
 	@Override
 	public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {
 		// special case water bottles
-		if(level == 0 || stack.getItem().isIn(InspirationsRegistry.TAG_DYE_BOTTLES)) {
+		if(level == 0 || stack.getItem().isIn(InspirationsTags.Items.DYE_BOTTLES)) {
 			return false;
 		}
 
@@ -42,7 +42,7 @@ public class DyeCauldronWater implements ISimpleCauldronRecipe {
 	public List<ItemStack> getInput() {
 		// we want to ignore the dyed water bottle as that has special behavior
 		return Arrays.stream(dye.getMatchingStacks())
-				.filter(stack->!stack.getItem().isIn(InspirationsRegistry.TAG_DYE_BOTTLES))
+				.filter(stack->!stack.getItem().isIn(InspirationsTags.Items.DYE_BOTTLES))
 				.collect(Collectors.toList());
 	}
 

@@ -3,7 +3,7 @@ package knightminer.inspirations.tweaks;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.common.network.MilkablePacket;
-import knightminer.inspirations.library.InspirationsRegistry;
+import knightminer.inspirations.library.InspirationsTags;
 import knightminer.inspirations.shared.SharedEvents;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -335,7 +335,7 @@ public class TweaksEvents {
 
 		// must be holding a milk container
 		ItemStack stack = event.getPlayer().getHeldItem(event.getHand());
-		if(stack.getItem().isIn(InspirationsRegistry.TAG_MILK_CONTAINERS)) {
+		if(stack.getItem().isIn(InspirationsTags.Items.MILK_CONTAINERS)) {
 			// if has tag, cannot be milked
 			CompoundNBT tags = target.getPersistentData();
 			if (tags.getShort(SharedEvents.TAG_MILKCOOLDOWN) > 0) {
