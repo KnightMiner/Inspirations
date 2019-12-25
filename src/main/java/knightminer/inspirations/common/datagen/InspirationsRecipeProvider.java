@@ -96,6 +96,12 @@ public class InspirationsRecipeProvider extends RecipeProvider implements ICondi
 		buildingRope();
 		buildingPath();
 		buildingBookshelf();
+
+		buildingFlowerDye(InspirationsBuilding.flower_rose, Items.RED_DYE);
+		buildingFlowerDye(InspirationsBuilding.flower_paeonia, Items.PINK_DYE);
+		buildingFlowerDye(InspirationsBuilding.flower_syringa, Items.MAGENTA_DYE);
+		buildingFlowerDye(InspirationsBuilding.flower_cyan, Items.CYAN_DYE);
+		buildingCyanFlower();
 	private void buildingRope() {
 		CondRecipe.shaped(InspirationsBuilding.rope, 3)
 				.addCondition(BUILDING)
@@ -227,5 +233,25 @@ public class InspirationsRecipeProvider extends RecipeProvider implements ICondi
 					.patternLine("SSS")
 					.build(consumer, "rainbow_bookshelf_" + dyeRow.toLowerCase());
 		}
+	}
+
+	// Register a flower -> one dye recipe.
+	private void buildingFlowerDye(IItemProvider flower, Item dye) {
+		CondRecipe.shapeless(dye)
+				.addCondition(BUILDING)
+				.addCondition(ConfigEnabledCondition.FLOWERS)
+				.setGroup(dye.getRegistryName().toString())
+				.addIngredient(flower)
+				.build(consumer, "flower/" + dye.getRegistryName().getPath());
+	}
+
+	private void buildingCyanFlower() {
+		CondRecipe.shapeless(InspirationsBuilding.flower_cyan)
+				.addCondition(BUILDING)
+				.addCondition(ConfigEnabledCondition.FLOWERS)
+				.addCondition(not(ConfigEnabledCondition.CAULDRON_DYEING))
+				.addIngredient(Tags.Items.DYES_CYAN)
+				.addIngredient(InspirationsBuilding.flower_rose)
+				.build(consumer, "flower/cyan_flower");
 	}
 }
