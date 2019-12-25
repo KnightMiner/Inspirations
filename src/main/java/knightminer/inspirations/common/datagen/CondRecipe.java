@@ -194,7 +194,7 @@ public class CondRecipe {
 			assert output[0] != null;
 			// Then wrap.
 			consumer.accept(textureSource != null ?
-					new FinishedTexture(output[0].getID(), output[0], textureSource, conditions) :
+					new FinishedTexture(output[0].getID(), output[0], textureSource, textureMatchFirst, conditions) :
 					new Finished(output[0].getID(), output[0], conditions)
 			);
 		}
