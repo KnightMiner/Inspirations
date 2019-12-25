@@ -89,6 +89,27 @@ public class InspirationsRecipeProvider extends RecipeProvider implements ICondi
 		buildingFlowerDye(InspirationsBuilding.flower_syringa, Items.MAGENTA_DYE);
 		buildingFlowerDye(InspirationsBuilding.flower_cyan, Items.CYAN_DYE);
 		buildingCyanFlower();
+		buildingEnlightnedBush();
+	}
+
+	private void buildingEnlightnedBush() {
+		String group = Util.resource("enlightened_bush");
+
+		CondRecipe.shaped(InspirationsBuilding.whiteEnlightenedBush)
+				.textureSource(ItemTags.LEAVES)
+				.textureMatchFirst()
+				.addCondition(BUILDING)
+				.addCondition(ConfigEnabledCondition.ENLIGHTENED_BUSH)
+				.setGroup(group)
+				.addCriterion("has_leaves", hasItem(ItemTags.LEAVES))
+				.addCriterion("has_glowstone", hasItem(Tags.Items.DUSTS_GLOWSTONE))
+				.key('L', ItemTags.LEAVES)
+				.key('G', Tags.Items.DUSTS_GLOWSTONE)
+				.patternLine("GLG")
+				.build(consumer);
+
+	}
+
 	private void buildingRope() {
 		CondRecipe.shaped(InspirationsBuilding.rope, 3)
 				.addCondition(BUILDING)
