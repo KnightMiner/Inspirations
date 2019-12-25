@@ -53,11 +53,19 @@ public class InspirationsBlockLootTable extends BlockLootTables {
 		}
 	}
 
-	private static LootTable.Builder droppingWithNameAndTexture(Block block) {
+	private LootTable.Builder droppingWithNameAndTexture(Block block) {
 		return LootTable.builder()
 			  .addLootPool(withSurvivesExplosion(block, LootPool.builder()
 					  .addEntry(ItemLootEntry.builder(block)
 							  .acceptFunction(CopyName.builder(CopyName.Source.BLOCK_ENTITY))
+							  .acceptFunction(FillTexturedBlockLootFunction::new)
+					  )));
+	}
+
+	private LootTable.Builder droppingWithTexture(Block block) {
+		return LootTable.builder()
+			  .addLootPool(withSurvivesExplosion(block, LootPool.builder()
+					  .addEntry(ItemLootEntry.builder(block)
 							  .acceptFunction(FillTexturedBlockLootFunction::new)
 					  )));
 	}
@@ -70,10 +78,15 @@ public class InspirationsBlockLootTable extends BlockLootTables {
 	}
 
 	private void addBuilding() {
-		this.registerLootTable(InspirationsBuilding.shelf_normal, InspirationsBlockLootTable::droppingWithNameAndTexture);
-		this.registerLootTable(InspirationsBuilding.shelf_rainbow, InspirationsBlockLootTable::droppingWithNameAndTexture);
-		this.registerLootTable(InspirationsBuilding.shelf_ancient, InspirationsBlockLootTable::droppingWithNameAndTexture);
-		this.registerLootTable(InspirationsBuilding.shelf_tomes, InspirationsBlockLootTable::droppingWithNameAndTexture);
+		this.registerLootTable(InspirationsBuilding.shelf_normal, this::droppingWithNameAndTexture);
+		this.registerLootTable(InspirationsBuilding.shelf_rainbow, this::droppingWithNameAndTexture);
+		this.registerLootTable(InspirationsBuilding.shelf_ancient, this::droppingWithNameAndTexture);
+		this.registerLootTable(InspirationsBuilding.shelf_tomes, this::droppingWithNameAndTexture);
+
+		this.registerLootTable(InspirationsBuilding.whiteEnlightenedBush, this::droppingWithTexture);
+		this.registerLootTable(InspirationsBuilding.redEnlightenedBush, this::droppingWithTexture);
+		this.registerLootTable(InspirationsBuilding.greenEnlightenedBush, this::droppingWithTexture);
+		this.registerLootTable(InspirationsBuilding.blueEnlightenedBush, this::droppingWithTexture);
 
 		this.registerDropSelfLootTable(InspirationsBuilding.plainMulch);
 		this.registerDropSelfLootTable(InspirationsBuilding.blackMulch);
@@ -117,6 +130,7 @@ public class InspirationsBlockLootTable extends BlockLootTables {
 						)
 				));
 	}
+
 
 
 	private void addTools() {
