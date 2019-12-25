@@ -276,6 +276,7 @@ public class InspirationsRecipeProvider extends RecipeProvider implements ICondi
 		CondRecipe.shapeless(dye)
 				.addCondition(BUILDING)
 				.addCondition(ConfigEnabledCondition.FLOWERS)
+				.addCriterion("has_flower", hasItem(flower))
 				.setGroup(dye.getRegistryName().toString())
 				.addIngredient(flower)
 				.build(consumer, "flower/" + dye.getRegistryName().getPath());
@@ -286,6 +287,8 @@ public class InspirationsRecipeProvider extends RecipeProvider implements ICondi
 				.addCondition(BUILDING)
 				.addCondition(ConfigEnabledCondition.FLOWERS)
 				.addCondition(not(ConfigEnabledCondition.CAULDRON_DYEING))
+				.addCriterion("has_dye", hasItem(Tags.Items.DYES_CYAN))
+				.addCriterion("has_flower", hasItem(InspirationsBuilding.flower_rose))
 				.addIngredient(Tags.Items.DYES_CYAN)
 				.addIngredient(InspirationsBuilding.flower_rose)
 				.build(consumer, "flower/cyan_flower");
