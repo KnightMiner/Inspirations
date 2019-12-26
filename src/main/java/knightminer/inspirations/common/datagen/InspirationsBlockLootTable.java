@@ -34,12 +34,17 @@ public class InspirationsBlockLootTable extends BlockLootTables {
 	@Override
 	protected Iterable<Block> getKnownBlocks() {
 		return ForgeRegistries.BLOCKS.getValues().stream()
-				.filter((block) -> block.getRegistryName().getNamespace().equals(Inspirations.modID))
+				.filter((block) -> {
+					String ns = block.getRegistryName().getNamespace();
+					return ns.equals(Inspirations.modID) || ns.equals("minecraft");
+				})
 				.collect(Collectors.toList());
 	}
 
 	@Override
 	protected void addTables() {
+		super.addTables();
+
 		addIf(InspirationsBuilding.pulseID, this::addBuilding);
 		addIf(InspirationsTools.pulseID, this::addTools);
 		addIf(InspirationsTweaks.pulseID, this::addTweaks);

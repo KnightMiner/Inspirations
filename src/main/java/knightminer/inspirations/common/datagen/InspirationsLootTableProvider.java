@@ -2,6 +2,7 @@ package knightminer.inspirations.common.datagen;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
+import knightminer.inspirations.Inspirations;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.LootTableProvider;
 import net.minecraft.util.ResourceLocation;
@@ -11,6 +12,8 @@ import net.minecraft.world.storage.loot.LootTable;
 import net.minecraft.world.storage.loot.LootTableManager;
 import net.minecraft.world.storage.loot.ValidationResults;
 
+import javax.annotation.Nonnull;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -22,6 +25,13 @@ public class InspirationsLootTableProvider extends LootTableProvider {
 		super(gen);
 	}
 
+	@Nonnull
+	@Override
+	public String getName() {
+		return "Inspirations Loot Tables";
+	}
+
+	@Nonnull
 	@Override
 	protected List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootParameterSet>> getTables() {
 		return ImmutableList.of(
@@ -32,8 +42,15 @@ public class InspirationsLootTableProvider extends LootTableProvider {
 	// Override to skip validating that vanilla's tables are present.
 	@Override
 	protected void validate(Map<ResourceLocation, LootTable> map, ValidationResults validationresults) {
+		Map<ResourceLocation, LootTable> kept = new HashMap<>();
 		map.forEach((loc, table) -> {
-			LootTableManager.func_215302_a(validationresults, loc, table, map::get);
+			if (loc.getNamespace().equals(Inspirations.modID)) {
+				LootTableManager.func_215302_a(validationresults, loc, table, map::get);
+				kept.put(loc, table);
+			}
 		});
+		// Remove vanilla's tables, which we also loaded so we can redirect stuff to them.
+		map.clear();
+		map.putAll(kept);
 	}
 }
