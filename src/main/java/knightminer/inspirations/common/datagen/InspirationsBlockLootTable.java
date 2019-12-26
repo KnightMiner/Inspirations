@@ -55,26 +55,18 @@ public class InspirationsBlockLootTable extends BlockLootTables {
 
 	private LootTable.Builder droppingWithNameAndTexture(Block block) {
 		return LootTable.builder()
-			  .addLootPool(withSurvivesExplosion(block, LootPool.builder()
-					  .addEntry(ItemLootEntry.builder(block)
-							  .acceptFunction(CopyName.builder(CopyName.Source.BLOCK_ENTITY))
-							  .acceptFunction(FillTexturedBlockLootFunction::new)
-					  )));
-	}
-
-	private LootTable.Builder droppingWithTexture(Block block) {
-		return LootTable.builder()
-			  .addLootPool(withSurvivesExplosion(block, LootPool.builder()
-					  .addEntry(ItemLootEntry.builder(block)
-							  .acceptFunction(FillTexturedBlockLootFunction::new)
-					  )));
+				.addLootPool(withSurvivesExplosion(block, LootPool.builder()
+						.addEntry(ItemLootEntry.builder(block)
+								.acceptFunction(CopyName.builder(CopyName.Source.BLOCK_ENTITY))
+								.acceptFunction(FillTexturedBlockLootFunction::new)
+						)));
 	}
 
 	private void registerRedirect(Block block, Block originalBlock) {
 		this.registerLootTable(block, LootTable.builder()
-			  .addLootPool(LootPool.builder()
-					  .addEntry(TableLootEntry.builder(originalBlock.getLootTable()))
-			  ));
+				.addLootPool(LootPool.builder()
+						.addEntry(TableLootEntry.builder(originalBlock.getLootTable()))
+				));
 	}
 
 	private void addBuilding() {
@@ -83,10 +75,10 @@ public class InspirationsBlockLootTable extends BlockLootTables {
 		this.registerLootTable(InspirationsBuilding.shelf_ancient, this::droppingWithNameAndTexture);
 		this.registerLootTable(InspirationsBuilding.shelf_tomes, this::droppingWithNameAndTexture);
 
-		this.registerLootTable(InspirationsBuilding.whiteEnlightenedBush, this::droppingWithTexture);
-		this.registerLootTable(InspirationsBuilding.redEnlightenedBush, this::droppingWithTexture);
-		this.registerLootTable(InspirationsBuilding.greenEnlightenedBush, this::droppingWithTexture);
-		this.registerLootTable(InspirationsBuilding.blueEnlightenedBush, this::droppingWithTexture);
+		this.registerLootTable(InspirationsBuilding.whiteEnlightenedBush, this::enlightenedBush);
+		this.registerLootTable(InspirationsBuilding.redEnlightenedBush, this::enlightenedBush);
+		this.registerLootTable(InspirationsBuilding.greenEnlightenedBush, this::enlightenedBush);
+		this.registerLootTable(InspirationsBuilding.blueEnlightenedBush, this::enlightenedBush);
 
 		this.registerDropSelfLootTable(InspirationsBuilding.plainMulch);
 		this.registerDropSelfLootTable(InspirationsBuilding.blackMulch);
@@ -131,7 +123,16 @@ public class InspirationsBlockLootTable extends BlockLootTables {
 				));
 	}
 
-
+	private LootTable.Builder enlightenedBush(Block bush) {
+		return LootTable.builder()
+				// No explosion check, since that's not going to pass a
+				// tool check.
+				.addLootPool(LootPool.builder()
+						.addEntry(ItemLootEntry.builder(bush)
+								.acceptFunction(FillTexturedBlockLootFunction::new))
+						.acceptCondition(SILK_TOUCH_OR_SHEARS)
+				);
+	}
 
 	private void addTools() {
 		// func_218482 = droppingNothing()
@@ -163,11 +164,11 @@ public class InspirationsBlockLootTable extends BlockLootTables {
 			// We don't use these values.
 			Item carpet = trapdoor.getPickBlock(null, null, null, null, null).getItem();
 			this.registerLootTable(trapdoor, LootTable.builder()
-				.addLootPool(withExplosionDecay(trapdoor, LootPool.builder()
-						.addEntry(ItemLootEntry.builder(Items.STONE_PRESSURE_PLATE))
-				))
-				.addLootPool(withExplosionDecay(carpet, LootPool.builder()
+				.addLootPool(withSurvivesExplosion(trapdoor, LootPool.builder()
 						.addEntry(ItemLootEntry.builder(carpet))
+				))
+				.addLootPool(withSurvivesExplosion(carpet, LootPool.builder()
+						.addEntry(ItemLootEntry.builder(Items.STONE_PRESSURE_PLATE))
 				))
 			);
 		}
