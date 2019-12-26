@@ -152,12 +152,13 @@ public class InspirationsTweaks extends PulseBase {
 		if (Config.waterlogHopper.get()) {
 			// We need to inject our replacement hopper blocks into the valid ones for the TE type.
 			// It's an immutable set, so we need to replace it entirely.
-			// TODO: This isn't thread-safe with any other mods doing the same!
-			TileEntityType.HOPPER.validBlocks = new ImmutableSet.Builder<Block>()
-					.addAll(TileEntityType.HOPPER.validBlocks)
-					.add(dryHopper)
-					.add(wetHopper)
-					.build();
+			synchronized(TileEntityType.HOPPER) {
+				TileEntityType.HOPPER.validBlocks = new ImmutableSet.Builder<Block>()
+						.addAll(TileEntityType.HOPPER.validBlocks)
+						.add(dryHopper)
+						.add(wetHopper)
+						.build();
+			}
 		}
 	}
 
