@@ -1,0 +1,27 @@
+{
+  "conditions": [
+    {
+      "pulse": "InspirationsBuilding",
+      "type": "inspirations:pulse_loaded"
+    },
+    {
+      "prop": "path",
+      "type": "inspirations:config"
+    }
+  ],
+  "pattern": [
+    " S ",
+    "S S",
+    " S "
+  ],
+  "key": {
+    "S": {
+      "tag": "forge:stone"
+    }
+  },
+  "result": {
+    "item": "inspirations:round_path",
+    "count": 6
+  },
+  "type": "minecraft:crafting_shaped"
+}

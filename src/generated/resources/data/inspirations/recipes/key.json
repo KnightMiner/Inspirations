@@ -1,0 +1,28 @@
+{
+  "conditions": [
+    {
+      "pulse": "InspirationsTools",
+      "type": "inspirations:pulse_loaded"
+    },
+    {
+      "prop": "lock",
+      "type": "inspirations:config"
+    }
+  ],
+  "mirrored": true,
+  "pattern": [
+    "IN"
+  ],
+  "key": {
+    "I": {
+      "tag": "forge:ingots/iron"
+    },
+    "N": {
+      "tag": "forge:nuggets/iron"
+    }
+  },
+  "result": {
+    "item": "inspirations:key"
+  },
+  "type": "minecraft:crafting_shaped"
+}

@@ -1,0 +1,45 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "inspirations:fill_textured_block"
+            }
+          ],
+          "name": "inspirations:white_enlightened_bush"
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:alternative",
+          "terms": [
+            {
+              "condition": "minecraft:match_tool",
+              "predicate": {
+                "item": "minecraft:shears"
+              }
+            },
+            {
+              "condition": "minecraft:match_tool",
+              "predicate": {
+                "enchantments": [
+                  {
+                    "enchantment": "minecraft:silk_touch",
+                    "levels": {
+                      "min": 1
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

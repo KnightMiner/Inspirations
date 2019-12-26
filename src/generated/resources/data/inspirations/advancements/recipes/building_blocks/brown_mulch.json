@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "inspirations:brown_mulch"
+    ]
+  },
+  "criteria": {
+    "has_mulch": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "inspirations:plain_mulch"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "inspirations:brown_mulch"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_mulch",
+      "has_the_recipe"
+    ]
+  ]
+}

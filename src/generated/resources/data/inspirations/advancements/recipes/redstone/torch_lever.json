@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "inspirations:torch_lever"
+    ]
+  },
+  "criteria": {
+    "has_lever": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "minecraft:torch"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "inspirations:torch_lever"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_lever",
+      "has_the_recipe"
+    ]
+  ]
+}

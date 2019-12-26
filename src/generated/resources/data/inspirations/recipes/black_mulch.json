@@ -1,0 +1,24 @@
+{
+  "conditions": [
+    {
+      "pulse": "InspirationsBuilding",
+      "type": "inspirations:pulse_loaded"
+    },
+    {
+      "prop": "mulch",
+      "type": "inspirations:config"
+    }
+  ],
+  "ingredients": [
+    {
+      "item": "inspirations:plain_mulch"
+    },
+    {
+      "tag": "forge:dyes/black"
+    }
+  ],
+  "result": {
+    "item": "inspirations:black_mulch"
+  },
+  "type": "minecraft:crafting_shapeless"
+}

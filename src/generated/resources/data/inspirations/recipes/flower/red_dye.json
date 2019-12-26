@@ -1,0 +1,22 @@
+{
+  "conditions": [
+    {
+      "pulse": "InspirationsBuilding",
+      "type": "inspirations:pulse_loaded"
+    },
+    {
+      "prop": "flowers",
+      "type": "inspirations:config"
+    }
+  ],
+  "group": "minecraft:red_dye",
+  "ingredients": [
+    {
+      "item": "inspirations:rose"
+    }
+  ],
+  "result": {
+    "item": "minecraft:red_dye"
+  },
+  "type": "minecraft:crafting_shapeless"
+}

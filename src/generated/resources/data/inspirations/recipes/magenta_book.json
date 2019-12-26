@@ -1,0 +1,25 @@
+{
+  "conditions": [
+    {
+      "pulse": "InspirationsBuilding",
+      "type": "inspirations:pulse_loaded"
+    },
+    {
+      "prop": "colored_books",
+      "type": "inspirations:config"
+    }
+  ],
+  "group": "inspirations:colored_book",
+  "ingredients": [
+    {
+      "item": "minecraft:book"
+    },
+    {
+      "tag": "forge:dyes/magenta"
+    }
+  ],
+  "result": {
+    "item": "inspirations:magenta_book"
+  },
+  "type": "minecraft:crafting_shapeless"
+}

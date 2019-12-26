@@ -1,0 +1,26 @@
+{
+  "conditions": [
+    {
+      "pulse": "InspirationsBuilding",
+      "type": "inspirations:pulse_loaded"
+    },
+    {
+      "prop": "glass_door",
+      "type": "inspirations:config"
+    }
+  ],
+  "pattern": [
+    "GGG",
+    "GGG"
+  ],
+  "key": {
+    "G": {
+      "item": "minecraft:glass_pane"
+    }
+  },
+  "result": {
+    "item": "inspirations:glass_trapdoor",
+    "count": 2
+  },
+  "type": "minecraft:crafting_shaped"
+}

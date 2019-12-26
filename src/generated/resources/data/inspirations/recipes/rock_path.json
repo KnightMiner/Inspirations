@@ -1,0 +1,25 @@
+{
+  "conditions": [
+    {
+      "pulse": "InspirationsBuilding",
+      "type": "inspirations:pulse_loaded"
+    },
+    {
+      "prop": "path",
+      "type": "inspirations:config"
+    }
+  ],
+  "pattern": [
+    "CC"
+  ],
+  "key": {
+    "C": {
+      "tag": "forge:cobblestone"
+    }
+  },
+  "result": {
+    "item": "inspirations:rock_path",
+    "count": 6
+  },
+  "type": "minecraft:crafting_shaped"
+}

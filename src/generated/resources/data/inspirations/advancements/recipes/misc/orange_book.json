@@ -1,0 +1,43 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "inspirations:orange_book"
+    ]
+  },
+  "criteria": {
+    "has_bookshelf": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "tag": "inspirations:bookshelves"
+          }
+        ]
+      }
+    },
+    "has_comparator": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "minecraft:comparator"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "inspirations:orange_book"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_bookshelf",
+      "has_comparator",
+      "has_the_recipe"
+    ]
+  ]
+}
