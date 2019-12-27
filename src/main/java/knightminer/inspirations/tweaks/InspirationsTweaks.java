@@ -17,6 +17,7 @@ import knightminer.inspirations.tweaks.recipe.NormalBrewingRecipe;
 import knightminer.inspirations.tweaks.util.SmoothGrowthListener;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.ComposterBlock;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.HopperBlock;
 import net.minecraft.dispenser.DefaultDispenseItemBehavior;
@@ -182,6 +183,7 @@ public class InspirationsTweaks extends PulseBase {
 				new NormalBrewingRecipe(Potions.AWKWARD, heartbeet, Potions.REGENERATION, Config::brewHeartbeet
 				));
 
+		registerCompostables();
 		registerDispenserBehavior();
 
 		MinecraftForge.EVENT_BUS.register(TweaksEvents.class);
@@ -196,6 +198,12 @@ public class InspirationsTweaks extends PulseBase {
 	}
 
 	private static final IDispenseItemBehavior DEFAULT = new DefaultDispenseItemBehavior();
+
+	private void registerCompostables() {
+		ComposterBlock.registerCompostable(0.3F, cactusSeeds);
+		ComposterBlock.registerCompostable(0.3F, sugarCaneSeeds);
+		ComposterBlock.registerCompostable(0.8F, heartbeet);
+	}
 
 	private void registerDispenserBehavior() {
 		IDispenseItemBehavior behavior = (source, stack) -> {

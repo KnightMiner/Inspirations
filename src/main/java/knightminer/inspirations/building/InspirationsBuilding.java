@@ -21,6 +21,7 @@ import knightminer.inspirations.common.item.HidableItem;
 import knightminer.inspirations.common.item.TextureBlockItem;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.ComposterBlock;
 import net.minecraft.block.DoublePlantBlock;
 import net.minecraft.block.FlowerPotBlock;
 import net.minecraft.block.SoundType;
@@ -263,6 +264,8 @@ public class InspirationsBuilding extends PulseBase {
 
 	@SubscribeEvent
 	public void init(FMLCommonSetupEvent event) {
+		registerCompostables();
+
 		/*if(Config.enableFlowers.get() && Config.enableCauldronDyeing()) {
 			InspirationsRegistry.addCauldronRecipe(new DyeCauldronRecipe(
 				new ItemStack(flower_rose),
@@ -272,5 +275,17 @@ public class InspirationsBuilding extends PulseBase {
 		}*/
 
 		MinecraftForge.EVENT_BUS.register(BuildingEvents.class);
+	}
+
+	private void registerCompostables() {
+		ComposterBlock.registerCompostable(0.3F, whiteEnlightenedBush);
+		ComposterBlock.registerCompostable(0.3F, redEnlightenedBush);
+		ComposterBlock.registerCompostable(0.3F, greenEnlightenedBush);
+		ComposterBlock.registerCompostable(0.3F, blueEnlightenedBush);
+		ComposterBlock.registerCompostable(0.5F, vine);
+		ComposterBlock.registerCompostable(0.65F, flower_cyan);
+		ComposterBlock.registerCompostable(0.65F, flower_syringa);
+		ComposterBlock.registerCompostable(0.65F, flower_paeonia);
+		ComposterBlock.registerCompostable(0.65F, flower_rose);
 	}
 }
