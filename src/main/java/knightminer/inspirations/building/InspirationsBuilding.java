@@ -180,22 +180,18 @@ public class InspirationsBuilding extends PulseBase {
 		flower_rose = registerBlock(r, new FlowerBlock((DoublePlantBlock) Blocks.ROSE_BUSH), "rose");
 
 		Supplier<FlowerPotBlock> emptyPot = () -> (FlowerPotBlock) Blocks.FLOWER_POT;
-		potted_cyan = registerBlock(r,
-				new FlowerPotBlock(emptyPot, () -> flower_cyan, Block.Properties.from(Blocks.FLOWER_POT)),
-				"potted_cyan"
-		);
-		potted_syringa = registerBlock(r,
-				new FlowerPotBlock(emptyPot, () -> flower_syringa, Block.Properties.from(Blocks.FLOWER_POT)),
-				"potted_syringa"
-		);
-		potted_paeonia = registerBlock(r,
-				new FlowerPotBlock(emptyPot, () -> flower_paeonia, Block.Properties.from(Blocks.FLOWER_POT)),
-				"potted_paeonia"
-		);
-		potted_rose = registerBlock(r,
-				new FlowerPotBlock(emptyPot, () -> flower_rose, Block.Properties.from(Blocks.FLOWER_POT)),
-				"potted_rose"
-		);
+		Block.Properties props = Block.Properties.from(Blocks.FLOWER_POT);
+		potted_cyan = registerBlock(r, new FlowerPotBlock(emptyPot, () -> flower_cyan, props), "potted_cyan");
+		potted_syringa = registerBlock(r, new FlowerPotBlock(emptyPot, () -> flower_syringa, props), "potted_syringa");
+		potted_paeonia = registerBlock(r, new FlowerPotBlock(emptyPot, () -> flower_paeonia, props), "potted_paeonia");
+		potted_rose = registerBlock(r, new FlowerPotBlock(emptyPot, () -> flower_rose, props), "potted_rose");
+
+		// Register the flower items with the empty flower pot block.
+		FlowerPotBlock flowerPot = (FlowerPotBlock) Blocks.FLOWER_POT;
+		flowerPot.addPlant(flower_cyan.getRegistryName(), () -> potted_cyan);
+		flowerPot.addPlant(flower_syringa.getRegistryName(), () -> potted_syringa);
+		flowerPot.addPlant(flower_paeonia.getRegistryName(), () -> potted_paeonia);
+		flowerPot.addPlant(flower_rose.getRegistryName(), () -> potted_rose);
 
 		whiteEnlightenedBush = registerBlock(r, new EnlightenedBushBlock(-1), "white_enlightened_bush");
 		redEnlightenedBush = registerBlock(r, new EnlightenedBushBlock(0xBF0000), "red_enlightened_bush");
@@ -245,12 +241,6 @@ public class InspirationsBuilding extends PulseBase {
 		registerBlockItem(r, flower_syringa, ItemGroup.DECORATIONS);
 		registerBlockItem(r, flower_paeonia, ItemGroup.DECORATIONS);
 		registerBlockItem(r, flower_rose, ItemGroup.DECORATIONS);
-
-		// Register the flower items with the empty flower pot block.
-		((FlowerPotBlock)Blocks.FLOWER_POT).addPlant(flower_cyan.getRegistryName(), () -> potted_cyan);
-		((FlowerPotBlock)Blocks.FLOWER_POT).addPlant(flower_syringa.getRegistryName(), () -> potted_syringa);
-		((FlowerPotBlock)Blocks.FLOWER_POT).addPlant(flower_paeonia.getRegistryName(), () -> potted_paeonia);
-		((FlowerPotBlock)Blocks.FLOWER_POT).addPlant(flower_rose.getRegistryName(), () -> potted_rose);
 
 		Item.Properties deco_props = new Item.Properties().group(ItemGroup.DECORATIONS);
 		registerBlockItem(r, new TextureBlockItem(whiteEnlightenedBush, deco_props, ItemTags.LEAVES));
