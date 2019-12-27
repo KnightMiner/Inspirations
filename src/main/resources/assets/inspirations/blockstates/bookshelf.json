@@ -1,14 +1,18 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "inspirations:block/bookshelf/normal"
-  },
   "variants": {
-    "facing": {
-      "south": {},
-      "west":  { "y":  90 },
-      "north": { "y": 180 },
-      "east":  { "y": 270 }
-    }
+    "pos=back,facing=south": { "model": "inspirations:block/bookshelf/normal_back", "y" :  0 },
+    "pos=back,facing=west":  { "model": "inspirations:block/bookshelf/normal_back", "y":  90 },
+    "pos=back,facing=north": { "model": "inspirations:block/bookshelf/normal_back", "y": 180 },
+    "pos=back,facing=east":  { "model": "inspirations:block/bookshelf/normal_back", "y": 270 },
+
+    "pos=front,facing=south": { "model": "inspirations:block/bookshelf/normal_front", "y" :  0 },
+    "pos=front,facing=west":  { "model": "inspirations:block/bookshelf/normal_front", "y":  90 },
+    "pos=front,facing=north": { "model": "inspirations:block/bookshelf/normal_front", "y": 180 },
+    "pos=front,facing=east":  { "model": "inspirations:block/bookshelf/normal_front", "y": 270 },
+
+    "pos=both,facing=south": { "model": "inspirations:block/bookshelf/normal_both", "y" :  0 },
+    "pos=both,facing=west":  { "model": "inspirations:block/bookshelf/normal_both", "y":  90 },
+    "pos=both,facing=north": { "model": "inspirations:block/bookshelf/normal_both", "y": 180 },
+    "pos=both,facing=east":  { "model": "inspirations:block/bookshelf/normal_both", "y": 270 }
   }
 }

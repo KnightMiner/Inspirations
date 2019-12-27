@@ -1,5 +1,5 @@
 {
-  "parent": "inspirations:block/bookshelf/model/normal",
+  "parent": "inspirations:block/bookshelf/model/normal_front",
   "textures": {
     "texture":    "inspirations:block/mixed_planks",
     "books":      "inspirations:block/books",

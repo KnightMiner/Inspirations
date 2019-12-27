@@ -1,0 +1,8 @@
+{
+  "parent": "inspirations:block/bookshelf/model/normal_back",
+  "textures": {
+    "texture":    "inspirations:block/mixed_planks",
+    "books":      "inspirations:block/books",
+    "bookLabels": "inspirations:block/books_overlay"
+  }
+}
