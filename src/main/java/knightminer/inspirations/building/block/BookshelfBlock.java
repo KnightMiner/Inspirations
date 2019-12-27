@@ -22,12 +22,14 @@ import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.DirectionProperty;
+import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
+import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.Rotation;
@@ -52,13 +54,17 @@ import javax.annotation.Nullable;
 public class BookshelfBlock extends InventoryBlock implements IHidable {
 
 	public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+	public static final EnumProperty<Offset> POSITION = EnumProperty.create("pos", Offset.class);
 
 	public BookshelfBlock() {
 		super(Block.Properties.create(Material.WOOD)
 				.hardnessAndResistance(2.0F, 5.0F)
 				.sound(SoundType.WOOD)
 		);
-		this.setDefaultState(this.getStateContainer().getBaseState().with(FACING, Direction.NORTH));
+		this.setDefaultState(this.getStateContainer().getBaseState()
+				.with(FACING, Direction.NORTH)
+				.with(POSITION, Offset.FRONT)
+		);
 	}
 
 	@Override
@@ -68,7 +74,7 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
 
 	@Override
 	protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-		builder.add(FACING);
+		builder.add(FACING, POSITION);
 	}
 
 	@Nonnull
@@ -87,7 +93,14 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
 	@Nullable
 	@Override
 	public BlockState getStateForPlacement(BlockItemUseContext context) {
-		return getDefaultState().with(FACING, context.getPlacementHorizontalFacing().getOpposite());
+		// Offset from the center of the block.
+		Vec3d offset = context.getHitVec().subtract(new Vec3d(context.getPos()).add(0.5, 0.5, 0.5));
+
+		Direction direction = context.getPlacementHorizontalFacing().getOpposite();
+		// Compute which half of the block the player clicked on.
+		Offset pos = (offset.dotProduct(new Vec3d(direction.getDirectionVec())) > 0) ? Offset.FRONT: Offset.BACK;
+
+		return getDefaultState().with(FACING, direction).with(POSITION, pos);
 	}
 
 	@Override
@@ -330,5 +343,27 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
 			return ((BookshelfTileEntity) te).getEnchantPower();
 		}
 		return 0;
+	}
+
+	public enum Offset implements IStringSerializable {
+		BACK("back"),
+		FRONT("front"),
+		BOTH("both");
+
+		private final String name;
+
+		Offset(String name) {
+			this.name = name;
+		}
+
+		public String toString() {
+			return this.getName();
+		}
+
+		@Nonnull
+		@Override
+		public String getName() {
+			return name;
+		}
 	}
 }
