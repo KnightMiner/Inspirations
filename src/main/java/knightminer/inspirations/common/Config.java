@@ -207,6 +207,7 @@ public class Config {
 	public static BooleanValue milkCooldown;
 	public static IntValue milkCooldownTime;
 	public static BooleanValue customPortalColor;
+	public static BooleanValue waterlogHopper;
 
 	// heartbeet
 	public static BooleanValue enableHeartbeet;
@@ -591,6 +592,12 @@ public class Config {
 					.comment("Replace carpet blocks, allowing them to fit to stairs below them.")
 					.worldRestart()
 					.define("fittedCarpets", true);
+
+			// waterloggable hoppers
+			waterlogHopper = builder_override
+					.comment( "Replace hopper blocks, allowing them to be waterlogged.")
+					.worldRestart()
+					.define("hopper", true);
 
 			// bonemeal
 			builder.push("bonemeal");
