@@ -110,11 +110,6 @@
     "_comment": "Recipes  #",
     "_comment": "############",
 
-    "item.inspirations.cactus_seeds": "Cactus Seeds",
-    "item.inspirations.carrot_seeds": "Carrot Seeds",
-    "item.inspirations.potato_seeds": "Potato Seeds",
-    "item.inspirations.sugar_cane_seeds": "Sugar Cane Seeds",
-
     "item.inspirations.splash_bottle": "Splash Potion Bottle",
     "item.inspirations.lingering_bottle": "Lingering Potion Bottle",
 
@@ -204,6 +199,14 @@
     "_comment": "###########",
     "_comment": "Tweaks  #",
     "_comment": "###########",
+
+    "block.inspirations.cactus": "Cactus",
+    "block.inspirations.sugar_cane": "Sugar Cane",
+
+    "item.inspirations.cactus_seeds": "Cactus Seeds",
+    "item.inspirations.carrot_seeds": "Carrot Seeds",
+    "item.inspirations.potato_seeds": "Potato Seeds",
+    "item.inspirations.sugar_cane_seeds": "Sugar Cane Seeds",
 
     "item.inspirations.heartbeet": "Heartbeet",
     "item.inspirations.silverfish_powder": "Silverfish Powder",
