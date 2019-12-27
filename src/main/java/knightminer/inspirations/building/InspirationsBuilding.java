@@ -22,6 +22,7 @@ import knightminer.inspirations.common.item.TextureBlockItem;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.DoublePlantBlock;
+import net.minecraft.block.FlowerPotBlock;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
@@ -43,6 +44,8 @@ import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.pulsar.pulse.Pulse;
+
+import java.util.function.Supplier;
 
 @Pulse(id = InspirationsBuilding.pulseID, description = "A collection of features to improve building")
 public class InspirationsBuilding extends PulseBase {
@@ -79,6 +82,11 @@ public class InspirationsBuilding extends PulseBase {
 	public static FlowerBlock flower_syringa;
 	public static FlowerBlock flower_paeonia;
 	public static FlowerBlock flower_rose;
+
+	public static FlowerPotBlock potted_cyan;
+	public static FlowerPotBlock potted_syringa;
+	public static FlowerPotBlock potted_paeonia;
+	public static FlowerPotBlock potted_rose;
 
 	public static EnlightenedBushBlock whiteEnlightenedBush;
 	public static EnlightenedBushBlock redEnlightenedBush;
@@ -170,6 +178,20 @@ public class InspirationsBuilding extends PulseBase {
 		flower_syringa = registerBlock(r, new FlowerBlock((DoublePlantBlock) Blocks.LILAC), "syringa");
 		flower_paeonia = registerBlock(r, new FlowerBlock((DoublePlantBlock) Blocks.PEONY), "paeonia");
 		flower_rose = registerBlock(r, new FlowerBlock((DoublePlantBlock) Blocks.ROSE_BUSH), "rose");
+
+		Supplier<FlowerPotBlock> emptyPot = () -> (FlowerPotBlock) Blocks.FLOWER_POT;
+		Block.Properties props = Block.Properties.from(Blocks.FLOWER_POT);
+		potted_cyan = registerBlock(r, new FlowerPotBlock(emptyPot, () -> flower_cyan, props), "potted_cyan");
+		potted_syringa = registerBlock(r, new FlowerPotBlock(emptyPot, () -> flower_syringa, props), "potted_syringa");
+		potted_paeonia = registerBlock(r, new FlowerPotBlock(emptyPot, () -> flower_paeonia, props), "potted_paeonia");
+		potted_rose = registerBlock(r, new FlowerPotBlock(emptyPot, () -> flower_rose, props), "potted_rose");
+
+		// Register the flower items with the empty flower pot block.
+		FlowerPotBlock flowerPot = (FlowerPotBlock) Blocks.FLOWER_POT;
+		flowerPot.addPlant(flower_cyan.getRegistryName(), () -> potted_cyan);
+		flowerPot.addPlant(flower_syringa.getRegistryName(), () -> potted_syringa);
+		flowerPot.addPlant(flower_paeonia.getRegistryName(), () -> potted_paeonia);
+		flowerPot.addPlant(flower_rose.getRegistryName(), () -> potted_rose);
 
 		whiteEnlightenedBush = registerBlock(r, new EnlightenedBushBlock(-1), "white_enlightened_bush");
 		redEnlightenedBush = registerBlock(r, new EnlightenedBushBlock(0xBF0000), "red_enlightened_bush");
