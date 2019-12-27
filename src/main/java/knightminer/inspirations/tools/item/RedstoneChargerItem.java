@@ -10,6 +10,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
+import net.minecraft.item.Items;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
@@ -30,9 +31,6 @@ public class RedstoneChargerItem extends Item {
 		);
 	}
 
-	/**
-	 * Called when a Block is right-clicked with this Item
-	 */
 	@Nonnull
 	@Override
 	public ActionResultType onItemUse(ItemUseContext context) {
@@ -75,5 +73,10 @@ public class RedstoneChargerItem extends Item {
 		// damage it and return
 		stack.damageItem(1, context.getPlayer(), player -> player.sendBreakAnimation(context.getHand()));
 		return ActionResultType.SUCCESS;
+	}
+
+	@Override
+	public boolean getIsRepairable(ItemStack toRepair, ItemStack repair) {
+		return repair.getItem() == Items.REDSTONE;
 	}
 }
