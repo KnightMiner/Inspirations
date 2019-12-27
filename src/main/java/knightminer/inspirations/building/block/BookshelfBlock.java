@@ -1,6 +1,7 @@
 package knightminer.inspirations.building.block;
 
 import com.google.common.collect.ImmutableMap;
+import com.mojang.datafixers.util.Pair;
 import knightminer.inspirations.building.tileentity.BookshelfTileEntity;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.IHidable;
@@ -145,6 +146,13 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
 
 		// skip opposite, not needed as the back is never clicked for books
 		if(facing.getOpposite() == trace.getFace()) {
+			if (state.get(POSITION) != Offset.BOTH && player.getHeldItemMainhand().getItem() == asItem()) {
+				if (!world.isRemote) {
+					player.getHeldItemMainhand().setCount(player.getHeldItemMainhand().getCount() - 1);
+					return world.setBlockState(pos, state.with(POSITION, Offset.BOTH));
+				}
+				return true;
+			}
 			return false;
 		}
 
@@ -217,32 +225,52 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
 	/*
 	 * Bounds
 	 */
-	private static final ImmutableMap<Direction, VoxelShape> BOUNDS;
+	private static final ImmutableMap<Pair<Direction, Offset>, VoxelShape> BOUNDS;
+
+	/**
+	 * Compute a voxelshape, rotated by the provided direction.
+	 */
+	private static VoxelShape makeRotatedShape(Direction side, int x1, int y1, int z1, int x2, int y2, int z2) {
+		float yaw = -(float) Math.PI / 2F * side.getHorizontalIndex();
+		Vec3d min = new Vec3d(x1 - 8, y1 - 8, z1 - 8).rotateYaw(yaw);
+		Vec3d max = new Vec3d(x2 - 8, y2 - 8, z2 - 8).rotateYaw(yaw);
+		return VoxelShapes.create(
+				0.5 + min.x / 16.0, 0.5 + min.y / 16.0, 0.5 + min.z / 16.0,
+				0.5 + max.x / 16.0, 0.5 + max.y / 16.0, 0.5 + max.z / 16.0
+		);
+	}
 
 	static {
 		// shelf bounds
-		ImmutableMap.Builder<Direction, VoxelShape> builder = ImmutableMap.builder();
+		ImmutableMap.Builder<Pair<Direction, Offset>, VoxelShape> builder = ImmutableMap.builder();
 		for(Direction side : Direction.Plane.HORIZONTAL) {
-			// Construct the shelf by constructing a half slab, then cutting out the two shelves.
-
-			// Exterior slab shape. For each direction, do 0.1 if the side is pointing that way.
-			int offX = side.getXOffset();
-			int offZ = side.getZOffset();
-			double x1 = offX == -1 ? 0.5 : 0;
-			double z1 = offZ == -1 ? 0.5 : 0;
-			double x2 = offX == 1 ? 0.5 : 1;
-			double z2 = offZ == 1 ? 0.5 : 1;
-
-			// Rotate the 2 X-Z points correctly for the inset shelves.
-			Vec3d min = new Vec3d(-7 / 16.0, 0, -7 / 16.0).rotateYaw(-(float) Math.PI / 2F * side.getHorizontalIndex());
-			Vec3d max = new Vec3d(7 / 16.0, 1, 0).rotateYaw(-(float) Math.PI / 2F * side.getHorizontalIndex());
-
-			// Then assemble.
-			builder.put(side, VoxelShapes.combineAndSimplify(
-					VoxelShapes.create(x1, 0, z1, x2, 1, z2), // Full half slab
-					VoxelShapes.or( // Then the two shelves.
-							VoxelShapes.create(0.5 + min.x, 1 / 16.0, 0.5 + min.z, 0.5 + max.x, 7 / 16.0, 0.5 + max.z),
-							VoxelShapes.create(0.5 + min.x, 9 / 16.0, 0.5 + min.z, 0.5 + max.x, 15 / 16.0, 0.5 + max.z)
+			// Construct the shelf by constructing the full block, then cutting out the shelves.
+			// +Z is forward.
+			builder.put(Pair.of(side, Offset.BACK), VoxelShapes.combineAndSimplify(
+					// Slab
+					makeRotatedShape(side,0, 0, 0, 16, 16, 8),
+					VoxelShapes.or( // Bottom, top.
+						makeRotatedShape(side,1,1, 1, 15, 7, 8),
+						makeRotatedShape(side,1,9, 1, 15, 15, 8)
+					),
+					IBooleanFunction.ONLY_FIRST
+			));
+			builder.put(Pair.of(side, Offset.FRONT), VoxelShapes.combineAndSimplify(
+					// Slab
+					makeRotatedShape(side,0, 0, 8, 16, 16, 16),
+					VoxelShapes.or( // Bottom, top.
+						makeRotatedShape(side,1,1, 9, 15, 7, 16),
+						makeRotatedShape(side,1,9, 9, 15, 15, 16)
+					),
+					IBooleanFunction.ONLY_FIRST
+			));
+			builder.put(Pair.of(side, Offset.BOTH), VoxelShapes.combineAndSimplify(
+					VoxelShapes.fullCube(),
+					VoxelShapes.or( // Bottom back, top back, bottom front, top front
+						makeRotatedShape(side,1,1, 0, 15, 7, 7),
+						makeRotatedShape(side,1,9, 0, 15, 15, 7),
+						makeRotatedShape(side,1,1, 9, 15, 7, 16),
+						makeRotatedShape(side,1,9, 9, 15, 15, 16)
 					),
 					IBooleanFunction.ONLY_FIRST
 			));
@@ -254,7 +282,7 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
 	@Nonnull
 	@Override
 	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-		return BOUNDS.get(state.get(FACING));
+		return BOUNDS.get(Pair.of(state.get(FACING), state.get(POSITION)));
 	}
 
 	/*
