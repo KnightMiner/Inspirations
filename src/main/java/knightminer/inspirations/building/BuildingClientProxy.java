@@ -11,9 +11,11 @@ import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.client.ClientUtil;
 import knightminer.inspirations.library.util.TextureBlockUtil;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
+import net.minecraft.client.renderer.BlockModelShapes;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
@@ -184,8 +186,8 @@ public class BuildingClientProxy extends ClientProxy {
 		if (shelf.getRegistryName() == null) {
 			throw new AssertionError("Null registry name");
 		}
-		for(Direction facing : Direction.Plane.HORIZONTAL){
-			ModelResourceLocation location = new ModelResourceLocation(shelf.getRegistryName(), String.format("facing=%s", facing.getName()));
+		for (BlockState state:shelf.getStateContainer().getValidStates()) {
+			ModelResourceLocation location = BlockModelShapes.getModelLocation(shelf.getRegistryName(), state);
 			replaceModel(event, location, BookshelfModel::new);
 		}
 		replaceTexturedModel(event, new ModelResourceLocation(shelf.getRegistryName(), "inventory"), "texture",true);
