@@ -1,6 +1,7 @@
 package knightminer.inspirations.building.tileentity;
 
 import knightminer.inspirations.building.InspirationsBuilding;
+import knightminer.inspirations.building.block.BookshelfBlock;
 import knightminer.inspirations.building.inventory.BookshelfContainer;
 import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.common.network.InventorySlotSyncPacket;
@@ -39,12 +40,20 @@ public class BookshelfTileEntity extends InventoryTileEntity {
 	public static ITextComponent TITLE = new TranslationTextComponent("gui.inspirations.bookshelf.name");
 
 	public BookshelfTileEntity() {
-		super(InspirationsBuilding.tileBookshelf, TITLE, 14, 1);
+		super(InspirationsBuilding.tileBookshelf, TITLE, 28, 1);
 		enchantBonus = Float.NaN;
 	}
 
 	@Override
-	public void setInventorySlotContents(int slot, ItemStack itemstack) {
+	public int getSizeInventory() {
+		return BookshelfBlock.getBookCount(world != null ? world.getBlockState(pos) : null);
+	}
+
+	@Override
+	public void setInventorySlotContents(int slot, @Nonnull ItemStack itemstack) {
+		if (slot > getSizeInventory()) {
+			return;
+		}
 		ItemStack oldStack = this.getStackInSlot(slot);
 
 		// we sync slot changes to all clients around
@@ -139,8 +148,8 @@ public class BookshelfTileEntity extends InventoryTileEntity {
 			}
 		}
 
-		// divide by 14 since that is the number of books in a shelf
-		enchantBonus = books / 14;
+		// divide by the inventory size.
+		enchantBonus = books / getSizeInventory();
 		return enchantBonus;
 	}
 
@@ -152,7 +161,7 @@ public class BookshelfTileEntity extends InventoryTileEntity {
 	public IModelData getModelData() {
 		// pack books into integer
 		int books = 0;
-		for(int i = 0; i < 14; i++) {
+		for(int i = 0; i < getSizeInventory(); i++) {
 			if (isStackInSlot(i)) {
 				books |= 1 << i;
 			}

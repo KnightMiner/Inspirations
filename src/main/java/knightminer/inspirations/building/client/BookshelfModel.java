@@ -4,6 +4,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableMap;
 import knightminer.inspirations.Inspirations;
+import knightminer.inspirations.building.block.BookshelfBlock;
 import knightminer.inspirations.building.tileentity.BookshelfTileEntity;
 import knightminer.inspirations.shared.client.TextureModel;
 import net.minecraft.block.BlockState;
@@ -44,7 +45,8 @@ public class BookshelfModel extends TextureModel {
 				if(texture != null) {
 					builder.put("texture", texture);
 				}
-				for(int i = 0; i < 14; i++) {
+				int bookLen = BookshelfBlock.getBookCount(state);
+				for(int i = 0; i < bookLen; i++) {
 					// if there is no book in the slot, remove the texture so the quad is removed
 					if((books & (1 << i)) == 0) {
 						builder.put("#book" + i, "");

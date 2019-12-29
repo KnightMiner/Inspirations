@@ -68,6 +68,19 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
 		);
 	}
 
+	/**
+	 * Return the number of books this shelf can hold.
+	 * @param state The relevant blockstate.
+	 * @return The book count.
+	 */
+	public static int getBookCount(@Nullable BlockState state) {
+		if (state != null && state.get(BookshelfBlock.POSITION) == BookshelfBlock.Offset.BOTH) {
+			return 28;
+		} else {
+			return 14;
+		}
+	}
+
 	@Override
 	public boolean hasTileEntity(BlockState state) {
 		return true;

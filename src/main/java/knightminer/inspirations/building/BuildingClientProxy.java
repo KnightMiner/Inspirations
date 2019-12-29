@@ -24,7 +24,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.resources.IReloadableResourceManager;
 import net.minecraft.resources.IResourceManager;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
 import net.minecraft.world.FoliageColors;
 import net.minecraft.world.biome.BiomeColors;
 import net.minecraftforge.client.event.ColorHandlerEvent;
@@ -64,7 +63,7 @@ public class BuildingClientProxy extends ClientProxy {
 
 		// coloring of books for normal bookshelf
 		blockColors.register((state, world, pos, tintIndex) -> {
-			if(tintIndex > 0 && tintIndex <= 14 && world != null && pos != null) {
+			if(tintIndex > 0 && tintIndex <= BookshelfBlock.getBookCount(state) && world != null && pos != null) {
 				TileEntity te = world.getTileEntity(pos);
 				if(te instanceof BookshelfTileEntity) {
 					ItemStack stack = ((BookshelfTileEntity) te).getStackInSlot(tintIndex - 1);
