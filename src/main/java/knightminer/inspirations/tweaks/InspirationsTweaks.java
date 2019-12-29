@@ -1,16 +1,26 @@
 package knightminer.inspirations.tweaks;
 
+import com.google.common.collect.ImmutableSet;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.common.item.HidableItem;
+import knightminer.inspirations.library.Util;
+import knightminer.inspirations.tweaks.block.BlockCropBlock;
+import knightminer.inspirations.tweaks.block.CactusCropBlock;
+import knightminer.inspirations.tweaks.block.DryHopperBlock;
 import knightminer.inspirations.tweaks.block.FittedCarpetBlock;
 import knightminer.inspirations.tweaks.block.FlatCarpetBlock;
+import knightminer.inspirations.tweaks.block.SugarCaneCropBlock;
+import knightminer.inspirations.tweaks.block.WetHopperBlock;
 import knightminer.inspirations.tweaks.datagen.TweaksRecipeProvider;
+import knightminer.inspirations.tweaks.item.SeedItem;
 import knightminer.inspirations.tweaks.recipe.NormalBrewingRecipe;
+import knightminer.inspirations.tweaks.util.SmoothGrowthListener;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.CropsBlock;
+import net.minecraft.block.ComposterBlock;
 import net.minecraft.block.DispenserBlock;
+import net.minecraft.block.HopperBlock;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.dispenser.DefaultDispenseItemBehavior;
 import net.minecraft.dispenser.IDispenseItemBehavior;
@@ -20,10 +30,12 @@ import net.minecraft.item.DyeColor;
 import net.minecraft.item.Food;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.item.Items;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.potion.Potions;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
@@ -49,12 +61,14 @@ public class InspirationsTweaks extends PulseBase {
 	// blocks
 	public static FittedCarpetBlock[] fitCarpets = new FittedCarpetBlock[16];
 	public static FlatCarpetBlock[] flatCarpets = new FlatCarpetBlock[16];
-	public static CropsBlock cactusCrop;
-	public static CropsBlock sugarCaneCrop;
+	public static BlockCropBlock cactus;
+	public static BlockCropBlock sugarCane;
+	public static HopperBlock wetHopper;
+	public static HopperBlock dryHopper;
 
 	// items
-	public static Item potatoSeeds;
-	public static Item carrotSeeds;
+	//public static Item potatoSeeds;
+	//public static Item carrotSeeds;
 	public static Item sugarCaneSeeds;
 	public static Item cactusSeeds;
 	//public static Item silverfishPowder;
@@ -84,8 +98,13 @@ public class InspirationsTweaks extends PulseBase {
 			registerCarpet(r, DyeColor.BLACK, Blocks.BLACK_CARPET);
 		}
 
-		//cactusCrop = register(r, new CactusCropBlock(), "cactus_crop");
-		//sugarCaneCrop = register(r, new BlockSugarCaneCrop(), "sugar_cane_crop");
+		if (Config.waterlogHopper.get()) {
+			dryHopper = register(r, new DryHopperBlock(Block.Properties.from(Blocks.HOPPER)), Blocks.HOPPER.getRegistryName());
+			wetHopper = register(r, new WetHopperBlock(Block.Properties.from(Blocks.HOPPER)), Util.getResource("wet_hopper"));
+		}
+
+		cactus = register(r, new CactusCropBlock(), "cactus");
+		sugarCane = register(r, new SugarCaneCropBlock(), "sugar_cane");
 	}
 
 	private void registerCarpet(IForgeRegistry<Block> r, DyeColor color, Block origCarpet) {
@@ -110,17 +129,15 @@ public class InspirationsTweaks extends PulseBase {
 			}
 		}
 
+		if (Config.waterlogHopper.get()) {
+			register(r, new BlockItem(dryHopper, new Item.Properties().group(ItemGroup.REDSTONE)), Items.HOPPER.getRegistryName());
+		}
+
+		Item.Properties props = new Item.Properties().group(ItemGroup.FOOD);
+		cactusSeeds = registerItem(r, new SeedItem(cactus, props), "cactus_seeds");
+		sugarCaneSeeds = registerItem(r, new SeedItem(sugarCane, props), "sugar_cane_seeds");
+
 		/*
-		cactusSeeds = registerItem(r, new HidableBlockItem(
-				InspirationsTweaks.cactusCrop,
-				new Item.Properties().group(ItemGroup.FOOD)
-		), "cactus_seeds");
-
-		sugarCaneSeeds = registerItem(r, new HidableBlockItem(
-				InspirationsTweaks.sugarCaneCrop,
-				new Item.Properties().group(ItemGroup.FOOD)
-		), "sugar_cane_seeds");
-
 		carrotSeeds = registerItem(r, new SeedItem((CropsBlock) Blocks.CARROTS, PlantType.Crop), "carrot_seeds");
 		potatoSeeds = registerItem(r, new SeedItem((CropsBlock) Blocks.POTATOES, PlantType.Crop), "potato_seeds");
 		*/
@@ -134,6 +151,21 @@ public class InspirationsTweaks extends PulseBase {
 //				new Item.Properties().group(ItemGroup.BREWING),
 //				() -> false // TODO: Make this have a purpose...
 //		),  "silverfish_powder");
+	}
+
+	@SubscribeEvent
+	public void registerTileEntities(Register<TileEntityType<?>> event) {
+		if (Config.waterlogHopper.get()) {
+			// We need to inject our replacement hopper blocks into the valid ones for the TE type.
+			// It's an immutable set, so we need to replace it entirely.
+			synchronized(TileEntityType.HOPPER) {
+				TileEntityType.HOPPER.validBlocks = new ImmutableSet.Builder<Block>()
+						.addAll(TileEntityType.HOPPER.validBlocks)
+						.add(dryHopper)
+						.add(wetHopper)
+						.build();
+			}
+		}
 	}
 
 	@SubscribeEvent
@@ -154,9 +186,12 @@ public class InspirationsTweaks extends PulseBase {
 				new NormalBrewingRecipe(Potions.AWKWARD, heartbeet, Potions.REGENERATION, Config::brewHeartbeet
 				));
 
+		registerCompostables();
 		registerDispenserBehavior();
 
 		MinecraftForge.EVENT_BUS.register(TweaksEvents.class);
+		MinecraftForge.EVENT_BUS.addListener(new SmoothGrowthListener(Blocks.CACTUS, cactus, false));
+		MinecraftForge.EVENT_BUS.addListener(new SmoothGrowthListener(Blocks.SUGAR_CANE, sugarCane, true));
 	}
 
 	@SubscribeEvent
@@ -175,6 +210,12 @@ public class InspirationsTweaks extends PulseBase {
 	}
 
 	private static final IDispenseItemBehavior DEFAULT = new DefaultDispenseItemBehavior();
+
+	private void registerCompostables() {
+		ComposterBlock.registerCompostable(0.3F, cactusSeeds);
+		ComposterBlock.registerCompostable(0.3F, sugarCaneSeeds);
+		ComposterBlock.registerCompostable(0.8F, heartbeet);
+	}
 
 	private void registerDispenserBehavior() {
 		IDispenseItemBehavior behavior = (source, stack) -> {

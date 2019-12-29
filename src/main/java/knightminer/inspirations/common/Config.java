@@ -207,6 +207,7 @@ public class Config {
 	public static BooleanValue milkCooldown;
 	public static IntValue milkCooldownTime;
 	public static BooleanValue customPortalColor;
+	public static BooleanValue waterlogHopper;
 
 	// heartbeet
 	public static BooleanValue enableHeartbeet;
@@ -217,7 +218,14 @@ public class Config {
 	public static IntValue heartbeetChance;
 
 	// seeds
-	public static BooleanValue enableMoreSeeds;
+	public static BooleanValue enableBlockCrops;
+	private static BooleanValue smoothBlockCropGrowth;
+	public static BooleanValue bonemealBlockCrop;
+	public static boolean smoothBlockCropGrowth() {
+		return enableBlockCrops.get() && smoothBlockCropGrowth.get();
+	}
+	public static BooleanValue nerfCactusFarms;
+//  public static BooleanValue enableMoreSeeds;
 //	private static BooleanValue addGrassDrops;
 //	private static BooleanValue nerfCarrotPotatoDrops;
 //	public static boolean addGrassDrops() {
@@ -585,6 +593,12 @@ public class Config {
 					.worldRestart()
 					.define("fittedCarpets", true);
 
+			// waterloggable hoppers
+			waterlogHopper = builder_override
+					.comment( "Replace hopper blocks, allowing them to be waterlogged.")
+					.worldRestart()
+					.define("hopper", true);
+
 			// bonemeal
 			builder.push("bonemeal");
 			bonemealMushrooms = builder
@@ -651,18 +665,44 @@ public class Config {
 					.define("unstackableRecipeAlts", true);
 
 			// seeds
-			/*
-			enableMoreSeeds = builder
-					.comment("Adds seeds for additional vanilla plants, including cactus, sugar cane, carrots, and potatoes.")
-					.worldRestart()
-					.define("moreSeeds.enable", true);
-			addGrassDrops = builder
-					.comment("Makes carrot and potato seeds drop from grass")
-					.define("moreSeeds.grassDrops", true);
-			nerfCarrotPotatoDrops = builder
-					.comment("Makes carrots and potatoes drop their respective seed if not fully grown")
-					.define("moreSeeds.nerfCarrotPotatoDrops", true);
-			 */
+			builder.push("seeds");
+			{
+				builder.push("blockCrops");
+				{
+					enableBlockCrops = builder
+							.comment("If true, adds seeds for cactus and sugar cane, useful for recipes for the crops")
+							.worldRestart()
+							.define("enable", true);
+					smoothBlockCropGrowth = builder
+							.comment("If true, cactus and sugar cane will grow in 2 pixel increments using the block crops")
+							.define("smoothGrowth", true);
+					bonemealBlockCrop = builder
+							.comment("If true, allows bonemeal to be used to speed block crop growth")
+							.define("bonemeal", false);
+					nerfCactusFarms = builder
+							.comment("If false, cactus seeds planted on cactus have fewer restrictions.",
+											 "Setting to true means cactus seeds are broken by neighboring blocks, meaning classic cactus farms will drop cactus seeds instead of full cactus.")
+							.define("nerfCactusFarms", false);
+				}
+				builder.pop();
+				/*
+				builder.push("veggies");
+				{
+					enableMoreSeeds = builder
+							.comment("Adds seeds for carrots and potatoes.")
+							.worldRestart()
+							.define("enable", true);
+					addGrassDrops = builder
+							.comment("Makes carrot and potato seeds drop from grass")
+							.define("grassDrops", true);
+					nerfCarrotPotatoDrops = builder
+							.comment("Makes carrots and potatoes drop their respective seed if not fully grown")
+							.define("nerfCarrotPotatoDrops", true);
+				}
+				builder.pop();
+				 */
+			}
+			builder.pop();
 
 			// milk cooldown
 			milkCooldown = builder

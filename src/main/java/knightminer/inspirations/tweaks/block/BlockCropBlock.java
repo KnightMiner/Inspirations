@@ -7,42 +7,32 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.CropsBlock;
 import net.minecraft.state.IntegerProperty;
 import net.minecraft.state.StateContainer;
-import net.minecraft.util.Direction;
-import net.minecraft.util.IItemProvider;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorldReader;
+import net.minecraft.world.World;
 import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.PlantType;
-import net.minecraftforge.registries.IRegistryDelegate;
 
 import javax.annotation.Nonnull;
+import java.util.Random;
+import java.util.function.Supplier;
 
 public abstract class BlockCropBlock extends CropsBlock implements IHidable, IPlantable {
-	protected IRegistryDelegate<Block> block;
-	protected PlantType type;
-	protected final VoxelShape[] shape;
+
 	public static final IntegerProperty SMALL_AGE = IntegerProperty.create("age", 0, 6);
 
-	public BlockCropBlock(Block block, PlantType type, VoxelShape[] shape, Block.Properties props) {
+	protected Supplier<Block> block;
+	protected PlantType type;
+
+	public BlockCropBlock(Supplier<Block> block, PlantType type, Properties props) {
 		super(props);
-		this.block = block.delegate;
-		this.shape = shape;
+		this.block = block;
 		this.type = type;
 	}
 
-	@Override
-	public boolean isEnabled() {
-		return Config.enableMoreSeeds.get();
-	}
-
-	@Deprecated
-	@Override
-	public boolean isValidPosition(@Nonnull BlockState state, IWorldReader world, BlockPos pos) {
-		BlockState soil = world.getBlockState(pos.down());
-		return soil.canSustainPlant(world, pos, Direction.UP, this);
+	public BlockCropBlock(Block block, PlantType type) {
+		this(block.delegate, type, Properties.from(block));
 	}
 
 	/* Age logic */
@@ -74,27 +64,38 @@ public abstract class BlockCropBlock extends CropsBlock implements IHidable, IPl
 		return false;
 	}
 
-	@Nonnull
-	@Override
-	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-		return shape[this.getAge(state)];
-	}
-
-	@Deprecated
-	@Nonnull
-	@Override
-	public VoxelShape getRaytraceShape(@Nonnull BlockState state, @Nonnull IBlockReader world, @Nonnull BlockPos pos) {
-		return shape[this.getAge(state)];
-	}
-
-	/* Crop drops */
-
-	@Nonnull
-	@Override
-	protected abstract IItemProvider getSeedsItem();
-
+	/* Crop logic */
 	@Override
 	public PlantType getPlantType(IBlockReader world, BlockPos pos) {
 		return type;
+	}
+
+	@Deprecated
+	@Override
+	public boolean isValidPosition(@Nonnull BlockState state, IWorldReader world, @Nonnull BlockPos pos) {
+		return block.get().isValidPosition(block.get().getDefaultState(), world, pos);
+	}
+
+	@Override
+	public boolean canUseBonemeal(World worldIn, Random rand, BlockPos pos, BlockState state) {
+		return Config.bonemealBlockCrop.get();
+	}
+
+	/**
+	 * Gets an IPlantable for this plant
+	 * @return  The base block's plantable, or this if the base block is not plantable
+	 */
+	protected IPlantable getPlant() {
+		Block block = this.block.get();
+		if (block instanceof IPlantable) {
+			return (IPlantable)block;
+		}
+		return this;
+	}
+
+	/* Hidable */
+	@Override
+	public boolean isEnabled() {
+		return Config.enableBlockCrops.get();
 	}
 }

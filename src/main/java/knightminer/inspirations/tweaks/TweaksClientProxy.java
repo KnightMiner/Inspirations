@@ -93,7 +93,7 @@ public class TweaksClientProxy extends ClientProxy {
 				return -1;
 			}
 			return BiomeColors.getGrassColor(world, pos);
-		}, InspirationsTweaks.sugarCaneCrop);
+		}, InspirationsTweaks.sugarCane);
 
 		// portal tinting
 		registerBlockColors(colors, PortalColorHandler.INSTANCE, Blocks.NETHER_PORTAL);
