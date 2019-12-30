@@ -58,22 +58,6 @@ public class InspirationsBlockLootTable extends BlockLootTables {
 		}
 	}
 
-	private LootTable.Builder droppingWithNameAndTexture(Block block) {
-		return LootTable.builder()
-				.addLootPool(withSurvivesExplosion(block, LootPool.builder()
-						.addEntry(ItemLootEntry.builder(block)
-								.acceptFunction(CopyName.builder(CopyName.Source.BLOCK_ENTITY))
-								.acceptFunction(FillTexturedBlockLootFunction::new)
-						)));
-	}
-
-	private void registerRedirect(Block block, Block originalBlock) {
-		this.registerLootTable(block, LootTable.builder()
-				.addLootPool(LootPool.builder()
-						.addEntry(TableLootEntry.builder(originalBlock.getLootTable()))
-				));
-	}
-
 	private void addBuilding() {
 		this.registerLootTable(InspirationsBuilding.shelf_normal, this::droppingWithNameAndTexture);
 		this.registerLootTable(InspirationsBuilding.shelf_rainbow, this::droppingWithNameAndTexture);
@@ -112,36 +96,6 @@ public class InspirationsBlockLootTable extends BlockLootTables {
 		this.registerLootTable(InspirationsBuilding.rope, this::rope);
 		this.registerLootTable(InspirationsBuilding.chain, this::rope);
 		this.registerLootTable(InspirationsBuilding.vine, this::rope);
-	}
-
-	private LootTable.Builder rope(Block block) {
-		RopeBlock rope = (RopeBlock) block;
-		return LootTable.builder()
-				// The rope block itself
-				.addLootPool(withSurvivesExplosion(block, LootPool.builder()
-						.addEntry(ItemLootEntry.builder(block))
-				))
-				// And, if rungs are present the items for those.
-				.addLootPool(withSurvivesExplosion(block, LootPool.builder()
-						.addEntry(ItemLootEntry.builder(rope.getRungsItem())
-								.acceptFunction(SetCount.builder(ConstantRange.of(RopeBlock.RUNG_ITEM_COUNT)))
-						)
-						.acceptCondition(BlockStateProperty.builder(rope)
-								.with(RopeBlock.RUNGS, RopeBlock.Rungs.NONE)
-								.inverted()
-						)
-				));
-	}
-
-	private LootTable.Builder enlightenedBush(Block bush) {
-		return LootTable.builder()
-				// No explosion check, since that's not going to pass a
-				// tool check.
-				.addLootPool(LootPool.builder()
-						.addEntry(ItemLootEntry.builder(bush)
-								.acceptFunction(FillTexturedBlockLootFunction::new))
-						.acceptCondition(SILK_TOUCH_OR_SHEARS)
-				);
 	}
 
 	private void addTools() {
@@ -188,5 +142,51 @@ public class InspirationsBlockLootTable extends BlockLootTables {
 		this.registerDropSelfLootTable(InspirationsUtility.collector);
 		this.registerDropping(InspirationsUtility.torchLeverFloor, InspirationsUtility.torchLeverItem);
 		this.registerDropping(InspirationsUtility.torchLeverWall, InspirationsUtility.torchLeverItem);
+	}
+
+	private LootTable.Builder rope(Block block) {
+		RopeBlock rope = (RopeBlock) block;
+		return LootTable.builder()
+				// The rope block itself
+				.addLootPool(withSurvivesExplosion(block, LootPool.builder()
+						.addEntry(ItemLootEntry.builder(block))
+				))
+				// And, if rungs are present the items for those.
+				.addLootPool(withSurvivesExplosion(block, LootPool.builder()
+						.addEntry(ItemLootEntry.builder(rope.getRungsItem())
+								.acceptFunction(SetCount.builder(ConstantRange.of(RopeBlock.RUNG_ITEM_COUNT)))
+						)
+						.acceptCondition(BlockStateProperty.builder(rope)
+								.with(RopeBlock.RUNGS, RopeBlock.Rungs.NONE)
+								.inverted()
+						)
+				));
+	}
+
+	private LootTable.Builder enlightenedBush(Block bush) {
+		return LootTable.builder()
+				// No explosion check, since that's not going to pass a
+				// tool check.
+				.addLootPool(LootPool.builder()
+						.addEntry(ItemLootEntry.builder(bush)
+								.acceptFunction(FillTexturedBlockLootFunction::new))
+						.acceptCondition(SILK_TOUCH_OR_SHEARS)
+				);
+	}
+
+	private LootTable.Builder droppingWithNameAndTexture(Block block) {
+		return LootTable.builder()
+				.addLootPool(withSurvivesExplosion(block, LootPool.builder()
+						.addEntry(ItemLootEntry.builder(block)
+								.acceptFunction(CopyName.builder(CopyName.Source.BLOCK_ENTITY))
+								.acceptFunction(FillTexturedBlockLootFunction::new)
+						)));
+	}
+
+	private void registerRedirect(Block block, Block originalBlock) {
+		this.registerLootTable(block, LootTable.builder()
+				.addLootPool(LootPool.builder()
+						.addEntry(TableLootEntry.builder(originalBlock.getLootTable()))
+				));
 	}
 }
