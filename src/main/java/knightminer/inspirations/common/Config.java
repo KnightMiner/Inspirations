@@ -293,9 +293,9 @@ public class Config {
 					.define("ropeLadder", true);
 
 			climbableIronBars = builder_override
-					.comment("Makes iron bars climbale if a rope is below them.")
+					.comment("Makes iron bars climbable if a rope is below them.")
 					.worldRestart()
-					.define("rope.climbaleBars", true);
+					.define("rope.climbableBars", true);
 
 			// glass door
 			enableGlassDoor = builder
