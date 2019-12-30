@@ -99,6 +99,11 @@ public class InspirationsBlockLootTable extends BlockLootTables {
 		this.registerDropSelfLootTable(InspirationsBuilding.flower_paeonia);
 		this.registerDropSelfLootTable(InspirationsBuilding.flower_syringa);
 
+		this.registerFlowerPot(InspirationsBuilding.potted_rose);
+		this.registerFlowerPot(InspirationsBuilding.potted_cyan);
+		this.registerFlowerPot(InspirationsBuilding.potted_paeonia);
+		this.registerFlowerPot(InspirationsBuilding.potted_syringa);
+
 		this.registerDropSelfLootTable(InspirationsBuilding.path_brick);
 		this.registerDropSelfLootTable(InspirationsBuilding.path_rock);
 		this.registerDropSelfLootTable(InspirationsBuilding.path_round);
@@ -153,8 +158,9 @@ public class InspirationsBlockLootTable extends BlockLootTables {
 				);
 			}
 		}
-		// this.registerDropping(InspirationsTweaks.sugarCaneCrop, InspirationsTweaks.sugarCaneSeeds);
-		// this.registerDropping(InspirationsTweaks.cactusCrop, InspirationsTweaks.cactusSeeds);
+		this.registerLootTable(InspirationsTweaks.wetHopper, droppingWithName(InspirationsTweaks.dryHopper));
+		this.registerDropping(InspirationsTweaks.sugarCane, InspirationsTweaks.sugarCaneSeeds);
+		this.registerDropping(InspirationsTweaks.cactus, InspirationsTweaks.cactusSeeds);
 	}
 
 	private void addRecipes() {

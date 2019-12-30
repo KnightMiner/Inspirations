@@ -30,17 +30,23 @@ public class InspirationsBlockTagsProvider extends BlockTagsProvider {
 
 	private void registerInspTags() {
 		this.getBuilder(InspirationsTags.Blocks.MULCH)
-			.add(InspirationsBuilding.plainMulch)
-			.add(InspirationsBuilding.blackMulch)
-			.add(InspirationsBuilding.blueMulch)
-			.add(InspirationsBuilding.brownMulch)
-			.add(InspirationsBuilding.redMulch);
+				.add(InspirationsBuilding.plainMulch)
+				.add(InspirationsBuilding.blackMulch)
+				.add(InspirationsBuilding.blueMulch)
+				.add(InspirationsBuilding.brownMulch)
+				.add(InspirationsBuilding.redMulch);
 
 		this.getBuilder(InspirationsTags.Blocks.SMALL_FLOWERS)
-			.add(InspirationsBuilding.flower_rose)
-			.add(InspirationsBuilding.flower_cyan)
-			.add(InspirationsBuilding.flower_paeonia)
-			.add(InspirationsBuilding.flower_syringa);
+				.add(InspirationsBuilding.flower_rose)
+				.add(InspirationsBuilding.flower_cyan)
+				.add(InspirationsBuilding.flower_paeonia)
+				.add(InspirationsBuilding.flower_syringa);
+
+		this.getBuilder(InspirationsTags.Blocks.FLOWER_POTS)
+				.add(InspirationsBuilding.potted_rose)
+				.add(InspirationsBuilding.potted_cyan)
+				.add(InspirationsBuilding.potted_paeonia)
+				.add(InspirationsBuilding.potted_syringa);
 
 		this.getBuilder(InspirationsTags.Blocks.ENLIGHTENED_BUSHES)
 				.add(InspirationsBuilding.whiteEnlightenedBush)
@@ -49,15 +55,15 @@ public class InspirationsBlockTagsProvider extends BlockTagsProvider {
 				.add(InspirationsBuilding.redEnlightenedBush);
 
 		this.getBuilder(InspirationsTags.Blocks.CARPETED_TRAPDOORS)
-			.add(InspirationsUtility.carpetedTrapdoors);
+				.add(InspirationsUtility.carpetedTrapdoors);
 		this.getBuilder(InspirationsTags.Blocks.CARPETED_PRESSURE_PLATES)
-			.add(InspirationsUtility.carpetedPressurePlates);
+				.add(InspirationsUtility.carpetedPressurePlates);
 
 		this.getBuilder(InspirationsTags.Blocks.BOOKSHELVES)
-			.add(InspirationsBuilding.shelf_normal)
-			.add(InspirationsBuilding.shelf_ancient)
-			.add(InspirationsBuilding.shelf_rainbow)
-			.add(InspirationsBuilding.shelf_tomes);
+				.add(InspirationsBuilding.shelf_normal)
+				.add(InspirationsBuilding.shelf_ancient)
+				.add(InspirationsBuilding.shelf_rainbow)
+				.add(InspirationsBuilding.shelf_tomes);
 
 		this.getBuilder(InspirationsTags.Blocks.CAULDRON_FIRE)
 				.add(Blocks.FIRE);
@@ -68,6 +74,7 @@ public class InspirationsBlockTagsProvider extends BlockTagsProvider {
 		this.getBuilder(BlockTags.DIRT_LIKE).add(InspirationsTags.Blocks.MULCH);
 		this.getBuilder(BlockTags.BAMBOO_PLANTABLE_ON).add(InspirationsTags.Blocks.MULCH);
 		this.getBuilder(BlockTags.WOODEN_TRAPDOORS).add(InspirationsTags.Blocks.CARPETED_TRAPDOORS);
+		this.getBuilder(BlockTags.FLOWER_POTS).add(InspirationsTags.Blocks.FLOWER_POTS);
 
 		this.getBuilder(BlockTags.CARPETS)
 				.add(InspirationsTweaks.fitCarpets)

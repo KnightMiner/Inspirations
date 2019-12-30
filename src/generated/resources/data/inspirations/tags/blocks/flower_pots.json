@@ -1,9 +1,9 @@
 {
   "replace": false,
   "values": [
+    "inspirations:potted_rose",
     "inspirations:potted_cyan",
     "inspirations:potted_paeonia",
-    "inspirations:potted_rose",
     "inspirations:potted_syringa"
   ]
 }

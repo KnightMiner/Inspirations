@@ -11,6 +11,7 @@ public class InspirationsTags {
 	public static class Blocks {
 		public static final Tag<Block> MULCH = new BlockTags.Wrapper(Util.getResource("mulch"));
 		public static final Tag<Block> SMALL_FLOWERS = new BlockTags.Wrapper(Util.getResource("small_flowers"));
+		public static final Tag<Block> FLOWER_POTS = new BlockTags.Wrapper(Util.getResource("flower_pots"));
 		public static final Tag<Block> CARPETED_TRAPDOORS = new BlockTags.Wrapper(Util.getResource("carpeted_trapdoors"));
 		public static final Tag<Block> CARPETED_PRESSURE_PLATES = new BlockTags.Wrapper(Util.getResource("carpeted_pressure_plates"));
 		public static final Tag<Block> BOOKSHELVES = new BlockTags.Wrapper(Util.getResource("bookshelves"));
