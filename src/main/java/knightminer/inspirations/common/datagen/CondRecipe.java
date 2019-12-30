@@ -42,7 +42,6 @@ public class CondRecipe {
 	public static ShapelessBuilder shapeless(IItemProvider result, int count) {
 		return new ShapelessBuilder(result, count);
 	}
-
 	public static CustomBuilder custom(SpecialRecipeSerializer<?> serializer) {
 		return new CustomBuilder(serializer);
 	}
@@ -52,21 +51,13 @@ public class CondRecipe {
 	 */
 	private static class Finished implements IFinishedRecipe {
 		private final IFinishedRecipe recipe;
-		private final boolean mirror;
 		private final List<ICondition> condList;
 		private final ResourceLocation id;
 		@Nullable
 		private IRecipeSerializer<?> custSerial;
 
-		private Finished(
-				ResourceLocation id,
-				IFinishedRecipe recipe,
-				@Nullable IRecipeSerializer<?> custSerial,
-				boolean mirror,
-				List<ICondition> cond
-		) {
+		private Finished(ResourceLocation id, IFinishedRecipe recipe, @Nullable IRecipeSerializer<?> custSerial, List<ICondition> cond) {
 			this.recipe = recipe;
-			this.mirror = mirror;
 			this.condList = cond;
 			this.id = id;
 			this.custSerial = custSerial;
@@ -88,9 +79,6 @@ public class CondRecipe {
 				jsonCond.add(CraftingHelper.serialize(cond));
 			}
 			json.add("conditions", jsonCond);
-			if (mirror) {
-				json.addProperty("mirrored", true);
-			}
 			recipe.serialize(json);
 			if (custSerial != null) {
 				json.addProperty("type", Registry.RECIPE_SERIALIZER.getKey(getSerializer()).toString());
@@ -133,8 +121,8 @@ public class CondRecipe {
 		private final Ingredient texSource;
 		private final boolean matchFirst;
 
-		private FinishedTexture(ResourceLocation id, IFinishedRecipe recipe, boolean mirror, Ingredient texSource, boolean matchFirst, List<ICondition> cond) {
-			super(id, recipe, TextureRecipe.SERIALIZER, mirror, cond);
+		private FinishedTexture(ResourceLocation id, IFinishedRecipe recipe, Ingredient texSource, boolean matchFirst, List<ICondition> cond) {
+			super(id, recipe, TextureRecipe.SERIALIZER, cond);
 			assert recipe.getSerializer() == ShapedRecipe.Serializer.CRAFTING_SHAPED;
 			this.texSource = texSource;
 			this.matchFirst = matchFirst;
@@ -157,22 +145,12 @@ public class CondRecipe {
 		@Nullable
 		private Ingredient textureSource;
 		private boolean textureMatchFirst;
-		private boolean mirror;
 
 		private ShapedBuilder(IItemProvider result, int count) {
 			super(result, count);
 			conditions = new ArrayList<>();
 			textureSource = null;
 			textureMatchFirst = false;
-			mirror = false;
-		}
-
-		/**
-		 * Vanilla option, whether the items can be horizontally mirrored.
-		 */
-		public ShapedBuilder canMirror() {
-			mirror = true;
-			return this;
 		}
 
 		public ShapedBuilder addCondition(ICondition cond) {
@@ -207,8 +185,8 @@ public class CondRecipe {
 		public void build(Consumer<IFinishedRecipe> consumer, ResourceLocation recipeLoc) {
 			// Capture the finished recipe in the consumer, then wrap in our own class.
 			super.build((result) -> consumer.accept(textureSource != null ?
-					new FinishedTexture(recipeLoc, result, mirror, textureSource, textureMatchFirst, conditions) :
-					new Finished(recipeLoc, result, custSerial, mirror, conditions)
+					new FinishedTexture(recipeLoc, result, textureSource, textureMatchFirst, conditions) :
+					new Finished(recipeLoc, result, custSerial, conditions)
 			), recipeLoc);
 		}
 
@@ -218,11 +196,11 @@ public class CondRecipe {
 		}
 
 		@Override
-		public void build(Consumer<IFinishedRecipe> consumer) {
+		public void build(@Nonnull Consumer<IFinishedRecipe> consumer) {
 			// Capture the finished recipe in the consumer, then wrap in our own class.
 			super.build((result) -> consumer.accept(textureSource != null ?
-					new FinishedTexture(result.getID(), result, mirror, textureSource, textureMatchFirst, conditions) :
-					new Finished(result.getID(), result, custSerial, mirror, conditions)
+					new FinishedTexture(result.getID(), result, textureSource, textureMatchFirst, conditions) :
+					new Finished(result.getID(), result, custSerial, conditions)
 			));
 		}
 	}
@@ -251,7 +229,7 @@ public class CondRecipe {
 		public void build(Consumer<IFinishedRecipe> consumer, ResourceLocation recipeLoc) {
 			// Capture the finished recipe in the consumer, then wrap in our own class.
 			super.build((result) -> consumer.accept(
-					new Finished(recipeLoc, result, custSerial, false, conditions)
+					new Finished(recipeLoc, result, custSerial, conditions)
 			), recipeLoc);
 		}
 
@@ -265,7 +243,7 @@ public class CondRecipe {
 		private final SpecialRecipeSerializer<?> serializer;
 		private ArrayList<ICondition> conditions;
 
-		private CustomBuilder(SpecialRecipeSerializer<?> serializer) {
+		private CustomBuilder(@Nonnull SpecialRecipeSerializer<?> serializer) {
 			this.serializer = serializer;
 			conditions = new ArrayList<>();
 		}
@@ -281,7 +259,7 @@ public class CondRecipe {
 
 			// Capture the finished recipe in the consumer, then wrap in our own class.
 			builder.build((result) ->
-					consumer.accept(new Finished(path, result, serializer, false, conditions)),
+					consumer.accept(new Finished(path, result, serializer, conditions)),
 					path.toString()
 			);
 		}

@@ -242,7 +242,7 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
 				.build(consumer);
 
 		// Allow any order for these.
-		for (String dyeRow: new String[]{"RGB", "RBG", "GRB", "GBR", "BRG", "BGR"}) {
+		for (String dyeRow: new String[]{"RGB", "RBG", "GRB"}) {
 			CondRecipe.shaped(InspirationsBuilding.shelf_rainbow, 2)
 					.textureSource(ItemTags.WOODEN_SLABS)
 					.addCondition(BUILDING)

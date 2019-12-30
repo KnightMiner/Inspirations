@@ -1,6 +1,5 @@
 package knightminer.inspirations.tools.datagen;
 
-import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.data.ConfigEnabledCondition;
 import knightminer.inspirations.common.data.PulseLoadedCondition;
 import knightminer.inspirations.common.datagen.CondRecipe;
@@ -17,7 +16,6 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.data.IFinishedRecipe;
 import net.minecraft.data.RecipeProvider;
 import net.minecraft.item.DyeColor;
-import net.minecraft.item.DyeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -96,7 +94,6 @@ public class ToolsRecipeProvider extends RecipeProvider implements IConditionBui
 		CondRecipe.shaped(InspirationsTools.key)
 				.addCondition(TOOLS)
 				.addCondition(ConfigEnabledCondition.LOCK)
-				.canMirror()
 				.addCriterion("has_iron", hasItem(Tags.Items.INGOTS_IRON))
 				.key('I', Tags.Items.INGOTS_IRON)
 				.key('N', Tags.Items.NUGGETS_IRON)
@@ -106,7 +103,6 @@ public class ToolsRecipeProvider extends RecipeProvider implements IConditionBui
 		CondRecipe.shaped(InspirationsTools.northCompass)
 				.addCondition(TOOLS)
 				.addCondition(ConfigEnabledCondition.NORTH_COMPASS)
-				.canMirror()
 				.addCriterion("has_iron", hasItem(Tags.Items.INGOTS_IRON))
 				.key('I', Tags.Items.INGOTS_IRON)
 				.key('N', Tags.Items.NUGGETS_IRON)
