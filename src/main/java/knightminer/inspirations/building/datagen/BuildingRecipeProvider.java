@@ -80,7 +80,16 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
 		buildingFlowerDye(InspirationsBuilding.flower_paeonia, Items.PINK_DYE);
 		buildingFlowerDye(InspirationsBuilding.flower_syringa, Items.MAGENTA_DYE);
 		buildingFlowerDye(InspirationsBuilding.flower_cyan, Items.CYAN_DYE);
-		buildingCyanFlower();
+
+		CondRecipe.shapeless(InspirationsBuilding.flower_cyan)
+				.addCondition(BUILDING)
+				.addCondition(ConfigEnabledCondition.FLOWERS)
+				.addCondition(not(ConfigEnabledCondition.CAULDRON_DYEING))
+				.addCriterion("has_dye", hasItem(Tags.Items.DYES_CYAN))
+				.addCriterion("has_flower", hasItem(InspirationsBuilding.flower_rose))
+				.addIngredient(Tags.Items.DYES_CYAN)
+				.addIngredient(InspirationsBuilding.flower_rose)
+				.build(consumer, "flower/cyan_flower");
 
 		buildingEnlightnedBush(InspirationsBuilding.whiteEnlightenedBush, DyeColor.WHITE);
 		buildingEnlightnedBush(InspirationsBuilding.redEnlightenedBush, DyeColor.RED);
@@ -278,17 +287,5 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
 				.setGroup(dye.getRegistryName().toString())
 				.addIngredient(flower)
 				.build(consumer, "flower/" + dye.getRegistryName().getPath());
-	}
-
-	private void buildingCyanFlower() {
-		CondRecipe.shapeless(InspirationsBuilding.flower_cyan)
-				.addCondition(BUILDING)
-				.addCondition(ConfigEnabledCondition.FLOWERS)
-				.addCondition(not(ConfigEnabledCondition.CAULDRON_DYEING))
-				.addCriterion("has_dye", hasItem(Tags.Items.DYES_CYAN))
-				.addCriterion("has_flower", hasItem(InspirationsBuilding.flower_rose))
-				.addIngredient(Tags.Items.DYES_CYAN)
-				.addIngredient(InspirationsBuilding.flower_rose)
-				.build(consumer, "flower/cyan_flower");
 	}
 }
