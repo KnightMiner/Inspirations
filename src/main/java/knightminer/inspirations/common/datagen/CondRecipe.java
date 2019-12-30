@@ -205,17 +205,11 @@ public class CondRecipe {
 
 		@Override
 		public void build(Consumer<IFinishedRecipe> consumer, ResourceLocation recipeLoc) {
-			// Capture the finished recipe which will be sent to the consumer.
-			final IFinishedRecipe[] output = {null};
-			super.build((res) -> output[0] = res, recipeLoc);
-
-			// It should have been called immediately.
-			assert output[0] != null;
-			// Then wrap.
-			consumer.accept(textureSource != null ?
-					new FinishedTexture(recipeLoc, output[0], mirror, textureSource, textureMatchFirst, conditions) :
-					new Finished(recipeLoc, output[0], custSerial, mirror, conditions)
-			);
+			// Capture the finished recipe in the consumer, then wrap in our own class.
+			super.build((result) -> consumer.accept(textureSource != null ?
+					new FinishedTexture(recipeLoc, result, mirror, textureSource, textureMatchFirst, conditions) :
+					new Finished(recipeLoc, result, custSerial, mirror, conditions)
+			), recipeLoc);
 		}
 
 		@Override
@@ -225,17 +219,11 @@ public class CondRecipe {
 
 		@Override
 		public void build(Consumer<IFinishedRecipe> consumer) {
-			// Capture the finished recipe which will be sent to the consumer.
-			final IFinishedRecipe[] output = {null};
-			super.build((res) -> output[0] = res);
-
-			// It should have been called immediately.
-			assert output[0] != null;
-			// Then wrap.
-			consumer.accept(textureSource != null ?
-					new FinishedTexture(output[0].getID(), output[0], mirror, textureSource, textureMatchFirst, conditions) :
-					new Finished(output[0].getID(), output[0], custSerial, mirror, conditions)
-			);
+			// Capture the finished recipe in the consumer, then wrap in our own class.
+			super.build((result) -> consumer.accept(textureSource != null ?
+					new FinishedTexture(result.getID(), result, mirror, textureSource, textureMatchFirst, conditions) :
+					new Finished(result.getID(), result, custSerial, mirror, conditions)
+			));
 		}
 	}
 
@@ -261,14 +249,10 @@ public class CondRecipe {
 
 		@Override
 		public void build(Consumer<IFinishedRecipe> consumer, ResourceLocation recipeLoc) {
-			// Capture the finished recipe which will be sent to the consumer.
-			final IFinishedRecipe[] output = {null};
-			super.build((res) -> output[0] = res, recipeLoc);
-
-			// It should have been called immediately.
-			assert output[0] != null;
-			// Then wrap.
-			consumer.accept(new Finished(recipeLoc, output[0], custSerial, false, conditions));
+			// Capture the finished recipe in the consumer, then wrap in our own class.
+			super.build((result) -> consumer.accept(
+					new Finished(recipeLoc, result, custSerial, false, conditions)
+			), recipeLoc);
 		}
 
 		@Override
@@ -292,15 +276,14 @@ public class CondRecipe {
 		}
 
 		public void build(@Nonnull Consumer<IFinishedRecipe> consumer, ResourceLocation path) {
-			// Capture the finished recipe which will be sent to the consumer.
+			// Reuse vanilla's builder - which just writes "type".
 			CustomRecipeBuilder builder = CustomRecipeBuilder.func_218656_a(serializer);
-			final IFinishedRecipe[] output = {null};
-			builder.build((res) -> output[0] = res, path.toString());
 
-			// It should have been called immediately.
-			assert output[0] != null;
-			// Then wrap.
-			consumer.accept(new Finished(path, output[0], serializer, false, conditions));
+			// Capture the finished recipe in the consumer, then wrap in our own class.
+			builder.build((result) ->
+					consumer.accept(new Finished(path, result, serializer, false, conditions)),
+					path.toString()
+			);
 		}
 
 		public void build(@Nonnull Consumer<IFinishedRecipe> consumer, String path) {

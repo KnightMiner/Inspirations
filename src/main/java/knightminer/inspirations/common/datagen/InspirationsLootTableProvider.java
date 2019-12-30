@@ -42,15 +42,9 @@ public class InspirationsLootTableProvider extends LootTableProvider {
 	// Override to skip validating that vanilla's tables are present.
 	@Override
 	protected void validate(Map<ResourceLocation, LootTable> map, ValidationResults validationresults) {
-		Map<ResourceLocation, LootTable> kept = new HashMap<>();
-		map.forEach((loc, table) -> {
-			if (loc.getNamespace().equals(Inspirations.modID)) {
-				LootTableManager.func_215302_a(validationresults, loc, table, map::get);
-				kept.put(loc, table);
-			}
-		});
+		map.forEach((loc, table) -> LootTableManager.func_215302_a(validationresults, loc, table, map::get));
 		// Remove vanilla's tables, which we also loaded so we can redirect stuff to them.
-		map.clear();
-		map.putAll(kept);
+		// This ensures the remaining generator logic doesn't write those to files.
+		map.keySet().removeIf((loc) -> !loc.getNamespace().equals(Inspirations.modID));
 	}
 }
