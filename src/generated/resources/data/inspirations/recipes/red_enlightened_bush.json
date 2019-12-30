@@ -1,9 +1,4 @@
 {
-  "type": "inspirations:texture_recipe",
-  "texture": {
-    "tag": "minecraft:leaves"
-  },
-  "match_first": true,
   "conditions": [
     {
       "pulse": "InspirationsBuilding",
@@ -32,5 +27,10 @@
   },
   "result": {
     "item": "inspirations:red_enlightened_bush"
-  }
+  },
+  "type": "inspirations:texture_recipe",
+  "texture": {
+    "tag": "minecraft:leaves"
+  },
+  "match_first": true
 }

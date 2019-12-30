@@ -17,7 +17,6 @@ import net.minecraft.item.Items;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.Tag;
 import net.minecraft.util.IItemProvider;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
@@ -30,10 +29,6 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
 
 	// Prevent needing to pass this into every method.
 	private Consumer<IFinishedRecipe> consumer = null;
-
-	private Tag<Item> getDyeTag(DyeColor dye) {
-		return new ItemTags.Wrapper(new ResourceLocation("forge", "dyes/" + dye.getName()));
-	}
 
 	public BuildingRecipeProvider(DataGenerator gen) {
 		super(gen);
@@ -105,8 +100,8 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
 				.key('G', Tags.Items.DUSTS_GLOWSTONE);
 
 		if (dye != DyeColor.WHITE) {
-			// First line, dye above.
-			builder = builder.key('D', getDyeTag(dye))
+			// First line - dye above the middle.
+			builder = builder.key('D', Util.getDyeTag(dye))
 				.patternLine(" D ");
 		}
 			builder
@@ -270,7 +265,7 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
 					.addCriterion("has_comparator", hasItem(Items.COMPARATOR))
 					.setGroup(group)
 					.addIngredient(Items.BOOK)
-					.addIngredient(getDyeTag(color))
+					.addIngredient(Util.getDyeTag(color))
 					.build(consumer);
 		}
 	}

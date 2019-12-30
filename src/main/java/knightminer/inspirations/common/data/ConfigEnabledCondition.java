@@ -126,7 +126,7 @@ public class ConfigEnabledCondition implements ICondition, ILootCondition {
 	public static final ConfigEnabledCondition REDSTONE_CHARGER = add("redstone_charger", Config.enableRedstoneCharger);
 
 	// tweaks
-	public static final ConfigEnabledCondition MORE_SEEDS = add("more_seeds", ()->false/* TODO: Config.enableMoreSeeds */);
+	public static final ConfigEnabledCondition CROP_BLOCKS = add("block_crops", Config.enableBlockCrops);
 	public static final ConfigEnabledCondition UNSTACKABLE_ALTS = add("unstackable_alts", Config.unstackableRecipeAlts);
 	public static final ConfigEnabledCondition SKELETON_SKULL = add("skeleton_skull", Config.skeletonSkull);
 	public static final ConfigEnabledCondition CAVE_SPIDER_WEB = add("cave_spider_web", Config.caveSpiderDrops);

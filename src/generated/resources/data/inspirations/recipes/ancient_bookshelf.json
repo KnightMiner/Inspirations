@@ -1,9 +1,4 @@
 {
-  "type": "inspirations:texture_recipe",
-  "texture": {
-    "tag": "minecraft:wooden_slabs"
-  },
-  "match_first": false,
   "conditions": [
     {
       "pulse": "InspirationsBuilding",
@@ -31,5 +26,10 @@
   "result": {
     "item": "inspirations:ancient_bookshelf",
     "count": 2
-  }
+  },
+  "type": "inspirations:texture_recipe",
+  "texture": {
+    "tag": "minecraft:wooden_slabs"
+  },
+  "match_first": false
 }

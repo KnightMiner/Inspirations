@@ -12,6 +12,8 @@ import net.minecraft.potion.Effect;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.EffectUtils;
 import net.minecraft.potion.Potion;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.Tag;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
@@ -213,5 +215,14 @@ public class Util {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Get the Forge tag for a specific dye.
+	 * @param dye The color
+	 * @return The forge:dyes/color tag.
+	 */
+	public static Tag<Item> getDyeTag(DyeColor dye) {
+		return new ItemTags.Wrapper(new ResourceLocation("forge", "dyes/" + dye.getName()));
 	}
 }

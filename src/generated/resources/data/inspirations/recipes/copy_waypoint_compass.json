@@ -1,0 +1,13 @@
+{
+  "conditions": [
+    {
+      "pulse": "InspirationsTools",
+      "type": "inspirations:pulse_loaded"
+    },
+    {
+      "prop": "copy_waypoint_compass",
+      "type": "inspirations:config"
+    }
+  ],
+  "type": "inspirations:copy_waypoint_compass"
+}

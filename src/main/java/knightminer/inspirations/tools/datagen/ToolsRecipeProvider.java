@@ -1,9 +1,14 @@
 package knightminer.inspirations.tools.datagen;
 
+import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.data.ConfigEnabledCondition;
 import knightminer.inspirations.common.data.PulseLoadedCondition;
 import knightminer.inspirations.common.datagen.CondRecipe;
+import knightminer.inspirations.library.InspirationsTags;
+import knightminer.inspirations.library.Util;
 import knightminer.inspirations.tools.InspirationsTools;
+import knightminer.inspirations.tools.recipe.CopyWaypointCompassRecipe;
+import knightminer.inspirations.tools.recipe.DyeWaypointCompassRecipe;
 import net.minecraft.advancements.criterion.EnchantmentPredicate;
 import net.minecraft.advancements.criterion.ItemPredicate;
 import net.minecraft.advancements.criterion.MinMaxBounds;
@@ -11,6 +16,9 @@ import net.minecraft.advancements.criterion.NBTPredicate;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.IFinishedRecipe;
 import net.minecraft.data.RecipeProvider;
+import net.minecraft.item.DyeColor;
+import net.minecraft.item.DyeItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.potion.PotionUtils;
@@ -106,6 +114,35 @@ public class ToolsRecipeProvider extends RecipeProvider implements IConditionBui
 				.patternLine("INI")
 				.patternLine(" I ")
 				.build(consumer);
+
+		Item undyedCompass = InspirationsTools.waypointCompasses[DyeColor.WHITE.getId()];
+		CondRecipe.shaped(undyedCompass)
+				.addCondition(TOOLS)
+				.addCondition(ConfigEnabledCondition.CRAFT_WAYPOINT)
+				.addCriterion("has_blaze", hasItem(Tags.Items.RODS_BLAZE))
+				.key('I', Tags.Items.INGOTS_IRON)
+				.key('B', Tags.Items.RODS_BLAZE)
+				.patternLine(" I ")
+				.patternLine("IBI")
+				.patternLine(" I ")
+				.build(consumer);
+
+		CondRecipe.custom(CopyWaypointCompassRecipe.SERIALIZER)
+				.addCondition(TOOLS)
+				.addCondition(ConfigEnabledCondition.COPY_WAYPOINT)
+				.build(consumer);
+
+		for (DyeColor color: DyeColor.values()) {
+			CondRecipe.shapeless(InspirationsTools.waypointCompasses[color.getId()])
+					.custom(DyeWaypointCompassRecipe.SERIALIZER)
+					.addCondition(TOOLS)
+					.addCondition(ConfigEnabledCondition.DYE_WAYPOINT)
+					.addCriterion("has_compass", hasItem(InspirationsTags.Items.WAYPOINT_COMPASSES))
+					.setGroup(Util.resource("dye_waypoint_compass"))
+					.addIngredient(InspirationsTags.Items.WAYPOINT_COMPASSES)
+					.addIngredient(Util.getDyeTag(color))
+					.build(consumer, "waypoint_compass/" + (color == DyeColor.WHITE ? "undye" : color.getName()));
+		}
 
 		CondRecipe.shaped(InspirationsTools.redstoneArrow, 8)
 				.addCondition(TOOLS)
