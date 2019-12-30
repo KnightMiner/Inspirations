@@ -269,8 +269,6 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
 					.addCondition(BUILDING)
 					.addCondition(ConfigEnabledCondition.COLORED_BOOKS)
 					.addCriterion("has_bookshelf", hasItem(InspirationsTags.Items.BOOKSHELVES))
-					// Books are only useful once you have a comparator to read values via.
-					.addCriterion("has_comparator", hasItem(Items.COMPARATOR))
 					.setGroup(group)
 					.addIngredient(Items.BOOK)
 					.addIngredient(Util.getDyeTag(color))
