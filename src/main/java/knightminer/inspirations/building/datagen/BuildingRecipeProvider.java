@@ -111,12 +111,9 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
 
 		if (dye != DyeColor.WHITE) {
 			// First line - dye above the middle.
-			builder = builder.key('D', Util.getDyeTag(dye))
-				.patternLine(" D ");
+			builder = builder.key('D', Util.getDyeTag(dye)).patternLine(" D ");
 		}
-			builder
-				.patternLine("GLG")
-				.build(consumer);
+		builder.patternLine("GLG").build(consumer);
 	}
 
 	private void buildingRope() {
