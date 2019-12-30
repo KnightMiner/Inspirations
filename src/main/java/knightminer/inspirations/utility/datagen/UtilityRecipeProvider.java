@@ -4,6 +4,7 @@ import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.common.data.ConfigEnabledCondition;
 import knightminer.inspirations.common.data.PulseLoadedCondition;
 import knightminer.inspirations.common.datagen.CondRecipe;
+import knightminer.inspirations.library.InspirationsTags;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraft.block.Block;
@@ -63,9 +64,7 @@ public class UtilityRecipeProvider extends RecipeProvider implements IConditionB
 				.addCondition(UTILITY)
 				.addCondition(BUILDING)
 				.addCondition(ConfigEnabledCondition.REDSTONE_BOOK)
-				.addCriterion("has_bookshelf", hasItem(
-						new ItemTags.Wrapper(Util.getResource("bookshelves"))
-				))
+				.addCriterion("has_bookshelf", hasItem(InspirationsTags.Items.BOOKSHELVES))
 				.addIngredient(Tags.Items.LEATHER)
 				.addIngredient(Items.PAPER).addIngredient(Items.PAPER)
 				.addIngredient(Tags.Items.DUSTS_REDSTONE)
@@ -105,9 +104,7 @@ public class UtilityRecipeProvider extends RecipeProvider implements IConditionB
 		CondRecipe.shaped(InspirationsUtility.carpetedTrapdoors[color.getId()])
 				.addCondition(UTILITY)
 				.addCondition(ConfigEnabledCondition.CARPETED_TRAPDOOR)
-				.addCriterion("has_carpet", hasItem(
-						new ItemTags.Wrapper(Util.getResource("carpets"))
-				))
+				.addCriterion("has_carpet", hasItem(InspirationsTags.Items.CARPETS))
 				.setGroup(Util.resource("carpeted_trapdoor"))
 				.key('C', carpet)
 				.key('T', ItemTags.WOODEN_TRAPDOORS)

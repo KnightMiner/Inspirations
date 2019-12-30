@@ -5,6 +5,7 @@ import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.common.data.ConfigEnabledCondition;
 import knightminer.inspirations.common.data.PulseLoadedCondition;
 import knightminer.inspirations.common.datagen.CondRecipe;
+import knightminer.inspirations.library.InspirationsTags;
 import knightminer.inspirations.library.Util;
 import net.minecraft.block.Block;
 import net.minecraft.data.DataGenerator;
@@ -258,9 +259,7 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
 			CondRecipe.shapeless(InspirationsBuilding.coloredBooks[color.getId()])
 					.addCondition(BUILDING)
 					.addCondition(ConfigEnabledCondition.COLORED_BOOKS)
-					.addCriterion("has_bookshelf", hasItem(
-							new ItemTags.Wrapper(Util.getResource("bookshelves"))
-					))
+					.addCriterion("has_bookshelf", hasItem(InspirationsTags.Items.BOOKSHELVES))
 					// Books are only useful once you have a comparator to read values via.
 					.addCriterion("has_comparator", hasItem(Items.COMPARATOR))
 					.setGroup(group)
