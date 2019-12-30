@@ -11,6 +11,16 @@
       "conditions": {
         "items": [
           {
+            "item": "minecraft:lever"
+          }
+        ]
+      }
+    },
+    "has_torch": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
             "item": "minecraft:torch"
           }
         ]
@@ -26,6 +36,7 @@
   "requirements": [
     [
       "has_lever",
+      "has_torch",
       "has_the_recipe"
     ]
   ]
