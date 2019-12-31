@@ -11,9 +11,11 @@ import knightminer.inspirations.tweaks.InspirationsTweaks;
 import knightminer.inspirations.utility.InspirationsUtility;
 import knightminer.inspirations.utility.block.CarpetedPressurePlateBlock;
 import net.minecraft.block.Block;
+import net.minecraft.block.DoorBlock;
 import net.minecraft.data.loot.BlockLootTables;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.Items;
+import net.minecraft.state.properties.DoubleBlockHalf;
 import net.minecraft.world.storage.loot.ConstantRange;
 import net.minecraft.world.storage.loot.ItemLootEntry;
 import net.minecraft.world.storage.loot.LootPool;
@@ -75,8 +77,15 @@ public class InspirationsBlockLootTable extends BlockLootTables {
 		this.registerDropSelfLootTable(InspirationsBuilding.brownMulch);
 		this.registerDropSelfLootTable(InspirationsBuilding.redMulch);
 
-		this.registerSilkTouch(InspirationsBuilding.glassDoor);
 		this.registerSilkTouch(InspirationsBuilding.glassTrapdoor);
+		// For glass doors, they need to only drop from one of the blocks so it doesn't dupe.
+		this.registerLootTable(InspirationsBuilding.glassDoor, LootTable.builder()
+				.addLootPool(LootPool.builder().addEntry(ItemLootEntry.builder(InspirationsBuilding.glassDoor))
+						.acceptCondition(BlockStateProperty.builder(InspirationsBuilding.glassDoor)
+								.with(DoorBlock.HALF, DoubleBlockHalf.LOWER))
+						.acceptCondition(SILK_TOUCH)
+				)
+		);
 
 		this.registerDropSelfLootTable(InspirationsBuilding.flower_rose);
 		this.registerDropSelfLootTable(InspirationsBuilding.flower_cyan);
