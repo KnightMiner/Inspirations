@@ -152,7 +152,7 @@ public class InspirationsBlockLootTable extends BlockLootTables {
 						.addEntry(ItemLootEntry.builder(block))
 				))
 				// And, if rungs are present the items for those.
-				.addLootPool(withSurvivesExplosion(block, LootPool.builder()
+				.addLootPool(withExplosionDecay(block, LootPool.builder()
 						.addEntry(ItemLootEntry.builder(rope.getRungsItem())
 								.acceptFunction(SetCount.builder(ConstantRange.of(RopeBlock.RUNG_ITEM_COUNT)))
 						)
