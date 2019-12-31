@@ -9,10 +9,10 @@ import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import knightminer.inspirations.utility.InspirationsUtility;
+import knightminer.inspirations.utility.block.CarpetedPressurePlateBlock;
 import net.minecraft.block.Block;
 import net.minecraft.data.loot.BlockLootTables;
 import net.minecraft.item.DyeColor;
-import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.world.storage.loot.ConstantRange;
 import net.minecraft.world.storage.loot.ItemLootEntry;
@@ -125,14 +125,12 @@ public class InspirationsBlockLootTable extends BlockLootTables {
 		for(DyeColor color : DyeColor.values()) {
 			this.registerDropSelfLootTable(InspirationsUtility.carpetedTrapdoors[color.getId()]);
 
-			Block trapdoor = InspirationsUtility.carpetedPressurePlates[color.getId()];
-			// We don't use these values.
-			Item carpet = trapdoor.getPickBlock(null, null, null, null, null).getItem();
-			this.registerLootTable(trapdoor, LootTable.builder()
-				.addLootPool(withSurvivesExplosion(trapdoor, LootPool.builder()
-						.addEntry(ItemLootEntry.builder(carpet))
+			CarpetedPressurePlateBlock pressurePlate = InspirationsUtility.carpetedPressurePlates[color.getId()];
+			this.registerLootTable(pressurePlate, LootTable.builder()
+				.addLootPool(withSurvivesExplosion(pressurePlate, LootPool.builder()
+						.addEntry(ItemLootEntry.builder(pressurePlate.getCarpet()))
 				))
-				.addLootPool(withSurvivesExplosion(carpet, LootPool.builder()
+				.addLootPool(withSurvivesExplosion(pressurePlate, LootPool.builder()
 						.addEntry(ItemLootEntry.builder(Items.STONE_PRESSURE_PLATE))
 				))
 			);

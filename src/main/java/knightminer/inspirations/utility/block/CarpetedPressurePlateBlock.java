@@ -60,20 +60,24 @@ public class CarpetedPressurePlateBlock extends PressurePlateBlock {
 		return transKey;
 	}
 
-	// Since fitted carpets may replace the original carpet, we need to lookup the item to make sure we get the right
-	// object. So defer until the first time we actually are pick-blocked.
+	// Since fitted carpets may replace the original carpet, we need to lookup the item to make sure we
+	// get the right object. So defer until the first time we actually need it.
 	private Item pickItem = Items.AIR;
 
-	@Override
-	public ItemStack getPickBlock(BlockState state, RayTraceResult target, IBlockReader world, BlockPos pos, PlayerEntity player) {
+	public Item getCarpet() {
 		if(pickItem == Items.AIR) {
 			pickItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation(color.getTranslationKey() + "_carpet"));
 
 			if(pickItem == Items.AIR) {
 				Inspirations.log.warn("No carpet item registered under minecraft:{}_carpet!", color.getTranslationKey());
-				return ItemStack.EMPTY;
+				return Items.AIR;
 			}
 		}
-		return new ItemStack(pickItem);
+		return pickItem;
+	}
+
+	@Override
+	public ItemStack getPickBlock(BlockState state, RayTraceResult target, IBlockReader world, BlockPos pos, PlayerEntity player) {
+		return new ItemStack(getCarpet());
 	}
 }
