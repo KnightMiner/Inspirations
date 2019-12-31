@@ -8,6 +8,7 @@ import knightminer.inspirations.tools.block.RedstoneChargeBlock;
 import knightminer.inspirations.tools.client.BarometerPropertyGetter;
 import knightminer.inspirations.tools.client.NorthCompassPropertyGetter;
 import knightminer.inspirations.tools.client.PhotometerPropertyGetter;
+import knightminer.inspirations.tools.datagen.ToolsRecipeProvider;
 import knightminer.inspirations.tools.enchantment.AxeDamageEnchantment;
 import knightminer.inspirations.tools.enchantment.AxeLootBonusEnchantment;
 import knightminer.inspirations.tools.enchantment.ExtendedFireAspectEnchantment;
@@ -23,6 +24,7 @@ import knightminer.inspirations.tools.recipe.CopyWaypointCompassRecipe;
 import knightminer.inspirations.tools.recipe.DyeWaypointCompassRecipe;
 import net.minecraft.block.Block;
 import net.minecraft.block.DispenserBlock;
+import net.minecraft.data.DataGenerator;
 import net.minecraft.dispenser.IBlockSource;
 import net.minecraft.dispenser.IPosition;
 import net.minecraft.dispenser.OptionalDispenseBehavior;
@@ -54,6 +56,7 @@ import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.pulsar.pulse.Pulse;
 
@@ -177,6 +180,14 @@ public class InspirationsTools extends PulseBase {
 	public void registerEntities(Register<EntityType<?>> event) {
 		IForgeRegistry<EntityType<?>> r = event.getRegistry();
 		r.register(entRSArrow);
+	}
+
+	@SubscribeEvent
+	public void gatherData(GatherDataEvent event) {
+		DataGenerator gen = event.getGenerator();
+		if (event.includeServer()) {
+			gen.addProvider(new ToolsRecipeProvider(gen));
+		}
 	}
 
 	@SubscribeEvent

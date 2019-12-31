@@ -1,0 +1,33 @@
+{
+  "conditions": [
+    {
+      "pulse": "InspirationsTools",
+      "type": "inspirations:pulse_loaded"
+    },
+    {
+      "prop": "charged_arrow",
+      "type": "inspirations:config"
+    }
+  ],
+  "pattern": [
+    "R",
+    "S",
+    "F"
+  ],
+  "key": {
+    "R": {
+      "tag": "forge:dusts/redstone"
+    },
+    "S": {
+      "tag": "forge:rods/wooden"
+    },
+    "F": {
+      "tag": "forge:feathers"
+    }
+  },
+  "result": {
+    "item": "inspirations:charged_arrow",
+    "count": 8
+  },
+  "type": "minecraft:crafting_shaped"
+}

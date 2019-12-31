@@ -1,0 +1,22 @@
+{
+  "conditions": [
+    {
+      "pulse": "InspirationsBuilding",
+      "type": "inspirations:pulse_loaded"
+    },
+    {
+      "prop": "flowers",
+      "type": "inspirations:config"
+    }
+  ],
+  "group": "minecraft:pink_dye",
+  "ingredients": [
+    {
+      "item": "inspirations:paeonia"
+    }
+  ],
+  "result": {
+    "item": "minecraft:pink_dye"
+  },
+  "type": "minecraft:crafting_shapeless"
+}

@@ -1,7 +1,6 @@
 package knightminer.inspirations.library;
 
 import com.google.common.collect.ImmutableList;
-import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.event.RegisterEvent.RegisterCauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.FillCauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.FluidCauldronRecipe;
@@ -16,10 +15,6 @@ import net.minecraft.block.material.Material;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.Tag;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvents;
 import net.minecraftforge.common.ToolType;
 import org.apache.logging.log4j.Logger;
@@ -38,18 +33,7 @@ import java.util.Set;
 public class InspirationsRegistry {
 	public static final Logger log = Util.getLogger("api");
 
-	// Blocks with this tag act as fire for the cauldron.
-	public static final Tag<Block> TAG_CAULDRON_FIRE = new BlockTags.Wrapper(new ResourceLocation(Inspirations.modID, "cauldron_fire"));
-	// Items with this tag are registered to have fluid tank functionality.
-	public static final Tag<Item> TAG_DISP_FLUID_TANKS = new ItemTags.Wrapper(new ResourceLocation(Inspirations.modID, "fluid_containers"));
-	// Items with this tag are registered to perform cauldron recipes.
-	public static final Tag<Item> TAG_DISP_CAULDRON_RECIPES = new ItemTags.Wrapper(new ResourceLocation(Inspirations.modID, "cauldron_recipes"));
-
-	public static final Tag<Item> TAG_MILK_CONTAINERS = new ItemTags.Wrapper(new ResourceLocation(Inspirations.modID, "milk_containers"));
-
 	public static final ToolType SHEAR_TYPE = ToolType.get("shears");
-
-	public static final Tag<Item> TAG_DYE_BOTTLES = new ItemTags.Wrapper(Util.getResource("dyed_water_bottles"));
 
 	/**
 	 * Sets a value from the Inspirations config into the registry. Used to keep the config out of the library
@@ -440,7 +424,7 @@ public class InspirationsRegistry {
 	 * @return True if the state is considered fire
 	 */
 	public static boolean isCauldronFire(BlockState state) {
-		if (state.getBlock().isIn(TAG_CAULDRON_FIRE)) {
+		if (state.getBlock().isIn(InspirationsTags.Blocks.CAULDRON_FIRE)) {
 			return true;
 		}
 		if (state.getBlock() == Blocks.CAMPFIRE && state.get(CampfireBlock.LIT)) {

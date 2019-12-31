@@ -1,0 +1,28 @@
+{
+  "conditions": [
+    {
+      "pulse": "InspirationsUtility",
+      "type": "inspirations:pulse_loaded"
+    },
+    {
+      "prop": "pipe",
+      "type": "inspirations:config"
+    }
+  ],
+  "pattern": [
+    "IPI"
+  ],
+  "key": {
+    "I": {
+      "tag": "forge:ingots/iron"
+    },
+    "P": {
+      "tag": "minecraft:planks"
+    }
+  },
+  "result": {
+    "item": "inspirations:pipe",
+    "count": 4
+  },
+  "type": "minecraft:crafting_shaped"
+}

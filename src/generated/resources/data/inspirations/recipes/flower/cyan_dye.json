@@ -1,0 +1,22 @@
+{
+  "conditions": [
+    {
+      "pulse": "InspirationsBuilding",
+      "type": "inspirations:pulse_loaded"
+    },
+    {
+      "prop": "flowers",
+      "type": "inspirations:config"
+    }
+  ],
+  "group": "minecraft:cyan_dye",
+  "ingredients": [
+    {
+      "item": "inspirations:cyan_flower"
+    }
+  ],
+  "result": {
+    "item": "minecraft:cyan_dye"
+  },
+  "type": "minecraft:crafting_shapeless"
+}

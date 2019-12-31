@@ -25,6 +25,10 @@ public class FillTexturedBlockLootFunction extends LootFunction {
 		super(conditions);
 	}
 
+	public FillTexturedBlockLootFunction() {
+		super(new ILootCondition[0]);
+	}
+
 	@Nonnull
 	@Override
 	protected ItemStack doApply(@Nonnull ItemStack stack, @Nonnull LootContext context) {

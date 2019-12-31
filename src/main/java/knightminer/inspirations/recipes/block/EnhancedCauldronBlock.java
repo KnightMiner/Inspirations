@@ -2,6 +2,7 @@ package knightminer.inspirations.recipes.block;
 
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.InspirationsRegistry;
+import knightminer.inspirations.library.InspirationsTags;
 import knightminer.inspirations.recipes.client.BoilingParticle;
 import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
 import net.minecraft.block.Block;
@@ -172,7 +173,7 @@ public class EnhancedCauldronBlock extends CauldronBlock {
 
 	private static void setBoiling(World world, BlockPos pos, BlockState state) {
 		world.setBlockState(pos, state.with(BOILING,
-				world.getBlockState(pos.down()).getBlock().isIn(InspirationsRegistry.TAG_CAULDRON_FIRE)
+				world.getBlockState(pos.down()).getBlock().isIn(InspirationsTags.Blocks.CAULDRON_FIRE)
 		));
 	}
 
