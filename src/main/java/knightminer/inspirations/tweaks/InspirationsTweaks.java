@@ -12,6 +12,7 @@ import knightminer.inspirations.tweaks.block.FittedCarpetBlock;
 import knightminer.inspirations.tweaks.block.FlatCarpetBlock;
 import knightminer.inspirations.tweaks.block.SugarCaneCropBlock;
 import knightminer.inspirations.tweaks.block.WetHopperBlock;
+import knightminer.inspirations.tweaks.datagen.TweaksRecipeProvider;
 import knightminer.inspirations.tweaks.item.SeedItem;
 import knightminer.inspirations.tweaks.recipe.NormalBrewingRecipe;
 import knightminer.inspirations.tweaks.util.SmoothGrowthListener;
@@ -20,6 +21,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.ComposterBlock;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.HopperBlock;
+import net.minecraft.data.DataGenerator;
 import net.minecraft.dispenser.DefaultDispenseItemBehavior;
 import net.minecraft.dispenser.IDispenseItemBehavior;
 import net.minecraft.item.BlockItem;
@@ -46,6 +48,7 @@ import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.pulsar.pulse.Pulse;
 
@@ -190,6 +193,15 @@ public class InspirationsTweaks extends PulseBase {
 		MinecraftForge.EVENT_BUS.addListener(new SmoothGrowthListener(Blocks.CACTUS, cactus, false));
 		MinecraftForge.EVENT_BUS.addListener(new SmoothGrowthListener(Blocks.SUGAR_CANE, sugarCane, true));
 	}
+
+	@SubscribeEvent
+	public void gatherData(GatherDataEvent event) {
+		DataGenerator gen = event.getGenerator();
+		if (event.includeServer()) {
+			gen.addProvider(new TweaksRecipeProvider(gen));
+		}
+	}
+
 
 	@SubscribeEvent
 	public static void loadLoot(LootTableLoadEvent event) {

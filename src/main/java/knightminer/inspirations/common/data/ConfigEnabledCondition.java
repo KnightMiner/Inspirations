@@ -87,53 +87,55 @@ public class ConfigEnabledCondition implements ICondition, ILootCondition {
 	}
 
 	// Add all the properties.
-	private static void add(String prop, BooleanSupplier supplier) {
-		PROPS.put(prop.toLowerCase(Locale.ROOT), new ConfigEnabledCondition(prop, supplier));
+	private static ConfigEnabledCondition add(String prop, BooleanSupplier supplier) {
+		ConfigEnabledCondition conf = new ConfigEnabledCondition(prop, supplier);
+		PROPS.put(prop.toLowerCase(Locale.ROOT), conf);
+		return conf;
 	}
-	private static void add(String prop, ForgeConfigSpec.BooleanValue option) {
-		PROPS.put(prop.toLowerCase(Locale.ROOT), new ConfigEnabledCondition(prop, option::get));
+	private static ConfigEnabledCondition add(String prop, ForgeConfigSpec.BooleanValue option) {
+		return add(prop, option::get);
 	}
-	static {
-		// building
-		add("bookshelf", Config.enableBookshelf);
-		add("colored_books", Config::enableColoredBooks);
-		add("enlightened_bush", Config.enableEnlightenedBush);
-		add("flowers", Config.enableFlowers);
-		add("glass_door", Config.enableGlassDoor);
-		add("mulch", Config.enableMulch);
-		add("path", Config.enablePath);
-		add("rope", Config.enableRope);
 
-		// utility
-		add("bricks_button", ()->false/*TODO: Config.enableBricksButton*/);
-		add("carpeted_trapdoor", Config.enableCarpetedTrapdoor);
-		add("collector", Config.enableCollector);
-		add("pipe", Config.enablePipe);
-		add("redstone_book", Config::enableRedstoneBook);
-		add("torch_lever", Config.enableTorchLever);
+	// building
+	public static final ConfigEnabledCondition BOOKSHELF = add("bookshelf", Config.enableBookshelf);
+	public static final ConfigEnabledCondition COLORED_BOOKS = add("colored_books", Config::enableColoredBooks);
+	public static final ConfigEnabledCondition ENLIGHTENED_BUSH = add("enlightened_bush", Config.enableEnlightenedBush);
+	public static final ConfigEnabledCondition FLOWERS = add("flowers", Config.enableFlowers);
+	public static final ConfigEnabledCondition GLASS_DOOR = add("glass_door", Config.enableGlassDoor);
+	public static final ConfigEnabledCondition MULCH = add("mulch", Config.enableMulch);
+	public static final ConfigEnabledCondition PATH = add("path", Config.enablePath);
+	public static final ConfigEnabledCondition ROPE = add("rope", Config.enableRope);
 
-		// tools
-		add("barometer", Config.enableBarometer);
-		add("charged_arrow", Config.enableChargedArrow);
-		add("craft_waypoint_compass", Config::craftWaypointCompass);
-		add("copy_waypoint_compass", Config::copyWaypointCompass);
-		add("dye_waypoint_compass", Config::dyeWaypointCompass);
-		add("lock", Config.enableLock);
-		add("north_compass", Config.enableNorthCompass);
-		add("photometer", Config.enablePhotometer);
-		add("redstone_charger", Config.enableRedstoneCharger);
+	// utility
+	public static final ConfigEnabledCondition BRICKS_BUTTON = add("bricks_button", ()->false/*TODO: Config.enableBricksButton*/);
+	public static final ConfigEnabledCondition CARPETED_TRAPDOOR = add("carpeted_trapdoor", Config.enableCarpetedTrapdoor);
+	public static final ConfigEnabledCondition COLLECTOR = add("collector", Config.enableCollector);
+	public static final ConfigEnabledCondition PIPE = add("pipe", Config.enablePipe);
+	public static final ConfigEnabledCondition REDSTONE_BOOK = add("redstone_book", Config::enableRedstoneBook);
+	public static final ConfigEnabledCondition TORCH_LEVER = add("torch_lever", Config.enableTorchLever);
 
-		// tweaks
-		add("more_seeds", ()->false/* TODO: Config.enableMoreSeeds */);
-		add("unstackable_alts", Config.unstackableRecipeAlts);
-		add("skeleton_skull", Config.skeletonSkull);
-		add("cave_spider_web", Config.caveSpiderDrops);
+	// tools
+	public static final ConfigEnabledCondition BAROMETER = add("barometer", Config.enableBarometer);
+	public static final ConfigEnabledCondition CHARGED_ARROW = add("charged_arrow", Config.enableChargedArrow);
+	public static final ConfigEnabledCondition CRAFT_WAYPOINT = add("craft_waypoint_compass", Config::craftWaypointCompass);
+	public static final ConfigEnabledCondition COPY_WAYPOINT = add("copy_waypoint_compass", Config::copyWaypointCompass);
+	public static final ConfigEnabledCondition DYE_WAYPOINT = add("dye_waypoint_compass", Config::dyeWaypointCompass);
+	public static final ConfigEnabledCondition LOCK = add("lock", Config.enableLock);
+	public static final ConfigEnabledCondition NORTH_COMPASS = add("north_compass", Config.enableNorthCompass);
+	public static final ConfigEnabledCondition PHOTOMETER = add("photometer", Config.enablePhotometer);
+	public static final ConfigEnabledCondition REDSTONE_CHARGER = add("redstone_charger", Config.enableRedstoneCharger);
 
-		// recipes
-		add("cauldron_dyeing", ()->false/* TODO: Config::enableCauldronDyeing */);
-		add("cauldron_fluids", ()->false/* TODO: Config::enableCauldronFluids */);
-		add("cauldron_potions", ()->false/* TODO: Config::enableCauldronPotions */);
-		add("extra_dyed_bottle_recipes", ()->false/* TODO: Config::extraBottleRecipes */);
-		add("patch_vanilla_dye_recipes", ()->false/* TODO: Config::patchVanillaDyeRecipes */);
-	}
+	// tweaks
+	public static final ConfigEnabledCondition CROP_BLOCKS = add("block_crops", Config.enableBlockCrops);
+	public static final ConfigEnabledCondition UNSTACKABLE_ALTS = add("unstackable_alts", Config.unstackableRecipeAlts);
+	public static final ConfigEnabledCondition SKELETON_SKULL = add("skeleton_skull", Config.skeletonSkull);
+	public static final ConfigEnabledCondition CAVE_SPIDER_WEB = add("cave_spider_web", Config.caveSpiderDrops);
+
+	// recipes
+	public static final ConfigEnabledCondition CAULDRON_DYEING = add("cauldron_dyeing", ()->false/* TODO: Config::enableCauldronDyeing */);
+	public static final ConfigEnabledCondition CAULDRON_FLUIDS = add("cauldron_fluids", ()->false/* TODO: Config::enableCauldronFluids */);
+	public static final ConfigEnabledCondition CAULDRON_POTIONS = add("cauldron_potions", ()->false/* TODO: Config::enableCauldronPotions */);
+	public static final ConfigEnabledCondition EXTRA_DYED_BOTTLE_RECIPES = add("extra_dyed_bottle_recipes", ()->false/* TODO: Config::extraBottleRecipes */);
+	public static final ConfigEnabledCondition PATCH_VANILLA_DYE_RECIPES = add("patch_vanilla_dye_recipes", ()->false/* TODO: Config::patchVanillaDyeRecipes */);
+
 }

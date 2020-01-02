@@ -1,0 +1,40 @@
+{
+  "conditions": [
+    {
+      "pulse": "InspirationsUtility",
+      "type": "inspirations:pulse_loaded"
+    },
+    {
+      "prop": "collector",
+      "type": "inspirations:config"
+    },
+    {
+      "pulse": "InspirationsTweaks",
+      "type": "inspirations:pulse_loaded"
+    },
+    {
+      "prop": "unstackable_alts",
+      "type": "inspirations:config"
+    }
+  ],
+  "pattern": [
+    " DS",
+    "TDS",
+    " DS"
+  ],
+  "key": {
+    "T": {
+      "tag": "forge:rods/wooden"
+    },
+    "S": {
+      "tag": "forge:string"
+    },
+    "D": {
+      "item": "minecraft:dropper"
+    }
+  },
+  "result": {
+    "item": "minecraft:dispenser"
+  },
+  "type": "minecraft:crafting_shaped"
+}

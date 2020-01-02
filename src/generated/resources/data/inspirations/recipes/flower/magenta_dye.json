@@ -1,0 +1,22 @@
+{
+  "conditions": [
+    {
+      "pulse": "InspirationsBuilding",
+      "type": "inspirations:pulse_loaded"
+    },
+    {
+      "prop": "flowers",
+      "type": "inspirations:config"
+    }
+  ],
+  "group": "minecraft:magenta_dye",
+  "ingredients": [
+    {
+      "item": "inspirations:syringa"
+    }
+  ],
+  "result": {
+    "item": "minecraft:magenta_dye"
+  },
+  "type": "minecraft:crafting_shapeless"
+}

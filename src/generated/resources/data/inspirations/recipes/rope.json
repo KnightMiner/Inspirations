@@ -1,0 +1,27 @@
+{
+  "conditions": [
+    {
+      "pulse": "InspirationsBuilding",
+      "type": "inspirations:pulse_loaded"
+    },
+    {
+      "prop": "rope",
+      "type": "inspirations:config"
+    }
+  ],
+  "pattern": [
+    "SS",
+    "SS",
+    "SS"
+  ],
+  "key": {
+    "S": {
+      "item": "minecraft:string"
+    }
+  },
+  "result": {
+    "item": "inspirations:rope",
+    "count": 3
+  },
+  "type": "minecraft:crafting_shaped"
+}

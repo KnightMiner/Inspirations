@@ -8,6 +8,7 @@ import knightminer.inspirations.utility.block.CollectorBlock;
 import knightminer.inspirations.utility.block.PipeBlock;
 import knightminer.inspirations.utility.block.TorchLevelBlock;
 import knightminer.inspirations.utility.block.TorchLeverWallBlock;
+import knightminer.inspirations.utility.datagen.UtilityRecipeProvider;
 import knightminer.inspirations.utility.inventory.CollectorContainer;
 import knightminer.inspirations.utility.inventory.PipeContainer;
 import knightminer.inspirations.utility.item.TorchLeverItem;
@@ -16,6 +17,7 @@ import knightminer.inspirations.utility.tileentity.PipeTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.material.Material;
+import net.minecraft.data.DataGenerator;
 import net.minecraft.dispenser.IDispenseItemBehavior;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.DyeColor;
@@ -29,6 +31,7 @@ import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.pulsar.pulse.Pulse;
 
@@ -44,9 +47,12 @@ public class InspirationsUtility extends PulseBase {
 	//public static Block bricksButton;
 	//public static Block netherBricksButton;
 	public static Block[] carpetedTrapdoors = new Block[16];
-	public static Block[] carpetedPressurePlates = new Block[16];
+	public static CarpetedPressurePlateBlock[] carpetedPressurePlates = new CarpetedPressurePlateBlock[16];
 	public static Block collector;
 	public static Block pipe;
+
+	// Items
+	public static Item torchLeverItem;
 	public static Item pipeItem;
 
 	// Tile entities
@@ -101,7 +107,7 @@ public class InspirationsUtility extends PulseBase {
 		IForgeRegistry<Item> r = event.getRegistry();
 
 		// itemblocks
-		register(r, new TorchLeverItem(), "torch_lever");
+		torchLeverItem = register(r, new TorchLeverItem(), "torch_lever");
 		//registerBlockItem(r, bricksButton, ItemGroup.REDSTONE);
 		//registerBlockItem(r, netherBricksButton, ItemGroup.REDSTONE);
 		for(Block trapdoor : carpetedTrapdoors) {
@@ -109,6 +115,14 @@ public class InspirationsUtility extends PulseBase {
 		}
 		registerBlockItem(r, collector, ItemGroup.REDSTONE);
 		pipeItem = registerBlockItem(r, pipe, ItemGroup.REDSTONE);
+	}
+
+	@SubscribeEvent
+	public void gatherData(GatherDataEvent event) {
+		DataGenerator gen = event.getGenerator();
+		if (event.includeServer()) {
+			gen.addProvider(new UtilityRecipeProvider(gen));
+		}
 	}
 
 	@SubscribeEvent

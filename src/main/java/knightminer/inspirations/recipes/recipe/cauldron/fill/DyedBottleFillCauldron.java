@@ -1,6 +1,7 @@
 package knightminer.inspirations.recipes.recipe.cauldron.fill;
 
 import knightminer.inspirations.library.InspirationsRegistry;
+import knightminer.inspirations.library.InspirationsTags;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
 import knightminer.inspirations.recipes.item.MixedDyedBottleItem;
@@ -18,7 +19,7 @@ public enum DyedBottleFillCauldron implements ICauldronRecipe {
 		}
 
 		return (state.isWater() || state.getColor() > -1)
-				&& stack.getItem().isIn(InspirationsRegistry.TAG_DYE_BOTTLES);
+				&& stack.getItem().isIn(InspirationsTags.Items.DYE_BOTTLES);
 	}
 
 	@Override

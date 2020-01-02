@@ -1,0 +1,27 @@
+{
+  "conditions": [
+    {
+      "pulse": "InspirationsBuilding",
+      "type": "inspirations:pulse_loaded"
+    },
+    {
+      "prop": "rope",
+      "type": "inspirations:config"
+    }
+  ],
+  "pattern": [
+    "B",
+    "B",
+    "B"
+  ],
+  "key": {
+    "B": {
+      "item": "minecraft:iron_bars"
+    }
+  },
+  "result": {
+    "item": "inspirations:chain",
+    "count": 6
+  },
+  "type": "minecraft:crafting_shaped"
+}

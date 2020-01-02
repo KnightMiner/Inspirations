@@ -36,6 +36,17 @@ if (System.getenv().BUILD_NUMBER != null) {
 	version += ".${System.getenv().BUILD_NUMBER}"
 }
 
+sourceSets {
+    main {
+        resources {
+            srcDirs = [
+                    "$rootDir/src/main/resources",
+                    "$rootDir/src/generated/resources"
+            ]
+        }
+    }
+}
+
 minecraft {
 	mappings channel: 'snapshot', version: config.mappings_version
 

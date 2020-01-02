@@ -2,6 +2,7 @@ package knightminer.inspirations.recipes.dispenser;
 
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.InspirationsRegistry;
+import knightminer.inspirations.library.InspirationsTags;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe.CauldronState;
 import knightminer.inspirations.recipes.block.EnhancedCauldronBlock;
@@ -36,7 +37,7 @@ public class DispenseCauldronRecipe extends DefaultDispenseItemBehavior {
 	@Nonnull
 	@Override
    protected ItemStack dispenseStack(IBlockSource source, ItemStack stack) {
-		if(!stack.getItem().isIn(InspirationsRegistry.TAG_DISP_CAULDRON_RECIPES)) {
+		if(!stack.getItem().isIn(InspirationsTags.Items.DISP_CAULDRON_RECIPES)) {
 			return fallback.dispense(source, stack);
 		}
 
