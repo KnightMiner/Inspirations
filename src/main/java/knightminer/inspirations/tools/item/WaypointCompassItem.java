@@ -53,7 +53,7 @@ public class WaypointCompassItem extends HidableItem {
     this.bodyColor = bodyColor;
     this.needleColor = needleColor;
 
-    this.addPropertyOverride(Util.getResource("angle"), new WaypointCompassPropertyGetter());
+    this.addPropertyOverride(WaypointCompassPropertyGetter.ID, new WaypointCompassPropertyGetter());
   }
 
   public int getColor(ItemStack stack, int tintIndex) {

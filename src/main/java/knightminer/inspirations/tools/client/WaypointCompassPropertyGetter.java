@@ -1,5 +1,6 @@
 package knightminer.inspirations.tools.client;
 
+import knightminer.inspirations.library.Util;
 import knightminer.inspirations.tools.item.WaypointCompassItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -7,6 +8,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemFrameEntity;
 import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -20,6 +22,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 public class WaypointCompassPropertyGetter implements IItemPropertyGetter {
+	public static final ResourceLocation ID = Util.getResource("angle");
 
 	@Override
 	@OnlyIn(Dist.CLIENT)

@@ -1,9 +1,11 @@
 package knightminer.inspirations.tools.client;
 
+import knightminer.inspirations.library.Util;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -11,6 +13,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import javax.annotation.Nullable;
 
 public class BarometerPropertyGetter implements IItemPropertyGetter {
+	public static final ResourceLocation ID = Util.getResource("height");
+
 	@Override
 	@OnlyIn(Dist.CLIENT)
 	public float call(ItemStack stack, @Nullable World world, @Nullable LivingEntity entityIn) {

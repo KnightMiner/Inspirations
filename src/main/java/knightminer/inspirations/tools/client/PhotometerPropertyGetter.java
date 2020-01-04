@@ -1,11 +1,13 @@
 package knightminer.inspirations.tools.client;
 
+import knightminer.inspirations.library.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
@@ -17,6 +19,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import javax.annotation.Nullable;
 
 public class PhotometerPropertyGetter implements IItemPropertyGetter {
+	public static final ResourceLocation ID = Util.getResource("light");
 
 	@OnlyIn(Dist.CLIENT)
 	@Override

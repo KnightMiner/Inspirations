@@ -1,11 +1,13 @@
 package knightminer.inspirations.tools.client;
 
+import knightminer.inspirations.library.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemFrameEntity;
 import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
@@ -14,6 +16,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import javax.annotation.Nullable;
 
 public class NorthCompassPropertyGetter implements IItemPropertyGetter {
+	public static final ResourceLocation ID = Util.getResource("angle");
+
 	double rotation;
 	double rota;
 	long lastUpdateTick;

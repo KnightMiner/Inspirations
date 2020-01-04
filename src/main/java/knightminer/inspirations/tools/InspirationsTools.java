@@ -125,16 +125,16 @@ public class InspirationsTools extends PulseBase {
 		),  "key");
 
 		northCompass = registerItem(r, new HidableItem(toolProps, Config.enableNorthCompass::get), "north_compass");
-		northCompass.addPropertyOverride(Util.getResource("angle"), new NorthCompassPropertyGetter());
+		northCompass.addPropertyOverride(NorthCompassPropertyGetter.ID, new NorthCompassPropertyGetter());
 
 //		if(Config.renameVanillaCompass.get()) {
 //				Items.COMPASS.translationKey = Util.prefix("origin_compass");
 //		}
 		barometer = registerItem(r, new HidableItem(toolProps, Config.enableBarometer::get), "barometer");
-		barometer.addPropertyOverride(Util.getResource("height"), new BarometerPropertyGetter());
+		barometer.addPropertyOverride(BarometerPropertyGetter.ID, new BarometerPropertyGetter());
 
 		photometer = registerItem(r, new HidableItem(toolProps, Config.enablePhotometer::get), "photometer");
-		photometer.addPropertyOverride(Util.getResource("light"), new PhotometerPropertyGetter());
+		photometer.addPropertyOverride(PhotometerPropertyGetter.ID, new PhotometerPropertyGetter());
 
 
 		// White is the undyed version, so it's available without Config.dyeWaypointCompass() and has no color
