@@ -1,0 +1,7 @@
+{
+  "parent": "inspirations:block/enlightened_bush/template",
+  "textures": {
+    "leaves": "block/oak_leaves",
+    "lights": "inspirations:block/lights_green"
+  }
+}

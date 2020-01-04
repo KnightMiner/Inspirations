@@ -10,6 +10,7 @@ import knightminer.inspirations.building.block.GlassTrapdoorBlock;
 import knightminer.inspirations.building.block.MulchBlock;
 import knightminer.inspirations.building.block.PathBlock;
 import knightminer.inspirations.building.block.RopeBlock;
+import knightminer.inspirations.building.datagen.BuildingBlockModelProvider;
 import knightminer.inspirations.building.datagen.BuildingRecipeProvider;
 import knightminer.inspirations.building.inventory.BookshelfContainer;
 import knightminer.inspirations.building.item.BookshelfItem;
@@ -262,6 +263,9 @@ public class InspirationsBuilding extends PulseBase {
 		DataGenerator gen = event.getGenerator();
 		if (event.includeServer()) {
 			gen.addProvider(new BuildingRecipeProvider(gen));
+		}
+		if (event.includeClient()) {
+			gen.addProvider(new BuildingBlockModelProvider(gen, event.getExistingFileHelper()));
 		}
 	}
 
