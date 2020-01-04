@@ -1,0 +1,6 @@
+{
+  "parent": "inspirations:item/barometer",
+  "textures": {
+    "layer0": "inspirations:item/barometer/19"
+  }
+}

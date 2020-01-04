@@ -1,0 +1,192 @@
+{
+  "parent": "item/generated",
+  "display": {
+    "ground": {
+      "translation": [
+        0,
+        2,
+        0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "head": {
+      "translation": [
+        0,
+        12,
+        0
+      ],
+      "scale": [
+        0,
+        0,
+        0
+      ]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [
+        20,
+        0,
+        0
+      ],
+      "translation": [
+        -0.25,
+        2.75,
+        1
+      ],
+      "scale": [
+        0.55,
+        0.55,
+        0.55
+      ]
+    },
+    "thirdperson_righthand": {
+      "rotation": [
+        20,
+        0,
+        0
+      ],
+      "translation": [
+        0.25,
+        2.75,
+        1
+      ],
+      "scale": [
+        0.55,
+        0.55,
+        0.55
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        8,
+        -11,
+        0
+      ],
+      "translation": [
+        2.5,
+        2.5,
+        0
+      ],
+      "scale": [
+        0.68,
+        0.68,
+        0.68
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        8,
+        -11,
+        0
+      ],
+      "translation": [
+        2.5,
+        2.5,
+        0
+      ],
+      "scale": [
+        0.68,
+        0.68,
+        0.68
+      ]
+    }
+  },
+  "textures": {
+    "layer0": "inspirations:item/photometer/00"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "inspirations:light": 1.0
+      },
+      "model": "inspirations:item/photometer/01"
+    },
+    {
+      "predicate": {
+        "inspirations:light": 2.0
+      },
+      "model": "inspirations:item/photometer/02"
+    },
+    {
+      "predicate": {
+        "inspirations:light": 3.0
+      },
+      "model": "inspirations:item/photometer/03"
+    },
+    {
+      "predicate": {
+        "inspirations:light": 4.0
+      },
+      "model": "inspirations:item/photometer/04"
+    },
+    {
+      "predicate": {
+        "inspirations:light": 5.0
+      },
+      "model": "inspirations:item/photometer/05"
+    },
+    {
+      "predicate": {
+        "inspirations:light": 6.0
+      },
+      "model": "inspirations:item/photometer/06"
+    },
+    {
+      "predicate": {
+        "inspirations:light": 7.0
+      },
+      "model": "inspirations:item/photometer/07"
+    },
+    {
+      "predicate": {
+        "inspirations:light": 8.0
+      },
+      "model": "inspirations:item/photometer/08"
+    },
+    {
+      "predicate": {
+        "inspirations:light": 9.0
+      },
+      "model": "inspirations:item/photometer/09"
+    },
+    {
+      "predicate": {
+        "inspirations:light": 10.0
+      },
+      "model": "inspirations:item/photometer/10"
+    },
+    {
+      "predicate": {
+        "inspirations:light": 11.0
+      },
+      "model": "inspirations:item/photometer/11"
+    },
+    {
+      "predicate": {
+        "inspirations:light": 12.0
+      },
+      "model": "inspirations:item/photometer/12"
+    },
+    {
+      "predicate": {
+        "inspirations:light": 13.0
+      },
+      "model": "inspirations:item/photometer/13"
+    },
+    {
+      "predicate": {
+        "inspirations:light": 14.0
+      },
+      "model": "inspirations:item/photometer/14"
+    },
+    {
+      "predicate": {
+        "inspirations:light": 15.0
+      },
+      "model": "inspirations:item/photometer/15"
+    }
+  ]
+}

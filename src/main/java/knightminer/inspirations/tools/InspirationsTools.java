@@ -8,6 +8,7 @@ import knightminer.inspirations.tools.block.RedstoneChargeBlock;
 import knightminer.inspirations.tools.client.BarometerPropertyGetter;
 import knightminer.inspirations.tools.client.NorthCompassPropertyGetter;
 import knightminer.inspirations.tools.client.PhotometerPropertyGetter;
+import knightminer.inspirations.tools.datagen.ToolsItemModelProvider;
 import knightminer.inspirations.tools.datagen.ToolsRecipeProvider;
 import knightminer.inspirations.tools.enchantment.AxeDamageEnchantment;
 import knightminer.inspirations.tools.enchantment.AxeLootBonusEnchantment;
@@ -142,9 +143,11 @@ public class InspirationsTools extends PulseBase {
 		waypointCompasses[DyeColor.WHITE.getId()] = registerItem(r,
 				new WaypointCompassItem(0xDDDDDD, 0xFFC100, Config.enableWaypointCompass::get
 		), "waypoint_compass");
+		// Black has a special body color.
 		waypointCompasses[DyeColor.BLACK.getId()] = registerItem(r,
-																														 new WaypointCompassItem(0x444444, DyeColor.RED.colorValue), "black_waypoint_compass");
-
+				new WaypointCompassItem(0x444444, DyeColor.RED.colorValue), "black_waypoint_compass"
+		);
+		// The body colour for all of these is just the same as the dye.
 		registerWaypointCompass(r, DyeColor.LIGHT_GRAY, DyeColor.WHITE.colorValue);
 		registerWaypointCompass(r, DyeColor.GRAY,       DyeColor.LIGHT_GRAY.colorValue);
 		registerWaypointCompass(r, DyeColor.RED,        DyeColor.ORANGE.colorValue);
@@ -185,6 +188,9 @@ public class InspirationsTools extends PulseBase {
 	@SubscribeEvent
 	public void gatherData(GatherDataEvent event) {
 		DataGenerator gen = event.getGenerator();
+		if (event.includeClient()) {
+			gen.addProvider(new ToolsItemModelProvider(gen, event.getExistingFileHelper()));
+		}
 		if (event.includeServer()) {
 			gen.addProvider(new ToolsRecipeProvider(gen));
 		}

@@ -1,0 +1,6 @@
+{
+  "parent": "inspirations:item/photometer",
+  "textures": {
+    "layer0": "inspirations:item/photometer/06"
+  }
+}

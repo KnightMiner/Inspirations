@@ -1,0 +1,356 @@
+{
+  "parent": "item/generated",
+  "display": {
+    "firstperson_lefthand": {
+      "rotation": [
+        14.74,
+        -24.25,
+        0
+      ],
+      "translation": [
+        1,
+        4,
+        2
+      ],
+      "scale": [
+        0.65,
+        0.65,
+        0.65
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        14.74,
+        155.75,
+        0
+      ],
+      "translation": [
+        1,
+        4,
+        2
+      ],
+      "scale": [
+        0.65,
+        0.65,
+        0.65
+      ]
+    },
+    "thirdperson_lefthand": {
+      "translation": [
+        0,
+        0,
+        -0.25
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "thirdperson_righthand": {
+      "translation": [
+        0,
+        0,
+        -0.25
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    }
+  },
+  "textures": {
+    "layer0": "inspirations:item/barometer/00"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "inspirations:height": 0.010416667
+      },
+      "model": "inspirations:item/barometer/01"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.03125
+      },
+      "model": "inspirations:item/barometer/02"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.052083332
+      },
+      "model": "inspirations:item/barometer/03"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.072916664
+      },
+      "model": "inspirations:item/barometer/04"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.09375
+      },
+      "model": "inspirations:item/barometer/05"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.114583336
+      },
+      "model": "inspirations:item/barometer/06"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.13541667
+      },
+      "model": "inspirations:item/barometer/07"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.15625
+      },
+      "model": "inspirations:item/barometer/08"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.17708333
+      },
+      "model": "inspirations:item/barometer/09"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.19791667
+      },
+      "model": "inspirations:item/barometer/10"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.21875
+      },
+      "model": "inspirations:item/barometer/11"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.23958333
+      },
+      "model": "inspirations:item/barometer/12"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.26041666
+      },
+      "model": "inspirations:item/barometer/13"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.28125
+      },
+      "model": "inspirations:item/barometer/14"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.30208334
+      },
+      "model": "inspirations:item/barometer/15"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.32291666
+      },
+      "model": "inspirations:item/barometer/16"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.34375
+      },
+      "model": "inspirations:item/barometer/17"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.36458334
+      },
+      "model": "inspirations:item/barometer/18"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.38541666
+      },
+      "model": "inspirations:item/barometer/19"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.40625
+      },
+      "model": "inspirations:item/barometer/20"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.42708334
+      },
+      "model": "inspirations:item/barometer/21"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.44791666
+      },
+      "model": "inspirations:item/barometer/22"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.46875
+      },
+      "model": "inspirations:item/barometer/23"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.48958334
+      },
+      "model": "inspirations:item/barometer/24"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.5104167
+      },
+      "model": "inspirations:item/barometer/25"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.53125
+      },
+      "model": "inspirations:item/barometer/26"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.5520833
+      },
+      "model": "inspirations:item/barometer/27"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.5729167
+      },
+      "model": "inspirations:item/barometer/28"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.59375
+      },
+      "model": "inspirations:item/barometer/29"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.6145833
+      },
+      "model": "inspirations:item/barometer/30"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.6354167
+      },
+      "model": "inspirations:item/barometer/31"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.65625
+      },
+      "model": "inspirations:item/barometer/32"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.6770833
+      },
+      "model": "inspirations:item/barometer/33"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.6979167
+      },
+      "model": "inspirations:item/barometer/34"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.71875
+      },
+      "model": "inspirations:item/barometer/35"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.7395833
+      },
+      "model": "inspirations:item/barometer/36"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.7604167
+      },
+      "model": "inspirations:item/barometer/37"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.78125
+      },
+      "model": "inspirations:item/barometer/38"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.8020833
+      },
+      "model": "inspirations:item/barometer/39"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.8229167
+      },
+      "model": "inspirations:item/barometer/40"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.84375
+      },
+      "model": "inspirations:item/barometer/41"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.8645833
+      },
+      "model": "inspirations:item/barometer/42"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.8854167
+      },
+      "model": "inspirations:item/barometer/43"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.90625
+      },
+      "model": "inspirations:item/barometer/44"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.9270833
+      },
+      "model": "inspirations:item/barometer/45"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.9479167
+      },
+      "model": "inspirations:item/barometer/46"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.96875
+      },
+      "model": "inspirations:item/barometer/47"
+    },
+    {
+      "predicate": {
+        "inspirations:height": 0.9895833
+      },
+      "model": "inspirations:item/barometer/48"
+    }
+  ]
+}

@@ -1,6 +1,0 @@
-{
-    "parent": "inspirations:item/barometer/pose",
-    "textures": {
-        "layer0": "inspirations:item/barometer/41"
-    }
-}
