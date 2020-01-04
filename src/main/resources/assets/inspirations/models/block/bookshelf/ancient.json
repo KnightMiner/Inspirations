@@ -1,7 +1,0 @@
-{
-  "parent": "inspirations:block/bookshelf/model/ancient",
-  "textures": {
-    "texture":    "inspirations:block/mixed_planks",
-    "books":      "inspirations:block/books_ancient"
-  }
-}
