@@ -13,26 +13,35 @@ import net.minecraftforge.fml.network.IContainerFactory;
 import slimeknights.mantle.inventory.MultiModuleContainer;
 
 public class BookshelfContainer extends MultiModuleContainer<BookshelfTileEntity> {
+
 	public static class Factory implements IContainerFactory<BookshelfContainer> {
 		@Override
 		public BookshelfContainer create(int windowId, PlayerInventory inv, PacketBuffer data) {
 			// Create the container on the clientside.
 			BlockPos pos = data.readBlockPos();
+			boolean secHalf = data.readBoolean();
 			TileEntity te = inv.player.world.getTileEntity(pos);
 			if (te instanceof BookshelfTileEntity) {
-				return new BookshelfContainer(windowId, inv, (BookshelfTileEntity) te);
+				return new BookshelfContainer(windowId, inv, secHalf, (BookshelfTileEntity) te);
 			}
 			throw new AssertionError(String.format("No bookshelf at %s!", pos));
 		}
 	}
 
-	public BookshelfContainer(int winId, PlayerInventory inventoryPlayer, BookshelfTileEntity shelf) {
+	/**
+	 * @param winId Internal window ID for vanilla's logic.
+	 * @param inventoryPlayer The player's inventory.
+	 * @param secHalf If true, access the second half for a dual-sided shelf.
+	 * @param shelf The shelf itself.
+	 */
+	public BookshelfContainer(int winId, PlayerInventory inventoryPlayer, boolean secHalf, BookshelfTileEntity shelf) {
 		super(InspirationsBuilding.contBookshelf, winId, shelf);
+		int offset = secHalf ? 14 : 0;
 		for(int i = 0; i < 7; i++) {
-			this.addSlot(new SlotBookshelf(tile, i, 26 + (i*18), 18));
+			this.addSlot(new SlotBookshelf(tile, i + offset, 26 + (i*18), 18));
 		}
 		for(int i = 0; i < 7; i++) {
-			this.addSlot(new SlotBookshelf(tile, i+7, 26 + (i*18), 44));
+			this.addSlot(new SlotBookshelf(tile, i + offset + 7, 26 + (i*18), 44));
 		}
 
 		addPlayerInventory(inventoryPlayer, 8, 74);

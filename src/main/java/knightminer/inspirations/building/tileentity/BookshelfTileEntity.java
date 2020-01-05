@@ -44,14 +44,22 @@ public class BookshelfTileEntity extends InventoryTileEntity {
 		enchantBonus = Float.NaN;
 	}
 
-	@Override
-	public int getSizeInventory() {
+	public int getMaxBookCount() {
 		return BookshelfBlock.getBookCount(world != null ? world.getBlockState(pos) : null);
+	}
+
+	@Nonnull
+	@Override
+	public ItemStack getStackInSlot(int slot) {
+		if (slot > getMaxBookCount()) {
+			return ItemStack.EMPTY;
+		}
+		return super.getStackInSlot(slot);
 	}
 
 	@Override
 	public void setInventorySlotContents(int slot, @Nonnull ItemStack itemstack) {
-		if (slot > getSizeInventory()) {
+		if (slot > getMaxBookCount()) {
 			return;
 		}
 		ItemStack oldStack = this.getStackInSlot(slot);
@@ -105,17 +113,15 @@ public class BookshelfTileEntity extends InventoryTileEntity {
 	}
 
 
-
-
 	/*
 	 * GUI
 	 */
 
-
 	@Nullable
 	@Override
-	public Container createMenu(int winId, PlayerInventory playerInv, PlayerEntity player) {
-		return new BookshelfContainer(winId, playerInv, this);
+	public Container createMenu(int winId, @Nonnull PlayerInventory playerInv, @Nonnull PlayerEntity player) {
+		boolean secHalf = BookshelfBlock.playerOnSecondary(world, pos, player);
+		return new BookshelfContainer(winId, playerInv, secHalf, this);
 	}
 
 	/*
@@ -161,7 +167,7 @@ public class BookshelfTileEntity extends InventoryTileEntity {
 	public IModelData getModelData() {
 		// pack books into integer
 		int books = 0;
-		for(int i = 0; i < getSizeInventory(); i++) {
+		for(int i = 0; i < getMaxBookCount(); i++) {
 			if (isStackInSlot(i)) {
 				books |= 1 << i;
 			}

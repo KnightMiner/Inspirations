@@ -80,6 +80,21 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
 			return 14;
 		}
 	}
+	/** Compute which half of the shelf to access by comparing to the player's offset. */
+	public static boolean playerOnSecondary(World world, BlockPos pos, PlayerEntity player) {
+		return playerOnSecondary(world.getBlockState(pos), pos, player);
+	}
+
+	/** Compute which half of the shelf to access by comparing to the player's offset. */
+	public static boolean playerOnSecondary(BlockState state, BlockPos pos, PlayerEntity player) {
+		if (state.get(BookshelfBlock.POSITION) != BookshelfBlock.Offset.BOTH) {
+			// No secondary side.
+			return false;
+		}
+		// Check if the player is on the other side of the block.
+		Vec3d offset = player.getPositionVector().subtract(new Vec3d(pos).add(0.5, 0.5, 0.5));
+		return offset.dotProduct(new Vec3d(state.get(BookshelfBlock.FACING).getDirectionVec())) < 0;
+	}
 
 	@Override
 	public boolean hasTileEntity(BlockState state) {
@@ -130,7 +145,10 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
 		}
 		TileEntity te = world.getTileEntity(pos);
 		if(te instanceof BookshelfTileEntity) {
-			NetworkHooks.openGui((ServerPlayerEntity) player, (INamedContainerProvider) te, pos);
+			NetworkHooks.openGui((ServerPlayerEntity) player, (INamedContainerProvider) te, buf -> {
+				buf.writeBlockPos(pos);
+				buf.writeBoolean(playerOnSecondary(world, pos, player));
+			});
 			return true;
 		}
 		return false;
