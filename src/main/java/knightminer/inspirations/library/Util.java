@@ -14,8 +14,11 @@ import net.minecraft.potion.EffectUtils;
 import net.minecraft.potion.Potion;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.Tag;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -61,6 +64,19 @@ public class Util {
 		return aabb.minX <= hit.x && hit.x <= aabb.maxX
 				&& aabb.minY <= hit.y && hit.y <= aabb.maxY
 				&& aabb.minZ <= hit.z && hit.z <= aabb.maxZ;
+	}
+
+	/**
+	 * Compute a voxelshape, rotated by the provided yaw.
+	 */
+	public static VoxelShape makeRotatedShape(Direction side, int x1, int y1, int z1, int x2, int y2, int z2) {
+		float yaw = -(float) Math.PI / 2F * side.getHorizontalIndex();
+		Vec3d min = new Vec3d(x1 - 8, y1 - 8, z1 - 8).rotateYaw(yaw);
+		Vec3d max = new Vec3d(x2 - 8, y2 - 8, z2 - 8).rotateYaw(yaw);
+		return VoxelShapes.create(
+				0.5 + min.x / 16.0, 0.5 + min.y / 16.0, 0.5 + min.z / 16.0,
+				0.5 + max.x / 16.0, 0.5 + max.y / 16.0, 0.5 + max.z / 16.0
+		);
 	}
 
 	// An item with Silk Touch, to make blocks drop their silk touch items if they have any.
