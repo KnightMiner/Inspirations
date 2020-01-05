@@ -174,17 +174,63 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
 	@Override
 	public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) {
 		Direction facing = state.get(FACING);
+		// If the player is looking at the secondary side.
+		boolean secHalf;
 
-		// skip opposite, not needed as the back is never clicked for books
+		// Back side
 		if(facing.getOpposite() == trace.getFace()) {
-			if (state.get(POSITION) != Offset.BOTH && player.getHeldItemMainhand().getItem() == asItem()) {
-				if (!world.isRemote) {
-					player.getHeldItemMainhand().setCount(player.getHeldItemMainhand().getCount() - 1);
-					return world.setBlockState(pos, state.with(POSITION, Offset.BOTH));
-				}
-				return true;
+			switch (state.get(POSITION)) {
+				case BOTH:
+					// You have to be using a book on it.
+					secHalf = true;
+					break;
+				case BACK:
+					// Can't be upgraded, so do nothing.
+					return false;
+				case FRONT:
+					// No backside shelf, check to see if we can upgrade.
+					// The player must have an identical shelf to what we are.
+					ItemStack stack = player.getHeldItem(hand);
+					Block stackTexture = TextureBlockUtil.getTextureBlock(stack);
+					Block tileTexture = TextureBlockUtil.getTextureBlock(world.getTileEntity(pos));
+					if (stack.getItem() == asItem() && stackTexture == tileTexture) {
+						if (!world.isRemote) {
+							if (!player.isCreative()) {
+								stack.shrink(1);
+							}
+							return world.setBlockState(pos, state.with(POSITION, Offset.BOTH));
+						}
+						return true;
+					}
+					// No shelf and no book in hand.
+					return false;
+				default:
+					throw new IllegalStateException("Unexpected value: " + state.get(POSITION));
 			}
-			return false;
+		// Front side
+		} else if (facing == trace.getFace()) {
+			secHalf = false;
+		} else {
+			// Other sides.
+			// If you clicked on the exterior, we ignore that.
+			// But allow clicking inside the block.
+			Vec3d click = trace.getHitVec().subtract(new Vec3d(pos));
+			// The outer 1-pixel border we don't care about.
+			if (
+					click.x < 1/16.0 || click.x > 15/16.0 ||
+					click.y < 1/16.0 || click.y > 15/16.0 ||
+					click.z < 1/16.0 || click.z > 15/16.0
+			) {
+				return false;
+			}
+			// Compare postion to determine offset - if you're on the inside or outside.
+			secHalf = click
+					.add(0.5, 0.5, 0.5)
+					.dotProduct(new Vec3d(facing.getDirectionVec())) > 0.03125;
+			if(secHalf && state.get(BookshelfBlock.POSITION) != BookshelfBlock.Offset.BOTH) {
+				// Clicked on the back half somehow, but there's no shelf there. Bail.
+				return false;
+			}
 		}
 
 		// if sneaking, just do the GUI
@@ -193,7 +239,7 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
 		}
 
 		// if we did not click a book, just do the GUI as well
-		int book = bookClicked(facing, pos, trace.getHitVec());
+		int book = bookClicked(facing, pos, trace.getHitVec(), secHalf);
 		if(book == -1) {
 			return world.isRemote || openGui(player, world, pos);
 		}
@@ -214,34 +260,48 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
 		return true;
 	}
 
-	private static int bookClicked(Direction facing, BlockPos pos, Vec3d clickWorld) {
+	/** Compute the book which was clicked on.
+	 *
+	 * Whether the user is clicking on the primary or secondary shelf should
+	 * have already been checked, so this doesn't re-check that.
+	 * */
+	private static int bookClicked(Direction facing, BlockPos pos, Vec3d clickWorld, boolean secSide) {
 		Vec3d click = new Vec3d(clickWorld.x - pos.getX(), clickWorld.y - pos.getY(), clickWorld.z - pos.getZ());
 		// if we did not click between the shelves, ignore
-		if(click.y < 0.0625 || click.y > 0.9375) {
+		if(click.y < 1/16.0 || click.y > 15/16.0) {
 			return -1;
 		}
 		int shelf = 0;
 		// if we clicked below the middle shelf, add 7 to the book
-		if(click.y <= 0.4375) {
+		if(click.y <= 7/16.0) {
 			shelf = 7;
-			// if we clicked below the top shelf but not quite in the middle shelf, no book
-		} else if(click.y < 0.5625) {
+			// if we clicked on the middle shelf itself, no book
+		} else if(click.y < 9/16.0) {
 			return -1;
 		}
 
+		// ensure we clicked within a shelf, not outside one.
+		// If we're along the axis we're facing,
+		// any position is valid. Otherwise, you must be inset 1 pixel.
 		int offX = facing.getXOffset();
 		int offZ = facing.getZOffset();
-		double x1 = offX == -1 ? 0.625 : 0.0625;
-		double z1 = offZ == -1 ? 0.625 : 0.0625;
-		double x2 = offX == +1 ? 0.375 : 0.9375;
-		double z2 = offZ == +1 ? 0.375 : 0.9375;
-		// ensure we clicked within a shelf, not outside one
+		double x1 = offX != 0 ? 0 :  1/16.0;
+		double z1 = offZ != 0 ? 0 :  1/16.0;
+		double x2 = offX != 0 ? 1 : 15/16.0;
+		double z2 = offZ != 0 ? 1 : 15/16.0;
 		if(click.x < x1 || click.x > x2 || click.z < z1 || click.z > z2) {
 			return -1;
 		}
 
-		// okay, so now we know we clicked in the book area, so just take the position clicked to determine where
-		Direction dir = facing.rotateYCCW();
+		// okay, so now we know we clicked in the book area, so just take the position clicked to determine where.
+		// Calculate the direction along the shelf.
+		Direction dir;
+		if(secSide) {
+			dir = facing.rotateY();
+			shelf += 14;
+		} else {
+			dir = facing.rotateYCCW();
+		}
 		// subtract one pixel and multiply by our direction
 		double clicked = (dir.getXOffset() * click.x) + (dir.getZOffset() * click.z) - 0.0625;
 		// if negative, just add one to wrap back around
