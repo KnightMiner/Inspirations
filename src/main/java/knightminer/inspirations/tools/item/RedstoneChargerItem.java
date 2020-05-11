@@ -4,6 +4,7 @@ import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.tools.block.RedstoneChargeBlock;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.DirectionalPlaceContext;
 import net.minecraft.item.Item;
@@ -43,16 +44,15 @@ public class RedstoneChargerItem extends Item {
 			pos = pos.offset(facing);
 		}
 
-		ItemStack stack = context.getItem();
-
 		// stop if we cannot edit
-		if (context.getPlayer() == null || !context.getPlayer().canPlayerEdit(pos, facing, ItemStack.EMPTY)) {
+		PlayerEntity player = context.getPlayer();
+		if (player == null || !player.canPlayerEdit(pos, facing, ItemStack.EMPTY)) {
 			return ActionResultType.FAIL;
 		}
 		
 		BlockState state = InspirationsTools.redstoneCharge.getDefaultState()
 			.with(RedstoneChargeBlock.FACING, facing.getOpposite())
-			.with(RedstoneChargeBlock.QUICK, context.isPlacerSneaking());
+			.with(RedstoneChargeBlock.QUICK, player.isCrouching());
 		
 		DirectionalPlaceContext blockContext = new DirectionalPlaceContext(world, pos, facing, ItemStack.EMPTY, facing);
 		
@@ -66,12 +66,13 @@ public class RedstoneChargerItem extends Item {
 		}
 
 		// mark we used the item
+		ItemStack stack = context.getItem();
 		if (context.getPlayer() instanceof ServerPlayerEntity) {
 			CriteriaTriggers.PLACED_BLOCK.trigger((ServerPlayerEntity)context.getPlayer(), pos, stack);
 		}
 
 		// damage it and return
-		stack.damageItem(1, context.getPlayer(), player -> player.sendBreakAnimation(context.getHand()));
+		stack.damageItem(1, context.getPlayer(), cPlayer -> cPlayer.sendBreakAnimation(context.getHand()));
 		return ActionResultType.SUCCESS;
 	}
 

@@ -1,14 +1,8 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "inspirations:block/bookshelf/normal"
-  },
   "variants": {
-    "facing": {
-      "south": {},
-      "west":  { "y":  90 },
-      "north": { "y": 180 },
-      "east":  { "y": 270 }
-    }
+    "facing=south": { "model": "inspirations:block/bookshelf/normal" },
+    "facing=west":  { "model": "inspirations:block/bookshelf/normal", "y":  90 },
+    "facing=north": { "model": "inspirations:block/bookshelf/normal", "y": 180 },
+    "facing=east":  { "model": "inspirations:block/bookshelf/normal", "y": 270 }
   }
 }

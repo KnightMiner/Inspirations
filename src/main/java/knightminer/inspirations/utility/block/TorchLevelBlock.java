@@ -9,6 +9,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.state.DirectionProperty;
 import net.minecraft.state.StateContainer;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
@@ -69,9 +70,9 @@ public class TorchLevelBlock extends TorchBlock {
 
 	@Deprecated
 	@Override
-	public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) {
+	public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) {
 		if (world.isRemote) {
-			return true;
+			return ActionResultType.SUCCESS;
 		}
 
 		float pitch;
@@ -90,7 +91,7 @@ public class TorchLevelBlock extends TorchBlock {
 		world.notifyNeighborsOfStateChange(pos, this);
 		world.notifyNeighborsOfStateChange(pos.down(), this);
 
-		return true;
+		return ActionResultType.SUCCESS;
 	}
 
 

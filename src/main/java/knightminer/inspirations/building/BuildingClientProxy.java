@@ -14,6 +14,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
@@ -28,12 +30,46 @@ import net.minecraft.world.biome.BiomeColors;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 import java.util.concurrent.CompletableFuture;
 
 public class BuildingClientProxy extends ClientProxy {
 	public static final Minecraft mc = Minecraft.getInstance();
+
+	@SubscribeEvent
+	public void clientSetup(FMLClientSetupEvent event) {
+		// set render types
+		RenderType cutout = RenderType.getCutout();
+		RenderType cutoutMipped = RenderType.getCutoutMipped();
+		// shelves
+		RenderTypeLookup.setRenderLayer(InspirationsBuilding.shelf_normal, cutout);
+		RenderTypeLookup.setRenderLayer(InspirationsBuilding.shelf_rainbow, cutout);
+		RenderTypeLookup.setRenderLayer(InspirationsBuilding.shelf_tomes, cutout);
+		RenderTypeLookup.setRenderLayer(InspirationsBuilding.shelf_ancient, cutout);
+		// ropes
+		RenderTypeLookup.setRenderLayer(InspirationsBuilding.rope, cutout);
+		RenderTypeLookup.setRenderLayer(InspirationsBuilding.vine, cutout);
+		RenderTypeLookup.setRenderLayer(InspirationsBuilding.ironBars, cutoutMipped);
+		// doors
+		RenderTypeLookup.setRenderLayer(InspirationsBuilding.glassDoor, cutoutMipped);
+		RenderTypeLookup.setRenderLayer(InspirationsBuilding.glassTrapdoor, cutoutMipped);
+		// flower
+		RenderTypeLookup.setRenderLayer(InspirationsBuilding.flower_cyan, cutout);
+		RenderTypeLookup.setRenderLayer(InspirationsBuilding.flower_paeonia, cutout);
+		RenderTypeLookup.setRenderLayer(InspirationsBuilding.flower_rose, cutout);
+		RenderTypeLookup.setRenderLayer(InspirationsBuilding.flower_syringa, cutout);
+		RenderTypeLookup.setRenderLayer(InspirationsBuilding.potted_cyan, cutout);
+		RenderTypeLookup.setRenderLayer(InspirationsBuilding.potted_syringa, cutout);
+		RenderTypeLookup.setRenderLayer(InspirationsBuilding.potted_paeonia, cutout);
+		RenderTypeLookup.setRenderLayer(InspirationsBuilding.potted_rose, cutout);
+		// enlightened bushes
+		RenderTypeLookup.setRenderLayer(InspirationsBuilding.blueEnlightenedBush, cutoutMipped);
+		RenderTypeLookup.setRenderLayer(InspirationsBuilding.greenEnlightenedBush, cutoutMipped);
+		RenderTypeLookup.setRenderLayer(InspirationsBuilding.redEnlightenedBush, cutoutMipped);
+		RenderTypeLookup.setRenderLayer(InspirationsBuilding.whiteEnlightenedBush, cutoutMipped);
+	}
 
 	@SubscribeEvent
 	public void commonSetup(FMLCommonSetupEvent event) {
@@ -186,7 +222,7 @@ public class BuildingClientProxy extends ClientProxy {
 		}
 		for(Direction facing : Direction.Plane.HORIZONTAL){
 			ModelResourceLocation location = new ModelResourceLocation(shelf.getRegistryName(), String.format("facing=%s", facing.getName()));
-			replaceModel(event, location, BookshelfModel::new);
+			replaceModel(event, location, (loader, model) -> new BookshelfModel(location, loader, model));
 		}
 		replaceTexturedModel(event, new ModelResourceLocation(shelf.getRegistryName(), "inventory"), "texture",true);
 	}

@@ -4,6 +4,8 @@ import knightminer.inspirations.building.block.RopeBlock;
 import knightminer.inspirations.common.Config;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResultType;
@@ -47,7 +49,7 @@ public class BuildingEvents {
 
 	private static boolean removeRopeLadder(World world, BlockPos pos, BlockState state, PlayerEntity player) {
 		// only remove rungs when sneaking
-		if (!player.isSneaking()) {
+		if (!player.isCrouching()) {
 			return false;
 		}
 

@@ -255,7 +255,7 @@ public class CondRecipe {
 
 		public void build(@Nonnull Consumer<IFinishedRecipe> consumer, ResourceLocation path) {
 			// Reuse vanilla's builder - which just writes "type".
-			CustomRecipeBuilder builder = CustomRecipeBuilder.func_218656_a(serializer);
+			CustomRecipeBuilder builder = CustomRecipeBuilder.customRecipe(serializer);
 
 			// Capture the finished recipe in the consumer, then wrap in our own class.
 			builder.build((result) ->

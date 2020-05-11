@@ -26,11 +26,11 @@ public class BarometerPropertyGetter implements IItemPropertyGetter {
 		}
 
 		// if negative position, just 0
-		if(entity.posY < 0) {
+		double height = entity.getPosY();
+		if(height < 0) {
 			return 0;
 		}
 
-		double height = entity.posY;
 		int worldHeight = world.getHeight();
 		if(height > worldHeight) {
 			return 1;

@@ -29,6 +29,7 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -89,7 +90,8 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
 	public BlockState getStateForPlacement(BlockItemUseContext context) {
 		// place opposite since its more useful to face into what you clicked
 		Direction facing = context.getNearestLookingDirection();
-		if(context.isPlacerSneaking()) {
+		PlayerEntity player = context.getPlayer();
+		if(player != null && player.isCrouching()) {
 			facing = facing.getOpposite();
 		}
 		return this.getDefaultState().with(FACING, facing);
@@ -108,12 +110,6 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
 	}
 
 	/* Tile Entity */
-
-	@Nonnull
-	@Override
-	public TileEntity createNewTileEntity(@Nonnull IBlockReader world) {
-		return new CollectorTileEntity();
-	}
 
 	@Nonnull
 	@Override
@@ -179,7 +175,7 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
 
 	@Deprecated
 	@Override
-	public void tick(BlockState state, World world, BlockPos pos, Random random) {
+	public void tick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if (world.isRemote) {
 			return;
 		}

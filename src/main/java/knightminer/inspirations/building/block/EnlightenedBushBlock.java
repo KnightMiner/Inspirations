@@ -13,7 +13,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.IBlockReader;
@@ -62,12 +61,6 @@ public class EnlightenedBushBlock extends Block implements IHidable {
 	@Override
 	public boolean causesSuffocation(@Nonnull BlockState state, @Nonnull IBlockReader worldIn, @Nonnull BlockPos pos) {
 		return false;
-	}
-
-	@Nonnull
-	@Override
-	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT_MIPPED;
 	}
 
 	@Deprecated

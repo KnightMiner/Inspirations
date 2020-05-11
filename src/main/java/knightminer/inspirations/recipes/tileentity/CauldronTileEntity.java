@@ -409,7 +409,7 @@ public class CauldronTileEntity extends TileEntity {
 	}
 
 	private void spawnItem(ItemStack stack, ItemEntity base) {
-		ItemEntity entityItem = new ItemEntity(world, base.posX, base.posY, base.posZ, stack);
+		ItemEntity entityItem = new ItemEntity(world, base.getPosX(), base.getPosY(), base.getPosZ(), stack);
 
 		// tag the entity so it does not craft again
 		// prevents something like a water bottle from emptying and filling constantly

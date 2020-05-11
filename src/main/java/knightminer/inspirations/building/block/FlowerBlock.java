@@ -21,6 +21,7 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.loot.ConstantRange;
 import net.minecraft.world.storage.loot.LootPool;
 import net.minecraft.world.storage.loot.LootTable;
@@ -83,10 +84,9 @@ public class FlowerBlock extends BushBlock implements IGrowable, IHidable {
 	public boolean canUseBonemeal(World worldIn, Random rand, BlockPos pos, BlockState state) {
 		return true;
 	}
-
-
+	
 	@Override
-	public void grow(World world, Random rand, BlockPos pos, BlockState state) {
+	public void grow(ServerWorld world, Random rand, BlockPos pos, BlockState state) {
 		// should not happen, but catch anyways
 		if(largePlant == null) {
 			return;

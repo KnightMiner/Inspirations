@@ -26,7 +26,7 @@ public class RecipesEvents {
 		}
 
 		PlayerEntity player = event.getPlayer();
-		if(player.isSneaking()) {
+		if(player.isCrouching()) {
 			return;
 		}
 

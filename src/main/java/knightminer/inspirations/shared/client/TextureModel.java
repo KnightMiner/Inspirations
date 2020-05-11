@@ -4,33 +4,33 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.mojang.datafixers.util.Either;
+import com.mojang.datafixers.util.Pair;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.util.TextureBlockUtil;
 import knightminer.inspirations.shared.SharedClientProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.BlockModel;
 import net.minecraft.client.renderer.model.BlockPart;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.IUnbakedModel;
 import net.minecraft.client.renderer.model.ItemOverrideList;
+import net.minecraft.client.renderer.model.Material;
+import net.minecraft.client.renderer.model.ModelBakery;
 import net.minecraft.client.renderer.model.ModelRotation;
 import net.minecraft.client.renderer.model.Variant;
 import net.minecraft.client.renderer.model.VariantList;
 import net.minecraft.client.renderer.model.WeightedBakedModel;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.BakedModelWrapper;
-import net.minecraftforge.client.model.IModel;
-import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelProperty;
 import slimeknights.mantle.client.ModelHelper;
@@ -43,41 +43,42 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.function.Function;
 
 public class TextureModel extends BakedModelWrapper<IBakedModel> {
 	private final Map<String, IBakedModel> cache = new HashMap<>();
+	private ResourceLocation location;
+	private ModelBakery loader;
 	private IUnbakedModel unbakedModel;
-	private final VertexFormat format;
 	private final String textureKey;
 	private boolean item;
-	private Map<ResourceLocation,IModel> unbakedChildren;
-
-	ModelProperty<String> TEXTURE = TextureBlockUtil.TEXTURE_PROP;
+	private Map<ResourceLocation,IUnbakedModel> unbakedChildren;
+	private ModelProperty<String> TEXTURE = TextureBlockUtil.TEXTURE_PROP;
 
 	/**
 	 * Creates a new instance of the unbakedModel
+	 * @param location       Location of the model being replaced
+	 * @param loader         Model loader instance to rebake models
 	 * @param originalModel  Original baked unbakedModel
-	 * @param unbakedModel   Unbaked, retexturable model
-	 * @param format         Model format, either BLOCK or ITEM
 	 * @param textureKey     Name of the primary key to retexture
 	 * @param item           If true, add logic to retexture the item model too
 	 */
-	public TextureModel(IBakedModel originalModel, IUnbakedModel unbakedModel, VertexFormat format, String textureKey, boolean item) {
+	public TextureModel(ResourceLocation location, ModelBakery loader, IBakedModel originalModel, String textureKey, boolean item) {
 		super(originalModel);
-		this.unbakedModel = unbakedModel;
-		this.format = format;
+		this.location = location;
+		this.loader = loader;
+		this.unbakedModel = loader.getUnbakedModel(location);
 		this.textureKey = textureKey;
 		this.item = item;
+		this.fetchDependents();
 	}
 
 	/**
-	 * Fetches all children models required by this unbakedModel. Done because it is bad practice and prone to threading errors if we fetch them at runtime
-	 * @param loader  Forge Model Loader
+	 * Ensures parents and children of this model are properly fetched
 	 */
-	public void fetchChildren(ModelLoader loader) {
+	protected void fetchDependents() {
 		// needed for getTextures, though we just discard it these are printed elsewhere in loading
-		Set<String> missingTextures = new HashSet<>();
+		Set<Pair<String, String>> missingTextures = Sets.newLinkedHashSet();
+
 		// load the parent of the main model
 		unbakedModel.getTextures(loader::getUnbakedModel, missingTextures);
 
@@ -91,24 +92,24 @@ public class TextureModel extends BakedModelWrapper<IBakedModel> {
 			}
 
 			// make an immutable map of all children
-			ImmutableMap.Builder<ResourceLocation, IModel> builder = new ImmutableMap.Builder<>();
+			ImmutableMap.Builder<ResourceLocation, IUnbakedModel> builder = new ImmutableMap.Builder<>();
 			// skip loading the same unbakedModel multiple times, it will fail again
 			Set<ResourceLocation> loaded = new HashSet<>();
 			for(Variant variant : list.getVariantList()) {
-				ResourceLocation location = variant.getModelLocation();
-				if (loaded.contains(location)) {
+				ResourceLocation variantLocation = variant.getModelLocation();
+				if (loaded.contains(variantLocation)) {
 					continue;
 				}
-				loaded.add(location);
+				loaded.add(variantLocation);
 				try {
 					// using getUnbakedModel as its much simplier, and typically the parent is already loaded
-					IUnbakedModel model = loader.getUnbakedModel(location);
+					IUnbakedModel model = loader.getUnbakedModel(variantLocation);
 					// run getTextures to ensure the parent is loaded
 					model.getTextures(loader::getUnbakedModel, missingTextures);
 					// store it to fetch when texturing
-					builder.put(location, model);
+					builder.put(variantLocation, model);
 				} catch (Exception e) {
-					Inspirations.log.error("Error loading unbaked model for " + location, e);
+					Inspirations.log.error("Error loading unbaked model for " + variantLocation, e);
 				}
 			}
 			unbakedChildren = builder.build();
@@ -142,10 +143,12 @@ public class TextureModel extends BakedModelWrapper<IBakedModel> {
 		if (unbakedModel instanceof VariantList) {
 			return retextureVariantList((VariantList)unbakedModel, textures);
 		}
-		return retexture(unbakedModel, textures).bake(
+		return retexture(unbakedModel, textures).bakeModel(
 				SharedClientProxy.modelLoader,
-				(Function<ResourceLocation, TextureAtlasSprite>) Minecraft.getInstance().getTextureMap()::getSprite,
-				ModelRotation.X0_Y0, this.format);
+				loader.getSpriteMap()::getSprite,
+				ModelRotation.X0_Y0,
+				this.location
+		);
 	}
 
 	/**
@@ -163,11 +166,12 @@ public class TextureModel extends BakedModelWrapper<IBakedModel> {
 	 * @param textures  New textures
 	 * @return  Retextured unbakedModel
 	 */
-	private IModel retexture(IModel model, ImmutableMap<String,String> textures) {
+	private IUnbakedModel retexture(IUnbakedModel model, ImmutableMap<String,String> textures) {
 		if (model instanceof BlockModel) {
 			return retextureBlockModel((BlockModel)model, textures);
 		}
-		return model.retexture(textures);
+		Inspirations.log.error("Failed to retexture model of class {}", model.getClass());
+		return model;
 	}
 
 	/**
@@ -183,7 +187,7 @@ public class TextureModel extends BakedModelWrapper<IBakedModel> {
 		}
 
 		BlockModel newModel = new BlockModel(model.getParentLocation(), elements,
-																				 Maps.newHashMap(model.textures), model.isAmbientOcclusion(), model.isGui3d(),
+																				 Maps.newHashMap(model.textures), model.isAmbientOcclusion(), model.func_230176_c_(),
 																				 model.getAllTransforms(), Lists.newArrayList(model.getOverrides()));
 		newModel.name = model.name;
 		newModel.parent = model.parent;
@@ -195,24 +199,26 @@ public class TextureModel extends BakedModelWrapper<IBakedModel> {
 				newModel.textures.remove(e.getKey());
 			}
 			else {
-				newModel.textures.put(e.getKey(), e.getValue());
+				newModel.textures.put(e.getKey(), Either.left(ModelLoaderRegistry.blockMaterial(e.getValue())));
 			}
 		}
 
 		// Map the unbakedModel's texture references as if it was the parent of a unbakedModel with the retexture map as its textures.
-		Map<String, String> remapped = Maps.newHashMap();
-		for (Map.Entry<String, String> e : newModel.textures.entrySet()) {
-			if (e.getValue().startsWith("#")) {
-				String key = e.getValue().substring(1);
-				if (newModel.textures.containsKey(key)) {
-					remapped.put(e.getKey(), newModel.textures.get(key));
+		Map<String, Either<Material,String>> remapped = Maps.newHashMap();
+		for (Map.Entry<String, Either<Material,String>> e : newModel.textures.entrySet()) {
+			Either<Material,String> either = e.getValue();
+			either.ifRight((path) -> {
+				if (path.startsWith("#")) {
+					String key = path.substring(1);
+					if (newModel.textures.containsKey(key)) {
+						remapped.put(e.getKey(), newModel.textures.get(key));
+					}
 				}
-			}
+			});
 		}
-
 		newModel.textures.putAll(remapped);
 
-		//Remove any faces that use a null texture, this is for performance reasons, also allows some cool layering stuff.
+		// Remove any faces that use a null texture, this is for performance reasons, also allows some cool layering stuff.
 		for (BlockPart part : newModel.getElements()) {
 			part.mapFaces.entrySet().removeIf(entry -> removed.contains(entry.getValue().texture));
 		}
@@ -224,7 +230,7 @@ public class TextureModel extends BakedModelWrapper<IBakedModel> {
 	 * Special logic to retexture instances of VariantList, as they need to be retextured while baking
 	 * @param list      VariantList instance
 	 * @param textures  Textures to use in retexturing
-	 * @return
+	 * @return  Retextured variant list model
 	 */
 	private IBakedModel retextureVariantList(VariantList list, ImmutableMap<String, String> textures) {
 		// nothing to do if no variants
@@ -234,16 +240,16 @@ public class TextureModel extends BakedModelWrapper<IBakedModel> {
 			// this logic is based off VariantList::bake, difference is each child unbakedModel is retextured
 			WeightedBakedModel.Builder builder = new WeightedBakedModel.Builder();
 			for(Variant variant : list.getVariantList()) {
-				IModel model = unbakedChildren.get(variant.getModelLocation());
+				IUnbakedModel model = unbakedChildren.get(variant.getModelLocation());
 				if (model == null) {
 					continue;
 				}
-				IBakedModel ibakedmodel = retexture(model, textures).bake(
+				IBakedModel ibakedmodel = retexture(model, textures).bakeModel(
 						SharedClientProxy.modelLoader,
-						(Function<ResourceLocation, TextureAtlasSprite>) Minecraft.getInstance().getTextureMap()::getSprite,
+						loader.getSpriteMap()::getSprite,
 						variant,
-						this.format
-																																);
+						this.location
+				);
 				builder.add(ibakedmodel, variant.getWeight());
 			}
 

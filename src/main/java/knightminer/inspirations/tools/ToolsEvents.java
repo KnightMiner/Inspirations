@@ -92,7 +92,7 @@ public class ToolsEvents {
 				event.setCanceled(true);
 				event.setCancellationResult(ActionResultType.SUCCESS);
 				// if the player is not sneaking, just open the chest as normal with the key
-			} else if(player.isSneaking()) {
+			} else if(player.isCrouching()) {
 				if(lockable.code != LockCode.EMPTY_CODE) {
 					// if the key matches the lock, take off the lock and give it to the player
 					if(lockable.code.func_219964_a(stack)) {

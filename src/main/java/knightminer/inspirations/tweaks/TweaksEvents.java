@@ -48,13 +48,13 @@ public class TweaksEvents {
 		PlayerEntity player = event.getPlayer();
 		ItemStack stack = player.getHeldItem(event.getHand());
 		// must be sneaking and holding nothing
-		if(player.isSneaking() && stack.isEmpty()) {
+		if(player.isCrouching() && stack.isEmpty()) {
 			Entity target = event.getTarget();
 			if(target instanceof PigEntity) {
 				PigEntity pig = (PigEntity) target;
 				if(pig.getSaddled()) {
 					pig.setSaddled(false);
-					pig.world.playSound(player, pig.posX, pig.posY, pig.posZ, SoundEvents.ENTITY_PIG_SADDLE, SoundCategory.NEUTRAL, 0.5F, 1.0F);
+					pig.world.playSound(player, pig.getPosX(), pig.getPosY(), pig.getPosZ(), SoundEvents.ENTITY_PIG_SADDLE, SoundCategory.NEUTRAL, 0.5F, 1.0F);
 					ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(Items.SADDLE), player.inventory.currentItem);
 					event.setCanceled(true);
 				}

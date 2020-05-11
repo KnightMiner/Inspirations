@@ -22,7 +22,7 @@ import net.minecraft.item.Items;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.potion.Potions;
 import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.crafting.IngredientNBT;
+import net.minecraftforge.common.crafting.NBTIngredient;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
 
@@ -57,12 +57,14 @@ public class ToolsRecipeProvider extends RecipeProvider implements IConditionBui
 				.patternLine(" I ")
 				.build(consumer);
 
+		// not using the builder because it lacks potion
 		ItemPredicate hasWater = new ItemPredicate(
 				null,  // Tag
 				Items.POTION,
 				MinMaxBounds.IntBound.UNBOUNDED,
 				MinMaxBounds.IntBound.UNBOUNDED,
-				new EnchantmentPredicate[0],
+				EnchantmentPredicate.field_226534_b_,
+				EnchantmentPredicate.field_226534_b_,
 				Potions.WATER,
 				NBTPredicate.ANY
 		);
@@ -71,7 +73,7 @@ public class ToolsRecipeProvider extends RecipeProvider implements IConditionBui
 				.addCondition(TOOLS)
 				.addCondition(ConfigEnabledCondition.BAROMETER)
 				.addCriterion("has_bottle", hasItem(hasWater))
-				.key('W', IngredientNBT.fromStacks(PotionUtils.addPotionToItemStack(
+				.key('W', NBTIngredient.fromStacks(PotionUtils.addPotionToItemStack(
 						new ItemStack(Items.POTION),
 						Potions.WATER
 				)))

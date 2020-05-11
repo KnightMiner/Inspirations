@@ -11,6 +11,7 @@ import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.DirectionProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
@@ -70,9 +71,9 @@ public class TorchLeverWallBlock extends WallTorchBlock {
 
 	@Deprecated
 	@Override
-	public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) {
+	public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) {
 		if (world.isRemote) {
-			return true;
+			return ActionResultType.SUCCESS;
 		}
 
 		// update state
@@ -84,7 +85,7 @@ public class TorchLeverWallBlock extends WallTorchBlock {
 		// notify update
 		world.notifyNeighborsOfStateChange(pos, this);
 		world.notifyNeighborsOfStateChange(pos.offset(state.get(FACING).getOpposite()), this);
-		return true;
+		return ActionResultType.SUCCESS;
 	}
 
 

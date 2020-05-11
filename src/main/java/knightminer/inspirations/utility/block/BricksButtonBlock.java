@@ -15,6 +15,7 @@ import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.DirectionProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Mirror;
@@ -29,6 +30,9 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -108,31 +112,32 @@ public class BricksButtonBlock extends HidableBlock {
 
 	@Deprecated
 	@Override
-	public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) {
+	public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) {
 		// if you did not click the secret button, no button for you
 		if(!getButtonBox(state).contains(trace.getHitVec().subtract(new Vec3d(pos)))) {
-			return false;
+			return ActionResultType.PASS;
 		}
 
 		// if already powered, we done here
 		if (state.get(POWERED)) {
-			return true;
+			return ActionResultType.SUCCESS;
 		}
 
 		world.setBlockState(pos, state.with(POWERED, true), 3);
 		world.playSound(player, pos, SoundEvents.BLOCK_STONE_BUTTON_CLICK_ON, SoundCategory.BLOCKS, 0.3F, 0.6F);
 		world.notifyNeighborsOfStateChange(pos, this);
 		world.getPendingBlockTicks().scheduleTick(pos, this, this.tickRate(world));
-		return true;
+		return ActionResultType.SUCCESS;
 	}
 
 	@Deprecated
 	@Override
-	public void randomTick(@Nonnull BlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull Random rand) {}
+	@OnlyIn(Dist.CLIENT)
+	public void animateTick(@Nonnull BlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull Random rand) {}
 
 	@Deprecated
 	@Override
-	public void tick(BlockState state, World world, BlockPos pos, Random random) {
+	public void tick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if (world.isRemote) {
 			return;
 		}

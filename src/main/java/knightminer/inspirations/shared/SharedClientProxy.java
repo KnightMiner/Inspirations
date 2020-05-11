@@ -5,7 +5,7 @@ import knightminer.inspirations.common.ClientProxy;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.client.ClientUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.AtlasTexture;
+import net.minecraft.inventory.container.PlayerContainer;
 import net.minecraft.resources.IReloadableResourceManager;
 import net.minecraft.resources.IResourceManager;
 import net.minecraftforge.client.event.ModelBakeEvent;
@@ -17,7 +17,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import java.util.concurrent.CompletableFuture;
 
 public class SharedClientProxy extends ClientProxy {
-
+	@SubscribeEvent
 	public void setup(FMLCommonSetupEvent event) {
 		// listener to clear color cache from client utils
 		IResourceManager manager = Minecraft.getInstance().getResourceManager();
@@ -45,9 +45,9 @@ public class SharedClientProxy extends ClientProxy {
 	@SubscribeEvent
 	public void registerTextures(TextureStitchEvent.Pre event) {
 		// ensures the colorless fluid texture is loaded.
-		if (event.getMap().getBasePath().equals("texture")) {
-			event.addSprite(Util.getResource("blocks/fluid_colorless"));
-			event.addSprite(Util.getResource("blocks/fluid_colorless_flow"));
+		if (PlayerContainer.LOCATION_BLOCKS_TEXTURE.equals(event.getMap().getTextureLocation())) {
+			event.addSprite(Util.getResource("block/fluid_colorless"));
+			event.addSprite(Util.getResource("block/fluid_colorless_flow"));
 		}
 	}
 }

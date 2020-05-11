@@ -25,7 +25,7 @@ import net.minecraft.state.DirectionProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Mirror;
@@ -77,13 +77,6 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
 		return new BookshelfTileEntity();
 	}
 
-	@Deprecated
-	@Nullable
-	@Override
-	public TileEntity createNewTileEntity(@Nonnull IBlockReader world) {
-		return new BookshelfTileEntity();
-	}
-
 	@Nullable
 	@Override
 	public BlockState getStateForPlacement(BlockItemUseContext context) {
@@ -126,40 +119,41 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
 
 	/* Activation */
 
+	@Deprecated
 	@Override
-	public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) {
+	public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) {
 		Direction facing = state.get(FACING);
 
 		// skip opposite, not needed as the back is never clicked for books
 		if(facing.getOpposite() == trace.getFace()) {
-			return false;
+			return ActionResultType.PASS;
 		}
 
 		// if sneaking, just do the GUI
-		if(player.isSneaking()) {
-			return world.isRemote || openGui(player, world, pos);
+		if(player.isCrouching()) {
+			return (world.isRemote || openGui(player, world, pos)) ? ActionResultType.SUCCESS : ActionResultType.PASS;
 		}
 
 		// if we did not click a book, just do the GUI as well
 		int book = bookClicked(facing, pos, trace.getHitVec());
 		if(book == -1) {
-			return world.isRemote || openGui(player, world, pos);
+			return (world.isRemote || openGui(player, world, pos)) ? ActionResultType.SUCCESS : ActionResultType.PASS;
 		}
 
 		TileEntity te = world.getTileEntity(pos);
 		if(te instanceof BookshelfTileEntity) {
 			// try interacting
 			if(((BookshelfTileEntity) te).interact(player, hand, book)) {
-				return true;
+				return ActionResultType.SUCCESS;
 			}
 
 			// if the offhand can interact, return false so we can process it later
 			if(InspirationsRegistry.isBook(player.getHeldItemOffhand())) {
-				return false;
+				return ActionResultType.PASS;
 			}
 		}
 
-		return true;
+		return ActionResultType.SUCCESS;
 	}
 
 	private static int bookClicked(Direction facing, BlockPos pos, Vec3d clickWorld) {
@@ -279,13 +273,6 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
 	/*
 	 * Block properties
 	 */
-
-	@Nonnull
-	@Override
-	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
-	}
-
 	@Override
 	public BlockState rotate(BlockState state, IWorld world, BlockPos pos, Rotation direction) {
 		return state.with(FACING, direction.rotate(state.get(FACING)));

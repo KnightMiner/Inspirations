@@ -11,6 +11,22 @@ import net.minecraftforge.fml.network.IContainerFactory;
 import slimeknights.mantle.inventory.MultiModuleContainer;
 
 public class PipeContainer extends MultiModuleContainer<PipeTileEntity> {
+	public PipeContainer(int winId, PlayerInventory inventoryPlayer, PipeTileEntity tile) {
+		super(InspirationsUtility.contPipe, winId, inventoryPlayer, tile);
+		this.addSlot(new Slot(tile, 0, 80, 20));
+		addInventorySlots();
+	}
+
+	@Override
+	protected int getInventoryXOffset() {
+		return 8;
+	}
+
+	@Override
+	protected int getInventoryYOffset() {
+		return 51;
+	}
+
 	public static class Factory implements IContainerFactory<PipeContainer> {
 		@Override
 		public PipeContainer create(int windowId, PlayerInventory inv, PacketBuffer data) {
@@ -22,13 +38,5 @@ public class PipeContainer extends MultiModuleContainer<PipeTileEntity> {
 			}
 			throw new AssertionError(String.format("No pipe at %s!", pos));
 		}
-	}
-
-
-	public PipeContainer(int winId, PlayerInventory inventoryPlayer, PipeTileEntity tile) {
-		super(InspirationsUtility.contPipe, winId, tile);
-		this.addSlot(new Slot(tile, 0, 80, 20));
-
-		addPlayerInventory(inventoryPlayer, 8, 51);
 	}
 }

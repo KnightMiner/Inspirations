@@ -41,7 +41,7 @@ public class SimpleDyedBottleItem extends HidableItem {
 				player.playSound(SoundEvents.ITEM_BOTTLE_EMPTY, 1.0F, 1.0F);
 
 				// give back bottle;
-				ItemStack bottle = new ItemStack(getContainerItem());
+				ItemStack bottle = stack.getContainerItem();
 				if (stack.getCount() == 1) {
 					player.setHeldItem(hand, bottle);
 				} else {

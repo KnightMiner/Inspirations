@@ -18,6 +18,7 @@ import net.minecraft.state.EnumProperty;
 import net.minecraft.state.IntegerProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.IStringSerializable;
@@ -27,6 +28,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.model.data.ModelProperty;
 
 import javax.annotation.Nonnull;
@@ -158,8 +161,9 @@ public class EnhancedCauldronBlock extends CauldronBlock {
 	}
 
 	@Override
-	public boolean onBlockActivated(@Nonnull BlockState state, @Nonnull World world, @Nonnull BlockPos pos, PlayerEntity player, @Nonnull Hand hand, BlockRayTraceResult ray) {
-		return true; // all moved to the cauldron registry
+	public ActionResultType onBlockActivated(@Nonnull BlockState state, @Nonnull World world, @Nonnull BlockPos pos, PlayerEntity player, @Nonnull Hand hand, BlockRayTraceResult ray) {
+		// all moved to the cauldron registry
+		return ActionResultType.SUCCESS;
 	}
 
 
@@ -179,7 +183,8 @@ public class EnhancedCauldronBlock extends CauldronBlock {
 
 	@Deprecated
 	@Override
-	public void randomTick(BlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull Random rand) {
+	@OnlyIn(Dist.CLIENT)
+	public void animateTick(BlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull Random rand) {
 		if(!state.get(BOILING)) {
 			return;
 		}

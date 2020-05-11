@@ -10,6 +10,7 @@ import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import knightminer.inspirations.utility.InspirationsUtility;
 import knightminer.inspirations.utility.block.CarpetedPressurePlateBlock;
+import net.minecraft.advancements.criterion.StatePropertiesPredicate;
 import net.minecraft.block.Block;
 import net.minecraft.block.DoorBlock;
 import net.minecraft.data.loot.BlockLootTables;
@@ -82,7 +83,10 @@ public class InspirationsBlockLootTable extends BlockLootTables {
 		this.registerLootTable(InspirationsBuilding.glassDoor, LootTable.builder()
 				.addLootPool(LootPool.builder().addEntry(ItemLootEntry.builder(InspirationsBuilding.glassDoor))
 						.acceptCondition(BlockStateProperty.builder(InspirationsBuilding.glassDoor)
-								.with(DoorBlock.HALF, DoubleBlockHalf.LOWER))
+								.fromProperties(StatePropertiesPredicate.Builder.newBuilder()
+										.withProp(DoorBlock.HALF, DoubleBlockHalf.LOWER)
+								)
+						)
 						.acceptCondition(SILK_TOUCH)
 				)
 		);
@@ -164,7 +168,8 @@ public class InspirationsBlockLootTable extends BlockLootTables {
 								.acceptFunction(SetCount.builder(ConstantRange.of(RopeBlock.RUNG_ITEM_COUNT)))
 						)
 						.acceptCondition(BlockStateProperty.builder(rope)
-								.with(RopeBlock.RUNGS, RopeBlock.Rungs.NONE)
+								.fromProperties(StatePropertiesPredicate.Builder.newBuilder()
+										.withProp(RopeBlock.RUNGS, RopeBlock.Rungs.NONE))
 								.inverted()
 						)
 				));

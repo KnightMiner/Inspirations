@@ -17,6 +17,7 @@ public class WetHopperBlock extends DryHopperBlock {
 		super(props);
 	}
 
+	@Deprecated
 	@Nonnull
 	@Override
 	public IFluidState getFluidState(BlockState state) {

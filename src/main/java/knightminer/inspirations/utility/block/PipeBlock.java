@@ -28,6 +28,7 @@ import net.minecraft.state.DirectionProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Mirror;
@@ -169,18 +170,20 @@ public class PipeBlock extends InventoryBlock implements IHidable, IWaterLoggabl
 				.with(WEST,  canConnectTo(world, pos, facing, Direction.WEST));
 	}
 
+	@Deprecated
 	@Override
 	@Nonnull
 	public IFluidState getFluidState(BlockState state) {
 		return state.get(WATERLOGGED) ? Fluids.WATER.getStillFluidState(false) : super.getFluidState(state);
 	}
 
+	@Deprecated
 	@Override
-	public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) {
+	public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) {
 		// return false if holding a pipe to make easier to place
 		Item item = player.getHeldItem(hand).getItem();
 		if(item == InspirationsUtility.pipe.asItem() || Block.getBlockFromItem(item) instanceof HopperBlock) {
-			return false;
+			return ActionResultType.PASS;
 		}
 		return super.onBlockActivated(state, world, pos, player, hand, trace);
 	}
@@ -214,13 +217,6 @@ public class PipeBlock extends InventoryBlock implements IHidable, IWaterLoggabl
 
 
 	/* Tile Entity */
-
-	@Nullable
-	@Override
-	public TileEntity createNewTileEntity(@Nonnull IBlockReader world) {
-		return new PipeTileEntity();
-	}
-
 	@Nonnull
 	@Override
 	public TileEntity createTileEntity(BlockState state, IBlockReader world) {

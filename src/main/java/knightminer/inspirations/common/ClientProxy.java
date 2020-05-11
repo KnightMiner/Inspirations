@@ -8,14 +8,12 @@ import net.minecraft.client.renderer.color.IBlockColor;
 import net.minecraft.client.renderer.color.IItemColor;
 import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.IUnbakedModel;
+import net.minecraft.client.renderer.model.ModelBakery;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelBakeEvent;
-import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
@@ -58,15 +56,10 @@ public class ClientProxy {
 		}
 	}
 
-	protected static void replaceModel(ModelBakeEvent event, ModelResourceLocation location, BiFunction<IBakedModel, IUnbakedModel, TextureModel> modelMaker) {
+	protected static void replaceModel(ModelBakeEvent event, ModelResourceLocation location, BiFunction<ModelBakery, IBakedModel, TextureModel> modelMaker) {
 		try {
-			// model to be retextured
-			IUnbakedModel model = ModelLoaderRegistry.getModel(location);
-			// model for rendering properties
-			IBakedModel standard = event.getModelRegistry().get(location);
 			// model to replace standard
-			TextureModel finalModel = modelMaker.apply(standard, model);
-			finalModel.fetchChildren(event.getModelLoader());
+			TextureModel finalModel = modelMaker.apply(event.getModelLoader(), event.getModelRegistry().get(location));
 			event.getModelRegistry().put(location, finalModel);
 		} catch(Exception e) {
 			Inspirations.log.error("Caught exception trying to replace model for " + location, e);
@@ -76,7 +69,7 @@ public class ClientProxy {
 	protected static void replaceTexturedModel(ModelBakeEvent event, ModelResourceLocation location, String key, boolean item) {
 		replaceModel(
 				event, location,
-				(orig, model) -> new TextureModel(orig, model, item ? DefaultVertexFormats.ITEM : DefaultVertexFormats.BLOCK, key, item)
+				(loader, model) -> new TextureModel(location, loader, model, key, item)
 		);
 	}
 

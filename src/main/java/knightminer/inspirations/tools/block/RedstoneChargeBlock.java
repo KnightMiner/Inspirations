@@ -24,6 +24,7 @@ import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -101,7 +102,7 @@ public class RedstoneChargeBlock extends Block {
 
 	@Deprecated
 	@Override
-	public void tick(BlockState state, World world, BlockPos pos, Random random) {
+	public void tick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if (!world.isRemote) {
 			world.removeBlock(pos, false);
 			world.playSound(null, pos, SoundEvents.BLOCK_REDSTONE_TORCH_BURNOUT, SoundCategory.BLOCKS, 0.5F, 2.6F + (world.rand.nextFloat() - world.rand.nextFloat()) * 0.8F);

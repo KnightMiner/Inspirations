@@ -11,7 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.chunk.ChunkRenderCache;
 import net.minecraft.client.renderer.color.IBlockColor;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IEnviromentBlockReader;
+import net.minecraft.world.ILightReader;
 import net.minecraft.world.IWorldReader;
 
 import javax.annotation.Nonnull;
@@ -30,7 +30,7 @@ public class PortalColorHandler implements IBlockColor {
   private PortalColorHandler() {}
 
   @Override
-  public int getColor(@Nonnull BlockState state, @Nullable IEnviromentBlockReader world, @Nullable BlockPos pos, int tintValue) {
+  public int getColor(@Nonnull BlockState state, @Nullable ILightReader world, @Nullable BlockPos pos, int tintValue) {
     if (!Config.customPortalColor.get()) {
       return -1;
     }
@@ -67,7 +67,7 @@ public class PortalColorHandler implements IBlockColor {
    * @param access  Block access
    * @param pos     Block pos
    */
-  private static int getColorValue(IEnviromentBlockReader access, BlockPos pos) {
+  private static int getColorValue(ILightReader access, BlockPos pos) {
     BlockState state = access.getBlockState(pos);
     Block block = state.getBlock();
     // stained glass

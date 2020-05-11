@@ -105,6 +105,7 @@ public class InspirationsTools extends PulseBase {
 	}
 
 	@SubscribeEvent
+	@SuppressWarnings("deprecation")
 	public void registerItems(Register<Item> event) {
 		IForgeRegistry<Item> r = event.getRegistry();
 

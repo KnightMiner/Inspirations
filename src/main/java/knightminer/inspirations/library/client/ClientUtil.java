@@ -15,13 +15,14 @@ import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.MissingTextureSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.inventory.container.PlayerContainer;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IEnviromentBlockReader;
+import net.minecraft.world.ILightReader;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.text.WordUtils;
@@ -34,6 +35,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 public final class ClientUtil {
 	public static final String TAG_TEXTURE_PATH = "texture_path";
@@ -117,24 +119,32 @@ public final class ClientUtil {
 	 * Gets the sprite for the given texture location, or Missing Texture if no sprite is found
 	 */
 	public static TextureAtlasSprite getSprite(ResourceLocation location) {
-		AtlasTexture textureMapBlocks = mc.getTextureMap();
+		Function<ResourceLocation, TextureAtlasSprite> textureGetter = mc.getAtlasSpriteGetter(PlayerContainer.LOCATION_BLOCKS_TEXTURE);
 		TextureAtlasSprite sprite = null;
 		if (location != null) {
-			sprite = textureMapBlocks.getSprite(location);
+			sprite = textureGetter.apply(location);
 		}
 		if (sprite == null) {
-			sprite = textureMapBlocks.getSprite(MissingTextureSprite.getLocation());
+			sprite = textureGetter.apply(MissingTextureSprite.getLocation());
 		}
 		return sprite;
 	}
 
+	/**
+	 * Used to render fluid sprites in the JEI interface
+	 * @param sprite  Sprite to render
+	 * @param x       Sprite X position
+	 * @param y       Sprite Y position
+	 * @param size    Sprite size in pixels
+	 * @param filled  Amount of sprite filled in pixels
+	 */
 	public static void renderFilledSprite(TextureAtlasSprite sprite, final int x, final int y, final int size, final int filled) {
-		double uMin = sprite.getMinU();
-		double uMax = sprite.getMaxU();
-		double vMin = sprite.getMinV();
-		double vMax = sprite.getMaxV();
-		uMax = uMax - (16 - size) / 16.0 * (uMax - uMin);
-		vMax = vMax - (16 - filled) / 16.0 * (vMax - vMin);
+		float uMin = sprite.getMinU();
+		float uMax = sprite.getMaxU();
+		float vMin = sprite.getMinV();
+		float vMax = sprite.getMaxV();
+		uMax = uMax - (16 - size) / 16.0f * (uMax - uMin);
+		vMax = vMax - (16 - filled) / 16.0f * (vMax - vMin);
 
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
@@ -177,7 +187,7 @@ public final class ClientUtil {
 	 * @param index Tint index
 	 * @return color, or -1 for undefined
 	 */
-	public static int getStackBlockColorsSafe(ItemStack stack, @Nullable IEnviromentBlockReader world, @Nullable BlockPos pos, int index) {
+	public static int getStackBlockColorsSafe(ItemStack stack, @Nullable ILightReader world, @Nullable BlockPos pos, int index) {
 		if (stack.isEmpty()) {
 			return -1;
 		}
@@ -186,7 +196,7 @@ public final class ClientUtil {
 		Item item = stack.getItem();
 		if (!unsafe.contains(item)) {
 			try {
-				return ClientUtil.getStackBlockColors(stack, world, pos, index);
+				return getStackBlockColors(stack, world, pos, index);
 			} catch (Exception e) {
 				// catch and log possible exceptions. Most likely exception is ClassCastException if they do not perform safety checks
 				Inspirations.log.error(String.format("Caught exception getting block colors for %s", item.getRegistryName()), e);
@@ -206,7 +216,7 @@ public final class ClientUtil {
 	 * @param index Tint index
 	 * @return color, or -1 for undefined
 	 */
-	public static int getStackBlockColors(ItemStack stack, @Nullable IEnviromentBlockReader world, @Nullable BlockPos pos, int index) {
+	public static int getStackBlockColors(ItemStack stack, @Nullable ILightReader world, @Nullable BlockPos pos, int index) {
 		if (stack.isEmpty() || !(stack.getItem() instanceof BlockItem)) {
 			return -1;
 		}
@@ -223,10 +233,11 @@ public final class ClientUtil {
 	 * @param color    Sprite color
 	 * @param level    Cauldron level
 	 */
+	@Deprecated
 	public static void renderJEICauldronFluid(int x, int y, ResourceLocation location, float[] color, int level) {
 		GlStateManager.enableBlend();
-		mc.gameRenderer.enableLightmap();
-		GlStateManager.color3f(color[0], color[1], color[2]);
+		//mc.gameRenderer.enableLightmap();
+		GlStateManager.color4f(color[0], color[1], color[2], 1);
 		// 0 means JEI ingredient list
 		TextureAtlasSprite sprite = ClientUtil.getSprite(location);
 		if (level == 0) {
@@ -235,7 +246,7 @@ public final class ClientUtil {
 			int height = ((10 * level) / InspirationsRegistry.getCauldronMax());
 			ClientUtil.renderFilledSprite(sprite, x, y, 10, height);
 		}
-		GlStateManager.color3f(1, 1, 1);
+		GlStateManager.color4f(1, 1, 1, 1);
 		GlStateManager.disableBlend();
 	}
 

@@ -71,7 +71,7 @@ public class InspirationsBlockTagsProvider extends BlockTagsProvider {
 
 	private void registerVanillaTags() {
 		this.getBuilder(BlockTags.LEAVES).add(InspirationsTags.Blocks.ENLIGHTENED_BUSHES);
-		this.getBuilder(BlockTags.DIRT_LIKE).add(InspirationsTags.Blocks.MULCH);
+		//this.getBuilder(BlockTags.DIRT_LIKE).add(InspirationsTags.Blocks.MULCH);
 		this.getBuilder(BlockTags.BAMBOO_PLANTABLE_ON).add(InspirationsTags.Blocks.MULCH);
 		this.getBuilder(BlockTags.WOODEN_TRAPDOORS).add(InspirationsTags.Blocks.CARPETED_TRAPDOORS);
 		this.getBuilder(BlockTags.FLOWER_POTS).add(InspirationsTags.Blocks.FLOWER_POTS);

@@ -70,7 +70,7 @@ public class WaypointCompassPropertyGetter implements IItemPropertyGetter {
 
 	@OnlyIn(Dist.CLIENT)
 	private double posToAngle(BlockPos pos, Entity entity) {
-		return Math.atan2((double)pos.getZ() + 0.5 - entity.posZ, (double)pos.getX() + 0.5 - entity.posX);
+		return Math.atan2((double)pos.getZ() + 0.5 - entity.getPosZ(), (double)pos.getX() + 0.5 - entity.getPosX());
 	}
 
 

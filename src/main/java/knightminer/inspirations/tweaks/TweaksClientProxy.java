@@ -5,6 +5,8 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.tweaks.client.PortalColorHandler;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.client.renderer.model.IBakedModel;
@@ -26,6 +28,7 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Map;
@@ -37,10 +40,8 @@ public class TweaksClientProxy extends ClientProxy {
 	private static final ResourceLocation FIREWORKS_VANILLA = new ModelResourceLocation("firework_rocket", "inventory");
 	private static final ResourceLocation FIREWORKS_TINTED = Util.getResource("item/fireworks");
 
-	private static final ResourceLocation PORTAL_EW_VANILLA = new ModelResourceLocation(
-			"minecraft:nether_portal", "axis=z");
-	private static final ResourceLocation PORTAL_NS_VANILLA = new ModelResourceLocation(
-			"minecraft:nether_portal", "axis=x");
+	private static final ResourceLocation PORTAL_EW_VANILLA = new ModelResourceLocation("minecraft:nether_portal", "axis=z");
+	private static final ResourceLocation PORTAL_NS_VANILLA = new ModelResourceLocation("minecraft:nether_portal", "axis=x");
 	private static final ResourceLocation PORTAL_EW_TINTED = Util.getResource("block/nether_portal_tinted_ew");
 	private static final ResourceLocation PORTAL_NS_TINTED = Util.getResource("block/nether_portal_tinted_ns");
 
@@ -48,14 +49,19 @@ public class TweaksClientProxy extends ClientProxy {
 	private static final ResourceLocation CAULDRON_ITEM_MODEL = new ModelResourceLocation(Util.getResource("cauldron"), "inventory");
 
 	@SubscribeEvent
+	public void clientSetup(FMLClientSetupEvent event) {
+		RenderType cutout = RenderType.getCutout();
+		RenderTypeLookup.setRenderLayer(InspirationsTweaks.cactus, cutout);
+		RenderTypeLookup.setRenderLayer(InspirationsTweaks.sugarCane, cutout);
+	}
+
+	@SubscribeEvent
 	public void loadCustomModels(ModelRegistryEvent event) {
 		// Register these models to be loaded in directly.
 		ModelLoader.addSpecialModel(PORTAL_EW_TINTED);
 		ModelLoader.addSpecialModel(PORTAL_NS_TINTED);
-
 		ModelLoader.addSpecialModel(ENCHANTED_BOOK_TINTED);
 		ModelLoader.addSpecialModel(FIREWORKS_TINTED);
-
 		ModelLoader.addSpecialModel(CAULDRON_ITEM_MODEL);
 	}
 

@@ -13,29 +13,25 @@ import net.minecraftforge.fml.network.IContainerFactory;
 import slimeknights.mantle.inventory.MultiModuleContainer;
 
 public class BookshelfContainer extends MultiModuleContainer<BookshelfTileEntity> {
-	public static class Factory implements IContainerFactory<BookshelfContainer> {
-		@Override
-		public BookshelfContainer create(int windowId, PlayerInventory inv, PacketBuffer data) {
-			// Create the container on the clientside.
-			BlockPos pos = data.readBlockPos();
-			TileEntity te = inv.player.world.getTileEntity(pos);
-			if (te instanceof BookshelfTileEntity) {
-				return new BookshelfContainer(windowId, inv, (BookshelfTileEntity) te);
-			}
-			throw new AssertionError(String.format("No bookshelf at %s!", pos));
-		}
-	}
-
 	public BookshelfContainer(int winId, PlayerInventory inventoryPlayer, BookshelfTileEntity shelf) {
-		super(InspirationsBuilding.contBookshelf, winId, shelf);
+		super(InspirationsBuilding.contBookshelf, winId, inventoryPlayer, shelf);
 		for(int i = 0; i < 7; i++) {
 			this.addSlot(new SlotBookshelf(tile, i, 26 + (i*18), 18));
 		}
 		for(int i = 0; i < 7; i++) {
 			this.addSlot(new SlotBookshelf(tile, i+7, 26 + (i*18), 44));
 		}
+		addInventorySlots();
+	}
 
-		addPlayerInventory(inventoryPlayer, 8, 74);
+	@Override
+	protected int getInventoryXOffset() {
+		return 8;
+	}
+
+	@Override
+	protected int getInventoryYOffset() {
+		return 74;
 	}
 
 	public static class SlotBookshelf extends Slot {
@@ -50,6 +46,19 @@ public class BookshelfContainer extends MultiModuleContainer<BookshelfTileEntity
 		@Override
 		public boolean isItemValid(ItemStack stack) {
 			return InspirationsRegistry.isBook(stack);
+		}
+	}
+
+	public static class Factory implements IContainerFactory<BookshelfContainer> {
+		@Override
+		public BookshelfContainer create(int windowId, PlayerInventory inv, PacketBuffer data) {
+			// Create the container on the clientside.
+			BlockPos pos = data.readBlockPos();
+			TileEntity te = inv.player.world.getTileEntity(pos);
+			if (te instanceof BookshelfTileEntity) {
+				return new BookshelfContainer(windowId, inv, (BookshelfTileEntity) te);
+			}
+			throw new AssertionError(String.format("No bookshelf at %s!", pos));
 		}
 	}
 }

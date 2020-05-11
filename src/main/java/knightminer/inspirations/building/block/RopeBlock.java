@@ -21,7 +21,6 @@ import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.ActionResultType;
-import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.IStringSerializable;
@@ -140,16 +139,16 @@ public class RopeBlock extends HidableBlock implements IWaterLoggable {
 	// right click with a rope to extend downwards
 	@Deprecated
 	@Override
-	public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+	public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
 		// no need to check verticals, one is not possible and the other normal block placement
 		if (hit.getFace().getAxis().isVertical()) {
-			return false;
+			return ActionResultType.PASS;
 		}
 
 		ItemStack stack = player.getHeldItem(hand);
 		// check if the item is the same type as us
 		if (Block.getBlockFromItem(stack.getItem()) != this) {
-			return false;
+			return ActionResultType.PASS;
 		}
 
 		// find the first block at the bottom of the rope
@@ -167,7 +166,7 @@ public class RopeBlock extends HidableBlock implements IWaterLoggable {
 			}
 		}
 
-		return true;
+		return ActionResultType.SUCCESS;
 	}
 
 	// when breaking, place all items from ropes below at the position of this rope
@@ -208,12 +207,6 @@ public class RopeBlock extends HidableBlock implements IWaterLoggable {
 	@Override
 	public boolean isLadder(BlockState state, IWorldReader world, BlockPos pos, LivingEntity entity) {
 		return true;
-	}
-
-	@Nonnull
-	@Override
-	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
 	}
 
 

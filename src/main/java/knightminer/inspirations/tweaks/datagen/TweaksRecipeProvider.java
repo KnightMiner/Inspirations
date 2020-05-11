@@ -5,8 +5,10 @@ import knightminer.inspirations.common.data.PulseLoadedCondition;
 import knightminer.inspirations.common.datagen.CondRecipe;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import knightminer.inspirations.utility.InspirationsUtility;
+import net.minecraft.advancements.criterion.EnchantmentPredicate;
 import net.minecraft.advancements.criterion.ItemPredicate;
 import net.minecraft.advancements.criterion.MinMaxBounds;
+import net.minecraft.advancements.criterion.NBTPredicate;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.IFinishedRecipe;
 import net.minecraft.data.RecipeProvider;
@@ -33,7 +35,6 @@ public class TweaksRecipeProvider extends RecipeProvider implements IConditionBu
 	}
 	@Override
 	protected void registerRecipes(@Nonnull Consumer<IFinishedRecipe> consumer) {
-
 		// Since these are mass-production recipes, show them after the user makes
 		// several of the original.
 		CondRecipe.shaped(InspirationsUtility.collector)
@@ -41,11 +42,17 @@ public class TweaksRecipeProvider extends RecipeProvider implements IConditionBu
 				.addCondition(ConfigEnabledCondition.COLLECTOR)
 				.addCondition(TWEAKS)
 				.addCondition(ConfigEnabledCondition.UNSTACKABLE_ALTS)
-				.addCriterion("many_collectors", hasItem(new ItemPredicate.Builder()
-						.item(InspirationsUtility.collector)
-						.count(MinMaxBounds.IntBound.atLeast(5))
-						.build()
-				))
+				// builder is missing count, so use ItemPredicate constructor
+				.addCriterion("many_collectors", hasItem(new ItemPredicate(
+						null, // tag
+						InspirationsUtility.collector.asItem(),
+						MinMaxBounds.IntBound.atLeast(5),
+						MinMaxBounds.IntBound.UNBOUNDED,
+						EnchantmentPredicate.field_226534_b_,
+						EnchantmentPredicate.field_226534_b_,
+						null, // potion
+						NBTPredicate.ANY
+				)))
 				.key('T', Tags.Items.RODS_WOODEN)
 				.key('S', Tags.Items.STRING)
 				.key('D', Items.DROPPER)
@@ -59,11 +66,17 @@ public class TweaksRecipeProvider extends RecipeProvider implements IConditionBu
 				.addCondition(ConfigEnabledCondition.COLLECTOR)
 				.addCondition(TWEAKS)
 				.addCondition(ConfigEnabledCondition.UNSTACKABLE_ALTS)
-				.addCriterion("many_collectors", hasItem(new ItemPredicate.Builder()
-						.item(Items.DISPENSER)
-						.count(MinMaxBounds.IntBound.atLeast(5))
-						.build()
-				))
+				// builder is missing count, so use ItemPredicate constructor
+				.addCriterion("many_collectors", hasItem(new ItemPredicate(
+						null, // tag
+						Items.DISPENSER,
+						MinMaxBounds.IntBound.atLeast(5),
+						MinMaxBounds.IntBound.UNBOUNDED,
+						EnchantmentPredicate.field_226534_b_,
+						EnchantmentPredicate.field_226534_b_,
+						null, // potion
+						NBTPredicate.ANY
+				)))
 				.key('T', Tags.Items.RODS_WOODEN)
 				.key('S', Tags.Items.STRING)
 				.key('D', Items.DROPPER)

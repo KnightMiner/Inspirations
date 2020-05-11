@@ -9,9 +9,9 @@ import knightminer.inspirations.shared.client.TextureModel;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.IUnbakedModel;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.renderer.model.ModelBakery;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.data.IModelData;
 
 import javax.annotation.Nonnull;
@@ -25,8 +25,8 @@ public class BookshelfModel extends TextureModel {
 
 	/** Book model cache, for internal use only */
 	public static final Cache<BookshelfCacheKey, IBakedModel> BOOK_CACHE = CacheBuilder.newBuilder().maximumSize(30).build();
-	public BookshelfModel(IBakedModel standard, IUnbakedModel model) {
-		super(standard, model, DefaultVertexFormats.BLOCK, "texture", false);
+	public BookshelfModel(ResourceLocation location, ModelBakery loader, IBakedModel standard) {
+		super(location, loader, standard, "texture", false);
 	}
 
 	@Nonnull

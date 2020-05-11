@@ -28,7 +28,10 @@ public final class ReflectionUtil {
 	@Nullable
 	public static <T extends ForgeRegistryEntry<T>> T getMixPredicateInput(@Nonnull Object mixPredicate) {
 		IRegistryDelegate<T> effect = getPrivateValue(getClass("net.minecraft.potion.PotionBrewing$MixPredicate"), mixPredicate, "field_185198_a");
-		return effect.get();
+		if (effect != null) {
+			return effect.get();
+		}
+		return null;
 	}
 
 	@Nullable
@@ -39,7 +42,10 @@ public final class ReflectionUtil {
 	@Nullable
 	public static <T extends ForgeRegistryEntry<T>> T getMixPredicateOutput(@Nonnull Object mixPredicate) {
 		IRegistryDelegate<T> effect = getPrivateValue(getClass("net.minecraft.potion.PotionBrewing$MixPredicate"), mixPredicate, "field_185200_c");
-		return effect.get();
+		if (effect != null) {
+			return effect.get();
+		}
+		return null;
 	}
 
 
@@ -57,10 +63,11 @@ public final class ReflectionUtil {
 	 * @return The return value of the method or <tt>null</tt>, if it fails or the method is <tt>void</tt>
 	 */
 	@Nullable
+	@SuppressWarnings("unchecked")
 	private static <T> T invokeMethod(final Class<?> classToSearch, final Object instance, final String name, final Class<?>[] paramTypes, final Object... params) {
 		try {
 			Method m = METHODS.computeIfAbsent(name, key -> ObfuscationReflectionHelper.findMethod(classToSearch, name, paramTypes));
-			return m != null ? (T) m.invoke(instance, params) : null;
+			return (T) m.invoke(instance, params);
 		} catch(IllegalAccessException | IllegalArgumentException | InvocationTargetException | ClassCastException | UnableToFindMethodException e) {
 			InspirationsRegistry.log.error(e);
 			METHODS.putIfAbsent(name, null); // set cache of method to null if it errors trying to find the method in the first place
@@ -75,6 +82,8 @@ public final class ReflectionUtil {
 	 * @param className The class name to be searched for
 	 * @return The class found or <tt>null</tt>, if the class is unavailable
 	 */
+	@Nullable
+	@SuppressWarnings("unchecked")
 	public static Class<? super Object> getClass(String className) {
 		return (Class<? super Object>) CLASS.computeIfAbsent(className, key -> {
 			try {
@@ -98,6 +107,7 @@ public final class ReflectionUtil {
 	 * @return The value of the field or <tt>null</tt>, if it fails
 	 */
 	@Nullable
+	@SuppressWarnings("unchecked")
 	private static <C, T> T getPrivateValue(final Class<? super C> clazz, final Object instance, final String name) {
 		if(clazz == null) {
 			return null;
@@ -107,7 +117,7 @@ public final class ReflectionUtil {
 		}
 		try {
 			Field f = FIELDS.computeIfAbsent(name, key -> ObfuscationReflectionHelper.findField(clazz, name));
-			return f != null ? (T) f.get(instance) : null;
+			return (T) f.get(instance);
 		} catch(IllegalAccessException | UnableToFindFieldException | ClassCastException e) {
 			InspirationsRegistry.log.error(e);
 			FIELDS.putIfAbsent(name, null); // set cache of field to null if it errors trying to find the field in the first place
