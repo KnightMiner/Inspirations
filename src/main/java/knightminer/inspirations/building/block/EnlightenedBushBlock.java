@@ -29,6 +29,7 @@ public class EnlightenedBushBlock extends Block implements IHidable {
 				.lightValue(15)
 				.hardnessAndResistance(0.2F)
 				.sound(SoundType.PLANT)
+				.notSolid()
 		);
 		this.color = color;
 	}

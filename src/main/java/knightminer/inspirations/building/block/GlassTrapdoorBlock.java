@@ -13,6 +13,7 @@ public class GlassTrapdoorBlock extends TrapDoorBlock implements IHidable {
 		super(Block.Properties.create(Material.GLASS)
 				.hardnessAndResistance(0.3F)
 				.sound(SoundType.GLASS)
+				.notSolid()
 		);
 	}
 
