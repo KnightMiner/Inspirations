@@ -2,7 +2,7 @@
 name: 1.12 Bug report
 about: Create an issue for Minecraft 1.12
 title: ''
-labels: '1.12'
+labels: bug, 1.12
 assignees: ''
 
 ---
