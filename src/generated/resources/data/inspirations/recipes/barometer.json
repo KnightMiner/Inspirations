@@ -15,7 +15,10 @@
   ],
   "key": {
     "W": {
-      "item": "minecraft:potion"
+      "type": "forge:nbt",
+      "item": "minecraft:potion",
+      "count": 1,
+      "nbt": "{Potion:\"minecraft:water\"}"
     },
     "B": {
       "item": "minecraft:glass_bottle"

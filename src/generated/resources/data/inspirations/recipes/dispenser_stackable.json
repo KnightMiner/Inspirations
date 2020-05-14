@@ -18,9 +18,9 @@
     }
   ],
   "pattern": [
-    " DS",
+    " TS",
     "TDS",
-    " DS"
+    " TS"
   ],
   "key": {
     "T": {

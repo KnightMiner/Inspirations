@@ -80,9 +80,9 @@ public class TweaksRecipeProvider extends RecipeProvider implements IConditionBu
 				.key('T', Tags.Items.RODS_WOODEN)
 				.key('S', Tags.Items.STRING)
 				.key('D', Items.DROPPER)
-				.patternLine(" DS")
+				.patternLine(" TS")
 				.patternLine("TDS")
-				.patternLine(" DS")
+				.patternLine(" TS")
 				.build(consumer, "dispenser_stackable");
 	}
 }

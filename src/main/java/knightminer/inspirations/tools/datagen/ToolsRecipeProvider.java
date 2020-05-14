@@ -3,6 +3,7 @@ package knightminer.inspirations.tools.datagen;
 import knightminer.inspirations.common.data.ConfigEnabledCondition;
 import knightminer.inspirations.common.data.PulseLoadedCondition;
 import knightminer.inspirations.common.datagen.CondRecipe;
+import knightminer.inspirations.common.datagen.NBTIngredient;
 import knightminer.inspirations.library.InspirationsTags;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.tools.InspirationsTools;
@@ -22,7 +23,6 @@ import net.minecraft.item.Items;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.potion.Potions;
 import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.crafting.NBTIngredient;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
 
@@ -53,7 +53,7 @@ public class ToolsRecipeProvider extends RecipeProvider implements IConditionBui
 				.key('R', Tags.Items.DUSTS_REDSTONE)
 				.key('G', Tags.Items.DUSTS_GLOWSTONE)
 				.key('I', Tags.Items.INGOTS_IRON)
-				.patternLine("RGB")
+				.patternLine("RBG")
 				.patternLine(" I ")
 				.build(consumer);
 
@@ -73,7 +73,7 @@ public class ToolsRecipeProvider extends RecipeProvider implements IConditionBui
 				.addCondition(TOOLS)
 				.addCondition(ConfigEnabledCondition.BAROMETER)
 				.addCriterion("has_bottle", hasItem(hasWater))
-				.key('W', NBTIngredient.fromStacks(PotionUtils.addPotionToItemStack(
+				.key('W', new NBTIngredient(PotionUtils.addPotionToItemStack(
 						new ItemStack(Items.POTION),
 						Potions.WATER
 				)))
