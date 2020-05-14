@@ -1,11 +1,13 @@
 package knightminer.inspirations.tweaks.block;
 
 import knightminer.inspirations.common.Config;
+import knightminer.inspirations.tweaks.InspirationsTweaks;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Direction;
+import net.minecraft.util.IItemProvider;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
@@ -29,6 +31,11 @@ public class CactusCropBlock extends BlockCropBlock {
 	};
 	public CactusCropBlock() {
 		super(Blocks.CACTUS, PlantType.Desert);
+	}
+
+	@Override
+	protected IItemProvider getSeedsItem() {
+		return InspirationsTweaks.cactusSeeds;
 	}
 
 	@Nonnull
