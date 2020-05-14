@@ -87,7 +87,8 @@ public class PathBlock extends HidableBlock {
 
 	private boolean canBlockStay(IWorldReader world, BlockPos pos) {
 		BlockPos down = pos.down();
-		return Block.hasSolidSide(world.getBlockState(down), world, pos, Direction.UP);
+		BlockState state = world.getBlockState(down);
+		return Block.hasSolidSide(state, world, pos, Direction.UP) || state.getBlock() instanceof MulchBlock;
 	}
 
 	@Deprecated
