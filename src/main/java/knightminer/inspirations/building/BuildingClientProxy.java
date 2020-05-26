@@ -97,7 +97,7 @@ public class BuildingClientProxy extends ClientProxy {
 		BlockColors blockColors = event.getBlockColors();
 
 		// coloring of books for normal bookshelf
-		blockColors.register((state, world, pos, tintIndex) -> {
+		registerBlockColors(blockColors, (state, world, pos, tintIndex) -> {
 			if(tintIndex > 0 && tintIndex <= 14 && world != null && pos != null) {
 				TileEntity te = world.getTileEntity(pos);
 				if(te instanceof BookshelfTileEntity) {
@@ -118,7 +118,7 @@ public class BuildingClientProxy extends ClientProxy {
 		}, InspirationsBuilding.shelf_normal);
 
 		// rope vine coloring
-		blockColors.register((state, world, pos, tintIndex) -> {
+		registerBlockColors(blockColors, (state, world, pos, tintIndex) -> {
 			if(world != null && pos != null) {
 				return BiomeColors.getFoliageColor(world, pos);
 			}
@@ -135,7 +135,7 @@ public class BuildingClientProxy extends ClientProxy {
 			int color = bush.getColor(); // Make closure capture just the int.
 			blockColors.register((state, world, pos, tintIndex) -> tintIndex == 0 ? color : -1, bush);
 		}
-		blockColors.register((state, world, pos, tintIndex) -> {
+		registerBlockColors(blockColors, (state, world, pos, tintIndex) -> {
 			if(tintIndex != 0 || world == null || pos == null) {
 				return -1;
 			}
@@ -155,7 +155,7 @@ public class BuildingClientProxy extends ClientProxy {
 		ItemColors itemColors = event.getItemColors();
 
 		// coloring of books for normal bookshelf
-		itemColors.register((stack, tintIndex) -> {
+		registerItemColors(itemColors, (stack, tintIndex) -> {
 			if(tintIndex > 0 && tintIndex <= 14) {
 				return 0x654B17;
 			}
@@ -165,9 +165,7 @@ public class BuildingClientProxy extends ClientProxy {
 		// book covers, too lazy to make 16 cover textures
 		for (DyeColor color: DyeColor.values()) {
 			int hexColor = color.colorValue;
-			itemColors.register(
-					(stack, tintIndex) -> (tintIndex == 0) ? hexColor : -1,
-					InspirationsBuilding.coloredBooks[color.getId()]
+			registerItemColors(itemColors, (stack, tintIndex) -> (tintIndex == 0) ? hexColor : -1, InspirationsBuilding.coloredBooks[color.getId()]
 			);
 		}
 
@@ -179,7 +177,7 @@ public class BuildingClientProxy extends ClientProxy {
 				InspirationsBuilding.greenEnlightenedBush
 		}) {
 			int color = bush.getColor(); // Make closure capture just the int.
-			itemColors.register((stack, tintIndex) -> tintIndex == 0 ? color : -1, bush);
+			registerItemColors(itemColors, (stack, tintIndex) -> tintIndex == 0 ? color : -1, bush);
 		}
 
 		// The main one uses the tint of the textured stack

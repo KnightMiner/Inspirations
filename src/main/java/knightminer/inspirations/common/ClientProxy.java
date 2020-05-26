@@ -10,8 +10,8 @@ import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ModelBakery;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
-import net.minecraft.item.Item;
 import net.minecraft.item.Items;
+import net.minecraft.util.IItemProvider;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -38,19 +38,9 @@ public class ClientProxy {
 		}
 	}
 
-	protected static void registerItemColors(ItemColors itemColors, IItemColor handler, Block ... blocks) {
-		for(Block block : blocks) {
-			if(block != null) {
-				Item item = block.asItem();
-				if(item != Items.AIR) {
-					itemColors.register(handler, item);
-				}
-			}
-		}
-	}
-	protected static void registerItemColors(ItemColors itemColors, IItemColor handler, Item ... items) {
-		for(Item item : items) {
-			if(item != null) {
+	protected static void registerItemColors(ItemColors itemColors, IItemColor handler, IItemProvider... items) {
+		for(IItemProvider item : items) {
+			if(item != null && item.asItem() != Items.AIR) {
 				itemColors.register(handler, item);
 			}
 		}

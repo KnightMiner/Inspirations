@@ -110,7 +110,7 @@ public class TweaksClientProxy extends ClientProxy {
 		ItemColors itemColors = event.getItemColors();
 
 		// colored ribbons on enchanted books
-		itemColors.register((stack, tintIndex) -> {
+		registerItemColors(itemColors, (stack, tintIndex) -> {
 			if(tintIndex == 0 && Config.coloredEnchantedRibbons.get()) {
 				// find the rarest enchantment we have
 				Enchantment.Rarity rarity = Enchantment.Rarity.COMMON;
@@ -138,7 +138,7 @@ public class TweaksClientProxy extends ClientProxy {
 			return -1;
 		}, Items.ENCHANTED_BOOK);
 
-		itemColors.register((stack, tintIndex) -> {
+		registerItemColors(itemColors, (stack, tintIndex) -> {
 			if (!Config.coloredFireworkItems.get()) {
 				return -1;
 			}
