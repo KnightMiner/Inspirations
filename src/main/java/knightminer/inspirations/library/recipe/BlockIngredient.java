@@ -11,15 +11,17 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.ITag;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.crafting.IIngredientSerializer;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.IRegistryDelegate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Stream;
 
 public abstract class BlockIngredient extends Ingredient {
@@ -32,6 +34,9 @@ public abstract class BlockIngredient extends Ingredient {
 
 	protected abstract boolean matchesBlock(Block block);
 
+	@Nonnull
+	protected abstract List<Block> getMatchingBlocks();
+
 	@Override
 	public boolean isSimple() {
 		return false;
@@ -41,6 +46,7 @@ public abstract class BlockIngredient extends Ingredient {
 	public boolean hasNoMatchingItems() {
 		return false;
 	}
+
 	/**
 	 * Dummy implementation, should not be used on normal recipes.
 	 */
@@ -49,6 +55,7 @@ public abstract class BlockIngredient extends Ingredient {
 	public ItemStack[] getMatchingStacks() {
 		return new ItemStack[0];
 	}
+
 
 	/**
 	 * Dummy implementation, should not be used on normal recipes.
@@ -77,11 +84,12 @@ public abstract class BlockIngredient extends Ingredient {
 	@Nonnull
 	@Override
 	public IIngredientSerializer<? extends Ingredient> getSerializer() {
-		return BlockIngredientSerialiser.INSTANCE;
+		return SERIALIZER;
 	}
 
-	public static class BlockIngredientSerialiser implements IIngredientSerializer<BlockIngredient> {
-		public static BlockIngredientSerialiser INSTANCE = new BlockIngredientSerialiser();
+	public static IIngredientSerializer<BlockIngredient> SERIALIZER = new Serializer();
+
+	private static class Serializer implements IIngredientSerializer<BlockIngredient> {
 
 		@Nonnull
 		@Override
@@ -95,11 +103,11 @@ public abstract class BlockIngredient extends Ingredient {
 				if (block == null) {
 					throw new JsonSyntaxException("Unknown block '" + blockName + "'");
 				} else {
-					return new DirectBlockIngredient(block, predicate);
+					return new BlockIngredientList(block, predicate);
 				}
 			} else if (json.has("tag")) {
 				ResourceLocation tagName = new ResourceLocation(JSONUtils.getString(json, "tag"));
-				Tag<Block> tag = BlockTags.getCollection().get(tagName);
+				ITag<Block> tag = BlockTags.getCollection().get(tagName);
 				if (tag == null) {
 					throw new JsonSyntaxException("Unknown block tag '" + tagName + "'");
 				} else {
@@ -115,14 +123,12 @@ public abstract class BlockIngredient extends Ingredient {
 		public BlockIngredient parse(@Nonnull PacketBuffer buffer) {
 			JsonObject predicateData = JSONUtils.fromJson(buffer.readString(32768));
 			StatePropertiesPredicate predicate = StatePropertiesPredicate.deserializeProperties(predicateData);
-			boolean isTag = buffer.readBoolean();
-			ResourceLocation loc = buffer.readResourceLocation();
-			if (isTag) {
-				return new TaggedBlockIngredient(loc, predicate);
-			} else {
-				// Direct block.
-				return new DirectBlockIngredient(loc, predicate);
+			int size = buffer.readVarInt();
+			List<Block> blocks = new ArrayList<>(size);
+			for(int i = 0; i < size; i++) {
+				blocks.add(buffer.readRegistryIdUnsafe(ForgeRegistries.BLOCKS));
 			}
+			return new BlockIngredientList(blocks, predicate);
 		}
 
 		@Override
@@ -131,48 +137,60 @@ public abstract class BlockIngredient extends Ingredient {
 			JsonObject predicateData = new JsonObject();
 			predicateData.add("properties", ingredient.predicate.toJsonElement());
 			buffer.writeString(predicateData.toString());
-			if (ingredient instanceof TaggedBlockIngredient) {
-				buffer.writeBoolean(true);
-				buffer.writeResourceLocation(((TaggedBlockIngredient) ingredient).tag.getId());
-			} else if (ingredient instanceof DirectBlockIngredient) {
-				buffer.writeBoolean(false);
-				buffer.writeResourceLocation(((DirectBlockIngredient) ingredient).block.name());
-			} else {
-				throw new IllegalArgumentException("Unknown BlockIngredient " + ingredient.getClass().getName());
+			List<Block> blocks = ingredient.getMatchingBlocks();
+			buffer.writeVarInt(blocks.size());
+			for(Block block: blocks) {
+				buffer.writeRegistryIdUnsafe(ForgeRegistries.BLOCKS, block);
 			}
 		}
 	}
 
+	public static class BlockIngredientList extends BlockIngredient {
+		public final List<Block> blocks;
 
-	public static class DirectBlockIngredient extends BlockIngredient {
-		public final IRegistryDelegate<Block> block;
-
-		protected DirectBlockIngredient(Block block, StatePropertiesPredicate predicate) {
+		BlockIngredientList(List<Block> blocks, StatePropertiesPredicate predicate) {
 			super(predicate);
-			this.block = block.delegate;
+			this.blocks = blocks;
 		}
 
-		protected DirectBlockIngredient(ResourceLocation blockName, StatePropertiesPredicate predicate) {
+		BlockIngredientList(Block block, StatePropertiesPredicate predicate) {
+			super(predicate);
+			this.blocks = Collections.singletonList(block);
+		}
+
+		protected BlockIngredientList(ResourceLocation blockName, StatePropertiesPredicate predicate) {
 			super(predicate);
 			Block block = ForgeRegistries.BLOCKS.getValue(blockName);
 			if (block == null) {
 				throw new JsonSyntaxException("Unknown block '" + blockName + "'");
 			}
-			this.block = block.delegate;
+			this.blocks = Collections.singletonList(block);
+		}
+
+		@Nonnull
+		@Override
+		protected List<Block> getMatchingBlocks() {
+			return blocks;
 		}
 
 		@Override
 		protected boolean matchesBlock(Block block) {
-			return block.delegate.get() == this.block.get();
+			return blocks.stream().anyMatch(block.delegate.get()::equals);
 		}
 	}
 
 	public static class TaggedBlockIngredient extends BlockIngredient {
-		public final Tag<Block> tag;
+		public final ITag<Block> tag;
 
-		protected TaggedBlockIngredient(Tag<Block> tag, StatePropertiesPredicate predicate) {
+		protected TaggedBlockIngredient(ITag<Block> tag, StatePropertiesPredicate predicate) {
 			super(predicate);
 			this.tag = tag;
+		}
+
+		@Nonnull
+		@Override
+		protected List<Block> getMatchingBlocks() {
+			return tag.getAllElements();
 		}
 
 		protected TaggedBlockIngredient(ResourceLocation tagName, StatePropertiesPredicate predicate) {

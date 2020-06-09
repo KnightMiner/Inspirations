@@ -3,6 +3,7 @@ package knightminer.inspirations.recipes;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.ModuleBase;
+import knightminer.inspirations.library.recipe.BlockIngredient;
 import knightminer.inspirations.library.recipe.anvil.AnvilRecipe;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
@@ -49,6 +50,7 @@ import net.minecraft.potion.Potions;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.village.PointOfInterestType;
+import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fluids.FluidAttributes;
@@ -242,6 +244,7 @@ public class InspirationsRecipes extends ModuleBase {
     }
 
     registry.register(new AnvilRecipe.Serializer(), "anvil");
+    CraftingHelper.register(Inspirations.getResource("blockstate"), BlockIngredient.SERIALIZER);
   }
 
   @SubscribeEvent
