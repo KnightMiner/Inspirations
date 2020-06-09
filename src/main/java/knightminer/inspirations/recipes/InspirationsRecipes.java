@@ -3,6 +3,7 @@ package knightminer.inspirations.recipes;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.ModuleBase;
+import knightminer.inspirations.library.recipe.anvil.AnvilRecipe;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronRecipe;
@@ -239,6 +240,8 @@ public class InspirationsRecipes extends ModuleBase {
     for (DyeColor color : DyeColor.values()) {
       CauldronContentTypes.COLOR.setResult(color.getColorValue(), CauldronContentTypes.DYE.of(color));
     }
+
+    registry.register(new AnvilRecipe.Serializer(), "anvil");
   }
 
   @SubscribeEvent

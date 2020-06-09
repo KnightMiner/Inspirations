@@ -1,6 +1,7 @@
 package knightminer.inspirations.library.recipe;
 
 import knightminer.inspirations.Inspirations;
+import knightminer.inspirations.library.recipe.anvil.AnvilRecipe;
 import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronTransform;
 import knightminer.inspirations.library.recipe.cauldron.special.DyeableCauldronRecipe;
@@ -31,6 +32,11 @@ public class RecipeSerializers {
   public static final SpecialRecipeSerializer<CopyWaypointCompassRecipe> COPY_WAYPOINT_COMPASS = injected();
   public static final DyeWaypointCompassRecipe.Serializer DYE_WAYPOINT_COMPASS = injected();
   public static final ShapelessNoContainerRecipe.Serializer SHAPELESS_NO_CONTAINER = injected();
+
+  /*
+   * Anvil
+   */
+  public static final AnvilRecipe.Serializer ANVIL = injected();
 
   /*
    * Cauldron

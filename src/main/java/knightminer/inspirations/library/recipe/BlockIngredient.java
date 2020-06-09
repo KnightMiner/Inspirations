@@ -37,6 +37,10 @@ public abstract class BlockIngredient extends Ingredient {
 		return false;
 	}
 
+	@Override
+	public boolean hasNoMatchingItems() {
+		return false;
+	}
 	/**
 	 * Dummy implementation, should not be used on normal recipes.
 	 */
@@ -63,7 +67,7 @@ public abstract class BlockIngredient extends Ingredient {
 	 * @param state The state to match.
 	 * @return If it matched.
 	 */
-	private boolean testBlock(BlockState state) {
+	public boolean testBlock(BlockState state) {
 		if (!matchesBlock(state.getBlock())) {
 			return false;
 		}
