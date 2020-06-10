@@ -1,6 +1,6 @@
 package knightminer.inspirations.recipes.entity;
 
-import knightminer.inspirations.library.InspirationsRegistry;
+import knightminer.inspirations.library.recipe.RecipeTypes;
 import knightminer.inspirations.library.recipe.anvil.AnvilInventory;
 import knightminer.inspirations.library.recipe.anvil.AnvilRecipe;
 import knightminer.inspirations.recipes.InspirationsRecipes;
@@ -157,7 +157,7 @@ public class SmashingAnvilEntity extends FallingBlockEntity implements IEntityAd
 			state
 		);
 		AnvilRecipe recipe = world.getRecipeManager()
-				.getRecipe(InspirationsRegistry.ANVIL_RECIPE_TYPE, inv, world).orElse(null);
+				.getRecipe(RecipeTypes.ANVIL, inv, world).orElse(null);
 
 		if(recipe == null) {
 			return false;

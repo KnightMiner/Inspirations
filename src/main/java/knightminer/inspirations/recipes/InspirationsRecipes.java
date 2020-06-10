@@ -13,7 +13,6 @@ import knightminer.inspirations.library.recipe.cauldron.special.DyeableCauldronR
 import knightminer.inspirations.library.recipe.cauldron.special.EmptyPotionCauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.special.FillPotionCauldronRecipe;
 import knightminer.inspirations.recipes.block.EnhancedCauldronBlock;
-import knightminer.inspirations.recipes.block.SmashingAnvilBlock;
 import knightminer.inspirations.recipes.data.RecipesRecipeProvider;
 import knightminer.inspirations.recipes.entity.SmashingAnvilEntity;
 import knightminer.inspirations.recipes.item.EmptyBottleItem;
@@ -64,6 +63,7 @@ import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.registries.GameData;
 import slimeknights.mantle.registration.FluidBuilder;
 import slimeknights.mantle.registration.adapter.BlockRegistryAdapter;
+import slimeknights.mantle.registration.adapter.EntityTypeRegistryAdapter;
 import slimeknights.mantle.registration.adapter.FluidRegistryAdapter;
 import slimeknights.mantle.registration.adapter.ItemRegistryAdapter;
 import slimeknights.mantle.registration.adapter.RegistryAdapter;
@@ -82,10 +82,6 @@ public class InspirationsRecipes extends ModuleBase {
   public static final ResourceLocation FLOWING_MILK = Inspirations.getResource("block/fluid/milk_flow");
 
   // blocks
-  public static Block fullAnvil;
-  public static Block chippedAnvil;
-  public static Block damagedAnvil;
-
   public static EnhancedCauldronBlock cauldron;
   public static TileEntityType<CauldronTileEntity> tileCauldron;
 
@@ -97,8 +93,7 @@ public class InspirationsRecipes extends ModuleBase {
   public static SoupItem potatoSoupItem;
 
   // entities
-  public static EntityType<SmashingAnvilEntity> SMASHING_ANVIL = EntityType.Builder
-          .<SmashingAnvilEntity>create(SmashingAnvilEntity::new, EntityClassification.MISC).size(0.98F, 0.98F);
+  public static EntityType<SmashingAnvilEntity> smashingAnvil;
 
   // fluids
   public static ForgeFlowingFluid milk;
@@ -148,6 +143,16 @@ public class InspirationsRecipes extends ModuleBase {
                                       .bucket(Items.MILK_BUCKET.delegate), "milk");
   }
 
+	@SubscribeEvent
+	void registerEntities(Register<EntityType<?>> event) {
+		EntityTypeRegistryAdapter registry = new EntityTypeRegistryAdapter(event.getRegistry());
+		smashingAnvil = registry.register(EntityType.Builder
+										.<SmashingAnvilEntity>create(SmashingAnvilEntity::new, EntityClassification.MISC)
+										.size(0.98F, 0.98F)
+										.setCustomClientFactory((packet, world) -> new SmashingAnvilEntity(InspirationsRecipes.smashingAnvil, world)),
+						  "falling_anvil");
+	}
+
   @SubscribeEvent
   void registerBlocks(Register<Block> event) {
     BlockRegistryAdapter registry = new BlockRegistryAdapter(event.getRegistry());
@@ -158,11 +163,6 @@ public class InspirationsRecipes extends ModuleBase {
     potatoSoupBlock = registry.registerFluidBlock(() -> potatoSoup, Material.WATER, 0, "potato_soup");
     honeyFluidBlock = registry.registerFluidBlock(() -> honey, Material.WATER, 0, "honey");
 
-    if (Config.enableAnvilSmashing.get()) {
-      registry.registerOverride(SmashingAnvilBlock::new, Blocks.ANVIL);
-      registry.registerOverride(SmashingAnvilBlock::new, Blocks.CHIPPED_ANVIL);
-      registry.registerOverride(SmashingAnvilBlock::new, Blocks.DAMAGED_ANVIL);
-    }
     if (Config.extendedCauldron.get()) {
       cauldron = registry.registerOverride(EnhancedCauldronBlock::new, Blocks.CAULDRON);
     }

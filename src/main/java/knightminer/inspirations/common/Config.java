@@ -346,8 +346,8 @@ public class Config {
 		{
 			// anvil smashing
 			// configFile.moveProperty("tweaks", "anvilSmashing", "recipes");
-			enableAnvilSmashing = override(override
-					.comment("Anvils break glass blocks and transform blocks into other blocks on landing. Uses a block override, so disable if another mod replaces anvils.")
+			enableAnvilSmashing = and(recipesModule, server
+					.comment("Anvils break glass blocks and transform blocks into other blocks on landing. This swaps the falling anvil entity, so this may need to be disabled if another mod replaces anvils.")
 					.worldRestart()
 					.define("anvilSmashing", true));
 
