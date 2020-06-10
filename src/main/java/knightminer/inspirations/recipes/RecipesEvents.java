@@ -5,13 +5,17 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.recipes.recipe.inventory.CauldronItemInventory;
 import knightminer.inspirations.recipes.recipe.inventory.VanillaCauldronInventory;
 import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
+import knightminer.inspirations.recipes.entity.SmashingAnvilEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CauldronBlock;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.item.FallingBlockEntity;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -70,6 +74,25 @@ public class RecipesEvents {
       event.setCancellationResult(ActionResultType.SUCCESS);
     }
     // TODO: blacklist?
+  }
+
+  /**
+   * When anvils begin falling, swap them for our entity.
+   */
+  @SubscribeEvent
+  public static void entitySpawnEvent(EntityJoinWorldEvent event) {
+    if(event.getEntity() instanceof FallingBlockEntity) {
+      FallingBlockEntity falling = (FallingBlockEntity) event.getEntity();
+      BlockState block = falling.getBlockState();
+      if(!(falling instanceof SmashingAnvilEntity) && block.isIn(BlockTags.ANVIL) && Config.enableAnvilSmashing.get()) {
+        event.setCanceled(true);
+        event.getWorld().addEntity(new SmashingAnvilEntity(
+                event.getWorld(),
+                falling.getPosX(), falling.getPosY(), falling.getPosZ(),
+                block)
+        );
+      }
+    }
   }
 
 	/* TODO: bottle does not exist
