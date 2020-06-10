@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.mojang.datafixers.util.Pair;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.recipe.BlockIngredient;
@@ -29,21 +30,36 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class AnvilRecipe implements IRecipe<AnvilInventory> {
 
 	private final ResourceLocation id;
 	private final NonNullList<Ingredient> ingredients;
 	private final String group;
-	private final BlockState result;
+	// If null, keep the existing block.
+	@Nullable
+	private final Block result;
+	// Properties to assign to the result, unparsed.
+	// If value == "<input>", copy over.
+	private final List<Pair<String, String>> properties;
 
-	private AnvilRecipe(ResourceLocation id, String group, NonNullList<Ingredient> ingredients, BlockState result) {
+	private AnvilRecipe(
+			ResourceLocation id,
+			String group,
+			NonNullList<Ingredient> ingredients,
+			@Nullable Block result,
+			List<Pair<String, String>> properties
+	) {
 		this.id = id;
 		this.group = group;
 		this.ingredients = ingredients;
 		this.result = result;
+		this.properties = properties;
 	}
 
 	/**
@@ -93,8 +109,62 @@ public class AnvilRecipe implements IRecipe<AnvilInventory> {
 	 * @param inv The inventory that was matched.
 	 * @return The block which should replace the existing one.
 	 */
+	@Nonnull
 	public BlockState getBlockResult(@Nonnull AnvilInventory inv) {
-		return result;
+		BlockState state = result == null ? inv.getState() : result.getDefaultState();
+
+		StateContainer<Block, BlockState> cont = state.getBlock().getStateContainer();
+		StateContainer<Block, BlockState> inpContainer = inv.getState().getBlock().getStateContainer();
+
+		for(Pair<String, String> prop: properties) {
+			String key = prop.getFirst();
+			String value = prop.getSecond();
+			if (value.equals("<input>")) {
+				IProperty<?> inpProp = inpContainer.getProperty(key);
+				if (inpProp == null) {
+					InspirationsRegistry.log.warn(
+							"No property \"{}\" to copy from block {} in Anvil recipe {}!",
+							key, inv.getState().getBlock().getRegistryName(), id
+					);
+					continue;
+				}
+				// Convert to a string, so differing types and identical but distinct IProperty objects
+				// still work.
+				value = getProperty(state, inpProp);
+			}
+			IProperty<?> targProp = cont.getProperty(key);
+			if(targProp == null) {
+				InspirationsRegistry.log.warn(
+						"Property \"{}\" is not valid for block {} in Anvil recipe {}!",
+						key, state.getBlock().getRegistryName(), id
+				);
+				continue;
+			}
+			state = setProperty(state, targProp, value);
+		}
+		return state;
+	}
+
+	/**
+	 * Setting the property needs a generic arg, so the parsed value can have the same type as the property.
+	 */
+	private <T extends Comparable<T>> BlockState setProperty(BlockState state, IProperty<T>prop, String value) {
+		Optional<T> parsedValue = prop.parseValue(value);
+		if (parsedValue.isPresent()) {
+			return state.with(prop, parsedValue.get());
+		} else {
+			InspirationsRegistry.log.warn(
+					"Invalid value \"{}\" for block property {} of {} in anvil recipe {}!",
+					value, prop.getName(), state.getBlock().getRegistryName(), id);
+			return state;
+		}
+	}
+
+	/**
+	 * Getting the property needs a generic arg, so the parsed value can have the same type as the property.
+	 */
+	private <T extends Comparable<T>> String getProperty(BlockState state, IProperty<T> prop) {
+		return state.get(prop).toString();
 	}
 
 	/**
@@ -186,60 +256,74 @@ public class AnvilRecipe implements IRecipe<AnvilInventory> {
 
 			// Generate the output blockstate.
 			JsonObject result = JSONUtils.getJsonObject(json, "result");
-			ResourceLocation blockName = new ResourceLocation(JSONUtils.getString(result, "block"));
-			Block resultBlock = ForgeRegistries.BLOCKS.getValue(blockName);
-			if (resultBlock == null || resultBlock == Blocks.AIR) {
-				throw new JsonParseException("Unknown block \"" + blockName + "\"");
-			}
-			BlockState state = resultBlock.getDefaultState();
+			String blockName = JSONUtils.getString(result, "block");
 
-			// Now, parse and apply the properties object to get a final state.
+			Block block;
+
+			if (blockName.equals("<input>")) {
+				// We keep the block, maybe tranferring properties.
+				block = null;
+			} else {
+				block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(blockName));
+				if(block == null || block == Blocks.AIR) {
+					throw new JsonParseException("Unknown block \"" + blockName + "\"");
+				}
+			}
+
 			JsonObject props = JSONUtils.getJsonObject(result, "properties", new JsonObject());
-			StateContainer<Block, BlockState> cont = resultBlock.getStateContainer();
-			for(Map.Entry<String, JsonElement> propEntry: props.entrySet()) {
-				IProperty<?> prop = cont.getProperty(propEntry.getKey());
-				if (prop == null) {
-					throw new JsonParseException("Block \"" + blockName + "\" has no property \"" + propEntry.getKey() + "\"!");
+			List<Pair<String, String>> propsMap = new ArrayList<>();
+			for(Map.Entry<String, JsonElement> entry: props.entrySet()) {
+				if (!entry.getValue().isJsonPrimitive()) {
+					throw new JsonParseException("Expected simple value for property \"" + entry.getKey() + "\", but got a " + entry.getValue().getClass().getSimpleName());
 				}
-				if (!propEntry.getValue().isJsonPrimitive()) {
-					throw new JsonParseException("Expected simple value for property \"" + propEntry.getKey() + "\", but got a " + propEntry.getValue().getClass().getSimpleName());
-				}
-				state = setProperty(state, prop, propEntry.getValue().getAsString());
+				propsMap.add(Pair.of(entry.getKey(), entry.getValue().getAsString()));
 			}
 
-			return new AnvilRecipe(recipeId, group, inputs, state);
-		}
-
-		/**
-		 * Setting the property needs a generic arg, so the parsed value can have the same type as the property.
-		 */
-		private <T extends Comparable<T>> BlockState setProperty(BlockState state, IProperty<T>prop, String value) {
-			T parsedValue = prop
-					.parseValue(value)
-					.orElseThrow(() -> new JsonParseException("Invalid value \"" + value + "\" for property \"" + prop.getName() + "\""));
-			return state.with(prop, parsedValue);
+			return new AnvilRecipe(recipeId, group, inputs, block, propsMap);
 		}
 
 		@Nullable
 		@Override
 		public AnvilRecipe read(@Nonnull ResourceLocation recipeId, @Nonnull PacketBuffer buffer) {
 			String group = buffer.readString();
-			BlockState result = Block.getStateById(buffer.readInt());
+			String resultName = buffer.readString();
+			Block result;
+			if(resultName.isEmpty()) {
+				result = null;
+			} else {
+				result = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(resultName));
+			}
+
 			int ingredientCount = buffer.readVarInt();
+			int propsCount = buffer.readVarInt();
+
 			NonNullList<Ingredient> inputs = NonNullList.withSize(ingredientCount, Ingredient.EMPTY);
 			for(int i = 0; i < ingredientCount; i++) {
 				inputs.set(i, Ingredient.read(buffer));
 			}
-			return new AnvilRecipe(recipeId, group, inputs, result);
+			List<Pair<String, String>> props = new ArrayList<>(propsCount);
+			for(int i = 0; i < propsCount; i++) {
+				props.add(Pair.of(buffer.readString(), buffer.readString()));
+			}
+			return new AnvilRecipe(recipeId, group, inputs, result, props);
 		}
 
 		@Override
 		public void write(PacketBuffer buffer, AnvilRecipe recipe) {
 			buffer.writeString(recipe.group);
-			buffer.writeInt(Block.getStateId(recipe.result));
+			if (recipe.result == null) { // Copy result
+				buffer.writeString("");
+			} else {
+				buffer.writeString(recipe.result.getRegistryName().toString());
+			}
 			buffer.writeVarInt(recipe.ingredients.size());
+			buffer.writeVarInt(recipe.properties.size());
 			for(Ingredient ingredient: recipe.ingredients) {
 				ingredient.write(buffer);
+			}
+			for(Pair<String, String> prop: recipe.properties) {
+				buffer.writeString(prop.getFirst());
+				buffer.writeString(prop.getSecond());
 			}
 		}
 	}
