@@ -94,7 +94,9 @@ public abstract class BlockIngredient extends Ingredient {
 		@Nonnull
 		@Override
 		public BlockIngredient parse(@Nonnull JsonObject json) {
-			StatePropertiesPredicate predicate = StatePropertiesPredicate.deserializeProperties(json);
+			JsonObject props = JSONUtils.getJsonObject(json, "properties", new JsonObject());
+			StatePropertiesPredicate predicate = StatePropertiesPredicate.deserializeProperties(props);
+
 			if (json.has("block") && json.has("tag")) {
 				throw new JsonParseException("A Block Ingredient entry is either a tag or a block, not both");
 			} else if (json.has("block")) {
@@ -122,7 +124,7 @@ public abstract class BlockIngredient extends Ingredient {
 		@Override
 		public BlockIngredient parse(@Nonnull PacketBuffer buffer) {
 			JsonObject predicateData = JSONUtils.fromJson(buffer.readString(32768));
-			StatePropertiesPredicate predicate = StatePropertiesPredicate.deserializeProperties(predicateData);
+			StatePropertiesPredicate predicate = StatePropertiesPredicate.deserializeProperties(predicateData.getAsJsonObject(""));
 			int size = buffer.readVarInt();
 			List<Block> blocks = new ArrayList<>(size);
 			for(int i = 0; i < size; i++) {
@@ -135,7 +137,7 @@ public abstract class BlockIngredient extends Ingredient {
 		public void write(@Nonnull PacketBuffer buffer, @Nonnull BlockIngredient ingredient) {
 			// This is ugly, but we'd otherwise need to mess with the internals to get out the data.
 			JsonObject predicateData = new JsonObject();
-			predicateData.add("properties", ingredient.predicate.toJsonElement());
+			predicateData.add("", ingredient.predicate.toJsonElement());
 			buffer.writeString(predicateData.toString());
 			List<Block> blocks = ingredient.getMatchingBlocks();
 			buffer.writeVarInt(blocks.size());
