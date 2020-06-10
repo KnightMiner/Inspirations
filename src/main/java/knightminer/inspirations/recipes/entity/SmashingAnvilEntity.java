@@ -66,20 +66,10 @@ public class SmashingAnvilEntity extends FallingBlockEntity {
 
 			this.move(MoverType.SELF, this.getMotion());
 			if(!this.world.isRemote) {
-				BlockPos blockpos1 = new BlockPos(this);
-				boolean flag = this.fallTile.getBlock() instanceof ConcretePowderBlock;
-				boolean flag1 = flag && this.world.getFluidState(blockpos1).isTagged(FluidTags.WATER);
-				double d0 = this.getMotion().lengthSquared();
-				if(flag && d0 > 1.0D) {
-					BlockRayTraceResult blockraytraceresult = this.world.rayTraceBlocks(new RayTraceContext(new Vec3d(this.prevPosX, this.prevPosY, this.prevPosZ), this.getPositionVec(), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.SOURCE_ONLY, this));
-					if(blockraytraceresult.getType() != RayTraceResult.Type.MISS && this.world.getFluidState(blockraytraceresult.getPos()).isTagged(FluidTags.WATER)) {
-						blockpos1 = blockraytraceresult.getPos();
-						flag1 = true;
-					}
-				}
+				BlockPos blockpos = new BlockPos(this);
 
-				if(!this.onGround && !flag1) {
-					if(!this.world.isRemote && (this.fallTime > 100 && (blockpos1.getY() < 1 || blockpos1.getY() > 256) || this.fallTime > 600)) {
+				if(!this.onGround) {
+					if(this.fallTime > 100 && (blockpos.getY() < 1 || blockpos.getY() > 256) || this.fallTime > 600) {
 						if(this.shouldDropItem && this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
 							this.entityDropItem(block);
 						}
@@ -87,39 +77,18 @@ public class SmashingAnvilEntity extends FallingBlockEntity {
 						this.remove();
 					}
 				} else {
-					BlockState blockstate = this.world.getBlockState(blockpos1);
+					BlockState blockstate = this.world.getBlockState(blockpos);
 					this.setMotion(this.getMotion().mul(0.7D, -0.5D, 0.7D));
 					if(blockstate.getBlock() != Blocks.MOVING_PISTON) {
 						this.remove();
 						if(!this.dontSetBlock) {
-							boolean flag2 = blockstate.isReplaceable(new DirectionalPlaceContext(this.world, blockpos1, Direction.DOWN, ItemStack.EMPTY, Direction.UP));
-							boolean flag3 = FallingBlock.canFallThrough(this.world.getBlockState(blockpos1.down())) && (!flag || !flag1);
-							boolean flag4 = this.fallTile.isValidPosition(this.world, blockpos1) && !flag3;
+							boolean flag2 = blockstate.isReplaceable(new DirectionalPlaceContext(this.world, blockpos, Direction.DOWN, ItemStack.EMPTY, Direction.UP));
+							boolean flag3 = FallingBlock.canFallThrough(this.world.getBlockState(blockpos.down()));
+							boolean flag4 = this.fallTile.isValidPosition(this.world, blockpos) && !flag3;
 							if(flag2 && flag4) {
-								if(this.fallTile.has(BlockStateProperties.WATERLOGGED) && this.world.getFluidState(blockpos1).getFluid() == Fluids.WATER) {
-									this.fallTile = this.fallTile.with(BlockStateProperties.WATERLOGGED, Boolean.valueOf(true));
-								}
-
-								if(this.world.setBlockState(blockpos1, this.fallTile, 3)) {
+								if(this.world.setBlockState(blockpos, this.fallTile, 3)) {
 									if(block instanceof FallingBlock) {
-										((FallingBlock) block).onEndFalling(this.world, blockpos1, this.fallTile, blockstate);
-									}
-
-									if(this.tileEntityData != null && this.fallTile.hasTileEntity()) {
-										TileEntity tileentity = this.world.getTileEntity(blockpos1);
-										if(tileentity != null) {
-											CompoundNBT compoundnbt = tileentity.write(new CompoundNBT());
-
-											for(String s : this.tileEntityData.keySet()) {
-												INBT inbt = this.tileEntityData.get(s);
-												if(!"x".equals(s) && !"y".equals(s) && !"z".equals(s)) {
-													compoundnbt.put(s, inbt.copy());
-												}
-											}
-
-											tileentity.read(compoundnbt);
-											tileentity.markDirty();
-										}
+										((FallingBlock) block).onEndFalling(this.world, blockpos, this.fallTile, blockstate);
 									}
 								} else if(this.shouldDropItem && this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
 									this.entityDropItem(block);
@@ -128,7 +97,8 @@ public class SmashingAnvilEntity extends FallingBlockEntity {
 								this.entityDropItem(block);
 							}
 						} else if(block instanceof FallingBlock) {
-							((FallingBlock) block).onBroken(this.world, blockpos1);
+							// Anvil broke, play sounds.
+							((FallingBlock) block).onBroken(this.world, blockpos);
 						}
 					}
 				}
