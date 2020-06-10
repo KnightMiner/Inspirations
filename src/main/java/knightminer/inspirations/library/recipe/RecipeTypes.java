@@ -1,6 +1,7 @@
 package knightminer.inspirations.library.recipe;
 
 import knightminer.inspirations.Inspirations;
+import knightminer.inspirations.library.recipe.anvil.AnvilRecipe;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronTransform;
 import net.minecraft.item.crafting.IRecipe;
@@ -13,6 +14,7 @@ public class RecipeTypes {
   /** Recipe type for cauldron recipes */
   public static final IRecipeType<ICauldronRecipe> CAULDRON = register("cauldron");
   public static final IRecipeType<ICauldronTransform> CAULDRON_TRANSFORM = register("cauldron_transform");
+  public static final IRecipeType<AnvilRecipe> ANVIL = register("anvil");
 
   /**
    * Registers an Inspirations recipe type
