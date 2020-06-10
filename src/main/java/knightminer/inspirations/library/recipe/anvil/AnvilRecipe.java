@@ -216,7 +216,7 @@ public class AnvilRecipe implements IRecipe<AnvilInventory> {
 	@Nonnull
 	@Override
 	public ItemStack getIcon() {
-		return new ItemStack(Items.FURNACE);
+		return new ItemStack(Items.ANVIL);
 	}
 
 	@Nonnull
