@@ -48,63 +48,117 @@ public class SmashingAnvilEntity extends FallingBlockEntity {
 	public void tick() {
 		if(this.fallTile.isAir()) {
 			this.remove();
-		} else {
-			Block block = this.fallTile.getBlock();
-			if(this.fallTime++ == 0) {
-				BlockPos blockpos = new BlockPos(this);
-				if(this.world.getBlockState(blockpos).getBlock() == block) {
-					this.world.removeBlock(blockpos, false);
-				} else if(!this.world.isRemote) {
+		}
+
+		Block block = this.fallTile.getBlock();
+		if(fallTime++ == 0) {
+			BlockPos blockpos = new BlockPos(this);
+			if(world.getBlockState(blockpos).getBlock() == block) {
+				world.removeBlock(blockpos, false);
+			} else if(!world.isRemote) {
+				this.remove();
+				return;
+			}
+		}
+
+		if(!hasNoGravity()) {
+			setMotion(this.getMotion().add(0.0D, -0.04D, 0.0D));
+		}
+
+		move(MoverType.SELF, this.getMotion());
+		if(!world.isRemote) {
+			BlockPos blockpos = new BlockPos(this);
+
+			if(!onGround) {
+				if(fallTime > 100 && (blockpos.getY() < 1 || blockpos.getY() > 256) || fallTime > 600) {
+					tryDropItem(block);
 					this.remove();
-					return;
 				}
-			}
+			} else {
+				// On the ground, place the block.
+				BlockState blockstate = world.getBlockState(blockpos);
+				this.setMotion(getMotion().mul(0.7D, -0.5D, 0.7D));
 
-			if(!this.hasNoGravity()) {
-				this.setMotion(this.getMotion().add(0.0D, -0.04D, 0.0D));
-			}
-
-			this.move(MoverType.SELF, this.getMotion());
-			if(!this.world.isRemote) {
-				BlockPos blockpos = new BlockPos(this);
-
-				if(!this.onGround) {
-					if(this.fallTime > 100 && (blockpos.getY() < 1 || blockpos.getY() > 256) || this.fallTime > 600) {
-						if(this.shouldDropItem && this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
-							this.entityDropItem(block);
-						}
-
-						this.remove();
+				this.remove();
+				if(dontSetBlock) { // It's a destroyed anvil, play sounds.
+					if(block instanceof FallingBlock) {
+						((FallingBlock) block).onBroken(this.world, blockpos);
 					}
 				} else {
-					BlockState blockstate = this.world.getBlockState(blockpos);
-					this.setMotion(this.getMotion().mul(0.7D, -0.5D, 0.7D));
-					if(blockstate.getBlock() != Blocks.MOVING_PISTON) {
-						this.remove();
-						if(!this.dontSetBlock) {
-							boolean flag2 = blockstate.isReplaceable(new DirectionalPlaceContext(this.world, blockpos, Direction.DOWN, ItemStack.EMPTY, Direction.UP));
-							boolean flag3 = FallingBlock.canFallThrough(this.world.getBlockState(blockpos.down()));
-							boolean flag4 = this.fallTile.isValidPosition(this.world, blockpos) && !flag3;
-							if(flag2 && flag4) {
-								if(this.world.setBlockState(blockpos, this.fallTile, 3)) {
-									if(block instanceof FallingBlock) {
-										((FallingBlock) block).onEndFalling(this.world, blockpos, this.fallTile, blockstate);
-									}
-								} else if(this.shouldDropItem && this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
-									this.entityDropItem(block);
-								}
-							} else if(this.shouldDropItem && this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
-								this.entityDropItem(block);
-							}
-						} else if(block instanceof FallingBlock) {
-							// Anvil broke, play sounds.
-							((FallingBlock) block).onBroken(this.world, blockpos);
+					BlockPos below = blockpos.down();
+					BlockState belowBlock = world.getBlockState(below);
+
+					boolean replaceable = blockstate.isReplaceable(new DirectionalPlaceContext(world, blockpos, Direction.DOWN, ItemStack.EMPTY, Direction.UP));
+					boolean canFallThrough = FallingBlock.canFallThrough(belowBlock);
+					boolean canBeHere = this.fallTile.isValidPosition(this.world, blockpos) && !canFallThrough;
+					if(replaceable && canBeHere) {
+						if(world.setBlockState(blockpos, this.fallTile, 3)) {
+							smashBlock(world, below, belowBlock);
+						} else {
+							tryDropItem(block);
 						}
+					} else {
+						tryDropItem(block);
 					}
 				}
 			}
+		}
+		this.setMotion(this.getMotion().scale(0.98D));
+	}
 
-			this.setMotion(this.getMotion().scale(0.98D));
+	// Common code in many places inside tick().
+	private void tryDropItem(Block block) {
+		if(this.shouldDropItem && this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
+			this.entityDropItem(block);
 		}
 	}
+
+	public boolean smashBlock(World world, BlockPos pos, BlockState state) {
+		// if we started on air, just return true
+		if(state.getBlock() == Blocks.AIR) {
+			return true;
+		}
+		// if the block is unbreakable, leave it
+		if(state.getBlockHardness(world, pos) == -1) {
+			return false;
+		}
+
+		// Find all the items on this block, plus the one above (where the anvil is).
+		List<ItemEntity> items = world.getEntitiesWithinAABB(ItemEntity.class, new AxisAlignedBB(
+			pos.getX(), pos.getY() + 0.5, pos.getZ(),
+			pos.getX() + 1, pos.getY() + 2, pos.getZ() + 1)
+		);
+
+		// Dummy inventory, used to pass the items/state to the recipes.
+		AnvilInventory inv = new AnvilInventory(
+			items.stream().map(ItemEntity::getItem).collect(Collectors.toList()),
+			state
+		);
+		AnvilRecipe recipe = world.getRecipeManager()
+				.getRecipe(InspirationsRegistry.ANVIL_RECIPE_TYPE, inv, world).orElse(null);
+
+		if(recipe == null) {
+			return false;
+		}
+
+		// Kill the entities used in the recipe.
+		for(int i = 0; i < items.size(); i++) {
+			if (inv.used[i]) {
+				items.get(i).remove();
+			}
+		}
+
+		BlockState transformation = recipe.getBlockResult(inv);
+
+		// if the result is air, break the block
+		if(transformation.getBlock() == Blocks.AIR) {
+			world.destroyBlock(pos, true);
+		} else {
+			// breaking particles
+			world.playEvent(2001, pos, Block.getStateId(state));
+			world.setBlockState(pos, transformation);
+		}
+		return true;
+	}
 }
+
