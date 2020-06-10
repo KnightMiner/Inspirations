@@ -96,6 +96,7 @@ public class Config {
   public static final CachedBoolean cauldronTipArrows;
   // misc
   public static final CachedBoolean fasterCauldronRain;
+  public static final CachedBoolean enableAnvilSmashing;
 
   // tools
   public static final CachedBoolean enableLock;
@@ -343,14 +344,12 @@ public class Config {
     // recipes
 		server.push("recipes");
 		{
-		  /*
 			// anvil smashing
 			// configFile.moveProperty("tweaks", "anvilSmashing", "recipes");
-			enableAnvilSmashing = builder_override
+			enableAnvilSmashing = override(override
 					.comment("Anvils break glass blocks and transform blocks into other blocks on landing. Uses a block override, so disable if another mod replaces anvils.")
 					.worldRestart()
-					.define("anvilSmashing", true);
-			*/
+					.define("anvilSmashing", true));
 
 			// cauldron //
 

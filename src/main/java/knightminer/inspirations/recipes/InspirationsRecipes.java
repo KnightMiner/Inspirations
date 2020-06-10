@@ -13,7 +13,9 @@ import knightminer.inspirations.library.recipe.cauldron.special.DyeableCauldronR
 import knightminer.inspirations.library.recipe.cauldron.special.EmptyPotionCauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.special.FillPotionCauldronRecipe;
 import knightminer.inspirations.recipes.block.EnhancedCauldronBlock;
+import knightminer.inspirations.recipes.block.SmashingAnvilBlock;
 import knightminer.inspirations.recipes.data.RecipesRecipeProvider;
+import knightminer.inspirations.recipes.entity.SmashingAnvilEntity;
 import knightminer.inspirations.recipes.item.EmptyBottleItem;
 import knightminer.inspirations.recipes.item.MixedDyedBottleItem;
 import knightminer.inspirations.recipes.item.SimpleDyedBottleItem;
@@ -32,6 +34,8 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.block.material.Material;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.entity.EntityClassification;
+import net.minecraft.entity.EntityType;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.BucketItem;
@@ -92,6 +96,10 @@ public class InspirationsRecipes extends ModuleBase {
   public static MixedDyedBottleItem mixedDyedWaterBottle;
   public static SoupItem potatoSoupItem;
 
+  // entities
+  public static EntityType<SmashingAnvilEntity> SMASHING_ANVIL = EntityType.Builder
+          .<SmashingAnvilEntity>create(SmashingAnvilEntity::new, EntityClassification.MISC).size(0.98F, 0.98F);
+
   // fluids
   public static ForgeFlowingFluid milk;
   // mushroom
@@ -150,13 +158,11 @@ public class InspirationsRecipes extends ModuleBase {
     potatoSoupBlock = registry.registerFluidBlock(() -> potatoSoup, Material.WATER, 0, "potato_soup");
     honeyFluidBlock = registry.registerFluidBlock(() -> honey, Material.WATER, 0, "honey");
 
-    /*
     if (Config.enableAnvilSmashing.get()) {
       registry.registerOverride(SmashingAnvilBlock::new, Blocks.ANVIL);
       registry.registerOverride(SmashingAnvilBlock::new, Blocks.CHIPPED_ANVIL);
       registry.registerOverride(SmashingAnvilBlock::new, Blocks.DAMAGED_ANVIL);
     }
-    */
     if (Config.extendedCauldron.get()) {
       cauldron = registry.registerOverride(EnhancedCauldronBlock::new, Blocks.CAULDRON);
     }
