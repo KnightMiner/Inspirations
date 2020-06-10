@@ -1,46 +1,68 @@
 package knightminer.inspirations.recipes.entity;
 
+import knightminer.inspirations.library.InspirationsRegistry;
+import knightminer.inspirations.library.recipe.anvil.AnvilInventory;
+import knightminer.inspirations.library.recipe.anvil.AnvilRecipe;
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.ConcretePowderBlock;
 import net.minecraft.block.FallingBlock;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.item.FallingBlockEntity;
-import net.minecraft.fluid.Fluids;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.DirectionalPlaceContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
-import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.tags.FluidTags;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.network.IPacket;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceContext;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
+import net.minecraftforge.fml.network.NetworkHooks;
 
-public class SmashingAnvilEntity extends FallingBlockEntity {
-	public SmashingAnvilEntity(EntityType<FallingBlockEntity> entityType, World world) {
+import javax.annotation.Nonnull;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class SmashingAnvilEntity extends FallingBlockEntity implements IEntityAdditionalSpawnData {
+	public SmashingAnvilEntity(EntityType<SmashingAnvilEntity> entityType, World world) {
 		super(entityType, world);
 	}
 
 	public SmashingAnvilEntity(World world, double x, double y, double z, BlockState fallingBlockState) {
-		super(InspirationsRecipes.SMASHING_ANVIL, world);
+		super(InspirationsRecipes.smashingAnvil, world);
 		this.fallTile = fallingBlockState;
 		this.preventEntitySpawning = true;
-		this.setPosition(x, y + (double)((1.0F - this.getHeight()) / 2.0F), z);
+		this.setPosition(x, y, z);
 		this.setMotion(Vec3d.ZERO);
 		this.prevPosX = x;
 		this.prevPosY = y;
 		this.prevPosZ = z;
 		this.setOrigin(new BlockPos(this));
+		// From anvil:
+		setHurtEntities(true);
+	}
+
+	@Nonnull
+	@Override
+	public IPacket<?> createSpawnPacket() {
+		return NetworkHooks.getEntitySpawningPacket(this);
+	}
+
+	// We can't use vanilla's spawn data method, so implement it here.
+	@Override
+	public void writeSpawnData(PacketBuffer buffer) {
+		buffer.writeInt(Block.getStateId(fallTile));
+	}
+
+	@Override
+	public void readSpawnData(PacketBuffer additionalData) {
+		fallTile = Block.getStateById(additionalData.readInt());
 	}
 
 	// Copy most of the original wholesale, changing some things.
