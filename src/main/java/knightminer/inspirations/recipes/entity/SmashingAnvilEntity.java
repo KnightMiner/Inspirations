@@ -163,10 +163,17 @@ public class SmashingAnvilEntity extends FallingBlockEntity implements IEntityAd
 			return false;
 		}
 
-		// Kill the entities used in the recipe.
+		// Consume one item from each used in the recipe
 		for(int i = 0; i < items.size(); i++) {
 			if (inv.used[i]) {
-				items.get(i).remove();
+				ItemEntity item = items.get(i);
+				ItemStack newStack = item.getItem().copy();
+				newStack.shrink(1);
+				if (newStack.isEmpty()) {
+					item.remove();
+				} else {
+					item.setItem(newStack);
+				}
 			}
 		}
 
