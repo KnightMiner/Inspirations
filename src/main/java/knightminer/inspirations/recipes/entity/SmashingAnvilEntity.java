@@ -87,40 +87,34 @@ public class SmashingAnvilEntity extends FallingBlockEntity implements IEntityAd
 			setMotion(this.getMotion().add(0.0D, -0.04D, 0.0D));
 		}
 
-		move(MoverType.SELF, this.getMotion());
+		Vec3d motion = this.getMotion();
+		move(MoverType.SELF, motion);
 		if(!world.isRemote) {
 			BlockPos blockpos = this.getPosition();
 
 			if(!onGround) {
 				if(fallTime > 100 && (blockpos.getY() < 1 || blockpos.getY() > 256) || fallTime > 600) {
-					tryDropItem(block);
-					this.remove();
+					tryDropItem();
+					remove();
 				}
 			} else {
 				// On the ground, place the block.
-				BlockState blockstate = world.getBlockState(blockpos);
 				this.setMotion(getMotion().mul(0.7D, -0.5D, 0.7D));
 
-				this.remove();
 				if(dontSetBlock) { // It's a destroyed anvil, play sounds.
 					if(block instanceof FallingBlock) {
 						((FallingBlock) block).onBroken(this.world, blockpos, this);
 					}
+					remove();
 				} else {
 					BlockPos below = blockpos.down();
-					BlockState belowBlock = world.getBlockState(below);
-
-					boolean replaceable = blockstate.isReplaceable(new DirectionalPlaceContext(world, blockpos, Direction.DOWN, ItemStack.EMPTY, Direction.UP));
-					boolean canFallThrough = FallingBlock.canFallThrough(belowBlock);
-					boolean canBeHere = this.fallTile.isValidPosition(this.world, blockpos) && !canFallThrough;
-					if(replaceable && canBeHere) {
-						if(world.setBlockState(blockpos, this.fallTile, 3)) {
-							smashBlock(world, below, belowBlock);
-						} else {
-							tryDropItem(block);
-						}
+					// Original behaviour - only placed if replaceable && canBeHere.
+					// Instead, if we destroy the block retain the entity.
+					if(smashBlock(world, below, world.getBlockState(below)) == SmashResult.PASSTHROUGH) {
+						// Restore velocity before the move() call, to preserve momentum.
+						this.setMotion(motion);
 					} else {
-						tryDropItem(block);
+						placeAnvil(blockpos);
 					}
 				}
 			}
@@ -128,21 +122,47 @@ public class SmashingAnvilEntity extends FallingBlockEntity implements IEntityAd
 		this.setMotion(this.getMotion().scale(0.98D));
 	}
 
-	// Common code in many places inside tick().
-	private void tryDropItem(Block block) {
+	/**
+	 * We landed, set the block if possible otherwise drop the item.
+	 * This follows vanilla's rules for how it can be placed.
+	 * */
+	private void placeAnvil(BlockPos blockpos) {
+		BlockState blockstate = world.getBlockState(blockpos);
+		boolean replaceable = blockstate.isReplaceable(new DirectionalPlaceContext(world, blockpos, Direction.DOWN, ItemStack.EMPTY, Direction.UP));
+		boolean canFallThrough = FallingBlock.canFallThrough(world.getBlockState(blockpos.down()));
+		boolean canBeHere = this.fallTile.isValidPosition(this.world, blockpos) && !canFallThrough;
+		if(replaceable && canBeHere) {
+			if(!world.setBlockState(blockpos, this.fallTile, 3)) {
+				tryDropItem();
+			}
+		} else {
+			tryDropItem();
+		}
+		remove();
+	}
+
+	/* If allowed, drop our item right here. */
+	private void tryDropItem() {
 		if(this.shouldDropItem && this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
-			this.entityDropItem(block);
+			this.entityDropItem(this.fallTile.getBlock());
 		}
 	}
 
-	public boolean smashBlock(World world, BlockPos pos, BlockState state) {
-		// if we started on air, just return true
-		if(state.getBlock() == Blocks.AIR) {
-			return true;
+	/**
+	 * Smashes the provided block by anvil.
+	 * @param pos The position of the block.
+	 * @param state The existing block at the position.
+	 * @param world The world the block is in.
+	 * @return The result of the operation.
+	 */
+	public static SmashResult smashBlock(World world, BlockPos pos, BlockState state) {
+		// Always pass harmlessly through air.
+		if(state.getBlock().isAir(state, world, pos)) {
+			return SmashResult.PASSTHROUGH;
 		}
-		// if the block is unbreakable, leave it
+		// If the block is unbreakable, always fail.
 		if(state.getBlockHardness(world, pos) == -1) {
-			return false;
+			return SmashResult.FAIL;
 		}
 
 		// Find all the items on this block, plus the one above (where the anvil is).
@@ -160,7 +180,7 @@ public class SmashingAnvilEntity extends FallingBlockEntity implements IEntityAd
 				.getRecipe(RecipeTypes.ANVIL, inv, world).orElse(null);
 
 		if(recipe == null) {
-			return false;
+			return SmashResult.FAIL;
 		}
 
 		// Consume one item from each used in the recipe
@@ -182,12 +202,22 @@ public class SmashingAnvilEntity extends FallingBlockEntity implements IEntityAd
 		// if the result is air, break the block
 		if(transformation.getBlock() == Blocks.AIR) {
 			world.destroyBlock(pos, true);
+			return SmashResult.PASSTHROUGH;
 		} else {
 			// breaking particles
 			world.playEvent(2001, pos, Block.getStateId(state));
 			world.setBlockState(pos, transformation);
+			return SmashResult.TRANSFORM;
 		}
-		return true;
+	}
+
+	enum SmashResult {
+		/** Broke the block, fall through it. */
+		PASSTHROUGH,
+		/** No recipe found. */
+		FAIL,
+		/** Converted the block. */
+		TRANSFORM
 	}
 }
 
