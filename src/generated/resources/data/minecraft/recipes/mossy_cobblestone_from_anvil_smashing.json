@@ -1,0 +1,12 @@
+{
+  "type": "inspirations:anvil_smashing",
+  "result": {
+    "block": "minecraft:mossy_cobblestone"
+  },
+  "ingredients": [
+    {
+      "type": "inspirations:blockstate",
+      "block": "minecraft:mossy_stone_bricks"
+    }
+  ]
+}

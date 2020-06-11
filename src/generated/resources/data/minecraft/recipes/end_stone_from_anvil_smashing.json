@@ -1,0 +1,12 @@
+{
+  "type": "inspirations:anvil_smashing",
+  "result": {
+    "block": "minecraft:end_stone"
+  },
+  "ingredients": [
+    {
+      "type": "inspirations:blockstate",
+      "block": "minecraft:end_stone_bricks"
+    }
+  ]
+}

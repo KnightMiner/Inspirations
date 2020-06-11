@@ -1,0 +1,12 @@
+{
+  "type": "inspirations:anvil_smashing",
+  "result": {
+    "block": "minecraft:red_sand"
+  },
+  "ingredients": [
+    {
+      "type": "inspirations:blockstate",
+      "block": "minecraft:red_sandstone"
+    }
+  ]
+}

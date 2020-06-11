@@ -1,6 +1,7 @@
 package knightminer.inspirations.recipes.data;
 
 import knightminer.inspirations.common.data.ConfigEnabledCondition;
+import knightminer.inspirations.common.datagen.AnvilRecipeBuilder;
 import knightminer.inspirations.common.datagen.IInspirationsRecipeBuilder;
 import knightminer.inspirations.common.datagen.NBTIngredient;
 import knightminer.inspirations.library.InspirationsTags;
@@ -41,6 +42,7 @@ import net.minecraft.item.Items;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.potion.Potions;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ITag;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.IItemProvider;
@@ -49,6 +51,7 @@ import net.minecraft.util.SoundEvents;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 import slimeknights.mantle.recipe.SizedIngredient;
 import slimeknights.mantle.recipe.data.ConsumerWrapperBuilder;
@@ -92,6 +95,7 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
   protected void registerRecipes(Consumer<IFinishedRecipe> consumer) {
     this.consumer = consumer;
     this.addCauldronRecipes();
+    this.addAnvilRecipes();
   }
 
   private void addCauldronRecipes() {
@@ -501,6 +505,47 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
                           .addIngredient(Tags.Items.MUSHROOMS)
                           .addCriterion("has_item", hasItem(Items.BAKED_POTATO))
                           .build(withCondition(), resource(folder + "potato_soup/item"));
+  }
+
+  private void addAnvilRecipes() {
+    AnvilRecipeBuilder.places(Blocks.COBBLESTONE).addIngredient(Blocks.STONE).buildVanilla(consumer, "cobble_from_stone_anvil_smashing");
+    AnvilRecipeBuilder.places(Blocks.COBBLESTONE).addIngredient(Blocks.STONE_BRICKS).buildVanilla(consumer, "cobble_from_bricks_anvil_smashing");
+    AnvilRecipeBuilder.places(Blocks.COBBLESTONE).addIngredient(Blocks.SMOOTH_STONE).buildVanilla(consumer, "cobble_from_smooth_stone_anvil_smashing");
+    AnvilRecipeBuilder.places(Blocks.MOSSY_COBBLESTONE).addIngredient(Blocks.MOSSY_STONE_BRICKS).build(consumer);
+    AnvilRecipeBuilder.places(Blocks.PRISMARINE).addIngredient(Blocks.PRISMARINE_BRICKS).build(consumer);
+    AnvilRecipeBuilder.places(Blocks.END_STONE).addIngredient(Blocks.END_STONE_BRICKS).build(consumer);
+    AnvilRecipeBuilder.places(Blocks.GRAVEL).addIngredient(Blocks.COBBLESTONE).build(consumer);
+    AnvilRecipeBuilder.places(Blocks.ANDESITE).addIngredient(Blocks.POLISHED_ANDESITE).build(consumer);
+    AnvilRecipeBuilder.places(Blocks.GRANITE).addIngredient(Blocks.POLISHED_GRANITE).build(consumer);
+    AnvilRecipeBuilder.places(Blocks.DIORITE).addIngredient(Blocks.POLISHED_DIORITE).build(consumer);
+
+    AnvilRecipeBuilder.places(Blocks.SAND).addIngredient(Blocks.SANDSTONE).build(consumer);
+    AnvilRecipeBuilder.places(Blocks.RED_SAND).addIngredient(Blocks.RED_SANDSTONE).build(consumer);
+
+    AnvilRecipeBuilder.smashes().addIngredient(BlockTags.ICE).build(consumer);
+    AnvilRecipeBuilder.smashes().addIngredient(BlockTags.LEAVES).build(consumer);
+    AnvilRecipeBuilder.smashes().addIngredient(Blocks.BROWN_MUSHROOM_BLOCK).build(consumer);
+    AnvilRecipeBuilder.smashes().addIngredient(Blocks.RED_MUSHROOM_BLOCK).build(consumer);
+    AnvilRecipeBuilder.smashes().addIngredient(Blocks.PUMPKIN).build(consumer);
+    AnvilRecipeBuilder.smashes().addIngredient(Blocks.CARVED_PUMPKIN).build(consumer);
+    AnvilRecipeBuilder.smashes().addIngredient(Blocks.JACK_O_LANTERN).build(consumer);
+    AnvilRecipeBuilder.smashes().addIngredient(Blocks.MELON).build(consumer);
+
+    // Smash all silverfish blocks.
+    AnvilRecipeBuilder.smashes().addIngredient(Blocks.INFESTED_CHISELED_STONE_BRICKS).build(consumer);
+    AnvilRecipeBuilder.smashes().addIngredient(Blocks.INFESTED_COBBLESTONE).build(consumer);
+    AnvilRecipeBuilder.smashes().addIngredient(Blocks.INFESTED_CRACKED_STONE_BRICKS).build(consumer);
+    AnvilRecipeBuilder.smashes().addIngredient(Blocks.INFESTED_MOSSY_STONE_BRICKS).build(consumer);
+    AnvilRecipeBuilder.smashes().addIngredient(Blocks.INFESTED_STONE).build(consumer);
+    AnvilRecipeBuilder.smashes().addIngredient(Blocks.INFESTED_STONE_BRICKS).build(consumer);
+
+    // Smash concrete into concrete powder.
+    for(DyeColor dye: DyeColor.values()) {
+      AnvilRecipeBuilder
+              .places(ForgeRegistries.BLOCKS.getValue(new ResourceLocation(dye.getTranslationKey() + "_concrete_powder")))
+              .addIngredient(ForgeRegistries.BLOCKS.getValue(new ResourceLocation(dye.getTranslationKey() + "_concrete")))
+              .build(consumer);
+    }
   }
 
   /**

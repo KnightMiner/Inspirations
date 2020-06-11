@@ -1,0 +1,12 @@
+{
+  "type": "inspirations:anvil_smashing",
+  "result": {
+    "block": "minecraft:prismarine"
+  },
+  "ingredients": [
+    {
+      "type": "inspirations:blockstate",
+      "block": "minecraft:prismarine_bricks"
+    }
+  ]
+}

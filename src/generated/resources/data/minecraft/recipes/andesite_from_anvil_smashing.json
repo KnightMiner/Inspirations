@@ -1,0 +1,12 @@
+{
+  "type": "inspirations:anvil_smashing",
+  "result": {
+    "block": "minecraft:andesite"
+  },
+  "ingredients": [
+    {
+      "type": "inspirations:blockstate",
+      "block": "minecraft:polished_andesite"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "type": "inspirations:anvil_smashing",
+  "result": {
+    "block": "minecraft:air"
+  },
+  "ingredients": [
+    {
+      "type": "inspirations:blockstate",
+      "tag": "minecraft:ice"
+    }
+  ]
+}
