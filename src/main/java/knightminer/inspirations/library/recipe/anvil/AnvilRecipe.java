@@ -228,7 +228,7 @@ public class AnvilRecipe implements IRecipe<AnvilInventory> {
 	@Nonnull
 	@Override
 	public IRecipeSerializer<?> getSerializer() {
-		return RecipeSerializers.ANVIL;
+		return RecipeSerializers.ANVIL_SMASHING;
 	}
 
 	@Nonnull

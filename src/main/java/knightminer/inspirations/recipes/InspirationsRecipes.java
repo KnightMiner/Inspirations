@@ -249,8 +249,8 @@ public class InspirationsRecipes extends ModuleBase {
       CauldronContentTypes.COLOR.setResult(color.getColorValue(), CauldronContentTypes.DYE.of(color));
     }
 
-    registry.register(new AnvilRecipe.Serializer(), "anvil");
-    CraftingHelper.register(Inspirations.getResource("blockstate"), BlockIngredient.SERIALIZER);
+    registry.register(new AnvilRecipe.Serializer(), "anvil_smashing");
+    CraftingHelper.register(BlockIngredient.INGREDIENT_ID, BlockIngredient.SERIALIZER);
   }
 
   @SubscribeEvent

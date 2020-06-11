@@ -1,8 +1,13 @@
 package knightminer.inspirations.library.recipe;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
+import com.mojang.datafixers.util.Pair;
+import knightminer.inspirations.Inspirations;
 import net.minecraft.advancements.criterion.StatePropertiesPredicate;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -25,6 +30,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 public abstract class BlockIngredient extends Ingredient {
+	public static final ResourceLocation INGREDIENT_ID = Inspirations.getResource("blockstate");
 	public final StatePropertiesPredicate predicate;
 
 	protected BlockIngredient(StatePropertiesPredicate blockstateMatcher) {
@@ -33,6 +39,7 @@ public abstract class BlockIngredient extends Ingredient {
 	}
 
 	protected abstract boolean matchesBlock(Block block);
+	protected abstract Pair<String, JsonElement> getJSON();
 
 	@Nonnull
 	protected abstract List<Block> getMatchingBlocks();
@@ -83,6 +90,19 @@ public abstract class BlockIngredient extends Ingredient {
 
 	@Nonnull
 	@Override
+	public JsonElement serialize() {
+		JsonObject result = new JsonObject();
+		result.addProperty("type", INGREDIENT_ID.toString());
+
+		Pair<String, JsonElement> blockData = getJSON();
+		result.add(blockData.getFirst(), blockData.getSecond());
+
+		result.add("properties", predicate.toJsonElement());
+		return result;
+	}
+
+	@Nonnull
+	@Override
 	public IIngredientSerializer<? extends Ingredient> getSerializer() {
 		return SERIALIZER;
 	}
@@ -100,13 +120,23 @@ public abstract class BlockIngredient extends Ingredient {
 			if (json.has("block") && json.has("tag")) {
 				throw new JsonParseException("A Block Ingredient entry is either a tag or a block, not both");
 			} else if (json.has("block")) {
-				ResourceLocation blockName = new ResourceLocation(JSONUtils.getString(json, "block"));
-				Block block = ForgeRegistries.BLOCKS.getValue(blockName);
-				if (block == null) {
-					throw new JsonSyntaxException("Unknown block '" + blockName + "'");
+				Iterable<JsonElement> blockElems;
+				JsonElement array = json.get("block");
+				if (array.isJsonArray()) {
+					blockElems = array.getAsJsonArray();
 				} else {
-					return new BlockIngredientList(block, predicate);
+					blockElems = Collections.singletonList(array);
 				}
+				List<Block> blocks = new ArrayList<>();
+				for(JsonElement blockJson: blockElems) {
+					ResourceLocation blockName = new ResourceLocation(blockJson.getAsString());
+					Block block = ForgeRegistries.BLOCKS.getValue(blockName);
+					if(block == null) {
+						throw new JsonSyntaxException("Unknown block '" + blockName + "'");
+					}
+					blocks.add(block);
+				}
+				return new BlockIngredientList(blocks, predicate);
 			} else if (json.has("tag")) {
 				ResourceLocation tagName = new ResourceLocation(JSONUtils.getString(json, "tag"));
 				ITag<Block> tag = BlockTags.getCollection().get(tagName);
@@ -150,17 +180,16 @@ public abstract class BlockIngredient extends Ingredient {
 	public static class BlockIngredientList extends BlockIngredient {
 		public final List<Block> blocks;
 
-		BlockIngredientList(List<Block> blocks, StatePropertiesPredicate predicate) {
+		public BlockIngredientList(List<Block> blocks, StatePropertiesPredicate predicate) {
 			super(predicate);
 			this.blocks = blocks;
 		}
-
-		BlockIngredientList(Block block, StatePropertiesPredicate predicate) {
+		public BlockIngredientList(Block block, StatePropertiesPredicate predicate) {
 			super(predicate);
 			this.blocks = Collections.singletonList(block);
 		}
 
-		protected BlockIngredientList(ResourceLocation blockName, StatePropertiesPredicate predicate) {
+		public BlockIngredientList(ResourceLocation blockName, StatePropertiesPredicate predicate) {
 			super(predicate);
 			Block block = ForgeRegistries.BLOCKS.getValue(blockName);
 			if (block == null) {
@@ -179,12 +208,25 @@ public abstract class BlockIngredient extends Ingredient {
 		protected boolean matchesBlock(Block block) {
 			return blocks.stream().anyMatch(block.delegate.get()::equals);
 		}
+
+		@Override
+		protected Pair<String, JsonElement> getJSON() {
+			if (blocks.size() == 1) {
+				return Pair.of("block", new JsonPrimitive(blocks.get(0).getRegistryName().toString()));
+			} else {
+				JsonArray array = new JsonArray();
+				for(Block block: blocks) {
+					array.add(new JsonPrimitive(block.getRegistryName().toString()));
+				}
+				return Pair.of("block", array);
+			}
+		}
 	}
 
 	public static class TaggedBlockIngredient extends BlockIngredient {
 		public final ITag<Block> tag;
 
-		protected TaggedBlockIngredient(ITag<Block> tag, StatePropertiesPredicate predicate) {
+		public TaggedBlockIngredient(ITag<Block> tag, StatePropertiesPredicate predicate) {
 			super(predicate);
 			this.tag = tag;
 		}
@@ -195,7 +237,7 @@ public abstract class BlockIngredient extends Ingredient {
 			return tag.getAllElements();
 		}
 
-		protected TaggedBlockIngredient(ResourceLocation tagName, StatePropertiesPredicate predicate) {
+		public TaggedBlockIngredient(ResourceLocation tagName, StatePropertiesPredicate predicate) {
 			super(predicate);
 			this.tag = BlockTags.getCollection().get(tagName);
 			if (this.tag == null) {
@@ -206,6 +248,15 @@ public abstract class BlockIngredient extends Ingredient {
 		@Override
 		protected boolean matchesBlock(Block block) {
 			return tag.contains(block);
+		}
+
+		@Override
+		protected Pair<String, JsonElement> getJSON() {
+			if (tag instanceof ITag.INamedTag) {
+				return Pair.of("tag", new JsonPrimitive(((ITag.INamedTag<Block>) tag).getName().toString()));
+			} else { // Should only be for recipe generation, so a code bug.
+				throw new IllegalStateException("Cannot get JSON for unnamed tag!");
+			}
 		}
 	}
 }

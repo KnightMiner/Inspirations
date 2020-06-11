@@ -19,7 +19,7 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
@@ -39,11 +39,11 @@ public class SmashingAnvilEntity extends FallingBlockEntity implements IEntityAd
 		this.fallTile = fallingBlockState;
 		this.preventEntitySpawning = true;
 		this.setPosition(x, y, z);
-		this.setMotion(Vec3d.ZERO);
+		this.setMotion(Vector3d.ZERO);
 		this.prevPosX = x;
 		this.prevPosY = y;
 		this.prevPosZ = z;
-		this.setOrigin(new BlockPos(this));
+		this.setOrigin(this.getPosition());
 		// From anvil:
 		setHurtEntities(true);
 	}
@@ -74,7 +74,7 @@ public class SmashingAnvilEntity extends FallingBlockEntity implements IEntityAd
 
 		Block block = this.fallTile.getBlock();
 		if(fallTime++ == 0) {
-			BlockPos blockpos = new BlockPos(this);
+			BlockPos blockpos = this.getPosition();
 			if(world.getBlockState(blockpos).getBlock() == block) {
 				world.removeBlock(blockpos, false);
 			} else if(!world.isRemote) {
@@ -89,7 +89,7 @@ public class SmashingAnvilEntity extends FallingBlockEntity implements IEntityAd
 
 		move(MoverType.SELF, this.getMotion());
 		if(!world.isRemote) {
-			BlockPos blockpos = new BlockPos(this);
+			BlockPos blockpos = this.getPosition();
 
 			if(!onGround) {
 				if(fallTime > 100 && (blockpos.getY() < 1 || blockpos.getY() > 256) || fallTime > 600) {
@@ -104,7 +104,7 @@ public class SmashingAnvilEntity extends FallingBlockEntity implements IEntityAd
 				this.remove();
 				if(dontSetBlock) { // It's a destroyed anvil, play sounds.
 					if(block instanceof FallingBlock) {
-						((FallingBlock) block).onBroken(this.world, blockpos);
+						((FallingBlock) block).onBroken(this.world, blockpos, this);
 					}
 				} else {
 					BlockPos below = blockpos.down();

@@ -36,7 +36,7 @@ public class RecipeSerializers {
   /*
    * Anvil
    */
-  public static final AnvilRecipe.Serializer ANVIL = injected();
+  public static final AnvilRecipe.Serializer ANVIL_SMASHING = injected();
 
   /*
    * Cauldron
