@@ -176,39 +176,36 @@ public class SmashingAnvilEntity extends FallingBlockEntity implements IEntityAd
 			items.stream().map(ItemEntity::getItem).collect(Collectors.toList()),
 			state
 		);
-		AnvilRecipe recipe = world.getRecipeManager()
-				.getRecipe(RecipeTypes.ANVIL, inv, world).orElse(null);
-
-		if(recipe == null) {
-			return SmashResult.FAIL;
-		}
-
-		// Consume one item from each used in the recipe
-		for(int i = 0; i < items.size(); i++) {
-			if (inv.used[i]) {
-				ItemEntity item = items.get(i);
-				ItemStack newStack = item.getItem().copy();
-				newStack.shrink(1);
-				if (newStack.isEmpty()) {
-					item.remove();
-				} else {
-					item.setItem(newStack);
+		return world.getRecipeManager()
+				.getRecipe(RecipeTypes.ANVIL, inv, world)
+				.map((recipe) -> {
+			// Consume one item from each used in the recipe
+			for(int i = 0; i < items.size(); i++) {
+				if(inv.used[i]) {
+					ItemEntity item = items.get(i);
+					ItemStack newStack = item.getItem().copy();
+					newStack.shrink(1);
+					if(newStack.isEmpty()) {
+						item.remove();
+					} else {
+						item.setItem(newStack);
+					}
 				}
 			}
-		}
 
-		BlockState transformation = recipe.getBlockResult(inv);
+			BlockState transformation = recipe.getBlockResult(inv);
 
-		// if the result is air, break the block
-		if(transformation.getBlock() == Blocks.AIR) {
-			world.destroyBlock(pos, true);
-			return SmashResult.PASSTHROUGH;
-		} else {
-			// breaking particles
-			world.playEvent(2001, pos, Block.getStateId(state));
-			world.setBlockState(pos, transformation);
-			return SmashResult.TRANSFORM;
-		}
+			// if the result is air, break the block
+			if(transformation.getBlock() == Blocks.AIR) {
+				world.destroyBlock(pos, true);
+				return SmashResult.PASSTHROUGH;
+			} else {
+				// breaking particles
+				world.playEvent(2001, pos, Block.getStateId(state));
+				world.setBlockState(pos, transformation);
+				return SmashResult.TRANSFORM;
+			}
+		}).orElse(SmashResult.FAIL);
 	}
 
 	enum SmashResult {
