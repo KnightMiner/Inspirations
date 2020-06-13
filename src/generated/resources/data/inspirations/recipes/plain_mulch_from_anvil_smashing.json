@@ -1,0 +1,22 @@
+{
+  "type": "inspirations:anvil_smashing",
+  "conditions": [
+    {
+      "prop": "building_module",
+      "type": "inspirations:config"
+    },
+    {
+      "prop": "mulch",
+      "type": "inspirations:config"
+    }
+  ],
+  "result": {
+    "block": "inspirations:plain_mulch"
+  },
+  "ingredients": [
+    {
+      "type": "inspirations:blockstate",
+      "tag": "minecraft:planks"
+    }
+  ]
+}

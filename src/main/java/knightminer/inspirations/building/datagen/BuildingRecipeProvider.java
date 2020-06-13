@@ -7,6 +7,7 @@ import knightminer.inspirations.building.block.type.PathType;
 import knightminer.inspirations.building.block.type.ShelfType;
 import knightminer.inspirations.common.data.ConfigEnabledCondition;
 import knightminer.inspirations.common.datagen.IInspirationsRecipeBuilder;
+import knightminer.inspirations.common.datagen.AnvilRecipeBuilder;
 import knightminer.inspirations.library.InspirationsTags;
 import net.minecraft.advancements.ICriterionInstance;
 import net.minecraft.data.DataGenerator;
@@ -19,6 +20,7 @@ import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.IItemProvider;
 import net.minecraftforge.common.Tags;
@@ -104,6 +106,11 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
     SingleItemRecipeBuilder.stonecuttingRecipe(Ingredient.fromTag(ItemTags.PLANKS), plainMulch)
                            .addCriterion("hasPlanks", hasItem(ItemTags.PLANKS))
                            .build(mulchCondition, resource("building/mulch/" + MulchType.PLAIN.getString()));
+    // Or via anvil.
+	  AnvilRecipeBuilder.places(InspirationsBuilding.mulch.get(MulchType.PLAIN))
+					  .addIngredient(BlockTags.PLANKS)
+					  .build(mulchCondition);
+
     // dye for other colors
     InspirationsBuilding.mulch.forEach((type, mulch) -> {
       DyeColor dye = type.getDye();
@@ -113,6 +120,10 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
                               .addIngredient(plainMulch)
                               .addIngredient(dye.getTag())
                               .build(mulchCondition, resource("building/mulch/" + type.getString()));
+	      AnvilRecipeBuilder.places(mulch)
+					      .addIngredient(BlockTags.PLANKS)
+					      .addTaggedItem(dye.getTag())
+					      .build(mulchCondition);
       }
     });
 
