@@ -18,6 +18,8 @@ import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tags.ITag;
 import net.minecraft.util.IItemProvider;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.crafting.CraftingHelper;
+import net.minecraftforge.common.crafting.conditions.ICondition;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -31,6 +33,7 @@ public class AnvilRecipeBuilder {
 	private final List<Ingredient> ingredients;
 	private final List<Pair<String, String>> properties;
 	private String group = "";
+	private final List<ICondition> condList;
 	@Nullable
 	private final Block result;
 
@@ -38,6 +41,7 @@ public class AnvilRecipeBuilder {
 		result = res;
 		ingredients = new ArrayList<>();
 		properties = new ArrayList<>();
+		condList = new ArrayList<>();
 	}
 
 	public static AnvilRecipeBuilder copiesInput() {
@@ -54,6 +58,11 @@ public class AnvilRecipeBuilder {
 
 	public AnvilRecipeBuilder group(String name) {
 		group = name;
+		return this;
+	}
+
+	public AnvilRecipeBuilder addCondition(ICondition cond) {
+		condList.add(cond);
 		return this;
 	}
 
@@ -144,6 +153,7 @@ public class AnvilRecipeBuilder {
 				id,
 				ingredients,
 				result,
+				condList,
 				properties,
 				group
 		));
@@ -192,6 +202,7 @@ public class AnvilRecipeBuilder {
 	private static class Finished implements IFinishedRecipe {
 		private final ResourceLocation id;
 		private final List<Ingredient> ingredients;
+		private final List<ICondition> condList;
 		private final String group;
 		// If null, keep the existing block.
 		@Nullable
@@ -203,11 +214,13 @@ public class AnvilRecipeBuilder {
 				ResourceLocation id,
 				List<Ingredient> ingredients,
 				@Nullable Block result,
+				List<ICondition> condList,
 				List<Pair<String, String>> properties,
 				String group
 		) {
 			this.id = id;
 			this.ingredients = ingredients;
+			this.condList = condList;
 			this.group = group;
 			this.result = result;
 			this.properties = properties;
@@ -215,6 +228,11 @@ public class AnvilRecipeBuilder {
 
 		@Override
 		public void serialize(@Nonnull JsonObject json) {
+			if (condList.size() > 0) {
+				json.add("conditions", condList.stream()
+						.map(CraftingHelper::serialize)
+						.collect(JsonArray::new, JsonArray::add, JsonArray::addAll));
+			}
 			if (!group.isEmpty()) {
 				json.addProperty("group", group);
 			}
@@ -227,17 +245,13 @@ public class AnvilRecipeBuilder {
 			}
 			if (properties.size() > 0) {
 				JsonObject props = new JsonObject();
-				for(Pair<String, String> prop : properties) {
-					result.addProperty(prop.getFirst(), prop.getSecond());
-				}
+				properties.forEach(prop -> props.addProperty(prop.getFirst(), prop.getSecond()));
 				result.add("properties", props);
 			}
 
-			JsonArray ingredients = new JsonArray();
-			for(Ingredient ingredient : this.ingredients) {
-				ingredients.add(ingredient.serialize());
-			}
-			json.add("ingredients", ingredients);
+			json.add("ingredients", ingredients.stream()
+						.map(Ingredient::serialize)
+						.collect(JsonArray::new, JsonArray::add, JsonArray::addAll));
 		}
 
 		@Nonnull
