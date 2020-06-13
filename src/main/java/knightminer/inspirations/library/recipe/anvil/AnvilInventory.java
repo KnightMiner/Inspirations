@@ -15,12 +15,10 @@ import java.util.List;
 public class AnvilInventory implements IInventory {
 	private final List<ItemStack> items;
 	private final BlockState state;
-	public boolean[] used;
 
 	public AnvilInventory(List<ItemStack> items, BlockState state) {
 		this.items = items;
 		this.state = state;
-		this.used = new boolean[items.size()];
 	}
 
 	public BlockState getState() {

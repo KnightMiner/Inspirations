@@ -12,6 +12,7 @@ import knightminer.inspirations.library.recipe.RecipeTypes;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.crafting.IRecipe;
@@ -49,6 +50,10 @@ public class AnvilRecipe implements IRecipe<AnvilInventory> {
 	// If value == "<input>", copy over.
 	private final List<Pair<String, String>> properties;
 
+	// When matching, holds the number of times each item was used.
+	@Nullable
+	private int[] used=null;
+
 	private AnvilRecipe(
 			ResourceLocation id,
 			String group,
@@ -70,36 +75,48 @@ public class AnvilRecipe implements IRecipe<AnvilInventory> {
 	@Override
 	public boolean matches(@Nonnull AnvilInventory inv, @Nonnull World worldIn) {
 		// Used is set to true if that item was used in this recipe. First reset it.
-		Arrays.fill(inv.used, false);
-		return ingredients.stream().allMatch(ing -> checkIngredient(inv, ing));
+		used = new int[inv.getItems().size()];
+		Arrays.fill(used, 0);
+		boolean result = ingredients.stream().allMatch(ing -> checkIngredient(inv, ing));
+		if (!result) {
+			// Clear this, since it's not useful.
+			used = null;
+		}
+		return result;
 	}
 
 	private boolean checkIngredient(AnvilInventory inv, Ingredient ing) {
+		assert this.used != null;
+		int[] used = this.used.clone();
+
 		if (ing instanceof BlockIngredient) {
 			// It's a block, just test the state.
 			return ((BlockIngredient) ing).testBlock(inv.getState());
 		} else if (ing instanceof CompoundIngredient) {
-			// Recurse, checking if any of these ingredients are present.
-			boolean[] used = inv.used.clone();
 			for(Ingredient subIng: ((CompoundIngredient) ing).getChildren()) {
 				if (checkIngredient(inv, subIng)) {
 					// Keep the state for this one.
 					return true;
 				}
 				// Restore the state, since the compound didn't match.
-				inv.used = used.clone();
+				this.used = used.clone();
 			}
 			return false;
 		} else {
 			// It's an item. We want to see if any item matches,
 			// but not reuse items twice - since they're consumed.
 			boolean found = false;
-			for(int i = 0; i < inv.used.length; i++) {
-				if (!inv.used[i] && ing.test(inv.getItems().get(i))) {
-					inv.used[i] = true;
+			for(int i = 0; i < this.used.length; i++) {
+				ItemStack item = inv.getItems().get(i);
+				if (this.used[i] < item.getCount() && ing.test(item)) {
+					this.used[i]++;
 					found = true;
 					break;
 				}
+			}
+			if (!found) {
+				// Restore the state, since the ingredient didn't match.
+				this.used = used.clone();
 			}
 			return found;
 		}
@@ -144,6 +161,40 @@ public class AnvilRecipe implements IRecipe<AnvilInventory> {
 			state = setProperty(state, targProp, value);
 		}
 		return state;
+	}
+
+	/**
+	 * Consume the items used by the recipe, killing empty items.
+	 * @param items Item entities involved.
+	 */
+	public void consumeItemEnts(List<ItemEntity> items) {
+		if (used == null || items.size() != used.length) {
+			return;
+		}
+		for(int i = 0; i < items.size(); i++) {
+			if(used[i] > 0) {
+				ItemEntity item = items.get(i);
+				ItemStack newStack = item.getItem().copy();
+				newStack.shrink(used[i]);
+				if(newStack.isEmpty()) {
+					item.remove();
+				} else {
+					item.setItem(newStack);
+				}
+			}
+		}
+	}
+	/**
+	 * Consume the items used by the recipe.
+	 * @param items ItemStacks in the same order as passed to match().
+	 */
+	public void consumeItemStacks(List<ItemStack> items) {
+		if (used == null || items.size() != used.length) {
+			return;
+		}
+		for(int i = 0; i < items.size(); i++) {
+			items.get(i).shrink(used[i]);
+		}
 	}
 
 	/**
