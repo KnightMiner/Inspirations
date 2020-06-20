@@ -11,7 +11,9 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.item.FallingBlockEntity;
 import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.DirectionalPlaceContext;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.IPacket;
 import net.minecraft.network.PacketBuffer;
@@ -21,6 +23,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.network.NetworkHooks;
 
@@ -88,7 +91,7 @@ public class SmashingAnvilEntity extends FallingBlockEntity implements IEntityAd
 
 		Vector3d motion = this.getMotion();
 		move(MoverType.SELF, motion);
-		if(!world.isRemote) {
+		if(!world.isRemote()) {
 			BlockPos blockpos = this.getPosition();
 
 			if(!onGround) {
@@ -109,7 +112,8 @@ public class SmashingAnvilEntity extends FallingBlockEntity implements IEntityAd
 					BlockPos below = blockpos.down();
 					// Original behaviour - only placed if replaceable && canBeHere.
 					// Instead, if we destroy the block retain the entity.
-					if(smashBlock(world, below, world.getBlockState(below)) == SmashResult.PASSTHROUGH) {
+					// We know it's the server world, checked earlier.
+					if(smashBlock((ServerWorld)world, below, world.getBlockState(below)) == SmashResult.PASSTHROUGH) {
 						// Restore velocity before the move() call, to preserve momentum.
 						this.setMotion(motion);
 					} else {
@@ -154,7 +158,7 @@ public class SmashingAnvilEntity extends FallingBlockEntity implements IEntityAd
 	 * @param world The world the block is in.
 	 * @return The result of the operation.
 	 */
-	public static SmashResult smashBlock(World world, BlockPos pos, BlockState state) {
+	public static SmashResult smashBlock(ServerWorld world, BlockPos pos, BlockState state) {
 		// Always pass harmlessly through air.
 		if(state.getBlock().isAir(state, world, pos)) {
 			return SmashResult.PASSTHROUGH;
@@ -180,6 +184,11 @@ public class SmashingAnvilEntity extends FallingBlockEntity implements IEntityAd
 			BlockState transformation = recipe.getBlockResult(inv);
 
 			recipe.consumeItemEnts(items);
+			recipe.generateItems(world, pos, (item) -> InventoryHelper.spawnItemStack(
+					world,
+					pos.getX() + 0.5f, pos.getY() + 1f, pos.getZ() + 0.5f,
+					item
+			));
 
 			// if the result is air, break the block
 			if(transformation.getBlock() == Blocks.AIR) {
@@ -203,4 +212,3 @@ public class SmashingAnvilEntity extends FallingBlockEntity implements IEntityAd
 		TRANSFORM
 	}
 }
-

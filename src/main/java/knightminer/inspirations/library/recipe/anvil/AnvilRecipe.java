@@ -18,6 +18,11 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.loot.LootContext;
+import net.minecraft.loot.LootParameterSets;
+import net.minecraft.loot.LootParameters;
+import net.minecraft.loot.LootTable;
+import net.minecraft.loot.LootTables;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.state.Property;
 import net.minecraft.resources.IReloadableResourceManager;
@@ -25,7 +30,10 @@ import net.minecraft.state.StateContainer;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.crafting.CompoundIngredient;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -39,6 +47,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class AnvilRecipe implements IRecipe<AnvilInventory> {
@@ -62,7 +71,11 @@ public class AnvilRecipe implements IRecipe<AnvilInventory> {
 	 * If Blocks.AIR, just break the block.
 	 * */
 	@Nullable
-	private final Block result;
+	private final Block blockResult;
+	/**
+	 * ID of the loot table used to generate items.
+	 */
+	private final ResourceLocation lootTable;
 	/**
 	 * Properties to assign to the result, unparsed.
 	 * If value == FROM_INPUT, copy over.
@@ -77,13 +90,15 @@ public class AnvilRecipe implements IRecipe<AnvilInventory> {
 			ResourceLocation id,
 			String group,
 			NonNullList<Ingredient> ingredients,
-			@Nullable Block result,
+			@Nullable Block blockResult,
+			ResourceLocation lootTable,
 			List<Pair<String, String>> properties
 	) {
 		this.id = id;
 		this.group = group;
 		this.ingredients = ingredients;
-		this.result = result;
+		this.lootTable = lootTable;
+		this.blockResult = blockResult;
 		this.properties = properties;
 	}
 
@@ -104,7 +119,7 @@ public class AnvilRecipe implements IRecipe<AnvilInventory> {
 				).reversed())
 				.collect(Collectors.toList());
 		}
-		
+
 		for(AnvilRecipe recipe: sortedRecipes) {
 			if (recipe.matches(inv, world)) {
 				return Optional.of(recipe);
@@ -187,7 +202,7 @@ public class AnvilRecipe implements IRecipe<AnvilInventory> {
 	 */
 	@Nonnull
 	public BlockState getBlockResult(@Nonnull AnvilInventory inv) {
-		BlockState state = result == null ? inv.getState() : result.getDefaultState();
+		BlockState state = blockResult == null ? inv.getState() : blockResult.getDefaultState();
 
 		StateContainer<Block, BlockState> cont = state.getBlock().getStateContainer();
 		StateContainer<Block, BlockState> inpContainer = inv.getState().getBlock().getStateContainer();
@@ -253,6 +268,22 @@ public class AnvilRecipe implements IRecipe<AnvilInventory> {
 		for(int i = 0; i < items.size(); i++) {
 			items.get(i).shrink(used[i]);
 		}
+	}
+
+	/**
+	 * Generate the items produced by this recipe.
+	 */
+	public void generateItems(ServerWorld world, BlockPos pos, Consumer<ItemStack> itemConsumer) {
+		LootContext context = new LootContext.Builder(world)
+				.withParameter(LootParameters.field_237457_g_, Vector3d.copy(pos).add(0.5, 0.5, 0.5))
+				.withParameter(LootParameters.BLOCK_STATE, world.getBlockState(pos))
+				// Not a tool, but the thing that makes the most sense...
+				.withParameter(LootParameters.TOOL, new ItemStack(Items.ANVIL))
+				.withNullableParameter(LootParameters.BLOCK_ENTITY, world.getTileEntity(pos))
+				.build(LootParameterSets.BLOCK);
+		// If invalid, it defaults to the empty table.
+		LootTable table = world.getServer().getLootTableManager().getLootTableFromLocation(lootTable);
+		table.generate(context, itemConsumer);
 	}
 
 	/**
@@ -388,20 +419,26 @@ public class AnvilRecipe implements IRecipe<AnvilInventory> {
 				propsMap.add(Pair.of(entry.getKey(), entry.getValue().getAsString()));
 			}
 
-			return new AnvilRecipe(recipeId, group, inputs, block, propsMap);
+			ResourceLocation lootTable = LootTables.EMPTY;
+			if (result.has("loot")) {
+				lootTable = new ResourceLocation(JSONUtils.getString(result, "loot"));
+			}
+
+			return new AnvilRecipe(recipeId, group, inputs, block, lootTable, propsMap);
 		}
 
 		@Nullable
 		@Override
 		public AnvilRecipe read(@Nonnull ResourceLocation recipeId, @Nonnull PacketBuffer buffer) {
 			String group = buffer.readString();
-			String resultName = buffer.readString();
-			Block result;
-			if(resultName.isEmpty()) {
-				result = null;
+			ResourceLocation itemResult = buffer.readResourceLocation();
+			String blockResultName = buffer.readString();
+			Block blockResult;
+			if(blockResultName.isEmpty()) {
+				blockResult = null;
 			} else {
 				// Should never be missing, since we've already validated it.
-				result = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(resultName));
+				blockResult = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(blockResultName));
 			}
 
 			int ingredientCount = buffer.readVarInt();
@@ -415,16 +452,17 @@ public class AnvilRecipe implements IRecipe<AnvilInventory> {
 			for(int i = 0; i < propsCount; i++) {
 				props.add(Pair.of(buffer.readString(), buffer.readString()));
 			}
-			return new AnvilRecipe(recipeId, group, inputs, result, props);
+			return new AnvilRecipe(recipeId, group, inputs, blockResult, itemResult, props);
 		}
 
 		@Override
 		public void write(PacketBuffer buffer, AnvilRecipe recipe) {
 			buffer.writeString(recipe.group);
-			if (recipe.result == null) { // Copy result
+			buffer.writeResourceLocation(recipe.lootTable);
+			if (recipe.blockResult == null) { // Copy result
 				buffer.writeString("");
 			} else {
-				buffer.writeString(recipe.result.getRegistryName().toString());
+				buffer.writeString(recipe.blockResult.getRegistryName().toString());
 			}
 			buffer.writeVarInt(recipe.ingredients.size());
 			buffer.writeVarInt(recipe.properties.size());
