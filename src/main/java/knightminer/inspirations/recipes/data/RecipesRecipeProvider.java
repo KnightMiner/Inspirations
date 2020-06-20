@@ -531,6 +531,10 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
     AnvilRecipeBuilder.smashes().addIngredient(Blocks.JACK_O_LANTERN).build(consumer);
     AnvilRecipeBuilder.smashes().addIngredient(Blocks.MELON).build(consumer);
 
+    // Smash glass.
+    AnvilRecipeBuilder.smashes().addIngredient(Tags.Blocks.GLASS).buildVanilla(consumer, "glass_tag");
+    AnvilRecipeBuilder.smashes().addIngredient(Tags.Blocks.GLASS_PANES).buildVanilla(consumer, "glass_panes_tag");
+
     // Smash all silverfish blocks.
     AnvilRecipeBuilder.smashes().addIngredient(Blocks.INFESTED_CHISELED_STONE_BRICKS).build(consumer);
     AnvilRecipeBuilder.smashes().addIngredient(Blocks.INFESTED_COBBLESTONE).build(consumer);

@@ -74,6 +74,9 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
                        .patternLine("GGG")
                        .patternLine("GGG")
                        .build(glassDoorCondition, prefix(InspirationsBuilding.glassTrapdoor, "building/"));
+    // They should be destroyed by anvils.
+    AnvilRecipeBuilder.smashes().addIngredient(InspirationsBuilding.glassDoor).build(consumer);
+    AnvilRecipeBuilder.smashes().addIngredient(InspirationsBuilding.glassTrapdoor).build(consumer);
 
     // rope
     Consumer<IFinishedRecipe> ropeCondition = withCondition(ConfigEnabledCondition.ROPE);
