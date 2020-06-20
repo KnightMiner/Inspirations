@@ -2,6 +2,7 @@ package knightminer.inspirations.recipes;
 
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.Config;
+import knightminer.inspirations.library.recipe.anvil.AnvilRecipe;
 import knightminer.inspirations.recipes.recipe.inventory.CauldronItemInventory;
 import knightminer.inspirations.recipes.recipe.inventory.VanillaCauldronInventory;
 import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
@@ -21,6 +22,7 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
+import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import slimeknights.mantle.util.TileEntityHelper;
 
 @EventBusSubscriber(modid = Inspirations.modID, bus = Bus.FORGE)
@@ -74,6 +76,11 @@ public class RecipesEvents {
       event.setCancellationResult(ActionResultType.SUCCESS);
     }
     // TODO: blacklist?
+  }
+
+  @SubscribeEvent
+  public static void onServerStart(FMLServerStartingEvent event) {
+    AnvilRecipe.onServerStart(event);
   }
 
   /**

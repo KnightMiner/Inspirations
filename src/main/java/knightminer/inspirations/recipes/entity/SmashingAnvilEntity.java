@@ -1,7 +1,7 @@
 package knightminer.inspirations.recipes.entity;
 
-import knightminer.inspirations.library.recipe.RecipeTypes;
 import knightminer.inspirations.library.recipe.anvil.AnvilInventory;
+import knightminer.inspirations.library.recipe.anvil.AnvilRecipe;
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -25,7 +25,6 @@ import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nonnull;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -176,12 +175,8 @@ public class SmashingAnvilEntity extends FallingBlockEntity implements IEntityAd
 			items.stream().map(ItemEntity::getItem).collect(Collectors.toList()),
 			state
 		);
-		
-		return world.getRecipeManager()
-				.getRecipes(RecipeTypes.ANVIL, inv, world)
-				.stream()
-				.max(Comparator.comparingInt(a -> a.getIngredients().size()))
-				.map((recipe) -> {
+
+		return AnvilRecipe.matchRecipe(inv, world).map((recipe) -> {
 			BlockState transformation = recipe.getBlockResult(inv);
 
 			recipe.consumeItemEnts(items);

@@ -11,7 +11,6 @@ import knightminer.inspirations.library.recipe.RecipeSerializers;
 import knightminer.inspirations.library.recipe.RecipeTypes;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -21,40 +20,60 @@ import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.state.Property;
+import net.minecraft.resources.IReloadableResourceManager;
 import net.minecraft.state.StateContainer;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.crafting.CompoundIngredient;
+import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 public class AnvilRecipe implements IRecipe<AnvilInventory> {
+	/** Used for property values or block to indicate it should be copied from the existing state. */
 	public static final String FROM_INPUT = "<input>";
+
+	/**
+	 * A list of all recipes, sorted by ingredient count.
+	 * That ensures recipes with more ingredients are preferred.
+	 * */
+	@Nullable
+	private static List<AnvilRecipe> sortedRecipes = null;
 
 	private final ResourceLocation id;
 	private final NonNullList<Ingredient> ingredients;
 	private final String group;
-	// If null, keep the existing block.
+
+	/**
+	 * The block to produce.
+	 * If null, keep the existing block.
+	 * If Blocks.AIR, just break the block.
+	 * */
 	@Nullable
 	private final Block result;
-	// Properties to assign to the result, unparsed.
-	// If value == "<input>", copy over.
+	/**
+	 * Properties to assign to the result, unparsed.
+	 * If value == FROM_INPUT, copy over.
+	*/
 	private final List<Pair<String, String>> properties;
 
-	// When matching, holds the number of times each item was used.
+	/** After matching, holds the number of times each item was used. */
 	@Nullable
-	private int[] used=null;
+	private int[] used = null;
 
-	private AnvilRecipe(
+	public AnvilRecipe(
 			ResourceLocation id,
 			String group,
 			NonNullList<Ingredient> ingredients,
@@ -66,6 +85,45 @@ public class AnvilRecipe implements IRecipe<AnvilInventory> {
 		this.ingredients = ingredients;
 		this.result = result;
 		this.properties = properties;
+	}
+
+	/**
+	 * Return the appropriate recipe for this input.
+	 * This is equivalent to the RecipeManager call, but prefers recipes with more ingredients.
+	 */
+	public static Optional<AnvilRecipe> matchRecipe(@Nonnull AnvilInventory inv, @Nonnull World world) {
+		if (sortedRecipes == null) {
+			// On first call, or after datapack reload sort all the recipes.
+			sortedRecipes = world.getRecipeManager()
+				.getRecipes(RecipeTypes.ANVIL)
+				.values()
+				.stream()
+				.map(AnvilRecipe.class::cast)
+				.sorted(Comparator.comparingInt(
+						(AnvilRecipe rec) -> rec.getIngredients().size()
+				).reversed())
+				.collect(Collectors.toList());
+		}
+		
+		for(AnvilRecipe recipe: sortedRecipes) {
+			if (recipe.matches(inv, world)) {
+				return Optional.of(recipe);
+			}
+		}
+		return Optional.empty();
+	}
+
+	/**
+	 * Register a reload listener which clears the sortedRecipes cache.
+	 * We can't do the cache in the listener since the recipe manager may run after us.
+	 */
+	public static void onServerStart(FMLServerStartingEvent event) {
+		IReloadableResourceManager resman = (IReloadableResourceManager) event.getServer().getDataPackRegistries().getResourceManager();
+		resman.addReloadListener(
+				(stage, resMan, prepProp, reloadProf, bgExec, gameExec) -> CompletableFuture
+						.runAsync(() -> sortedRecipes = null, gameExec)
+						.thenCompose(stage::markCompleteAwaitingOthers)
+		);
 	}
 
 	/**
