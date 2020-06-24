@@ -160,12 +160,8 @@ public class AnvilRecipeBuilder {
 		));
 	}
 
-	public void buildInsp(Consumer<IFinishedRecipe> consumer, String id) {
+	public void build(Consumer<IFinishedRecipe> consumer, String id) {
 		build(consumer, Inspirations.getResource(id));
-	}
-
-	public void buildVanilla(Consumer<IFinishedRecipe> consumer, String id) {
-		build(consumer, new ResourceLocation(id));
 	}
 
 	// Same name as the item.
@@ -197,7 +193,8 @@ public class AnvilRecipeBuilder {
 		if (id == null) {
 			throw new IllegalStateException("Could not infer save location for smashing recipe!");
 		}
-		build(consumer, id);
+		// Anvil smashing is always in our namespace.
+		build(consumer, Inspirations.getResource(id.getPath()));
 	}
 
 	private static class Finished implements IFinishedRecipe {
