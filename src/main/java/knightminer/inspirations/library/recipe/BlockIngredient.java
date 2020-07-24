@@ -130,11 +130,10 @@ public abstract class BlockIngredient extends Ingredient {
 				List<Block> blocks = new ArrayList<>();
 				for(JsonElement blockJson: blockElems) {
 					ResourceLocation blockName = new ResourceLocation(blockJson.getAsString());
-					Block block = ForgeRegistries.BLOCKS.getValue(blockName);
-					if(block == null) {
+					if (!ForgeRegistries.BLOCKS.containsKey(blockName)) {
 						throw new JsonSyntaxException("Unknown block '" + blockName + "'");
 					}
-					blocks.add(block);
+					blocks.add(ForgeRegistries.BLOCKS.getValue(blockName));
 				}
 				return new BlockIngredientList(blocks, predicate);
 			} else if (json.has("tag")) {
