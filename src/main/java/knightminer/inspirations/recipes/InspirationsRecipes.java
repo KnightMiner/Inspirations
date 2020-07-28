@@ -44,14 +44,12 @@ import net.minecraft.potion.PotionUtils;
 import net.minecraft.potion.Potions;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.SoundEvents;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.brewing.BrewingRecipe;
 import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 import net.minecraftforge.common.brewing.IBrewingRecipe;
 import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -63,9 +61,6 @@ import slimeknights.mantle.util.RecipeMatch;
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class InspirationsRecipes extends ModuleBase {
 	public static final String pulseID = "InspirationsRecipes";
-
-	@SuppressWarnings("Convert2MethodRef")
-	public static Object proxy = DistExecutor.unsafeCallWhenOn(Dist.CLIENT, ()->()->new RecipesClientProxy());
 
 	// blocks
 	public static Block fullAnvil;

@@ -46,11 +46,9 @@ import net.minecraft.item.crafting.SpecialRecipeSerializer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import slimeknights.mantle.registration.adapter.BlockRegistryAdapter;
@@ -63,9 +61,6 @@ import javax.annotation.Nonnull;
 @SuppressWarnings("unused")
 public class InspirationsTools extends ModuleBase {
 	public static final String pulseID = "InspirationsTools";
-
-	@SuppressWarnings("Convert2MethodRef")
-	public static Object proxy = DistExecutor.unsafeCallWhenOn(Dist.CLIENT, ()->()->new ToolsClientProxy());
 
 	// items
 	public static Item lock;

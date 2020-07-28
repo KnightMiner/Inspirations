@@ -11,12 +11,10 @@ import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.loot.LootConditionType;
 import net.minecraft.loot.LootFunctionType;
 import net.minecraft.util.registry.Registry;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 
@@ -27,9 +25,6 @@ public class InspirationsShared extends ModuleBase {
 	public static LootConditionType lootConfig;
 	public static LootFunctionType textureFunction;
 
-
-	@SuppressWarnings("Convert2MethodRef")
-	public static Object proxy = DistExecutor.callWhenOn(Dist.CLIENT, ()->()->new SharedClientProxy());
 
 	@SubscribeEvent
 	void setup(FMLCommonSetupEvent event) {

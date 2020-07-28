@@ -25,11 +25,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityType;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.fml.network.IContainerFactory;
@@ -41,10 +39,6 @@ import slimeknights.mantle.registration.adapter.TileEntityTypeRegistryAdapter;
 
 @SuppressWarnings("unused")
 public class InspirationsUtility extends ModuleBase {
-
-	@SuppressWarnings("Convert2MethodRef")
-	public static Object proxy = DistExecutor.callWhenOn(Dist.CLIENT, ()->()->new UtilityClientProxy());
-
 	// blocks
 	public static Block torchLeverWall;
 	public static Block torchLeverFloor;

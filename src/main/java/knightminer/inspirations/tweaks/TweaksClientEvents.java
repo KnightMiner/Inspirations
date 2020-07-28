@@ -1,6 +1,7 @@
 package knightminer.inspirations.tweaks;
 
-import knightminer.inspirations.common.ClientProxy;
+import knightminer.inspirations.Inspirations;
+import knightminer.inspirations.common.ClientEvents;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.tweaks.client.PortalColorHandler;
@@ -21,19 +22,25 @@ import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.biome.BiomeColors;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Map;
 
-public class TweaksClientProxy extends ClientProxy {
+@SuppressWarnings({"unused", "WeakerAccess"})
+@EventBusSubscriber(modid = Inspirations.modID, value = Dist.CLIENT, bus = Bus.MOD)
+public class TweaksClientEvents extends ClientEvents {
 	private static final ResourceLocation ENCHANTED_BOOK_VANILLA = new ModelResourceLocation("enchanted_book", "inventory");
 	private static final ResourceLocation ENCHANTED_BOOK_TINTED = Util.getResource("item/enchanted_book");
 
@@ -49,14 +56,16 @@ public class TweaksClientProxy extends ClientProxy {
 	private static final ResourceLocation CAULDRON_ITEM_MODEL = new ModelResourceLocation(Util.getResource("cauldron"), "inventory");
 
 	@SubscribeEvent
-	public void clientSetup(FMLClientSetupEvent event) {
+	static void clientSetup(FMLClientSetupEvent event) {
 		RenderType cutout = RenderType.getCutout();
 		RenderTypeLookup.setRenderLayer(InspirationsTweaks.cactus, cutout);
 		RenderTypeLookup.setRenderLayer(InspirationsTweaks.sugarCane, cutout);
+
+		MinecraftForge.EVENT_BUS.addListener(TweaksClientEvents::fixShieldTooltip);
 	}
 
 	@SubscribeEvent
-	public void loadCustomModels(ModelRegistryEvent event) {
+	static void loadCustomModels(ModelRegistryEvent event) {
 		// Register these models to be loaded in directly.
 		ModelLoader.addSpecialModel(PORTAL_EW_TINTED);
 		ModelLoader.addSpecialModel(PORTAL_NS_TINTED);
@@ -67,7 +76,7 @@ public class TweaksClientProxy extends ClientProxy {
 
 
 	@SubscribeEvent
-	public void swapModels(ModelBakeEvent event) {
+	static void swapModels(ModelBakeEvent event) {
 		// Switch to the custom versions when loading models.
 		Map<ResourceLocation, IBakedModel>map = event.getModelRegistry();
 
@@ -90,7 +99,7 @@ public class TweaksClientProxy extends ClientProxy {
 	}
 
 	@SubscribeEvent
-	public void registerBlockColors(ColorHandlerEvent.Block event) {
+	static void registerBlockColors(ColorHandlerEvent.Block event) {
 		BlockColors colors = event.getBlockColors();
 
 		// coloring on sugar cane crop to match reeds
@@ -106,7 +115,7 @@ public class TweaksClientProxy extends ClientProxy {
 	}
 
 	@SubscribeEvent
-	public void registerItemColors(ColorHandlerEvent.Item event) {
+	static void registerItemColors(ColorHandlerEvent.Item event) {
 		ItemColors itemColors = event.getItemColors();
 
 		// colored ribbons on enchanted books
@@ -189,8 +198,8 @@ public class TweaksClientProxy extends ClientProxy {
 		}, Items.FIREWORK_ROCKET);
 	}
 
-	@SubscribeEvent
-	public static void fixShieldTooltip(ItemTooltipEvent event) {
+	// registered with Forge bus
+	private static void fixShieldTooltip(ItemTooltipEvent event) {
 		if (!Config.fixShieldTooltip.get()) {
 			return;
 		}

@@ -21,9 +21,9 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 import java.util.function.BiFunction;
 
-public class ClientProxy {
+public class ClientEvents {
 
-	public ClientProxy() {
+	public ClientEvents() {
 		MinecraftForge.EVENT_BUS.register(this);
 		FMLJavaModLoadingContext.get().getModEventBus().register(this);
 	}

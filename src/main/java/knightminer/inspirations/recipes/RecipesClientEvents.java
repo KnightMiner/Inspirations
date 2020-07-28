@@ -1,14 +1,15 @@
 package knightminer.inspirations.recipes;
 
-import knightminer.inspirations.common.ClientProxy;
+import knightminer.inspirations.common.ClientEvents;
 
-public class RecipesClientProxy extends ClientProxy {
+//@EventBusSubscriber(modid = Inspirations.modID, value = Dist.CLIENT, bus = Bus.MOD)
+public class RecipesClientEvents extends ClientEvents {
 	/* TODO: reimplement
 	private static final ResourceLocation POTION_MODEL = new ResourceLocation("bottle_drinkable");
 	public static final ResourceLocation CAULDRON_MODEL = Util.getResource("cauldron");
 
 	@SubscribeEvent
-	public void registerModels(ModelRegistryEvent event) {
+	static void registerModels(ModelRegistryEvent event) {
 		setModelStateMapper(InspirationsRecipes.cauldron, new CauldronStateMapper(CAULDRON_MODEL));
 		if(Config.enableCauldronDyeing) {
 			registerItemModel(InspirationsRecipes.dyedWaterBottle, POTION_MODEL);
@@ -16,7 +17,7 @@ public class RecipesClientProxy extends ClientProxy {
 	}
 
 	@SubscribeEvent
-	public void registerBlockColors(ColorHandlerEvent.Block event) {
+	static void registerBlockColors(ColorHandlerEvent.Block event) {
 		BlockColors blockColors = event.getBlockColors();
 
 		// coloring of liquid inside, either for potions or dyes
@@ -33,7 +34,7 @@ public class RecipesClientProxy extends ClientProxy {
 	}
 
 	@SubscribeEvent
-	public void registerItemColors(ColorHandlerEvent.Item event) {
+	static void registerItemColors(ColorHandlerEvent.Item event) {
 		ItemColors itemColors = event.getItemColors();
 
 		// dyed water bottles
@@ -50,7 +51,7 @@ public class RecipesClientProxy extends ClientProxy {
 	 * Replaces the bookshelf models with the dynamic texture model, which also handles books
 	 * /
 	@SubscribeEvent
-	public void onModelBake(ModelBakeEvent event) {
+	static void onModelBake(ModelBakeEvent event) {
 		if(InspirationsRecipes.cauldron == null) {
 			return;
 		}
@@ -66,7 +67,7 @@ public class RecipesClientProxy extends ClientProxy {
 	}
 
 	@SubscribeEvent
-	public void registerTextures(TextureStitchEvent.Pre event) {
+	static void registerTextures(TextureStitchEvent.Pre event) {
 		TextureMap map = event.getMap();
 		registerFluidTexture(map, InspirationsRecipes.milk);
 	}

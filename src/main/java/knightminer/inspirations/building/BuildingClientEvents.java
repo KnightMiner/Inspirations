@@ -5,7 +5,7 @@ import knightminer.inspirations.building.block.BookshelfBlock;
 import knightminer.inspirations.building.block.EnlightenedBushBlock;
 import knightminer.inspirations.building.client.BookshelfModel;
 import knightminer.inspirations.building.tileentity.BookshelfTileEntity;
-import knightminer.inspirations.common.ClientProxy;
+import knightminer.inspirations.common.ClientEvents;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.client.ClientUtil;
 import knightminer.inspirations.library.util.TextureBlockUtil;
@@ -27,20 +27,24 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.world.FoliageColors;
 import net.minecraft.world.biome.BiomeColors;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 import java.util.concurrent.CompletableFuture;
 
 @SuppressWarnings("unused")
-public class BuildingClientProxy extends ClientProxy {
-	public static final Minecraft mc = Minecraft.getInstance();
+@EventBusSubscriber(modid = Inspirations.modID, value = Dist.CLIENT, bus = Bus.MOD)
+public class BuildingClientEvents extends ClientEvents {
+	private static final Minecraft mc = Minecraft.getInstance();
 
 	@SubscribeEvent
-	public void clientSetup(FMLClientSetupEvent event) {
+	static void clientSetup(FMLClientSetupEvent event) {
 		// set render types
 		RenderType cutout = RenderType.getCutout();
 		RenderType cutoutMipped = RenderType.getCutoutMipped();
@@ -73,7 +77,7 @@ public class BuildingClientProxy extends ClientProxy {
 	}
 
 	@SubscribeEvent
-	public void commonSetup(FMLCommonSetupEvent event) {
+	static void commonSetup(FMLCommonSetupEvent event) {
 
 		// listener to clear bookshelf model cache as its shared by all bookshelf model files
 		IResourceManager manager = Minecraft.getInstance().getResourceManager();
@@ -94,7 +98,7 @@ public class BuildingClientProxy extends ClientProxy {
 
 
 	@SubscribeEvent
-	public void registerBlockColors(ColorHandlerEvent.Block event) {
+	static void registerBlockColors(ColorHandlerEvent.Block event) {
 		BlockColors blockColors = event.getBlockColors();
 
 		// coloring of books for normal bookshelf
@@ -152,7 +156,7 @@ public class BuildingClientProxy extends ClientProxy {
 	}
 
 	@SubscribeEvent
-	public void registerItemColors(ColorHandlerEvent.Item event) {
+	static void registerItemColors(ColorHandlerEvent.Item event) {
 		ItemColors itemColors = event.getItemColors();
 
 		// coloring of books for normal bookshelf
@@ -203,7 +207,7 @@ public class BuildingClientProxy extends ClientProxy {
 	 * Replaces the bookshelf models with the dynamic texture model, which also handles books
 	 */
 	@SubscribeEvent
-	public void onModelBake(ModelBakeEvent event) {
+	static void onModelBake(ModelBakeEvent event) {
 		replaceBookshelfModel(event, InspirationsBuilding.shelf_normal);
 		replaceBookshelfModel(event, InspirationsBuilding.shelf_ancient);
 		replaceBookshelfModel(event, InspirationsBuilding.shelf_rainbow);

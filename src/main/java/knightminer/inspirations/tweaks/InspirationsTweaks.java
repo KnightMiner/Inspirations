@@ -39,13 +39,11 @@ import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -55,9 +53,6 @@ import slimeknights.mantle.registration.adapter.ItemRegistryAdapter;
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class InspirationsTweaks extends ModuleBase {
 	public static final String pulseID = "InspirationsTweaks";
-
-	@SuppressWarnings("Convert2MethodRef")
-	public static Object proxy = DistExecutor.unsafeCallWhenOn(Dist.CLIENT, ()->()->new TweaksClientProxy());
 
 	// blocks
 	public static FittedCarpetBlock[] fitCarpets = new FittedCarpetBlock[16];
