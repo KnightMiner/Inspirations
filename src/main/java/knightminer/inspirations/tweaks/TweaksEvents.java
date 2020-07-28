@@ -276,7 +276,7 @@ public class TweaksEvents {
 		}
 
 		// build a list of lily pads we hit
-		BlockPos blockPos = entity.func_233580_cy_();
+		BlockPos blockPos = entity.getPosition();
 		BlockPos[] posList = new BlockPos[4];
 		int i = 0;
 		posList[i++] = blockPos;
@@ -345,7 +345,7 @@ public class TweaksEvents {
 				// no tag means we add it as part of milking
 				tags.putShort(SharedEvents.TAG_MILKCOOLDOWN, Config.milkCooldownTime.get().shortValue());
 				if (!event.getWorld().isRemote) {
-					InspirationsNetwork.sendToClients(event.getWorld(), target.func_233580_cy_(), new MilkablePacket(target, false));
+					InspirationsNetwork.sendToClients(event.getWorld(), target.getPosition(), new MilkablePacket(target, false));
 				}
 			}
 		}
