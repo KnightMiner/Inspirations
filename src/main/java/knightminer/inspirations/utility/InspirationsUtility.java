@@ -30,12 +30,12 @@ import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
-import net.minecraftforge.fml.network.IContainerFactory;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.registration.adapter.BlockRegistryAdapter;
 import slimeknights.mantle.registration.adapter.ContainerTypeRegistryAdapter;
 import slimeknights.mantle.registration.adapter.ItemRegistryAdapter;
 import slimeknights.mantle.registration.adapter.TileEntityTypeRegistryAdapter;
+import slimeknights.mantle.registration.object.EnumObject;
 
 @SuppressWarnings("unused")
 public class InspirationsUtility extends ModuleBase {
@@ -44,8 +44,8 @@ public class InspirationsUtility extends ModuleBase {
 	public static Block torchLeverFloor;
 	//public static Block bricksButton;
 	//public static Block netherBricksButton;
-	public static Block[] carpetedTrapdoors = new Block[16];
-	public static CarpetedPressurePlateBlock[] carpetedPressurePlates = new CarpetedPressurePlateBlock[16];
+	public static EnumObject<DyeColor,CarpetedTrapdoorBlock> carpetedTrapdoors = EnumObject.empty();
+	public static EnumObject<DyeColor,CarpetedPressurePlateBlock> carpetedPressurePlates = EnumObject.empty();
 	public static Block collector;
 	public static Block pipe;
 
@@ -72,10 +72,9 @@ public class InspirationsUtility extends ModuleBase {
 		//bricksButton = registerBlock(r, new BricksButtonBlock(BricksButtonBlock.BRICK_BUTTON), "bricks_button");
 		//netherBricksButton = registerBlock(r, new BricksButtonBlock(BricksButtonBlock.NETHER_BUTTON), "nether_bricks_button");
 
-		for(DyeColor color : DyeColor.values()) {
-			carpetedTrapdoors[color.getId()] = registry.register(new CarpetedTrapdoorBlock(color), color.getString() + "_carpeted_trapdoor");
-			carpetedPressurePlates[color.getId()] = registry.register(new CarpetedPressurePlateBlock(color), color.getString() + "_carpeted_pressure_plate");
-		}
+		carpetedTrapdoors = registry.registerEnum(CarpetedTrapdoorBlock::new, DyeColor.values(), "carpeted_trapdoor");
+		carpetedPressurePlates = registry.registerEnum(CarpetedPressurePlateBlock::new, DyeColor.values(), "carpeted_pressure_plate");
+
 		collector = registry.register(new CollectorBlock(), "collector");
 		pipe = registry.register(new PipeBlock(), "pipe");
 	}
@@ -93,8 +92,8 @@ public class InspirationsUtility extends ModuleBase {
 		ContainerTypeRegistryAdapter registry = new ContainerTypeRegistryAdapter(event.getRegistry());
 		IForgeRegistry<ContainerType<?>> r = event.getRegistry();
 
-		contCollector = registry.register((IContainerFactory<CollectorContainer>)CollectorContainer::new, "collector");
-		contPipe = registry.register((IContainerFactory<PipeContainer>)PipeContainer::new, "pipe");
+		contCollector = registry.registerType(CollectorContainer::new, "collector");
+		contPipe = registry.registerType(PipeContainer::new, "pipe");
 	}
 
 	@SubscribeEvent
@@ -105,9 +104,7 @@ public class InspirationsUtility extends ModuleBase {
 		torchLeverItem = registry.register(new TorchLeverItem(), "torch_lever");
 		//registerBlockItem(r, bricksButton, ItemGroup.REDSTONE);
 		//registerBlockItem(r, netherBricksButton, ItemGroup.REDSTONE);
-		for(Block trapdoor : carpetedTrapdoors) {
-			registry.registerBlockItem(trapdoor);
-		}
+		registry.registerBlockItem(carpetedTrapdoors);
 		registry.registerBlockItem(collector);
 		pipeItem = registry.registerBlockItem(pipe);
 	}

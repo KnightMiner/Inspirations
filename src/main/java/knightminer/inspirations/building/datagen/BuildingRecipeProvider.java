@@ -1,6 +1,11 @@
 package knightminer.inspirations.building.datagen;
 
 import knightminer.inspirations.building.InspirationsBuilding;
+import knightminer.inspirations.building.block.type.BushType;
+import knightminer.inspirations.building.block.type.FlowerType;
+import knightminer.inspirations.building.block.type.MulchType;
+import knightminer.inspirations.building.block.type.PathType;
+import knightminer.inspirations.building.block.type.ShelfType;
 import knightminer.inspirations.common.data.ConfigEnabledCondition;
 import knightminer.inspirations.common.datagen.CondRecipe;
 import knightminer.inspirations.library.InspirationsTags;
@@ -66,35 +71,36 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
 		buildingRope();
 		buildingPath();
 		buildingBookshelf();
-		buildingMulch(InspirationsBuilding.blackMulch, Tags.Items.DYES_BLACK);
-		buildingMulch(InspirationsBuilding.blueMulch, Tags.Items.DYES_BLUE);
-		buildingMulch(InspirationsBuilding.brownMulch, Tags.Items.DYES_BROWN);
-		buildingMulch(InspirationsBuilding.redMulch, Tags.Items.DYES_RED);
+		buildingMulch(MulchType.BLACK, Tags.Items.DYES_BLACK);
+		buildingMulch(MulchType.BLUE, Tags.Items.DYES_BLUE);
+		buildingMulch(MulchType.BROWN, Tags.Items.DYES_BROWN);
+		buildingMulch(MulchType.RED, Tags.Items.DYES_RED);
 		buildingColoredBooks();
 
-		buildingFlowerDye(InspirationsBuilding.flower_rose, Items.RED_DYE);
-		buildingFlowerDye(InspirationsBuilding.flower_paeonia, Items.PINK_DYE);
-		buildingFlowerDye(InspirationsBuilding.flower_syringa, Items.MAGENTA_DYE);
-		buildingFlowerDye(InspirationsBuilding.flower_cyan, Items.CYAN_DYE);
+		buildingFlowerDye(FlowerType.ROSE, Items.RED_DYE);
+		buildingFlowerDye(FlowerType.PAEONIA, Items.PINK_DYE);
+		buildingFlowerDye(FlowerType.SYRINGA, Items.MAGENTA_DYE);
+		buildingFlowerDye(FlowerType.CYAN, Items.CYAN_DYE);
 
-		CondRecipe.shapeless(InspirationsBuilding.flower_cyan)
-				.addCondition(BUILDING)
-				.addCondition(ConfigEnabledCondition.FLOWERS)
-				.addCondition(not(ConfigEnabledCondition.CAULDRON_DYEING))
-				.addCriterion("has_dye", hasItem(Tags.Items.DYES_CYAN))
-				.addCriterion("has_flower", hasItem(InspirationsBuilding.flower_rose))
-				.addIngredient(Tags.Items.DYES_CYAN)
-				.addIngredient(InspirationsBuilding.flower_rose)
-				.build(consumer, "flower/cyan_flower");
+		IItemProvider rose = InspirationsBuilding.flower.get(FlowerType.ROSE);
+		CondRecipe.shapeless(InspirationsBuilding.flower.get(FlowerType.CYAN))
+							.addCondition(BUILDING)
+							.addCondition(ConfigEnabledCondition.FLOWERS)
+							.addCondition(not(ConfigEnabledCondition.CAULDRON_DYEING))
+							.addCriterion("has_dye", hasItem(Tags.Items.DYES_CYAN))
+							.addCriterion("has_flower", hasItem(rose))
+							.addIngredient(Tags.Items.DYES_CYAN)
+							.addIngredient(rose)
+							.build(consumer, "flower/cyan_flower");
 
-		buildingEnlightnedBush(InspirationsBuilding.whiteEnlightenedBush, DyeColor.WHITE);
-		buildingEnlightnedBush(InspirationsBuilding.redEnlightenedBush, DyeColor.RED);
-		buildingEnlightnedBush(InspirationsBuilding.greenEnlightenedBush, DyeColor.GREEN);
-		buildingEnlightnedBush(InspirationsBuilding.blueEnlightenedBush, DyeColor.BLUE);
+		buildingEnlightnedBush(BushType.WHITE, DyeColor.WHITE);
+		buildingEnlightnedBush(BushType.RED, DyeColor.RED);
+		buildingEnlightnedBush(BushType.GREEN, DyeColor.GREEN);
+		buildingEnlightnedBush(BushType.BLUE, DyeColor.BLUE);
 	}
 
-	private void buildingEnlightnedBush(Block bush, DyeColor dye) {
-		ShapedRecipeBuilder builder = CondRecipe.shaped(bush)
+	private void buildingEnlightnedBush(BushType type, DyeColor dye) {
+		ShapedRecipeBuilder builder = CondRecipe.shaped(InspirationsBuilding.enlightenedBush.get(type))
 				.textureSource(ItemTags.LEAVES)
 				.textureMatchFirst()
 				.addCondition(BUILDING)
@@ -105,7 +111,8 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
 				.key('L', ItemTags.LEAVES)
 				.key('G', Tags.Items.DUSTS_GLOWSTONE);
 
-		if (dye != DyeColor.WHITE) {
+		// white uses no dye
+		if (type != BushType.WHITE) {
 			// First line - dye above the middle.
 			builder = builder.key('D', Util.getDyeTag(dye)).patternLine(" D ");
 		}
@@ -145,7 +152,7 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
 	}
 
 	private void buildingPath() {
-		CondRecipe.shaped(InspirationsBuilding.path_brick, 6)
+		CondRecipe.shaped(InspirationsBuilding.path.get(PathType.BRICK), 6)
 				.addCondition(BUILDING)
 				.addCondition(ConfigEnabledCondition.PATH)
 				.addCriterion("has_brick", hasItem(Items.BRICKS))
@@ -153,7 +160,7 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
 				.patternLine("BB")
 				.build(consumer);
 
-		CondRecipe.shaped(InspirationsBuilding.path_rock, 6)
+		CondRecipe.shaped(InspirationsBuilding.path.get(PathType.ROCK), 6)
 				.addCondition(BUILDING)
 				.addCondition(ConfigEnabledCondition.PATH)
 				.addCriterion("has_cobble", hasItem(Tags.Items.COBBLESTONE))
@@ -161,7 +168,7 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
 				.patternLine("CC")
 				.build(consumer);
 
-		CondRecipe.shaped(InspirationsBuilding.path_round, 6)
+		CondRecipe.shaped(InspirationsBuilding.path.get(PathType.ROUND), 6)
 				.addCondition(BUILDING)
 				.addCondition(ConfigEnabledCondition.PATH)
 				.addCriterion("has_stone", hasItem(Tags.Items.STONE))
@@ -171,7 +178,7 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
 				.patternLine(" S ")
 				.build(consumer);
 
-		CondRecipe.shaped(InspirationsBuilding.path_tile, 6)
+		CondRecipe.shaped(InspirationsBuilding.path.get(PathType.TILE), 6)
 				.addCondition(BUILDING)
 				.addCondition(ConfigEnabledCondition.PATH)
 				.addCriterion("has_stone", hasItem(Items.STONE_BRICKS))
@@ -180,20 +187,21 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
 				.build(consumer);
 	}
 
-	private void buildingMulch(Block block, ITag<Item> dye) {
-		CondRecipe.shapeless(block)
-				.addCondition(BUILDING)
-				.addCondition(ConfigEnabledCondition.MULCH)
-				.addCriterion("has_mulch", hasItem(InspirationsBuilding.plainMulch))
-				.addIngredient(InspirationsBuilding.plainMulch)
-				.addIngredient(dye)
-				.build(consumer);
+	private void buildingMulch(MulchType type, ITag<Item> dye) {
+		Block plain = InspirationsBuilding.mulch.get(MulchType.PLAIN);
+		CondRecipe.shapeless(InspirationsBuilding.mulch.get(type))
+							.addCondition(BUILDING)
+							.addCondition(ConfigEnabledCondition.MULCH)
+							.addCriterion("has_mulch", hasItem(plain))
+							.addIngredient(plain)
+							.addIngredient(dye)
+							.build(consumer);
 	}
 
 	private void buildingBookshelf() {
 		String group = Util.resource("bookshelf");
 
-		CondRecipe.shaped(InspirationsBuilding.shelf_normal, 2)
+		CondRecipe.shaped(InspirationsBuilding.bookshelf.get(ShelfType.NORMAL), 2)
 				.textureSource(ItemTags.WOODEN_SLABS)
 				.addCondition(BUILDING)
 				.addCondition(ConfigEnabledCondition.BOOKSHELF)
@@ -206,7 +214,7 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
 				.patternLine("SSS")
 				.build(consumer);
 
-		CondRecipe.shaped(InspirationsBuilding.shelf_ancient, 2)
+		CondRecipe.shaped(Objects.requireNonNull(InspirationsBuilding.bookshelf.get(ShelfType.ANCIENT)), 2)
 				.textureSource(ItemTags.WOODEN_SLABS)
 				.addCondition(BUILDING)
 				.addCondition(ConfigEnabledCondition.BOOKSHELF)
@@ -220,7 +228,7 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
 				.patternLine("SSS")
 				.build(consumer);
 
-		CondRecipe.shaped(InspirationsBuilding.shelf_tomes, 2)
+		CondRecipe.shaped(InspirationsBuilding.bookshelf.get(ShelfType.TOMES), 2)
 				.textureSource(ItemTags.WOODEN_SLABS)
 				.addCondition(BUILDING)
 				.addCondition(ConfigEnabledCondition.BOOKSHELF)
@@ -236,7 +244,7 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
 
 		// Allow any order for these.
 		for (String dyeRow: new String[]{"RGB", "RBG", "GRB"}) {
-			CondRecipe.shaped(InspirationsBuilding.shelf_rainbow, 2)
+			CondRecipe.shaped(InspirationsBuilding.bookshelf.get(ShelfType.RAINBOW), 2)
 					.textureSource(ItemTags.WOODEN_SLABS)
 					.addCondition(BUILDING)
 					.addCondition(ConfigEnabledCondition.BOOKSHELF)
@@ -258,7 +266,7 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
 		String group = Util.resource("colored_book");
 
 		for(DyeColor color: DyeColor.values()) {
-			CondRecipe.shapeless(InspirationsBuilding.coloredBooks[color.getId()])
+			CondRecipe.shapeless(InspirationsBuilding.coloredBooks.get(color))
 					.addCondition(BUILDING)
 					.addCondition(ConfigEnabledCondition.COLORED_BOOKS)
 					.addCriterion("has_bookshelf", hasItem(InspirationsTags.Items.BOOKSHELVES))
@@ -270,7 +278,8 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
 	}
 
 	// Register a flower -> one dye recipe.
-	private void buildingFlowerDye(IItemProvider flower, Item dye) {
+	private void buildingFlowerDye(FlowerType type, Item dye) {
+		IItemProvider flower = InspirationsBuilding.flower.get(type);
 		CondRecipe.shapeless(dye)
 				.addCondition(BUILDING)
 				.addCondition(ConfigEnabledCondition.FLOWERS)

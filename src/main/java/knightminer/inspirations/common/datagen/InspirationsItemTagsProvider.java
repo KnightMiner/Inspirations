@@ -7,10 +7,12 @@ import knightminer.inspirations.tools.InspirationsTools;
 import net.minecraft.data.BlockTagsProvider;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.ItemTagsProvider;
+import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraftforge.common.Tags;
+import slimeknights.mantle.registration.object.EnumObject;
 
 import javax.annotation.Nonnull;
 
@@ -42,7 +44,7 @@ public class InspirationsItemTagsProvider extends ItemTagsProvider {
 		this.copy(InspirationsTags.Blocks.ENLIGHTENED_BUSHES, InspirationsTags.Items.ENLIGHTENED_BUSHES);
 
 		this.getOrCreateBuilder(InspirationsTags.Items.BOOKS)
-				.add(InspirationsBuilding.coloredBooks)
+				.add(toArray(InspirationsBuilding.coloredBooks))
 				.add(InspirationsBuilding.redstoneBook)
 				.add(Items.BOOK, Items.WRITABLE_BOOK, Items.WRITTEN_BOOK)
 				.add(Items.ENCHANTED_BOOK, Items.KNOWLEDGE_BOOK);
@@ -85,5 +87,14 @@ public class InspirationsItemTagsProvider extends ItemTagsProvider {
 		this.getOrCreateBuilder(ItemTags.ARROWS).add(InspirationsTools.redstoneArrow);
 		this.copy(BlockTags.LEAVES, ItemTags.LEAVES);
 		this.copy(BlockTags.WOODEN_TRAPDOORS, ItemTags.WOODEN_TRAPDOORS);
+	}
+
+	/**
+	 * Converts an enum object into an array of values
+	 * @param object  Enum object
+	 * @return  Array of enum object values
+	 */
+	private static Item[] toArray(EnumObject<?,? extends Item> object) {
+		return object.values().toArray(new Item[0]);
 	}
 }

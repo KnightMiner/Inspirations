@@ -8,7 +8,6 @@ import knightminer.inspirations.common.data.FillTexturedBlockLootFunction;
 import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import knightminer.inspirations.utility.InspirationsUtility;
-import knightminer.inspirations.utility.block.CarpetedPressurePlateBlock;
 import net.minecraft.advancements.criterion.StatePropertiesPredicate;
 import net.minecraft.block.Block;
 import net.minecraft.block.DoorBlock;
@@ -26,18 +25,18 @@ import net.minecraft.loot.functions.SetCount;
 import net.minecraft.state.properties.DoubleBlockHalf;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import javax.annotation.Nonnull;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
+// TODO: javadocs
 public class InspirationsBlockLootTable extends BlockLootTables {
 
-	// We only care about our blocks.
-	@Nonnull
 	@Override
 	protected Iterable<Block> getKnownBlocks() {
+		// We only care about our blocks.
 		return ForgeRegistries.BLOCKS.getValues().stream()
 				.filter((block) -> {
-					String ns = block.getRegistryName().getNamespace();
+					String ns = Objects.requireNonNull(block.getRegistryName()).getNamespace();
 					return ns.equals(Inspirations.modID) || ns.equals("minecraft");
 				})
 				.collect(Collectors.toList());
@@ -55,22 +54,13 @@ public class InspirationsBlockLootTable extends BlockLootTables {
 	}
 
 	private void addBuilding() {
-		this.registerLootTable(InspirationsBuilding.shelf_normal, this::droppingWithNameAndTexture);
-		this.registerLootTable(InspirationsBuilding.shelf_rainbow, this::droppingWithNameAndTexture);
-		this.registerLootTable(InspirationsBuilding.shelf_ancient, this::droppingWithNameAndTexture);
-		this.registerLootTable(InspirationsBuilding.shelf_tomes, this::droppingWithNameAndTexture);
+		// enum
+		InspirationsBuilding.bookshelf.values().forEach(block -> this.registerLootTable(block, this::droppingWithNameAndTexture));
+		InspirationsBuilding.enlightenedBush.values().forEach(block -> this.registerLootTable(block, this::enlightenedBush));
+		InspirationsBuilding.mulch.values().forEach(this::registerDropSelfLootTable);
+		InspirationsBuilding.path.values().forEach(this::registerDropSelfLootTable);
 
-		this.registerLootTable(InspirationsBuilding.whiteEnlightenedBush, this::enlightenedBush);
-		this.registerLootTable(InspirationsBuilding.redEnlightenedBush, this::enlightenedBush);
-		this.registerLootTable(InspirationsBuilding.greenEnlightenedBush, this::enlightenedBush);
-		this.registerLootTable(InspirationsBuilding.blueEnlightenedBush, this::enlightenedBush);
-
-		this.registerDropSelfLootTable(InspirationsBuilding.plainMulch);
-		this.registerDropSelfLootTable(InspirationsBuilding.blackMulch);
-		this.registerDropSelfLootTable(InspirationsBuilding.blueMulch);
-		this.registerDropSelfLootTable(InspirationsBuilding.brownMulch);
-		this.registerDropSelfLootTable(InspirationsBuilding.redMulch);
-
+		// glass doors
 		this.registerSilkTouch(InspirationsBuilding.glassTrapdoor);
 		// For glass doors, they need to only drop from one of the blocks so it doesn't dupe.
 		this.registerLootTable(InspirationsBuilding.glassDoor, LootTable.builder()
@@ -84,21 +74,11 @@ public class InspirationsBlockLootTable extends BlockLootTables {
 				)
 		);
 
-		this.registerDropSelfLootTable(InspirationsBuilding.flower_rose);
-		this.registerDropSelfLootTable(InspirationsBuilding.flower_cyan);
-		this.registerDropSelfLootTable(InspirationsBuilding.flower_paeonia);
-		this.registerDropSelfLootTable(InspirationsBuilding.flower_syringa);
+		// flowers
+		InspirationsBuilding.flower.values().forEach(this::registerDropSelfLootTable);
+		InspirationsBuilding.flowerPot.values().forEach(this::registerFlowerPot);
 
-		this.registerFlowerPot(InspirationsBuilding.potted_rose);
-		this.registerFlowerPot(InspirationsBuilding.potted_cyan);
-		this.registerFlowerPot(InspirationsBuilding.potted_paeonia);
-		this.registerFlowerPot(InspirationsBuilding.potted_syringa);
-
-		this.registerDropSelfLootTable(InspirationsBuilding.path_brick);
-		this.registerDropSelfLootTable(InspirationsBuilding.path_rock);
-		this.registerDropSelfLootTable(InspirationsBuilding.path_round);
-		this.registerDropSelfLootTable(InspirationsBuilding.path_tile);
-
+		// ropes
 		this.registerLootTable(InspirationsBuilding.rope, this::rope);
 		this.registerLootTable(InspirationsBuilding.chain, this::rope);
 		this.registerLootTable(InspirationsBuilding.vine, this::rope);
@@ -113,8 +93,8 @@ public class InspirationsBlockLootTable extends BlockLootTables {
 		if (Config.enableFittedCarpets.get()) {
 			for(DyeColor color : DyeColor.values()) {
 				this.registerRedirect(
-						InspirationsTweaks.fitCarpets[color.getId()],
-						InspirationsTweaks.flatCarpets[color.getId()]
+						InspirationsTweaks.fitCarpets.get(color),
+						InspirationsTweaks.flatCarpets.get(color)
 				);
 			}
 		}
@@ -128,20 +108,14 @@ public class InspirationsBlockLootTable extends BlockLootTables {
 	}
 
 	private void addUtility() {
-		for(DyeColor color : DyeColor.values()) {
-			this.registerDropSelfLootTable(InspirationsUtility.carpetedTrapdoors[color.getId()]);
-
-			CarpetedPressurePlateBlock pressurePlate = InspirationsUtility.carpetedPressurePlates[color.getId()];
-			this.registerLootTable(pressurePlate, LootTable.builder()
-				.addLootPool(withSurvivesExplosion(pressurePlate, LootPool.builder()
-						.addEntry(ItemLootEntry.builder(pressurePlate.getCarpet()))
-				))
-				.addLootPool(withSurvivesExplosion(pressurePlate, LootPool.builder()
-						.addEntry(ItemLootEntry.builder(Items.STONE_PRESSURE_PLATE))
-				))
-			);
-		}
-
+		InspirationsUtility.carpetedTrapdoors.values().forEach(this::registerDropSelfLootTable);
+		InspirationsUtility.carpetedPressurePlates.forEach((color, plate) -> {
+			this.registerLootTable(plate, LootTable.builder()
+			  .addLootPool(withSurvivesExplosion(plate, LootPool.builder()
+			    .addEntry(ItemLootEntry.builder(plate.getCarpet()))))
+			  .addLootPool(withSurvivesExplosion(plate, LootPool.builder()
+				  .addEntry(ItemLootEntry.builder(Items.STONE_PRESSURE_PLATE)))));
+		});
 		this.registerDropSelfLootTable(InspirationsUtility.pipe);
 		this.registerDropSelfLootTable(InspirationsUtility.collector);
 		this.registerDropping(InspirationsUtility.torchLeverFloor, InspirationsUtility.torchLeverItem);
@@ -161,9 +135,9 @@ public class InspirationsBlockLootTable extends BlockLootTables {
 								.acceptFunction(SetCount.builder(ConstantRange.of(RopeBlock.RUNG_ITEM_COUNT)))
 						)
 						.acceptCondition(BlockStateProperty.builder(rope)
-								.fromProperties(StatePropertiesPredicate.Builder.newBuilder()
-										.withProp(RopeBlock.RUNGS, RopeBlock.Rungs.NONE))
-								.inverted()
+																							 .fromProperties(StatePropertiesPredicate.Builder.newBuilder()
+																																															 .withProp(RopeBlock.RUNGS, RopeBlock.Rungs.NONE))
+																							 .inverted()
 						)
 				));
 	}
@@ -183,15 +157,14 @@ public class InspirationsBlockLootTable extends BlockLootTables {
 		return LootTable.builder()
 				.addLootPool(withSurvivesExplosion(block, LootPool.builder()
 						.addEntry(ItemLootEntry.builder(block)
-								.acceptFunction(CopyName.builder(CopyName.Source.BLOCK_ENTITY))
-								.acceptFunction(FillTexturedBlockLootFunction::new)
+																	 .acceptFunction(CopyName.builder(CopyName.Source.BLOCK_ENTITY))
+																	 .acceptFunction(FillTexturedBlockLootFunction::new)
 						)));
 	}
 
 	private void registerRedirect(Block block, Block originalBlock) {
 		this.registerLootTable(block, LootTable.builder()
-				.addLootPool(LootPool.builder()
-						.addEntry(TableLootEntry.builder(originalBlock.getLootTable()))
+				.addLootPool(LootPool.builder().addEntry(TableLootEntry.builder(originalBlock.getLootTable()))
 				));
 	}
 }

@@ -7,6 +7,9 @@ import knightminer.inspirations.common.data.FillTexturedBlockLootFunction;
 import knightminer.inspirations.library.recipe.ModItemList;
 import knightminer.inspirations.library.recipe.ShapelessNoContainerRecipe;
 import knightminer.inspirations.library.recipe.TextureRecipe;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
+import net.minecraft.item.DyeColor;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.loot.LootConditionType;
 import net.minecraft.loot.LootFunctionType;
@@ -17,6 +20,7 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.registries.IForgeRegistry;
+import slimeknights.mantle.registration.object.EnumObject;
 
 /**
  * Base module for common code between the modules
@@ -25,6 +29,25 @@ public class InspirationsShared extends ModuleBase {
 	public static LootConditionType lootConfig;
 	public static LootFunctionType textureFunction;
 
+	/** Enum object for vanilla carpet blocks to aid in registration/lookups */
+	public static final EnumObject<DyeColor,Block> VANILLA_CARPETS = new EnumObject.Builder<DyeColor,Block>(DyeColor.class)
+			.put(DyeColor.WHITE,      Blocks.WHITE_CARPET.delegate)
+			.put(DyeColor.ORANGE,     Blocks.ORANGE_CARPET.delegate)
+			.put(DyeColor.MAGENTA,    Blocks.MAGENTA_CARPET.delegate)
+			.put(DyeColor.LIGHT_BLUE, Blocks.LIGHT_BLUE_CARPET.delegate)
+			.put(DyeColor.YELLOW,     Blocks.YELLOW_CARPET.delegate)
+			.put(DyeColor.LIME,       Blocks.LIME_CARPET.delegate)
+			.put(DyeColor.PINK,       Blocks.PINK_CARPET.delegate)
+			.put(DyeColor.GRAY,       Blocks.GRAY_CARPET.delegate)
+			.put(DyeColor.LIGHT_GRAY, Blocks.LIGHT_GRAY_CARPET.delegate)
+			.put(DyeColor.CYAN,       Blocks.CYAN_CARPET.delegate)
+			.put(DyeColor.PURPLE,     Blocks.PURPLE_CARPET.delegate)
+			.put(DyeColor.BLUE,       Blocks.BLUE_CARPET.delegate)
+			.put(DyeColor.BROWN,      Blocks.BROWN_CARPET.delegate)
+			.put(DyeColor.GREEN,      Blocks.GREEN_CARPET.delegate)
+			.put(DyeColor.RED,        Blocks.RED_CARPET.delegate)
+			.put(DyeColor.BLACK,      Blocks.BLACK_CARPET.delegate)
+			.build();
 
 	@SubscribeEvent
 	void setup(FMLCommonSetupEvent event) {

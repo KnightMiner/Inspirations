@@ -49,8 +49,7 @@ public class UtilityEvents {
 
 		// determine the state to place
 		DyeColor color = ((CarpetBlock)carpetBlock).getColor();
-
-		BlockState state = InspirationsUtility.carpetedPressurePlates[color.getId()].getDefaultState();
+		BlockState state = InspirationsUtility.carpetedPressurePlates.get(color).getDefaultState();
 		state = state.updatePostPlacement(Direction.DOWN, world.getBlockState(pos.down()), world, pos, pos.down());
 
 		// play sound

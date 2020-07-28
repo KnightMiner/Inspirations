@@ -2,7 +2,8 @@ package knightminer.inspirations.building;
 
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.block.BookshelfBlock;
-import knightminer.inspirations.building.block.EnlightenedBushBlock;
+import knightminer.inspirations.building.block.type.BushType;
+import knightminer.inspirations.building.block.type.ShelfType;
 import knightminer.inspirations.building.client.BookshelfModel;
 import knightminer.inspirations.building.tileentity.BookshelfTileEntity;
 import knightminer.inspirations.common.ClientEvents;
@@ -13,13 +14,11 @@ import knightminer.inspirations.shared.client.BackgroundContainerScreen;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
-import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.resources.IReloadableResourceManager;
 import net.minecraft.resources.IResourceManager;
@@ -37,6 +36,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 @SuppressWarnings("unused")
 @EventBusSubscriber(modid = Inspirations.modID, value = Dist.CLIENT, bus = Bus.MOD)
@@ -47,38 +47,30 @@ public class BuildingClientEvents extends ClientEvents {
 	static void clientSetup(FMLClientSetupEvent event) {
 		// set render types
 		RenderType cutout = RenderType.getCutout();
+		Consumer<Block> setCutout = (block) -> RenderTypeLookup.setRenderLayer(block, cutout);
 		RenderType cutoutMipped = RenderType.getCutoutMipped();
-		// shelves
-		RenderTypeLookup.setRenderLayer(InspirationsBuilding.shelf_normal, cutout);
-		RenderTypeLookup.setRenderLayer(InspirationsBuilding.shelf_rainbow, cutout);
-		RenderTypeLookup.setRenderLayer(InspirationsBuilding.shelf_tomes, cutout);
-		RenderTypeLookup.setRenderLayer(InspirationsBuilding.shelf_ancient, cutout);
+		Consumer<Block> setCutoutMipped = (block) -> RenderTypeLookup.setRenderLayer(block, cutoutMipped);
+
+		// general
+		InspirationsBuilding.bookshelf.forEach(setCutout);
+		InspirationsBuilding.enlightenedBush.forEach(setCutoutMipped);
+
 		// ropes
-		RenderTypeLookup.setRenderLayer(InspirationsBuilding.rope, cutout);
-		RenderTypeLookup.setRenderLayer(InspirationsBuilding.vine, cutout);
-		RenderTypeLookup.setRenderLayer(InspirationsBuilding.ironBars, cutoutMipped);
+		setRenderLayer(InspirationsBuilding.rope, cutout);
+		setRenderLayer(InspirationsBuilding.vine, cutout);
+		setRenderLayer(InspirationsBuilding.ironBars, cutoutMipped);
+
 		// doors
-		RenderTypeLookup.setRenderLayer(InspirationsBuilding.glassDoor, cutoutMipped);
-		RenderTypeLookup.setRenderLayer(InspirationsBuilding.glassTrapdoor, cutoutMipped);
+		setRenderLayer(InspirationsBuilding.glassDoor, cutoutMipped);
+		setRenderLayer(InspirationsBuilding.glassTrapdoor, cutoutMipped);
+
 		// flower
-		RenderTypeLookup.setRenderLayer(InspirationsBuilding.flower_cyan, cutout);
-		RenderTypeLookup.setRenderLayer(InspirationsBuilding.flower_paeonia, cutout);
-		RenderTypeLookup.setRenderLayer(InspirationsBuilding.flower_rose, cutout);
-		RenderTypeLookup.setRenderLayer(InspirationsBuilding.flower_syringa, cutout);
-		RenderTypeLookup.setRenderLayer(InspirationsBuilding.potted_cyan, cutout);
-		RenderTypeLookup.setRenderLayer(InspirationsBuilding.potted_syringa, cutout);
-		RenderTypeLookup.setRenderLayer(InspirationsBuilding.potted_paeonia, cutout);
-		RenderTypeLookup.setRenderLayer(InspirationsBuilding.potted_rose, cutout);
-		// enlightened bushes
-		RenderTypeLookup.setRenderLayer(InspirationsBuilding.blueEnlightenedBush, cutoutMipped);
-		RenderTypeLookup.setRenderLayer(InspirationsBuilding.greenEnlightenedBush, cutoutMipped);
-		RenderTypeLookup.setRenderLayer(InspirationsBuilding.redEnlightenedBush, cutoutMipped);
-		RenderTypeLookup.setRenderLayer(InspirationsBuilding.whiteEnlightenedBush, cutoutMipped);
+		InspirationsBuilding.flower.forEach(setCutout);
+		InspirationsBuilding.flowerPot.forEach(setCutout);
 	}
 
 	@SubscribeEvent
 	static void commonSetup(FMLCommonSetupEvent event) {
-
 		// listener to clear bookshelf model cache as its shared by all bookshelf model files
 		IResourceManager manager = Minecraft.getInstance().getResourceManager();
 		// should always be true, but just in case
@@ -93,7 +85,7 @@ public class BuildingClientEvents extends ClientEvents {
 		}
 
 		// Register GUIs.
-		ScreenManager.registerFactory(InspirationsBuilding.contBookshelf, new BackgroundContainerScreen.Factory<>("bookshelf"));
+		registerScreenFactory(InspirationsBuilding.contBookshelf, new BackgroundContainerScreen.Factory<>("bookshelf"));
 	}
 
 
@@ -120,7 +112,7 @@ public class BuildingClientEvents extends ClientEvents {
 			}
 
 			return -1;
-		}, InspirationsBuilding.shelf_normal);
+		}, InspirationsBuilding.bookshelf.getOrNull(ShelfType.NORMAL));
 
 		// rope vine coloring
 		registerBlockColors(blockColors, (state, world, pos, tintIndex) -> {
@@ -132,14 +124,14 @@ public class BuildingClientEvents extends ClientEvents {
 
 		// bush block coloring
 		// First the three which never change tint.
-		for (EnlightenedBushBlock bush: new EnlightenedBushBlock[] {
-				InspirationsBuilding.redEnlightenedBush,
-				InspirationsBuilding.blueEnlightenedBush,
-				InspirationsBuilding.greenEnlightenedBush
-		}) {
-			int color = bush.getColor(); // Make closure capture just the int.
-			blockColors.register((state, world, pos, tintIndex) -> tintIndex == 0 ? color : -1, bush);
-		}
+		InspirationsBuilding.enlightenedBush.forEach((type, bush) -> {
+			if (type != BushType.WHITE) {
+				int color = type.getColor(); // Make closure capture just the int.
+				blockColors.register((state, world, pos, tintIndex) -> tintIndex == 0 ? color : -1, bush);
+			}
+		});
+
+		// white copies the default leaf colors
 		registerBlockColors(blockColors, (state, world, pos, tintIndex) -> {
 			if(tintIndex != 0 || world == null || pos == null) {
 				return -1;
@@ -152,7 +144,7 @@ public class BuildingClientEvents extends ClientEvents {
 				}
 			}
 			return FoliageColors.getDefault();
-		}, InspirationsBuilding.whiteEnlightenedBush);
+		}, InspirationsBuilding.enlightenedBush.getOrNull(BushType.WHITE));
 	}
 
 	@SubscribeEvent
@@ -165,39 +157,36 @@ public class BuildingClientEvents extends ClientEvents {
 				return 0x654B17;
 			}
 			return -1;
-		}, InspirationsBuilding.shelf_normal);
+		}, InspirationsBuilding.bookshelf.getOrNull(ShelfType.NORMAL));
 
 		// book covers, too lazy to make 16 cover textures
-		for (DyeColor color: DyeColor.values()) {
+		InspirationsBuilding.coloredBooks.forEach((color, book) -> {
 			int hexColor = color.colorValue;
-			registerItemColors(itemColors, (stack, tintIndex) -> (tintIndex == 0) ? hexColor : -1, InspirationsBuilding.coloredBooks[color.getId()]
-			);
-		}
+			itemColors.register((stack, tintIndex) -> (tintIndex == 0) ? hexColor : -1, book);
+		});
 
 		// bush block colors
 		// First the three blocks which never change tint.
-		for (EnlightenedBushBlock bush: new EnlightenedBushBlock[] {
-				InspirationsBuilding.redEnlightenedBush,
-				InspirationsBuilding.blueEnlightenedBush,
-				InspirationsBuilding.greenEnlightenedBush
-		}) {
-			int color = bush.getColor(); // Make closure capture just the int.
-			registerItemColors(itemColors, (stack, tintIndex) -> tintIndex == 0 ? color : -1, bush);
-		}
+		InspirationsBuilding.enlightenedBush.forEach((type, bush) -> {
+			if (type != BushType.WHITE) {
+				int color = type.getColor();
+				itemColors.register((stack, tintIndex) -> tintIndex == 0 ? color : -1, bush);
+			}
+		});
 
 		// The main one uses the tint of the textured stack
 		registerItemColors(itemColors, (stack, tintIndex) -> {
 			if(tintIndex != 0) {
 				return -1;
 			}
-
+			// redirect to block for colors
 			Block block = TextureBlockUtil.getTextureBlock(stack);
 			if(block != Blocks.AIR) {
 				return itemColors.getColor(new ItemStack(block), 0);
 			} else {
 				return FoliageColors.getDefault();
 			}
-		}, InspirationsBuilding.whiteEnlightenedBush);
+		}, InspirationsBuilding.enlightenedBush.getOrNull(BushType.WHITE));
 
 		// We can't get the world position of the item, so use the default tint.
 		registerItemColors(itemColors, (stack, tintIndex) -> FoliageColors.getDefault(), InspirationsBuilding.vine);
@@ -208,15 +197,12 @@ public class BuildingClientEvents extends ClientEvents {
 	 */
 	@SubscribeEvent
 	static void onModelBake(ModelBakeEvent event) {
-		replaceBookshelfModel(event, InspirationsBuilding.shelf_normal);
-		replaceBookshelfModel(event, InspirationsBuilding.shelf_ancient);
-		replaceBookshelfModel(event, InspirationsBuilding.shelf_rainbow);
-		replaceBookshelfModel(event, InspirationsBuilding.shelf_tomes);
-
-		replaceBothTexturedModels(event, InspirationsBuilding.whiteEnlightenedBush.getRegistryName(), "leaves");
-		replaceBothTexturedModels(event, InspirationsBuilding.redEnlightenedBush.getRegistryName(), "leaves");
-		replaceBothTexturedModels(event, InspirationsBuilding.blueEnlightenedBush.getRegistryName(), "leaves");
-		replaceBothTexturedModels(event, InspirationsBuilding.greenEnlightenedBush.getRegistryName(), "leaves");
+		for (BookshelfBlock block : InspirationsBuilding.bookshelf.values()) {
+			replaceBookshelfModel(event, block);
+		}
+		for (Block block : InspirationsBuilding.enlightenedBush.values()) {
+			replaceBothTexturedModels(event, block.getRegistryName(), "leaves");
+		}
 	}
 
 	@Deprecated

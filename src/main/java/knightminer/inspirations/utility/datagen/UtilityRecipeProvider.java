@@ -5,14 +5,11 @@ import knightminer.inspirations.common.data.ConfigEnabledCondition;
 import knightminer.inspirations.common.datagen.CondRecipe;
 import knightminer.inspirations.library.InspirationsTags;
 import knightminer.inspirations.library.Util;
+import knightminer.inspirations.shared.InspirationsShared;
 import knightminer.inspirations.utility.InspirationsUtility;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.CarpetBlock;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.IFinishedRecipe;
 import net.minecraft.data.RecipeProvider;
-import net.minecraft.item.DyeColor;
 import net.minecraft.item.Items;
 import net.minecraft.tags.ItemTags;
 import net.minecraftforge.common.Tags;
@@ -81,35 +78,17 @@ public class UtilityRecipeProvider extends RecipeProvider implements IConditionB
 				.build(consumer);
 
 		// All the trapdoors.
-		carpetedTrapdoor(consumer, Blocks.WHITE_CARPET);
-		carpetedTrapdoor(consumer, Blocks.ORANGE_CARPET);
-		carpetedTrapdoor(consumer, Blocks.MAGENTA_CARPET);
-		carpetedTrapdoor(consumer, Blocks.LIGHT_BLUE_CARPET);
-		carpetedTrapdoor(consumer, Blocks.YELLOW_CARPET);
-		carpetedTrapdoor(consumer, Blocks.LIME_CARPET);
-		carpetedTrapdoor(consumer, Blocks.PINK_CARPET);
-		carpetedTrapdoor(consumer, Blocks.GRAY_CARPET);
-		carpetedTrapdoor(consumer, Blocks.LIGHT_GRAY_CARPET);
-		carpetedTrapdoor(consumer, Blocks.CYAN_CARPET);
-		carpetedTrapdoor(consumer, Blocks.PURPLE_CARPET);
-		carpetedTrapdoor(consumer, Blocks.BLUE_CARPET);
-		carpetedTrapdoor(consumer, Blocks.BROWN_CARPET);
-		carpetedTrapdoor(consumer, Blocks.GREEN_CARPET);
-		carpetedTrapdoor(consumer, Blocks.RED_CARPET);
-		carpetedTrapdoor(consumer, Blocks.BLACK_CARPET);
-	}
-
-	private void carpetedTrapdoor(@Nonnull Consumer<IFinishedRecipe> consumer, Block carpet) {
-		DyeColor color = ((CarpetBlock)carpet).getColor();
-		CondRecipe.shaped(InspirationsUtility.carpetedTrapdoors[color.getId()])
-				.addCondition(UTILITY)
-				.addCondition(ConfigEnabledCondition.CARPETED_TRAPDOOR)
-				.addCriterion("has_carpet", hasItem(InspirationsTags.Items.CARPETS))
-				.setGroup(Util.resource("carpeted_trapdoor"))
-				.key('C', carpet)
-				.key('T', ItemTags.WOODEN_TRAPDOORS)
-				.patternLine("C")
-				.patternLine("T")
-				.build(consumer);
+		InspirationsUtility.carpetedTrapdoors.forEach((color, trapdoor) -> {
+			CondRecipe.shaped(trapdoor)
+								.addCondition(UTILITY)
+								.addCondition(ConfigEnabledCondition.CARPETED_TRAPDOOR)
+								.addCriterion("has_carpet", hasItem(InspirationsTags.Items.CARPETS))
+								.setGroup(Util.resource("carpeted_trapdoor"))
+								.key('C', InspirationsShared.VANILLA_CARPETS.get(color))
+								.key('T', ItemTags.WOODEN_TRAPDOORS)
+								.patternLine("C")
+								.patternLine("T")
+								.build(consumer);
+		});
 	}
 }

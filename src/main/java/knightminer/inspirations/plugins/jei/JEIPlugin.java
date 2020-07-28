@@ -19,10 +19,12 @@ import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.IItemProvider;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 @JeiPlugin
 public class JEIPlugin implements IModPlugin {
@@ -53,19 +55,11 @@ public class JEIPlugin implements IModPlugin {
 	@Override
 	public void registerItemSubtypes(ISubtypeRegistration registry) {
 		ISubtypeInterpreter texture = TextureBlockUtil::getTextureBlockName;
+		Consumer<IItemProvider> setTextureSubtype = item -> registry.registerSubtypeInterpreter(item.asItem(), texture);
 
 		// building
-		// bookshelves
-		registry.registerSubtypeInterpreter(InspirationsBuilding.shelf_normal.asItem(), texture);
-		registry.registerSubtypeInterpreter(InspirationsBuilding.shelf_ancient.asItem(), texture);
-		registry.registerSubtypeInterpreter(InspirationsBuilding.shelf_rainbow.asItem(), texture);
-		registry.registerSubtypeInterpreter(InspirationsBuilding.shelf_tomes.asItem(), texture);
-
-		// enlightened bushes
-		registry.registerSubtypeInterpreter(InspirationsBuilding.whiteEnlightenedBush.asItem(), texture);
-		registry.registerSubtypeInterpreter(InspirationsBuilding.redEnlightenedBush.asItem(), texture);
-		registry.registerSubtypeInterpreter(InspirationsBuilding.greenEnlightenedBush.asItem(), texture);
-		registry.registerSubtypeInterpreter(InspirationsBuilding.blueEnlightenedBush.asItem(), texture);
+		InspirationsBuilding.bookshelf.values().forEach(setTextureSubtype);
+		InspirationsBuilding.enlightenedBush.values().forEach(setTextureSubtype);
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.ModuleBase;
 import knightminer.inspirations.common.item.HidableItem;
+import knightminer.inspirations.shared.InspirationsShared;
 import knightminer.inspirations.tweaks.block.BlockCropBlock;
 import knightminer.inspirations.tweaks.block.CactusCropBlock;
 import knightminer.inspirations.tweaks.block.DryHopperBlock;
@@ -49,18 +50,22 @@ import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.registration.adapter.BlockRegistryAdapter;
 import slimeknights.mantle.registration.adapter.ItemRegistryAdapter;
+import slimeknights.mantle.registration.object.EnumObject;
+
+import java.util.Objects;
 
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class InspirationsTweaks extends ModuleBase {
 	public static final String pulseID = "InspirationsTweaks";
 
 	// blocks
-	public static FittedCarpetBlock[] fitCarpets = new FittedCarpetBlock[16];
-	public static FlatCarpetBlock[] flatCarpets = new FlatCarpetBlock[16];
 	public static BlockCropBlock cactus;
 	public static BlockCropBlock sugarCane;
 	public static HopperBlock wetHopper;
 	public static HopperBlock dryHopper;
+	// enum
+	public static EnumObject<DyeColor,FittedCarpetBlock> fitCarpets = EnumObject.empty();
+	public static EnumObject<DyeColor,FlatCarpetBlock> flatCarpets = EnumObject.empty();
 
 	// items
 	//public static Item potatoSeeds;
@@ -77,22 +82,17 @@ public class InspirationsTweaks extends ModuleBase {
 		IForgeRegistry<Block> r = event.getRegistry();
 
 		if (Config.enableFittedCarpets.get()) {
-			registerCarpet(registry, DyeColor.WHITE, Blocks.WHITE_CARPET);
-			registerCarpet(registry, DyeColor.ORANGE, Blocks.ORANGE_CARPET);
-			registerCarpet(registry, DyeColor.MAGENTA, Blocks.MAGENTA_CARPET);
-			registerCarpet(registry, DyeColor.LIGHT_BLUE, Blocks.LIGHT_BLUE_CARPET);
-			registerCarpet(registry, DyeColor.YELLOW, Blocks.YELLOW_CARPET);
-			registerCarpet(registry, DyeColor.LIME, Blocks.LIME_CARPET);
-			registerCarpet(registry, DyeColor.PINK, Blocks.PINK_CARPET);
-			registerCarpet(registry, DyeColor.GRAY, Blocks.GRAY_CARPET);
-			registerCarpet(registry, DyeColor.LIGHT_GRAY, Blocks.LIGHT_GRAY_CARPET);
-			registerCarpet(registry, DyeColor.CYAN, Blocks.CYAN_CARPET);
-			registerCarpet(registry, DyeColor.PURPLE, Blocks.PURPLE_CARPET);
-			registerCarpet(registry, DyeColor.BLUE, Blocks.BLUE_CARPET);
-			registerCarpet(registry, DyeColor.BROWN, Blocks.BROWN_CARPET);
-			registerCarpet(registry, DyeColor.GREEN, Blocks.GREEN_CARPET);
-			registerCarpet(registry, DyeColor.RED, Blocks.RED_CARPET);
-			registerCarpet(registry, DyeColor.BLACK, Blocks.BLACK_CARPET);
+			EnumObject.Builder<DyeColor,FlatCarpetBlock> flatBuilder = new EnumObject.Builder<>(DyeColor.class);
+			EnumObject.Builder<DyeColor,FittedCarpetBlock> fittedBuilder = new EnumObject.Builder<>(DyeColor.class);
+			for (DyeColor color : DyeColor.values()) {
+				Block original = InspirationsShared.VANILLA_CARPETS.get(color);
+				assert original != null;
+				Block.Properties props = Block.Properties.from(original);
+				flatBuilder.putDelegate(color, registry.register(new FlatCarpetBlock(color, props), original).delegate);
+				fittedBuilder.putDelegate(color, registry.register(new FittedCarpetBlock(color, props), color.getString() + "_fitted_carpet").delegate);
+			}
+			flatCarpets = flatBuilder.build();
+			fitCarpets = fittedBuilder.build();
 		}
 
 		if (Config.waterlogHopper.get()) {
@@ -104,13 +104,6 @@ public class InspirationsTweaks extends ModuleBase {
 		sugarCane = registry.register(new SugarCaneCropBlock(), "sugar_cane");
 	}
 
-	private void registerCarpet(BlockRegistryAdapter registry, DyeColor color, Block origCarpet) {
-		// The flat version overrides vanilla (with no blockstate values).
-		// The fitted version goes in our mod namespace.
-		flatCarpets[color.getId()] = registry.registerOverride((props) -> new FlatCarpetBlock(color, props), origCarpet);
-		fitCarpets[color.getId()] = registry.register(new FittedCarpetBlock(color, Block.Properties.from(origCarpet)), color.getString() + "_fitted_carpet");
-	}
-
 	@SubscribeEvent
 	void registerItem(Register<Item> event) {
 		ItemRegistryAdapter registry = new ItemRegistryAdapter(event.getRegistry());
@@ -118,10 +111,12 @@ public class InspirationsTweaks extends ModuleBase {
 		IForgeRegistry<Item> r = event.getRegistry();
 
 		if (Config.enableFittedCarpets.get()) {
-			for(FlatCarpetBlock carpet : flatCarpets) {
+			for(DyeColor color : DyeColor.values()) {
+				Block carpet = InspirationsShared.VANILLA_CARPETS.get(color);
+				assert carpet != null;
 				BlockItem item = registry.registerBlockItem(carpet, decorationProps);
 				Item.BLOCK_TO_ITEM.put(carpet, item);
-				Item.BLOCK_TO_ITEM.put(fitCarpets[carpet.getColor().getId()], item);
+				Item.BLOCK_TO_ITEM.put(Objects.requireNonNull(flatCarpets.get(color)), item);
 			}
 		}
 

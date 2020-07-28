@@ -1,6 +1,6 @@
 package knightminer.inspirations.utility.block;
 
-import knightminer.inspirations.Inspirations;
+import knightminer.inspirations.shared.InspirationsShared;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.PressurePlateBlock;
@@ -8,17 +8,15 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.DyeColor;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.IItemProvider;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
 
@@ -62,18 +60,10 @@ public class CarpetedPressurePlateBlock extends PressurePlateBlock {
 
 	// Since fitted carpets may replace the original carpet, we need to lookup the item to make sure we
 	// get the right object. So defer until the first time we actually need it.
-	private Item pickItem = Items.AIR;
+	private IItemProvider pickItem = Items.AIR;
 
-	public Item getCarpet() {
-		if(pickItem == Items.AIR) {
-			pickItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation(color.getTranslationKey() + "_carpet"));
-
-			if(pickItem == Items.AIR) {
-				Inspirations.log.warn("No carpet item registered under minecraft:{}_carpet!", color.getTranslationKey());
-				return Items.AIR;
-			}
-		}
-		return pickItem;
+	public IItemProvider getCarpet() {
+		return InspirationsShared.VANILLA_CARPETS.get(color);
 	}
 
 	@Override

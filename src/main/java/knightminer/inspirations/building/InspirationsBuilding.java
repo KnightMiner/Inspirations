@@ -10,6 +10,11 @@ import knightminer.inspirations.building.block.GlassTrapdoorBlock;
 import knightminer.inspirations.building.block.MulchBlock;
 import knightminer.inspirations.building.block.PathBlock;
 import knightminer.inspirations.building.block.RopeBlock;
+import knightminer.inspirations.building.block.type.BushType;
+import knightminer.inspirations.building.block.type.FlowerType;
+import knightminer.inspirations.building.block.type.MulchType;
+import knightminer.inspirations.building.block.type.PathType;
+import knightminer.inspirations.building.block.type.ShelfType;
 import knightminer.inspirations.building.datagen.BuildingRecipeProvider;
 import knightminer.inspirations.building.inventory.BookshelfContainer;
 import knightminer.inspirations.building.item.BookshelfItem;
@@ -44,12 +49,13 @@ import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
-import net.minecraftforge.fml.network.IContainerFactory;
 import slimeknights.mantle.registration.adapter.BlockRegistryAdapter;
 import slimeknights.mantle.registration.adapter.ContainerTypeRegistryAdapter;
 import slimeknights.mantle.registration.adapter.ItemRegistryAdapter;
 import slimeknights.mantle.registration.adapter.TileEntityTypeRegistryAdapter;
+import slimeknights.mantle.registration.object.EnumObject;
 
+import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
@@ -60,49 +66,27 @@ public class InspirationsBuilding extends ModuleBase {
 	public static final String pulseID = "InspirationsBuilding";
 
 	// blocks
-	public static BookshelfBlock shelf_normal;
-	public static BookshelfBlock shelf_rainbow;
-	public static BookshelfBlock shelf_tomes;
-	public static BookshelfBlock shelf_ancient;
-
 	public static RopeBlock rope;
 	public static RopeBlock vine;
 	public static RopeBlock chain;
-	public static Block ironBars;
-
 	public static Block glassDoor;
 	public static Block glassTrapdoor;
-
-	public static Block plainMulch;
-	public static Block brownMulch;
-	public static Block redMulch;
-	public static Block blackMulch;
-	public static Block blueMulch;
-
-	public static PathBlock path_rock;
-	public static PathBlock path_round;
-	public static PathBlock path_tile;
-	public static PathBlock path_brick;
-
-	public static FlowerBlock flower_cyan;
-	public static FlowerBlock flower_syringa;
-	public static FlowerBlock flower_paeonia;
-	public static FlowerBlock flower_rose;
-
-	public static FlowerPotBlock potted_cyan;
-	public static FlowerPotBlock potted_syringa;
-	public static FlowerPotBlock potted_paeonia;
-	public static FlowerPotBlock potted_rose;
-
-	public static EnlightenedBushBlock whiteEnlightenedBush;
-	public static EnlightenedBushBlock redEnlightenedBush;
-	public static EnlightenedBushBlock greenEnlightenedBush;
-	public static EnlightenedBushBlock blueEnlightenedBush;
+	// enum
+	public static EnumObject<ShelfType,BookshelfBlock> bookshelf = EnumObject.empty();
+	public static EnumObject<MulchType,MulchBlock> mulch = EnumObject.empty();
+	public static EnumObject<PathType,PathBlock> path = EnumObject.empty();
+	public static EnumObject<BushType,EnlightenedBushBlock> enlightenedBush = EnumObject.empty();
+	// flowers
+	public static EnumObject<FlowerType,FlowerBlock> flower = EnumObject.empty();
+	public static EnumObject<FlowerType,FlowerPotBlock> flowerPot = EnumObject.empty();
+	// overrides
+	public static Block ironBars;
 
 	// items
 	public static Item glassDoorItem;
-	public static Item[] coloredBooks = new Item[16];
 	public static Item redstoneBook;
+	// emum
+	public static EnumObject<DyeColor,Item> coloredBooks;
 
 	// Tile Entities
 	public static TileEntityType<BookshelfTileEntity> tileBookshelf;
@@ -115,28 +99,25 @@ public class InspirationsBuilding extends ModuleBase {
 	void registerTE(Register<TileEntityType<?>> event) {
 		TileEntityTypeRegistryAdapter registry = new TileEntityTypeRegistryAdapter(event.getRegistry());
 
-		tileBookshelf = registry.register(BookshelfTileEntity::new, "bookshelf", (blocks) ->
-			blocks.add(shelf_normal, shelf_ancient, shelf_rainbow, shelf_tomes));
-		tileEnlightenedBush = registry.register(EnlightenedBushTileEntity::new, "enlightened_bush", (blocks) ->
-			blocks.add(whiteEnlightenedBush, redEnlightenedBush, greenEnlightenedBush, blueEnlightenedBush));
+		tileBookshelf = registry.register(BookshelfTileEntity::new, bookshelf, "bookshelf");
+		tileEnlightenedBush = registry.register(EnlightenedBushTileEntity::new, enlightenedBush, "enlightened_bush");
 	}
 
 	@SubscribeEvent
 	void registerContainers(Register<ContainerType<?>> event) {
 		ContainerTypeRegistryAdapter registry = new ContainerTypeRegistryAdapter(event.getRegistry());
-		contBookshelf = registry.register((IContainerFactory<BookshelfContainer>)BookshelfContainer::new, "bookshelf");
+		contBookshelf = registry.registerType(BookshelfContainer::new, "bookshelf");
 	}
 
-	@SuppressWarnings("ConstantConditions")
 	@SubscribeEvent
 	public void registerBlocks(Register<Block> event) {
 		BlockRegistryAdapter registry = new BlockRegistryAdapter(event.getRegistry());
 
-		shelf_normal = registry.register(new BookshelfBlock(), "bookshelf");
-		shelf_ancient = registry.register(new BookshelfBlock(), "ancient_bookshelf");
-		shelf_rainbow = registry.register(new BookshelfBlock(), "rainbow_bookshelf");
-		shelf_tomes = registry.register(new BookshelfBlock(), "tomes_bookshelf");
-
+		// normal shelf uses a less regular naming
+		bookshelf = new EnumObject.Builder<ShelfType, BookshelfBlock>(ShelfType.class)
+				.putDelegate(ShelfType.NORMAL, registry.register(new BookshelfBlock(), "bookshelf").delegate)
+				.putAll(registry.registerEnum(type -> new BookshelfBlock(), ShelfType.FANCY, "bookshelf"))
+				.build();
 		rope = registry.register(new RopeBlock(Items.STICK, Block.Properties
 				.create(Material.CARPET, MaterialColor.OBSIDIAN)
 				.sound(SoundType.CLOTH)
@@ -162,45 +143,29 @@ public class InspirationsBuilding extends ModuleBase {
 		glassDoor = registry.register(new GlassDoorBlock(), "glass_door");
 		glassTrapdoor = registry.register(new GlassTrapdoorBlock(), "glass_trapdoor");
 
-		// TODO: register enum
-		plainMulch  = registry.register(new MulchBlock(MaterialColor.LIGHT_GRAY), "plain_mulch");
-		brownMulch  = registry.register(new MulchBlock(MaterialColor.DIRT), "brown_mulch");
-		redMulch    = registry.register(new MulchBlock(MaterialColor.NETHERRACK), "red_mulch");
-		blackMulch  = registry.register(new MulchBlock(MaterialColor.GRAY), "black_mulch");
-		blueMulch   = registry.register(new MulchBlock(MaterialColor.BLUE), "blue_mulch");
+		mulch = registry.registerEnum(type -> new MulchBlock(type.getColor()), MulchType.values(), "mulch");
+		path = registry.registerEnum(type -> new PathBlock(type.getShape(), type.getColor()), PathType.values(), "path");
+		enlightenedBush = registry.registerEnum(type -> new EnlightenedBushBlock(type.getColor()), BushType.values(), "enlightened_bush");
 
-		// TODO: register enum
-		path_rock  = registry.register(new PathBlock(PathBlock.SHAPE_ROCK, MaterialColor.STONE), "rock_path");
-		path_round = registry.register(new PathBlock(PathBlock.SHAPE_ROUND, MaterialColor.STONE), "round_path");
-		path_tile  = registry.register(new PathBlock(PathBlock.SHAPE_TILE, MaterialColor.STONE), "tile_path");
-		path_brick = registry.register(new PathBlock(PathBlock.SHAPE_BRICK, MaterialColor.RED), "brick_path");
-
-		// TODO: register enum?
-		flower_cyan = registry.register(new FlowerBlock(null), "cyan_flower");
-		flower_syringa = registry.register(new FlowerBlock((DoublePlantBlock) Blocks.LILAC), "syringa");
-		flower_paeonia = registry.register(new FlowerBlock((DoublePlantBlock) Blocks.PEONY), "paeonia");
-		flower_rose = registry.register(new FlowerBlock((DoublePlantBlock) Blocks.ROSE_BUSH), "rose");
-
-		// TODO: register enum?
+		// flowers, have no base name
+		flower = new EnumObject.Builder<FlowerType,FlowerBlock>(FlowerType.class)
+				.putDelegate(FlowerType.CYAN, registry.register(new FlowerBlock(null), "cyan_flower").delegate)
+				.putDelegate(FlowerType.SYRINGA, registry.register(new FlowerBlock((DoublePlantBlock) Blocks.LILAC), "syringa").delegate)
+				.putDelegate(FlowerType.PAEONIA, registry.register(new FlowerBlock((DoublePlantBlock) Blocks.PEONY), "paeonia").delegate)
+				.putDelegate(FlowerType.ROSE, registry.register(new FlowerBlock((DoublePlantBlock) Blocks.ROSE_BUSH), "rose").delegate)
+				.build();
+		// flower pots
 		Supplier<FlowerPotBlock> emptyPot = () -> (FlowerPotBlock) Blocks.FLOWER_POT.delegate.get();
+		FlowerPotBlock vanillaPot = (FlowerPotBlock) Blocks.FLOWER_POT;
 		Block.Properties props = Block.Properties.from(Blocks.FLOWER_POT);
-		potted_cyan = registry.register(new FlowerPotBlock(emptyPot, () -> flower_cyan, props), "potted_cyan");
-		potted_syringa = registry.register(new FlowerPotBlock(emptyPot, () -> flower_syringa, props), "potted_syringa");
-		potted_paeonia = registry.register(new FlowerPotBlock(emptyPot, () -> flower_paeonia, props), "potted_paeonia");
-		potted_rose = registry.register(new FlowerPotBlock(emptyPot, () -> flower_rose, props), "potted_rose");
-
-		// Register the flower items with the empty flower pot block.
-		FlowerPotBlock flowerPot = (FlowerPotBlock) Blocks.FLOWER_POT;
-		flowerPot.addPlant(flower_cyan.getRegistryName(), () -> potted_cyan);
-		flowerPot.addPlant(flower_syringa.getRegistryName(), () -> potted_syringa);
-		flowerPot.addPlant(flower_paeonia.getRegistryName(), () -> potted_paeonia);
-		flowerPot.addPlant(flower_rose.getRegistryName(), () -> potted_rose);
-
-		// TODO: register enum?
-		whiteEnlightenedBush = registry.register(new EnlightenedBushBlock(-1), "white_enlightened_bush");
-		redEnlightenedBush = registry.register(new EnlightenedBushBlock(0xBF0000), "red_enlightened_bush");
-		greenEnlightenedBush = registry.register(new EnlightenedBushBlock(0x267F00), "green_enlightened_bush");
-		blueEnlightenedBush = registry.register(new EnlightenedBushBlock(0x001CBF), "blue_enlightened_bush");
+		flowerPot = registry.registerEnum(type -> {
+			Block plant = flower.get(type);
+			// create pot and register it with the vanilla pot.
+			assert plant != null;
+			FlowerPotBlock pot = new FlowerPotBlock(emptyPot, plant.delegate, props);
+			vanillaPot.addPlant(Objects.requireNonNull(plant.getRegistryName()), pot.delegate);
+			return pot;
+		}, "potted", FlowerType.values());
 	}
 
 	@SubscribeEvent
@@ -212,46 +177,24 @@ public class InspirationsBuilding extends ModuleBase {
 		Item.Properties buildingProps = new Item.Properties().group(ItemGroup.BUILDING_BLOCKS);
 		Item.Properties redstoneProps = new Item.Properties().group(ItemGroup.REDSTONE);
 
-		// TODO: enum object
-		for (DyeColor color : DyeColor.values()) {
-			coloredBooks[color.getId()] = registry.register(new HidableItem(materialProps, Config::enableColoredBooks), color.getString() + "_book");
-		}
-
+		coloredBooks = registry.registerEnum(color -> new HidableItem(materialProps, Config::enableColoredBooks), DyeColor.values(), "book");
 		redstoneBook = registry.register(new HidableItem(materialProps, Config::enableRedstoneBook), "redstone_book");
 
-		// itemblocks
-		registry.registerBlockItem(new BookshelfItem(shelf_normal));
-		registry.registerBlockItem(new BookshelfItem(shelf_ancient));
-		registry.registerBlockItem(new BookshelfItem(shelf_rainbow));
-		registry.registerBlockItem(new BookshelfItem(shelf_tomes));
-
+		// item blocks
+		registry.registerBlockItem(bookshelf, BookshelfItem::new);
 		registry.registerBlockItem(rope, decorationProps);
 		registry.registerBlockItem(vine, decorationProps);
 		registry.registerBlockItem(chain, decorationProps);
-		registry.registerBlockItem(ironBars, decorationProps);
+		if (ironBars != null) {
+			registry.registerBlockItem(ironBars, decorationProps);
+		}
 
-		registry.registerBlockItem(plainMulch, buildingProps);
-		registry.registerBlockItem(brownMulch, buildingProps);
-		registry.registerBlockItem(redMulch, buildingProps);
-		registry.registerBlockItem(blackMulch, buildingProps);
-		registry.registerBlockItem(blueMulch, buildingProps);
+		registry.registerBlockItem(mulch, buildingProps);
+		registry.registerBlockItem(path, decorationProps);
+		registry.registerBlockItem(flower, decorationProps);
+		registry.registerBlockItem(enlightenedBush, (bush) -> new TextureBlockItem(bush, decorationProps, ItemTags.LEAVES));
 
-		registry.registerBlockItem(path_rock, decorationProps);
-		registry.registerBlockItem(path_round, decorationProps);
-		registry.registerBlockItem(path_tile, decorationProps);
-		registry.registerBlockItem(path_brick, decorationProps);
-
-		registry.registerBlockItem(flower_cyan, decorationProps);
-		registry.registerBlockItem(flower_syringa, decorationProps);
-		registry.registerBlockItem(flower_paeonia, decorationProps);
-		registry.registerBlockItem(flower_rose, decorationProps);
-
-		registry.registerBlockItem(new TextureBlockItem(whiteEnlightenedBush, decorationProps, ItemTags.LEAVES));
-		registry.registerBlockItem(new TextureBlockItem(redEnlightenedBush, decorationProps, ItemTags.LEAVES));
-		registry.registerBlockItem(new TextureBlockItem(greenEnlightenedBush, decorationProps, ItemTags.LEAVES));
-		registry.registerBlockItem(new TextureBlockItem(blueEnlightenedBush, decorationProps, ItemTags.LEAVES));
-
-		glassDoorItem = registry.register(new GlassDoorBlockItem(glassDoor, redstoneProps), "glass_door");
+		glassDoorItem = registry.register(new GlassDoorBlockItem(glassDoor, redstoneProps), glassDoor);
 		registry.registerBlockItem(glassTrapdoor, redstoneProps);
 	}
 
@@ -281,20 +224,20 @@ public class InspirationsBuilding extends ModuleBase {
 	@SubscribeEvent
 	public static void loadLoad(LootTableLoadEvent event) {
 		// Add the drops for the small flowers.
-		flower_paeonia.injectLoot(event);
-		flower_rose.injectLoot(event);
-		flower_syringa.injectLoot(event);
+		flower.forEach((type, plant) -> {
+			if (type != FlowerType.CYAN) {
+				plant.injectLoot(event);
+			}
+		});
 	}
 
 	private static void registerCompostables() {
-		ComposterBlock.registerCompostable(0.3F, whiteEnlightenedBush);
-		ComposterBlock.registerCompostable(0.3F, redEnlightenedBush);
-		ComposterBlock.registerCompostable(0.3F, greenEnlightenedBush);
-		ComposterBlock.registerCompostable(0.3F, blueEnlightenedBush);
+		for (Block bush : enlightenedBush.values()) {
+			ComposterBlock.registerCompostable(0.3F, bush);
+		}
 		ComposterBlock.registerCompostable(0.5F, vine);
-		ComposterBlock.registerCompostable(0.65F, flower_cyan);
-		ComposterBlock.registerCompostable(0.65F, flower_syringa);
-		ComposterBlock.registerCompostable(0.65F, flower_paeonia);
-		ComposterBlock.registerCompostable(0.65F, flower_rose);
+		for (Block plant : flower.values()) {
+			ComposterBlock.registerCompostable(0.65F, plant);
+		}
 	}
 }
