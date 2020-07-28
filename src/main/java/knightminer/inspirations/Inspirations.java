@@ -4,31 +4,21 @@ import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.electronwill.nightconfig.core.io.WritingMode;
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.common.Config;
-import knightminer.inspirations.common.data.ConfigEnabledCondition;
-import knightminer.inspirations.common.data.FillTexturedBlockLootFunction;
-import knightminer.inspirations.common.data.PulseLoadedCondition;
 import knightminer.inspirations.common.datagen.InspirationsBlockTagsProvider;
 import knightminer.inspirations.common.datagen.InspirationsItemTagsProvider;
 import knightminer.inspirations.common.datagen.InspirationsLootTableProvider;
 import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.library.InspirationsRegistry;
-import knightminer.inspirations.library.Util;
-import knightminer.inspirations.library.recipe.ModItemList;
-import knightminer.inspirations.library.recipe.ShapelessNoContainerRecipe;
-import knightminer.inspirations.library.recipe.TextureRecipe;
 import knightminer.inspirations.shared.InspirationsShared;
 import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraft.client.Minecraft;
+import net.minecraft.data.BlockTagsProvider;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.world.storage.loot.conditions.LootConditionManager;
-import net.minecraft.world.storage.loot.functions.LootFunctionManager;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -37,23 +27,20 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
-import net.minecraftforge.registries.IForgeRegistry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import slimeknights.mantle.pulsar.control.PulseManager;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
 //import knightminer.inspirations.recipes.InspirationsRecipes;
 
+@SuppressWarnings("unused")
 @Mod(Inspirations.modID)
 public class Inspirations {
 	public static final String modID = "inspirations";
 
 	public static final Logger log = LogManager.getLogger(modID);
-
-	public static PulseManager pulseManager;
 
 	// We can't read the config very early on.
 	public static boolean configLoaded = false;
@@ -65,7 +52,6 @@ public class Inspirations {
 	public static Runnable updateJEI = null;
 
 	public Inspirations() {
-		pulseManager = new PulseManager(Config.pulseConfig);
 		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, Config.SPEC);
 
 		log.info("Loading replacements config file...");
@@ -80,34 +66,32 @@ public class Inspirations {
 		Config.SPEC_OVERRIDE.setConfig(repl_config);
 		log.info("Config loaded.");
 
-		MinecraftForge.EVENT_BUS.register(pulseManager);
-		MinecraftForge.EVENT_BUS.addListener(this::registerRecipeTypes);
 		FMLJavaModLoadingContext.get().getModEventBus().register(this);
+		IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
+		modBus.register(this);
+		modBus.register(new InspirationsShared());
+		modBus.register(new InspirationsBuilding());
+		modBus.register(new InspirationsUtility());
+		modBus.register(new InspirationsTools());
+		modBus.register(new InspirationsTweaks());
+		//		pulseManager.registerPulse(new InspirationsRecipes());
 
-		pulseManager.registerPulse(new InspirationsShared());
-		pulseManager.registerPulse(new InspirationsBuilding());
-		pulseManager.registerPulse(new InspirationsUtility());
-		pulseManager.registerPulse(new InspirationsTools());
-//		pulseManager.registerPulse(new InspirationsRecipes());
-		pulseManager.registerPulse(new InspirationsTweaks());
-		pulseManager.enablePulses();
-
-		InspirationsNetwork.instance.setup();
+		InspirationsNetwork.INSTANCE.setup();
 	}
 
 	@SubscribeEvent
-	public void gatherData(GatherDataEvent event) {
+	void gatherData(GatherDataEvent event) {
 		DataGenerator gen = event.getGenerator();
 		if (event.includeServer()) {
-			gen.addProvider(new InspirationsBlockTagsProvider(gen));
-			gen.addProvider(new InspirationsItemTagsProvider(gen));
+			BlockTagsProvider blockTags = new InspirationsBlockTagsProvider(gen);
+			gen.addProvider(blockTags);
+			gen.addProvider(new InspirationsItemTagsProvider(gen, blockTags));
 			gen.addProvider(new InspirationsLootTableProvider(gen));
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	@SubscribeEvent
-	public void configChanged(final ModConfig.ModConfigEvent configEvent) {
+	void configChanged(final ModConfig.ModConfigEvent configEvent) {
 		configLoaded = true;
 
 		//InspirationsRegistry.setConfig("biggerCauldron", Config.enableBiggerCauldron());
@@ -125,23 +109,7 @@ public class Inspirations {
 		}
 	}
 
-	@SubscribeEvent
-	public void registerRecipeTypes(RegistryEvent.Register<IRecipeSerializer<?>> event) {
-		IForgeRegistry<IRecipeSerializer<?>> r = event.getRegistry();
-
-		r.register(ShapelessNoContainerRecipe.SERIALIZER);
-		r.register(TextureRecipe.SERIALIZER);
-
-		// These don't have registry events yet.
-		PulseLoadedCondition.Serializer pulseLoaded = new PulseLoadedCondition.Serializer();
-		ConfigEnabledCondition.Serializer confEnabled = new ConfigEnabledCondition.Serializer();
-
-		CraftingHelper.register(pulseLoaded);
-		CraftingHelper.register(confEnabled);
-		CraftingHelper.register(Util.getResource("mod_item_list"), ModItemList.SERIALIZER);
-
-		LootConditionManager.registerCondition(pulseLoaded);
-		LootConditionManager.registerCondition(confEnabled);
-		LootFunctionManager.registerFunction(new FillTexturedBlockLootFunction.Serializer(Util.getResource("fill_textured_block")));
+	public static ResourceLocation getResource(String name) {
+		return new ResourceLocation(modID, name);
 	}
 }

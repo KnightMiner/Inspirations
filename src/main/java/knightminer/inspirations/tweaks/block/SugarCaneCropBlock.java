@@ -24,7 +24,7 @@ public class SugarCaneCropBlock extends BlockCropBlock {
 	};
 
 	public SugarCaneCropBlock() {
-		super(Blocks.SUGAR_CANE, PlantType.Beach);
+		super(Blocks.SUGAR_CANE, PlantType.BEACH);
 	}
 
 	@Override

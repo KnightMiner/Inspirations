@@ -3,8 +3,8 @@ package knightminer.inspirations.tweaks.block;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import net.minecraft.block.BlockState;
 import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.fluid.IFluidState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
@@ -20,7 +20,7 @@ public class WetHopperBlock extends DryHopperBlock {
 	@Deprecated
 	@Nonnull
 	@Override
-	public IFluidState getFluidState(BlockState state) {
+	public FluidState getFluidState(BlockState state) {
 		return Fluids.WATER.getStillFluidState(false);
 	}
 
@@ -32,7 +32,7 @@ public class WetHopperBlock extends DryHopperBlock {
 	}
 
 	@Override
-	public boolean receiveFluid(@Nonnull IWorld world, @Nonnull BlockPos pos, BlockState state, @Nonnull IFluidState fluid) {
+	public boolean receiveFluid(@Nonnull IWorld world, @Nonnull BlockPos pos, BlockState state, @Nonnull FluidState fluid) {
 		return false;
 	}
 

@@ -4,6 +4,7 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.utility.InspirationsUtility;
 import knightminer.inspirations.utility.block.PipeBlock;
 import knightminer.inspirations.utility.inventory.PipeContainer;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -119,7 +120,7 @@ public class PipeTileEntity extends InventoryTileEntity implements ITickableTile
 	@Override
 	public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
 		CompoundNBT tag = pkt.getNbtCompound();
-		read(tag);
+		read(this.getBlockState(), tag);
 	}
 
 
@@ -128,8 +129,8 @@ public class PipeTileEntity extends InventoryTileEntity implements ITickableTile
 	private static final String TAG_COOLDOWN = "cooldown";
 
 	@Override
-	public void read(CompoundNBT tags) {
-		super.read(tags);
+	public void read(BlockState state, CompoundNBT tags) {
+		super.read(state, tags);
 		this.cooldown = tags.getShort(TAG_COOLDOWN);
 	}
 

@@ -1,6 +1,7 @@
 package knightminer.inspirations.tools.client;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemFrameEntity;
 import net.minecraft.item.IItemPropertyGetter;
@@ -20,9 +21,9 @@ public class NorthCompassPropertyGetter implements IItemPropertyGetter {
 
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public float call(ItemStack stack, @Nullable World world, @Nullable LivingEntity entity) {
-		if(stack.isOnItemFrame()) {
-			ItemFrameEntity frame = stack.getItemFrame();
+	public float call(ItemStack stack, @Nullable ClientWorld clientWorld, @Nullable LivingEntity entity) {
+		ItemFrameEntity frame = stack.getItemFrame();
+		if(frame != null) {
 			Direction facing = frame.getHorizontalFacing();
 			if(facing == Direction.DOWN) {
 				return frame.getRotation()/8f;
@@ -36,6 +37,7 @@ public class NorthCompassPropertyGetter implements IItemPropertyGetter {
 		if(entity == null) {
 			return 0;
 		}
+		World world = clientWorld;
 		if(world == null) {
 			if(entity.world == null) {
 				return 0;

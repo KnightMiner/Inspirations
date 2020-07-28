@@ -1,11 +1,11 @@
 package knightminer.inspirations.recipes.client;
 
 import net.minecraft.client.particle.BubbleParticle;
-import net.minecraft.world.World;
+import net.minecraft.client.world.ClientWorld;
 
 public class BoilingParticle extends BubbleParticle {
 
-	public BoilingParticle(World world, double xCoord, double yCoord, double zCoord, double xSpeed, double ySpeed, double zSpeed) {
+	public BoilingParticle(ClientWorld world, double xCoord, double yCoord, double zCoord, double xSpeed, double ySpeed, double zSpeed) {
 		super(world, xCoord, yCoord, zCoord, xSpeed, ySpeed, zSpeed);
 		this.particleAlpha = 0.5f;
 		this.canCollide = false;

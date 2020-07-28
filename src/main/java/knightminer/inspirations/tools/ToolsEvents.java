@@ -21,6 +21,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.ShearsItem;
+import net.minecraft.loot.LootContext;
+import net.minecraft.loot.LootParameters;
 import net.minecraft.network.play.server.SEntityVelocityPacket;
 import net.minecraft.tileentity.LockableTileEntity;
 import net.minecraft.tileentity.TileEntity;
@@ -34,8 +36,6 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.LockCode;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraft.world.storage.loot.LootContext;
-import net.minecraft.world.storage.loot.LootParameters;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
@@ -226,8 +226,7 @@ public class ToolsEvents {
 		}
 		World world = event.getWorld();
 		BlockPos pos = event.getPos();
-		TileEntity te = world.getTileEntity(pos);
-		if (WaypointCompassItem.beaconIsComplete(te)) {
+		if (WaypointCompassItem.beaconIsComplete(world.getTileEntity(pos))) {
 			if (!world.isRemote) {
 				// give the player the linked compass
 				ItemStack newStack;
@@ -286,7 +285,7 @@ public class ToolsEvents {
 			}
 			if (knockback > 0) {
 				if (attacker instanceof LivingEntity) {
-					((LivingEntity)attacker).knockBack(target, knockback * 0.5F, MathHelper.sin(target.rotationYaw * 0.017453292F), -MathHelper.cos(target.rotationYaw * 0.017453292F));
+					((LivingEntity)attacker).applyKnockback(knockback * 0.5F, MathHelper.sin(target.rotationYaw * 0.017453292F), -MathHelper.cos(target.rotationYaw * 0.017453292F));
 					if (attacker instanceof ServerPlayerEntity) {
 						InspirationsNetwork.sendPacket(attacker, new SEntityVelocityPacket(attacker));
 					}

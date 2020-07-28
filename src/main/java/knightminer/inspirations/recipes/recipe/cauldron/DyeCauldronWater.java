@@ -21,7 +21,7 @@ public class DyeCauldronWater implements ISimpleCauldronRecipe {
 	public DyeCauldronWater(DyeColor color) {
 		this.color = color;
 		this.dye = Ingredient.fromTag(ItemTags.getCollection().getOrCreate(
-				new ResourceLocation("forge", "dyes/" + color.getName()
+				new ResourceLocation("forge", "dyes/" + color.getString()
 		)));
 	}
 

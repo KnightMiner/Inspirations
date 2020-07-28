@@ -1,6 +1,7 @@
 package knightminer.inspirations.tools.recipe;
 
 import knightminer.inspirations.common.Config;
+import knightminer.inspirations.library.recipe.RecipeSerializers;
 import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.tools.item.WaypointCompassItem;
 import net.minecraft.inventory.CraftingInventory;
@@ -8,13 +9,11 @@ import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.SpecialRecipe;
-import net.minecraft.item.crafting.SpecialRecipeSerializer;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
-import java.util.function.Function;
 
 public class CopyWaypointCompassRecipe extends SpecialRecipe {
   public CopyWaypointCompassRecipe(ResourceLocation idIn) {
@@ -127,14 +126,6 @@ public class CopyWaypointCompassRecipe extends SpecialRecipe {
   @Nonnull
   @Override
   public IRecipeSerializer<?> getSerializer() {
-    return SERIALIZER;
-  }
-
-  public static Serializer SERIALIZER = new Serializer(CopyWaypointCompassRecipe::new);
-
-  public static class Serializer extends SpecialRecipeSerializer<CopyWaypointCompassRecipe> {
-    public Serializer(Function<ResourceLocation,CopyWaypointCompassRecipe> factory) {
-      super(factory);
-    }
+    return RecipeSerializers.copy_waypoint_compass;
   }
 }

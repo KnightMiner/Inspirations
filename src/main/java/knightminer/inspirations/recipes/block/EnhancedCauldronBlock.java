@@ -7,7 +7,6 @@ import knightminer.inspirations.recipes.client.BoilingParticle;
 import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.CauldronBlock;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.ParticleManager;
@@ -43,8 +42,8 @@ public class EnhancedCauldronBlock extends CauldronBlock {
 	public static final BooleanProperty BOILING = BooleanProperty.create("boiling");
 	public static final ModelProperty<String> TEXTURE = new ModelProperty<>();
 
-	public EnhancedCauldronBlock() {
-		super(Block.Properties.from(Blocks.CAULDRON));
+	public EnhancedCauldronBlock(Block.Properties props) {
+		super(props);
 
 		BlockState state = this.getDefaultState()
 				.with(LEVEL, 0)
@@ -54,7 +53,6 @@ public class EnhancedCauldronBlock extends CauldronBlock {
 			state = state.with(LEVEL_EXT, 0);
 		}
 		this.setDefaultState(state);
-		this.setRegistryName(Blocks.CAULDRON.getRegistryName());
 	}
 
 
@@ -199,14 +197,14 @@ public class EnhancedCauldronBlock extends CauldronBlock {
 			double x = pos.getX() + 0.1875D + (rand.nextFloat() * 0.625D);
 			double y = pos.getY() + (Config.enableBiggerCauldron() ? 0.1875 : 0.375D) + (level * 0.1875D);
 			double z = pos.getZ() + 0.1875D + (rand.nextFloat() * 0.625D);
-			manager.addEffect(new BoilingParticle(world, x, y, z, 0, 0, 0));
+			manager.addEffect(new BoilingParticle((ClientWorld)world, x, y, z, 0, 0, 0));
 		}
 	}
 
 
 	/* 4 bottle support */
 	@Override
-	public void setWaterLevel(World worldIn, @Nonnull BlockPos pos, BlockState state, int level) {
+	public void setWaterLevel(World worldIn, BlockPos pos, BlockState state, int level) {
 		// if 4, set 4 prop
 		if(Config.enableBiggerCauldron()) {
 			state = state.with(LEVEL_EXT, MathHelper.clamp(level, 0, 4));
@@ -225,7 +223,7 @@ public class EnhancedCauldronBlock extends CauldronBlock {
 		if(state.getBlock() instanceof EnhancedCauldronBlock) {
 			return ((EnhancedCauldronBlock)block).getLevel(state);
 		}
-		if(state.getProperties().contains(LEVEL)) {
+		if(state.hasProperty(LEVEL)) {
 			return state.get(LEVEL);
 		}
 		return InspirationsRegistry.getCauldronMax();
@@ -244,7 +242,7 @@ public class EnhancedCauldronBlock extends CauldronBlock {
 		return getLevel(state);
 	}
 
-	public static enum CauldronContents implements IStringSerializable {
+	public enum CauldronContents implements IStringSerializable {
 		FLUID,
 		DYE,
 		POTION;
@@ -255,7 +253,7 @@ public class EnhancedCauldronBlock extends CauldronBlock {
 		}
 
 		@Override
-		public String getName() {
+		public String getString() {
 			return name().toLowerCase(Locale.US);
 		}
 

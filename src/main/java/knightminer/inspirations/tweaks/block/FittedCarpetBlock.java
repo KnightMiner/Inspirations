@@ -13,8 +13,8 @@ import net.minecraft.world.IBlockReader;
 import javax.annotation.Nonnull;
 
 public class FittedCarpetBlock extends FlatCarpetBlock {
-	public FittedCarpetBlock(DyeColor color, Block original) {
-		super(color, original);
+	public FittedCarpetBlock(DyeColor color, Block.Properties props) {
+		super(color, props);
 		this.setDefaultState(this.getStateContainer().getBaseState()
 			.with(NORTHWEST, false)
 			.with(NORTHEAST, false)

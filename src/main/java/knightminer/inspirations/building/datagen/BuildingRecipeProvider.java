@@ -1,9 +1,7 @@
 package knightminer.inspirations.building.datagen;
 
-import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.common.data.ConfigEnabledCondition;
-import knightminer.inspirations.common.data.PulseLoadedCondition;
 import knightminer.inspirations.common.datagen.CondRecipe;
 import knightminer.inspirations.library.InspirationsTags;
 import knightminer.inspirations.library.Util;
@@ -15,18 +13,19 @@ import net.minecraft.data.ShapedRecipeBuilder;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
+import net.minecraft.tags.ITag;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.Tag;
 import net.minecraft.util.IItemProvider;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
 
 import javax.annotation.Nonnull;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public class BuildingRecipeProvider extends RecipeProvider implements IConditionBuilder {
-	ICondition BUILDING = new PulseLoadedCondition(InspirationsBuilding.pulseID);
+	private final ICondition BUILDING = ConfigEnabledCondition.MODULE_BUILDING;
 
 	// Prevent needing to pass this into every method.
 	private Consumer<IFinishedRecipe> consumer = null;
@@ -44,9 +43,6 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
 	@Override
 	protected void registerRecipes(@Nonnull Consumer<IFinishedRecipe> consumer) {
 		this.consumer = consumer;
-		if (!Inspirations.pulseManager.isPulseLoaded(InspirationsBuilding.pulseID)) {
-			return;
-		}
 		// First several one-off recipes.
 		CondRecipe.shaped(InspirationsBuilding.glassDoor)
 				.addCondition(BUILDING)
@@ -184,7 +180,7 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
 				.build(consumer);
 	}
 
-	private void buildingMulch(Block block, Tag<Item> dye) {
+	private void buildingMulch(Block block, ITag<Item> dye) {
 		CondRecipe.shapeless(block)
 				.addCondition(BUILDING)
 				.addCondition(ConfigEnabledCondition.MULCH)
@@ -279,7 +275,7 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
 				.addCondition(BUILDING)
 				.addCondition(ConfigEnabledCondition.FLOWERS)
 				.addCriterion("has_flower", hasItem(flower))
-				.setGroup(dye.getRegistryName().toString())
+				.setGroup(Objects.requireNonNull(dye.getRegistryName()).toString())
 				.addIngredient(flower)
 				.build(consumer, "flower/" + dye.getRegistryName().getPath());
 	}

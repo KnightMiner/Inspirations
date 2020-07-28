@@ -1,6 +1,7 @@
 package knightminer.inspirations.tools.client;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -20,8 +21,9 @@ public class PhotometerPropertyGetter implements IItemPropertyGetter {
 
 	@OnlyIn(Dist.CLIENT)
 	@Override
-	public float call(ItemStack stack, @Nullable World world, @Nullable LivingEntity entityIn) {
+	public float call(ItemStack stack, @Nullable ClientWorld clientWorld, @Nullable LivingEntity entityIn) {
 		Entity entity = entityIn != null ? entityIn : stack.getItemFrame();
+		World world = clientWorld;
 		if(entity == null) {
 			return 0;
 		}
@@ -48,7 +50,7 @@ public class PhotometerPropertyGetter implements IItemPropertyGetter {
 		}
 		// if any part failed, just use the entity position
 		if (pos == null) {
-			pos = new BlockPos(entity);
+			pos = entity.getPosition();
 		}
 
 		// only use block light, skylight is not too useful

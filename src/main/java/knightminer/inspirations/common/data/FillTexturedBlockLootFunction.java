@@ -4,14 +4,15 @@ import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import knightminer.inspirations.library.util.TextureBlockUtil;
+import knightminer.inspirations.shared.InspirationsShared;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.LootContext;
+import net.minecraft.loot.LootFunction;
+import net.minecraft.loot.LootFunctionType;
+import net.minecraft.loot.LootParameter;
+import net.minecraft.loot.LootParameters;
+import net.minecraft.loot.conditions.ILootCondition;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.storage.loot.LootContext;
-import net.minecraft.world.storage.loot.LootFunction;
-import net.minecraft.world.storage.loot.LootParameter;
-import net.minecraft.world.storage.loot.LootParameters;
-import net.minecraft.world.storage.loot.conditions.ILootCondition;
 
 import javax.annotation.Nonnull;
 import java.util.Set;
@@ -45,12 +46,13 @@ public class FillTexturedBlockLootFunction extends LootFunction {
 		return ImmutableSet.of(LootParameters.BLOCK_ENTITY);
 	}
 
-	public static class Serializer extends LootFunction.Serializer<FillTexturedBlockLootFunction> {
-		public Serializer(ResourceLocation location) {
-			super(location, FillTexturedBlockLootFunction.class);
-		}
 
-		@Nonnull
+	@Override
+	public LootFunctionType func_230425_b_() {
+		return InspirationsShared.textureFunction;
+	}
+
+	public static class Serializer extends LootFunction.Serializer<FillTexturedBlockLootFunction> {
 		@Override
 		public FillTexturedBlockLootFunction deserialize(@Nonnull JsonObject json, @Nonnull JsonDeserializationContext ctx, @Nonnull ILootCondition[] conditions) {
 			return new FillTexturedBlockLootFunction(conditions);

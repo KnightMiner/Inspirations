@@ -15,10 +15,10 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.util.Size2i;
 
 import javax.annotation.Nullable;
@@ -129,13 +129,13 @@ public class TextureRecipeExtension implements ICraftingCategoryExtension, ICust
 
 						if (modIdDifferent) {
 							String modName = JEIPlugin.modIdHelper.getFormattedModNameForModId(recipeModId);
-							tooltip.add(TextFormatting.GRAY + I18n.format("jei.tooltip.recipe.by", modName));
+							tooltip.add(new TranslationTextComponent("jei.tooltip.recipe.by", modName).mergeStyle(TextFormatting.GRAY));
 						}
 					}
 
 					boolean showAdvanced = Minecraft.getInstance().gameSettings.advancedItemTooltips || Screen.hasShiftDown();
 					if (showAdvanced) {
-						tooltip.add(TextFormatting.DARK_GRAY + I18n.format("jei.tooltip.recipe.id", registryName.toString()));
+						tooltip.add(new TranslationTextComponent("jei.tooltip.recipe.id", registryName).mergeStyle(TextFormatting.DARK_GRAY));
 					}
 				}
 			});

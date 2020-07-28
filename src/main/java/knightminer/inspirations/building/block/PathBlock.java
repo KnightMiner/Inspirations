@@ -7,8 +7,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.IWaterLoggable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.fluid.IFluidState;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
@@ -49,18 +49,23 @@ public class PathBlock extends HidableBlock implements IWaterLoggable {
 		builder.add(WATERLOGGED);
 	}
 
+	@Override
 	public BlockState getStateForPlacement(BlockItemUseContext context) {
-		IFluidState fluid = context.getWorld().getFluidState(context.getPos());
+		FluidState fluid = context.getWorld().getFluidState(context.getPos());
 		return getDefaultState().with(WATERLOGGED, fluid.getFluid() == Fluids.WATER);
 	}
 
-	@Nonnull
-	public IFluidState getFluidState(BlockState state) {
+	@SuppressWarnings("deprecation")
+	@Override
+	@Deprecated
+	public FluidState getFluidState(BlockState state) {
 	  return state.get(WATERLOGGED) ? Fluids.WATER.getStillFluidState(false) : super.getFluidState(state);
 	}
 
-	@Nonnull
-	public BlockState updatePostPlacement(BlockState state, @Nonnull Direction facing, @Nonnull BlockState facingState, @Nonnull IWorld world, @Nonnull BlockPos currentPos, @Nonnull BlockPos facingPos) {
+	@SuppressWarnings("deprecation")
+	@Override
+	@Deprecated
+	public BlockState updatePostPlacement(BlockState state, Direction facing, BlockState facingState, IWorld world, BlockPos currentPos, BlockPos facingPos) {
 		if (state.get(WATERLOGGED)) {
 			world.getPendingFluidTicks().scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}

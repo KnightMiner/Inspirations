@@ -191,6 +191,6 @@ public class BookshelfTileEntity extends InventoryTileEntity {
 	public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
 		CompoundNBT tag = pkt.getNbtCompound();
 		TextureBlockUtil.updateTextureBlock(this, tag);
-		read(tag);
+		read(this.getBlockState(), tag);
 	}
 }

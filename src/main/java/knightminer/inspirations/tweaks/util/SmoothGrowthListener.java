@@ -41,7 +41,7 @@ public class SmoothGrowthListener implements Consumer<Pre> {
 
     BlockState current = event.getState();
     // at half growth place the seed, gives us 8 ticks on the block, 8 on the seed instead of 16 on the block
-    if (event.getState().getBlock() != crop.get() || !current.has(AGE_0_15) || current.get(AGE_0_15) < 7) {
+    if (event.getState().getBlock() != crop.get() || !current.hasProperty(AGE_0_15) || current.get(AGE_0_15) < 7) {
       return;
     }
 

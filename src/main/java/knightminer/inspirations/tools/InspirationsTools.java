@@ -1,13 +1,9 @@
 package knightminer.inspirations.tools;
 
 import knightminer.inspirations.common.Config;
-import knightminer.inspirations.common.PulseBase;
+import knightminer.inspirations.common.ModuleBase;
 import knightminer.inspirations.common.item.HidableItem;
-import knightminer.inspirations.library.Util;
 import knightminer.inspirations.tools.block.RedstoneChargeBlock;
-import knightminer.inspirations.tools.client.BarometerPropertyGetter;
-import knightminer.inspirations.tools.client.NorthCompassPropertyGetter;
-import knightminer.inspirations.tools.client.PhotometerPropertyGetter;
 import knightminer.inspirations.tools.datagen.ToolsRecipeProvider;
 import knightminer.inspirations.tools.enchantment.AxeDamageEnchantment;
 import knightminer.inspirations.tools.enchantment.AxeLootBonusEnchantment;
@@ -35,8 +31,8 @@ import net.minecraft.enchantment.Enchantments;
 import net.minecraft.enchantment.ProtectionEnchantment;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.IProjectile;
 import net.minecraft.entity.projectile.ArrowEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ArrowItem;
 import net.minecraft.item.DirectionalPlaceContext;
@@ -46,8 +42,8 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.crafting.IRecipeSerializer;
+import net.minecraft.item.crafting.SpecialRecipeSerializer;
 import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
@@ -57,16 +53,19 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
-import net.minecraftforge.registries.IForgeRegistry;
-import slimeknights.mantle.pulsar.pulse.Pulse;
+import slimeknights.mantle.registration.adapter.BlockRegistryAdapter;
+import slimeknights.mantle.registration.adapter.EntityTypeRegistryAdapter;
+import slimeknights.mantle.registration.adapter.ItemRegistryAdapter;
+import slimeknights.mantle.registration.adapter.RegistryAdapter;
 
 import javax.annotation.Nonnull;
 
-@Pulse(id = InspirationsTools.pulseID, description = "Adds various tools or tweaks to vanilla tools")
-public class InspirationsTools extends PulseBase {
+@SuppressWarnings("unused")
+public class InspirationsTools extends ModuleBase {
 	public static final String pulseID = "InspirationsTools";
 
-	public static Object proxy = DistExecutor.callWhenOn(Dist.CLIENT, ()->()->new ToolsClientProxy());
+	@SuppressWarnings("Convert2MethodRef")
+	public static Object proxy = DistExecutor.unsafeCallWhenOn(Dist.CLIENT, ()->()->new ToolsClientProxy());
 
 	// items
 	public static Item lock;
@@ -83,13 +82,7 @@ public class InspirationsTools extends PulseBase {
 	// blocks
 	public static Block redstoneCharge;
 
-	public static EntityType<RedstoneArrow> entRSArrow = buildEntity(EntityType.Builder
-		.<RedstoneArrow>create(RedstoneArrow::new, EntityClassification.MISC)
-		.size(0.5F, 0.5F)
-		.setTrackingRange(4)
-		.setUpdateInterval(20)
-		.setCustomClientFactory((packet, world) -> new RedstoneArrow(InspirationsTools.entRSArrow, world)),
-		"redstone_arrow");
+	public static EntityType<RedstoneArrow> entRSArrow;
 
 	@SubscribeEvent
 	public void setup(FMLCommonSetupEvent event) {
@@ -99,92 +92,70 @@ public class InspirationsTools extends PulseBase {
 
 	@SubscribeEvent
 	public void registerBlocks(Register<Block> event) {
-		IForgeRegistry<Block> r = event.getRegistry();
-
-		redstoneCharge = registerBlock(r, new RedstoneChargeBlock(), "redstone_charge");
+		BlockRegistryAdapter registry = new BlockRegistryAdapter(event.getRegistry());
+		redstoneCharge = registry.register(new RedstoneChargeBlock(), "redstone_charge");
 	}
 
 	@SubscribeEvent
 	@SuppressWarnings("deprecation")
 	public void registerItems(Register<Item> event) {
-		IForgeRegistry<Item> r = event.getRegistry();
-
-		// Reuse...
+		ItemRegistryAdapter registry = new ItemRegistryAdapter(event.getRegistry());
+		Item.Properties materialsProps = new Item.Properties().group(ItemGroup.MATERIALS);
 		Item.Properties toolProps = new Item.Properties().group(ItemGroup.TOOLS);
 
-		redstoneArrow = registerItem(r, new RedstoneArrowItem(toolProps), "charged_arrow");
+		redstoneArrow = registry.register(new RedstoneArrowItem(toolProps), "charged_arrow");
 
-		redstoneCharger = registerItem(r, new RedstoneChargerItem(), "redstone_charger");
+		redstoneCharger = registry.register(new RedstoneChargerItem(), "redstone_charger");
 
-		lock = registerItem(r, new HidableItem(
-			new Item.Properties().group(ItemGroup.MATERIALS),
-			Config.enableLock::get
-		), "lock");
-		key = registerItem(r, new HidableItem(
-			new Item.Properties().group(ItemGroup.MATERIALS),
-			Config.enableLock::get
-		),  "key");
+		lock = registry.register(new HidableItem(materialsProps, Config.enableLock::get), "lock");
+		key = registry.register( new HidableItem(materialsProps, Config.enableLock::get),  "key");
 
-		northCompass = registerItem(r, new HidableItem(toolProps, Config.enableNorthCompass::get), "north_compass");
-		northCompass.addPropertyOverride(Util.getResource("angle"), new NorthCompassPropertyGetter());
+		northCompass = registry.register(new HidableItem(toolProps, Config.enableNorthCompass::get), "north_compass");
+		barometer = registry.register(new HidableItem(toolProps, Config.enableBarometer::get), "barometer");
+		photometer = registry.register(new HidableItem(toolProps, Config.enablePhotometer::get), "photometer");
 
-//		if(Config.renameVanillaCompass.get()) {
-//				Items.COMPASS.translationKey = Util.prefix("origin_compass");
-//		}
-		barometer = registerItem(r, new HidableItem(toolProps, Config.enableBarometer::get), "barometer");
-		barometer.addPropertyOverride(Util.getResource("height"), new BarometerPropertyGetter());
-
-		photometer = registerItem(r, new HidableItem(toolProps, Config.enablePhotometer::get), "photometer");
-		photometer.addPropertyOverride(Util.getResource("light"), new PhotometerPropertyGetter());
-
-
-		// White is the undyed version, so it's available without Config.dyeWaypointCompass() and has no color
-		// in the name.
-		waypointCompasses[DyeColor.WHITE.getId()] = registerItem(r,
-				new WaypointCompassItem(0xDDDDDD, 0xFFC100, Config.enableWaypointCompass::get
-		), "waypoint_compass");
-		waypointCompasses[DyeColor.BLACK.getId()] = registerItem(r,
-																														 new WaypointCompassItem(0x444444, DyeColor.RED.colorValue), "black_waypoint_compass");
-
-		registerWaypointCompass(r, DyeColor.LIGHT_GRAY, DyeColor.WHITE.colorValue);
-		registerWaypointCompass(r, DyeColor.GRAY,       DyeColor.LIGHT_GRAY.colorValue);
-		registerWaypointCompass(r, DyeColor.RED,        DyeColor.ORANGE.colorValue);
-		registerWaypointCompass(r, DyeColor.ORANGE,     DyeColor.YELLOW.colorValue);
-		registerWaypointCompass(r, DyeColor.YELLOW,     0xDBA213);
-		registerWaypointCompass(r, DyeColor.LIME,       DyeColor.BROWN.colorValue);
-		registerWaypointCompass(r, DyeColor.GREEN,      DyeColor.LIME.colorValue);
-		registerWaypointCompass(r, DyeColor.CYAN,       DyeColor.LIGHT_BLUE.colorValue);
-		registerWaypointCompass(r, DyeColor.LIGHT_BLUE, 0x77A9FF);
-		registerWaypointCompass(r, DyeColor.BLUE,       0x7E54FF);
-		registerWaypointCompass(r, DyeColor.PURPLE,     DyeColor.MAGENTA.colorValue);
-		registerWaypointCompass(r, DyeColor.MAGENTA,    DyeColor.PINK.colorValue);
-		registerWaypointCompass(r, DyeColor.PINK,       0xF2BFCE);
-		registerWaypointCompass(r, DyeColor.BROWN,      0xA59072);
+		// TODO: reevaluate
+		// TODO: enum object
+		waypointCompasses[DyeColor.WHITE.getId()] = registry.register(new WaypointCompassItem(0xDDDDDD, 0xFFC100, Config.enableWaypointCompass::get), "waypoint_compass");
+		waypointCompasses[DyeColor.BLACK.getId()] = registry.register(new WaypointCompassItem(0x444444, DyeColor.RED.colorValue), "black_waypoint_compass");
+		registerWaypointCompass(registry, DyeColor.LIGHT_GRAY, DyeColor.WHITE.colorValue);
+		registerWaypointCompass(registry, DyeColor.GRAY,       DyeColor.LIGHT_GRAY.colorValue);
+		registerWaypointCompass(registry, DyeColor.RED,        DyeColor.ORANGE.colorValue);
+		registerWaypointCompass(registry, DyeColor.ORANGE,     DyeColor.YELLOW.colorValue);
+		registerWaypointCompass(registry, DyeColor.YELLOW,     0xDBA213);
+		registerWaypointCompass(registry, DyeColor.LIME,       DyeColor.BROWN.colorValue);
+		registerWaypointCompass(registry, DyeColor.GREEN,      DyeColor.LIME.colorValue);
+		registerWaypointCompass(registry, DyeColor.CYAN,       DyeColor.LIGHT_BLUE.colorValue);
+		registerWaypointCompass(registry, DyeColor.LIGHT_BLUE, 0x77A9FF);
+		registerWaypointCompass(registry, DyeColor.BLUE,       0x7E54FF);
+		registerWaypointCompass(registry, DyeColor.PURPLE,     DyeColor.MAGENTA.colorValue);
+		registerWaypointCompass(registry, DyeColor.MAGENTA,    DyeColor.PINK.colorValue);
+		registerWaypointCompass(registry, DyeColor.PINK,       0xF2BFCE);
+		registerWaypointCompass(registry, DyeColor.BROWN,      0xA59072);
 
 		if(Config.shieldEnchantmentTable()) {
-			register(r, new EnchantableShieldItem(new Item.Properties()
-					.maxDamage(Items.SHIELD.getMaxDamage())
-					.group(ItemGroup.COMBAT)),
-					Items.SHIELD.getRegistryName()
-			);
+			registry.register(new EnchantableShieldItem(new Item.Properties().maxDamage(Items.SHIELD.getMaxDamage()).group(ItemGroup.COMBAT)), Items.SHIELD);
 		}
 	}
 
-	private void registerWaypointCompass(IForgeRegistry<Item> r, DyeColor body, int needle) {
-		waypointCompasses[body.getId()] = registerItem(r,
-				new WaypointCompassItem(body.colorValue, needle),
-				body.getTranslationKey() + "_waypoint_compass"
-		);
+	private void registerWaypointCompass(ItemRegistryAdapter registry, DyeColor body, int needle) {
+		waypointCompasses[body.getId()] = registry.register(new WaypointCompassItem(body.colorValue, needle), body.getString() + "_waypoint_compass");
 	}
 
 	@SubscribeEvent
-	public void registerEntities(Register<EntityType<?>> event) {
-		IForgeRegistry<EntityType<?>> r = event.getRegistry();
-		r.register(entRSArrow);
+	void registerEntities(Register<EntityType<?>> event) {
+		EntityTypeRegistryAdapter registry = new EntityTypeRegistryAdapter(event.getRegistry());
+		entRSArrow = registry.register(EntityType.Builder
+													.<RedstoneArrow>create(RedstoneArrow::new, EntityClassification.MISC)
+													.size(0.5F, 0.5F)
+													.setTrackingRange(4)
+													.setUpdateInterval(20)
+													.setCustomClientFactory((packet, world) -> new RedstoneArrow(InspirationsTools.entRSArrow, world)),
+											"redstone_arrow");
 	}
 
 	@SubscribeEvent
-	public void gatherData(GatherDataEvent event) {
+	void gatherData(GatherDataEvent event) {
 		DataGenerator gen = event.getGenerator();
 		if (event.includeServer()) {
 			gen.addProvider(new ToolsRecipeProvider(gen));
@@ -192,15 +163,15 @@ public class InspirationsTools extends PulseBase {
 	}
 
 	@SubscribeEvent
-	public void registerRecipes(Register<IRecipeSerializer<?>> event) {
-		IForgeRegistry<IRecipeSerializer<?>> r = event.getRegistry();
-		register(r, CopyWaypointCompassRecipe.SERIALIZER, "copy_waypoint_compass");
-		register(r, DyeWaypointCompassRecipe.SERIALIZER, "dye_waypoint_compass");
+	void registerRecipes(Register<IRecipeSerializer<?>> event) {
+		RegistryAdapter<IRecipeSerializer<?>> registry = new RegistryAdapter<>(event.getRegistry());
+		registry.register(new SpecialRecipeSerializer<>(CopyWaypointCompassRecipe::new), "copy_waypoint_compass");
+		registry.register(new DyeWaypointCompassRecipe.Serializer(), "dye_waypoint_compass");
 	}
 
 	@SubscribeEvent
 	public void registerEnchantments(Register<Enchantment> event) {
-		IForgeRegistry<Enchantment> r = event.getRegistry();
+		RegistryAdapter<Enchantment> registry = new RegistryAdapter<>(event.getRegistry());
 
 		if(Config.moreShieldEnchantments.get()) {
 			EquipmentSlotType[] slots = new EquipmentSlotType[]{
@@ -215,25 +186,25 @@ public class InspirationsTools extends PulseBase {
 					(ProtectionEnchantment) Enchantments.PROJECTILE_PROTECTION,
 					(ProtectionEnchantment) Enchantments.BLAST_PROTECTION
 			}) {
-				register(r, new ShieldProtectionEnchantment(ench.getRarity(), ench.protectionType, slots), ench.getRegistryName());
+				registry.register(new ShieldProtectionEnchantment(ench.getRarity(), ench.protectionType, slots), ench);
 			}
-			register(r, new ShieldThornsEnchantment(Enchantments.THORNS.getRarity(), slots), Enchantments.THORNS.getRegistryName());
+			registry.register(new ShieldThornsEnchantment(Enchantments.THORNS.getRarity(), slots), Enchantments.THORNS);
 		}
 
 		if(Config.moreShieldEnchantments.get() || Config.axeWeaponEnchants.get()) {
 			EquipmentSlotType[] slots = new EquipmentSlotType[] {EquipmentSlotType.MAINHAND};
-			register(r, new ExtendedKnockbackEnchantment(Enchantment.Rarity.UNCOMMON, slots), new ResourceLocation("knockback"));
-			register(r, new ExtendedFireAspectEnchantment(Enchantment.Rarity.RARE, slots), new ResourceLocation("fire_aspect"));
+			registry.register(new ExtendedKnockbackEnchantment(Enchantment.Rarity.UNCOMMON, slots), Enchantments.KNOCKBACK);
+			registry.register(new ExtendedFireAspectEnchantment(Enchantment.Rarity.RARE, slots), Enchantments.FIRE_ASPECT);
 			if(Config.axeWeaponEnchants.get()) {
-				register(r, new AxeLootBonusEnchantment(Enchantment.Rarity.RARE, EnchantmentType.WEAPON, slots), new ResourceLocation("looting"));
+				registry.register(new AxeLootBonusEnchantment(Enchantment.Rarity.RARE, EnchantmentType.WEAPON, slots), Enchantments.LOOTING);
 			}
 		}
 
 		if(Config.axeEnchantmentTable.get()) {
 			EquipmentSlotType[] slots = new EquipmentSlotType[] {EquipmentSlotType.MAINHAND};
-			register(r, new AxeDamageEnchantment(Enchantment.Rarity.COMMON, 0, slots), new ResourceLocation("sharpness"));
-			register(r, new AxeDamageEnchantment(Enchantment.Rarity.UNCOMMON, 1, slots), new ResourceLocation("smite"));
-			register(r, new AxeDamageEnchantment(Enchantment.Rarity.UNCOMMON, 2, slots), new ResourceLocation("bane_of_arthropods"));
+			registry.register(new AxeDamageEnchantment(Enchantment.Rarity.COMMON, 0, slots), Enchantments.SHARPNESS);
+			registry.register(new AxeDamageEnchantment(Enchantment.Rarity.UNCOMMON, 1, slots), Enchantments.SMITE);
+			registry.register(new AxeDamageEnchantment(Enchantment.Rarity.UNCOMMON, 2, slots), Enchantments.BANE_OF_ARTHROPODS);
 		}
 	}
 
@@ -241,7 +212,7 @@ public class InspirationsTools extends PulseBase {
 		DispenserBlock.registerDispenseBehavior(redstoneArrow, new ProjectileDispenseBehavior() {
 			@Nonnull
 			@Override
-			protected IProjectile getProjectileEntity(@Nonnull World world, @Nonnull IPosition position, @Nonnull ItemStack stack) {
+			protected ProjectileEntity getProjectileEntity(@Nonnull World world, @Nonnull IPosition position, @Nonnull ItemStack stack) {
 				RedstoneArrow arrow = new RedstoneArrow(world, position.getX(), position.getY(), position.getZ());
 				arrow.pickupStatus = ArrowEntity.PickupStatus.ALLOWED;
 				return arrow;
@@ -251,7 +222,7 @@ public class InspirationsTools extends PulseBase {
 			@Nonnull
 			@Override
 			protected ItemStack dispenseStack(IBlockSource source, ItemStack stack) {
-				this.successful = true;
+				this.setSuccessful(true);
 				World world = source.getWorld();
 				Direction facing = source.getBlockState().get(DispenserBlock.FACING);
 				BlockPos pos = source.getBlockPos().offset(facing);
@@ -264,7 +235,7 @@ public class InspirationsTools extends PulseBase {
 						stack.setCount(0);
 					}
 				} else {
-					this.successful = false;
+					this.setSuccessful(false);
 				}
 
 				return stack;

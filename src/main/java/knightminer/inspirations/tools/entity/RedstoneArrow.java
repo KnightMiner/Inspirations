@@ -16,7 +16,6 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
@@ -51,7 +50,7 @@ public class RedstoneArrow extends AbstractArrowEntity implements IEntityAdditio
 
 	@Override
 	public void writeSpawnData(PacketBuffer buffer) {
-		Entity shooter = this.getShooter();
+		Entity shooter = this.func_234616_v_();
 		buffer.writeInt(shooter != null ? shooter.getEntityId() : 0);
 	}
 
@@ -89,31 +88,26 @@ public class RedstoneArrow extends AbstractArrowEntity implements IEntityAdditio
 	 * Called when the arrow hits a block or an entity
 	 */
 	@Override
-	protected void onHit(RayTraceResult raytrace) {
-		if(raytrace.getType() == RayTraceResult.Type.BLOCK && raytrace instanceof BlockRayTraceResult) {
-			// get to the block the arrow is on
-			Direction sideHit = ((BlockRayTraceResult)raytrace).getFace();
-			BlockPos pos = ((BlockRayTraceResult)raytrace).getPos().offset(sideHit);
+	protected void func_230299_a_(BlockRayTraceResult raytrace) {
+		// get to the block the arrow is on
+		Direction sideHit = raytrace.getFace();
+		BlockPos pos = raytrace.getPos().offset(sideHit);
 
-			// if there is a block there, try the block next to that
+		// if there is a block there, try the block next to that
+		if(!world.getBlockState(pos).isReplaceable(new DirectionalPlaceContext(world, pos, sideHit, ItemStack.EMPTY, sideHit))) {
+			pos = pos.offset(sideHit);
 			if(!world.getBlockState(pos).isReplaceable(new DirectionalPlaceContext(world, pos, sideHit, ItemStack.EMPTY, sideHit))) {
-				pos = pos.offset(sideHit);
-				if(!world.getBlockState(pos).isReplaceable(new DirectionalPlaceContext(world, pos, sideHit, ItemStack.EMPTY, sideHit))) {
-					super.onHit(raytrace);
-					return;
-				}
+				super.func_230299_a_(raytrace);
+				return;
 			}
-
-			world.playSound(null, pos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0F, world.rand.nextFloat() * 0.4F + 0.8F);
-			BlockState state = redstoneCharge.getDefaultState().with(RedstoneChargeBlock.FACING, sideHit.getOpposite());
-			world.setBlockState(pos, state, Constants.BlockFlags.DEFAULT_AND_RERENDER);
-			redstoneCharge.onBlockPlacedBy(world, pos, state, null, ItemStack.EMPTY);
-
-
-			this.remove();
-			return;
 		}
 
-		super.onHit(raytrace);
+		world.playSound(null, pos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0F, world.rand.nextFloat() * 0.4F + 0.8F);
+		BlockState state = redstoneCharge.getDefaultState().with(RedstoneChargeBlock.FACING, sideHit.getOpposite());
+		world.setBlockState(pos, state, Constants.BlockFlags.DEFAULT_AND_RERENDER);
+		redstoneCharge.onBlockPlacedBy(world, pos, state, null, ItemStack.EMPTY);
+
+
+		this.remove();
 	}
 }

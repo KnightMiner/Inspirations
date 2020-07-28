@@ -40,7 +40,7 @@ public class RedstoneChargeBlock extends Block {
 	public RedstoneChargeBlock() {
 		super(Block.Properties.create(Material.MISCELLANEOUS)
 				.hardnessAndResistance(0)
-				.lightValue(2)
+				.setLightLevel((state) -> 2)
 		);
 
 		this.setDefaultState(this.getStateContainer().getBaseState().with(FACING, Direction.DOWN).with(QUICK, false));
@@ -73,18 +73,11 @@ public class RedstoneChargeBlock extends Block {
 	}
 
 	/* Fading */
-	/**
-	 * How many world ticks before ticking
-	 */
-	@Override
-	public int tickRate(IWorldReader world) {
-		return 20;
-	}
 
 	@Override
 	public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack stack) {
 		if (!world.isRemote()) {
-			world.notifyNeighbors(pos.offset(state.get(FACING)), this);
+			world.notifyNeighborsOfStateChange(pos.offset(state.get(FACING)),this);
 			world.getPendingBlockTicks().scheduleTick(pos, this, state.get(QUICK) ? 2 : 20);
 		}
 		super.onBlockPlacedBy(world, pos, state, entity, stack);
@@ -95,8 +88,8 @@ public class RedstoneChargeBlock extends Block {
 	public void onReplaced(BlockState state, @Nonnull World worldIn, @Nonnull BlockPos pos, @Nonnull BlockState newState, boolean isMoving) {
 		if (!isMoving && state.getBlock() != newState.getBlock()) {
          super.onReplaced(state, worldIn, pos, newState, isMoving);
-         worldIn.notifyNeighbors(pos, this);
-         worldIn.notifyNeighbors(pos.offset(state.get(FACING)), this);
+         worldIn.notifyNeighborsOfStateChange(pos, this);
+         worldIn.notifyNeighborsOfStateChange(pos.offset(state.get(FACING)), this);
       }
 	}
 

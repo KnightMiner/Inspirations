@@ -8,16 +8,12 @@ import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.util.TextureBlockUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.fluid.IFluidState;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryHelper;
-import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -34,16 +30,15 @@ import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.shapes.IBooleanFunction;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkHooks;
 import slimeknights.mantle.block.InventoryBlock;
 
 import javax.annotation.Nonnull;
@@ -84,23 +79,11 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
 	}
 
 	@Override
-	public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
+	public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
 		super.onBlockPlacedBy(world, pos, state, placer, stack);
 		TextureBlockUtil.updateTextureBlock(world, pos, stack);
 	}
 
-	@Override
-	protected boolean openGui(PlayerEntity player, World world, BlockPos pos) {
-		if(!(player instanceof ServerPlayerEntity)) {
-			throw new AssertionError("Needs to be server!");
-		}
-		TileEntity te = world.getTileEntity(pos);
-		if(te instanceof BookshelfTileEntity) {
-			NetworkHooks.openGui((ServerPlayerEntity) player, (INamedContainerProvider) te, pos);
-			return true;
-		}
-		return false;
-	}
 
 	/* Enable/Disabling */
 
@@ -156,8 +139,15 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
 		return ActionResultType.SUCCESS;
 	}
 
-	private static int bookClicked(Direction facing, BlockPos pos, Vec3d clickWorld) {
-		Vec3d click = new Vec3d(clickWorld.x - pos.getX(), clickWorld.y - pos.getY(), clickWorld.z - pos.getZ());
+	/**
+	 * Gets the book that was clicked
+	 * @param facing      Direction of the bookshelf
+	 * @param pos         Block position
+	 * @param clickWorld  World relative click position
+	 * @return  Index of clicked book, or -1 if no book clicked
+	 */
+	private static int bookClicked(Direction facing, BlockPos pos, Vector3d clickWorld) {
+		Vector3d click = new Vector3d(clickWorld.x - pos.getX(), clickWorld.y - pos.getY(), clickWorld.z - pos.getZ());
 		// if we did not click between the shelves, ignore
 		if(click.y < 0.0625 || click.y > 0.9375) {
 			return -1;
@@ -215,8 +205,8 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
 			double z2 = offZ == 1 ? 0.5 : 1;
 
 			// Rotate the 2 X-Z points correctly for the inset shelves.
-			Vec3d min = new Vec3d(-7 / 16.0, 0, -7 / 16.0).rotateYaw(-(float) Math.PI / 2F * side.getHorizontalIndex());
-			Vec3d max = new Vec3d(7 / 16.0, 1, 0).rotateYaw(-(float) Math.PI / 2F * side.getHorizontalIndex());
+			Vector3d min = new Vector3d(-7 / 16.0, 0, -7 / 16.0).rotateYaw(-(float) Math.PI / 2F * side.getHorizontalIndex());
+			Vector3d max = new Vector3d(7 / 16.0, 1, 0).rotateYaw(-(float) Math.PI / 2F * side.getHorizontalIndex());
 
 			// Then assemble.
 			builder.put(side, VoxelShapes.combineAndSimplify(
@@ -292,20 +282,20 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
 		return TextureBlockUtil.getPickBlock(world, pos, state);
 	}
 
-	@Override
-	public boolean removedByPlayer(BlockState state, World world, BlockPos pos, PlayerEntity player, boolean willHarvest, IFluidState fluid) {
-		// we pull up a few calls to this point in time because we still have the TE here
-		// the execution otherwise is equivalent to vanilla order
-		this.onBlockHarvested(world, pos, state, player);
-		if(willHarvest) {
-			this.harvestBlock(world, player, pos, state, world.getTileEntity(pos), player.getHeldItemMainhand());
-		}
-
-		world.setBlockState(pos, Blocks.AIR.getDefaultState());
-		// return false to prevent the above called functions to be called again
-		// side effect of this is that no xp will be dropped. but it shoudln't anyway from a bookshelf :P
-		return false;
-	}
+//	@Override
+//	public boolean removedByPlayer(BlockState state, World world, BlockPos pos, PlayerEntity player, boolean willHarvest, IFluidState fluid) {
+//		// we pull up a few calls to this point in time because we still have the TE here
+//		// the execution otherwise is equivalent to vanilla order
+//		this.onBlockHarvested(world, pos, state, player);
+//		if(willHarvest) {
+//			this.harvestBlock(world, player, pos, state, world.getTileEntity(pos), player.getHeldItemMainhand());
+//		}
+//
+//		world.setBlockState(pos, Blocks.AIR.getDefaultState());
+//		// return false to prevent the above called functions to be called again
+//		// side effect of this is that no xp will be dropped. but it shoudln't anyway from a bookshelf :P
+//		return false;
+//	}
 
 	@Override
 	public float getEnchantPowerBonus(BlockState state, IWorldReader world, BlockPos pos) {

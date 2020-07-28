@@ -3,25 +3,26 @@ package knightminer.inspirations.common.network;
 import knightminer.inspirations.shared.SharedEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.network.NetworkEvent;
-import slimeknights.mantle.network.AbstractPacket;
+import slimeknights.mantle.network.packet.IThreadsafePacket;
 
-import java.util.function.Supplier;
+import javax.annotation.Nonnull;
 
-public class MilkablePacket extends AbstractPacket {
+@SuppressWarnings("WeakerAccess")
+public class MilkablePacket implements IThreadsafePacket {
 
-	private int entityID;
-	private boolean milkable;
-
-	private MilkablePacket() {}
+	private final int entityID;
+	private final boolean milkable;
 
 	public MilkablePacket(Entity entity, boolean milkable) {
-		entityID = entity.getEntityId();
+		this.entityID = entity.getEntityId();
 		this.milkable = milkable;
+	}
+
+	public MilkablePacket(PacketBuffer buf) {
+		this.entityID = buf.readInt();
+		this.milkable = buf.readBoolean();
 	}
 
 	@Override
@@ -30,32 +31,22 @@ public class MilkablePacket extends AbstractPacket {
 		buf.writeBoolean(milkable);
 	}
 
-	public static MilkablePacket decode(PacketBuffer buf) {
-		MilkablePacket packet = new MilkablePacket();
-		packet.entityID = buf.readInt();
-		packet.milkable = buf.readBoolean();
-		return packet;
-	}
-
 	@Override
-	public void handle(Supplier<NetworkEvent.Context> context) {
-		// only send to clients.
-		switch (context.get().getDirection()) {
-		  case LOGIN_TO_SERVER:
-		  case PLAY_TO_SERVER:
-			throw new UnsupportedOperationException("Clientside only");
-		}
-		context.get().setPacketHandled(true);
-
-		// This should never be called on servers, but protect access to the clientside MC.
-		Entity entity = DistExecutor.callWhenOn(Dist.CLIENT, () -> () -> Minecraft.getInstance().world.getEntityByID(entityID));
-		if(entity == null) {
-			return;
-		}
-
-		CompoundNBT tags = entity.getPersistentData();
-		// value for not milkable does not matter as long as its greater than 0
-		tags.putShort(SharedEvents.TAG_MILKCOOLDOWN, (short)(milkable ? 0 : 100));
+	public void handleThreadsafe(@Nonnull NetworkEvent.Context context) {
+		HandleClient.handle(this);
 	}
 
+	/** Simply a separate class to safely load the client side logic */
+	private static class HandleClient {
+		private static void handle(MilkablePacket packet) {
+			assert Minecraft.getInstance().world != null;
+			Entity entity = Minecraft.getInstance().world.getEntityByID(packet.entityID);
+			if(entity == null) {
+				return;
+			}
+
+			// value for not milkable does not matter as long as its greater than 0
+			entity.getPersistentData().putShort(SharedEvents.TAG_MILKCOOLDOWN, (short)(packet.milkable ? 0 : 100));
+		}
+	}
 }

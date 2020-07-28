@@ -10,6 +10,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.SoundEvents;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -33,7 +34,7 @@ public class SimpleDyedBottleItem extends HidableItem {
 
 	/** Dye sheep on right click with a bottle */
 	@Override
-	public boolean itemInteractionForEntity(ItemStack stack, PlayerEntity player, LivingEntity target, Hand hand) {
+	public ActionResultType itemInteractionForEntity(ItemStack stack, PlayerEntity player, LivingEntity target, Hand hand) {
 		if (target instanceof SheepEntity) {
 			SheepEntity sheep = (SheepEntity)target;
 			if (!sheep.getSheared() && sheep.getFleeceColor() != color) {
@@ -49,8 +50,8 @@ public class SimpleDyedBottleItem extends HidableItem {
 					ItemHandlerHelper.giveItemToPlayer(player, bottle);
 				}
 			}
-			return true;
+			return ActionResultType.SUCCESS;
 		}
-		return false;
+		return ActionResultType.PASS;
 	}
 }

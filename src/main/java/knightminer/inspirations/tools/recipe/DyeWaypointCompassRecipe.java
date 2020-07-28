@@ -1,9 +1,11 @@
 package knightminer.inspirations.tools.recipe;
 
 import com.google.gson.JsonObject;
+import knightminer.inspirations.library.recipe.RecipeSerializers;
 import knightminer.inspirations.tools.item.WaypointCompassItem;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.item.crafting.ShapelessRecipe;
 import net.minecraft.network.PacketBuffer;
@@ -41,7 +43,10 @@ public class DyeWaypointCompassRecipe extends ShapelessRecipe {
 		return output;
 	}
 
-	public static Serializer SERIALIZER = new Serializer();
+	@Override
+	public IRecipeSerializer<?> getSerializer() {
+		return RecipeSerializers.dye_waypoint_compass;
+	}
 
 	public static class Serializer extends ShapelessRecipe.Serializer {
 		// This recipe has the exact same options as the parent type, redirect to that code.

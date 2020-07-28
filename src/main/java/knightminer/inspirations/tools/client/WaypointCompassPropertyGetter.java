@@ -2,6 +2,7 @@ package knightminer.inspirations.tools.client;
 
 import knightminer.inspirations.tools.item.WaypointCompassItem;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemFrameEntity;
@@ -9,8 +10,8 @@ import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.DimensionType;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -23,13 +24,14 @@ public class WaypointCompassPropertyGetter implements IItemPropertyGetter {
 
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public float call(@Nonnull ItemStack stack, @Nullable World world, @Nullable LivingEntity entityIn) {
+	public float call(@Nonnull ItemStack stack, @Nullable ClientWorld clientWorld, @Nullable LivingEntity entityIn) {
 		if (entityIn == null && !stack.isOnItemFrame()) {
 			return 0.0F;
 		}
 		boolean isHeld = entityIn != null;
 		Entity entity = isHeld ? entityIn : stack.getItemFrame();
 
+		World world = clientWorld;
 		if (world == null || entity == null) {
 			if(entity == null || entity.world == null) {
 				return 0.0F;
@@ -52,7 +54,7 @@ public class WaypointCompassPropertyGetter implements IItemPropertyGetter {
 	private double getAngle(ItemStack stack, @Nonnull World world, @Nonnull Entity entity, boolean isHeld) {
 		DimensionType dimension = WaypointCompassItem.getDimensionType(stack);
 		if (dimension != null) {
-			BlockPos pos = WaypointCompassItem.getPos(stack, dimension, world.getDimension().getType());
+			BlockPos pos = WaypointCompassItem.getPos(stack, dimension, null/*world.getDimension().getType()*/);
 			if (pos != null) {
 				double entityAngle = isHeld ? (double)entity.rotationYaw : this.getFrameRotation((ItemFrameEntity) entity);
 				entityAngle = MathHelper.positiveModulo(entityAngle / 360.0D, 1.0D);

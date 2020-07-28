@@ -1,7 +1,7 @@
 package knightminer.inspirations.recipes;
 
 import knightminer.inspirations.common.Config;
-import knightminer.inspirations.common.PulseBase;
+import knightminer.inspirations.common.ModuleBase;
 import knightminer.inspirations.common.item.HidableItem;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.recipe.cauldron.BrewingCauldronRecipe;
@@ -43,7 +43,6 @@ import net.minecraft.potion.PotionBrewing;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.potion.Potions;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvents;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
@@ -56,16 +55,17 @@ import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.registries.IForgeRegistry;
-import slimeknights.mantle.pulsar.pulse.Pulse;
+import slimeknights.mantle.registration.adapter.BlockRegistryAdapter;
+import slimeknights.mantle.registration.adapter.ItemRegistryAdapter;
+import slimeknights.mantle.registration.object.EnumObject;
 import slimeknights.mantle.util.RecipeMatch;
 
-import java.util.Map;
-
-@Pulse(id = InspirationsRecipes.pulseID, description = "Adds additional recipe types, including cauldrons and anvil smashing")
-public class InspirationsRecipes extends PulseBase {
+@SuppressWarnings({"WeakerAccess", "unused"})
+public class InspirationsRecipes extends ModuleBase {
 	public static final String pulseID = "InspirationsRecipes";
 
-	public static Object proxy = DistExecutor.callWhenOn(Dist.CLIENT, ()->()->new RecipesClientProxy());
+	@SuppressWarnings("Convert2MethodRef")
+	public static Object proxy = DistExecutor.unsafeCallWhenOn(Dist.CLIENT, ()->()->new RecipesClientProxy());
 
 	// blocks
 	public static Block fullAnvil;
@@ -77,7 +77,7 @@ public class InspirationsRecipes extends PulseBase {
 	// items
 	public static Item splashBottle;
 	public static Item lingeringBottle;
-	public static Map<DyeColor,SimpleDyedBottleItem> simpleDyedWaterBottle;
+	public static EnumObject<DyeColor,SimpleDyedBottleItem> simpleDyedWaterBottle;
 	public static MixedDyedBottleItem mixedDyedWaterBottle;
 
 	// fluids
@@ -88,7 +88,7 @@ public class InspirationsRecipes extends PulseBase {
 
 
 	@SubscribeEvent
-	public void preInit(FMLCommonSetupEvent event) {
+	void preInit(FMLCommonSetupEvent event) {
 		//TODO: reimplement
 		if(Config.enableCauldronFluids()) {
 			//mushroomStew = registerColoredFluid("mushroom_stew", 0xFFCD8C6F);
@@ -101,40 +101,30 @@ public class InspirationsRecipes extends PulseBase {
 	}
 
 	@SubscribeEvent
-	public void registerBlocks(Register<Block> event) {
-		IForgeRegistry<Block> r = event.getRegistry();
+	void registerBlocks(Register<Block> event) {
+		BlockRegistryAdapter registry = new BlockRegistryAdapter(event.getRegistry());
 
 		if(Config.enableAnvilSmashing.get()) {
-			fullAnvil = new SmashingAnvilBlock(Blocks.ANVIL);
-			chippedAnvil = new SmashingAnvilBlock(Blocks.CHIPPED_ANVIL);
-			damagedAnvil = new SmashingAnvilBlock(Blocks.DAMAGED_ANVIL);
-			r.registerAll(fullAnvil, chippedAnvil, damagedAnvil);
+			registry.registerOverride(SmashingAnvilBlock::new, Blocks.ANVIL);
+			registry.registerOverride(SmashingAnvilBlock::new, Blocks.CHIPPED_ANVIL);
+			registry.registerOverride(SmashingAnvilBlock::new, Blocks.DAMAGED_ANVIL);
 		}
 		if(Config.enableExtendedCauldron()) {
-			cauldron = register(r, new EnhancedCauldronBlock(), Blocks.CAULDRON.getRegistryName());
+			cauldron = registry.registerOverride(EnhancedCauldronBlock::new, Blocks.CAULDRON);
 		}
 	}
 
 	@SubscribeEvent
-	public void registerItems(Register<Item> event) {
+	void registerItems(Register<Item> event) {
 		IForgeRegistry<Item> r = event.getRegistry();
+		ItemRegistryAdapter registry = new ItemRegistryAdapter(event.getRegistry());
+		Item.Properties brewingProps = new Item.Properties().group(ItemGroup.BREWING);
 
-		splashBottle = registerItem(r, new HidableItem(
-				new Item.Properties().group(ItemGroup.BREWING),
-				Config::enableCauldronPotions
-		), "splash_bottle");
-		lingeringBottle = registerItem(r, new HidableItem(
-				new Item.Properties().group(ItemGroup.BREWING),
-				Config::enableCauldronPotions
-		), "lingering_bottle");
+		splashBottle = registry.register(new HidableItem(brewingProps, Config::enableCauldronPotions), "splash_bottle");
+		lingeringBottle = registry.register(new HidableItem(brewingProps, Config::enableCauldronPotions), "lingering_bottle");
 
-		for(DyeColor color: DyeColor.values()) {
-			simpleDyedWaterBottle.put(color, registerItem(r,
-					new SimpleDyedBottleItem(color),
-					color.getName() + "_dyed_bottle"
-			));
-		}
-		mixedDyedWaterBottle = registerItem(r, new MixedDyedBottleItem(), "mixed_dyed_bottle");
+		simpleDyedWaterBottle = registry.registerEnum(SimpleDyedBottleItem::new, DyeColor.values(), "dyed_bottle");
+		mixedDyedWaterBottle = registry.register(new MixedDyedBottleItem(), "mixed_dyed_bottle");
 	}
 
 	/* TODO: reimplement
@@ -176,7 +166,7 @@ public class InspirationsRecipes extends PulseBase {
 	}*/
 
 	@SubscribeEvent
-	public void init(FMLCommonSetupEvent event) {
+	void init(FMLCommonSetupEvent event) {
 		InspirationsRegistry.registerAnvilBreaking(Material.GLASS);
 		if(Config.enableCauldronRecipes()) {
 			registerCauldronRecipes();
@@ -185,7 +175,7 @@ public class InspirationsRecipes extends PulseBase {
 	}
 
 	@SubscribeEvent
-	public void postInit(InterModProcessEvent event) {
+	void postInit(InterModProcessEvent event) {
 		MinecraftForge.EVENT_BUS.register(RecipesEvents.class);
 		registerPostCauldronRecipes();
 	}
@@ -302,9 +292,7 @@ public class InspirationsRecipes extends PulseBase {
 
 	private static void addPotionBottle(Item potion, ItemStack bottle, String bottleTag) {
 		InspirationsRegistry.addCauldronRecipe(new PotionFillCauldron(potion, bottle));
-		InspirationsRegistry.addCauldronRecipe(new PotionEmptyCauldron(potion,
-																																	 new ItemTags.Wrapper(new ResourceLocation("forge", bottleTag))
-		));
+		InspirationsRegistry.addCauldronRecipe(new PotionEmptyCauldron(potion, ItemTags.makeWrapperTag("forge:" + bottleTag)));
 	}
 
 	private static void addStewRecipes(ItemStack stew, Fluid fluid, ItemStack ingredient) {
@@ -324,6 +312,7 @@ public class InspirationsRecipes extends PulseBase {
 				Ingredient ingredient = recipe.getIngredient();
 
 				// null checks because some dumb mod is returning null for the input or output
+				//noinspection ConstantConditions
 				if (ingredient == null || inputIngredient == null || outputStack == null){
 					continue;
 				}

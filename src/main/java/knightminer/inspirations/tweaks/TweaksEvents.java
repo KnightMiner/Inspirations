@@ -24,7 +24,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.player.BonemealEvent;
@@ -52,8 +52,8 @@ public class TweaksEvents {
 			Entity target = event.getTarget();
 			if(target instanceof PigEntity) {
 				PigEntity pig = (PigEntity) target;
-				if(pig.getSaddled()) {
-					pig.setSaddled(false);
+				if(pig.isHorseSaddled()) {
+					pig.field_234214_bx_.setSaddledFromBoolean(false);
 					pig.world.playSound(player, pig.getPosX(), pig.getPosY(), pig.getPosZ(), SoundEvents.ENTITY_PIG_SADDLE, SoundCategory.NEUTRAL, 0.5F, 1.0F);
 					ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(Items.SADDLE), player.inventory.currentItem);
 					event.setCanceled(true);
@@ -270,13 +270,13 @@ public class TweaksEvents {
 			return;
 		}
 		// actually hit the lily pad
-		Vec3d vec = entity.getPositionVector();
+		Vector3d vec = entity.getPositionVec();
 		if(vec.y % 1 > 0.09375) {
 			return;
 		}
 
 		// build a list of lily pads we hit
-		BlockPos blockPos = entity.getPosition();
+		BlockPos blockPos = entity.func_233580_cy_();
 		BlockPos[] posList = new BlockPos[4];
 		int i = 0;
 		posList[i++] = blockPos;
@@ -345,7 +345,7 @@ public class TweaksEvents {
 				// no tag means we add it as part of milking
 				tags.putShort(SharedEvents.TAG_MILKCOOLDOWN, Config.milkCooldownTime.get().shortValue());
 				if (!event.getWorld().isRemote) {
-					InspirationsNetwork.sendToClients(event.getWorld(), target.getPosition(), new MilkablePacket(target, false));
+					InspirationsNetwork.sendToClients(event.getWorld(), target.func_233580_cy_(), new MilkablePacket(target, false));
 				}
 			}
 		}

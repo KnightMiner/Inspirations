@@ -6,8 +6,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.HopperBlock;
 import net.minecraft.block.IWaterLoggable;
 import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.fluid.IFluidState;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.tileentity.HopperTileEntity;
@@ -60,7 +60,7 @@ public class DryHopperBlock extends HopperBlock implements IWaterLoggable {
 	}
 
 	@Override
-	public boolean receiveFluid(@Nonnull IWorld world, @Nonnull BlockPos pos, BlockState state, @Nonnull IFluidState fluid) {
+	public boolean receiveFluid(IWorld world, BlockPos pos, BlockState state, FluidState fluid) {
 		if (fluid.getFluid() == Fluids.WATER) {
 			if (!world.isRemote()) {
 				// Swap the block but don't alter the properties itself.

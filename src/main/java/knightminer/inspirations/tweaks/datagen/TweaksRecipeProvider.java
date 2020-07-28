@@ -1,9 +1,7 @@
 package knightminer.inspirations.tweaks.datagen;
 
 import knightminer.inspirations.common.data.ConfigEnabledCondition;
-import knightminer.inspirations.common.data.PulseLoadedCondition;
 import knightminer.inspirations.common.datagen.CondRecipe;
-import knightminer.inspirations.tweaks.InspirationsTweaks;
 import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraft.advancements.criterion.EnchantmentPredicate;
 import net.minecraft.advancements.criterion.ItemPredicate;
@@ -21,8 +19,8 @@ import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public class TweaksRecipeProvider extends RecipeProvider implements IConditionBuilder {
-	ICondition TWEAKS = new PulseLoadedCondition(InspirationsTweaks.pulseID);
-	ICondition UTILITY = new PulseLoadedCondition(InspirationsUtility.pulseID);
+	private static final ICondition TWEAKS = ConfigEnabledCondition.MODULE_TWEAKS;
+	private static final ICondition UTILITY = ConfigEnabledCondition.MODULE_UTILITY;
 
 	public TweaksRecipeProvider(DataGenerator gen) {
 		super(gen);
@@ -48,8 +46,8 @@ public class TweaksRecipeProvider extends RecipeProvider implements IConditionBu
 						InspirationsUtility.collector.asItem(),
 						MinMaxBounds.IntBound.atLeast(5),
 						MinMaxBounds.IntBound.UNBOUNDED,
-						EnchantmentPredicate.field_226534_b_,
-						EnchantmentPredicate.field_226534_b_,
+						EnchantmentPredicate.enchantments,
+						EnchantmentPredicate.enchantments,
 						null, // potion
 						NBTPredicate.ANY
 				)))
@@ -72,8 +70,8 @@ public class TweaksRecipeProvider extends RecipeProvider implements IConditionBu
 						Items.DISPENSER,
 						MinMaxBounds.IntBound.atLeast(5),
 						MinMaxBounds.IntBound.UNBOUNDED,
-						EnchantmentPredicate.field_226534_b_,
-						EnchantmentPredicate.field_226534_b_,
+						EnchantmentPredicate.enchantments,
+						EnchantmentPredicate.enchantments,
 						null, // potion
 						NBTPredicate.ANY
 				)))

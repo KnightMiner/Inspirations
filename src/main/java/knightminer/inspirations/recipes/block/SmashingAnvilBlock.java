@@ -6,17 +6,17 @@ import net.minecraft.block.AnvilBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.item.FallingBlockEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
-import java.util.Objects;
 
 public class SmashingAnvilBlock extends AnvilBlock {
 
-	public SmashingAnvilBlock(Block original) {
-		super(Block.Properties.from(original));
-		setRegistryName(Objects.requireNonNull(original.getRegistryName()));
+	public SmashingAnvilBlock(Block.Properties props) {
+		super(props);
 	}
 
 	// Replace this to handle our different blocks.
@@ -33,13 +33,21 @@ public class SmashingAnvilBlock extends AnvilBlock {
    }
 
 	@Override
-	public void onEndFalling(World world, BlockPos pos, BlockState anvil, BlockState state) {
+	public void onEndFalling(World world, BlockPos pos, BlockState anvil, BlockState target, FallingBlockEntity entity) {
 		BlockPos down = pos.down();
 		if(!smashBlock(world, down, world.getBlockState(down))) {
-			super.onEndFalling(world, pos, anvil, state);
+			super.onEndFalling(world, pos, anvil, target, entity);
 		}
 	}
 
+	/**
+	 * Base logic to smash a block
+	 * @param world  World instance
+	 * @param pos    Position target
+	 * @param state  State being smashed
+	 * @return  True if somethign was smashed
+	 */
+	@SuppressWarnings("WeakerAccess")
 	public static boolean smashBlock(World world, BlockPos pos, BlockState state) {
 		// if we started on air, just return true
 		if(state.getBlock() == Blocks.AIR) {
@@ -60,7 +68,7 @@ public class SmashingAnvilBlock extends AnvilBlock {
 			world.destroyBlock(pos, true);
 		} else {
 			// breaking particles
-			world.playEvent(2001, pos, Block.getStateId(state));
+			world.playEvent(Constants.WorldEvents.BREAK_BLOCK_EFFECTS, pos, Block.getStateId(state));
 			world.setBlockState(pos, transformation);
 		}
 		return true;

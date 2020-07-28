@@ -49,6 +49,6 @@ public class DyeCauldronRecipe extends RecipeMatchCauldronRecipe {
 
 	@Override
 	public String toString() {
-		return String.format("DyeCauldronRecipe: %s dyed %s", getResult().toString(), color.getName());
+		return String.format("DyeCauldronRecipe: %s dyed %s", getResult().toString(), color.getString());
 	}
 }

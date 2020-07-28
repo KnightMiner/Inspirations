@@ -13,7 +13,7 @@ import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.item.crafting.ShapedRecipe;
 import net.minecraft.item.crafting.SpecialRecipeSerializer;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.ITag;
 import net.minecraft.util.IItemProvider;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
@@ -172,7 +172,7 @@ public class CondRecipe {
 			return textureSource(Ingredient.fromItems(item));
 		}
 
-		public ShapedBuilder textureSource(Tag<Item> tag) {
+		public ShapedBuilder textureSource(ITag<Item> tag) {
 			return textureSource(Ingredient.fromTag(tag));
 		}
 

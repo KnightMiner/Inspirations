@@ -33,8 +33,8 @@ public class FlatCarpetBlock extends CarpetBlock {
 	// No bits set.
 	public static final int SHAPE_FLAT = 0;
 
-    public FlatCarpetBlock(DyeColor color, Block original) {
-        super(color, Block.Properties.from(original).hardnessAndResistance(0.1F));
+    public FlatCarpetBlock(DyeColor color, Block.Properties props) {
+        super(color, props);
     }
 
 	@Nonnull

@@ -33,9 +33,9 @@ public class TorchLeverWallBlock extends WallTorchBlock {
 				.create(Material.MISCELLANEOUS)
 				.doesNotBlockMovement()
 				.hardnessAndResistance(0)
-				.lightValue(14)
+				.setLightLevel(state -> 14)
 				.tickRandomly()
-				.sound(SoundType.WOOD)
+				.sound(SoundType.WOOD), ParticleTypes.FLAME
 		);
 		setDefaultState(getDefaultState().with(POWERED, false));
     }
@@ -77,7 +77,7 @@ public class TorchLeverWallBlock extends WallTorchBlock {
 		}
 
 		// update state
-		state = state.cycle(POWERED);
+		state = state.func_235896_a_(POWERED);
 		world.setBlockState(pos, state, 3);
 		// play sound
 		float pitch = state.get(POWERED) ? 0.6F : 0.5F;

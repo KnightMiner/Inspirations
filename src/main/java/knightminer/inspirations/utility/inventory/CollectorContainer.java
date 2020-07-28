@@ -5,9 +5,6 @@ import knightminer.inspirations.utility.tileentity.CollectorTileEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.network.IContainerFactory;
 import slimeknights.mantle.inventory.MultiModuleContainer;
 
 public class CollectorContainer extends MultiModuleContainer<CollectorTileEntity> {
@@ -21,16 +18,7 @@ public class CollectorContainer extends MultiModuleContainer<CollectorTileEntity
 		addInventorySlots();
 	}
 
-	public static class Factory implements IContainerFactory<CollectorContainer> {
-		@Override
-		public CollectorContainer create(int windowId, PlayerInventory inv, PacketBuffer data) {
-			// Create the container on the clientside.
-			BlockPos pos = data.readBlockPos();
-			TileEntity te = inv.player.world.getTileEntity(pos);
-			if (te instanceof CollectorTileEntity) {
-				return new CollectorContainer(windowId, inv, (CollectorTileEntity) te);
-			}
-			throw new AssertionError(String.format("No collector at %s!", pos));
-		}
+	public CollectorContainer(int windowId, PlayerInventory inv, PacketBuffer data) {
+		this(windowId, inv, getTileEntityFromBuf(data, CollectorTileEntity.class));
 	}
 }

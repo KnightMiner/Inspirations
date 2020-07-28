@@ -2,12 +2,13 @@ package knightminer.inspirations.common.item;
 
 import knightminer.inspirations.library.util.TextureBlockUtil;
 import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.ITag;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
@@ -18,9 +19,9 @@ import java.util.List;
 
 public class TextureBlockItem extends HidableBlockItem {
 
-	private final Tag<Item> texTag;
+	private final ITag<Item> texTag;
 
-	public TextureBlockItem(Block block, BlockItem.Properties props, Tag<Item> texTag) {
+	public TextureBlockItem(Block block, BlockItem.Properties props, ITag<Item> texTag) {
 		super(block, props);
 		this.texTag = texTag;
 	}
@@ -40,8 +41,8 @@ public class TextureBlockItem extends HidableBlockItem {
 		}
 
 		Block block = TextureBlockUtil.getTextureBlock(stack);
-		if(block != null) {
-			tooltip.add(block.getNameTextComponent());
+		if(block != Blocks.AIR) {
+			tooltip.add(block.getTranslatedName());
 		}
 	}
 }

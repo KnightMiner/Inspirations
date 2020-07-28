@@ -30,7 +30,7 @@ public class CactusCropBlock extends BlockCropBlock {
 			makeCuboidShape(1, 0, 1, 15, 14, 15)
 	};
 	public CactusCropBlock() {
-		super(Blocks.CACTUS, PlantType.Desert);
+		super(Blocks.CACTUS, PlantType.DESERT);
 	}
 
 	@Override

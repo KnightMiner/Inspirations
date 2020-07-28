@@ -7,6 +7,7 @@ import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import knightminer.inspirations.Inspirations;
+import knightminer.inspirations.library.client.ClientUtil;
 import knightminer.inspirations.library.util.TextureBlockUtil;
 import knightminer.inspirations.shared.SharedClientProxy;
 import net.minecraft.block.Block;
@@ -18,22 +19,21 @@ import net.minecraft.client.renderer.model.BlockPart;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.IUnbakedModel;
 import net.minecraft.client.renderer.model.ItemOverrideList;
-import net.minecraft.client.renderer.model.Material;
 import net.minecraft.client.renderer.model.ModelBakery;
 import net.minecraft.client.renderer.model.ModelRotation;
+import net.minecraft.client.renderer.model.RenderMaterial;
 import net.minecraft.client.renderer.model.Variant;
 import net.minecraft.client.renderer.model.VariantList;
 import net.minecraft.client.renderer.model.WeightedBakedModel;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
 import net.minecraftforge.client.model.BakedModelWrapper;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelProperty;
-import slimeknights.mantle.client.ModelHelper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -204,9 +204,9 @@ public class TextureModel extends BakedModelWrapper<IBakedModel> {
 		}
 
 		// Map the unbakedModel's texture references as if it was the parent of a unbakedModel with the retexture map as its textures.
-		Map<String, Either<Material,String>> remapped = Maps.newHashMap();
-		for (Map.Entry<String, Either<Material,String>> e : newModel.textures.entrySet()) {
-			Either<Material,String> either = e.getValue();
+		Map<String, Either<RenderMaterial,String>> remapped = Maps.newHashMap();
+		for (Map.Entry<String, Either<RenderMaterial,String>> e : newModel.textures.entrySet()) {
+			Either<RenderMaterial,String> either = e.getValue();
 			either.ifRight((path) -> {
 				if (path.startsWith("#")) {
 					String key = path.substring(1);
@@ -276,12 +276,12 @@ public class TextureModel extends BakedModelWrapper<IBakedModel> {
 
 		@Nullable
 		@Override
-		public IBakedModel getModelWithOverrides(@Nonnull IBakedModel originalModel, @Nonnull ItemStack stack, @Nullable World world, @Nullable LivingEntity entity) {
+		public IBakedModel func_239290_a_(IBakedModel originalModel, ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
 			if(originalModel instanceof TextureModel) {
 				// read out the data on the itemstack
 				Block block = TextureBlockUtil.getTextureBlock(stack);
 				if(block != Blocks.AIR) {
-					ResourceLocation texture = ModelHelper.getTextureFromBlockstate(block.getDefaultState()).getName();
+					ResourceLocation texture = ClientUtil.getTextureFromBlock(block);
 					TextureModel textureModel = (TextureModel) originalModel;
 					return textureModel.getCachedTextureModel(texture.toString());
 				}

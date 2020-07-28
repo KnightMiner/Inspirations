@@ -2,7 +2,6 @@ package knightminer.inspirations.utility.datagen;
 
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.common.data.ConfigEnabledCondition;
-import knightminer.inspirations.common.data.PulseLoadedCondition;
 import knightminer.inspirations.common.datagen.CondRecipe;
 import knightminer.inspirations.library.InspirationsTags;
 import knightminer.inspirations.library.Util;
@@ -24,8 +23,8 @@ import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public class UtilityRecipeProvider extends RecipeProvider implements IConditionBuilder {
-	ICondition BUILDING = new PulseLoadedCondition(InspirationsBuilding.pulseID);
-	ICondition UTILITY = new PulseLoadedCondition(InspirationsUtility.pulseID);
+	private static final ICondition BUILDING = ConfigEnabledCondition.MODULE_BUILDING;
+	private static final ICondition UTILITY = ConfigEnabledCondition.MODULE_UTILITY;
 
 	public UtilityRecipeProvider(DataGenerator gen) {
 		super(gen);

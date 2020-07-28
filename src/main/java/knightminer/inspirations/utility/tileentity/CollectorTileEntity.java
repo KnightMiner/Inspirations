@@ -109,6 +109,6 @@ public class CollectorTileEntity extends InventoryTileEntity {
 	@Override
 	public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
 		CompoundNBT tag = pkt.getNbtCompound();
-		read(tag);
+		read(this.getBlockState(), tag);
 	}
 }

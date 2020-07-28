@@ -7,9 +7,6 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.network.IContainerFactory;
 import slimeknights.mantle.inventory.MultiModuleContainer;
 
 public class BookshelfContainer extends MultiModuleContainer<BookshelfTileEntity> {
@@ -22,6 +19,10 @@ public class BookshelfContainer extends MultiModuleContainer<BookshelfTileEntity
 			this.addSlot(new SlotBookshelf(tile, i+7, 26 + (i*18), 44));
 		}
 		addInventorySlots();
+	}
+
+	public BookshelfContainer(int id, PlayerInventory inv, PacketBuffer buf) {
+		this(id, inv, getTileEntityFromBuf(buf, BookshelfTileEntity.class));
 	}
 
 	@Override
@@ -46,19 +47,6 @@ public class BookshelfContainer extends MultiModuleContainer<BookshelfTileEntity
 		@Override
 		public boolean isItemValid(ItemStack stack) {
 			return InspirationsRegistry.isBook(stack);
-		}
-	}
-
-	public static class Factory implements IContainerFactory<BookshelfContainer> {
-		@Override
-		public BookshelfContainer create(int windowId, PlayerInventory inv, PacketBuffer data) {
-			// Create the container on the clientside.
-			BlockPos pos = data.readBlockPos();
-			TileEntity te = inv.player.world.getTileEntity(pos);
-			if (te instanceof BookshelfTileEntity) {
-				return new BookshelfContainer(windowId, inv, (BookshelfTileEntity) te);
-			}
-			throw new AssertionError(String.format("No bookshelf at %s!", pos));
 		}
 	}
 }

@@ -8,8 +8,8 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.IWaterLoggable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.fluid.IFluidState;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.DirectionalPlaceContext;
@@ -68,7 +68,7 @@ public class RopeBlock extends HidableBlock implements IWaterLoggable {
 	@Deprecated
 	@Override
 	@Nonnull
-	public IFluidState getFluidState(BlockState state) {
+	public FluidState getFluidState(BlockState state) {
 		return state.get(WATERLOGGED) ? Fluids.WATER.getStillFluidState(false) : super.getFluidState(state);
 	}
 
@@ -261,7 +261,7 @@ public class RopeBlock extends HidableBlock implements IWaterLoggable {
 		Z;
 
 		@Override
-		public String getName() {
+		public String getString() {
 			return this.name().toLowerCase(Locale.US);
 		}
 

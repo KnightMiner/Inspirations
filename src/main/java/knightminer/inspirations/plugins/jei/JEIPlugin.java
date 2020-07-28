@@ -3,7 +3,6 @@ package knightminer.inspirations.plugins.jei;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.common.IHidable;
-import knightminer.inspirations.common.PulseBase;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.recipe.TextureRecipe;
 import knightminer.inspirations.library.util.TextureBlockUtil;
@@ -56,19 +55,17 @@ public class JEIPlugin implements IModPlugin {
 		ISubtypeInterpreter texture = TextureBlockUtil::getTextureBlockName;
 
 		// building
-		if(PulseBase.isBuildingLoaded()) {
-			// bookshelves
-			registry.registerSubtypeInterpreter(InspirationsBuilding.shelf_normal.asItem(), texture);
-			registry.registerSubtypeInterpreter(InspirationsBuilding.shelf_ancient.asItem(), texture);
-			registry.registerSubtypeInterpreter(InspirationsBuilding.shelf_rainbow.asItem(), texture);
-			registry.registerSubtypeInterpreter(InspirationsBuilding.shelf_tomes.asItem(), texture);
+		// bookshelves
+		registry.registerSubtypeInterpreter(InspirationsBuilding.shelf_normal.asItem(), texture);
+		registry.registerSubtypeInterpreter(InspirationsBuilding.shelf_ancient.asItem(), texture);
+		registry.registerSubtypeInterpreter(InspirationsBuilding.shelf_rainbow.asItem(), texture);
+		registry.registerSubtypeInterpreter(InspirationsBuilding.shelf_tomes.asItem(), texture);
 
-			// enlightened bushes
-			registry.registerSubtypeInterpreter(InspirationsBuilding.whiteEnlightenedBush.asItem(), texture);
-			registry.registerSubtypeInterpreter(InspirationsBuilding.redEnlightenedBush.asItem(), texture);
-			registry.registerSubtypeInterpreter(InspirationsBuilding.greenEnlightenedBush.asItem(), texture);
-			registry.registerSubtypeInterpreter(InspirationsBuilding.blueEnlightenedBush.asItem(), texture);
-		}
+		// enlightened bushes
+		registry.registerSubtypeInterpreter(InspirationsBuilding.whiteEnlightenedBush.asItem(), texture);
+		registry.registerSubtypeInterpreter(InspirationsBuilding.redEnlightenedBush.asItem(), texture);
+		registry.registerSubtypeInterpreter(InspirationsBuilding.greenEnlightenedBush.asItem(), texture);
+		registry.registerSubtypeInterpreter(InspirationsBuilding.blueEnlightenedBush.asItem(), texture);
 	}
 
 	@Override

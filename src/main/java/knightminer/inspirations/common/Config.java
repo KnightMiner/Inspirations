@@ -1,7 +1,6 @@
 package knightminer.inspirations.common;
 
 import net.minecraftforge.common.ForgeConfigSpec;
-import slimeknights.mantle.pulsar.config.PulsarConfig;
 
 import static net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 import static net.minecraftforge.common.ForgeConfigSpec.Builder;
@@ -12,8 +11,11 @@ import static net.minecraftforge.common.ForgeConfigSpec.IntValue;
 
 @SuppressWarnings("WeakerAccess")
 public class Config {
-
-	public static PulsarConfig pulseConfig = new PulsarConfig("inspirationsModules", "Modules");
+	// modules
+	public static BooleanValue buildingModule;
+	public static BooleanValue utilityModule;
+	public static BooleanValue toolsModule;
+	public static BooleanValue tweaksModule;
 
 	// TODO: add client config
 	public static Builder BUILDER;
@@ -28,6 +30,7 @@ public class Config {
 	public static BooleanValue enableRope;
 	private static BooleanValue enableRopeLadder;
 	public static boolean enableRopeLadder() { return enableRopeLadder.get() && enableRope.get(); }
+	// OVERRIDE
 	public static BooleanValue climbableIronBars;
 	public static BooleanValue enableGlassDoor;
 	public static BooleanValue enableMulch;
@@ -45,7 +48,7 @@ public class Config {
 	}
 
 	public static ConfigValue<String> bookKeywords;
-	private static String bookKeywordsDefault = "almanac, atlas, book, catalogue, concordance, dictionary, directory, encyclopedia, guide, journal, lexicon, manual, thesaurus, tome";
+	private static final String BOOK_KEYWORD_DEFAULTS = "almanac, atlas, book, catalogue, concordance, dictionary, directory, encyclopedia, guide, journal, lexicon, manual, thesaurus, tome";
 
 	// utility
 	public static BooleanValue enableTorchLever;
@@ -257,6 +260,29 @@ public class Config {
 				.comment("Shows all variants for dynamically textured blocks, like bookshelves. If false just the first will be shown")
 				.define("general.showAllVariants", true);
 
+		builder.push("modules");
+		{
+			buildingModule = builder
+					.comment("Building blocks to improve decoration")
+					.worldRestart()
+					.define("building", true);
+
+			utilityModule = builder
+					.comment("Adds tools for automation and redstone interaction")
+					.worldRestart()
+					.define("utility", true);
+
+			tweaksModule = builder
+					.comment("Contains tweaks to vanilla features")
+					.worldRestart()
+					.define("tweaks", true);
+
+			toolsModule = builder
+					.comment("Includes new tools to reduce dependency on debug features")
+					.worldRestart()
+					.define("tools", true);
+		}
+		builder.pop();
 
 		builder.push("building");
 		{
@@ -279,7 +305,7 @@ public class Config {
 
 			bookKeywords = builder
 					.comment("List of keywords for valid books, used to determine valid books in the bookshelf. Separate each by commas.")
-					.define("bookshelf.bookKeywords", bookKeywordsDefault);
+					.define("bookshelf.bookKeywords", BOOK_KEYWORD_DEFAULTS);
 
 
 			// rope

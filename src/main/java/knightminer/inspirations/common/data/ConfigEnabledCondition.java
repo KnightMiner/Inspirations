@@ -4,12 +4,15 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSyntaxException;
+import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.Config;
-import knightminer.inspirations.library.Util;
+import knightminer.inspirations.shared.InspirationsShared;
+import net.minecraft.loot.ILootSerializer;
+import net.minecraft.loot.LootConditionType;
+import net.minecraft.loot.LootContext;
+import net.minecraft.loot.conditions.ILootCondition;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.storage.loot.LootContext;
-import net.minecraft.world.storage.loot.conditions.ILootCondition;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.crafting.conditions.IConditionSerializer;
@@ -22,12 +25,12 @@ import java.util.function.BooleanSupplier;
 
 // Reuse code for both a recipe and loot table condition.
 public class ConfigEnabledCondition implements ICondition, ILootCondition {
-	public static final ResourceLocation ID = Util.getResource("config");
+	private static final ResourceLocation ID = Inspirations.getResource("config");
+	/* Map of config names to condition cache */
+	private static final Map<String,ConfigEnabledCondition> PROPS = new HashMap<>();
 
 	private final String configName;
 	private final BooleanSupplier supplier;
-
-	private static Map<String,ConfigEnabledCondition> PROPS = new HashMap<>();
 
 	private ConfigEnabledCondition(String configName, BooleanSupplier supplier) {
 		this.configName = configName;
@@ -49,9 +52,16 @@ public class ConfigEnabledCondition implements ICondition, ILootCondition {
 		return supplier.getAsBoolean();
 	}
 
-	public static class Serializer extends AbstractSerializer<ConfigEnabledCondition> implements IConditionSerializer<ConfigEnabledCondition>  {
-		public Serializer() {
-			super(ID, ConfigEnabledCondition.class);
+	@Nonnull
+	@Override
+	public LootConditionType func_230419_b_() {
+		return InspirationsShared.lootConfig;
+	}
+
+	public static class Serializer implements ILootSerializer<ConfigEnabledCondition>, IConditionSerializer<ConfigEnabledCondition>  {
+		@Override
+		public ResourceLocation getID() {
+			return ID;
 		}
 
 		@Override
@@ -64,37 +74,51 @@ public class ConfigEnabledCondition implements ICondition, ILootCondition {
 			String prop = JSONUtils.getString(json, "prop");
 			ConfigEnabledCondition config = PROPS.get(prop.toLowerCase(Locale.ROOT));
 			if (config == null) {
-				throw new JsonSyntaxException("Invalid propertyname '" + prop + "'");
+				throw new JsonSyntaxException("Invalid property name '" + prop + "'");
 			}
 			return config;
 		}
 
 		@Override
-		public ResourceLocation getID() {
-			return ID;
+		public void func_230424_a_(JsonObject json, ConfigEnabledCondition condition, JsonSerializationContext context) {
+			write(json, condition);
 		}
 
 		@Override
-		public void serialize(@Nonnull JsonObject json, @Nonnull ConfigEnabledCondition cond, @Nonnull JsonSerializationContext ctx) {
-			write(json, cond);
-		}
-
-		@Nonnull
-		@Override
-		public ConfigEnabledCondition deserialize(@Nonnull JsonObject json, @Nonnull JsonDeserializationContext ctx) {
+		public ConfigEnabledCondition func_230423_a_(JsonObject json, JsonDeserializationContext context) {
 			return read(json);
 		}
 	}
 
-	// Add all the properties.
+	/**
+	 * Adds a condition
+	 * @param prop      Property name
+	 * @param supplier  Boolean supplier
+	 * @return  Added condition
+	 */
 	private static ConfigEnabledCondition add(String prop, BooleanSupplier supplier) {
 		ConfigEnabledCondition conf = new ConfigEnabledCondition(prop, supplier);
 		PROPS.put(prop.toLowerCase(Locale.ROOT), conf);
 		return conf;
 	}
+
+	/**
+	 * Adds a condition
+	 * @param prop    Property name
+	 * @param option  Config option instance
+	 * @return  Added condition
+	 */
 	private static ConfigEnabledCondition add(String prop, ForgeConfigSpec.BooleanValue option) {
 		return add(prop, option::get);
 	}
+
+	/* Config conditions available */
+
+	// modules
+	public static final ConfigEnabledCondition MODULE_BUILDING = add("building_module", Config.buildingModule);
+	public static final ConfigEnabledCondition MODULE_UTILITY = add("utility_module", Config.utilityModule);
+	public static final ConfigEnabledCondition MODULE_TOOLS = add("tools_module", Config.toolsModule);
+	public static final ConfigEnabledCondition MODULE_TWEAKS = add("tweaks_module", Config.tweaksModule);
 
 	// building
 	public static final ConfigEnabledCondition BOOKSHELF = add("bookshelf", Config.enableBookshelf);

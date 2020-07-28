@@ -4,12 +4,12 @@ import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.block.BookshelfBlock;
 import knightminer.inspirations.building.block.EnlightenedBushBlock;
 import knightminer.inspirations.building.client.BookshelfModel;
-import knightminer.inspirations.building.client.BookshelfScreen;
 import knightminer.inspirations.building.tileentity.BookshelfTileEntity;
 import knightminer.inspirations.common.ClientProxy;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.client.ClientUtil;
 import knightminer.inspirations.library.util.TextureBlockUtil;
+import knightminer.inspirations.shared.client.BackgroundContainerScreen;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
@@ -35,6 +35,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 import java.util.concurrent.CompletableFuture;
 
+@SuppressWarnings("unused")
 public class BuildingClientProxy extends ClientProxy {
 	public static final Minecraft mc = Minecraft.getInstance();
 
@@ -88,7 +89,7 @@ public class BuildingClientProxy extends ClientProxy {
 		}
 
 		// Register GUIs.
-		ScreenManager.registerFactory(InspirationsBuilding.contBookshelf, BookshelfScreen::new);
+		ScreenManager.registerFactory(InspirationsBuilding.contBookshelf, new BackgroundContainerScreen.Factory<>("bookshelf"));
 	}
 
 
@@ -214,12 +215,13 @@ public class BuildingClientProxy extends ClientProxy {
 		replaceBothTexturedModels(event, InspirationsBuilding.greenEnlightenedBush.getRegistryName(), "leaves");
 	}
 
+	@Deprecated
 	private static void replaceBookshelfModel(ModelBakeEvent event, BookshelfBlock shelf) {
 		if (shelf.getRegistryName() == null) {
 			throw new AssertionError("Null registry name");
 		}
 		for(Direction facing : Direction.Plane.HORIZONTAL){
-			ModelResourceLocation location = new ModelResourceLocation(shelf.getRegistryName(), String.format("facing=%s", facing.getName()));
+			ModelResourceLocation location = new ModelResourceLocation(shelf.getRegistryName(), String.format("facing=%s", facing.getString()));
 			replaceModel(event, location, (loader, model) -> new BookshelfModel(location, loader, model));
 		}
 		replaceTexturedModel(event, new ModelResourceLocation(shelf.getRegistryName(), "inventory"), "texture",true);

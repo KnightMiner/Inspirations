@@ -1,7 +1,7 @@
 package knightminer.inspirations.utility;
 
 
-import knightminer.inspirations.common.PulseBase;
+import knightminer.inspirations.common.ModuleBase;
 import knightminer.inspirations.utility.block.CarpetedPressurePlateBlock;
 import knightminer.inspirations.utility.block.CarpetedTrapdoorBlock;
 import knightminer.inspirations.utility.block.CollectorBlock;
@@ -32,13 +32,17 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
+import net.minecraftforge.fml.network.IContainerFactory;
 import net.minecraftforge.registries.IForgeRegistry;
-import slimeknights.mantle.pulsar.pulse.Pulse;
+import slimeknights.mantle.registration.adapter.BlockRegistryAdapter;
+import slimeknights.mantle.registration.adapter.ContainerTypeRegistryAdapter;
+import slimeknights.mantle.registration.adapter.ItemRegistryAdapter;
+import slimeknights.mantle.registration.adapter.TileEntityTypeRegistryAdapter;
 
-@Pulse(id = InspirationsUtility.pulseID, description = "Adds various utilities")
-public class InspirationsUtility extends PulseBase {
-	public static final String pulseID = "InspirationsUtility";
+@SuppressWarnings("unused")
+public class InspirationsUtility extends ModuleBase {
 
+	@SuppressWarnings("Convert2MethodRef")
 	public static Object proxy = DistExecutor.callWhenOn(Dist.CLIENT, ()->()->new UtilityClientProxy());
 
 	// blocks
@@ -65,56 +69,53 @@ public class InspirationsUtility extends PulseBase {
 
 	@SubscribeEvent
 	public void registerBlocks(Register<Block> event) {
+		BlockRegistryAdapter registry = new BlockRegistryAdapter(event.getRegistry());
 		IForgeRegistry<Block> r = event.getRegistry();
 
-		torchLeverFloor = registerBlock(r, new TorchLevelBlock(), "torch_lever");
-		torchLeverWall = registerBlock(r, new TorchLeverWallBlock(), "wall_torch_lever");
+		torchLeverFloor = registry.register(new TorchLevelBlock(), "torch_lever");
+		torchLeverWall = registry.register(new TorchLeverWallBlock(), "wall_torch_lever");
 
 		//bricksButton = registerBlock(r, new BricksButtonBlock(BricksButtonBlock.BRICK_BUTTON), "bricks_button");
 		//netherBricksButton = registerBlock(r, new BricksButtonBlock(BricksButtonBlock.NETHER_BUTTON), "nether_bricks_button");
 
 		for(DyeColor color : DyeColor.values()) {
-			carpetedTrapdoors[color.getId()] = registerBlock(r, new CarpetedTrapdoorBlock(color), color.getName() + "_carpeted_trapdoor");
-			carpetedPressurePlates[color.getId()] = registerBlock(r, new CarpetedPressurePlateBlock(color), color.getName() + "_carpeted_pressure_plate");
+			carpetedTrapdoors[color.getId()] = registry.register(new CarpetedTrapdoorBlock(color), color.getString() + "_carpeted_trapdoor");
+			carpetedPressurePlates[color.getId()] = registry.register(new CarpetedPressurePlateBlock(color), color.getString() + "_carpeted_pressure_plate");
 		}
-		collector = registerBlock(r, new CollectorBlock(), "collector");
-		pipe = registerBlock(r, new PipeBlock(), "pipe");
+		collector = registry.register(new CollectorBlock(), "collector");
+		pipe = registry.register(new PipeBlock(), "pipe");
 	}
 
 	@SubscribeEvent
 	public void registerTEs(Register<TileEntityType<?>> event) {
-		IForgeRegistry<TileEntityType<?>> r = event.getRegistry();
+		TileEntityTypeRegistryAdapter registry = new TileEntityTypeRegistryAdapter(event.getRegistry());
 
-		tileCollector = register(r, TileEntityType.Builder.create(
-				CollectorTileEntity::new, collector
-		).build(null), "collector");
-
-		tilePipe = register(r, TileEntityType.Builder.create(
-				PipeTileEntity::new, pipe
-		).build(null), "pipe");
+		tileCollector = registry.register(CollectorTileEntity::new, collector, "collector");
+		tilePipe = registry.register(PipeTileEntity::new, pipe, "pipe");
 	}
 
 	@SubscribeEvent
 	public void registerContainers(Register<ContainerType<?>> event) {
+		ContainerTypeRegistryAdapter registry = new ContainerTypeRegistryAdapter(event.getRegistry());
 		IForgeRegistry<ContainerType<?>> r = event.getRegistry();
 
-		contCollector = register(r, new ContainerType<>(new CollectorContainer.Factory()), "collector");
-		contPipe = register(r, new ContainerType<>(new PipeContainer.Factory()), "pipe");
+		contCollector = registry.register((IContainerFactory<CollectorContainer>)CollectorContainer::new, "collector");
+		contPipe = registry.register((IContainerFactory<PipeContainer>)PipeContainer::new, "pipe");
 	}
 
 	@SubscribeEvent
 	public void registerItems(Register<Item> event) {
-		IForgeRegistry<Item> r = event.getRegistry();
+		ItemRegistryAdapter registry = new ItemRegistryAdapter(event.getRegistry(), new Item.Properties().group(ItemGroup.REDSTONE));
 
 		// itemblocks
-		torchLeverItem = register(r, new TorchLeverItem(), "torch_lever");
+		torchLeverItem = registry.register(new TorchLeverItem(), "torch_lever");
 		//registerBlockItem(r, bricksButton, ItemGroup.REDSTONE);
 		//registerBlockItem(r, netherBricksButton, ItemGroup.REDSTONE);
 		for(Block trapdoor : carpetedTrapdoors) {
-			registerBlockItem(r, trapdoor, ItemGroup.REDSTONE);
+			registry.registerBlockItem(trapdoor);
 		}
-		registerBlockItem(r, collector, ItemGroup.REDSTONE);
-		pipeItem = registerBlockItem(r, pipe, ItemGroup.REDSTONE);
+		registry.registerBlockItem(collector);
+		pipeItem = registry.registerBlockItem(pipe);
 	}
 
 	@SubscribeEvent

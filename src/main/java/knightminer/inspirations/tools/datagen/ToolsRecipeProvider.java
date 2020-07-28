@@ -1,14 +1,12 @@
 package knightminer.inspirations.tools.datagen;
 
 import knightminer.inspirations.common.data.ConfigEnabledCondition;
-import knightminer.inspirations.common.data.PulseLoadedCondition;
 import knightminer.inspirations.common.datagen.CondRecipe;
 import knightminer.inspirations.common.datagen.NBTIngredient;
 import knightminer.inspirations.library.InspirationsTags;
 import knightminer.inspirations.library.Util;
+import knightminer.inspirations.library.recipe.RecipeSerializers;
 import knightminer.inspirations.tools.InspirationsTools;
-import knightminer.inspirations.tools.recipe.CopyWaypointCompassRecipe;
-import knightminer.inspirations.tools.recipe.DyeWaypointCompassRecipe;
 import net.minecraft.advancements.criterion.EnchantmentPredicate;
 import net.minecraft.advancements.criterion.ItemPredicate;
 import net.minecraft.advancements.criterion.MinMaxBounds;
@@ -30,7 +28,7 @@ import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public class ToolsRecipeProvider extends RecipeProvider implements IConditionBuilder {
-	ICondition TOOLS = new PulseLoadedCondition(InspirationsTools.pulseID);
+	private final ICondition TOOLS = ConfigEnabledCondition.MODULE_TOOLS;
 
 	public ToolsRecipeProvider(DataGenerator gen) {
 		super(gen);
@@ -63,8 +61,8 @@ public class ToolsRecipeProvider extends RecipeProvider implements IConditionBui
 				Items.POTION,
 				MinMaxBounds.IntBound.UNBOUNDED,
 				MinMaxBounds.IntBound.UNBOUNDED,
-				EnchantmentPredicate.field_226534_b_,
-				EnchantmentPredicate.field_226534_b_,
+				EnchantmentPredicate.enchantments,
+				EnchantmentPredicate.enchantments,
 				Potions.WATER,
 				NBTPredicate.ANY
 		);
@@ -125,21 +123,21 @@ public class ToolsRecipeProvider extends RecipeProvider implements IConditionBui
 				.patternLine(" I ")
 				.build(consumer);
 
-		CondRecipe.custom(CopyWaypointCompassRecipe.SERIALIZER)
+		CondRecipe.custom(RecipeSerializers.copy_waypoint_compass)
 				.addCondition(TOOLS)
 				.addCondition(ConfigEnabledCondition.COPY_WAYPOINT)
 				.build(consumer);
 
 		for (DyeColor color: DyeColor.values()) {
 			CondRecipe.shapeless(InspirationsTools.waypointCompasses[color.getId()])
-					.custom(DyeWaypointCompassRecipe.SERIALIZER)
+					.custom(RecipeSerializers.dye_waypoint_compass)
 					.addCondition(TOOLS)
 					.addCondition(ConfigEnabledCondition.DYE_WAYPOINT)
 					.addCriterion("has_compass", hasItem(InspirationsTags.Items.WAYPOINT_COMPASSES))
 					.setGroup(Util.resource("dye_waypoint_compass"))
 					.addIngredient(InspirationsTags.Items.WAYPOINT_COMPASSES)
 					.addIngredient(Util.getDyeTag(color))
-					.build(consumer, "waypoint_compass/" + (color == DyeColor.WHITE ? "undye" : color.getName()));
+					.build(consumer, "waypoint_compass/" + (color == DyeColor.WHITE ? "undye" : color.getString()));
 		}
 
 		CondRecipe.shaped(InspirationsTools.redstoneArrow, 8)

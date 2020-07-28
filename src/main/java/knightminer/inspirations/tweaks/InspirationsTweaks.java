@@ -2,9 +2,8 @@ package knightminer.inspirations.tweaks;
 
 import com.google.common.collect.ImmutableSet;
 import knightminer.inspirations.common.Config;
-import knightminer.inspirations.common.PulseBase;
+import knightminer.inspirations.common.ModuleBase;
 import knightminer.inspirations.common.item.HidableItem;
-import knightminer.inspirations.library.Util;
 import knightminer.inspirations.tweaks.block.BlockCropBlock;
 import knightminer.inspirations.tweaks.block.CactusCropBlock;
 import knightminer.inspirations.tweaks.block.DryHopperBlock;
@@ -50,13 +49,15 @@ import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.registries.IForgeRegistry;
-import slimeknights.mantle.pulsar.pulse.Pulse;
+import slimeknights.mantle.registration.adapter.BlockRegistryAdapter;
+import slimeknights.mantle.registration.adapter.ItemRegistryAdapter;
 
-@Pulse(id = InspirationsTweaks.pulseID, description = "Various vanilla tweaks")
-public class InspirationsTweaks extends PulseBase {
+@SuppressWarnings({"WeakerAccess", "unused"})
+public class InspirationsTweaks extends ModuleBase {
 	public static final String pulseID = "InspirationsTweaks";
 
-	public static Object proxy = DistExecutor.callWhenOn(Dist.CLIENT, ()->()->new TweaksClientProxy());
+	@SuppressWarnings("Convert2MethodRef")
+	public static Object proxy = DistExecutor.unsafeCallWhenOn(Dist.CLIENT, ()->()->new TweaksClientProxy());
 
 	// blocks
 	public static FittedCarpetBlock[] fitCarpets = new FittedCarpetBlock[16];
@@ -76,77 +77,76 @@ public class InspirationsTweaks extends PulseBase {
 
 
 	@SubscribeEvent
-	public void registerBlocks(Register<Block> event) {
+	void registerBlocks(Register<Block> event) {
+		BlockRegistryAdapter registry = new BlockRegistryAdapter(event.getRegistry());
 		IForgeRegistry<Block> r = event.getRegistry();
 
 		if (Config.enableFittedCarpets.get()) {
-			registerCarpet(r, DyeColor.WHITE, Blocks.WHITE_CARPET);
-			registerCarpet(r, DyeColor.ORANGE, Blocks.ORANGE_CARPET);
-			registerCarpet(r, DyeColor.MAGENTA, Blocks.MAGENTA_CARPET);
-			registerCarpet(r, DyeColor.LIGHT_BLUE, Blocks.LIGHT_BLUE_CARPET);
-			registerCarpet(r, DyeColor.YELLOW, Blocks.YELLOW_CARPET);
-			registerCarpet(r, DyeColor.LIME, Blocks.LIME_CARPET);
-			registerCarpet(r, DyeColor.PINK, Blocks.PINK_CARPET);
-			registerCarpet(r, DyeColor.GRAY, Blocks.GRAY_CARPET);
-			registerCarpet(r, DyeColor.LIGHT_GRAY, Blocks.LIGHT_GRAY_CARPET);
-			registerCarpet(r, DyeColor.CYAN, Blocks.CYAN_CARPET);
-			registerCarpet(r, DyeColor.PURPLE, Blocks.PURPLE_CARPET);
-			registerCarpet(r, DyeColor.BLUE, Blocks.BLUE_CARPET);
-			registerCarpet(r, DyeColor.BROWN, Blocks.BROWN_CARPET);
-			registerCarpet(r, DyeColor.GREEN, Blocks.GREEN_CARPET);
-			registerCarpet(r, DyeColor.RED, Blocks.RED_CARPET);
-			registerCarpet(r, DyeColor.BLACK, Blocks.BLACK_CARPET);
+			registerCarpet(registry, DyeColor.WHITE, Blocks.WHITE_CARPET);
+			registerCarpet(registry, DyeColor.ORANGE, Blocks.ORANGE_CARPET);
+			registerCarpet(registry, DyeColor.MAGENTA, Blocks.MAGENTA_CARPET);
+			registerCarpet(registry, DyeColor.LIGHT_BLUE, Blocks.LIGHT_BLUE_CARPET);
+			registerCarpet(registry, DyeColor.YELLOW, Blocks.YELLOW_CARPET);
+			registerCarpet(registry, DyeColor.LIME, Blocks.LIME_CARPET);
+			registerCarpet(registry, DyeColor.PINK, Blocks.PINK_CARPET);
+			registerCarpet(registry, DyeColor.GRAY, Blocks.GRAY_CARPET);
+			registerCarpet(registry, DyeColor.LIGHT_GRAY, Blocks.LIGHT_GRAY_CARPET);
+			registerCarpet(registry, DyeColor.CYAN, Blocks.CYAN_CARPET);
+			registerCarpet(registry, DyeColor.PURPLE, Blocks.PURPLE_CARPET);
+			registerCarpet(registry, DyeColor.BLUE, Blocks.BLUE_CARPET);
+			registerCarpet(registry, DyeColor.BROWN, Blocks.BROWN_CARPET);
+			registerCarpet(registry, DyeColor.GREEN, Blocks.GREEN_CARPET);
+			registerCarpet(registry, DyeColor.RED, Blocks.RED_CARPET);
+			registerCarpet(registry, DyeColor.BLACK, Blocks.BLACK_CARPET);
 		}
 
 		if (Config.waterlogHopper.get()) {
-			dryHopper = register(r, new DryHopperBlock(Block.Properties.from(Blocks.HOPPER)), Blocks.HOPPER.getRegistryName());
-			wetHopper = register(r, new WetHopperBlock(Block.Properties.from(Blocks.HOPPER)), Util.getResource("wet_hopper"));
+			dryHopper = registry.registerOverride(DryHopperBlock::new, Blocks.HOPPER);
+			wetHopper = registry.register(new WetHopperBlock(Block.Properties.from(Blocks.HOPPER)), "wet_hopper");
 		}
 
-		cactus = register(r, new CactusCropBlock(), "cactus");
-		sugarCane = register(r, new SugarCaneCropBlock(), "sugar_cane");
+		cactus = registry.register(new CactusCropBlock(), "cactus");
+		sugarCane = registry.register(new SugarCaneCropBlock(), "sugar_cane");
 	}
 
-	private void registerCarpet(IForgeRegistry<Block> r, DyeColor color, Block origCarpet) {
+	private void registerCarpet(BlockRegistryAdapter registry, DyeColor color, Block origCarpet) {
 		// The flat version overrides vanilla (with no blockstate values).
 		// The fitted version goes in our mod namespace.
-
-		FlatCarpetBlock flatCarpet = flatCarpets[color.getId()] = new FlatCarpetBlock(color, origCarpet);
-		FittedCarpetBlock fitCarpet = fitCarpets[color.getId()] = new FittedCarpetBlock(color, origCarpet);
-		register(r, flatCarpet, origCarpet.getRegistryName());
-		register(r, fitCarpet, color.getName() + "_fitted_carpet");
+		flatCarpets[color.getId()] = registry.registerOverride((props) -> new FlatCarpetBlock(color, props), origCarpet);
+		fitCarpets[color.getId()] = registry.register(new FittedCarpetBlock(color, Block.Properties.from(origCarpet)), color.getString() + "_fitted_carpet");
 	}
 
 	@SubscribeEvent
-	public void registerItem(Register<Item> event) {
+	void registerItem(Register<Item> event) {
+		ItemRegistryAdapter registry = new ItemRegistryAdapter(event.getRegistry());
+		Item.Properties decorationProps = new Item.Properties().group(ItemGroup.DECORATIONS);
 		IForgeRegistry<Item> r = event.getRegistry();
 
 		if (Config.enableFittedCarpets.get()) {
 			for(FlatCarpetBlock carpet : flatCarpets) {
-				BlockItem item = register(r, new BlockItem(carpet, new Item.Properties().group(ItemGroup.DECORATIONS)), carpet.getRegistryName());
+				BlockItem item = registry.registerBlockItem(carpet, decorationProps);
 				Item.BLOCK_TO_ITEM.put(carpet, item);
 				Item.BLOCK_TO_ITEM.put(fitCarpets[carpet.getColor().getId()], item);
 			}
 		}
 
 		if (Config.waterlogHopper.get()) {
-			register(r, new BlockItem(dryHopper, new Item.Properties().group(ItemGroup.REDSTONE)), Items.HOPPER.getRegistryName());
+			registry.register(new BlockItem(dryHopper, new Item.Properties().group(ItemGroup.REDSTONE)), Items.HOPPER);
 		}
 
 		Item.Properties props = new Item.Properties().group(ItemGroup.FOOD);
-		cactusSeeds = registerItem(r, new SeedItem(cactus, props), "cactus_seeds");
-		sugarCaneSeeds = registerItem(r, new SeedItem(sugarCane, props), "sugar_cane_seeds");
+		cactusSeeds = registry.register(new SeedItem(cactus, props), "cactus_seeds");
+		sugarCaneSeeds = registry.register(new SeedItem(sugarCane, props), "sugar_cane_seeds");
 
 		/*
 		carrotSeeds = registerItem(r, new SeedItem((CropsBlock) Blocks.CARROTS, PlantType.Crop), "carrot_seeds");
 		potatoSeeds = registerItem(r, new SeedItem((CropsBlock) Blocks.POTATOES, PlantType.Crop), "potato_seeds");
 		*/
 
-		heartbeet = registerItem(r, new HidableItem(
-				new Item.Properties().group(ItemGroup.FOOD).food(
-				new Food.Builder().hunger(2).saturation(2.4f).effect(new EffectInstance(Effects.REGENERATION, 100), 1).build()),
-				Config.enableHeartbeet::get
-		), "heartbeet");
+		heartbeet = registry.register(new HidableItem(new Item.Properties().group(ItemGroup.FOOD)
+		  .food(new Food.Builder().hunger(2).saturation(2.4f).effect(() -> new EffectInstance(Effects.REGENERATION, 100), 1).build()
+		), Config.enableHeartbeet::get), "heartbeet");
+
 //		silverfishPowder = registerItem(r, new HidableItem(
 //				new Item.Properties().group(ItemGroup.BREWING),
 //				() -> false // TODO: Make this have a purpose...

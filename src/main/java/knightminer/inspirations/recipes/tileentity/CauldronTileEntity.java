@@ -518,8 +518,8 @@ public class CauldronTileEntity extends TileEntity {
 	}
 
 	@Override
-	public void read(CompoundNBT tags) {
-		super.read(tags);
+	public void read(BlockState state, CompoundNBT tags) {
+		super.read(state, tags);
 
 		this.state = CauldronState.fromNBT(tags.getCompound(TAG_STATE));
 	}

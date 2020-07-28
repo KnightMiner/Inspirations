@@ -59,6 +59,6 @@ public class EnlightenedBushTileEntity extends TileEntity {
 	public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
 		CompoundNBT tag = pkt.getNbtCompound();
 		TextureBlockUtil.updateTextureBlock(this, tag);
-		read(tag);
+		read(this.getBlockState(), tag);
 	}
 }

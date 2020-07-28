@@ -30,9 +30,9 @@ public class TorchLevelBlock extends TorchBlock {
 				.create(Material.MISCELLANEOUS)
 				.doesNotBlockMovement()
 				.hardnessAndResistance(0)
-				.lightValue(14)
+				.setLightLevel(state -> 14)
 				.tickRandomly()
-				.sound(SoundType.WOOD)
+				.sound(SoundType.WOOD), ParticleTypes.FLAME
 		);
 		setDefaultState(getDefaultState().with(SWING, Direction.UP));
 	}

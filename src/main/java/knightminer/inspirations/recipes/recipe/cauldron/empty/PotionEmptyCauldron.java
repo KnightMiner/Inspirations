@@ -4,15 +4,15 @@ import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionUtils;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.ITag;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
 
 public class PotionEmptyCauldron implements ICauldronRecipe {
 
-	private Tag<Item> bottle;
+	private ITag<Item> bottle;
 	private Item potion;
-	public PotionEmptyCauldron(Item potion, Tag<Item> bottle) {
+	public PotionEmptyCauldron(Item potion, ITag<Item> bottle) {
 		this.bottle = bottle;
 		this.potion = potion;
 	}

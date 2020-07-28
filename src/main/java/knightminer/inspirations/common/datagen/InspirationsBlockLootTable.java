@@ -5,7 +5,6 @@ import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.building.block.RopeBlock;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.data.FillTexturedBlockLootFunction;
-import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import knightminer.inspirations.utility.InspirationsUtility;
@@ -16,15 +15,15 @@ import net.minecraft.block.DoorBlock;
 import net.minecraft.data.loot.BlockLootTables;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.Items;
+import net.minecraft.loot.ConstantRange;
+import net.minecraft.loot.ItemLootEntry;
+import net.minecraft.loot.LootPool;
+import net.minecraft.loot.LootTable;
+import net.minecraft.loot.TableLootEntry;
+import net.minecraft.loot.conditions.BlockStateProperty;
+import net.minecraft.loot.functions.CopyName;
+import net.minecraft.loot.functions.SetCount;
 import net.minecraft.state.properties.DoubleBlockHalf;
-import net.minecraft.world.storage.loot.ConstantRange;
-import net.minecraft.world.storage.loot.ItemLootEntry;
-import net.minecraft.world.storage.loot.LootPool;
-import net.minecraft.world.storage.loot.LootTable;
-import net.minecraft.world.storage.loot.TableLootEntry;
-import net.minecraft.world.storage.loot.conditions.BlockStateProperty;
-import net.minecraft.world.storage.loot.functions.CopyName;
-import net.minecraft.world.storage.loot.functions.SetCount;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
@@ -48,17 +47,11 @@ public class InspirationsBlockLootTable extends BlockLootTables {
 	protected void addTables() {
 		super.addTables();
 
-		addIf(InspirationsBuilding.pulseID, this::addBuilding);
-		addIf(InspirationsTools.pulseID, this::addTools);
-		addIf(InspirationsTweaks.pulseID, this::addTweaks);
-		addIf(InspirationsRecipes.pulseID, this::addRecipes);
-		addIf(InspirationsUtility.pulseID, this::addUtility);
-	}
-
-	private void addIf(String pulseID, Runnable registrar) {
-		if (Inspirations.pulseManager.isPulseLoaded(pulseID)) {
-			registrar.run();
-		}
+		this.addBuilding();
+		this.addTools();
+		this.addTweaks();
+		this.addRecipes();
+		this.addUtility();
 	}
 
 	private void addBuilding() {

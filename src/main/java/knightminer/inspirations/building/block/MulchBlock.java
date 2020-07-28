@@ -60,6 +60,6 @@ public class MulchBlock extends FallingBlock implements IHidable {
 	public boolean canSustainPlant(@Nonnull BlockState state, @Nonnull IBlockReader world, BlockPos pos, @Nonnull Direction direction, net.minecraftforge.common.IPlantable plantable) {
 		// we are fine with most plants, but saplings are a bit much
 		// this is mostly cop out since I have no way of stopping sapling growth
-		return plantable.getPlantType(world, pos.offset(direction)) == PlantType.Plains && !(plantable instanceof SaplingBlock);
+		return plantable.getPlantType(world, pos.offset(direction)) == PlantType.PLAINS && !(plantable instanceof SaplingBlock);
 	}
 }

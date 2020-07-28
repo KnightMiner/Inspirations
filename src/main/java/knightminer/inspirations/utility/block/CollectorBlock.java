@@ -27,7 +27,6 @@ import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.fml.network.NetworkHooks;
@@ -160,17 +159,12 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
 		boolean powered = world.isBlockPowered(pos) || world.isBlockPowered(pos.up());
 		boolean triggered = state.get(TRIGGERED);
 		if (powered && !triggered) {
-			world.getPendingBlockTicks().scheduleTick(pos, this, this.tickRate(world));
+			world.getPendingBlockTicks().scheduleTick(pos, this, 4);
 			world.setBlockState(pos, state.with(TRIGGERED, true), 4);
 		}
 		else if (!powered && triggered) {
 			world.setBlockState(pos, state.with(TRIGGERED, false), 4);
 		}
-	}
-
-	@Override
-	public int tickRate(IWorldReader worldIn) {
-		return 4;
 	}
 
 	@Deprecated

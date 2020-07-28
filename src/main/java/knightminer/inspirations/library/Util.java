@@ -1,45 +1,44 @@
 package knightminer.inspirations.library;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
+import knightminer.inspirations.Inspirations;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantments;
+import net.minecraft.item.DyeColor;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.loot.LootContext;
+import net.minecraft.loot.LootParameters;
 import net.minecraft.potion.Effect;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.EffectUtils;
 import net.minecraft.potion.Potion;
+import net.minecraft.tags.ITag.INamedTag;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.Tag;
 import net.minecraft.util.Direction;
+import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraft.world.storage.loot.LootContext;
-import net.minecraft.world.storage.loot.LootParameters;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import knightminer.inspirations.Inspirations;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.Items;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.AxisAlignedBB;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 
 @SuppressWarnings("deprecation")
 public class Util {
@@ -60,7 +59,7 @@ public class Util {
 		return LogManager.getLogger(log + "-" + type);
 	}
 
-	public static boolean clickedAABB(AxisAlignedBB aabb, Vec3d hit) {
+	public static boolean clickedAABB(AxisAlignedBB aabb, Vector3d hit) {
 		return aabb.minX <= hit.x && hit.x <= aabb.maxX
 				&& aabb.minY <= hit.y && hit.y <= aabb.maxY
 				&& aabb.minZ <= hit.z && hit.z <= aabb.maxZ;
@@ -71,8 +70,8 @@ public class Util {
 	 */
 	public static VoxelShape makeRotatedShape(Direction side, int x1, int y1, int z1, int x2, int y2, int z2) {
 		float yaw = -(float) Math.PI / 2F * side.getHorizontalIndex();
-		Vec3d min = new Vec3d(x1 - 8, y1 - 8, z1 - 8).rotateYaw(yaw);
-		Vec3d max = new Vec3d(x2 - 8, y2 - 8, z2 - 8).rotateYaw(yaw);
+		Vector3d min = new Vector3d(x1 - 8, y1 - 8, z1 - 8).rotateYaw(yaw);
+		Vector3d max = new Vector3d(x2 - 8, y2 - 8, z2 - 8).rotateYaw(yaw);
 		return VoxelShapes.create(
 				0.5 + min.x / 16.0, 0.5 + min.y / 16.0, 0.5 + min.z / 16.0,
 				0.5 + max.x / 16.0, 0.5 + max.y / 16.0, 0.5 + max.z / 16.0
@@ -199,22 +198,22 @@ public class Util {
 		List<EffectInstance> effects = potionType.getEffects();
 
 		if (effects.isEmpty()) {
-			lores.add(new TranslationTextComponent("effect.none").applyTextStyle(TextFormatting.GRAY));
+			lores.add(new TranslationTextComponent("effect.none").mergeStyle(TextFormatting.GRAY));
 			return;
 		}
 
 		for (EffectInstance effect : effects) {
-			ITextComponent effectString = effect.getPotion().getDisplayName();
+			IFormattableTextComponent effectString = new TranslationTextComponent(effect.getPotion().getName());
 			Effect potion = effect.getPotion();
 
 			if (effect.getAmplifier() > 0) {
-				effectString.appendText(" ");
-				effectString.appendSibling(new TranslationTextComponent("potion.potency." + effect.getAmplifier()));
+				effectString.appendString(" ");
+				effectString.append(new TranslationTextComponent("potion.potency." + effect.getAmplifier()));
 			}
 			if (effect.getDuration() > 20) {
-				effectString.appendSibling(new StringTextComponent(" (" + EffectUtils.getPotionDurationString(effect, 1.0f) + ")"));
+				effectString.append(new StringTextComponent(" (" + EffectUtils.getPotionDurationString(effect, 1.0f) + ")"));
 			}
-			effectString.applyTextStyle(potion.isBeneficial() ? TextFormatting.BLUE : TextFormatting.RED);
+			effectString.mergeStyle(potion.isBeneficial() ? TextFormatting.BLUE : TextFormatting.RED);
 			lores.add(effectString);
 		}
 	}
@@ -238,7 +237,7 @@ public class Util {
 	 * @param dye The color
 	 * @return The forge:dyes/color tag.
 	 */
-	public static Tag<Item> getDyeTag(DyeColor dye) {
-		return new ItemTags.Wrapper(new ResourceLocation("forge", "dyes/" + dye.getName()));
+	public static INamedTag<Item> getDyeTag(DyeColor dye) {
+		return ItemTags.makeWrapperTag("forge:dyes/" + dye.getString());
 	}
 }

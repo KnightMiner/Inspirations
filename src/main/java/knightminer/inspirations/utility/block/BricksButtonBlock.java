@@ -10,6 +10,7 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.DirectionProperty;
@@ -25,10 +26,7 @@ import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
@@ -69,8 +67,8 @@ public class BricksButtonBlock extends HidableBlock {
 	}
 
 	@Override
-	public BlockState getStateForPlacement(BlockState state, Direction facing, BlockState neighState, IWorld world, BlockPos pos, BlockPos facingPos, Hand hand) {
-		return state.with(FACING, facing.getOpposite());
+	public BlockState getStateForPlacement(BlockItemUseContext context) {
+		return getDefaultState().with(FACING, context.getPlacementHorizontalFacing().getOpposite());
 	}
 
 	@Override
@@ -105,16 +103,11 @@ public class BricksButtonBlock extends HidableBlock {
 
 	/* Pressing the button */
 
-	@Override
-	public int tickRate(IWorldReader p_149738_1_) {
-		return 20;
-	}
-
 	@Deprecated
 	@Override
 	public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) {
 		// if you did not click the secret button, no button for you
-		if(!getButtonBox(state).contains(trace.getHitVec().subtract(new Vec3d(pos)))) {
+		if(!getButtonBox(state).contains(trace.getHitVec().subtract(pos.getX(), pos.getY(), pos.getZ()))) {
 			return ActionResultType.PASS;
 		}
 
@@ -126,7 +119,7 @@ public class BricksButtonBlock extends HidableBlock {
 		world.setBlockState(pos, state.with(POWERED, true), 3);
 		world.playSound(player, pos, SoundEvents.BLOCK_STONE_BUTTON_CLICK_ON, SoundCategory.BLOCKS, 0.3F, 0.6F);
 		world.notifyNeighborsOfStateChange(pos, this);
-		world.getPendingBlockTicks().scheduleTick(pos, this, this.tickRate(world));
+		world.getPendingBlockTicks().scheduleTick(pos, this, 20);
 		return ActionResultType.SUCCESS;
 	}
 

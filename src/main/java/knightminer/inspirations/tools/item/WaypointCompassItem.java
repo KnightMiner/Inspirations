@@ -3,10 +3,8 @@ package knightminer.inspirations.tools.item;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.item.HidableItem;
-import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.client.ClientUtil;
 import knightminer.inspirations.library.util.TagUtil;
-import knightminer.inspirations.tools.client.WaypointCompassPropertyGetter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
@@ -20,13 +18,13 @@ import net.minecraft.tileentity.BeaconTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.DimensionType;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
-import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nonnull;
@@ -36,9 +34,9 @@ import java.util.function.Supplier;
 
 public class WaypointCompassItem extends HidableItem {
 
-  public static final String TAG_POS = "pos";
-  public static final String TAG_DIMENSION = "dimension";
-  public static final String TAG_CHECK_BEACON = "check_beacon";
+  private static final String TAG_POS = "pos";
+  private static final String TAG_DIMENSION = "dimension";
+  private static final String TAG_CHECK_BEACON = "check_beacon";
 
   private final int bodyColor;
   private final int needleColor;
@@ -52,8 +50,6 @@ public class WaypointCompassItem extends HidableItem {
 
     this.bodyColor = bodyColor;
     this.needleColor = needleColor;
-
-    this.addPropertyOverride(Util.getResource("angle"), new WaypointCompassPropertyGetter());
   }
 
   public int getColor(ItemStack stack, int tintIndex) {
@@ -84,15 +80,15 @@ public class WaypointCompassItem extends HidableItem {
 
     DimensionType dimension = getDimensionType(stack);
     if (dimension != null) {
-      if (dimension == world.getDimension().getType()) {
+      if (true/*dimension == world.getDimension().getType()*/) {
         checkPos(stack, world, getPos(stack));
         // only update other dimensions half as often
       } else if (Config.waypointCompassCrossDimension.get() && world.getGameTime() % 320 == 20) {
-        World other = DimensionManager.getWorld(world.getServer(), dimension, false, false);
+       // World other = DimensionManager.getWorld(world.getServer(), dimension, false, false);
         // TODO: clear NBT if null?
-        if (other != null) {
-          checkPos(stack, other, getPos(stack, dimension, other.getDimension().getType()));
-        }
+//        if (other != null) {
+//          checkPos(stack, other, getPos(stack, dimension, other.getDimension().getType()));
+//        }
       }
     }
   }
@@ -102,7 +98,7 @@ public class WaypointCompassItem extends HidableItem {
    * @param te Potential beacon tile
    * @return If the beacon is constructed and can see the sky
    */
-  public static boolean beaconIsComplete(TileEntity te) {
+  public static boolean beaconIsComplete(@Nullable TileEntity te) {
     if (!(te instanceof BeaconTileEntity)) {
       return false;
     }
@@ -111,7 +107,7 @@ public class WaypointCompassItem extends HidableItem {
   }
 
   /** Checks a position in the world to see if the compass is valid */
-  private void checkPos(ItemStack stack, World world, BlockPos pos) {
+  private void checkPos(ItemStack stack, World world, @Nullable BlockPos pos) {
     if (pos != null && world.isBlockLoaded(pos)) {
       TileEntity te = world.getTileEntity(pos);
       if (te instanceof BeaconTileEntity) {
@@ -141,7 +137,7 @@ public class WaypointCompassItem extends HidableItem {
     }
     DimensionType type = getDimensionType(stack);
     if (type != null) {
-      ResourceLocation dimension = DimensionType.getKey(type);
+      ResourceLocation dimension = null;// = type.field_241504_y_;
       if (dimension == null) {
         dimension = new ResourceLocation("null_dimension");
       }
@@ -149,7 +145,7 @@ public class WaypointCompassItem extends HidableItem {
               "dimension." + dimension.getNamespace() + "." + dimension.getPath().replace('/', '.')
       );
 
-      ITextComponent dimensionTooltip;
+      IFormattableTextComponent dimensionTooltip;
       if (!prettyDim.getUnformattedComponentText().equals(prettyDim.getKey())) {
         dimensionTooltip = prettyDim;
       } else {
@@ -158,7 +154,7 @@ public class WaypointCompassItem extends HidableItem {
       }
 
       if (flag == ITooltipFlag.TooltipFlags.ADVANCED) {
-        dimensionTooltip.appendSibling(new StringTextComponent(String.format(" (%d)", getDimension(stack))));
+        dimensionTooltip.append(new StringTextComponent(String.format(" (%d)", getDimension(stack))));
         if (Config.waypointCompassAdvTooltip.get() && !Minecraft.getInstance().isReducedDebug()) {
           BlockPos pos = getPos(stack);
           if (pos != null) {
@@ -168,13 +164,11 @@ public class WaypointCompassItem extends HidableItem {
       }
       tooltip.add(dimensionTooltip);
     } else if (Config.craftWaypointCompass()) {
-      tooltip.add(new TranslationTextComponent(getTranslationKey() + ".blank.tooltip")
-              .setStyle(new Style().setItalic(true))
+      tooltip.add(new TranslationTextComponent(getTranslationKey() + ".blank.tooltip").mergeStyle(TextFormatting.ITALIC)
       );
     } else {
       tooltip.add(new TranslationTextComponent(getTranslationKey() + ".vanilla.tooltip",
-              new TranslationTextComponent(Items.COMPASS.getTranslationKey())
-              .setStyle(new Style().setItalic(true))
+              new TranslationTextComponent(Items.COMPASS.getTranslationKey()).mergeStyle(TextFormatting.ITALIC)
       ));
     }
   }
@@ -203,14 +197,14 @@ public class WaypointCompassItem extends HidableItem {
    */
   @Nullable
   public static DimensionType getDimensionType(ItemStack stack) {
-    Integer dimension = getDimension(stack);
-    if (dimension != null) {
-      try {
-        return DimensionType.getById(dimension);
-      } catch (IllegalArgumentException e) {
-        return null;
-      }
-    }
+//    Integer dimension = getDimension(stack);
+//    if (dimension != null) {
+//      try {
+//        return DimensionType.getById(dimension);
+//      } catch (IllegalArgumentException e) {
+//        return null;
+//      }
+//    }
     return null;
   }
 
@@ -248,13 +242,13 @@ public class WaypointCompassItem extends HidableItem {
       }
 
       // from nether coords
-      if (compassDimension == DimensionType.THE_NETHER) {
-        return new BlockPos(pos.getX() * 8, pos.getY(), pos.getZ() * 8);
-      }
-      // to nether coords
-      if (worldDimension == DimensionType.THE_NETHER) {
-        return new BlockPos(Math.round(pos.getX() / 8f), pos.getY(), Math.round(pos.getZ() / 8f));
-      }
+//      if (compassDimension == DimensionType.field_236000_d_) {
+//        return new BlockPos(pos.getX() * 8, pos.getY(), pos.getZ() * 8);
+//      }
+//      // to nether coords
+//      if (worldDimension == DimensionType.THE_NETHER) {
+//        return new BlockPos(Math.round(pos.getX() / 8f), pos.getY(), Math.round(pos.getZ() / 8f));
+//      }
     }
     return pos;
   }
@@ -270,7 +264,7 @@ public class WaypointCompassItem extends HidableItem {
       clearNBT(stack);
       return;
     }
-    setNBT(stack, world.getDimension().getType(), pos);
+    //setNBT(stack, world.getDimension().getType(), pos);
   }
 
   /** Removes compass related NBT, but keeps the display name */
@@ -296,13 +290,13 @@ public class WaypointCompassItem extends HidableItem {
     setNBT(stack, getDimensionType(waypoint), getPos(waypoint));
   }
 
-  private static void setNBT(@Nonnull ItemStack stack, DimensionType dimension, BlockPos pos) {
+  private static void setNBT(ItemStack stack, DimensionType dimension, @Nullable BlockPos pos) {
     if (pos == null) {
       stack.setTag(null);
       return;
     }
     CompoundNBT tags = TagUtil.getTagSafe(stack);
-    tags.putInt(WaypointCompassItem.TAG_DIMENSION, dimension.getId());
+    //tags.putInt(WaypointCompassItem.TAG_DIMENSION, dimension.getId());
     tags.put(WaypointCompassItem.TAG_POS, TagUtil.writePos(pos));
     stack.setTag(tags);
   }

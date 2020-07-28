@@ -4,7 +4,6 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.recipes.item.SimpleDyedBottleItem;
-import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.registry.Registry;
@@ -12,7 +11,6 @@ import net.minecraft.util.registry.Registry;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.stream.Stream;
 
 public class DyeIngredientWrapper extends Ingredient {
@@ -32,7 +30,7 @@ public class DyeIngredientWrapper extends Ingredient {
 		ItemStack[] oreStacks = base.getMatchingStacks();
 		if(array == null || oreStacks.length != lastSizeA) {
 			array = Arrays.stream(oreStacks)
-					.filter(stack->stack.getItem() != InspirationsRecipes.simpleDyedWaterBottle)
+					.filter(stack -> InspirationsRecipes.simpleDyedWaterBottle.contains(stack.getItem()))
 					.toArray(ItemStack[]::new);
 			lastSizeA = oreStacks.length;
 		}
@@ -46,9 +44,9 @@ public class DyeIngredientWrapper extends Ingredient {
 		IntList oreList = base.getValidItemStacksPacked();
 		if (this.itemIds == null || this.lastSizeL != oreList.size()) {
 			int[] dyedBottle = new int[16];
-			for (Map.Entry<DyeColor,SimpleDyedBottleItem> entry: InspirationsRecipes.simpleDyedWaterBottle.entrySet()) {
-				// TODO: better way to do this?
-				dyedBottle[entry.getKey().colorValue] = Registry.ITEM.getId(entry.getValue());
+			// TODO: better way to do this?
+			for (SimpleDyedBottleItem item : InspirationsRecipes.simpleDyedWaterBottle.values()) {
+				dyedBottle[item.getColor().getId()] = Registry.ITEM.getId(item);
 			}
 			this.itemIds = new IntArrayList(oreList);
 			this.itemIds.removeAll(new IntArrayList(dyedBottle));

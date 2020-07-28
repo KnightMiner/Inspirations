@@ -9,7 +9,7 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.ITag;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
@@ -160,7 +160,7 @@ public final class TextureBlockUtil {
 	/**
 	 * Adds all blocks from the block tag to the specified block for fillItemGroup
 	 */
-	public static void addBlocksFromTag(Block block, Tag<Item> tag, NonNullList<ItemStack> list) {
+	public static void addBlocksFromTag(Block block, ITag<Item> tag, NonNullList<ItemStack> list) {
 		boolean added = false;
 		// using item tags as that is what will be present in the recipe
 		for(Item candidate : tag.getAllElements()) {
@@ -207,6 +207,10 @@ public final class TextureBlockUtil {
 		if (texture.isEmpty()) {
 			return Blocks.AIR;
 		}
-		return ForgeRegistries.BLOCKS.getValue(new ResourceLocation(texture));
+		Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(texture));
+		if (block == null) {
+			return Blocks.AIR;
+		}
+		return block;
 	}
 }

@@ -10,6 +10,8 @@ import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ModelBakery;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
+import net.minecraft.item.IItemPropertyGetter;
+import net.minecraft.item.ItemModelsProperties;
 import net.minecraft.item.Items;
 import net.minecraft.util.IItemProvider;
 import net.minecraft.util.ResourceLocation;
@@ -46,6 +48,13 @@ public class ClientProxy {
 		}
 	}
 
+	protected static void registerModelProperty(IItemProvider item, String name, IItemPropertyGetter prop) {
+		if (item != null) {
+			ItemModelsProperties.func_239418_a_(item.asItem(), Inspirations.getResource(name), prop);
+		}
+	}
+
+	@Deprecated
 	protected static void replaceModel(ModelBakeEvent event, ModelResourceLocation location, BiFunction<ModelBakery, IBakedModel, TextureModel> modelMaker) {
 		try {
 			// model to replace standard
@@ -56,6 +65,7 @@ public class ClientProxy {
 		}
 	}
 
+	@Deprecated
 	protected static void replaceTexturedModel(ModelBakeEvent event, ModelResourceLocation location, String key, boolean item) {
 		replaceModel(
 				event, location,
@@ -63,6 +73,7 @@ public class ClientProxy {
 		);
 	}
 
+	@Deprecated
 	protected static void replaceBothTexturedModels(ModelBakeEvent event, ResourceLocation loc, String key) {
 		replaceTexturedModel(event, new ModelResourceLocation(loc, ""), key, false);
 		replaceTexturedModel(event, new ModelResourceLocation(loc, "inventory"), key, true);

@@ -22,12 +22,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ILightReader;
+import net.minecraft.world.IBlockDisplayReader;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.lwjgl.opengl.GL11;
-import slimeknights.mantle.client.ModelHelper;
 
 import javax.annotation.Nullable;
 import java.awt.Color;
@@ -35,10 +34,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
 
+@SuppressWarnings("WeakerAccess")
 public final class ClientUtil {
-	public static final String TAG_TEXTURE_PATH = "texture_path";
+	private static final String TAG_TEXTURE_PATH = "texture_path";
 	private static final Minecraft mc = Minecraft.getInstance();
 
 	private ClientUtil() { }
@@ -62,7 +61,7 @@ public final class ClientUtil {
 	 */
 	private static Integer getItemColorRaw(Item key) {
 		IBakedModel model = mc.getItemRenderer().getItemModelWithOverrides(new ItemStack(key), null, null);
-		if (model == null) {
+		if (model == mc.getModelManager().getMissingModel()) {
 			return -1;
 		}
 		TextureAtlasSprite sprite = model.getParticleTexture(EmptyModelData.INSTANCE);
@@ -74,7 +73,6 @@ public final class ClientUtil {
 		try {
 			for(int x = 0; x < sprite.getWidth(); x++) {
 				for(int y = 0; y < sprite.getHeight(); y++) {
-					// TODO: apparently want a try/catch here, just return 0x00000000 if it fails I guess
 					int argb = sprite.getPixelRGBA(0, x, y);
 					// integer is in format of 0xAABBGGRR
 					int cr = argb & 0xFF;
@@ -91,7 +89,7 @@ public final class ClientUtil {
 					}
 				}
 			}
-		} catch (NullPointerException e) {
+		} catch (Exception e) {
 			// there is a random bug where models do not properly load, leading to a null frame data
 			// so just catch that and treat it as another error state
 			InspirationsRegistry.log.error("Caught exception reading sprite for " + key.getRegistryName(), e);
@@ -108,26 +106,20 @@ public final class ClientUtil {
 	/**
 	 * Called on resource reload to clear any resource based cache
 	 */
-
 	public static void clearCache() {
 		colorCache.clear();
 		unsafe.clear();
 	}
 
-
 	/**
 	 * Gets the sprite for the given texture location, or Missing Texture if no sprite is found
 	 */
 	public static TextureAtlasSprite getSprite(ResourceLocation location) {
-		Function<ResourceLocation, TextureAtlasSprite> textureGetter = mc.getAtlasSpriteGetter(PlayerContainer.LOCATION_BLOCKS_TEXTURE);
-		TextureAtlasSprite sprite = null;
-		if (location != null) {
-			sprite = textureGetter.apply(location);
+		AtlasTexture atlas = mc.getModelManager().getAtlasTexture(PlayerContainer.LOCATION_BLOCKS_TEXTURE);
+		if (location == null) {
+			return atlas.getSprite(MissingTextureSprite.getLocation());
 		}
-		if (sprite == null) {
-			sprite = textureGetter.apply(MissingTextureSprite.getLocation());
-		}
-		return sprite;
+		return atlas.getSprite(location);
 	}
 
 	/**
@@ -157,6 +149,16 @@ public final class ClientUtil {
 	}
 
 	/**
+	 * Gets the name of a particle texture for a block
+	 * @param block  Block to fetch
+	 * @return  Texture name for the block
+	 */
+	@SuppressWarnings("deprecation")
+	public static ResourceLocation getTextureFromBlock(Block block) {
+		return mc.getModelManager().getBlockModelShapes().getModel(block.getDefaultState()).getParticleTexture().getName();
+	}
+
+	/**
 	 * Gets the cached texture from the TileEntity, or stores it from the texture stack if none is cached
 	 * @param te Tile Entity
 	 * @return String of texture path, or empty string if none found
@@ -167,7 +169,7 @@ public final class ClientUtil {
 			// load it from saved block
 			Block block = TextureBlockUtil.getTextureBlock(te);
 			if (block != Blocks.AIR) {
-				texture = ModelHelper.getTextureFromBlockstate(block.getDefaultState()).getName().toString();
+				texture = getTextureFromBlock(block).toString();
 				te.getTileData().putString(TAG_TEXTURE_PATH, texture);
 			}
 		}
@@ -187,7 +189,7 @@ public final class ClientUtil {
 	 * @param index Tint index
 	 * @return color, or -1 for undefined
 	 */
-	public static int getStackBlockColorsSafe(ItemStack stack, @Nullable ILightReader world, @Nullable BlockPos pos, int index) {
+	public static int getStackBlockColorsSafe(ItemStack stack, @Nullable IBlockDisplayReader world, @Nullable BlockPos pos, int index) {
 		if (stack.isEmpty()) {
 			return -1;
 		}
@@ -216,7 +218,7 @@ public final class ClientUtil {
 	 * @param index Tint index
 	 * @return color, or -1 for undefined
 	 */
-	public static int getStackBlockColors(ItemStack stack, @Nullable ILightReader world, @Nullable BlockPos pos, int index) {
+	public static int getStackBlockColors(ItemStack stack, @Nullable IBlockDisplayReader world, @Nullable BlockPos pos, int index) {
 		if (stack.isEmpty() || !(stack.getItem() instanceof BlockItem)) {
 			return -1;
 		}
