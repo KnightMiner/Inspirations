@@ -16,7 +16,6 @@
     "minecraft:brown_carpet",
     "minecraft:green_carpet",
     "minecraft:red_carpet",
-    "minecraft:black_carpet",
-    "#inspirations:carpeted_trapdoors"
+    "minecraft:black_carpet"
   ]
 }

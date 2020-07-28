@@ -1,8 +1,8 @@
 {
   "conditions": [
     {
-      "pulse": "InspirationsUtility",
-      "type": "inspirations:pulse_loaded"
+      "prop": "utility_module",
+      "type": "inspirations:config"
     },
     {
       "prop": "collector",

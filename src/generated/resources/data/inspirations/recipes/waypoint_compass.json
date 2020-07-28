@@ -1,8 +1,8 @@
 {
   "conditions": [
     {
-      "pulse": "InspirationsTools",
-      "type": "inspirations:pulse_loaded"
+      "prop": "tools_module",
+      "type": "inspirations:config"
     },
     {
       "prop": "craft_waypoint_compass",

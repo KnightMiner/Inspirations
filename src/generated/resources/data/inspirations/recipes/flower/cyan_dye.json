@@ -1,8 +1,8 @@
 {
   "conditions": [
     {
-      "pulse": "InspirationsBuilding",
-      "type": "inspirations:pulse_loaded"
+      "prop": "building_module",
+      "type": "inspirations:config"
     },
     {
       "prop": "flowers",
