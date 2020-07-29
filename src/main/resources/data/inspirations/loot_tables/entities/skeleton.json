@@ -3,8 +3,8 @@
         "name": "inspirations:wither_bone",
         "conditions": [
             {
-                "condition": "inspirations:pulse_loaded",
-                "pulse": "InspirationsTweaks"
+                "condition": "inspirations:config",
+                "prop": "tweaks_module"
             },
             {
                 "condition": "inspirations:config",

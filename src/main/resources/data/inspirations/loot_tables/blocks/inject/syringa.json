@@ -11,7 +11,7 @@
           "name": "inspirations:syringa",
           "_comment": "Each block will drop a flower...",
           "conditions": [
-            { "condition": "inspirations:pulse_loaded", "pulse": "InspirationsBuilding" },
+            { "condition": "inspirations:config", "prop": "building_module" },
             { "condition": "inspirations:config", "prop": "flowers" },
             { 
               "condition": "minecraft:match_tool",
