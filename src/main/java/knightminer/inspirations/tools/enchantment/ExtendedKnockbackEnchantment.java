@@ -10,7 +10,6 @@ import net.minecraft.item.AxeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
-import javax.annotation.Nonnull;
 import java.util.Map;
 
 public class ExtendedKnockbackEnchantment extends KnockbackEnchantment {
@@ -27,14 +26,13 @@ public class ExtendedKnockbackEnchantment extends KnockbackEnchantment {
 	}
 
 	@Override
-	public boolean canApply(@Nonnull ItemStack stack) {
+	public boolean canApply(ItemStack stack) {
 		// fallback in case axes cannot be enchanted at the table, but can receive from books
 		return (Config.axeWeaponEnchants.get() && stack.getItem() instanceof AxeItem) || super.canApply(stack);
 	}
 
-	@Nonnull
 	@Override
-	public Map<EquipmentSlotType, ItemStack> getEntityEquipment(@Nonnull LivingEntity entity) {
+	public Map<EquipmentSlotType, ItemStack> getEntityEquipment(LivingEntity entity) {
 		// shields in hand should not give knockback, just on hit
 		Map<EquipmentSlotType, ItemStack> items = super.getEntityEquipment(entity);
 		for (EquipmentSlotType slot: EquipmentSlotType.values()) {

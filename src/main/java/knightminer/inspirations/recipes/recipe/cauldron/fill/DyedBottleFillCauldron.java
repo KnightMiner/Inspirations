@@ -1,6 +1,6 @@
 package knightminer.inspirations.recipes.recipe.cauldron.fill;
 
-import knightminer.inspirations.library.InspirationsRegistry;
+import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.InspirationsTags;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
@@ -9,12 +9,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
 
+@Deprecated
 public enum DyedBottleFillCauldron implements ICauldronRecipe {
 	INSTANCE;
 
 	@Override
 	public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		if(level == InspirationsRegistry.getCauldronMax()) {
+		if(level == Config.getCauldronMax()) {
 			return false;
 		}
 

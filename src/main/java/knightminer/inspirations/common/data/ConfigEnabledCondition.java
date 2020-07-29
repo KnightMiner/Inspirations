@@ -17,7 +17,6 @@ import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.crafting.conditions.IConditionSerializer;
 
-import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -52,7 +51,6 @@ public class ConfigEnabledCondition implements ICondition, ILootCondition {
 		return supplier.getAsBoolean();
 	}
 
-	@Nonnull
 	@Override
 	public LootConditionType func_230419_b_() {
 		return InspirationsShared.lootConfig;

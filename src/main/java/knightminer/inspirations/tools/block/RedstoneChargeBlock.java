@@ -28,7 +28,6 @@ import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Random;
 
@@ -53,12 +52,14 @@ public class RedstoneChargeBlock extends Block {
 		return true;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
 	@Override
 	public boolean isReplaceable(BlockState p_196253_1_, BlockItemUseContext p_196253_2_) {
 		return true;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
 	@Override
 	public PushReaction getPushReaction(BlockState p_149656_1_) {
@@ -83,16 +84,18 @@ public class RedstoneChargeBlock extends Block {
 		super.onBlockPlacedBy(world, pos, state, entity, stack);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
 	@Override
-	public void onReplaced(BlockState state, @Nonnull World worldIn, @Nonnull BlockPos pos, @Nonnull BlockState newState, boolean isMoving) {
+	public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
 		if (!isMoving && state.getBlock() != newState.getBlock()) {
-         super.onReplaced(state, worldIn, pos, newState, isMoving);
+         super.onReplaced(state, worldIn, pos, newState, false);
          worldIn.notifyNeighborsOfStateChange(pos, this);
          worldIn.notifyNeighborsOfStateChange(pos.offset(state.get(FACING)), this);
       }
 	}
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
 	@Override
 	public void tick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
@@ -105,18 +108,21 @@ public class RedstoneChargeBlock extends Block {
 
 	/* Powering */
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
 	@Override
 	public int getWeakPower(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
 		return 15;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
 	@Override
 	public int getStrongPower(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
 		return state.get(FACING).getOpposite() == side ? 15 : 0;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
 	@Override
 	public boolean canProvidePower(BlockState state) {
@@ -132,23 +138,24 @@ public class RedstoneChargeBlock extends Block {
 	/* Bounds */
 	private static final VoxelShape BOUNDS = Block.makeCuboidShape(6, 6, 6, 10, 10, 10);
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
-	@Nonnull
 	@Override
 	public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
 		return BOUNDS;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
-	@Nonnull
 	@Override
-	public VoxelShape getCollisionShape(@Nonnull BlockState state, @Nonnull IBlockReader world, @Nonnull BlockPos pos, ISelectionContext context) {
+	public VoxelShape getCollisionShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
 		return VoxelShapes.empty();
 	}
 
 
 	/* Properties */
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
 	@Override
 	public boolean isValidPosition(BlockState state, IWorldReader world, BlockPos pos) {
@@ -163,7 +170,7 @@ public class RedstoneChargeBlock extends Block {
 	}
 
 	@Override
-    @OnlyIn(Dist.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	public void animateTick(BlockState stateIn, World worldIn, BlockPos pos, Random rand) {
 		Direction facing = stateIn.get(FACING);
 
@@ -179,8 +186,8 @@ public class RedstoneChargeBlock extends Block {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
-	@Nonnull
 	@Override
 	public BlockRenderType getRenderType(BlockState state) {
 		return BlockRenderType.INVISIBLE;

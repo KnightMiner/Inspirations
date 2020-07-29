@@ -1,5 +1,6 @@
 package knightminer.inspirations.utility;
 
+import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.Config;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.Block;
@@ -20,7 +21,11 @@ import net.minecraft.world.World;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 
+@SuppressWarnings("unused")
+@EventBusSubscriber(modid = Inspirations.modID, bus = Bus.FORGE)
 public class UtilityEvents {
 	@SubscribeEvent
 	public static void placeCarpetOnPressurePlate(RightClickBlock event) {
@@ -80,7 +85,7 @@ public class UtilityEvents {
 	 * Makes clicking a hopper with a pipe place the pipe instead of opening the hopper's GUI
 	 */
 	@SubscribeEvent
-	public static void clickHopperWithPipe(RightClickBlock event) {
+	static void clickHopperWithPipe(RightClickBlock event) {
 		if(!Config.enablePipe.get() || event.getItemStack().getItem() != InspirationsUtility.pipeItem) {
 			return;
 		}

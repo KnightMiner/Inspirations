@@ -45,30 +45,28 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
 import slimeknights.mantle.block.InventoryBlock;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+@SuppressWarnings("WeakerAccess")
 public class PipeBlock extends InventoryBlock implements IHidable, IWaterLoggable {
 	// Facing is the direction we output to.
 	public static final DirectionProperty FACING = BlockStateProperties.FACING;
 	// These six values specify if another pipe/hopper is in this direction for us
 	// to visually connect to.
-	public static final BooleanProperty NORTH = BlockStateProperties.NORTH;
-	public static final BooleanProperty EAST = BlockStateProperties.EAST;
-	public static final BooleanProperty SOUTH = BlockStateProperties.SOUTH;
-	public static final BooleanProperty WEST = BlockStateProperties.WEST;
-	public static final BooleanProperty UP = BlockStateProperties.UP;
-	public static final BooleanProperty DOWN = BlockStateProperties.DOWN;
+	private static final BooleanProperty NORTH = BlockStateProperties.NORTH;
+	private static final BooleanProperty EAST = BlockStateProperties.EAST;
+	private static final BooleanProperty SOUTH = BlockStateProperties.SOUTH;
+	private static final BooleanProperty WEST = BlockStateProperties.WEST;
+	private static final BooleanProperty UP = BlockStateProperties.UP;
+	private static final BooleanProperty DOWN = BlockStateProperties.DOWN;
 	// If this is set, there is a hopper on our output side which isn't facing towards us.
 	// We then render a longer pipe to connect with the spout model.
 	public static final BooleanProperty HOPPER = BooleanProperty.create("hopper");
 
-	public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
+	private static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
 	// Direction.getIndex() -> Property. Order is D-U-N-S-W-E
-	public static final BooleanProperty[] DIR_ENABLED = new BooleanProperty[] {
-			DOWN, UP, NORTH, SOUTH, WEST, EAST
-	};
+	public static final BooleanProperty[] DIR_ENABLED = new BooleanProperty[] {DOWN, UP, NORTH, SOUTH, WEST, EAST};
 
 	public PipeBlock() {
 		super(Block.Properties
@@ -97,7 +95,7 @@ public class PipeBlock extends InventoryBlock implements IHidable, IWaterLoggabl
 	}
 
 	@Override
-	public void fillItemGroup(@Nonnull ItemGroup group, NonNullList<ItemStack> stacks) {
+	public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> stacks) {
 		if(shouldAddtoItemGroup(group)) {
 			super.fillItemGroup(group, stacks);
 		}
@@ -110,24 +108,24 @@ public class PipeBlock extends InventoryBlock implements IHidable, IWaterLoggabl
 		builder.add(WATERLOGGED, FACING, NORTH, EAST, SOUTH, WEST, UP, DOWN, HOPPER);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
-	@Nonnull
 	@Override
-	public BlockState rotate(@Nonnull BlockState state, Rotation rot) {
+	public BlockState rotate(BlockState state, Rotation rot) {
 		return state.with(FACING, rot.rotate(state.get(FACING)));
 	}
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
-	@Nonnull
 	@Override
-	public BlockState mirror(@Nonnull BlockState state, Mirror mirror) {
+	public BlockState mirror(BlockState state, Mirror mirror) {
 		return state.with(FACING, mirror.mirror(state.get(FACING)));
 	}
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
-	@Nonnull
 	@Override
-	public BlockState updatePostPlacement(@Nonnull BlockState state, Direction neighFacing, BlockState neighState, IWorld world, BlockPos pos, BlockPos neighPos) {
+	public BlockState updatePostPlacement(BlockState state, Direction neighFacing, BlockState neighState, IWorld world, BlockPos pos, BlockPos neighPos) {
 		Direction outFacing = state.get(FACING);
 
 		// We only need to check the one side that updated.
@@ -170,13 +168,14 @@ public class PipeBlock extends InventoryBlock implements IHidable, IWaterLoggabl
 				.with(WEST,  canConnectTo(world, pos, facing, Direction.WEST));
 	}
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
 	@Override
-	@Nonnull
 	public FluidState getFluidState(BlockState state) {
 		return state.get(WATERLOGGED) ? Fluids.WATER.getStillFluidState(false) : super.getFluidState(state);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
 	@Override
 	public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) {
@@ -217,7 +216,6 @@ public class PipeBlock extends InventoryBlock implements IHidable, IWaterLoggabl
 
 
 	/* Tile Entity */
-	@Nonnull
 	@Override
 	public TileEntity createTileEntity(BlockState state, IBlockReader world) {
 		return new PipeTileEntity();
@@ -258,7 +256,7 @@ public class PipeBlock extends InventoryBlock implements IHidable, IWaterLoggabl
 
 	// Compute a static lookup table for all the combinations.
 	// First index is the facing, the second is a connections bitmask.
-	private static VoxelShape[][] BOUNDS = new VoxelShape[6][64];
+	private static final VoxelShape[][] BOUNDS = new VoxelShape[6][64];
 
 	static {
 		// above side bounds in an array to index easier - DUNSWE
@@ -282,8 +280,8 @@ public class PipeBlock extends InventoryBlock implements IHidable, IWaterLoggabl
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
-	@Nonnull
 	@Override
 	public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
 		int bitmask = 0;

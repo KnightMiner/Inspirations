@@ -1,11 +1,10 @@
 package knightminer.inspirations.building;
 
+import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.block.RopeBlock;
 import knightminer.inspirations.common.Config;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResultType;
@@ -15,12 +14,20 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.items.ItemHandlerHelper;
 
-public class BuildingEvents {
+import javax.annotation.Nullable;
 
+@SuppressWarnings({"unused"})
+@EventBusSubscriber(modid = Inspirations.modID, bus = Bus.FORGE)
+public class BuildingEvents {
+	/**
+	 * Rope ladder event is used to allow sneak right click interaction to have special logic, as opposed to the standard interaction method
+	 */
 	@SubscribeEvent
-	public static void toggleRopeLadder(PlayerInteractEvent.RightClickBlock event) {
+	static void toggleRopeLadder(PlayerInteractEvent.RightClickBlock event) {
 		if (!Config.enableRopeLadder() || event.getWorld().isRemote()) {
 			return;
 		}
@@ -47,6 +54,9 @@ public class BuildingEvents {
 		}
 	}
 
+	/**
+	 * Logic to remove rungs from a rope ladder
+	 */
 	private static boolean removeRopeLadder(World world, BlockPos pos, BlockState state, PlayerEntity player) {
 		// only remove rungs when sneaking
 		if (!player.isCrouching()) {
@@ -64,9 +74,12 @@ public class BuildingEvents {
 		return true;
 	}
 
-	private static boolean makeRopeLadder(World world, BlockPos pos, BlockState state, Direction side, PlayerEntity player, ItemStack stack) {
+	/**
+	 * Logic to add rungs to a rope ladder
+	 */
+	private static boolean makeRopeLadder(World world, BlockPos pos, BlockState state, @Nullable Direction side, PlayerEntity player, ItemStack stack) {
 		// must have not clicked the bottom and we must have 4 items
-		if (side.getAxis() == Direction.Axis.Y || (stack.getCount() < RopeBlock.RUNG_ITEM_COUNT && !player.isCreative())) {
+		if (side == null || side.getAxis() == Direction.Axis.Y || (stack.getCount() < RopeBlock.RUNG_ITEM_COUNT && !player.isCreative())) {
 			return false;
 		}
 

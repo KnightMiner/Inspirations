@@ -15,7 +15,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -23,8 +22,7 @@ import java.util.WeakHashMap;
 public class WaypointCompassPropertyGetter implements IItemPropertyGetter {
 
 	@Override
-	@OnlyIn(Dist.CLIENT)
-	public float call(@Nonnull ItemStack stack, @Nullable ClientWorld clientWorld, @Nullable LivingEntity entityIn) {
+	public float call(ItemStack stack, @Nullable ClientWorld clientWorld, @Nullable LivingEntity entityIn) {
 		if (entityIn == null && !stack.isOnItemFrame()) {
 			return 0.0F;
 		}
@@ -50,8 +48,7 @@ public class WaypointCompassPropertyGetter implements IItemPropertyGetter {
 
 	/* Math functions */
 
-	@OnlyIn(Dist.CLIENT)
-	private double getAngle(ItemStack stack, @Nonnull World world, @Nonnull Entity entity, boolean isHeld) {
+	private double getAngle(ItemStack stack, World world, Entity entity, boolean isHeld) {
 		DimensionType dimension = WaypointCompassItem.getDimensionType(stack);
 		if (dimension != null) {
 			BlockPos pos = WaypointCompassItem.getPos(stack, dimension, null/*world.getDimension().getType()*/);

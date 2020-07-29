@@ -12,15 +12,12 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.tags.BlockTags;
 import slimeknights.mantle.registration.object.EnumObject;
 
-import javax.annotation.Nonnull;
-
 public class InspirationsBlockTagsProvider extends BlockTagsProvider {
 	public InspirationsBlockTagsProvider(DataGenerator gen) {
 		super(gen);
 		modId = Inspirations.modID;
 	}
 
-	@Nonnull
 	@Override
 	public String getName() {
 		return "Inspirations Block Tags";

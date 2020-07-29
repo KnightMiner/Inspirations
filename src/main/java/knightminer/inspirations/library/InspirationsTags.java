@@ -38,7 +38,7 @@ public class InspirationsTags {
 		public static final INamedTag<Item> DISP_CAULDRON_RECIPES = tag("cauldron_recipes");
 
 		/** Items with this tag are registered to have fluid tank functionality. */
-		public static final INamedTag<Item> DISP_FLUID_TANKS = tag( "fluid_containers");
+		public static final INamedTag<Item> DISP_FLUID_TANKS = tag("fluid_containers");
 
 		public static final INamedTag<Item> MILK_CONTAINERS = tag("milk_containers");
 

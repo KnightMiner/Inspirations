@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Deprecated
 public class DyeCauldronWater implements ISimpleCauldronRecipe {
 
 	private DyeColor color;

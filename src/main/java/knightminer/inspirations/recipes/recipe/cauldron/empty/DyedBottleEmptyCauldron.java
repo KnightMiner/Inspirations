@@ -7,6 +7,7 @@ import net.minecraft.item.Items;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
 
+@Deprecated
 public enum DyedBottleEmptyCauldron implements ICauldronRecipe {
 	INSTANCE;
 

@@ -4,13 +4,15 @@ import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.potion.PotionUtils;
+import net.minecraft.potion.Potions;
 
+@Deprecated
 public enum TippedArrowCauldronRecipe implements ICauldronRecipe {
 	INSTANCE;
 
 	@Override
 	public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		return state.getPotion() != null && stack.getItem() == Items.ARROW;
+		return state.getPotion() != Potions.EMPTY &&stack.getItem() == Items.ARROW;
 	}
 
 	@Override

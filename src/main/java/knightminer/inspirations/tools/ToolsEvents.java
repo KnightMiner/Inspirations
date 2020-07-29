@@ -1,9 +1,9 @@
 package knightminer.inspirations.tools;
 
+import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.library.InspirationsRegistry;
-import knightminer.inspirations.library.Util;
 import knightminer.inspirations.tools.item.WaypointCompassItem;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -47,6 +47,7 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import java.util.Iterator;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class ToolsEvents {
 
 	@SubscribeEvent
@@ -76,9 +77,9 @@ public class ToolsEvents {
 			if(isLock) {
 				// already locked: display message
 				if(lockable.code != LockCode.EMPTY_CODE) {
-					player.sendStatusMessage(new TranslationTextComponent(Util.prefix("lock.fail.locked")), true);
+					player.sendStatusMessage(new TranslationTextComponent(Inspirations.prefix("lock.fail.locked")), true);
 				} else if(!stack.hasDisplayName()) {
-					player.sendStatusMessage(new TranslationTextComponent(Util.prefix("lock.fail.blank")), true);
+					player.sendStatusMessage(new TranslationTextComponent(Inspirations.prefix("lock.fail.blank")), true);
 				} else {
 					// lock the container
 					lockable.code = heldCode;
@@ -86,7 +87,7 @@ public class ToolsEvents {
 					if(!player.isCreative()) {
 						stack.shrink(1);
 					}
-					player.sendStatusMessage(new TranslationTextComponent(Util.prefix("lock.success")), true);
+					player.sendStatusMessage(new TranslationTextComponent(Inspirations.prefix("lock.success")), true);
 				}
 
 				event.setCanceled(true);
@@ -102,12 +103,12 @@ public class ToolsEvents {
 						ItemHandlerHelper.giveItemToPlayer(player,
 								new ItemStack(InspirationsTools.lock).setDisplayName(new StringTextComponent(code.lock))
 						);
-						player.sendStatusMessage(new TranslationTextComponent(Util.prefix("unlock.success")), true);
+						player.sendStatusMessage(new TranslationTextComponent(Inspirations.prefix("unlock.success")), true);
 					} else {
-						player.sendStatusMessage(new TranslationTextComponent(Util.prefix("unlock.fail.no_match")), true);
+						player.sendStatusMessage(new TranslationTextComponent(Inspirations.prefix("unlock.fail.no_match")), true);
 					}
 				} else {
-					player.sendStatusMessage(new TranslationTextComponent(Util.prefix("unlock.fail.unlocked")), true);
+					player.sendStatusMessage(new TranslationTextComponent(Inspirations.prefix("unlock.fail.unlocked")), true);
 				}
 
 				event.setCanceled(true);
@@ -255,7 +256,7 @@ public class ToolsEvents {
 	}
 
 	@SubscribeEvent
-	public static void onShieldHit(LivingAttackEvent event) {
+	static void onShieldHit(LivingAttackEvent event) {
 		if (!Config.moreShieldEnchantments.get()) {
 			return;
 		}

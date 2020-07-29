@@ -1,6 +1,6 @@
 package knightminer.inspirations.recipes.recipe.cauldron.fill;
 
-import knightminer.inspirations.library.InspirationsRegistry;
+import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -10,6 +10,7 @@ import net.minecraft.potion.Potions;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
 
+@Deprecated
 public class PotionFillCauldron implements ICauldronRecipe {
 
 	private ItemStack bottle;
@@ -21,8 +22,8 @@ public class PotionFillCauldron implements ICauldronRecipe {
 
 	@Override
 	public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		return level < InspirationsRegistry.getCauldronMax() && (level == 0 || state.getPotion() != null)
-				&& stack.getItem() == potion;
+		return level < Config.getCauldronMax() && (level == 0 || state.getPotion() != Potions.EMPTY)
+           && stack.getItem() == potion;
 	}
 
 	@Override
@@ -30,9 +31,6 @@ public class PotionFillCauldron implements ICauldronRecipe {
 		return bottle.copy();
 	}
 
-	/**
-	 * Gets the result change in cauldron level as a result of this recipe
-	 */
 	@Override
 	public int getLevel(int level) {
 		return level + 1;

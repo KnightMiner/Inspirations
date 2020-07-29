@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("WeakerAccess")
 public class TextureRecipeExtension implements ICraftingCategoryExtension, ICustomCraftingCategoryExtension {
 
 	private final TextureRecipe recipe;

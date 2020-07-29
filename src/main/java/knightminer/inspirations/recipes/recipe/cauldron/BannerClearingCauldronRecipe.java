@@ -5,6 +5,7 @@ import net.minecraft.item.BannerItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.BannerTileEntity;
 
+@Deprecated
 public enum BannerClearingCauldronRecipe implements ICauldronRecipe {
 	INSTANCE;
 

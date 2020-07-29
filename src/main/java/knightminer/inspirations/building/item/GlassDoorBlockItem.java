@@ -8,8 +8,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.TallBlockItem;
 import net.minecraft.util.NonNullList;
 
-import javax.annotation.Nonnull;
-
+/**
+ * Extension of a door item to make it hidable and not burnable
+ */
 public class GlassDoorBlockItem extends TallBlockItem implements IHidable {
     public GlassDoorBlockItem(Block blockIn, Properties builder) {
         super(blockIn, builder);
@@ -26,7 +27,7 @@ public class GlassDoorBlockItem extends TallBlockItem implements IHidable {
     }
 
     @Override
-    public void fillItemGroup(@Nonnull ItemGroup group, @Nonnull NonNullList<ItemStack> items) {
+    public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
         if(shouldAddtoItemGroup(group)) {
             super.fillItemGroup(group, items);
         }

@@ -11,12 +11,9 @@ import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelDataMap;
 import net.minecraftforge.client.model.data.ModelProperty;
 
-import javax.annotation.Nonnull;
-
 public class EnlightenedBushTileEntity extends TileEntity {
 
-	public static final ModelProperty<String> TEXTURE = TextureBlockUtil.TEXTURE_PROP;
-
+	private static final ModelProperty<String> TEXTURE = TextureBlockUtil.TEXTURE_PROP;
 	public EnlightenedBushTileEntity() {
 		super(InspirationsBuilding.tileEnlightenedBush);
 	}
@@ -25,7 +22,6 @@ public class EnlightenedBushTileEntity extends TileEntity {
 	/*
 	 * Rendering
 	 */
-	@Nonnull
 	@Override
 	public IModelData getModelData() {
 		// texture not loaded
@@ -40,7 +36,6 @@ public class EnlightenedBushTileEntity extends TileEntity {
 	/*
 	 * Networking
 	 */
-	@Nonnull
 	@Override
 	public CompoundNBT getUpdateTag() {
 		// new tag instead of super since default implementation calls the super of writeToNBT
@@ -59,6 +54,7 @@ public class EnlightenedBushTileEntity extends TileEntity {
 	public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
 		CompoundNBT tag = pkt.getNbtCompound();
 		TextureBlockUtil.updateTextureBlock(this, tag);
+		// TODO: this okay?
 		read(this.getBlockState(), tag);
 	}
 }

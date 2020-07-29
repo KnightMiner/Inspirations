@@ -23,8 +23,6 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.network.NetworkHooks;
 
-import javax.annotation.Nonnull;
-
 import static knightminer.inspirations.tools.InspirationsTools.redstoneCharge;
 
 public class RedstoneArrow extends AbstractArrowEntity implements IEntityAdditionalSpawnData {
@@ -42,7 +40,6 @@ public class RedstoneArrow extends AbstractArrowEntity implements IEntityAdditio
 		init();
 	}
 
-	@Nonnull
 	@Override
 	public IPacket<?> createSpawnPacket() {
 		return NetworkHooks.getEntitySpawningPacket(this);
@@ -68,7 +65,6 @@ public class RedstoneArrow extends AbstractArrowEntity implements IEntityAdditio
 
 	private static TranslationTextComponent NAME = new TranslationTextComponent("item.inspirations.charged_arrow");
 
-	@Nonnull
 	@Override
 	public ITextComponent getName() {
 		if (this.hasCustomName()) {
@@ -78,7 +74,6 @@ public class RedstoneArrow extends AbstractArrowEntity implements IEntityAdditio
 		}
 	}
 
-	@Nonnull
 	@Override
 	protected ItemStack getArrowStack() {
 		return new ItemStack(InspirationsTools.redstoneArrow, 1);

@@ -1,7 +1,6 @@
 package knightminer.inspirations.common;
 
 import knightminer.inspirations.Inspirations;
-import knightminer.inspirations.library.Util;
 import net.minecraft.loot.ConstantRange;
 import net.minecraft.loot.LootPool;
 import net.minecraft.loot.LootTable;
@@ -43,7 +42,7 @@ public class ModuleBase {
 		ResourceLocation base = new ResourceLocation(name);
 		LootTable table = event.getTable();
 		if (table != LootTable.EMPTY_LOOT_TABLE) {
-			ResourceLocation location = Util.getResource(base.getPath());
+			ResourceLocation location = Inspirations.getResource(base.getPath());
 			table.addPool(new LootPool.Builder()
 					.name(location.toString())
 					.rolls(ConstantRange.of(1))

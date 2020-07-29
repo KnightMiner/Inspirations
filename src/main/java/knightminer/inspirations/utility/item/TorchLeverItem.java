@@ -9,8 +9,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.WallOrFloorItem;
 import net.minecraft.util.NonNullList;
 
-import javax.annotation.Nonnull;
-
 public class TorchLeverItem extends WallOrFloorItem implements IHidable {
     public TorchLeverItem() {
         super(
@@ -26,7 +24,7 @@ public class TorchLeverItem extends WallOrFloorItem implements IHidable {
     }
 
     @Override
-    public void fillItemGroup(@Nonnull ItemGroup group, @Nonnull NonNullList<ItemStack> items) {
+    public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
         if(shouldAddtoItemGroup(group)) {
             super.fillItemGroup(group, items);
         }

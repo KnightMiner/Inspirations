@@ -15,12 +15,12 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class TextureRecipe extends ShapedRecipe {
 
 	public final Ingredient texture; // first one found of these determines the output block used
-	public final boolean matchFirst;
+	private final boolean matchFirst;
 
 	/**
 	 * Creates a new recipe using an existing shaped recipe
@@ -34,7 +34,6 @@ public class TextureRecipe extends ShapedRecipe {
 		this.matchFirst = matchFirst;
 	}
 
-	@Nonnull
 	@Override
 	public ItemStack getCraftingResult(CraftingInventory craftMatrix) {
 		ItemStack result = super.getCraftingResult(craftMatrix);
@@ -92,10 +91,11 @@ public class TextureRecipe extends ShapedRecipe {
 			return new TextureRecipe(recipe, texture, matchFirst);
 		}
 
+		@Nullable
 		@Override
 		public TextureRecipe read(ResourceLocation recipeId, PacketBuffer buffer) {
 			ShapedRecipe recipe = CRAFTING_SHAPED.read(recipeId, buffer);
-			return new TextureRecipe(recipe, Ingredient.read(buffer), buffer.readBoolean());
+			return recipe == null ? null : new TextureRecipe(recipe, Ingredient.read(buffer), buffer.readBoolean());
 		}
 
 		@Override

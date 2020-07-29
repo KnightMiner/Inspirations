@@ -19,7 +19,6 @@ import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class EnlightenedBushBlock extends Block implements IHidable {
@@ -59,6 +58,8 @@ public class EnlightenedBushBlock extends Block implements IHidable {
 	 * Properties
 	 */
 
+	@SuppressWarnings("deprecation")
+	@Deprecated
 	@Override
 	public VoxelShape getCollisionShape(BlockState p_230335_1_, IBlockReader p_230335_2_, BlockPos p_230335_3_) {
 		return VoxelShapes.empty();
@@ -75,7 +76,6 @@ public class EnlightenedBushBlock extends Block implements IHidable {
 		TextureBlockUtil.updateTextureBlock(world, pos, stack);
 	}
 
-	@Nonnull
 	@Override
 	public ItemStack getPickBlock(BlockState state, RayTraceResult target, IBlockReader world, BlockPos pos, PlayerEntity player) {
 		return TextureBlockUtil.getPickBlock(world, pos, state);

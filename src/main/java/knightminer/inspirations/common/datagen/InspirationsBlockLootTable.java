@@ -109,13 +109,13 @@ public class InspirationsBlockLootTable extends BlockLootTables {
 
 	private void addUtility() {
 		InspirationsUtility.carpetedTrapdoors.values().forEach(this::registerDropSelfLootTable);
-		InspirationsUtility.carpetedPressurePlates.forEach((color, plate) -> {
+		InspirationsUtility.carpetedPressurePlates.forEach((color, plate) ->
 			this.registerLootTable(plate, LootTable.builder()
 			  .addLootPool(withSurvivesExplosion(plate, LootPool.builder()
 			    .addEntry(ItemLootEntry.builder(plate.getCarpet()))))
 			  .addLootPool(withSurvivesExplosion(plate, LootPool.builder()
-				  .addEntry(ItemLootEntry.builder(Items.STONE_PRESSURE_PLATE)))));
-		});
+				  .addEntry(ItemLootEntry.builder(Items.STONE_PRESSURE_PLATE)))))
+		);
 		this.registerDropSelfLootTable(InspirationsUtility.pipe);
 		this.registerDropSelfLootTable(InspirationsUtility.collector);
 		this.registerDropping(InspirationsUtility.torchLeverFloor, InspirationsUtility.torchLeverItem);

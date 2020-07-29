@@ -9,7 +9,6 @@ import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.util.IItemProvider;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -18,17 +17,13 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 
-import javax.annotation.Nonnull;
-
 public class CarpetedPressurePlateBlock extends PressurePlateBlock {
-	protected static final VoxelShape PRESSED_AABB = VoxelShapes.or(
+	private static final VoxelShape PRESSED_AABB = VoxelShapes.or(
 			Block.makeCuboidShape(0, 0, 0, 16, 1, 16),
-			Block.makeCuboidShape(1, 1, 1, 15, 1.25, 15)
-	);
-	protected static final VoxelShape UNPRESSED_AABB = VoxelShapes.or(
+			Block.makeCuboidShape(1, 1, 1, 15, 1.25, 15));
+	private static final VoxelShape UNPRESSED_AABB = VoxelShapes.or(
 			Block.makeCuboidShape(0, 0, 0, 16, 1, 16),
-			Block.makeCuboidShape(1, 1, 1, 15, 1.5, 15)
-	);
+			Block.makeCuboidShape(1, 1, 1, 15, 1.5, 15));
 
 	private final DyeColor color;
 	private final String transKey;
@@ -42,26 +37,24 @@ public class CarpetedPressurePlateBlock extends PressurePlateBlock {
 		this.transKey = String.format("block.minecraft.%s_carpet", color.getTranslationKey());
 	}
 
-	@Nonnull
 	@Override
-	public VoxelShape getShape(@Nonnull BlockState state, @Nonnull IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
 		boolean flag = this.getRedstoneStrength(state) > 0;
 		return flag ? PRESSED_AABB : UNPRESSED_AABB;
 	}
 
-	// Use the name of the carpet on top for the translation key.
-	// This should never be seen normally, but other mods might display it
-	// so ensure it's a valid value.
-	@Nonnull
 	@Override
 	public String getTranslationKey() {
+		// Use the name of the carpet on top for the translation key.
+		// This should never be seen normally, but other mods might display it
+		// so ensure it's a valid value.
 		return transKey;
 	}
 
-	// Since fitted carpets may replace the original carpet, we need to lookup the item to make sure we
-	// get the right object. So defer until the first time we actually need it.
-	private IItemProvider pickItem = Items.AIR;
-
+	/**
+	 * Gets the carpet block that cooresponds to this block
+	 * @return  Carpet block
+	 */
 	public IItemProvider getCarpet() {
 		return InspirationsShared.VANILLA_CARPETS.get(color);
 	}

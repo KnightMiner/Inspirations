@@ -7,6 +7,9 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tags.ItemTags;
 
+/**
+ * Extension of a texture block item to make it burnable
+ */
 public class BookshelfItem extends TextureBlockItem {
 	public BookshelfItem(Block block) {
 		super(block, new Item.Properties().group(ItemGroup.DECORATIONS), ItemTags.WOODEN_SLABS);

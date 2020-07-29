@@ -2,7 +2,7 @@ package knightminer.inspirations.common.datagen;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import knightminer.inspirations.library.Util;
+import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.recipe.TextureRecipe;
 import net.minecraft.data.CustomRecipeBuilder;
 import net.minecraft.data.IFinishedRecipe;
@@ -20,7 +20,6 @@ import net.minecraft.util.registry.Registry;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +27,7 @@ import java.util.function.Consumer;
 
 /**
  * Builder for creating recipes which are conditionally enabled.
+ * TODO: reevaluate, there is an easier way to do this I think
  */
 public class CondRecipe {
 	public static ShapedBuilder shaped(IItemProvider result) {
@@ -63,7 +63,6 @@ public class CondRecipe {
 			this.custSerial = custSerial;
 		}
 
-		@Nonnull
 		@Override
 		public JsonObject getRecipeJson() {
 			JsonObject json = new JsonObject();
@@ -73,7 +72,7 @@ public class CondRecipe {
 		}
 
 		@Override
-		public void serialize(@Nonnull JsonObject json) {
+		public void serialize(JsonObject json) {
 			JsonArray jsonCond = new JsonArray();
 			for(ICondition cond : condList) {
 				jsonCond.add(CraftingHelper.serialize(cond));
@@ -85,13 +84,11 @@ public class CondRecipe {
 			}
 		}
 
-		@Nonnull
 		@Override
 		public ResourceLocation getID() {
 			return id;
 		}
 
-		@Nonnull
 		@Override
 		public IRecipeSerializer<?> getSerializer() {
 			if (custSerial != null) {
@@ -128,7 +125,6 @@ public class CondRecipe {
 			this.matchFirst = matchFirst;
 		}
 
-		@Nonnull
 		@Override
 		public JsonObject getRecipeJson() {
 			JsonObject json = super.getRecipeJson();
@@ -191,12 +187,12 @@ public class CondRecipe {
 		}
 
 		@Override
-		public void build(@Nonnull Consumer<IFinishedRecipe> consumer, String path) {
-			build(consumer, Util.getResource(path));
+		public void build(Consumer<IFinishedRecipe> consumer, String path) {
+			build(consumer, Inspirations.getResource(path));
 		}
 
 		@Override
-		public void build(@Nonnull Consumer<IFinishedRecipe> consumer) {
+		public void build(Consumer<IFinishedRecipe> consumer) {
 			// Capture the finished recipe in the consumer, then wrap in our own class.
 			super.build((result) -> consumer.accept(textureSource != null ?
 					new FinishedTexture(result.getID(), result, textureSource, textureMatchFirst, conditions) :
@@ -234,8 +230,8 @@ public class CondRecipe {
 		}
 
 		@Override
-		public void build(@Nonnull Consumer<IFinishedRecipe> consumer, String path) {
-			build(consumer, Util.getResource(path));
+		public void build(Consumer<IFinishedRecipe> consumer, String path) {
+			build(consumer, Inspirations.getResource(path));
 		}
 	}
 
@@ -243,7 +239,7 @@ public class CondRecipe {
 		private final SpecialRecipeSerializer<?> serializer;
 		private ArrayList<ICondition> conditions;
 
-		private CustomBuilder(@Nonnull SpecialRecipeSerializer<?> serializer) {
+		private CustomBuilder(SpecialRecipeSerializer<?> serializer) {
 			this.serializer = serializer;
 			conditions = new ArrayList<>();
 		}
@@ -253,7 +249,7 @@ public class CondRecipe {
 			return this;
 		}
 
-		public void build(@Nonnull Consumer<IFinishedRecipe> consumer, ResourceLocation path) {
+		public void build(Consumer<IFinishedRecipe> consumer, ResourceLocation path) {
 			// Reuse vanilla's builder - which just writes "type".
 			CustomRecipeBuilder builder = CustomRecipeBuilder.customRecipe(serializer);
 
@@ -264,11 +260,11 @@ public class CondRecipe {
 			);
 		}
 
-		public void build(@Nonnull Consumer<IFinishedRecipe> consumer, String path) {
-			build(consumer, Util.getResource(path));
+		public void build(Consumer<IFinishedRecipe> consumer, String path) {
+			build(consumer, Inspirations.getResource(path));
 		}
 
-		public void build(@Nonnull Consumer<IFinishedRecipe> consumer) {
+		public void build(Consumer<IFinishedRecipe> consumer) {
 			build(consumer, serializer.getRegistryName());
 		}
 	}

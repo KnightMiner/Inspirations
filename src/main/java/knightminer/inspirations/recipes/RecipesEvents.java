@@ -1,24 +1,14 @@
 package knightminer.inspirations.recipes;
 
-import knightminer.inspirations.common.Config;
-import knightminer.inspirations.library.InspirationsRegistry;
-import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-
+//@EventBusSubscriber(modid = Inspirations.modID, bus = Bus.FORGE)
+@SuppressWarnings("WeakerAccess")
 public class RecipesEvents {
 
-	/**
+	/*
 	 * Event to handle cauldron clicking.
 	 * Done though an event instead of the block so we can ensure it runs before other cauldron handlers, since we cancel for non-water.
 	 */
+	/* TODO: reimplement
 	@SubscribeEvent(priority = EventPriority.HIGH)
 	public static void clickCauldron(RightClickBlock event) {
 		if(!Config.enableCauldronRecipes()) {
@@ -43,11 +33,11 @@ public class RecipesEvents {
 		}
 
 		boolean result = CauldronTileEntity.interact(world, pos, state, player, event.getHand());
-		if(result || InspirationsRegistry.isCauldronBlacklist(stack)) {
+		if(result InspirationsRegistry.isCauldronBlacklist(stack)) {
 			event.setCanceled(true);
 			event.setCancellationResult(ActionResultType.SUCCESS);
 		}
-	}
+	} */
 
 	/* TODO: bottle does not exist
 	@SubscribeEvent

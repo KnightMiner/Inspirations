@@ -25,7 +25,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityType;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -72,7 +71,7 @@ public class InspirationsUtility extends ModuleBase {
 		//bricksButton = registerBlock(r, new BricksButtonBlock(BricksButtonBlock.BRICK_BUTTON), "bricks_button");
 		//netherBricksButton = registerBlock(r, new BricksButtonBlock(BricksButtonBlock.NETHER_BUTTON), "nether_bricks_button");
 
-		carpetedTrapdoors = registry.registerEnum(CarpetedTrapdoorBlock::new, DyeColor.values(), "carpeted_trapdoor");
+		carpetedTrapdoors = registry.registerEnum((color) -> new CarpetedTrapdoorBlock(), DyeColor.values(), "carpeted_trapdoor");
 		carpetedPressurePlates = registry.registerEnum(CarpetedPressurePlateBlock::new, DyeColor.values(), "carpeted_pressure_plate");
 
 		collector = registry.register(new CollectorBlock(), "collector");
@@ -120,7 +119,6 @@ public class InspirationsUtility extends ModuleBase {
 	@SubscribeEvent
 	public void setup(FMLCommonSetupEvent event) {
 		registerDispenserBehavior();
-		MinecraftForge.EVENT_BUS.register(UtilityEvents.class);
 	}
 
 	// Get access to the existing behaviours.

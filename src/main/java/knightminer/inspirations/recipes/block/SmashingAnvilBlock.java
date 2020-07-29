@@ -1,6 +1,5 @@
 package knightminer.inspirations.recipes.block;
 
-import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import net.minecraft.block.AnvilBlock;
 import net.minecraft.block.Block;
@@ -58,7 +57,7 @@ public class SmashingAnvilBlock extends AnvilBlock {
 			return false;
 		}
 
-		BlockState transformation = InspirationsRegistry.getAnvilSmashResult(state);
+		BlockState transformation = null;//InspirationsRegistry.getAnvilSmashResult(state);
 		if(transformation == null) {
 			return false;
 		}

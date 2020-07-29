@@ -82,10 +82,10 @@ public class Config {
 	private static BooleanValue enableBiggerCauldron;
 	private static BooleanValue fasterCauldronRain;
 	public static boolean enableBiggerCauldron() { return enableBiggerCauldron.get() && enableExtendedCauldron(); }
+	public static int getCauldronMax() { return enableBiggerCauldron() ? 4 : 3; }
 	public static boolean fasterCauldronRain() { return fasterCauldronRain.get() && enableExtendedCauldron(); }
 
-
-	private enum SpongeEmptyCauldron {
+  private enum SpongeEmptyCauldron {
 		DISABLED, // No emptying.
 		ANY, // For any amount of liquid.
 		FULL  // Allowed, but only full cauldrons.

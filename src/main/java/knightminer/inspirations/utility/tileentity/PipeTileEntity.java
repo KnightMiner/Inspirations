@@ -22,10 +22,8 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import slimeknights.mantle.tileentity.InventoryTileEntity;
 
-import javax.annotation.Nonnull;
-
 public class PipeTileEntity extends InventoryTileEntity implements ITickableTileEntity {
-	public static ITextComponent TITLE = new TranslationTextComponent("gui.inspirations.pipe");
+	private static final ITextComponent TITLE = new TranslationTextComponent("gui.inspirations.pipe");
 	private short cooldown = 0;
 
 	public PipeTileEntity() {
@@ -81,7 +79,7 @@ public class PipeTileEntity extends InventoryTileEntity implements ITickableTile
 	}
 
 	@Override
-	public void setInventorySlotContents(int slot, @Nonnull ItemStack itemstack) {
+	public void setInventorySlotContents(int slot, ItemStack itemstack) {
 		super.setInventorySlotContents(slot, itemstack);
 		cooldown = 7; // set the cooldown to prevent instant retransfer
 	}
@@ -93,16 +91,14 @@ public class PipeTileEntity extends InventoryTileEntity implements ITickableTile
 
 	/* GUI */
 
-	@Nonnull
 	@Override
-	public Container createMenu(int winId, @Nonnull PlayerInventory inv, @Nonnull PlayerEntity entity) {
+	public Container createMenu(int winId, PlayerInventory inv, PlayerEntity entity) {
 		return new PipeContainer(winId, inv, this);
 	}
 
 
 	/* Networking */
 
-	@Nonnull
 	@Override
 	public CompoundNBT getUpdateTag() {
 		// new tag instead of super since default implementation calls the super of writeToNBT
@@ -120,6 +116,7 @@ public class PipeTileEntity extends InventoryTileEntity implements ITickableTile
 	@Override
 	public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
 		CompoundNBT tag = pkt.getNbtCompound();
+		// TODO: this fine?
 		read(this.getBlockState(), tag);
 	}
 
@@ -134,7 +131,6 @@ public class PipeTileEntity extends InventoryTileEntity implements ITickableTile
 		this.cooldown = tags.getShort(TAG_COOLDOWN);
 	}
 
-	@Nonnull
 	@Override
 	public CompoundNBT write(CompoundNBT tags) {
 		super.write(tags);

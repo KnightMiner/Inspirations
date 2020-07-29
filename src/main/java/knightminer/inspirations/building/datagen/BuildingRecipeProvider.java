@@ -1,5 +1,6 @@
 package knightminer.inspirations.building.datagen;
 
+import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.building.block.type.BushType;
 import knightminer.inspirations.building.block.type.FlowerType;
@@ -9,7 +10,6 @@ import knightminer.inspirations.building.block.type.ShelfType;
 import knightminer.inspirations.common.data.ConfigEnabledCondition;
 import knightminer.inspirations.common.datagen.CondRecipe;
 import knightminer.inspirations.library.InspirationsTags;
-import knightminer.inspirations.library.Util;
 import net.minecraft.block.Block;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.IFinishedRecipe;
@@ -25,7 +25,6 @@ import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
 
-import javax.annotation.Nonnull;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -39,14 +38,13 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
 		super(gen);
 	}
 
-	@Nonnull
 	@Override
 	public String getName() {
 		return "Inspirations Recipes - Building";
 	}
 
 	@Override
-	protected void registerRecipes(@Nonnull Consumer<IFinishedRecipe> consumer) {
+	protected void registerRecipes(Consumer<IFinishedRecipe> consumer) {
 		this.consumer = consumer;
 		// First several one-off recipes.
 		CondRecipe.shaped(InspirationsBuilding.glassDoor)
@@ -105,7 +103,7 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
 				.textureMatchFirst()
 				.addCondition(BUILDING)
 				.addCondition(ConfigEnabledCondition.ENLIGHTENED_BUSH)
-				.setGroup(Util.resource("enlightened_bush"))
+				.setGroup(Inspirations.resourceName("enlightened_bush"))
 				.addCriterion("has_leaves", hasItem(ItemTags.LEAVES))
 				.addCriterion("has_glowstone", hasItem(Tags.Items.DUSTS_GLOWSTONE))
 				.key('L', ItemTags.LEAVES)
@@ -114,7 +112,7 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
 		// white uses no dye
 		if (type != BushType.WHITE) {
 			// First line - dye above the middle.
-			builder = builder.key('D', Util.getDyeTag(dye)).patternLine(" D ");
+			builder = builder.key('D', dye.getTag()).patternLine(" D ");
 		}
 		builder.patternLine("GLG").build(consumer);
 	}
@@ -199,7 +197,7 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
 	}
 
 	private void buildingBookshelf() {
-		String group = Util.resource("bookshelf");
+		String group = Inspirations.resourceName("bookshelf");
 
 		CondRecipe.shaped(InspirationsBuilding.bookshelf.get(ShelfType.NORMAL), 2)
 				.textureSource(ItemTags.WOODEN_SLABS)
@@ -263,7 +261,7 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
 	}
 
 	private void buildingColoredBooks() {
-		String group = Util.resource("colored_book");
+		String group = Inspirations.resourceName("colored_book");
 
 		for(DyeColor color: DyeColor.values()) {
 			CondRecipe.shapeless(InspirationsBuilding.coloredBooks.get(color))
@@ -272,7 +270,7 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
 					.addCriterion("has_bookshelf", hasItem(InspirationsTags.Items.BOOKSHELVES))
 					.setGroup(group)
 					.addIngredient(Items.BOOK)
-					.addIngredient(Util.getDyeTag(color))
+					.addIngredient(color.getTag())
 					.build(consumer);
 		}
 	}

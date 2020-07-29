@@ -34,13 +34,12 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import slimeknights.mantle.block.InventoryBlock;
 
-import javax.annotation.Nonnull;
 import java.util.Random;
 
 public class CollectorBlock extends InventoryBlock implements IHidable {
 
 	public static final DirectionProperty FACING = BlockStateProperties.FACING;
-	public static final BooleanProperty TRIGGERED = BlockStateProperties.TRIGGERED;
+	private static final BooleanProperty TRIGGERED = BlockStateProperties.TRIGGERED;
 	public CollectorBlock() {
 		super(Block.Properties.create(Material.ROCK)
 				.hardnessAndResistance(3.5F)
@@ -59,7 +58,7 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
 	}
 
 	@Override
-	public void fillItemGroup(@Nonnull ItemGroup group, NonNullList<ItemStack> stacks) {
+	public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> stacks) {
 		if (shouldAddtoItemGroup(group)) {
 			super.fillItemGroup(group, stacks);
 		}
@@ -77,14 +76,13 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
 		return state.with(FACING, direction.rotate(state.get(FACING)));
 	}
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
-	@Nonnull
 	@Override
 	public BlockState mirror(BlockState state, Mirror mirror) {
 		return state.with(FACING, mirror.mirror(state.get(FACING)));
 	}
 
-	@Nonnull
 	@Override
 	public BlockState getStateForPlacement(BlockItemUseContext context) {
 		// place opposite since its more useful to face into what you clicked
@@ -110,7 +108,6 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
 
 	/* Tile Entity */
 
-	@Nonnull
 	@Override
 	public TileEntity createTileEntity(BlockState blockState, IBlockReader iBlockReader) {
 		return new CollectorTileEntity();
@@ -132,6 +129,7 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
 
 	/* Comparator logic */
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
 	@Override
 	public int getComparatorInputOverride(BlockState blockState, World world, BlockPos pos) {
@@ -144,6 +142,7 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
 		return 0;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
 	@Override
 	public boolean hasComparatorInputOverride(BlockState state) {
@@ -153,6 +152,7 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
 
 	/* Collecting logic */
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
 	@Override
 	public void neighborChanged(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
@@ -167,6 +167,7 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
 	@Override
 	public void tick(BlockState state, ServerWorld world, BlockPos pos, Random random) {

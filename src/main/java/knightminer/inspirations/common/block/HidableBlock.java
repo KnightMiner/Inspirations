@@ -6,7 +6,6 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
-import javax.annotation.Nonnull;
 import java.util.function.Supplier;
 
 public class HidableBlock extends Block implements IHidable {
@@ -23,7 +22,7 @@ public class HidableBlock extends Block implements IHidable {
     }
 
     @Override
-    public void fillItemGroup(@Nonnull ItemGroup group, @Nonnull NonNullList<ItemStack> items) {
+    public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
         if(shouldAddtoItemGroup(group)) {
             super.fillItemGroup(group, items);
         }

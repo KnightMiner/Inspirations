@@ -3,7 +3,6 @@ package knightminer.inspirations.plugins.jei;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.common.IHidable;
-import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.recipe.TextureRecipe;
 import knightminer.inspirations.library.util.TextureBlockUtil;
 import mezz.jei.api.IModPlugin;
@@ -28,10 +27,10 @@ import java.util.function.Consumer;
 
 @JeiPlugin
 public class JEIPlugin implements IModPlugin {
-	public static IRecipeManager recipeManager;
-	public static ICraftingGridHelper vanillaCraftingHelper;
-	public static IModIdHelper modIdHelper;
-	public static IIngredientManager ingedientManager;
+	static IRecipeManager recipeManager;
+	static ICraftingGridHelper vanillaCraftingHelper;
+	static IModIdHelper modIdHelper;
+	private static IIngredientManager ingedientManager;
 
 	// Store which items can be hidden, and their current state.
 	// This lets us reduce the work JEI tries to do.
@@ -49,7 +48,7 @@ public class JEIPlugin implements IModPlugin {
 
 	@Override
 	public ResourceLocation getPluginUid() {
-		return Util.getResource("jei");
+		return Inspirations.getResource("jei");
 	}
 
 	@Override

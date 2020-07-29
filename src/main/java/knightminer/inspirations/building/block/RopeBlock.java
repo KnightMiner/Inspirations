@@ -35,15 +35,14 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Locale;
 
+@SuppressWarnings("WeakerAccess")
 public class RopeBlock extends HidableBlock implements IWaterLoggable {
-
 	public static final EnumProperty<Rungs> RUNGS = EnumProperty.create("rungs", Rungs.class);
 	public static final BooleanProperty BOTTOM = BooleanProperty.create("bottom");
-	public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
+	private static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
 	// Number of items used per block.
 	public static final int RUNG_ITEM_COUNT = 4;
@@ -65,9 +64,9 @@ public class RopeBlock extends HidableBlock implements IWaterLoggable {
 		builder.add(BOTTOM, RUNGS, WATERLOGGED);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
 	@Override
-	@Nonnull
 	public FluidState getFluidState(BlockState state) {
 		return state.get(WATERLOGGED) ? Fluids.WATER.getStillFluidState(false) : super.getFluidState(state);
 	}
@@ -81,27 +80,26 @@ public class RopeBlock extends HidableBlock implements IWaterLoggable {
 	public BlockState getStateForPlacement(BlockItemUseContext context) {
 		BlockPos down = context.getPos().down();
 		return getDefaultState()
-				.with(BOTTOM, !canConnectTo(context.getWorld().getBlockState(down), context.getWorld(), down))
+				.with(BOTTOM, isBottom(context.getWorld().getBlockState(down), context.getWorld(), down))
 				.with(RUNGS, Rungs.NONE)
 				.with(WATERLOGGED, context.getWorld().getFluidState(context.getPos()).getFluid() == Fluids.WATER);
 	}
 
 	private static final VoxelShape ATTACH_TOP = Block.makeCuboidShape(7, 15, 7, 9, 16, 9);
 	private static final VoxelShape ATTACH_BOTTOM = Block.makeCuboidShape(7, 0, 7, 9, 1, 9);
-
-	private boolean canConnectTo(BlockState state, IBlockReader world, BlockPos pos) {
+	private boolean isBottom(BlockState state, IBlockReader world, BlockPos pos) {
 		if (state.getBlock() == this) {
-			return true;
+			return false;
 		}
 		// Check if the top of the block is able to attach to the rope - the center 2x2 must
 		// all be present.
-		return !state.isIn(BlockTags.LEAVES) && !VoxelShapes.compare(
-				state.getCollisionShape(world, pos).project(Direction.UP), ATTACH_TOP, IBooleanFunction.ONLY_SECOND
-		);
+		return state.isIn(BlockTags.LEAVES)
+					 || VoxelShapes.compare(state.getCollisionShape(world, pos).project(Direction.UP), ATTACH_TOP, IBooleanFunction.ONLY_SECOND);
 	}
 
 	/* Ropey logic */
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
 	@Override
 	public boolean isValidPosition(BlockState state, IWorldReader world, BlockPos pos) {
@@ -121,22 +119,22 @@ public class RopeBlock extends HidableBlock implements IWaterLoggable {
 		);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
 	@Override
-	@Nonnull
-	public BlockState updatePostPlacement(@Nonnull BlockState state, Direction facing, BlockState facingState, IWorld world, BlockPos pos, BlockPos facingPos) {
+	public BlockState updatePostPlacement(BlockState state, Direction facing, BlockState facingState, IWorld world, BlockPos pos, BlockPos facingPos) {
 		// if the rope is not valid, break it
 		if (!this.isValidRope(world, pos)) {
 			return Blocks.AIR.getDefaultState();
 		}
 		if (facing == Direction.DOWN) {
 			BlockPos down = pos.down();
-			return state.with(BOTTOM, !canConnectTo(world.getBlockState(down), world, down));
+			return state.with(BOTTOM, isBottom(world.getBlockState(down), world, down));
 		}
 		return state;
 	}
 
-	// right click with a rope to extend downwards
+	@SuppressWarnings("deprecation")
 	@Deprecated
 	@Override
 	public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
@@ -145,6 +143,7 @@ public class RopeBlock extends HidableBlock implements IWaterLoggable {
 			return ActionResultType.PASS;
 		}
 
+		// right click with a rope to extend downwards
 		ItemStack stack = player.getHeldItem(hand);
 		// check if the item is the same type as us
 		if (Block.getBlockFromItem(stack.getItem()) != this) {
@@ -169,9 +168,9 @@ public class RopeBlock extends HidableBlock implements IWaterLoggable {
 		return ActionResultType.SUCCESS;
 	}
 
-	// when breaking, place all items from ropes below at the position of this rope
 	@Override
-	public void onBlockHarvested(World world, BlockPos pos, BlockState state, @Nonnull PlayerEntity player) {
+	public void onBlockHarvested(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+		// when breaking, place all items from ropes below at the position of this rope
 		// break all blocks below that are ropes
 		BlockPos next = pos.down();
 		int count = 0;
@@ -213,8 +212,8 @@ public class RopeBlock extends HidableBlock implements IWaterLoggable {
 	/* Bounds */
 
 	// Shape for collisions. Indexes are Rungs ordinals.
-	public static final VoxelShape[] SHAPE = new VoxelShape[3];
-	public static final VoxelShape[] SHAPE_BOTTOM = new VoxelShape[3];
+	private static final VoxelShape[] SHAPE = new VoxelShape[3];
+	private static final VoxelShape[] SHAPE_BOTTOM = new VoxelShape[3];
 
 	static {
 		VoxelShape rope_core = Block.makeCuboidShape(7, 0, 7, 9, 16, 9);
@@ -248,8 +247,8 @@ public class RopeBlock extends HidableBlock implements IWaterLoggable {
 		SHAPE_BOTTOM[Rungs.Z.ordinal()] = VoxelShapes.or(rope_core_bottom, rope_rungs_z);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
-	@Nonnull
 	@Override
 	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
 		return (state.get(BOTTOM) ? SHAPE_BOTTOM: SHAPE)[state.get(RUNGS).ordinal()];

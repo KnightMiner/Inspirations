@@ -8,7 +8,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.registry.Registry;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.stream.Stream;
@@ -25,7 +24,6 @@ public class DyeIngredientWrapper extends Ingredient {
 	}
 
 	@Override
-	@Nonnull
 	public ItemStack[] getMatchingStacks() {
 		ItemStack[] oreStacks = base.getMatchingStacks();
 		if(array == null || oreStacks.length != lastSizeA) {
@@ -39,7 +37,6 @@ public class DyeIngredientWrapper extends Ingredient {
 
 
 	@Override
-	@Nonnull
 	public IntList getValidItemStacksPacked() {
 		IntList oreList = base.getValidItemStacksPacked();
 		if (this.itemIds == null || this.lastSizeL != oreList.size()) {

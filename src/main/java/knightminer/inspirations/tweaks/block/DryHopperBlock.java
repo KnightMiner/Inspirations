@@ -19,8 +19,6 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
-import javax.annotation.Nonnull;
-
 // Hopper block with waterlogged=False.
 public class DryHopperBlock extends HopperBlock implements IWaterLoggable {
 	public DryHopperBlock(Properties props) {
@@ -38,7 +36,7 @@ public class DryHopperBlock extends HopperBlock implements IWaterLoggable {
 	}
 
 	@Override
-	public void onReplaced(BlockState state1, @Nonnull World world, @Nonnull BlockPos pos, BlockState state2, boolean moving) {
+	public void onReplaced(BlockState state1, World world, BlockPos pos, BlockState state2, boolean moving) {
 		if (state2.getBlock() != state1.getBlock() &&
 		    state2.getBlock() != InspirationsTweaks.dryHopper &&
 		    state2.getBlock() != InspirationsTweaks.wetHopper
@@ -76,9 +74,8 @@ public class DryHopperBlock extends HopperBlock implements IWaterLoggable {
 		}
 	}
 
-	@Nonnull
 	@Override
-	public Fluid pickupFluid(@Nonnull IWorld world, @Nonnull BlockPos pos, BlockState state) {
+	public Fluid pickupFluid(IWorld world, BlockPos pos, BlockState state) {
 		return Fluids.EMPTY;
 	}
 }

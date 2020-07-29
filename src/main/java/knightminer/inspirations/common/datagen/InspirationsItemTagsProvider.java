@@ -14,8 +14,6 @@ import net.minecraft.tags.ItemTags;
 import net.minecraftforge.common.Tags;
 import slimeknights.mantle.registration.object.EnumObject;
 
-import javax.annotation.Nonnull;
-
 public class InspirationsItemTagsProvider extends ItemTagsProvider {
 
 	public InspirationsItemTagsProvider(DataGenerator gen, BlockTagsProvider blocks) {
@@ -23,7 +21,6 @@ public class InspirationsItemTagsProvider extends ItemTagsProvider {
 		this.modId = Inspirations.modID;
 	}
 
-	@Nonnull
 	@Override
 	public String getName() {
 		return "Inspirations Item Tags";

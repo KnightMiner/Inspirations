@@ -1,12 +1,12 @@
 package knightminer.inspirations.library.recipe.cauldron;
 
-import knightminer.inspirations.library.InspirationsRegistry;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.Potions;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
@@ -14,13 +14,16 @@ import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Objects;
 
 /**
  * Base interface for all cauldron recipes. Contains all methods required to determine new state, itemstack, and level based on the recipe
  * <p>
  * Parameters are considered stateless and generally should not modify the input stack except in the case of transformInput()
+ * @deprecated Cauldron will be getting major changes, should avoid using any of the API until complete
  */
+@Deprecated
 public interface ICauldronRecipe {
 
 	/**
@@ -87,6 +90,7 @@ public interface ICauldronRecipe {
 	 * @param state   Input cauldron state
 	 * @return Sound event
 	 */
+	@Nullable
 	default SoundEvent getSound(ItemStack stack, boolean boiling, int level, CauldronState state) {
 		return SoundEvents.ENTITY_FISHING_BOBBER_SPLASH;
 	}
@@ -112,7 +116,7 @@ public interface ICauldronRecipe {
 	/**
 	 * Current cauldron state
 	 */
-	public class CauldronState {
+	class CauldronState {
 		private int color;
 		private Potion potion;
 		private FluidStack fluid;
@@ -127,8 +131,8 @@ public interface ICauldronRecipe {
 		 */
 		private CauldronState() {
 			this.color = -1;
-			this.potion = null;
-			this.fluid = null;
+			this.potion = Potions.EMPTY;
+			this.fluid = FluidStack.EMPTY;
 		}
 
 
@@ -166,7 +170,7 @@ public interface ICauldronRecipe {
 		 * Gets a fluid cauldron state
 		 * @param fluid Fluid input
 		 */
-		public static CauldronState fluid(Fluid fluid) {
+		public static CauldronState fluid(@Nullable Fluid fluid) {
 			if(fluid == null) {
 				return WATER;
 			}
@@ -184,7 +188,7 @@ public interface ICauldronRecipe {
 		 * @return true if the state is treated as water
 		 */
 		public boolean isWater() {
-			return this == WATER || (fluid != null && InspirationsRegistry.isCauldronWater(fluid.getFluid()));
+			return this == WATER || (!fluid.isEmpty() && fluid.getFluid().isIn(FluidTags.WATER));
 		}
 
 		/**
@@ -210,24 +214,22 @@ public interface ICauldronRecipe {
 		 * Gets the fluid for this state
 		 * @return fluid for this state, or EMPTY if it is not a fluid
 		 */
-		@Nonnull
 		public Fluid getFluid() {
 			if(this == WATER) {
 				return Fluids.WATER;
 			}
-			return fluid == null ? Fluids.EMPTY : fluid.getFluid();
+			return fluid.isEmpty() ? Fluids.EMPTY : fluid.getFluid();
 		}
 
 		/**
 		 * Gets the fluid stack for this state
 		 * @return fluid stack for this state, or EMPTY if it is not a fluid
 		 */
-		@Nonnull
 		public FluidStack getFluidStack() {
 			if(this == WATER) {
 				return new FluidStack(Fluids.WATER, FluidAttributes.BUCKET_VOLUME);
 			}
-			return fluid == null ? FluidStack.EMPTY : fluid.copy();
+			return fluid.isEmpty() ? FluidStack.EMPTY : fluid.copy();
 		}
 
 		/**
@@ -235,11 +237,11 @@ public interface ICauldronRecipe {
 		 * @param state State to compare
 		 * @return True if the states match, that is they are the same type (dye, potion, or fluid) and have the same contents
 		 */
-		public boolean matches(CauldronState state) {
-			return this == state
+		public boolean matches(@Nullable CauldronState state) {
+			return state != null && (this == state
 					|| (state.color == this.color
 					&& state.potion == this.potion
-					&& state.getFluid() == this.getFluid());
+					&& state.getFluid() == this.getFluid()));
 		}
 
 		/**
@@ -252,10 +254,10 @@ public interface ICauldronRecipe {
 		}
 
 		/* NBT */
-		public static final String TAG_WATER = "water";
-		public static final String TAG_COLOR = "color";
-		public static final String TAG_POTION = "potion";
-		public static final String TAG_FLUID = "fluid";
+		private static final String TAG_WATER = "water";
+		private static final String TAG_COLOR = "color";
+		private static final String TAG_POTION = "potion";
+		private static final String TAG_FLUID = "fluid";
 
 		/**
 		 * Creates a new cauldron state from NBT
@@ -289,7 +291,6 @@ public interface ICauldronRecipe {
 		 * Writes this state to NBT
 		 * @return CompoundNBT of the state
 		 */
-		@Nonnull
 		public CompoundNBT writeToNBT() {
 			CompoundNBT tags = new CompoundNBT();
 			// if water, just set a boolean so we have something
@@ -302,11 +303,11 @@ public interface ICauldronRecipe {
 			if(color > -1) {
 				tags.putInt(TAG_COLOR, color);
 			}
-			if(potion != null) {
-				tags.putString(TAG_POTION, potion.getRegistryName().toString());
+			if(potion != Potions.EMPTY) {
+				tags.putString(TAG_POTION, Objects.requireNonNull(potion.getRegistryName()).toString());
 			}
-			if(fluid != null) {
-				tags.putString(TAG_FLUID, fluid.getFluid().getRegistryName().toString());
+			if(!fluid.isEmpty()) {
+				tags.putString(TAG_FLUID, Objects.requireNonNull(fluid.getFluid().getRegistryName()).toString());
 			}
 
 			return tags;
@@ -329,11 +330,11 @@ public interface ICauldronRecipe {
 			if(color > -1) {
 				hashCode = color;
 			}
-			if(potion != null) {
+			if(potion != Potions.EMPTY) {
 				hashCode = hashCode * 31 + potion.hashCode();
 			}
-			if(fluid != null) {
-				hashCode = hashCode * 31 + fluid.getFluid().getRegistryName().hashCode();
+			if(!fluid.isEmpty()) {
+				hashCode = hashCode * 31 + fluid.getFluid().hashCode();
 			}
 			return hashCode;
 		}

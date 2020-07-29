@@ -1,7 +1,6 @@
 package knightminer.inspirations.recipes.block;
 
 import knightminer.inspirations.common.Config;
-import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.InspirationsTags;
 import knightminer.inspirations.recipes.client.BoilingParticle;
 import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
@@ -10,6 +9,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.CauldronBlock;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.ParticleManager;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.state.BooleanProperty;
@@ -31,10 +31,10 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.model.data.ModelProperty;
 
-import javax.annotation.Nonnull;
 import java.util.Locale;
 import java.util.Random;
 
+@SuppressWarnings("WeakerAccess")
 public class EnhancedCauldronBlock extends CauldronBlock {
 
 	public static final EnumProperty<CauldronContents> CONTENTS = EnumProperty.create("contents", CauldronContents.class);
@@ -68,7 +68,7 @@ public class EnhancedCauldronBlock extends CauldronBlock {
 	}
 
 	@Override
-	public void fillWithRain(World world, @Nonnull BlockPos pos) {
+	public void fillWithRain(World world, BlockPos pos) {
 		TileEntity te = world.getTileEntity(pos);
 		// do not fill unless the current contents are water
 		if(te instanceof CauldronTileEntity && !((CauldronTileEntity) te).isWater()) {
@@ -114,9 +114,10 @@ public class EnhancedCauldronBlock extends CauldronBlock {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
 	@Override
-	public void onReplaced(BlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull BlockState newState, boolean isMoving) {
+	public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
 		if (newState.getBlock() != state.getBlock() && !isMoving) {
 			int level = getLevel(state);
 			if (Config.dropCauldronContents.get() && level > 0) {
@@ -147,10 +148,10 @@ public class EnhancedCauldronBlock extends CauldronBlock {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
-	@Nonnull
 	@Override
-	public BlockState updatePostPlacement(@Nonnull BlockState state, Direction facing, BlockState facingState, IWorld world, BlockPos pos, BlockPos facingPos) {
+	public BlockState updatePostPlacement(BlockState state, Direction facing, BlockState facingState, IWorld world, BlockPos pos, BlockPos facingPos) {
 		TileEntity te = world.getTileEntity(pos);
 		if(te instanceof CauldronTileEntity) {
 			state = state.with(CONTENTS, ((CauldronTileEntity)te).getContentType());
@@ -159,7 +160,7 @@ public class EnhancedCauldronBlock extends CauldronBlock {
 	}
 
 	@Override
-	public ActionResultType onBlockActivated(@Nonnull BlockState state, @Nonnull World world, @Nonnull BlockPos pos, PlayerEntity player, @Nonnull Hand hand, BlockRayTraceResult ray) {
+	public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult ray) {
 		// all moved to the cauldron registry
 		return ActionResultType.SUCCESS;
 	}
@@ -167,6 +168,7 @@ public class EnhancedCauldronBlock extends CauldronBlock {
 
 	/* boiling */
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
 	@Override
 	public void neighborChanged(BlockState state, World world, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
@@ -182,7 +184,7 @@ public class EnhancedCauldronBlock extends CauldronBlock {
 	@Deprecated
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public void animateTick(BlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull Random rand) {
+	public void animateTick(BlockState state, World world, BlockPos pos, Random rand) {
 		if(!state.get(BOILING)) {
 			return;
 		}
@@ -226,7 +228,7 @@ public class EnhancedCauldronBlock extends CauldronBlock {
 		if(state.hasProperty(LEVEL)) {
 			return state.get(LEVEL);
 		}
-		return InspirationsRegistry.getCauldronMax();
+		return Config.getCauldronMax();
 	}
 
 	public int getLevel(BlockState state) {

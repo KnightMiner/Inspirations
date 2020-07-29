@@ -1,6 +1,6 @@
 package knightminer.inspirations.common.network;
 
-import knightminer.inspirations.library.Util;
+import knightminer.inspirations.Inspirations;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.IPacket;
@@ -13,13 +13,15 @@ import slimeknights.mantle.network.NetworkWrapper;
 import slimeknights.mantle.network.packet.ISimplePacket;
 
 public class InspirationsNetwork extends NetworkWrapper {
-
 	public static final InspirationsNetwork INSTANCE = new InspirationsNetwork();
 
 	private InspirationsNetwork() {
-		super(Util.getResource("network"));
+		super(Inspirations.getResource("network"));
 	}
 
+	/**
+	 * Called during mod construction to register all packets
+	 */
 	public void setup() {
 		// register all the packets
 
@@ -29,13 +31,6 @@ public class InspirationsNetwork extends NetworkWrapper {
 		registerPacket(MilkablePacket.class, MilkablePacket::new, NetworkDirection.PLAY_TO_CLIENT);
 	}
 
-	/**
-	 * Sends a packet to all players on the network
-	 * @param packet  Packet
-	 */
-	public static void sendToAll(ISimplePacket packet) {
-		INSTANCE.network.send(PacketDistributor.ALL.noArg(), packet);
-	}
 	/**
 	 *
 	 * Sends a packet to a specific player

@@ -5,12 +5,16 @@ import knightminer.inspirations.utility.tileentity.PipeTileEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.network.PacketBuffer;
-import slimeknights.mantle.inventory.MultiModuleContainer;
+import slimeknights.mantle.inventory.BaseContainer;
 
-public class PipeContainer extends MultiModuleContainer<PipeTileEntity> {
-	public PipeContainer(int winId, PlayerInventory inventoryPlayer, PipeTileEntity tile) {
+import javax.annotation.Nullable;
+
+public class PipeContainer extends BaseContainer<PipeTileEntity> {
+	public PipeContainer(int winId, PlayerInventory inventoryPlayer, @Nullable PipeTileEntity tile) {
 		super(InspirationsUtility.contPipe, winId, inventoryPlayer, tile);
-		this.addSlot(new Slot(tile, 0, 80, 20));
+		if (tile != null) {
+			this.addSlot(new Slot(tile, 0, 80, 20));
+		}
 		addInventorySlots();
 	}
 

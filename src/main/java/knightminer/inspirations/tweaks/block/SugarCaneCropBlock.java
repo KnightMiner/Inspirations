@@ -10,8 +10,6 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 import net.minecraftforge.common.PlantType;
 
-import javax.annotation.Nonnull;
-
 public class SugarCaneCropBlock extends BlockCropBlock {
 	private static final VoxelShape[] BOUNDS = {
 			makeCuboidShape(2, 0, 2, 14,  2, 14),
@@ -32,7 +30,6 @@ public class SugarCaneCropBlock extends BlockCropBlock {
 		return InspirationsTweaks.cactusSeeds;
 	}
 
-	@Nonnull
 	@Override
 	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
 		return BOUNDS[this.getAge(state)];

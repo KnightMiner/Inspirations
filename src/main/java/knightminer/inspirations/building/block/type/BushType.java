@@ -13,8 +13,6 @@ public enum BushType implements IStringSerializable {
   GREEN(0x267F00),
   BLUE(0x001CBF);
 
-  /** All bush types with a tint index */
-  public static final BushType[] COLORED = {RED, GREEN, BLUE};
   private final String name = name().toLowerCase(Locale.ROOT);
   private final int color;
   BushType(int color) {

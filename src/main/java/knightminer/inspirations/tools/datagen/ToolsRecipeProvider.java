@@ -1,10 +1,10 @@
 package knightminer.inspirations.tools.datagen;
 
+import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.data.ConfigEnabledCondition;
 import knightminer.inspirations.common.datagen.CondRecipe;
 import knightminer.inspirations.common.datagen.NBTIngredient;
 import knightminer.inspirations.library.InspirationsTags;
-import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.recipe.RecipeSerializers;
 import knightminer.inspirations.tools.InspirationsTools;
 import net.minecraft.advancements.criterion.EnchantmentPredicate;
@@ -24,7 +24,6 @@ import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
 
-import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public class ToolsRecipeProvider extends RecipeProvider implements IConditionBuilder {
@@ -34,14 +33,13 @@ public class ToolsRecipeProvider extends RecipeProvider implements IConditionBui
 		super(gen);
 	}
 
-	@Nonnull
 	@Override
 	public String getName() {
 		return "Inspirations Recipes - Tools";
 	}
 
 	@Override
-	protected void registerRecipes(@Nonnull Consumer<IFinishedRecipe> consumer) {
+	protected void registerRecipes(Consumer<IFinishedRecipe> consumer) {
 		CondRecipe.shaped(InspirationsTools.photometer)
 				.addCondition(TOOLS)
 				.addCondition(ConfigEnabledCondition.PHOTOMETER)
@@ -134,9 +132,9 @@ public class ToolsRecipeProvider extends RecipeProvider implements IConditionBui
 					.addCondition(TOOLS)
 					.addCondition(ConfigEnabledCondition.DYE_WAYPOINT)
 					.addCriterion("has_compass", hasItem(InspirationsTags.Items.WAYPOINT_COMPASSES))
-					.setGroup(Util.resource("dye_waypoint_compass"))
+					.setGroup(Inspirations.resourceName("dye_waypoint_compass"))
 					.addIngredient(InspirationsTags.Items.WAYPOINT_COMPASSES)
-					.addIngredient(Util.getDyeTag(color))
+					.addIngredient(color.getTag())
 					.build(consumer, "waypoint_compass/" + (color == DyeColor.WHITE ? "undye" : color.getString()));
 		}
 

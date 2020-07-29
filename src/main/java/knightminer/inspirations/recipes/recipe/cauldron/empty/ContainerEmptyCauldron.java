@@ -1,19 +1,21 @@
 package knightminer.inspirations.recipes.recipe.cauldron.empty;
 
-import knightminer.inspirations.library.InspirationsRegistry;
+import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 
+@Deprecated
 public enum ContainerEmptyCauldron implements ICauldronRecipe {
 	INSTANCE;
 
 	@Override
 	public boolean matches(ItemStack stack, boolean boiling, int level, final CauldronState state) {
-		if(level != InspirationsRegistry.getCauldronMax() || state.getFluid() == null) {
+		if(level != Config.getCauldronMax() || state.getFluid() == Fluids.EMPTY) {
 			return false;
 		}
 

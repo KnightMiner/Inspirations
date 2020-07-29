@@ -1,7 +1,6 @@
 package knightminer.inspirations.recipes.dispenser;
 
 import knightminer.inspirations.common.Config;
-import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.InspirationsTags;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe.CauldronState;
@@ -24,8 +23,6 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import javax.annotation.Nonnull;
-
 public class DispenseCauldronRecipe extends DefaultDispenseItemBehavior {
 	private static final DefaultDispenseItemBehavior DEFAULT = new DefaultDispenseItemBehavior();
 	private IDispenseItemBehavior fallback;
@@ -34,7 +31,6 @@ public class DispenseCauldronRecipe extends DefaultDispenseItemBehavior {
 		this.fallback = fallback;
 	}
 
-	@Nonnull
 	@Override
    protected ItemStack dispenseStack(IBlockSource source, ItemStack stack) {
 		if(!stack.getItem().isIn(InspirationsTags.Items.DISP_CAULDRON_RECIPES)) {
@@ -45,7 +41,7 @@ public class DispenseCauldronRecipe extends DefaultDispenseItemBehavior {
 		BlockPos pos = source.getBlockPos().offset(side);
 		World world = source.getWorld();
 		BlockState state = world.getBlockState(pos);
-		if(!InspirationsRegistry.isNormalCauldron(state)) {
+		if(state.getBlock() != Blocks.CAULDRON) {
 			return fallback.dispense(source, stack);
 		}
 
@@ -62,15 +58,14 @@ public class DispenseCauldronRecipe extends DefaultDispenseItemBehavior {
 				boiling = state.get(EnhancedCauldronBlock.BOILING);
 			}
 		} else {
-			cauldronState = InspirationsRegistry.getCauldronState(state);
-			boiling = InspirationsRegistry.isCauldronFire(world.getBlockState(pos.down()));
+			boiling = CauldronTileEntity.isCauldronFire(world.getBlockState(pos.down()));
 		}
 
 		// other properties
 		int level = EnhancedCauldronBlock.getCauldronLevel(state);
 
 		// grab recipe
-		ICauldronRecipe recipe = InspirationsRegistry.getCauldronResult(stack, boiling, level, cauldronState);
+		ICauldronRecipe recipe = null;//InspirationsRegistry.getCauldronResult(stack, boiling, level, cauldronState);
 		if(recipe == null) {
 			return DEFAULT.dispense(source, stack);
 		}
@@ -92,26 +87,21 @@ public class DispenseCauldronRecipe extends DefaultDispenseItemBehavior {
 		int newLevel = recipe.getLevel(level);
 		if(newLevel != level || !cauldronState.matches(newState)) {
 			// overrides for full cauldrons, assuming we started with a "valid cauldron", in this context an iron one
-			if(newLevel == InspirationsRegistry.getCauldronMax() && InspirationsRegistry.isNormalCauldron(state) && InspirationsRegistry.hasFullCauldron(newState)) {
-				world.setBlockState(pos, InspirationsRegistry.getFullCauldron(newState));
-				cauldron = null;
-			} else {
-				if(!(block instanceof CauldronBlock)) {
-					((CauldronBlock)Blocks.CAULDRON).setWaterLevel(world, pos, Blocks.CAULDRON.getDefaultState(), newLevel);
+			if(!(block instanceof CauldronBlock)) {
+				((CauldronBlock)Blocks.CAULDRON).setWaterLevel(world, pos, Blocks.CAULDRON.getDefaultState(), newLevel);
 
-					// missing the tile entity
-					if(Config.enableExtendedCauldron()) {
-						TileEntity te = world.getTileEntity(pos);
-						if(te instanceof CauldronTileEntity) {
-							cauldron = (CauldronTileEntity)te;
-						}
+				// missing the tile entity
+				if(Config.enableExtendedCauldron()) {
+					TileEntity te = world.getTileEntity(pos);
+					if(te instanceof CauldronTileEntity) {
+						cauldron = (CauldronTileEntity)te;
 					}
-				} else {
-					((CauldronBlock)block).setWaterLevel(world, pos, state, newLevel);
 				}
-				if(newLevel == 0) {
-					newState = CauldronState.WATER;
-				}
+			} else {
+				((CauldronBlock)block).setWaterLevel(world, pos, state, newLevel);
+			}
+			if(newLevel == 0) {
+				newState = CauldronState.WATER;
 			}
 		}
 

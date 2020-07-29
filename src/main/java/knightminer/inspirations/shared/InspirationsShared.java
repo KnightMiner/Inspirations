@@ -14,17 +14,16 @@ import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.loot.LootConditionType;
 import net.minecraft.loot.LootFunctionType;
 import net.minecraft.util.registry.Registry;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.registration.object.EnumObject;
 
 /**
  * Base module for common code between the modules
  */
+@SuppressWarnings("unused")
 public class InspirationsShared extends ModuleBase {
 	public static LootConditionType lootConfig;
 	public static LootFunctionType textureFunction;
@@ -48,11 +47,6 @@ public class InspirationsShared extends ModuleBase {
 			.put(DyeColor.RED,        Blocks.RED_CARPET.delegate)
 			.put(DyeColor.BLACK,      Blocks.BLACK_CARPET.delegate)
 			.build();
-
-	@SubscribeEvent
-	void setup(FMLCommonSetupEvent event) {
-		MinecraftForge.EVENT_BUS.addListener(SharedEvents::updateMilkCooldown);
-	}
 
 	@SubscribeEvent
 	void registerRecipeTypes(RegistryEvent.Register<IRecipeSerializer<?>> event) {

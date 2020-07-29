@@ -35,6 +35,7 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
@@ -201,7 +202,7 @@ public class BuildingClientEvents extends ClientEvents {
 			replaceBookshelfModel(event, block);
 		}
 		for (Block block : InspirationsBuilding.enlightenedBush.values()) {
-			replaceBothTexturedModels(event, block.getRegistryName(), "leaves");
+			replaceBothTexturedModels(event, Objects.requireNonNull(block.getRegistryName()), "leaves");
 		}
 	}
 

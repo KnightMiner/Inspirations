@@ -6,7 +6,6 @@ import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 
-import javax.annotation.Nonnull;
 import java.util.Map;
 
 public class ShieldProtectionEnchantment extends ProtectionEnchantment {
@@ -19,9 +18,8 @@ public class ShieldProtectionEnchantment extends ProtectionEnchantment {
     return stack.isShield(null) || super.canApplyAtEnchantingTable(stack);
   }
 
-  @Nonnull
   @Override
-  public Map<EquipmentSlotType, ItemStack> getEntityEquipment(@Nonnull LivingEntity entity) {
+  public Map<EquipmentSlotType, ItemStack> getEntityEquipment(LivingEntity entity) {
     // only include the shield if blocking
     Map<EquipmentSlotType, ItemStack> items = super.getEntityEquipment(entity);
     if (entity.isActiveItemStackBlocking()) {

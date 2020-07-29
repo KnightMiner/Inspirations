@@ -21,23 +21,22 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+@SuppressWarnings("WeakerAccess")
 public class FlatCarpetBlock extends CarpetBlock {
-	public static final BooleanProperty NORTHWEST = BooleanProperty.create("northwest");
-	public static final BooleanProperty NORTHEAST = BooleanProperty.create("northeast");
-	public static final BooleanProperty SOUTHWEST = BooleanProperty.create("southwest");
-	public static final BooleanProperty SOUTHEAST = BooleanProperty.create("southeast");
+	protected static final BooleanProperty NORTHWEST = BooleanProperty.create("northwest");
+	protected static final BooleanProperty NORTHEAST = BooleanProperty.create("northeast");
+	protected static final BooleanProperty SOUTHWEST = BooleanProperty.create("southwest");
+	protected static final BooleanProperty SOUTHEAST = BooleanProperty.create("southeast");
 
 	// No bits set.
-	public static final int SHAPE_FLAT = 0;
+	private static final int SHAPE_FLAT = 0;
 
     public FlatCarpetBlock(DyeColor color, Block.Properties props) {
         super(color, props);
     }
 
-	@Nonnull
 	@Override
 	public BlockState updatePostPlacement(BlockState state, Direction facing, BlockState facingState, IWorld world, BlockPos pos, BlockPos facingPos) {
 		if (!state.isValidPosition(world, pos)) {

@@ -19,7 +19,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.client.model.data.ModelProperty;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Objects;
 
 public final class TextureBlockUtil {
 
@@ -41,6 +42,7 @@ public final class TextureBlockUtil {
 	public static void updateTextureBlock(World world, BlockPos pos, ItemStack stack) {
 		TileEntity te = world.getTileEntity(pos);
 		if(te != null && stack.hasTag()) {
+			//noinspection ConstantConditions
 			updateTextureBlock(te, stack.getTag());
 		}
 	}
@@ -49,7 +51,7 @@ public final class TextureBlockUtil {
 	 * Updates the current texture block in the TE
 	 * @param tags  NBT tags containing update information
 	 */
-	public static void updateTextureBlock(TileEntity te, CompoundNBT tags) {
+	public static void updateTextureBlock(@Nullable TileEntity te, CompoundNBT tags) {
 		if(te != null) {
 			String texture = tags.getString(TAG_TEXTURE);
 			if (!texture.isEmpty()) {
@@ -66,7 +68,7 @@ public final class TextureBlockUtil {
 	 * @param world  World
 	 * @param pos    Pos
 	 * @param state  State
-	 * @return
+	 * @return  Pickblock stack with proper NBT
 	 */
 	public static ItemStack getPickBlock(IBlockReader world, BlockPos pos, BlockState state) {
 		Block block = state.getBlock();
@@ -87,7 +89,7 @@ public final class TextureBlockUtil {
 	 * Gets the current texture block from the TE
 	 * @return  Block, or AIR if none is set
 	 */
-	public static Block getTextureBlock(TileEntity te) {
+	public static Block getTextureBlock(@Nullable TileEntity te) {
 		if(te == null) {
 			return Blocks.AIR;
 		}
@@ -95,14 +97,15 @@ public final class TextureBlockUtil {
 		if (blockName.isEmpty()) {
 			return Blocks.AIR;
 		}
-		return ForgeRegistries.BLOCKS.getValue(new ResourceLocation(blockName));
+		Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(blockName));
+		return block == null ? Blocks.AIR : block;
 	}
 
 	/**
 	 * Gets the current texture block from the TE
-	 * @return
+	 * @return  Texture block name from the TE
 	 */
-	public static String getTextureBlockName(TileEntity te) {
+	public static String getTextureBlockName(@Nullable TileEntity te) {
 		if(te == null) {
 			return "";
 		}
@@ -118,11 +121,11 @@ public final class TextureBlockUtil {
 	 * @param block       Block to use as the texture
 	 * @return  The item stack with the proper NBT
 	 */
-	public static ItemStack createTexturedStack(Block texturable, Block block) {
+	public static ItemStack createTexturedStack(Block texturable, @Nullable Block block) {
 		ItemStack stack = new ItemStack(texturable);
 
 		if(block != null && block != Blocks.AIR) {
-			setStackTexture(stack, block.getRegistryName().toString());
+			setStackTexture(stack, Objects.requireNonNull(block.getRegistryName()).toString());
 		}
 
 		return stack;
@@ -134,7 +137,7 @@ public final class TextureBlockUtil {
 	 * @param blockName  Block name to set
 	 * @return  The item stack with the proper NBT
 	 */
-	public static ItemStack setStackTexture(ItemStack stack, @Nonnull String blockName) {
+	public static ItemStack setStackTexture(ItemStack stack, String blockName) {
 		if(!blockName.isEmpty()) {
 			CompoundNBT tag = stack.getOrCreateTag();
 			tag.putString(TextureBlockUtil.TAG_TEXTURE, blockName);
@@ -150,11 +153,11 @@ public final class TextureBlockUtil {
 	 * @param block  Block to set
 	 * @return  The item stack with the proper NBT
 	 */
-	public static ItemStack setStackTexture(ItemStack stack, Block block) {
+	public static ItemStack setStackTexture(ItemStack stack, @Nullable Block block) {
 		if (block == null || block == Blocks.AIR) {
 			return stack;
 		}
-		return setStackTexture(stack, block.getRegistryName().toString());
+		return setStackTexture(stack, Objects.requireNonNull(block.getRegistryName()).toString());
 	}
 
 	/**

@@ -1,10 +1,5 @@
 package knightminer.inspirations.library.recipe;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -16,15 +11,18 @@ import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.IIngredientSerializer;
 import net.minecraftforge.fml.ModList;
 
-import javax.annotation.Nonnull;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+@SuppressWarnings("WeakerAccess")
 public class ModItemList extends CompoundIngredient {
 
 	protected ModItemList(List<Ingredient> children) {
 		super(children);
 	}
 
-	@Nonnull
 	@Override
 	public IIngredientSerializer<? extends Ingredient> getSerializer() {
 		return new Factory();
@@ -34,10 +32,8 @@ public class ModItemList extends CompoundIngredient {
 
 
 	public static class Factory implements IIngredientSerializer<ModItemList> {
-
-		@Nonnull
 		@Override
-		public ModItemList parse(@Nonnull JsonObject json) {
+		public ModItemList parse(JsonObject json) {
 			List<Ingredient> ingredientList = new LinkedList<>();
 			// start by iterating the array of ingredients
 			JsonArray ingredients = JSONUtils.getJsonArray(json, "ingredients");
@@ -64,14 +60,13 @@ public class ModItemList extends CompoundIngredient {
 		}
 
 		@Override
-		public void write(@Nonnull PacketBuffer buffer, @Nonnull ModItemList ingredient) {
+		public void write(PacketBuffer buffer, ModItemList ingredient) {
 			buffer.writeVarInt(ingredient.getChildren().size());
 			ingredient.getChildren().forEach((child) -> child.write(buffer));
 		}
 
-		@Nonnull
 		@Override
-		public ModItemList parse(@Nonnull PacketBuffer buffer) {
+		public ModItemList parse(PacketBuffer buffer) {
 			return new ModItemList(Stream
 					.generate(() -> Ingredient.read(buffer))
 					.limit(buffer.readVarInt())

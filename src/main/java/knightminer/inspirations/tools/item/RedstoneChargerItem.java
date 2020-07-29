@@ -20,8 +20,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
-import javax.annotation.Nonnull;
-
 import static knightminer.inspirations.tools.InspirationsTools.redstoneCharge;
 
 public class RedstoneChargerItem extends Item {
@@ -32,7 +30,6 @@ public class RedstoneChargerItem extends Item {
 		);
 	}
 
-	@Nonnull
 	@Override
 	public ActionResultType onItemUse(ItemUseContext context) {
 		BlockPos pos = context.getPos();

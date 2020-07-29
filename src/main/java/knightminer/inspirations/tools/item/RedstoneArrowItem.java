@@ -12,17 +12,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
 
-import javax.annotation.Nonnull;
-
 public class RedstoneArrowItem extends ArrowItem implements IHidable {
 
 	public RedstoneArrowItem(Properties builder) {
 		super(builder);
 	}
 
-	@Nonnull
 	@Override
-	public AbstractArrowEntity createArrow(@Nonnull World world, @Nonnull ItemStack stack, LivingEntity shooter) {
+	public AbstractArrowEntity createArrow(World world, ItemStack stack, LivingEntity shooter) {
 		return new RedstoneArrow(world, shooter);
 	}
 
@@ -37,7 +34,7 @@ public class RedstoneArrowItem extends ArrowItem implements IHidable {
 	}
 
 	@Override
-	public void fillItemGroup(@Nonnull ItemGroup group, @Nonnull NonNullList<ItemStack> items) {
+	public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
 		if(shouldAddtoItemGroup(group)) {
 			super.fillItemGroup(group, items);
 		}

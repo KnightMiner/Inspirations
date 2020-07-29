@@ -27,7 +27,6 @@ import net.minecraft.world.DimensionType;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Supplier;
@@ -66,7 +65,6 @@ public class WaypointCompassItem extends HidableItem {
   /**
    * Make all compasses use the same name.
    */
-  @Nonnull
   @Override
   public String getTranslationKey() {
     return "item.inspirations.waypoint_compass";
@@ -259,7 +257,7 @@ public class WaypointCompassItem extends HidableItem {
    * @param world  World
    * @param pos    Block pos
    */
-  public static void setNBT(@Nonnull ItemStack stack, @Nullable World world, @Nullable BlockPos pos) {
+  public static void setNBT(ItemStack stack, @Nullable World world, @Nullable BlockPos pos) {
     if (world == null || pos == null) {
       clearNBT(stack);
       return;
@@ -283,7 +281,7 @@ public class WaypointCompassItem extends HidableItem {
    * @param stack     Stack to modify
    * @param waypoint  Stack to copy from
    */
-  public static void copyNBT(@Nonnull ItemStack stack, @Nonnull ItemStack waypoint) {
+  public static void copyNBT(ItemStack stack, ItemStack waypoint) {
     if (!waypoint.hasTag()) {
       return;
     }

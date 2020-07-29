@@ -4,10 +4,12 @@ import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionUtils;
+import net.minecraft.potion.Potions;
 import net.minecraft.tags.ITag;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
 
+@Deprecated
 public class PotionEmptyCauldron implements ICauldronRecipe {
 
 	private ITag<Item> bottle;
@@ -22,7 +24,7 @@ public class PotionEmptyCauldron implements ICauldronRecipe {
 		if(level == 0) {
 			return false;
 		}
-		return state.getPotion() != null && stack.getItem().isIn(bottle);
+		return state.getPotion() != Potions.EMPTY && stack.getItem().isIn(bottle);
 	}
 
 	@Override

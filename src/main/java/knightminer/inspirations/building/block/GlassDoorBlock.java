@@ -20,8 +20,6 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 
-import javax.annotation.Nonnull;
-
 public class GlassDoorBlock extends DoorBlock implements IHidable {
 
 	public GlassDoorBlock() {
@@ -46,7 +44,7 @@ public class GlassDoorBlock extends DoorBlock implements IHidable {
 	// Custom shape to include the protruding handle.
 	// Packing:
 	// 4 sides, 2 top/bottom, 2 left/right = 16 total.
-	protected static VoxelShape[] SHAPES = new VoxelShape[16];
+	private static final VoxelShape[] SHAPES = new VoxelShape[16];
 	static {
 		for (boolean onTop: new boolean[] { false, true}) {
 			for (Direction yaw: Direction.Plane.HORIZONTAL) {
@@ -62,7 +60,7 @@ public class GlassDoorBlock extends DoorBlock implements IHidable {
 		}
 	}
 
-	@Nonnull
+	@Override
 	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
 		Direction direction = state.get(FACING);
 		boolean flipped = state.get(HINGE) == DoorHingeSide.RIGHT;

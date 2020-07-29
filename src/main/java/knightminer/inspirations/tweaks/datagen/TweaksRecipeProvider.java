@@ -15,7 +15,6 @@ import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
 
-import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public class TweaksRecipeProvider extends RecipeProvider implements IConditionBuilder {
@@ -26,13 +25,13 @@ public class TweaksRecipeProvider extends RecipeProvider implements IConditionBu
 		super(gen);
 	}
 
-	@Nonnull
 	@Override
 	public String getName() {
 		return "Inspirations Recipes - Tweaks";
 	}
+
 	@Override
-	protected void registerRecipes(@Nonnull Consumer<IFinishedRecipe> consumer) {
+	protected void registerRecipes(Consumer<IFinishedRecipe> consumer) {
 		// Since these are mass-production recipes, show them after the user makes
 		// several of the original.
 		CondRecipe.shaped(InspirationsUtility.collector)

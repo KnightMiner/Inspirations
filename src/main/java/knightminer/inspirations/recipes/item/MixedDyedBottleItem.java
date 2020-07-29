@@ -14,7 +14,7 @@ import net.minecraftforge.common.util.Constants;
 
 public class MixedDyedBottleItem extends HidableItem {
 
-	public static final String TAG_COLOR = "color";
+	private static final String TAG_COLOR = "color";
 
 	public MixedDyedBottleItem() {
 		super(new Item.Properties()

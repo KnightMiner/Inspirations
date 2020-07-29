@@ -19,11 +19,10 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
-import javax.annotation.Nonnull;
 import java.util.Random;
 
 public class TorchLevelBlock extends TorchBlock {
-	public static final DirectionProperty SWING = DirectionProperty.create("swing", (dir) -> dir != Direction.DOWN);
+	private static final DirectionProperty SWING = DirectionProperty.create("swing", (dir) -> dir != Direction.DOWN);
 
 	public TorchLevelBlock() {
 		super(Block.Properties
@@ -47,7 +46,7 @@ public class TorchLevelBlock extends TorchBlock {
 	}
 
 	@Override
-	public void animateTick(BlockState state, @Nonnull World world, BlockPos pos, @Nonnull Random rand) {
+	public void animateTick(BlockState state, World world, BlockPos pos, Random rand) {
 		Direction swing = state.get(SWING);
 		double x = pos.getX() + 0.5D;
 		double y = pos.getY() + 0.7D;
@@ -68,6 +67,7 @@ public class TorchLevelBlock extends TorchBlock {
 	 * Powering
 	 */
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
 	@Override
 	public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) {
@@ -99,9 +99,10 @@ public class TorchLevelBlock extends TorchBlock {
 	 * Called serverside after this block is replaced with another in Chunk, but before the Tile Entity is updated
 	 */
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
 	@Override
-	public void onReplaced(BlockState state, @Nonnull World world, @Nonnull BlockPos pos, BlockState newState, boolean isMoving) {
+	public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
 		// if powered, send updates for power
 		if (state.getBlock() != newState.getBlock() && !isMoving && isPowered(state)) {
 			world.notifyNeighborsOfStateChange(pos, this);
@@ -110,12 +111,14 @@ public class TorchLevelBlock extends TorchBlock {
 		super.onReplaced(state, world, pos, newState, isMoving);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
 	@Override
 	public int getWeakPower(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
 		return isPowered(state) ? 15 : 0;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
 	@Override
 	public int getStrongPower(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
@@ -125,6 +128,7 @@ public class TorchLevelBlock extends TorchBlock {
 		return side == Direction.DOWN ? 15 : 0;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
 	@Override
 	public boolean canProvidePower(BlockState state) {

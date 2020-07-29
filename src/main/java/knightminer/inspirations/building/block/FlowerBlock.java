@@ -1,8 +1,8 @@
 package knightminer.inspirations.building.block;
 
+import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.IHidable;
-import knightminer.inspirations.library.Util;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BushBlock;
@@ -28,6 +28,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.event.LootTableLoadEvent;
 
+import javax.annotation.Nullable;
+import java.util.Objects;
 import java.util.Random;
 
 public class FlowerBlock extends BushBlock implements IGrowable, IHidable {
@@ -35,7 +37,7 @@ public class FlowerBlock extends BushBlock implements IGrowable, IHidable {
 	private final DoublePlantBlock largePlant;
 
 
-	public FlowerBlock(DoublePlantBlock largePlant) {
+	public FlowerBlock(@Nullable DoublePlantBlock largePlant) {
 		super(Block.Properties.create(Material.PLANTS).hardnessAndResistance(0F).sound(SoundType.PLANT));
 		this.largePlant = largePlant;
 	}
@@ -54,6 +56,7 @@ public class FlowerBlock extends BushBlock implements IGrowable, IHidable {
 
 	/* Planty stuff */
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
 	@Override
 	public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
@@ -61,6 +64,7 @@ public class FlowerBlock extends BushBlock implements IGrowable, IHidable {
 		return SHAPE.withOffset(off.x, off.y, off.z);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
 	@Override
 	public VoxelShape getCollisionShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
@@ -101,7 +105,7 @@ public class FlowerBlock extends BushBlock implements IGrowable, IHidable {
 	public void injectLoot(LootTableLoadEvent event) {
 		if (largePlant == null ||
 				!event.getName().getNamespace().equals("minecraft") ||
-				!event.getName().getPath().equals("blocks/" + largePlant.getRegistryName().getPath())
+				!event.getName().getPath().equals("blocks/" + Objects.requireNonNull(largePlant.getRegistryName()).getPath())
 		) {
 			return;
 		}
@@ -109,10 +113,11 @@ public class FlowerBlock extends BushBlock implements IGrowable, IHidable {
 		// replace it with an alternatives check to drop us if hit by shears.
 		// If anything doesn't match what we expect, don't change anything.
 		LootTable table = event.getTable();
+		//noinspection ConstantConditions  Annotations are wrong
 		if (table.removePool("main") == null) {
 			return; // Wasn't removed.
 		}
-		ResourceLocation location = Util.getResource("blocks/inject/" + getRegistryName().getPath());
+		ResourceLocation location = Inspirations.getResource("blocks/inject/" + Objects.requireNonNull(getRegistryName()).getPath());
 		table.addPool(new LootPool.Builder()
 				.name(location.toString())
 				.rolls(ConstantRange.of(1))

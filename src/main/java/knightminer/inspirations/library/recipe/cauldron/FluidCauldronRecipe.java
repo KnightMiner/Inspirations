@@ -8,12 +8,11 @@ import net.minecraft.util.SoundEvents;
 import slimeknights.mantle.util.RecipeMatch;
 
 import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * Recipe to transform an item stack using a fluid
  */
-@ParametersAreNonnullByDefault
+@Deprecated
 public class FluidCauldronRecipe extends RecipeMatchCauldronRecipe {
 
 	@Nullable

@@ -1,17 +1,16 @@
 package knightminer.inspirations.library.recipe.cauldron;
 
-import knightminer.inspirations.library.InspirationsRegistry;
+import knightminer.inspirations.common.Config;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import slimeknights.mantle.util.RecipeMatch;
 
 import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * Cauldron recipe to transform the fluid inside a cauldron into another fluid. Use primarily for soups, stews, and juices
  */
-@ParametersAreNonnullByDefault
+@Deprecated
 public class FluidTransformCauldronRecipe extends FluidCauldronRecipe {
 
 	private CauldronState result;
@@ -25,7 +24,7 @@ public class FluidTransformCauldronRecipe extends FluidCauldronRecipe {
 	 * @param boiling If true, cauldron must be above fire. If false, cauldron must not be above fire. Use null to ignore fire
 	 */
 	public FluidTransformCauldronRecipe(RecipeMatch input, Fluid fluid, Fluid result, @Nullable Boolean boiling) {
-		this(input, fluid, result, boiling, InspirationsRegistry.getCauldronMax());
+		this(input, fluid, result, boiling, Config.getCauldronMax());
 	}
 
 	/**
@@ -69,10 +68,10 @@ public class FluidTransformCauldronRecipe extends FluidCauldronRecipe {
 
 	@Override
 	public String toString() {
+		assert fluid != null;
 		return String.format(
 				"FluidTransformCauldronRecipe: %s from %s",
 				result.getFluid().getRegistryName(),
-				fluid == CauldronState.WATER ? "water" : fluid.getFluid().getRegistryName()
-		);
+				fluid == CauldronState.WATER ? "water" : fluid.getFluid().getRegistryName());
 	}
 }

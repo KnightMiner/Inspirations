@@ -9,8 +9,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 
-import javax.annotation.Nonnull;
-
 // Hopper block with waterlogged=True.
 public class WetHopperBlock extends DryHopperBlock {
 	public WetHopperBlock(Properties props) {
@@ -18,7 +16,6 @@ public class WetHopperBlock extends DryHopperBlock {
 	}
 
 	@Deprecated
-	@Nonnull
 	@Override
 	public FluidState getFluidState(BlockState state) {
 		return Fluids.WATER.getStillFluidState(false);
@@ -32,13 +29,12 @@ public class WetHopperBlock extends DryHopperBlock {
 	}
 
 	@Override
-	public boolean receiveFluid(@Nonnull IWorld world, @Nonnull BlockPos pos, BlockState state, @Nonnull FluidState fluid) {
+	public boolean receiveFluid(IWorld world, BlockPos pos, BlockState state, FluidState fluid) {
 		return false;
 	}
 
-	@Nonnull
 	@Override
-	public Fluid pickupFluid(@Nonnull IWorld world, @Nonnull BlockPos pos, BlockState state) {
+	public Fluid pickupFluid(IWorld world, BlockPos pos, BlockState state) {
 		// Swap the block but don't alter the properties itself.
 		world.setBlockState(pos, InspirationsTweaks.dryHopper.getDefaultState()
 				.with(FACING, state.get(FACING))

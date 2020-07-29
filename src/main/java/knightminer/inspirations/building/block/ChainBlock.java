@@ -9,8 +9,6 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 
-import javax.annotation.Nonnull;
-
 public class ChainBlock extends RopeBlock {
 	public ChainBlock(Item rungsItem, Properties props) {
 		super(rungsItem, props);
@@ -19,8 +17,8 @@ public class ChainBlock extends RopeBlock {
 	/* Bounds */
 
 	// Override shape for this version.
-	public static final VoxelShape[] SHAPE = new VoxelShape[3];
-	public static final VoxelShape[] SHAPE_BOTTOM = new VoxelShape[3];
+	private static final VoxelShape[] SHAPE = new VoxelShape[3];
+	private static final VoxelShape[] SHAPE_BOTTOM = new VoxelShape[3];
 
 	static {
 		VoxelShape chain_core = VoxelShapes.or(
@@ -57,8 +55,8 @@ public class ChainBlock extends RopeBlock {
 		SHAPE_BOTTOM[Rungs.Z.ordinal()] = VoxelShapes.or(chain_core_bottom, chain_rungs_z);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
-	@Nonnull
 	@Override
 	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
 		return (state.get(BOTTOM) ? SHAPE_BOTTOM: SHAPE)[state.get(RUNGS).ordinal()];

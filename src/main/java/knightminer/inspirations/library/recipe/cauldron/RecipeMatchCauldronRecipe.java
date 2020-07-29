@@ -10,6 +10,7 @@ import slimeknights.mantle.util.RecipeMatch;
 import javax.annotation.Nullable;
 import java.util.List;
 
+@Deprecated
 public abstract class RecipeMatchCauldronRecipe implements ISimpleCauldronRecipe {
 
 	private RecipeMatch input;
@@ -49,7 +50,7 @@ public abstract class RecipeMatchCauldronRecipe implements ISimpleCauldronRecipe
 	@Override
 	public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {
 		// if boiling is required, ensure it is set
-		if(level < levels || !matches(state) || (this.boiling != null && boiling != this.boiling.booleanValue())) {
+		if(level < levels || !matches(state) || (this.boiling != null && boiling != this.boiling)) {
 			return false;
 		}
 
@@ -72,6 +73,7 @@ public abstract class RecipeMatchCauldronRecipe implements ISimpleCauldronRecipe
 		return this.input.matches(Util.createNonNullList(stack)).isPresent();
 	}
 
+	@SuppressWarnings("OptionalGetWithoutIsPresent")
 	@Override
 	public ItemStack transformInput(ItemStack stack, boolean boiling, int level, CauldronState state) {
 		NonNullList<ItemStack> list = Util.createNonNullList(stack);

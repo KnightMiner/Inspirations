@@ -2,7 +2,6 @@ package knightminer.inspirations.shared;
 
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.ClientEvents;
-import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.client.ClientUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.container.PlayerContainer;
@@ -51,8 +50,8 @@ public class SharedClientEvents extends ClientEvents {
 	static void registerTextures(TextureStitchEvent.Pre event) {
 		// ensures the colorless fluid texture is loaded.
 		if (PlayerContainer.LOCATION_BLOCKS_TEXTURE.equals(event.getMap().getTextureLocation())) {
-			event.addSprite(Util.getResource("block/fluid_colorless"));
-			event.addSprite(Util.getResource("block/fluid_colorless_flow"));
+			event.addSprite(Inspirations.getResource("block/fluid_colorless"));
+			event.addSprite(Inspirations.getResource("block/fluid_colorless_flow"));
 		}
 	}
 }

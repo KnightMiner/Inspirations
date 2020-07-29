@@ -1,10 +1,10 @@
 package knightminer.inspirations.utility.datagen;
 
+import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.common.data.ConfigEnabledCondition;
 import knightminer.inspirations.common.datagen.CondRecipe;
 import knightminer.inspirations.library.InspirationsTags;
-import knightminer.inspirations.library.Util;
 import knightminer.inspirations.shared.InspirationsShared;
 import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraft.data.DataGenerator;
@@ -16,7 +16,6 @@ import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
 
-import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public class UtilityRecipeProvider extends RecipeProvider implements IConditionBuilder {
@@ -27,14 +26,13 @@ public class UtilityRecipeProvider extends RecipeProvider implements IConditionB
 		super(gen);
 	}
 
-	@Nonnull
 	@Override
 	public String getName() {
 		return "Inspirations Recipes - Utility";
 	}
 
 	@Override
-	protected void registerRecipes(@Nonnull Consumer<IFinishedRecipe> consumer) {
+	protected void registerRecipes(Consumer<IFinishedRecipe> consumer) {
 		CondRecipe.shaped(InspirationsUtility.collector)
 				.addCondition(UTILITY)
 				.addCondition(ConfigEnabledCondition.COLLECTOR)
@@ -78,17 +76,17 @@ public class UtilityRecipeProvider extends RecipeProvider implements IConditionB
 				.build(consumer);
 
 		// All the trapdoors.
-		InspirationsUtility.carpetedTrapdoors.forEach((color, trapdoor) -> {
+		InspirationsUtility.carpetedTrapdoors.forEach((color, trapdoor) ->
 			CondRecipe.shaped(trapdoor)
 								.addCondition(UTILITY)
 								.addCondition(ConfigEnabledCondition.CARPETED_TRAPDOOR)
 								.addCriterion("has_carpet", hasItem(InspirationsTags.Items.CARPETS))
-								.setGroup(Util.resource("carpeted_trapdoor"))
+								.setGroup(Inspirations.resourceName("carpeted_trapdoor"))
 								.key('C', InspirationsShared.VANILLA_CARPETS.get(color))
 								.key('T', ItemTags.WOODEN_TRAPDOORS)
 								.patternLine("C")
 								.patternLine("T")
-								.build(consumer);
-		});
+								.build(consumer)
+		);
 	}
 }

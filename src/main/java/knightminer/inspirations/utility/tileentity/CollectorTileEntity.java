@@ -20,17 +20,19 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import slimeknights.mantle.tileentity.InventoryTileEntity;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class CollectorTileEntity extends InventoryTileEntity {
-	public static ITextComponent TITLE = new TranslationTextComponent("gui.inspirations.collector");
+	private static final ITextComponent TITLE = new TranslationTextComponent("gui.inspirations.collector");
 
 	public CollectorTileEntity() {
 		super(InspirationsUtility.tileCollector, TITLE, 9);
 	}
 
 	public void collect(Direction facing) {
+		if (world == null) {
+			return;
+		}
 		BlockPos offset = pos.offset(facing);
 		TileEntity te = world.getTileEntity(offset);
 		// if we have a TE and its an item handler, try extracting from that
@@ -74,7 +76,7 @@ public class CollectorTileEntity extends InventoryTileEntity {
 	}
 
 	@Override
-	public boolean isItemValidForSlot(int slot, @Nonnull ItemStack itemstack) {
+	public boolean isItemValidForSlot(int slot, ItemStack itemstack) {
 		// mantle checks stack size which breaks some things when using stacks bigger than 1
 		return slot < getSizeInventory();
 	}
@@ -85,13 +87,13 @@ public class CollectorTileEntity extends InventoryTileEntity {
 
 	@Nullable
 	@Override
-	public Container createMenu(int winId, @Nonnull PlayerInventory playerInv, @Nonnull PlayerEntity player) {
+	public Container createMenu(int winId, PlayerInventory playerInv, PlayerEntity player) {
 		return new CollectorContainer(winId, playerInv, this);
 	}
 
 
 	/* Networking */
-	@Nonnull
+
 	@Override
 	public CompoundNBT getUpdateTag() {
 		// new tag instead of super since default implementation calls the super of writeToNBT
@@ -109,6 +111,7 @@ public class CollectorTileEntity extends InventoryTileEntity {
 	@Override
 	public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
 		CompoundNBT tag = pkt.getNbtCompound();
+		// TODO: is this okay?
 		read(this.getBlockState(), tag);
 	}
 }

@@ -1,5 +1,6 @@
 package knightminer.inspirations.shared;
 
+import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.common.network.MilkablePacket;
@@ -8,11 +9,16 @@ import net.minecraft.entity.passive.CowEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 
+@EventBusSubscriber(modid = Inspirations.modID, bus = Bus.FORGE)
 public class SharedEvents {
 	public static final String TAG_MILKCOOLDOWN = "milk_cooldown";
 
-	public static void updateMilkCooldown(LivingUpdateEvent event) {
+	@SubscribeEvent
+	static void updateMilkCooldown(LivingUpdateEvent event) {
 		LivingEntity entity = event.getEntityLiving();
 		World world = entity.getEntityWorld();
 		// only run every 20 ticks on serverside
@@ -36,6 +42,5 @@ public class SharedEvents {
 				}
 			}
 		}
-
 	}
 }

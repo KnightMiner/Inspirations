@@ -17,8 +17,6 @@ import net.minecraftforge.fluids.FluidActionResult;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 
-import javax.annotation.Nonnull;
-
 public class DispenseFluidTank extends DefaultDispenseItemBehavior {
 	private static final DefaultDispenseItemBehavior DEFAULT = new DefaultDispenseItemBehavior();
 	private IDispenseItemBehavior fallback;
@@ -26,7 +24,6 @@ public class DispenseFluidTank extends DefaultDispenseItemBehavior {
 		this.fallback = fallback;
 	}
 
-	@Nonnull
 	@Override
 	protected ItemStack dispenseStack(IBlockSource source, ItemStack stack){
 		if(!stack.getItem().isIn(InspirationsTags.Items.DISP_FLUID_TANKS)) {

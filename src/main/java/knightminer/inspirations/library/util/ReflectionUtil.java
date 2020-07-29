@@ -8,7 +8,6 @@ import net.minecraftforge.fml.common.ObfuscationReflectionHelper.UnableToFindMet
 import net.minecraftforge.registries.ForgeRegistryEntry;
 import net.minecraftforge.registries.IRegistryDelegate;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -26,7 +25,7 @@ public final class ReflectionUtil {
 	/* PotionBrewing.MixPredicate */
 
 	@Nullable
-	public static <T extends ForgeRegistryEntry<T>> T getMixPredicateInput(@Nonnull Object mixPredicate) {
+	public static <T extends ForgeRegistryEntry<T>> T getMixPredicateInput(Object mixPredicate) {
 		IRegistryDelegate<T> effect = getPrivateValue(getClass("net.minecraft.potion.PotionBrewing$MixPredicate"), mixPredicate, "field_185198_a");
 		if (effect != null) {
 			return effect.get();
@@ -35,12 +34,12 @@ public final class ReflectionUtil {
 	}
 
 	@Nullable
-	public static Ingredient getMixPredicateReagent(@Nonnull Object mixPredicate) {
+	public static Ingredient getMixPredicateReagent(Object mixPredicate) {
 		return getPrivateValue(getClass("net.minecraft.potion.PotionBrewing$MixPredicate"), mixPredicate, "field_185199_b");
 	}
 
 	@Nullable
-	public static <T extends ForgeRegistryEntry<T>> T getMixPredicateOutput(@Nonnull Object mixPredicate) {
+	public static <T extends ForgeRegistryEntry<T>> T getMixPredicateOutput(Object mixPredicate) {
 		IRegistryDelegate<T> effect = getPrivateValue(getClass("net.minecraft.potion.PotionBrewing$MixPredicate"), mixPredicate, "field_185200_c");
 		if (effect != null) {
 			return effect.get();
@@ -84,7 +83,7 @@ public final class ReflectionUtil {
 	 */
 	@Nullable
 	@SuppressWarnings("unchecked")
-	public static Class<? super Object> getClass(String className) {
+	private static Class<? super Object> getClass(String className) {
 		return (Class<? super Object>) CLASS.computeIfAbsent(className, key -> {
 			try {
 				return Class.forName(key, false, InspirationsRegistry.class.getClassLoader());
@@ -108,7 +107,7 @@ public final class ReflectionUtil {
 	 */
 	@Nullable
 	@SuppressWarnings("unchecked")
-	private static <C, T> T getPrivateValue(final Class<? super C> clazz, final Object instance, final String name) {
+	private static <C, T> T getPrivateValue(@Nullable Class<? super C> clazz, final Object instance, final String name) {
 		if(clazz == null) {
 			return null;
 		}

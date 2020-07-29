@@ -14,13 +14,13 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.data.IModelData;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
+// FIXME: use model loader
 public class BookshelfModel extends TextureModel {
 
 	/** Book model cache, for internal use only */
@@ -29,9 +29,11 @@ public class BookshelfModel extends TextureModel {
 		super(location, loader, standard, "texture", false);
 	}
 
-	@Nonnull
 	@Override
-	public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
+	public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, Random rand, IModelData extraData) {
+		if (state == null) {
+			return super.getQuads(null, side, rand, extraData);
+		}
 		IBakedModel bakedModel = this.originalModel;
 		String texture = extraData.getData(BookshelfTileEntity.TEXTURE);
 		Integer booksValue = extraData.getData(BookshelfTileEntity.BOOKS);

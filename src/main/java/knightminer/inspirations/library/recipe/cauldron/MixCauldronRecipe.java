@@ -1,7 +1,7 @@
 package knightminer.inspirations.library.recipe.cauldron;
 
 import com.google.common.collect.ImmutableList;
-import knightminer.inspirations.library.InspirationsRegistry;
+import knightminer.inspirations.common.Config;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
@@ -14,6 +14,7 @@ import java.util.List;
 /**
  * Recipe to combine two fluids into an item output
  */
+@Deprecated
 public class MixCauldronRecipe implements ISimpleCauldronRecipe {
 
 	private CauldronState input1, input2;
@@ -34,7 +35,7 @@ public class MixCauldronRecipe implements ISimpleCauldronRecipe {
 	@Override
 	public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {
 		// cauldron must be full of a fluid
-		if(level != InspirationsRegistry.getCauldronMax() || state.getFluid() == Fluids.EMPTY) {
+		if(level != Config.getCauldronMax() || state.getFluid() == Fluids.EMPTY) {
 			return false;
 		}
 

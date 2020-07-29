@@ -9,7 +9,6 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtils;
 import net.minecraftforge.common.brewing.IBrewingRecipe;
 
-import javax.annotation.Nonnull;
 import java.util.function.Supplier;
 
 /**
@@ -55,13 +54,12 @@ public class NormalBrewingRecipe implements IHidable, IBrewingRecipe {
 	}
 
 	@Override
-	public boolean isIngredient(@Nonnull ItemStack ingredient) {
+	public boolean isIngredient(ItemStack ingredient) {
 		return catalyst.test(ingredient);
 	}
 
-	@Nonnull
 	@Override
-	public ItemStack getOutput(@Nonnull ItemStack input, @Nonnull ItemStack ingredient) {
+	public ItemStack getOutput(ItemStack input, ItemStack ingredient) {
 		if (!catalyst.test(ingredient)) {
 			return ItemStack.EMPTY;
 		}

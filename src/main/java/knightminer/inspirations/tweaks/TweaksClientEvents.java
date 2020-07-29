@@ -3,7 +3,6 @@ package knightminer.inspirations.tweaks;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.ClientEvents;
 import knightminer.inspirations.common.Config;
-import knightminer.inspirations.library.Util;
 import knightminer.inspirations.tweaks.client.PortalColorHandler;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.renderer.RenderType;
@@ -42,18 +41,18 @@ import java.util.Map;
 @EventBusSubscriber(modid = Inspirations.modID, value = Dist.CLIENT, bus = Bus.MOD)
 public class TweaksClientEvents extends ClientEvents {
 	private static final ResourceLocation ENCHANTED_BOOK_VANILLA = new ModelResourceLocation("enchanted_book", "inventory");
-	private static final ResourceLocation ENCHANTED_BOOK_TINTED = Util.getResource("item/enchanted_book");
+	private static final ResourceLocation ENCHANTED_BOOK_TINTED = Inspirations.getResource("item/enchanted_book");
 
 	private static final ResourceLocation FIREWORKS_VANILLA = new ModelResourceLocation("firework_rocket", "inventory");
-	private static final ResourceLocation FIREWORKS_TINTED = Util.getResource("item/fireworks");
+	private static final ResourceLocation FIREWORKS_TINTED = Inspirations.getResource("item/fireworks");
 
 	private static final ResourceLocation PORTAL_EW_VANILLA = new ModelResourceLocation("minecraft:nether_portal", "axis=z");
 	private static final ResourceLocation PORTAL_NS_VANILLA = new ModelResourceLocation("minecraft:nether_portal", "axis=x");
-	private static final ResourceLocation PORTAL_EW_TINTED = Util.getResource("block/nether_portal_tinted_ew");
-	private static final ResourceLocation PORTAL_NS_TINTED = Util.getResource("block/nether_portal_tinted_ns");
+	private static final ResourceLocation PORTAL_EW_TINTED = Inspirations.getResource("block/nether_portal_tinted_ew");
+	private static final ResourceLocation PORTAL_NS_TINTED = Inspirations.getResource("block/nether_portal_tinted_ns");
 
 	private static final ResourceLocation CAULDRON_MODEL_VANILLA = new ModelResourceLocation("cauldron", "inventory");
-	private static final ResourceLocation CAULDRON_ITEM_MODEL = new ModelResourceLocation(Util.getResource("cauldron"), "inventory");
+	private static final ResourceLocation CAULDRON_ITEM_MODEL = new ModelResourceLocation(Inspirations.getResource("cauldron"), "inventory");
 
 	@SubscribeEvent
 	static void clientSetup(FMLClientSetupEvent event) {

@@ -24,14 +24,11 @@ import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ToolType;
 
-import javax.annotation.Nonnull;
-
 public class PathBlock extends HidableBlock implements IWaterLoggable {
+	private final static BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
+
 	private final VoxelShape shape;
 	private final VoxelShape collShape;
-
-	public static BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
-
 	public PathBlock(VoxelShape shape, MaterialColor mapColor) {
 		super(Block.Properties.create(Material.ROCK, mapColor)
 			.hardnessAndResistance(1.5F, 10F)
@@ -74,25 +71,26 @@ public class PathBlock extends HidableBlock implements IWaterLoggable {
 
 	/* Block Shape */
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
-	@Nonnull
 	@Override
-	public VoxelShape getShape(@Nonnull BlockState state, @Nonnull IBlockReader worldIn, @Nonnull BlockPos pos, @Nonnull ISelectionContext context) {
+	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
 		return shape;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
-	@Nonnull
 	@Override
-	public VoxelShape getCollisionShape(@Nonnull BlockState state, @Nonnull IBlockReader world, @Nonnull BlockPos pos, @Nonnull ISelectionContext context) {
+	public VoxelShape getCollisionShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
 		return collShape;
 	}
 
 	/* Solid surface below */
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
 	@Override
-	public boolean isValidPosition(@Nonnull BlockState state, @Nonnull IWorldReader world, @Nonnull BlockPos pos) {
+	public boolean isValidPosition(BlockState state, IWorldReader world, BlockPos pos) {
 		return super.isValidPosition(state, world, pos) && this.canBlockStay(world, pos);
 	}
 
@@ -102,9 +100,10 @@ public class PathBlock extends HidableBlock implements IWaterLoggable {
 		return Block.hasSolidSide(state, world, pos, Direction.UP) || state.getBlock() instanceof MulchBlock;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
 	@Override
-	public void neighborChanged(@Nonnull BlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull Block other, @Nonnull BlockPos fromPos, boolean isMoving) {
+	public void neighborChanged(BlockState state, World world, BlockPos pos, Block other, BlockPos fromPos, boolean isMoving) {
 		if (!this.canBlockStay(world, pos)) {
 			world.destroyBlock(pos, true);
 		} else if (state.get(WATERLOGGED)) {

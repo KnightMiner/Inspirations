@@ -1,6 +1,5 @@
 package knightminer.inspirations.library;
 
-import knightminer.inspirations.Inspirations;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -15,11 +14,8 @@ import net.minecraft.potion.Effect;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.EffectUtils;
 import net.minecraft.potion.Potion;
-import net.minecraft.tags.ITag.INamedTag;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.VoxelShape;
@@ -31,33 +27,13 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.server.ServerWorld;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 
 @SuppressWarnings("deprecation")
 public class Util {
-	public static String resource(String name) {
-		return String.format("%s:%s", Inspirations.modID, name.toLowerCase(Locale.US));
-	}
-	public static String prefix(String name) {
-		return String.format("%s.%s", Inspirations.modID, name.toLowerCase(Locale.US));
-	}
-
-	public static ResourceLocation getResource(String res) {
-		return new ResourceLocation(Inspirations.modID, res);
-	}
-
-	public static Logger getLogger(String type) {
-		String log = Inspirations.modID;
-
-		return LogManager.getLogger(log + "-" + type);
-	}
 
 	public static boolean clickedAABB(AxisAlignedBB aabb, Vector3d hit) {
 		return aabb.minX <= hit.x && hit.x <= aabb.maxX
@@ -131,6 +107,7 @@ public class Util {
 	 * @return  New NonNullList
 	 */
 	@SafeVarargs
+	@Deprecated
 	public static <E> NonNullList<E> createNonNullList(E... elements) {
 		NonNullList<E> list = NonNullList.create();
 		list.addAll(Arrays.asList(elements));
@@ -167,23 +144,11 @@ public class Util {
 	}
 
 	/**
-	 * Splits a hex color integer into three float color components between 0 and 1
-	 * @param color  Input color
-	 * @return  Floats for the color
-	 */
-	public static float[] getColorComponents(int color) {
-		int i = (color & 0xFFFFFF) >> 16;
-		int j = (color & 0xFFFF) >> 8;
-		int k = (color & 0xFF);
-		return new float[] {i / 255.0f, j / 255.0f, k / 255.0f};
-	}
-
-	/**
 	 * Merge three float color components between 0 and 1 into a hex color integer
 	 * @param component  float color component array, must be length 3
 	 * @return  Color integer value
 	 */
-	public static int getColorInteger(@Nonnull float[] component) {
+	public static int getColorInteger(float[] component) {
 		return ((int)(component[0] * 255) & 0xFF) << 16
 					 | ((int)(component[1] * 255) & 0xFF) << 8
 					 | ((int)(component[2] * 255) & 0xFF);
@@ -223,6 +188,7 @@ public class Util {
 	 * @param color  Dye color input
 	 * @return  EnumDyeColor matching, or null for no match
 	 */
+	@Nullable
 	public static DyeColor getDyeForColor(int color) {
 		for(DyeColor dyeColor : DyeColor.values()) {
 			if(dyeColor.getId() == color) {
@@ -230,14 +196,5 @@ public class Util {
 			}
 		}
 		return null;
-	}
-
-	/**
-	 * Get the Forge tag for a specific dye.
-	 * @param dye The color
-	 * @return The forge:dyes/color tag.
-	 */
-	public static INamedTag<Item> getDyeTag(DyeColor dye) {
-		return ItemTags.makeWrapperTag("forge:dyes/" + dye.getString());
 	}
 }

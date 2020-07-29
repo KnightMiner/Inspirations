@@ -1,5 +1,6 @@
 package knightminer.inspirations.tweaks;
 
+import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.common.network.MilkablePacket;
@@ -33,14 +34,18 @@ import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 import java.util.List;
 
+@SuppressWarnings({"unused"})
+@EventBusSubscriber(modid = Inspirations.modID, bus = Bus.FORGE)
 public class TweaksEvents {
 
 	@SubscribeEvent
-	public static void unsaddlePig(EntityInteract event) {
+	static void unsaddlePig(EntityInteract event) {
 		if(!Config.enablePigDesaddle.get()) {
 			return;
 		}
@@ -63,7 +68,7 @@ public class TweaksEvents {
 	}
 
 	@SubscribeEvent
-	public static void extraBonemeal(BonemealEvent event) {
+	static void extraBonemeal(BonemealEvent event) {
 		if(!Config.bonemealMushrooms.get() && !Config.bonemealDeadBush.get() && !Config.bonemealGrassSpread.get() && !Config.bonemealMyceliumSpread.get()) {
 			return;
 		}
@@ -191,7 +196,8 @@ public class TweaksEvents {
 	}
 
 	@SubscribeEvent
-	public static void dropHeartbeet(HarvestDropsEvent event) {
+	static void dropHeartbeet(HarvestDropsEvent event) {
+		// TODO: loot tables for this?
 		if(!Config.enableHeartbeet.get()) {
 			return;
 		}
@@ -253,7 +259,7 @@ public class TweaksEvents {
 	*/
 
 	@SubscribeEvent(priority = EventPriority.LOW)
-	public static void onFall(LivingFallEvent event) {
+	static void onFall(LivingFallEvent event) {
 		if(!Config.lilypadBreakFall.get()) {
 			return;
 		}
@@ -298,11 +304,13 @@ public class TweaksEvents {
 			posList[i++] = blockPos.south();
 			// make sure to get the corners
 			if(i == 3) {
+				//noinspection UnusedAssignment
 				posList[i++] = posList[1].south();
 			}
 		} else if(z < 0.3) {
 			posList[i++] = blockPos.north();
 			if(i == 3) {
+				//noinspection UnusedAssignment
 				posList[i++] = posList[1].north();
 			}
 		}
@@ -322,7 +330,7 @@ public class TweaksEvents {
 	}
 
 	@SubscribeEvent
-	public static void milkCow(EntityInteract event) {
+	static void milkCow(EntityInteract event) {
 		if(!Config.milkCooldown.get()) {
 			return;
 		}

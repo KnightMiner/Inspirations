@@ -6,6 +6,7 @@ import net.minecraft.item.DyeableArmorItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
+@Deprecated
 public class ArmorClearingCauldronRecipe implements ICauldronRecipe {
 
 	private final ArmorMaterial material;

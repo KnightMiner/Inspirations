@@ -12,7 +12,6 @@ import net.minecraft.loot.LootTableManager;
 import net.minecraft.loot.ValidationTracker;
 import net.minecraft.util.ResourceLocation;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -24,13 +23,11 @@ public class InspirationsLootTableProvider extends LootTableProvider {
 		super(gen);
 	}
 
-	@Nonnull
 	@Override
 	public String getName() {
 		return "Inspirations Loot Tables";
 	}
 
-	@Nonnull
 	@Override
 	protected List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootParameterSet>> getTables() {
 		return ImmutableList.of(

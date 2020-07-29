@@ -12,13 +12,13 @@ import net.minecraft.tags.ITag;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
 public class TextureBlockItem extends HidableBlockItem {
-
 	private final ITag<Item> texTag;
 
 	public TextureBlockItem(Block block, BlockItem.Properties props, ITag<Item> texTag) {
@@ -27,14 +27,15 @@ public class TextureBlockItem extends HidableBlockItem {
 	}
 
 	@Override
-	public void fillItemGroup(@Nonnull ItemGroup group, @Nonnull NonNullList<ItemStack> items) {
+	public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
 		if (shouldAddtoItemGroup(group) && isInGroup(group)) {
 			TextureBlockUtil.addBlocksFromTag(this.getBlock(), texTag, items);
 		}
 	}
 
+	@OnlyIn(Dist.CLIENT)
 	@Override
-	public void addInformation(@Nonnull ItemStack stack, @Nullable World worldIn, @Nonnull List<ITextComponent> tooltip, @Nonnull ITooltipFlag flagIn) {
+	public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 		super.addInformation(stack, worldIn, tooltip, flagIn);
 		if(!stack.hasTag()) {
 			return;

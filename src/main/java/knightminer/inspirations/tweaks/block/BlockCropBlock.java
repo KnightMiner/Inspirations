@@ -14,7 +14,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.PlantType;
 
-import javax.annotation.Nonnull;
 import java.util.Random;
 import java.util.function.Supplier;
 
@@ -43,13 +42,11 @@ public abstract class BlockCropBlock extends CropsBlock implements IHidable, IPl
 		// No super, we want a different age size!
 	}
 
-	@Nonnull
 	@Override
 	public IntegerProperty getAgeProperty() {
 		return SMALL_AGE;
 	}
 
-	@Nonnull
 	@Override
 	public BlockState withAge(int age) {
 		if(age == getMaxAge()) {
@@ -72,7 +69,7 @@ public abstract class BlockCropBlock extends CropsBlock implements IHidable, IPl
 
 	@Deprecated
 	@Override
-	public boolean isValidPosition(@Nonnull BlockState state, IWorldReader world, @Nonnull BlockPos pos) {
+	public boolean isValidPosition(BlockState state, IWorldReader world, BlockPos pos) {
 		return block.get().isValidPosition(block.get().getDefaultState(), world, pos);
 	}
 

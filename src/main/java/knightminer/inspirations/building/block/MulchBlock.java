@@ -17,14 +17,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
+import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.PlantType;
 import net.minecraftforge.common.ToolType;
 
-import javax.annotation.Nonnull;
-
 public class MulchBlock extends FallingBlock implements IHidable {
 
-	protected static final VoxelShape SHAPE = Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 15.0D, 16.0D);
+	private static final VoxelShape SHAPE = Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 15.0D, 16.0D);
 
 	public MulchBlock(MaterialColor color) {
 		super(Properties.create(Material.WOOD, color)
@@ -40,16 +39,16 @@ public class MulchBlock extends FallingBlock implements IHidable {
 	}
 
 	@Override
-	public void fillItemGroup(@Nonnull ItemGroup group, @Nonnull NonNullList<ItemStack> items) {
+	public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
 		if(shouldAddtoItemGroup(group)) {
 			super.fillItemGroup(group, items);
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
-	@Nonnull
 	@Override
-	public VoxelShape getCollisionShape(@Nonnull BlockState state, @Nonnull IBlockReader worldIn, @Nonnull BlockPos pos, ISelectionContext context) {
+	public VoxelShape getCollisionShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
 		return SHAPE;
 	}
 
@@ -57,7 +56,7 @@ public class MulchBlock extends FallingBlock implements IHidable {
 	 * Plants
 	 */
 	@Override
-	public boolean canSustainPlant(@Nonnull BlockState state, @Nonnull IBlockReader world, BlockPos pos, @Nonnull Direction direction, net.minecraftforge.common.IPlantable plantable) {
+	public boolean canSustainPlant(BlockState state, IBlockReader world, BlockPos pos, Direction direction, IPlantable plantable) {
 		// we are fine with most plants, but saplings are a bit much
 		// this is mostly cop out since I have no way of stopping sapling growth
 		return plantable.getPlantType(world, pos.offset(direction)) == PlantType.PLAINS && !(plantable instanceof SaplingBlock);

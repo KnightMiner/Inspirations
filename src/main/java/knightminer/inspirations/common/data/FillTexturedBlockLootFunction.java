@@ -14,38 +14,42 @@ import net.minecraft.loot.LootParameters;
 import net.minecraft.loot.conditions.ILootCondition;
 import net.minecraft.tileentity.TileEntity;
 
-import javax.annotation.Nonnull;
 import java.util.Set;
 
 /**
  * Applies the data for a texturable block to the dropped item.
  * No configuration is necessary.
  */
+@SuppressWarnings("WeakerAccess")
 public class FillTexturedBlockLootFunction extends LootFunction {
+	/**
+	 * Creates a new instance from the given conditions
+	 * @param conditions  Conditions list
+	 */
 	public FillTexturedBlockLootFunction(ILootCondition[] conditions) {
 		super(conditions);
 	}
 
+	/**
+	 * Creates a new instance with no conditions
+	 */
 	public FillTexturedBlockLootFunction() {
 		super(new ILootCondition[0]);
 	}
 
-	@Nonnull
 	@Override
-	protected ItemStack doApply(@Nonnull ItemStack stack, @Nonnull LootContext context) {
+	protected ItemStack doApply(ItemStack stack, LootContext context) {
 		TileEntity te = context.get(LootParameters.BLOCK_ENTITY);
 		if (te != null) {
-			stack = TextureBlockUtil.setStackTexture(stack, TextureBlockUtil.getTextureBlockName(te));
+			TextureBlockUtil.setStackTexture(stack, TextureBlockUtil.getTextureBlockName(te));
 		}
 		return stack;
 	}
 
-	@Nonnull
 	@Override
 	public Set<LootParameter<?>> getRequiredParameters() {
 		return ImmutableSet.of(LootParameters.BLOCK_ENTITY);
 	}
-
 
 	@Override
 	public LootFunctionType func_230425_b_() {
@@ -54,7 +58,7 @@ public class FillTexturedBlockLootFunction extends LootFunction {
 
 	public static class Serializer extends LootFunction.Serializer<FillTexturedBlockLootFunction> {
 		@Override
-		public FillTexturedBlockLootFunction deserialize(@Nonnull JsonObject json, @Nonnull JsonDeserializationContext ctx, @Nonnull ILootCondition[] conditions) {
+		public FillTexturedBlockLootFunction deserialize(JsonObject json, JsonDeserializationContext ctx, ILootCondition[] conditions) {
 			return new FillTexturedBlockLootFunction(conditions);
 		}
 	}

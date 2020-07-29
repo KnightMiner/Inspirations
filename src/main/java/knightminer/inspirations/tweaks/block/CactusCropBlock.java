@@ -16,8 +16,6 @@ import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraftforge.common.PlantType;
 
-import javax.annotation.Nonnull;
-
 public class CactusCropBlock extends BlockCropBlock {
 
 	private static final VoxelShape[] BOUNDS = {
@@ -38,7 +36,6 @@ public class CactusCropBlock extends BlockCropBlock {
 		return InspirationsTweaks.cactusSeeds;
 	}
 
-	@Nonnull
 	@Override
 	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
 		return BOUNDS[this.getAge(state)];
@@ -46,13 +43,14 @@ public class CactusCropBlock extends BlockCropBlock {
 
 	/* spiky! */
 	@Override
-	public void onEntityCollision(@Nonnull BlockState state, @Nonnull World worldIn, @Nonnull BlockPos pos, @Nonnull Entity entity) {
+	public void onEntityCollision(BlockState state, World worldIn, BlockPos pos, Entity entity) {
 		entity.attackEntityFrom(DamageSource.CACTUS, 1.0F);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
 	@Override
-	public boolean isValidPosition(@Nonnull BlockState state, IWorldReader world, @Nonnull BlockPos pos) {
+	public boolean isValidPosition(BlockState state, IWorldReader world, BlockPos pos) {
 		// if true, vanilla cactus farms will now produce cactus seeds rather than full blocks
 		if (Config.nerfCactusFarms.get()) {
 			return super.isValidPosition(state, world, pos);

@@ -179,7 +179,6 @@ public class InspirationsTweaks extends ModuleBase {
 		registerCompostables();
 		registerDispenserBehavior();
 
-		MinecraftForge.EVENT_BUS.register(TweaksEvents.class);
 		MinecraftForge.EVENT_BUS.addListener(new SmoothGrowthListener(Blocks.CACTUS, cactus, false));
 		MinecraftForge.EVENT_BUS.addListener(new SmoothGrowthListener(Blocks.SUGAR_CANE, sugarCane, true));
 	}

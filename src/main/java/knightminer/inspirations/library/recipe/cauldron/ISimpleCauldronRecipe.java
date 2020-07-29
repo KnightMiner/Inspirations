@@ -1,14 +1,15 @@
 package knightminer.inspirations.library.recipe.cauldron;
 
-import java.util.List;
-
-import knightminer.inspirations.library.InspirationsRegistry;
+import knightminer.inspirations.common.Config;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
+
+import java.util.List;
 
 /**
  * This is any cauldron recipe using items and fluids simple enough to be displayed in JEI
  */
+@Deprecated
 public interface ISimpleCauldronRecipe extends ICauldronRecipe {
 	/**
 	 * Gets the inputs of the recipe for display in JEI
@@ -50,10 +51,10 @@ public interface ISimpleCauldronRecipe extends ICauldronRecipe {
 
 	/**
 	 * Gets the display starting level for display in JEI. The result level will be determined using {@link #getLevel(int)}
-	 * @return
+	 * @return  Input display level
 	 */
 	default int getInputLevel() {
-		return InspirationsRegistry.getCauldronMax();
+		return Config.getCauldronMax();
 	}
 
 	@Override

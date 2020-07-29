@@ -4,12 +4,10 @@ import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
 import slimeknights.mantle.util.RecipeMatch;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-
 /**
  * Cauldron recipe to dye an item stack from colored cauldron water
  */
-@ParametersAreNonnullByDefault
+@Deprecated
 public class DyeCauldronRecipe extends RecipeMatchCauldronRecipe {
 
 	private DyeColor color;

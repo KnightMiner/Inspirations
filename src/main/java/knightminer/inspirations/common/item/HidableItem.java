@@ -6,7 +6,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import slimeknights.mantle.item.TooltipItem;
 
-import javax.annotation.Nonnull;
 import java.util.function.Supplier;
 
 /**
@@ -26,7 +25,7 @@ public class HidableItem extends TooltipItem implements IHidable {
     }
 
     @Override
-    public void fillItemGroup(@Nonnull ItemGroup group, @Nonnull NonNullList<ItemStack> items) {
+    public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
         if(shouldAddtoItemGroup(group)) {
             super.fillItemGroup(group, items);
         }

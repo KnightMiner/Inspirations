@@ -10,8 +10,6 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 
-import javax.annotation.Nonnull;
-
 public class FittedCarpetBlock extends FlatCarpetBlock {
 	public FittedCarpetBlock(DyeColor color, Block.Properties props) {
 		super(color, props);
@@ -137,27 +135,20 @@ public class FittedCarpetBlock extends FlatCarpetBlock {
 		}
 	}
 
-
-	@Nonnull
 	@Override
-	public VoxelShape getShape(BlockState state, @Nonnull IBlockReader world, @Nonnull BlockPos pos, ISelectionContext context) {
+	public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
 		return BOUNDS[
 				(state.get(NORTHWEST) ? 8 : 0) |
 				(state.get(NORTHEAST) ? 4 : 0) |
 				(state.get(SOUTHWEST) ? 2 : 0) |
 				(state.get(SOUTHEAST) ? 1 : 0)
-				];
+		];
 	}
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
-	@Nonnull
 	@Override
-	public VoxelShape getCollisionShape(BlockState state, @Nonnull IBlockReader world, @Nonnull BlockPos pos, ISelectionContext context) {
-		return COLLISION[
-				(state.get(NORTHWEST) ? 8 : 0) |
-				(state.get(NORTHEAST) ? 4 : 0) |
-				(state.get(SOUTHWEST) ? 2 : 0) |
-				(state.get(SOUTHEAST) ? 1 : 0)
-				];
+	public VoxelShape getCollisionShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
+		return getShape(state, world, pos, context);
 	}
 }

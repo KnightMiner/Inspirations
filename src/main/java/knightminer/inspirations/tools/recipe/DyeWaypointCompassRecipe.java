@@ -12,7 +12,7 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class DyeWaypointCompassRecipe extends ShapelessRecipe {
 
@@ -28,8 +28,7 @@ public class DyeWaypointCompassRecipe extends ShapelessRecipe {
 	}
 
 	@Override
-	@Nonnull
-	public ItemStack getCraftingResult(@Nonnull CraftingInventory crafting){
+	public ItemStack getCraftingResult(CraftingInventory crafting){
 		ItemStack output = this.getRecipeOutput().copy();
 		for (int i = 0; i < crafting.getSizeInventory(); i++) {
 			ItemStack stack = crafting.getStackInSlot(i);
@@ -50,15 +49,15 @@ public class DyeWaypointCompassRecipe extends ShapelessRecipe {
 
 	public static class Serializer extends ShapelessRecipe.Serializer {
 		// This recipe has the exact same options as the parent type, redirect to that code.
-		@Nonnull
+		@Nullable
 		@Override
-		public DyeWaypointCompassRecipe read(@Nonnull ResourceLocation recipeID, PacketBuffer buffer) {
-			return new DyeWaypointCompassRecipe(CRAFTING_SHAPELESS.read(recipeID, buffer));
+		public DyeWaypointCompassRecipe read(ResourceLocation recipeID, PacketBuffer buffer) {
+			ShapelessRecipe recipe = CRAFTING_SHAPELESS.read(recipeID, buffer);
+			return recipe == null ? null : new DyeWaypointCompassRecipe(recipe);
 		}
 
-		@Nonnull
 		@Override
-		public DyeWaypointCompassRecipe read(@Nonnull ResourceLocation recipeID, JsonObject json) {
+		public DyeWaypointCompassRecipe read(ResourceLocation recipeID, JsonObject json) {
 			return new DyeWaypointCompassRecipe(CRAFTING_SHAPELESS.read(recipeID, json));
 		}
 

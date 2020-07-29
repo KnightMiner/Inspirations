@@ -42,7 +42,6 @@ import net.minecraft.item.Items;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.RegistryEvent.Register;
@@ -63,8 +62,6 @@ import java.util.function.Supplier;
  */
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class InspirationsBuilding extends ModuleBase {
-	public static final String pulseID = "InspirationsBuilding";
-
 	// blocks
 	public static RopeBlock rope;
 	public static RopeBlock vine;
@@ -159,9 +156,8 @@ public class InspirationsBuilding extends ModuleBase {
 		FlowerPotBlock vanillaPot = (FlowerPotBlock) Blocks.FLOWER_POT;
 		Block.Properties props = Block.Properties.from(Blocks.FLOWER_POT);
 		flowerPot = registry.registerEnum(type -> {
-			Block plant = flower.get(type);
 			// create pot and register it with the vanilla pot.
-			assert plant != null;
+			Block plant = flower.get(type);
 			FlowerPotBlock pot = new FlowerPotBlock(emptyPot, plant.delegate, props);
 			vanillaPot.addPlant(Objects.requireNonNull(plant.getRegistryName()), pot.delegate);
 			return pot;
@@ -217,8 +213,6 @@ public class InspirationsBuilding extends ModuleBase {
 				new ItemStack(flower_cyan))
 			);
 		}*/
-
-		MinecraftForge.EVENT_BUS.register(BuildingEvents.class);
 	}
 
 	@SubscribeEvent

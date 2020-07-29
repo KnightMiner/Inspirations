@@ -31,6 +31,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 //import knightminer.inspirations.recipes.InspirationsRecipes;
@@ -39,7 +40,6 @@ import java.util.stream.Collectors;
 @Mod(Inspirations.modID)
 public class Inspirations {
 	public static final String modID = "inspirations";
-
 	public static final Logger log = LogManager.getLogger(modID);
 
 	// We can't read the config very early on.
@@ -101,15 +101,39 @@ public class Inspirations {
 				.map(String::trim)
 				.collect(Collectors.toList())
 		);
-		InspirationsRegistry.setDefaultEnchantingPower(Config.defaultEnchantingPower.get().floatValue());
 
 		// If we have JEI, this will be set. It needs to run on the main thread...
 		if (updateJEI != null) {
-			DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> Minecraft.getInstance().deferTask(updateJEI));
+			DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> Minecraft.getInstance().deferTask(updateJEI));
 		}
 	}
 
+	/* Utilities */
+
+	/**
+	 * Gets a resource location under the Inspirations name
+	 * @param name  Resource path
+	 * @return  Resource location
+	 */
 	public static ResourceLocation getResource(String name) {
 		return new ResourceLocation(modID, name);
+	}
+
+	/**
+	 * Gets a resource location as a string, under the Inspirations namespace
+	 * @param name  Resource path
+	 * @return  Resource location string
+	 */
+	public static String resourceName(String name) {
+		return String.format("%s:%s", modID, name.toLowerCase(Locale.US));
+	}
+
+	/**
+	 * Gets the given name prefixed with Inspirations.
+	 * @param name  Name to prefix
+	 * @return  Prefixed name
+	 */
+	public static String prefix(String name) {
+		return String.format("%s.%s", modID, name.toLowerCase(Locale.US));
 	}
 }

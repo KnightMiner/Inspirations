@@ -9,7 +9,7 @@ import com.mojang.datafixers.util.Pair;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.client.ClientUtil;
 import knightminer.inspirations.library.util.TextureBlockUtil;
-import knightminer.inspirations.shared.SharedClientProxy;
+import knightminer.inspirations.shared.SharedClientEvents;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -35,8 +35,8 @@ import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelProperty;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -44,15 +44,17 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+// TODO: update to use a model loader
+@SuppressWarnings("WeakerAccess")
 public class TextureModel extends BakedModelWrapper<IBakedModel> {
 	private final Map<String, IBakedModel> cache = new HashMap<>();
-	private ResourceLocation location;
-	private ModelBakery loader;
-	private IUnbakedModel unbakedModel;
+	private final ResourceLocation location;
+	private final ModelBakery loader;
+	private final IUnbakedModel unbakedModel;
 	private final String textureKey;
 	private boolean item;
-	private Map<ResourceLocation,IUnbakedModel> unbakedChildren;
-	private ModelProperty<String> TEXTURE = TextureBlockUtil.TEXTURE_PROP;
+	private Map<ResourceLocation,IUnbakedModel> unbakedChildren = Collections.emptyMap();
+	private final ModelProperty<String> TEXTURE = TextureBlockUtil.TEXTURE_PROP;
 
 	/**
 	 * Creates a new instance of the unbakedModel
@@ -75,7 +77,7 @@ public class TextureModel extends BakedModelWrapper<IBakedModel> {
 	/**
 	 * Ensures parents and children of this model are properly fetched
 	 */
-	protected void fetchDependents() {
+	private void fetchDependents() {
 		// needed for getTextures, though we just discard it these are printed elsewhere in loading
 		Set<Pair<String, String>> missingTextures = Sets.newLinkedHashSet();
 
@@ -116,9 +118,8 @@ public class TextureModel extends BakedModelWrapper<IBakedModel> {
 		}
 	}
 
-	@Nonnull
 	@Override
-	public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
+	public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, Random rand, IModelData extraData) {
 		IBakedModel bakedModel = this.originalModel;
 		String texture = extraData.getData(TEXTURE);
 		if(texture != null) {
@@ -143,12 +144,14 @@ public class TextureModel extends BakedModelWrapper<IBakedModel> {
 		if (unbakedModel instanceof VariantList) {
 			return retextureVariantList((VariantList)unbakedModel, textures);
 		}
-		return retexture(unbakedModel, textures).bakeModel(
-				SharedClientProxy.modelLoader,
-				loader.getSpriteMap()::getSprite,
-				ModelRotation.X0_Y0,
-				this.location
+		// retexture the model
+		IBakedModel textured = retexture(unbakedModel, textures).bakeModel(
+        SharedClientEvents.modelLoader,
+        loader.getSpriteMap()::getSprite,
+        ModelRotation.X0_Y0,
+        this.location
 		);
+		return textured == null ? originalModel : textured;
 	}
 
 	/**
@@ -245,10 +248,10 @@ public class TextureModel extends BakedModelWrapper<IBakedModel> {
 					continue;
 				}
 				IBakedModel ibakedmodel = retexture(model, textures).bakeModel(
-						SharedClientProxy.modelLoader,
-						loader.getSpriteMap()::getSprite,
-						variant,
-						this.location
+            SharedClientEvents.modelLoader,
+            loader.getSpriteMap()::getSprite,
+            variant,
+            this.location
 				);
 				builder.add(ibakedmodel, variant.getWeight());
 			}
@@ -261,7 +264,6 @@ public class TextureModel extends BakedModelWrapper<IBakedModel> {
 
 	/* Item model logic */
 
-	@Nonnull
 	@Override
 	public ItemOverrideList getOverrides() {
 		return item ? ItemTextureOverride.INSTANCE : super.getOverrides();

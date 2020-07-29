@@ -1,8 +1,9 @@
 package knightminer.inspirations.recipes.recipe.cauldron.fill;
 
-import knightminer.inspirations.library.InspirationsRegistry;
+import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
 import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
@@ -10,12 +11,13 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 
+@Deprecated
 public enum FluidContainerFillCauldron implements ICauldronRecipe {
 	INSTANCE;
 
 	@Override
 	public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		if(level == InspirationsRegistry.getCauldronMax() || (level > 0 && state.getFluid() == null)) {
+		if(level == Config.getCauldronMax() || (level > 0 && state.getFluid() == Fluids.EMPTY)) {
 			return false;
 		}
 
@@ -35,13 +37,13 @@ public enum FluidContainerFillCauldron implements ICauldronRecipe {
 
 	@Override
 	public int getLevel(int level) {
-		return InspirationsRegistry.getCauldronMax();
+		return Config.getCauldronMax();
 	}
 
 	@Override
 	public CauldronState getState(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		Fluid fluid = FluidUtil.getFluidHandler(stack).map(h -> h.drain(1000, FluidAction.SIMULATE).getFluid()).orElse(null);
-		if(fluid == null || fluid == state.getFluid()) {
+		Fluid fluid = FluidUtil.getFluidHandler(stack).map(h -> h.drain(1000, FluidAction.SIMULATE).getFluid()).orElse(Fluids.EMPTY);
+		if(fluid == Fluids.EMPTY || fluid == state.getFluid()) {
 			return state;
 		}
 
@@ -50,7 +52,7 @@ public enum FluidContainerFillCauldron implements ICauldronRecipe {
 
 	@Override
 	public SoundEvent getSound(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		return FluidUtil.getFluidHandler(stack).map(h-> {
+		return FluidUtil.getFluidHandler(stack).map(h -> {
 			FluidStack fluid = h.drain(1000, FluidAction.SIMULATE);
 			return fluid.getFluid().getAttributes().getFillSound(fluid);
 		}).orElse(SoundEvents.ITEM_BUCKET_FILL);

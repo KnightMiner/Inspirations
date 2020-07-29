@@ -24,6 +24,7 @@ import net.minecraft.util.IItemProvider;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelBakeEvent;
 
+import javax.annotation.Nullable;
 import java.util.function.BiFunction;
 
 public abstract class ClientEvents {
@@ -65,7 +66,7 @@ public abstract class ClientEvents {
 	 * @param name  Property name, will be namespaced under Inspirations
 	 * @param prop  Property getter instance
 	 */
-	protected static void registerModelProperty(IItemProvider item, String name, IItemPropertyGetter prop) {
+	protected static void registerModelProperty(@Nullable IItemProvider item, String name, IItemPropertyGetter prop) {
 		if (item != null) {
 			ItemModelsProperties.func_239418_a_(item.asItem(), Inspirations.getResource(name), prop);
 		}
@@ -76,7 +77,7 @@ public abstract class ClientEvents {
 	 * @param block        Block to register
 	 * @param renderLayer  Render layer
 	 */
-	protected static void setRenderLayer(Block block, RenderType renderLayer) {
+	protected static void setRenderLayer(@Nullable Block block, RenderType renderLayer) {
 		if (block != null) {
 			RenderTypeLookup.setRenderLayer(block, renderLayer);
 		}
@@ -89,7 +90,7 @@ public abstract class ClientEvents {
 	 * @param <M>      Container type
 	 * @param <U>      Screen type
 	 */
-	protected static <M extends Container, U extends Screen & IHasContainer<M>> void registerScreenFactory(ContainerType<? extends M> type, ScreenManager.IScreenFactory<M, U> factory) {
+	protected static <M extends Container, U extends Screen & IHasContainer<M>> void registerScreenFactory(@Nullable ContainerType<? extends M> type, ScreenManager.IScreenFactory<M, U> factory) {
 		if (type != null) {
 			ScreenManager.registerFactory(type, factory);
 		}

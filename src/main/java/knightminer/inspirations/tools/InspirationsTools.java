@@ -56,8 +56,6 @@ import slimeknights.mantle.registration.adapter.EntityTypeRegistryAdapter;
 import slimeknights.mantle.registration.adapter.ItemRegistryAdapter;
 import slimeknights.mantle.registration.adapter.RegistryAdapter;
 
-import javax.annotation.Nonnull;
-
 @SuppressWarnings("unused")
 public class InspirationsTools extends ModuleBase {
 	public static final String pulseID = "InspirationsTools";
@@ -205,16 +203,14 @@ public class InspirationsTools extends ModuleBase {
 
 	private void registerDispenserBehavior() {
 		DispenserBlock.registerDispenseBehavior(redstoneArrow, new ProjectileDispenseBehavior() {
-			@Nonnull
 			@Override
-			protected ProjectileEntity getProjectileEntity(@Nonnull World world, @Nonnull IPosition position, @Nonnull ItemStack stack) {
+			protected ProjectileEntity getProjectileEntity( World world,  IPosition position, ItemStack stack) {
 				RedstoneArrow arrow = new RedstoneArrow(world, position.getX(), position.getY(), position.getZ());
 				arrow.pickupStatus = ArrowEntity.PickupStatus.ALLOWED;
 				return arrow;
 			}
 		});
 		DispenserBlock.registerDispenseBehavior(redstoneCharger, new OptionalDispenseBehavior() {
-			@Nonnull
 			@Override
 			protected ItemStack dispenseStack(IBlockSource source, ItemStack stack) {
 				this.setSuccessful(true);

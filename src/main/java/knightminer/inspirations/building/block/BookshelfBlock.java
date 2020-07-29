@@ -41,7 +41,6 @@ import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import slimeknights.mantle.block.InventoryBlock;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class BookshelfBlock extends InventoryBlock implements IHidable {
@@ -66,7 +65,6 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
 		builder.add(FACING);
 	}
 
-	@Nonnull
 	@Override
 	public TileEntity createTileEntity(BlockState state, IBlockReader world) {
 		return new BookshelfTileEntity();
@@ -93,7 +91,7 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
 	}
 
 	@Override
-	public void fillItemGroup(@Nonnull ItemGroup group, @Nonnull NonNullList<ItemStack> items) {
+	public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
 		if(shouldAddtoItemGroup(group)) {
 			super.fillItemGroup(group, items);
 		}
@@ -102,6 +100,7 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
 
 	/* Activation */
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
 	@Override
 	public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) {
@@ -222,7 +221,6 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
 	}
 
 	@Deprecated
-	@Nonnull
 	@Override
 	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
 		return BOUNDS.get(state.get(FACING));
@@ -243,12 +241,14 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
 		super.onReplaced(state, world, pos, newState, isMoving);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
 	@Override
 	public boolean hasComparatorInputOverride(BlockState p_149740_1_) {
 		return true;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
 	@Override
 	public int getComparatorInputOverride(BlockState state, World world, BlockPos pos) {
@@ -268,8 +268,8 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
 		return state.with(FACING, direction.rotate(state.get(FACING)));
 	}
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
-	@Nonnull
 	@Override
 	public BlockState mirror(BlockState state, Mirror mirror) {
 		return state.with(FACING, mirror.mirror(state.get(FACING)));

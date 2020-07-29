@@ -2,6 +2,7 @@ package knightminer.inspirations.library.client;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import knightminer.inspirations.Inspirations;
+import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.util.TextureBlockUtil;
 import net.minecraft.block.Block;
@@ -114,7 +115,7 @@ public final class ClientUtil {
 	/**
 	 * Gets the sprite for the given texture location, or Missing Texture if no sprite is found
 	 */
-	public static TextureAtlasSprite getSprite(ResourceLocation location) {
+	public static TextureAtlasSprite getSprite(@Nullable ResourceLocation location) {
 		AtlasTexture atlas = mc.getModelManager().getAtlasTexture(PlayerContainer.LOCATION_BLOCKS_TEXTURE);
 		if (location == null) {
 			return atlas.getSprite(MissingTextureSprite.getLocation());
@@ -245,7 +246,7 @@ public final class ClientUtil {
 		if (level == 0) {
 			ClientUtil.renderFilledSprite(sprite, x, y, 16, 16);
 		} else {
-			int height = ((10 * level) / InspirationsRegistry.getCauldronMax());
+			int height = ((10 * level) / Config.getCauldronMax());
 			ClientUtil.renderFilledSprite(sprite, x, y, 10, height);
 		}
 		GlStateManager.color4f(1, 1, 1, 1);

@@ -1,7 +1,7 @@
 package knightminer.inspirations.library.recipe.cauldron;
 
 import com.google.common.collect.ImmutableList;
-import knightminer.inspirations.library.InspirationsRegistry;
+import knightminer.inspirations.common.Config;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
@@ -10,13 +10,12 @@ import net.minecraft.potion.Potions;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
 /**
  * Cauldron recipe to transform a potion into another potion. Used primarily with vanilla potion recipes from the brewing registry.
  */
-@ParametersAreNonnullByDefault
+@Deprecated
 public class BrewingCauldronRecipe implements ISimpleCauldronRecipe {
 
 	private Ingredient reagent;
@@ -39,13 +38,13 @@ public class BrewingCauldronRecipe implements ISimpleCauldronRecipe {
 		// must have at least one level and be boiling. If 3 or more stack count must be bigger than 1
 		return level > 0 && boiling
 				// if expensive brewing, level must be less than 3 or two inputs provided
-				&& (!InspirationsRegistry.expensiveCauldronBrewing() || level < 3 || stack.getCount() > 1)
+				&& (!Config.expensiveCauldronBrewing() || level < 3 || stack.getCount() > 1)
 				&& state.matches(input) && reagent.test(stack);
 	}
 
 	@Override
 	public ItemStack transformInput(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		stack.shrink(InspirationsRegistry.expensiveCauldronBrewing() && level > 2 ? 2 : 1);
+		stack.shrink(Config.expensiveCauldronBrewing() && level > 2 ? 2 : 1);
 		return stack;
 	}
 
@@ -61,7 +60,7 @@ public class BrewingCauldronRecipe implements ISimpleCauldronRecipe {
 
 	@Override
 	public int getInputLevel() {
-		return InspirationsRegistry.expensiveCauldronBrewing() ? 2 : InspirationsRegistry.getCauldronMax();
+		return Config.expensiveCauldronBrewing() ? 2 : Config.getCauldronMax();
 	}
 
 	@Override

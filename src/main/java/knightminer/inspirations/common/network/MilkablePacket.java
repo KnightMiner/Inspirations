@@ -7,8 +7,6 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 import slimeknights.mantle.network.packet.IThreadsafePacket;
 
-import javax.annotation.Nonnull;
-
 @SuppressWarnings("WeakerAccess")
 public class MilkablePacket implements IThreadsafePacket {
 
@@ -32,7 +30,7 @@ public class MilkablePacket implements IThreadsafePacket {
 	}
 
 	@Override
-	public void handleThreadsafe(@Nonnull NetworkEvent.Context context) {
+	public void handleThreadsafe(NetworkEvent.Context context) {
 		HandleClient.handle(this);
 	}
 

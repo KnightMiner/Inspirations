@@ -10,8 +10,6 @@ import net.minecraftforge.fml.network.NetworkEvent;
 import slimeknights.mantle.network.packet.IThreadsafePacket;
 import slimeknights.mantle.tileentity.InventoryTileEntity;
 
-import javax.annotation.Nonnull;
-
 @SuppressWarnings("WeakerAccess")
 public class InventorySlotSyncPacket implements IThreadsafePacket {
 
@@ -39,7 +37,7 @@ public class InventorySlotSyncPacket implements IThreadsafePacket {
   }
 
   @Override
-  public void handleThreadsafe(@Nonnull NetworkEvent.Context context) {
+  public void handleThreadsafe(NetworkEvent.Context context) {
     HandleClient.handle(this);
   }
 

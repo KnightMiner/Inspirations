@@ -1,21 +1,21 @@
 package knightminer.inspirations.library.recipe.cauldron;
 
-import knightminer.inspirations.library.InspirationsRegistry;
+import knightminer.inspirations.common.Config;
 import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
 import slimeknights.mantle.util.RecipeMatch;
 
 import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.Objects;
 
 /**
  * Cauldron recipe to fill the cauldron from a fluid container
  */
-@ParametersAreNonnullByDefault
+@Deprecated
 public class FillCauldronRecipe extends FluidCauldronRecipe {
-
 	private int amount;
 
 	/**
@@ -29,6 +29,9 @@ public class FillCauldronRecipe extends FluidCauldronRecipe {
 	 */
 	public FillCauldronRecipe(RecipeMatch input, Fluid fluid, int amount, ItemStack container, @Nullable Boolean boiling, SoundEvent sound) {
 		super(input, fluid, container, boiling, 0, sound);
+		if (fluid == Fluids.EMPTY) {
+			throw new IllegalArgumentException("Cannot create fill recipe with empty fluid");
+		}
 		this.amount = amount;
 	}
 
@@ -67,8 +70,8 @@ public class FillCauldronRecipe extends FluidCauldronRecipe {
 
 	@Override
 	public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		if(level == InspirationsRegistry.getCauldronMax() || (level > 0 && !state.matches(fluid))
-				|| (this.boiling != null && boiling != this.boiling.booleanValue())) {
+		if(level == Config.getCauldronMax() || (level > 0 && !state.matches(fluid))
+       || (this.boiling != null && boiling != this.boiling)) {
 			return false;
 		}
 
@@ -77,7 +80,7 @@ public class FillCauldronRecipe extends FluidCauldronRecipe {
 
 	@Override
 	public CauldronState getState(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		return fluid;
+		return Objects.requireNonNull(fluid);
 	}
 
 	@Override
@@ -97,6 +100,7 @@ public class FillCauldronRecipe extends FluidCauldronRecipe {
 
 	@Override
 	public String toString() {
+		assert fluid != null;
 		return String.format("FillCauldronRecipe: filling with %s", fluid.getFluid().getAttributes().getTranslationKey());
 	}
 }

@@ -25,22 +25,19 @@ import net.minecraftforge.client.model.data.ModelProperty;
 import net.minecraftforge.items.ItemHandlerHelper;
 import slimeknights.mantle.tileentity.InventoryTileEntity;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class BookshelfTileEntity extends InventoryTileEntity {
 
 	public static final ModelProperty<String> TEXTURE = TextureBlockUtil.TEXTURE_PROP;
 	public static final ModelProperty<Integer> BOOKS = new ModelProperty<>();
+	private static final ITextComponent TITLE = new TranslationTextComponent("gui.inspirations.bookshelf.name");
 
 	/** Cached enchantment bonus, so we are not constantly digging the inventory */
-	private float enchantBonus;
-
-	public static ITextComponent TITLE = new TranslationTextComponent("gui.inspirations.bookshelf.name");
+	private float enchantBonus = Float.NaN;
 
 	public BookshelfTileEntity() {
 		super(InspirationsBuilding.tileBookshelf, TITLE, 14, 1);
-		enchantBonus = Float.NaN;
 	}
 
 	@Override
@@ -53,9 +50,9 @@ public class BookshelfTileEntity extends InventoryTileEntity {
 		}
 		super.setInventorySlotContents(slot, itemstack);
 
-		if(getWorld() != null) {
+		if(world != null) {
 			// update for rendering
-			if(getWorld().isRemote) {
+			if(world.isRemote) {
 				ModelDataManager.requestModelDataRefresh(this);
 			}
 
@@ -76,7 +73,7 @@ public class BookshelfTileEntity extends InventoryTileEntity {
 	public boolean interact(PlayerEntity player, Hand hand, int bookClicked) {
 		// if it contains a book, take the book out
 		if(isStackInSlot(bookClicked)) {
-			if (!world.isRemote) {
+			if (world != null && !world.isRemote) {
 				ItemHandlerHelper.giveItemToPlayer(player, getStackInSlot(bookClicked), player.inventory.currentItem);
 				setInventorySlotContents(bookClicked, ItemStack.EMPTY);
 			}
@@ -86,7 +83,7 @@ public class BookshelfTileEntity extends InventoryTileEntity {
 		// try adding book
 		ItemStack stack = player.getHeldItem(hand);
 		if(InspirationsRegistry.isBook(stack)) {
-			if (!world.isRemote) {
+			if (world != null && !world.isRemote) {
 				setInventorySlotContents(bookClicked, stack.split(1));
 			}
 			return true;
@@ -96,12 +93,9 @@ public class BookshelfTileEntity extends InventoryTileEntity {
 	}
 
 
-
-
 	/*
 	 * GUI
 	 */
-
 
 	@Nullable
 	@Override
@@ -147,7 +141,6 @@ public class BookshelfTileEntity extends InventoryTileEntity {
 	/*
 	 * Rendering
 	 */
-	@Nonnull
 	@Override
 	public IModelData getModelData() {
 		// pack books into integer
@@ -171,7 +164,6 @@ public class BookshelfTileEntity extends InventoryTileEntity {
 	 * Networking
 	 */
 
-	@Nonnull
 	@Override
 	public CompoundNBT getUpdateTag() {
 		// new tag instead of super since default implementation calls the super of writeToNBT
@@ -191,6 +183,7 @@ public class BookshelfTileEntity extends InventoryTileEntity {
 	public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
 		CompoundNBT tag = pkt.getNbtCompound();
 		TextureBlockUtil.updateTextureBlock(this, tag);
+		// TODO: this okay?
 		read(this.getBlockState(), tag);
 	}
 }

@@ -13,15 +13,13 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
-import javax.annotation.Nonnull;
-
 public class CopyWaypointCompassRecipe extends SpecialRecipe {
   public CopyWaypointCompassRecipe(ResourceLocation idIn) {
     super(idIn);
   }
 
   @Override
-  public boolean matches(@Nonnull CraftingInventory inv, @Nonnull World world) {
+  public boolean matches(CraftingInventory inv, World world) {
     if (!Config.enableWaypointCompass.get()) {
       return false;
     }
@@ -55,13 +53,11 @@ public class CopyWaypointCompassRecipe extends SpecialRecipe {
     return foundWaypoint && !blank.isEmpty();
   }
 
-  @Nonnull
   @Override
   public ItemStack getRecipeOutput() {
     return ItemStack.EMPTY;
   }
 
-  @Nonnull
   @Override
   public ItemStack getCraftingResult(CraftingInventory inv) {
     ItemStack waypoint = ItemStack.EMPTY;
@@ -97,7 +93,6 @@ public class CopyWaypointCompassRecipe extends SpecialRecipe {
     return ItemStack.EMPTY;
   }
 
-  @Nonnull
   @Override
   public NonNullList<ItemStack> getRemainingItems(CraftingInventory inv) {
     NonNullList<ItemStack> items = NonNullList.withSize(inv.getSizeInventory(), ItemStack.EMPTY);
@@ -123,7 +118,6 @@ public class CopyWaypointCompassRecipe extends SpecialRecipe {
     return "inspirations:waypoint_compass_copy";
   }
 
-  @Nonnull
   @Override
   public IRecipeSerializer<?> getSerializer() {
     return RecipeSerializers.copy_waypoint_compass;

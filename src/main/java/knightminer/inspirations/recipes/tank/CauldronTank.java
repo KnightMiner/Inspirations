@@ -1,14 +1,12 @@
 package knightminer.inspirations.recipes.tank;
 
 import knightminer.inspirations.common.Config;
-import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe.CauldronState;
 import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
 import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.Fluids;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-
-import javax.annotation.Nonnull;
 
 public class CauldronTank implements IFluidHandler {
 
@@ -18,6 +16,7 @@ public class CauldronTank implements IFluidHandler {
 	}
 
 	/* Properties */
+
   @Override
   public int getTanks() {
     return 1;
@@ -29,15 +28,14 @@ public class CauldronTank implements IFluidHandler {
   }
 
   @Override
-  public boolean isFluidValid(int tank, @Nonnull FluidStack stack) {
+  public boolean isFluidValid(int tank, FluidStack stack) {
     return !stack.hasTag();
   }
 
-  @Nonnull
   @Override
   public FluidStack getFluidInTank(int tank) {
     Fluid fluid = cauldron.getState().getFluid();
-    return fluid == null ? null : new FluidStack(fluid, 1000);
+    return fluid == Fluids.EMPTY ? FluidStack.EMPTY : new FluidStack(fluid, 1000);
   }
 
 
@@ -53,14 +51,14 @@ public class CauldronTank implements IFluidHandler {
 		// if the fluid is different, its not allowed
 		// note the fluid will be null if a non-fluid type, but will be water for an empty cauldron
 		int level = cauldron.getFluidLevel();
-		int max = InspirationsRegistry.getCauldronMax();
+		int max = Config.getCauldronMax();
 		if(level == max) {
 			return 0;
 		}
 
 		// validate fluid
 		CauldronState state = cauldron.getState();
-		if(level == max || (level > 0 && state.getFluid() != stack.getFluid())) {
+		if(level > 0 && state.getFluid() != stack.getFluid()) {
 			return 0;
 		}
 
@@ -82,12 +80,12 @@ public class CauldronTank implements IFluidHandler {
 	public FluidStack drain(FluidStack stack, FluidAction action) {
 		// cannot drain with NBT stacks
 		if(stack.hasTag()) {
-			return null;
+			return FluidStack.EMPTY;
 		}
 
 		CauldronState state = cauldron.getState();
 		if(state.getFluid() != stack.getFluid()) {
-			return null;
+			return FluidStack.EMPTY;
 		}
 
 		return drain(stack.getAmount(), action);
@@ -96,20 +94,20 @@ public class CauldronTank implements IFluidHandler {
 	@Override
 	public FluidStack drain(int maxDrain, FluidAction action) {
 		CauldronState state = cauldron.getState();
-		if(state.getFluid() == null) {
-			return null;
+		if(state.getFluid() == Fluids.EMPTY) {
+			return FluidStack.EMPTY;
 		}
 
 		// nothing to drain
 		int level = cauldron.getFluidLevel();
 		if(level == 0) {
-			return null;
+			return FluidStack.EMPTY;
 		}
 
 		// nothing can drain
 		int toDrain = Math.min(getLevels(maxDrain), level);
 		if(toDrain == 0) {
-			return null;
+			return FluidStack.EMPTY;
 		}
 
 		if(action == FluidAction.EXECUTE) {

@@ -10,7 +10,6 @@ import net.minecraft.item.AxeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
-import javax.annotation.Nonnull;
 import java.util.Map;
 
 public class ExtendedFireAspectEnchantment extends FireAspectEnchantment {
@@ -32,9 +31,8 @@ public class ExtendedFireAspectEnchantment extends FireAspectEnchantment {
 		return (Config.axeWeaponEnchants.get() && stack.getItem() instanceof AxeItem) || super.canApply(stack);
 	}
 
-	@Nonnull
 	@Override
-	public Map<EquipmentSlotType, ItemStack> getEntityEquipment(@Nonnull LivingEntity entity) {
+	public Map<EquipmentSlotType, ItemStack> getEntityEquipment(LivingEntity entity) {
 		// shields in hand should not give knockback, just on hit
 		Map<EquipmentSlotType, ItemStack> items = super.getEntityEquipment(entity);
 		for (EquipmentSlotType slot : EquipmentSlotType.values()) {

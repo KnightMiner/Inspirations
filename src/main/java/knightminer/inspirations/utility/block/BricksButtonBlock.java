@@ -29,17 +29,14 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Random;
 
 public class BricksButtonBlock extends HidableBlock {
 
 	public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
-	public static final BooleanProperty POWERED = AbstractButtonBlock.POWERED;
+	private static final BooleanProperty POWERED = AbstractButtonBlock.POWERED;
 	private final ImmutableMap<Direction, AxisAlignedBB> buttonBounds;
 
 	public BricksButtonBlock(ImmutableMap<Direction, AxisAlignedBB> buttonBounds) {
@@ -79,23 +76,15 @@ public class BricksButtonBlock extends HidableBlock {
 		super.onBlockPlacedBy(world, pos, state, player, stack);
 	}
 
-	/**
-	 * Returns the blockstate with the given rotation from the passed blockstate. If inapplicable, returns the passed
-	 * blockstate.
-	 */
+	@SuppressWarnings("deprecation")
 	@Deprecated
-	@Nonnull
 	@Override
 	public BlockState rotate(BlockState state, Rotation rot) {
 		return state.with(FACING, rot.rotate(state.get(FACING)));
 	}
 
-	/**
-	 * Returns the blockstate with the given mirror of the passed blockstate. If inapplicable, returns the passed
-	 * blockstate.
-	 */
+	@SuppressWarnings("deprecation")
 	@Deprecated
-	@Nonnull
 	@Override
 	public BlockState mirror(BlockState state, Mirror mirror) {
 		return state.with(FACING, mirror.mirror(state.get(FACING)));
@@ -103,6 +92,7 @@ public class BricksButtonBlock extends HidableBlock {
 
 	/* Pressing the button */
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
 	@Override
 	public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) {
@@ -123,11 +113,7 @@ public class BricksButtonBlock extends HidableBlock {
 		return ActionResultType.SUCCESS;
 	}
 
-	@Deprecated
-	@Override
-	@OnlyIn(Dist.CLIENT)
-	public void animateTick(@Nonnull BlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull Random rand) {}
-
+	@SuppressWarnings("deprecation")
 	@Deprecated
 	@Override
 	public void tick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
@@ -166,6 +152,7 @@ public class BricksButtonBlock extends HidableBlock {
 
 	/* Redstone logic */
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
 	@Override
 	public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
@@ -176,12 +163,14 @@ public class BricksButtonBlock extends HidableBlock {
 		super.onReplaced(state, world, pos, newState, isMoving);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
 	@Override
 	public int getWeakPower(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
 		return state.get(POWERED) ? 15 : 0;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
 	@Override
 	public int getStrongPower(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
@@ -189,6 +178,7 @@ public class BricksButtonBlock extends HidableBlock {
 		return 0;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
 	@Override
 	public boolean canProvidePower(BlockState state) {

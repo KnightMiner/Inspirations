@@ -2,8 +2,7 @@ package knightminer.inspirations.recipes.tileentity;
 
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.Config;
-import knightminer.inspirations.library.InspirationsRegistry;
-import knightminer.inspirations.library.Util;
+import knightminer.inspirations.library.InspirationsTags;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe.CauldronState;
 import knightminer.inspirations.recipes.block.EnhancedCauldronBlock;
@@ -12,6 +11,7 @@ import knightminer.inspirations.recipes.tank.CauldronTank;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.CauldronBlock;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.AreaEffectCloudEntity;
@@ -20,6 +20,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -29,6 +30,7 @@ import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtils;
+import net.minecraft.potion.Potions;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.DamageSource;
@@ -47,15 +49,14 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
 public class CauldronTileEntity extends TileEntity {
-	public static final DamageSource DAMAGE_BOIL = new DamageSource(Util.prefix("boiling")).setDamageBypassesArmor();
+	private static final DamageSource DAMAGE_BOIL = new DamageSource(Inspirations.prefix("boiling")).setDamageBypassesArmor();
 
 	private CauldronState state;
-	private CauldronTank tank;
+	private final CauldronTank tank;
 
 	public CauldronTileEntity() {
 		super(TileEntityType.BARREL);
@@ -63,15 +64,30 @@ public class CauldronTileEntity extends TileEntity {
 		this.tank = new CauldronTank(this);
 	}
 
-	@Nonnull
+	/**
+	 * Checks if a state is considered fire in a cauldron
+	 * @param state State to check
+	 * @return True if the state is considered fire
+	 */
+	public static boolean isCauldronFire(BlockState state) {
+		if (state.getBlock().isIn(InspirationsTags.Blocks.CAULDRON_FIRE)) {
+			return true;
+		}
+		return state.getBlock() == Blocks.CAMPFIRE && state.get(CampfireBlock.LIT);
+	}
+
+	/**
+	 * Gets the type of contents contained in the cauldron
+	 * @return  Content type
+	 */
 	public CauldronContents getContentType() {
-		if(state.getFluid() != null) {
+		if (state.getFluid() != Fluids.EMPTY) {
 			return CauldronContents.FLUID;
 		}
-		if(state.getColor() > -1) {
+		if (state.getColor() > -1) {
 			return CauldronContents.DYE;
 		}
-		if(state.getPotion() != null) {
+		if (state.getPotion() != Potions.EMPTY) {
 			return CauldronContents.POTION;
 		}
 
@@ -80,7 +96,7 @@ public class CauldronTileEntity extends TileEntity {
 
 	/**
 	 * Checks if this TE currently has water in it
-	 * @return
+	 * @return  True if the cauldron contains water
 	 */
 	public boolean isWater() {
 		return state.isWater();
@@ -107,20 +123,19 @@ public class CauldronTileEntity extends TileEntity {
 		}
 
 		Fluid fluid = state.getFluid();
-		if(fluid != null) {
+		if (fluid != Fluids.EMPTY) {
 			return fluid.getAttributes().getColor();
 		}
 
 		return -1;
 	}
 
-	@Nonnull
 	@Override
 	public IModelData getModelData() {
 		// just pull the texture right from the fluid
 		if(getFluidLevel() > 0 && this.state != CauldronState.WATER && getContentType() == CauldronContents.FLUID) {
 			Fluid fluid = this.state.getFluid();
-			if(fluid != null) {
+			if(fluid != Fluids.EMPTY) {
 				return new ModelDataMap.Builder()
 						.withInitial(EnhancedCauldronBlock.TEXTURE, fluid.getAttributes().getStillTexture().toString())
 						.build();
@@ -156,15 +171,14 @@ public class CauldronTileEntity extends TileEntity {
 				boiling = blockState.get(EnhancedCauldronBlock.BOILING);
 			}
 		} else {
-			state = InspirationsRegistry.getCauldronState(blockState);
-			boiling = InspirationsRegistry.isCauldronFire(world.getBlockState(pos.down()));
+			boiling = isCauldronFire(world.getBlockState(pos.down()));
 		}
 
 		// other properties
 		int level = EnhancedCauldronBlock.getCauldronLevel(blockState);
 
 		// grab recipe
-		ICauldronRecipe recipe = InspirationsRegistry.getCauldronResult(stack, boiling, level, state);
+		ICauldronRecipe recipe = null;//InspirationsRegistry.getCauldronResult(stack, boiling, level, state);
 		if(recipe != null) {
 			// update properties based on the recipe
 			if(!world.isRemote) {
@@ -185,28 +199,22 @@ public class CauldronTileEntity extends TileEntity {
 				// update level
 				int newLevel = recipe.getLevel(level);
 				if(newLevel != level || !state.matches(newState)) {
-					// overrides for full cauldrons, assuming we started with a "valid cauldron", in this context an iron one
-					if(newLevel == InspirationsRegistry.getCauldronMax() && InspirationsRegistry.isNormalCauldron(blockState) && InspirationsRegistry.hasFullCauldron(newState)) {
-						world.setBlockState(pos, InspirationsRegistry.getFullCauldron(newState));
-						cauldron = null;
-					} else {
-						// if it was not a cauldron before, replace it with a vanilla cauldron
-						if (!(block instanceof CauldronBlock)) {
-							((CauldronBlock)Blocks.CAULDRON).setWaterLevel(world, pos, Blocks.CAULDRON.getDefaultState(), newLevel);
+					// if it was not a cauldron before, replace it with a vanilla cauldron
+					if (!(block instanceof CauldronBlock)) {
+						((CauldronBlock)Blocks.CAULDRON).setWaterLevel(world, pos, Blocks.CAULDRON.getDefaultState(), newLevel);
 
-							// missing the tile entity
-							if(Config.enableExtendedCauldron()) {
-								TileEntity te = world.getTileEntity(pos);
-								if(te instanceof CauldronTileEntity) {
-									cauldron = (CauldronTileEntity)te;
-								}
+						// missing the tile entity
+						if(Config.enableExtendedCauldron()) {
+							TileEntity te = world.getTileEntity(pos);
+							if(te instanceof CauldronTileEntity) {
+								cauldron = (CauldronTileEntity)te;
 							}
-						} else {
-							((CauldronBlock)block).setWaterLevel(world, pos, blockState, newLevel);
 						}
-						if(newLevel == 0) {
-							newState = CauldronState.WATER;
-						}
+					} else {
+						((CauldronBlock)block).setWaterLevel(world, pos, blockState, newLevel);
+					}
+					if(newLevel == 0) {
+						newState = CauldronState.WATER;
 					}
 				}
 
@@ -288,7 +296,7 @@ public class CauldronTileEntity extends TileEntity {
 			// try and find a recipe
 			boolean boiling = currentState.get(EnhancedCauldronBlock.BOILING);
 			ItemStack stack = entityItem.getItem();
-			ICauldronRecipe recipe = InspirationsRegistry.getCauldronResult(stack, boiling, level, state);
+			ICauldronRecipe recipe = null;//InspirationsRegistry.getCauldronResult(stack, boiling, level, state);
 			if(recipe != null) {
 				CauldronState state = this.state;
 
@@ -409,12 +417,14 @@ public class CauldronTileEntity extends TileEntity {
 	}
 
 	private void spawnItem(ItemStack stack, ItemEntity base) {
-		ItemEntity entityItem = new ItemEntity(world, base.getPosX(), base.getPosY(), base.getPosZ(), stack);
+		if (world != null) {
+			ItemEntity entityItem = new ItemEntity(world, base.getPosX(), base.getPosY(), base.getPosZ(), stack);
 
-		// tag the entity so it does not craft again
-		// prevents something like a water bottle from emptying and filling constantly
-		entityItem.getPersistentData().putBoolean(TAG_CAULDRON_CRAFTED, true);
-		world.addEntity(entityItem);
+			// tag the entity so it does not craft again
+			// prevents something like a water bottle from emptying and filling constantly
+			entityItem.getPersistentData().putBoolean(TAG_CAULDRON_CRAFTED, true);
+			world.addEntity(entityItem);
+		}
 	}
 
 	/**
@@ -423,6 +433,9 @@ public class CauldronTileEntity extends TileEntity {
 	 * @param level  Cauldron level
 	 */
 	public void onBreak(BlockPos pos, int level) {
+		if (world == null) {
+			return;
+		}
 		switch(getContentType()) {
 			case FLUID:
 				BlockState block = state.getFluid().getAttributes().getBlock(null, null, state.getFluid().getDefaultState());
@@ -455,9 +468,8 @@ public class CauldronTileEntity extends TileEntity {
 
 	/* fluid tank stuff */
 
-	@Nonnull
 	@Override
-	public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+	public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
 		if(cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
 			return LazyOptional.of(() -> (IFluidHandler)tank).cast();
 		}
@@ -465,6 +477,9 @@ public class CauldronTileEntity extends TileEntity {
 	}
 
 	public int getFluidLevel() {
+		if (world == null) {
+			return 0;
+		}
 		BlockState state = world.getBlockState(pos);
 		Block block = state.getBlock();
 		if(block instanceof EnhancedCauldronBlock) {
@@ -474,6 +489,9 @@ public class CauldronTileEntity extends TileEntity {
 	}
 
 	public void setFluidLevel(int levels) {
+		if (world == null) {
+			return;
+		}
 		BlockState state = world.getBlockState(pos);
 		Block block = state.getBlock();
 		if(block instanceof EnhancedCauldronBlock) {
@@ -485,6 +503,9 @@ public class CauldronTileEntity extends TileEntity {
 	}
 
 	public void setState(CauldronState newState, boolean doBlockUpdate) {
+		if (world == null) {
+			return;
+		}
 		if(!state.matches(newState)) {
 			this.state = newState;
 			if(doBlockUpdate) {
@@ -498,16 +519,14 @@ public class CauldronTileEntity extends TileEntity {
 
 
 	/* NBT */
-	public static final String TAG_STATE = "state";
+	private static final String TAG_STATE = "state";
 
-	@Nonnull
 	@Override
 	public CompoundNBT getUpdateTag() {
 		// new tag instead of super since default implementation calls the super of writeToNBT
 		return write(new CompoundNBT());
 	}
 
-	@Nonnull
 	@Override
 	public CompoundNBT write(CompoundNBT tags) {
 		tags = super.write(tags);
@@ -534,7 +553,7 @@ public class CauldronTileEntity extends TileEntity {
 		CauldronState newState = CauldronState.fromNBT(pkt.getNbtCompound());
 		if(!this.state.matches(newState)) {
 			this.state = newState;
-			if(world.isRemote) {
+			if(world != null && world.isRemote) {
 				Minecraft.getInstance().worldRenderer.notifyBlockUpdate(null, pos, null, null, 0);
 			}
 		}

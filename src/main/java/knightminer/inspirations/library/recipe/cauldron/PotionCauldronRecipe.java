@@ -1,17 +1,17 @@
 package knightminer.inspirations.library.recipe.cauldron;
 
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.Potions;
 import slimeknights.mantle.util.RecipeMatch;
 
 import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * Recipe to transform an item stack using a fluid
  */
-@ParametersAreNonnullByDefault
+@Deprecated
 public class PotionCauldronRecipe extends RecipeMatchCauldronRecipe {
 
 	protected Potion potion;
@@ -35,7 +35,7 @@ public class PotionCauldronRecipe extends RecipeMatchCauldronRecipe {
 
 	@Override
 	public Object getInputState() {
-		return potion == Potions.WATER ? null : potion;
+		return potion == Potions.WATER ? Fluids.WATER : potion;
 	}
 
 	@Override
