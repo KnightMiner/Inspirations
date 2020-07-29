@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "conditions": [
+    {
+      "prop": "building_module",
+      "type": "inspirations:config"
+    },
+    {
+      "prop": "flowers",
+      "type": "inspirations:config"
+    }
+  ],
+  "group": "cyan_dye",
+  "ingredients": [
+    {
+      "item": "inspirations:cyan_flower"
+    }
+  ],
+  "result": {
+    "item": "minecraft:cyan_dye"
+  }
+}

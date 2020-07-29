@@ -1,24 +1,38 @@
 package knightminer.inspirations.building.block.type;
 
 import net.minecraft.block.material.MaterialColor;
+import net.minecraft.item.DyeColor;
 import net.minecraft.util.IStringSerializable;
 
+import javax.annotation.Nullable;
 import java.util.Locale;
 
 /**
  * Variants for each of the mulch types
  */
 public enum MulchType implements IStringSerializable {
-  PLAIN(MaterialColor.LIGHT_GRAY),
-  BROWN(MaterialColor.DIRT),
-  RED(MaterialColor.NETHERRACK),
-  BLACK(MaterialColor.GRAY),
-  BLUE(MaterialColor.BLUE);
+  PLAIN(null, MaterialColor.LIGHT_GRAY),
+  BROWN(DyeColor.BROWN, MaterialColor.DIRT),
+  RED(DyeColor.RED, MaterialColor.NETHERRACK),
+  BLACK(DyeColor.BLACK, MaterialColor.GRAY),
+  BLUE(DyeColor.BLUE, MaterialColor.BLUE);
 
   private final String name = name().toLowerCase(Locale.ROOT);
+  @Nullable
+  private final DyeColor dye;
   private final MaterialColor color;
-  MulchType(MaterialColor color) {
+  MulchType(@Nullable DyeColor dye, MaterialColor color) {
+    this.dye = dye;
     this.color = color;
+  }
+
+  /**
+   * Gets the dye for this color
+   * @return  Dye color
+   */
+  @Nullable
+  public DyeColor getDye() {
+    return dye;
   }
 
   /**

@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "inspirations:building/books/green"
+    ]
+  },
+  "criteria": {
+    "has_bookshelf": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "tag": "inspirations:bookshelves"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "inspirations:building/books/green"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_bookshelf",
+      "has_the_recipe"
+    ]
+  ]
+}

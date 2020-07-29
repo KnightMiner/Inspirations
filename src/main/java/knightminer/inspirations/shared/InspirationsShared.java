@@ -5,8 +5,8 @@ import knightminer.inspirations.common.ModuleBase;
 import knightminer.inspirations.common.data.ConfigEnabledCondition;
 import knightminer.inspirations.common.data.FillTexturedBlockLootFunction;
 import knightminer.inspirations.library.recipe.ModItemList;
-import knightminer.inspirations.library.recipe.ShapelessNoContainerRecipe;
-import knightminer.inspirations.library.recipe.TextureRecipe;
+import knightminer.inspirations.library.recipe.crafting.ShapelessNoContainerRecipe;
+import knightminer.inspirations.library.recipe.crafting.TextureRecipe;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.DyeColor;
@@ -17,7 +17,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.registries.IForgeRegistry;
+import slimeknights.mantle.registration.adapter.RegistryAdapter;
 import slimeknights.mantle.registration.object.EnumObject;
 
 /**
@@ -50,9 +50,10 @@ public class InspirationsShared extends ModuleBase {
 
 	@SubscribeEvent
 	void registerRecipeTypes(RegistryEvent.Register<IRecipeSerializer<?>> event) {
-		IForgeRegistry<IRecipeSerializer<?>> r = event.getRegistry();
-		r.register(ShapelessNoContainerRecipe.SERIALIZER);
-		r.register(TextureRecipe.SERIALIZER);
+		// recipe serializers
+		RegistryAdapter<IRecipeSerializer<?>> registry = new RegistryAdapter<>(event.getRegistry());
+		registry.register(new ShapelessNoContainerRecipe.Serializer(), "shapeless_no_container");
+		registry.register(new TextureRecipe.Serializer(), "texture_recipe");
 
 		// no event registries
 		// config condition

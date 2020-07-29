@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "conditions": [
+    {
+      "prop": "building_module",
+      "type": "inspirations:config"
+    },
+    {
+      "prop": "mulch",
+      "type": "inspirations:config"
+    }
+  ],
+  "ingredients": [
+    {
+      "item": "inspirations:plain_mulch"
+    },
+    {
+      "tag": "forge:dyes/blue"
+    }
+  ],
+  "result": {
+    "item": "inspirations:blue_mulch"
+  }
+}

@@ -44,7 +44,7 @@ public class DyeWaypointCompassRecipe extends ShapelessRecipe {
 
 	@Override
 	public IRecipeSerializer<?> getSerializer() {
-		return RecipeSerializers.dye_waypoint_compass;
+		return RecipeSerializers.DYE_WAYPOINT_COMPASS;
 	}
 
 	public static class Serializer extends ShapelessRecipe.Serializer {

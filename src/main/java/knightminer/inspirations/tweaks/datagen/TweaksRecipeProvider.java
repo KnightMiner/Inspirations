@@ -1,7 +1,7 @@
 package knightminer.inspirations.tweaks.datagen;
 
 import knightminer.inspirations.common.data.ConfigEnabledCondition;
-import knightminer.inspirations.common.datagen.CondRecipe;
+import knightminer.inspirations.common.datagen.IRecipeBuilderUtils;
 import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraft.advancements.criterion.EnchantmentPredicate;
 import net.minecraft.advancements.criterion.ItemPredicate;
@@ -10,6 +10,7 @@ import net.minecraft.advancements.criterion.NBTPredicate;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.IFinishedRecipe;
 import net.minecraft.data.RecipeProvider;
+import net.minecraft.data.ShapedRecipeBuilder;
 import net.minecraft.item.Items;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.crafting.conditions.ICondition;
@@ -17,9 +18,8 @@ import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
 
 import java.util.function.Consumer;
 
-public class TweaksRecipeProvider extends RecipeProvider implements IConditionBuilder {
-	private static final ICondition TWEAKS = ConfigEnabledCondition.MODULE_TWEAKS;
-	private static final ICondition UTILITY = ConfigEnabledCondition.MODULE_UTILITY;
+public class TweaksRecipeProvider extends RecipeProvider implements IConditionBuilder, IRecipeBuilderUtils {
+	private Consumer<IFinishedRecipe> consumer;
 
 	public TweaksRecipeProvider(DataGenerator gen) {
 		super(gen);
@@ -31,14 +31,24 @@ public class TweaksRecipeProvider extends RecipeProvider implements IConditionBu
 	}
 
 	@Override
+	public ICondition baseCondition() {
+		return ConfigEnabledCondition.MODULE_TWEAKS;
+	}
+
+	@Override
+	public Consumer<IFinishedRecipe> getConsumer() {
+		return consumer;
+	}
+
+	@Override
 	protected void registerRecipes(Consumer<IFinishedRecipe> consumer) {
+		this.consumer = consumer;
+
 		// Since these are mass-production recipes, show them after the user makes
 		// several of the original.
-		CondRecipe.shaped(InspirationsUtility.collector)
-				.addCondition(UTILITY)
-				.addCondition(ConfigEnabledCondition.COLLECTOR)
-				.addCondition(TWEAKS)
-				.addCondition(ConfigEnabledCondition.UNSTACKABLE_ALTS)
+
+		// stackable collector
+		ShapedRecipeBuilder.shapedRecipe(InspirationsUtility.collector)
 				// builder is missing count, so use ItemPredicate constructor
 				.addCriterion("many_collectors", hasItem(new ItemPredicate(
 						null, // tag
@@ -56,13 +66,13 @@ public class TweaksRecipeProvider extends RecipeProvider implements IConditionBu
 				.patternLine("  T")
 				.patternLine(" TS")
 				.patternLine("TDS")
-				.build(consumer, "collector_stackable");
+				.build(
+						withCondition(ConfigEnabledCondition.MODULE_UTILITY, ConfigEnabledCondition.COLLECTOR, ConfigEnabledCondition.UNSTACKABLE_ALTS),
+						resource("tweaks/collector_stackable")
+				);
 
-		CondRecipe.shaped(Items.DISPENSER)
-				.addCondition(UTILITY)
-				.addCondition(ConfigEnabledCondition.COLLECTOR)
-				.addCondition(TWEAKS)
-				.addCondition(ConfigEnabledCondition.UNSTACKABLE_ALTS)
+		// stackable dispenser
+		ShapedRecipeBuilder.shapedRecipe(Items.DISPENSER)
 				// builder is missing count, so use ItemPredicate constructor
 				.addCriterion("many_collectors", hasItem(new ItemPredicate(
 						null, // tag
@@ -80,6 +90,6 @@ public class TweaksRecipeProvider extends RecipeProvider implements IConditionBu
 				.patternLine(" TS")
 				.patternLine("TDS")
 				.patternLine(" TS")
-				.build(consumer, "dispenser_stackable");
+				.build(withCondition(ConfigEnabledCondition.UNSTACKABLE_ALTS), resource("tweaks/dispenser_stackable"));
 	}
 }

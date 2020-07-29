@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "inspirations:utility/collector"
+    ]
+  },
+  "criteria": {
+    "has_rod": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "minecraft:fishing_rod"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "inspirations:utility/collector"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_rod",
+      "has_the_recipe"
+    ]
+  ]
+}

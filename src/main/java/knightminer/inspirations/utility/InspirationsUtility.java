@@ -50,7 +50,6 @@ public class InspirationsUtility extends ModuleBase {
 
 	// Items
 	public static Item torchLeverItem;
-	public static Item pipeItem;
 
 	// Tile entities
 	public static TileEntityType<CollectorTileEntity> tileCollector;
@@ -105,7 +104,7 @@ public class InspirationsUtility extends ModuleBase {
 		//registerBlockItem(r, netherBricksButton, ItemGroup.REDSTONE);
 		registry.registerBlockItem(carpetedTrapdoors);
 		registry.registerBlockItem(collector);
-		pipeItem = registry.registerBlockItem(pipe);
+		registry.registerBlockItem(pipe);
 	}
 
 	@SubscribeEvent

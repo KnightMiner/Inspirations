@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:stonecutting",
+  "conditions": [
+    {
+      "prop": "building_module",
+      "type": "inspirations:config"
+    },
+    {
+      "prop": "path",
+      "type": "inspirations:config"
+    }
+  ],
+  "ingredient": {
+    "item": "minecraft:bricks"
+  },
+  "result": "inspirations:brick_path",
+  "count": 6
+}

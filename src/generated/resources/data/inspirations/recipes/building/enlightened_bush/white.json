@@ -1,0 +1,32 @@
+{
+  "type": "inspirations:texture_recipe",
+  "conditions": [
+    {
+      "prop": "building_module",
+      "type": "inspirations:config"
+    },
+    {
+      "prop": "enlightened_bush",
+      "type": "inspirations:config"
+    }
+  ],
+  "group": "inspirations:enlightened_bush",
+  "pattern": [
+    "GLG"
+  ],
+  "key": {
+    "L": {
+      "tag": "minecraft:leaves"
+    },
+    "G": {
+      "tag": "forge:dusts/glowstone"
+    }
+  },
+  "result": {
+    "item": "inspirations:white_enlightened_bush"
+  },
+  "texture": {
+    "tag": "minecraft:leaves"
+  },
+  "match_first": true
+}

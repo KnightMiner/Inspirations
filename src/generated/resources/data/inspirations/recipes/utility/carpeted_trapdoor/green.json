@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "conditions": [
+    {
+      "prop": "utility_module",
+      "type": "inspirations:config"
+    },
+    {
+      "prop": "carpeted_trapdoor",
+      "type": "inspirations:config"
+    }
+  ],
+  "group": "inspirations:carpeted_trapdoor",
+  "pattern": [
+    "C",
+    "T"
+  ],
+  "key": {
+    "C": {
+      "item": "minecraft:green_carpet"
+    },
+    "T": {
+      "tag": "minecraft:wooden_trapdoors"
+    }
+  },
+  "result": {
+    "item": "inspirations:green_carpeted_trapdoor"
+  }
+}

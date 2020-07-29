@@ -86,7 +86,7 @@ public class UtilityEvents {
 	 */
 	@SubscribeEvent
 	static void clickHopperWithPipe(RightClickBlock event) {
-		if(!Config.enablePipe.get() || event.getItemStack().getItem() != InspirationsUtility.pipeItem) {
+		if(!Config.enablePipe.get() || event.getItemStack().getItem() != InspirationsUtility.pipe.asItem()) {
 			return;
 		}
 		World world = event.getWorld();

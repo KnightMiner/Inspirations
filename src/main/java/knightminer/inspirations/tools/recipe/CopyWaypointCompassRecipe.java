@@ -120,6 +120,6 @@ public class CopyWaypointCompassRecipe extends SpecialRecipe {
 
   @Override
   public IRecipeSerializer<?> getSerializer() {
-    return RecipeSerializers.copy_waypoint_compass;
+    return RecipeSerializers.COPY_WAYPOINT_COMPASS;
   }
 }

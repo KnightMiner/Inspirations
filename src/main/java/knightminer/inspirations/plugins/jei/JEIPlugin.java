@@ -3,7 +3,7 @@ package knightminer.inspirations.plugins.jei;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.common.IHidable;
-import knightminer.inspirations.library.recipe.TextureRecipe;
+import knightminer.inspirations.library.recipe.crafting.TextureRecipe;
 import knightminer.inspirations.library.util.TextureBlockUtil;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;

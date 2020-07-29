@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "conditions": [
+    {
+      "prop": "building_module",
+      "type": "inspirations:config"
+    },
+    {
+      "prop": "colored_books",
+      "type": "inspirations:config"
+    }
+  ],
+  "group": "inspirations:colored_book",
+  "ingredients": [
+    {
+      "item": "minecraft:book"
+    },
+    {
+      "tag": "forge:dyes/red"
+    }
+  ],
+  "result": {
+    "item": "inspirations:red_book"
+  }
+}

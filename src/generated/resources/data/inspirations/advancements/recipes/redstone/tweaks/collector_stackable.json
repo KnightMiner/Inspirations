@@ -1,0 +1,35 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "inspirations:tweaks/collector_stackable"
+    ]
+  },
+  "criteria": {
+    "many_collectors": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "inspirations:collector",
+            "count": {
+              "min": 5
+            }
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "inspirations:tweaks/collector_stackable"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "many_collectors",
+      "has_the_recipe"
+    ]
+  ]
+}

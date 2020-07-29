@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "conditions": [
+    {
+      "prop": "building_module",
+      "type": "inspirations:config"
+    },
+    {
+      "prop": "rope",
+      "type": "inspirations:config"
+    }
+  ],
+  "pattern": [
+    "V",
+    "V",
+    "V"
+  ],
+  "key": {
+    "V": {
+      "item": "minecraft:vine"
+    }
+  },
+  "result": {
+    "item": "inspirations:vine",
+    "count": 3
+  }
+}

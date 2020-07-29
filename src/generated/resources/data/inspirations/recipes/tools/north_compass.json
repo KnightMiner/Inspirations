@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "conditions": [
+    {
+      "prop": "tools_module",
+      "type": "inspirations:config"
+    },
+    {
+      "prop": "north_compass",
+      "type": "inspirations:config"
+    }
+  ],
+  "pattern": [
+    " I ",
+    "INI",
+    " I "
+  ],
+  "key": {
+    "I": {
+      "tag": "forge:ingots/iron"
+    },
+    "N": {
+      "tag": "forge:nuggets/iron"
+    }
+  },
+  "result": {
+    "item": "inspirations:north_compass"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "inspirations:building/enlightened_bush/red"
+    ]
+  },
+  "criteria": {
+    "has_leaves": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "tag": "minecraft:leaves"
+          }
+        ]
+      }
+    },
+    "has_glowstone": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "tag": "forge:dusts/glowstone"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "inspirations:building/enlightened_bush/red"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_leaves",
+      "has_glowstone",
+      "has_the_recipe"
+    ]
+  ]
+}

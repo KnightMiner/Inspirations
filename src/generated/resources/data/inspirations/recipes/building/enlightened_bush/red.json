@@ -1,0 +1,36 @@
+{
+  "type": "inspirations:texture_recipe",
+  "conditions": [
+    {
+      "prop": "building_module",
+      "type": "inspirations:config"
+    },
+    {
+      "prop": "enlightened_bush",
+      "type": "inspirations:config"
+    }
+  ],
+  "group": "inspirations:enlightened_bush",
+  "pattern": [
+    " D ",
+    "GLG"
+  ],
+  "key": {
+    "L": {
+      "tag": "minecraft:leaves"
+    },
+    "G": {
+      "tag": "forge:dusts/glowstone"
+    },
+    "D": {
+      "tag": "forge:dyes/red"
+    }
+  },
+  "result": {
+    "item": "inspirations:red_enlightened_bush"
+  },
+  "texture": {
+    "tag": "minecraft:leaves"
+  },
+  "match_first": true
+}

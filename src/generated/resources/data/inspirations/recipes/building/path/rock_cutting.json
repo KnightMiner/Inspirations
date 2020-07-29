@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:stonecutting",
+  "conditions": [
+    {
+      "prop": "building_module",
+      "type": "inspirations:config"
+    },
+    {
+      "prop": "path",
+      "type": "inspirations:config"
+    }
+  ],
+  "ingredient": {
+    "tag": "forge:cobblestone"
+  },
+  "result": "inspirations:rock_path",
+  "count": 6
+}

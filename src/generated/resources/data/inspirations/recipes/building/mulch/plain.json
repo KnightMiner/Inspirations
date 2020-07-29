@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:stonecutting",
+  "conditions": [
+    {
+      "prop": "building_module",
+      "type": "inspirations:config"
+    },
+    {
+      "prop": "mulch",
+      "type": "inspirations:config"
+    }
+  ],
+  "ingredient": {
+    "tag": "minecraft:planks"
+  },
+  "result": "inspirations:plain_mulch",
+  "count": 1
+}

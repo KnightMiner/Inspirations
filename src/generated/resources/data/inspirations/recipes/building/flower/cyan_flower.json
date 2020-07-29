@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "conditions": [
+    {
+      "prop": "building_module",
+      "type": "inspirations:config"
+    },
+    {
+      "prop": "flowers",
+      "type": "inspirations:config"
+    },
+    {
+      "value": {
+        "prop": "cauldron_dyeing",
+        "type": "inspirations:config"
+      },
+      "type": "forge:not"
+    }
+  ],
+  "ingredients": [
+    {
+      "tag": "forge:dyes/cyan"
+    },
+    {
+      "item": "inspirations:rose"
+    }
+  ],
+  "result": {
+    "item": "inspirations:cyan_flower"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "conditions": [
+    {
+      "prop": "building_module",
+      "type": "inspirations:config"
+    },
+    {
+      "prop": "flowers",
+      "type": "inspirations:config"
+    }
+  ],
+  "group": "magenta_dye",
+  "ingredients": [
+    {
+      "item": "inspirations:syringa"
+    }
+  ],
+  "result": {
+    "item": "minecraft:magenta_dye"
+  }
+}

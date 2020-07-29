@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "conditions": [
+    {
+      "prop": "building_module",
+      "type": "inspirations:config"
+    },
+    {
+      "prop": "flowers",
+      "type": "inspirations:config"
+    }
+  ],
+  "group": "red_dye",
+  "ingredients": [
+    {
+      "item": "inspirations:rose"
+    }
+  ],
+  "result": {
+    "item": "minecraft:red_dye"
+  }
+}

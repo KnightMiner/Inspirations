@@ -1,0 +1,34 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "conditions": [
+    {
+      "prop": "tools_module",
+      "type": "inspirations:config"
+    },
+    {
+      "prop": "barometer",
+      "type": "inspirations:config"
+    }
+  ],
+  "pattern": [
+    " W",
+    "BR"
+  ],
+  "key": {
+    "W": {
+      "type": "forge:nbt",
+      "item": "minecraft:potion",
+      "count": 1,
+      "nbt": "{Potion:\"minecraft:water\"}"
+    },
+    "B": {
+      "item": "minecraft:glass_bottle"
+    },
+    "R": {
+      "tag": "forge:dusts/redstone"
+    }
+  },
+  "result": {
+    "item": "inspirations:barometer"
+  }
+}

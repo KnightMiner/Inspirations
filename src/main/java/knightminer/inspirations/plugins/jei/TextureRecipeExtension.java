@@ -1,7 +1,7 @@
 package knightminer.inspirations.plugins.jei;
 
 import com.google.common.collect.ImmutableList;
-import knightminer.inspirations.library.recipe.TextureRecipe;
+import knightminer.inspirations.library.recipe.crafting.TextureRecipe;
 import knightminer.inspirations.library.util.TextureBlockUtil;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;

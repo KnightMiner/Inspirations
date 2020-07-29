@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "inspirations:tools/waypoint_compass/brown"
+    ]
+  },
+  "criteria": {
+    "has_compass": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "tag": "inspirations:waypoint_compasses"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "inspirations:tools/waypoint_compass/brown"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_compass",
+      "has_the_recipe"
+    ]
+  ]
+}

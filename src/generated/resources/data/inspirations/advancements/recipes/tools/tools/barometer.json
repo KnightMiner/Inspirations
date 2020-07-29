@@ -1,0 +1,33 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "inspirations:tools/barometer"
+    ]
+  },
+  "criteria": {
+    "has_bottle": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "minecraft:potion",
+            "potion": "minecraft:water"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "inspirations:tools/barometer"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_bottle",
+      "has_the_recipe"
+    ]
+  ]
+}
