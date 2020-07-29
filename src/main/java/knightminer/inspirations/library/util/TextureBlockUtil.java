@@ -10,6 +10,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tags.ITag;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
@@ -166,20 +167,22 @@ public final class TextureBlockUtil {
 	public static void addBlocksFromTag(Block block, ITag<Item> tag, NonNullList<ItemStack> list) {
 		boolean added = false;
 		// using item tags as that is what will be present in the recipe
-		for(Item candidate : tag.getAllElements()) {
-			// non-block items don't have the textures we need
-			if (!(candidate instanceof BlockItem)) {
-				continue;
-			}
-			Block textureBlock = ((BlockItem)candidate).getBlock();
-			// Don't add instances of the block itself, see enlightened bushes
-			if (block.getClass().isInstance(textureBlock)) {
-				continue;
-			}
-			added = true;
-			list.add(createTexturedStack(block, textureBlock));
-			if(!Config.showAllVariants.get()) {
-				return;
+		if (!ItemTags.getCollection().getRegisteredTags().isEmpty()) {
+			for(Item candidate : tag.getAllElements()) {
+				// non-block items don't have the textures we need
+				if (!(candidate instanceof BlockItem)) {
+					continue;
+				}
+				Block textureBlock = ((BlockItem)candidate).getBlock();
+				// Don't add instances of the block itself, see enlightened bushes
+				if (block.getClass().isInstance(textureBlock)) {
+					continue;
+				}
+				added = true;
+				list.add(createTexturedStack(block, textureBlock));
+				if(!Config.showAllVariants.get()) {
+					return;
+				}
 			}
 		}
 		// if we never got one, just add the textureless one
