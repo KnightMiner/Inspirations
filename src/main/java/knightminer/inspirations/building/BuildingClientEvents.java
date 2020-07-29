@@ -86,7 +86,7 @@ public class BuildingClientEvents extends ClientEvents {
 		}
 
 		// Register GUIs.
-		registerScreenFactory(InspirationsBuilding.contBookshelf, new BackgroundContainerScreen.Factory<>("bookshelf"));
+		registerScreenFactory(InspirationsBuilding.contBookshelf, new BackgroundContainerScreen.Factory<>(156, "bookshelf"));
 	}
 
 

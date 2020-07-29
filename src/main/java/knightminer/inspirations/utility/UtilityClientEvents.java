@@ -26,7 +26,7 @@ public class UtilityClientEvents extends ClientEvents {
 	@SubscribeEvent
 	static void commonSetup(FMLCommonSetupEvent event) {
 		// Register GUIs.
-		registerScreenFactory(InspirationsUtility.contCollector, new BackgroundContainerScreen.Factory<>(new ResourceLocation("textures/gui/container/dispenser.png")));
-		registerScreenFactory(InspirationsUtility.contPipe, new BackgroundContainerScreen.Factory<>("pipe"));
+		registerScreenFactory(InspirationsUtility.contCollector, new BackgroundContainerScreen.Factory<>(166, new ResourceLocation("textures/gui/container/dispenser.png")));
+		registerScreenFactory(InspirationsUtility.contPipe, new BackgroundContainerScreen.Factory<>(133, "pipe"));
 	}
 }

@@ -27,9 +27,11 @@ public class BackgroundContainerScreen<T extends Container> extends ContainerScr
    * @param name         Container name
    * @param background   Container background
    */
-  public BackgroundContainerScreen(T container, PlayerInventory inventory, ITextComponent name, ResourceLocation background) {
+  public BackgroundContainerScreen(T container, PlayerInventory inventory, ITextComponent name, int height, ResourceLocation background) {
     super(container, inventory, name);
     this.background = background;
+    this.ySize = height;
+    this.playerInventoryTitleY = this.ySize - 94;
   }
 
   @Override
@@ -55,26 +57,30 @@ public class BackgroundContainerScreen<T extends Container> extends ContainerScr
 
   public static class Factory<T extends Container> implements IScreenFactory<T,BackgroundContainerScreen<T>> {
     private final ResourceLocation background;
+    private final int height;
 
     /**
      * Creates a factory from the given background location
+     * @param height      Screen height
      * @param background  Background location
      */
-    public Factory(ResourceLocation background) {
+    public Factory(int height, ResourceLocation background) {
+      this.height = height;
       this.background = background;
     }
 
     /**
      * Creates a factory from the container name
+     * @param height      Screen height
      * @param name  Name of this container
      */
-    public Factory(String name) {
-      this(Inspirations.getResource(String.format("textures/gui/%s.png", name)));
+    public Factory(int height, String name) {
+      this(height, Inspirations.getResource(String.format("textures/gui/%s.png", name)));
     }
 
     @Override
     public BackgroundContainerScreen<T> create(T container, PlayerInventory inventory, ITextComponent name) {
-      return new BackgroundContainerScreen<>(container, inventory, name, background);
+      return new BackgroundContainerScreen<>(container, inventory, name, height, background);
     }
   }
 }
