@@ -80,7 +80,6 @@ public class InspirationsBlockLootTable extends BlockLootTables {
 
     // ropes
     this.registerLootTable(InspirationsBuilding.rope, this::rope);
-    this.registerLootTable(InspirationsBuilding.chain, this::rope);
     this.registerLootTable(InspirationsBuilding.vine, this::rope);
   }
 

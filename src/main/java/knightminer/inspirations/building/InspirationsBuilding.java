@@ -1,7 +1,6 @@
 package knightminer.inspirations.building;
 
 import knightminer.inspirations.building.block.BookshelfBlock;
-import knightminer.inspirations.building.block.ChainBlock;
 import knightminer.inspirations.building.block.ClimbablePaneBlock;
 import knightminer.inspirations.building.block.EnlightenedBushBlock;
 import knightminer.inspirations.building.block.FlowerBlock;
@@ -42,7 +41,6 @@ import net.minecraft.item.Items;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.ToolType;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -65,7 +63,6 @@ public class InspirationsBuilding extends ModuleBase {
   // blocks
   public static RopeBlock rope;
   public static RopeBlock vine;
-  public static RopeBlock chain;
   public static Block glassDoor;
   public static Block glassTrapdoor;
   // enum
@@ -125,13 +122,6 @@ public class InspirationsBuilding extends ModuleBase {
         .sound(SoundType.PLANT)
         .hardnessAndResistance(0.5F)
     ), "vine");
-    chain = registry.register(new ChainBlock(Items.IRON_NUGGET, Block.Properties
-        .create(Material.IRON, MaterialColor.STONE)
-        .sound(SoundType.METAL)
-        .hardnessAndResistance(5.0F)
-        .harvestTool(ToolType.PICKAXE)
-        .harvestLevel(0)
-    ), "chain");
     // iron bars override
     if (Config.climbableIronBars.get()) {
       ironBars = registry.register(new ClimbablePaneBlock(Block.Properties.create(Material.IRON, MaterialColor.AIR).hardnessAndResistance(5.0F, 6.0F).sound(SoundType.METAL)), new ResourceLocation("iron_bars"));
@@ -180,7 +170,6 @@ public class InspirationsBuilding extends ModuleBase {
     registry.registerBlockItem(bookshelf, BookshelfItem::new);
     registry.registerBlockItem(rope, decorationProps);
     registry.registerBlockItem(vine, decorationProps);
-    registry.registerBlockItem(chain, decorationProps);
     if (ironBars != null) {
       registry.registerBlockItem(ironBars, decorationProps);
     }

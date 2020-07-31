@@ -13,11 +13,17 @@ import knightminer.inspirations.shared.InspirationsShared;
 import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import knightminer.inspirations.utility.InspirationsUtility;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.data.BlockTagsProvider;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.event.RegistryEvent.MissingMappings;
+import net.minecraftforge.event.RegistryEvent.MissingMappings.Mapping;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
@@ -87,6 +93,30 @@ public class Inspirations {
       gen.addProvider(blockTags);
       gen.addProvider(new InspirationsItemTagsProvider(gen, blockTags));
       gen.addProvider(new InspirationsLootTableProvider(gen));
+    }
+  }
+
+  @SubscribeEvent
+  void missingBlockMappings(MissingMappings<Block> event) {
+    for (Mapping<Block> mapping : event.getAllMappings()) {
+      if (modID.equals(mapping.key.getNamespace())) {
+        // vanilla added their own chain, replace ours with it
+        if ("chain".equals(mapping.key.getPath())) {
+          mapping.remap(Blocks.CHAIN);
+        }
+      }
+    }
+  }
+
+  @SubscribeEvent
+  void missingItemMappings(MissingMappings<Item> event) {
+    for (Mapping<Item> mapping : event.getAllMappings()) {
+      if (modID.equals(mapping.key.getNamespace())) {
+        // vanilla added their own chain, replace ours with it
+        if ("chain".equals(mapping.key.getPath())) {
+          mapping.remap(Items.CHAIN);
+        }
+      }
     }
   }
 

@@ -89,13 +89,6 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
                        .patternLine("V")
                        .patternLine("V")
                        .build(ropeCondition, prefix(InspirationsBuilding.vine, "building/"));
-    ShapedRecipeBuilder.shapedRecipe(InspirationsBuilding.chain, 6)
-                       .addCriterion("has_bars", hasItem(Items.IRON_BARS))
-                       .key('B', Items.IRON_BARS)
-                       .patternLine("B")
-                       .patternLine("B")
-                       .patternLine("B")
-                       .build(ropeCondition, prefix(InspirationsBuilding.chain, "building/"));
 
     // path
     Consumer<IFinishedRecipe> pathCondition = withCondition(ConfigEnabledCondition.PATH);
