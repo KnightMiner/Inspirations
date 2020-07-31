@@ -27,87 +27,87 @@ import java.util.function.Consumer;
 
 @JeiPlugin
 public class JEIPlugin implements IModPlugin {
-	static IRecipeManager recipeManager;
-	static ICraftingGridHelper vanillaCraftingHelper;
-	static IModIdHelper modIdHelper;
-	private static IIngredientManager ingedientManager;
+  static IRecipeManager recipeManager;
+  static ICraftingGridHelper vanillaCraftingHelper;
+  static IModIdHelper modIdHelper;
+  private static IIngredientManager ingedientManager;
 
-	// Store which items can be hidden, and their current state.
-	// This lets us reduce the work JEI tries to do.
-	private static List<HideState> hideableItems = new ArrayList<>();
+  // Store which items can be hidden, and their current state.
+  // This lets us reduce the work JEI tries to do.
+  private static List<HideState> hideableItems = new ArrayList<>();
 
-	static class HideState {
-		ItemStack stack;
-		boolean visible;
+  static class HideState {
+    ItemStack stack;
+    boolean visible;
 
-		HideState(ItemStack item) {
-			stack = item;
-			visible = true;
-		}
-	}
+    HideState(ItemStack item) {
+      stack = item;
+      visible = true;
+    }
+  }
 
-	@Override
-	public ResourceLocation getPluginUid() {
-		return Inspirations.getResource("jei");
-	}
+  @Override
+  public ResourceLocation getPluginUid() {
+    return Inspirations.getResource("jei");
+  }
 
-	@Override
-	public void registerItemSubtypes(ISubtypeRegistration registry) {
-		ISubtypeInterpreter texture = TextureBlockUtil::getTextureBlockName;
-		Consumer<IItemProvider> setTextureSubtype = item -> registry.registerSubtypeInterpreter(item.asItem(), texture);
+  @Override
+  public void registerItemSubtypes(ISubtypeRegistration registry) {
+    ISubtypeInterpreter texture = TextureBlockUtil::getTextureBlockName;
+    Consumer<IItemProvider> setTextureSubtype = item -> registry.registerSubtypeInterpreter(item.asItem(), texture);
 
-		// building
-		InspirationsBuilding.bookshelf.values().forEach(setTextureSubtype);
-		InspirationsBuilding.enlightenedBush.values().forEach(setTextureSubtype);
-	}
+    // building
+    InspirationsBuilding.bookshelf.values().forEach(setTextureSubtype);
+    InspirationsBuilding.enlightenedBush.values().forEach(setTextureSubtype);
+  }
 
-	@Override
-	public void registerRecipes(IRecipeRegistration registry) {
-		vanillaCraftingHelper = registry.getJeiHelpers().getGuiHelper().createCraftingGridHelper(1);
-		modIdHelper = registry.getJeiHelpers().getModIdHelper();
-	}
+  @Override
+  public void registerRecipes(IRecipeRegistration registry) {
+    vanillaCraftingHelper = registry.getJeiHelpers().getGuiHelper().createCraftingGridHelper(1);
+    modIdHelper = registry.getJeiHelpers().getModIdHelper();
+  }
 
 
-	@Override
-	public void registerVanillaCategoryExtensions(IVanillaCategoryExtensionRegistration registry) {
-		registry.getCraftingCategory().addCategoryExtension(TextureRecipe.class, TextureRecipeExtension::new);
-	}
+  @Override
+  public void registerVanillaCategoryExtensions(IVanillaCategoryExtensionRegistration registry) {
+    registry.getCraftingCategory().addCategoryExtension(TextureRecipe.class, TextureRecipeExtension::new);
+  }
 
-	@Override
-	public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
-		recipeManager = jeiRuntime.getRecipeManager();
-		ingedientManager = jeiRuntime.getIngredientManager();
+  @Override
+  public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
+    recipeManager = jeiRuntime.getRecipeManager();
+    ingedientManager = jeiRuntime.getIngredientManager();
 
-		hideableItems.clear();
-		for(ItemStack item: ingedientManager.getAllIngredients(VanillaTypes.ITEM)) {
-			if (item.getItem() instanceof IHidable) {
-				hideableItems.add(new HideState(item));
-			}
-		}
-		Inspirations.updateJEI = JEIPlugin::updateHiddenItems;
-	}
+    hideableItems.clear();
+    for (ItemStack item : ingedientManager.getAllIngredients(VanillaTypes.ITEM)) {
+      if (item.getItem() instanceof IHidable) {
+        hideableItems.add(new HideState(item));
+      }
+    }
+    Inspirations.updateJEI = JEIPlugin::updateHiddenItems;
+  }
 
-	// Go through and hide/unhide Inspirations items whenever the config reloads.
-	private static void updateHiddenItems() {
-		// Only try to alter the state of items that have actually changed.
-		List<ItemStack> hidden = new ArrayList<>();
-		List<ItemStack> visible = new ArrayList<>();
-		for(HideState state: hideableItems) {
-			boolean enabled = ((IHidable)state.stack.getItem()).isEnabled();
-			if (enabled != state.visible) {
-				if (enabled) {
-					visible.add(state.stack);
-				} else {
-					hidden.add(state.stack);
-				}
-				state.visible = enabled;
-			}
-		}
-		if (hidden.size() > 0) {
-			ingedientManager.removeIngredientsAtRuntime(VanillaTypes.ITEM, hidden);
-		}
-		if (visible.size() > 0) {
-			ingedientManager.addIngredientsAtRuntime(VanillaTypes.ITEM, visible);
-		}
-	}
+  // Go through and hide/unhide Inspirations items whenever the config reloads.
+  private static void updateHiddenItems() {
+    // Only try to alter the state of items that have actually changed.
+    List<ItemStack> hidden = new ArrayList<>();
+    List<ItemStack> visible = new ArrayList<>();
+    for (HideState state : hideableItems) {
+      boolean enabled = ((IHidable)state.stack.getItem()).isEnabled();
+      if (enabled != state.visible) {
+        if (enabled) {
+          visible.add(state.stack);
+        } else {
+          hidden.add(state.stack);
+        }
+        state.visible = enabled;
+      }
+    }
+    if (hidden.size() > 0) {
+      ingedientManager.removeIngredientsAtRuntime(VanillaTypes.ITEM, hidden);
+    }
+    if (visible.size() > 0) {
+      ingedientManager.addIngredientsAtRuntime(VanillaTypes.ITEM, visible);
+    }
+  }
 }

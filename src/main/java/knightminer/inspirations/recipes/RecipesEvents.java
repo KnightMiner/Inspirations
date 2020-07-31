@@ -4,10 +4,10 @@ package knightminer.inspirations.recipes;
 @SuppressWarnings("WeakerAccess")
 public class RecipesEvents {
 
-	/*
-	 * Event to handle cauldron clicking.
-	 * Done though an event instead of the block so we can ensure it runs before other cauldron handlers, since we cancel for non-water.
-	 */
+  /*
+   * Event to handle cauldron clicking.
+   * Done though an event instead of the block so we can ensure it runs before other cauldron handlers, since we cancel for non-water.
+   */
 	/* TODO: reimplement
 	@SubscribeEvent(priority = EventPriority.HIGH)
 	public static void clickCauldron(RightClickBlock event) {

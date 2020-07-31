@@ -12,38 +12,39 @@ import net.minecraft.util.SoundEvents;
 @Deprecated
 public class PotionEmptyCauldron implements ICauldronRecipe {
 
-	private ITag<Item> bottle;
-	private Item potion;
-	public PotionEmptyCauldron(Item potion, ITag<Item> bottle) {
-		this.bottle = bottle;
-		this.potion = potion;
-	}
+  private ITag<Item> bottle;
+  private Item potion;
 
-	@Override
-	public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		if(level == 0) {
-			return false;
-		}
-		return state.getPotion() != Potions.EMPTY && stack.getItem().isIn(bottle);
-	}
+  public PotionEmptyCauldron(Item potion, ITag<Item> bottle) {
+    this.bottle = bottle;
+    this.potion = potion;
+  }
 
-	@Override
-	public ItemStack getResult(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		return PotionUtils.addPotionToItemStack(new ItemStack(potion), state.getPotion());
-	}
+  @Override
+  public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {
+    if (level == 0) {
+      return false;
+    }
+    return state.getPotion() != Potions.EMPTY && stack.getItem().isIn(bottle);
+  }
 
-	@Override
-	public int getLevel(int level) {
-		return level - 1;
-	}
+  @Override
+  public ItemStack getResult(ItemStack stack, boolean boiling, int level, CauldronState state) {
+    return PotionUtils.addPotionToItemStack(new ItemStack(potion), state.getPotion());
+  }
 
-	@Override
-	public SoundEvent getSound(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		return SoundEvents.ITEM_BOTTLE_FILL;
-	}
+  @Override
+  public int getLevel(int level) {
+    return level - 1;
+  }
 
-	@Override
-	public ItemStack getContainer(ItemStack stack) {
-		return ItemStack.EMPTY;
-	}
+  @Override
+  public SoundEvent getSound(ItemStack stack, boolean boiling, int level, CauldronState state) {
+    return SoundEvents.ITEM_BOTTLE_FILL;
+  }
+
+  @Override
+  public ItemStack getContainer(ItemStack stack) {
+    return ItemStack.EMPTY;
+  }
 }

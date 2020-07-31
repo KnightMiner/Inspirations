@@ -11,27 +11,29 @@ import net.minecraftforge.eventbus.api.Event;
  */
 @Cancelable
 public abstract class RegisterEvent<T> extends Event {
-	private final T recipe;
+  private final T recipe;
 
-	public RegisterEvent(T recipe) {
-		this.recipe = recipe;
-	}
+  public RegisterEvent(T recipe) {
+    this.recipe = recipe;
+  }
 
-	public T getRecipe() {
-		return recipe;
-	}
+  public T getRecipe() {
+    return recipe;
+  }
 
-	/** Returns true on success, false if cancelled */
-	public boolean fire() {
-		return !MinecraftForge.EVENT_BUS.post(this);
-	}
+  /**
+   * Returns true on success, false if cancelled
+   */
+  public boolean fire() {
+    return !MinecraftForge.EVENT_BUS.post(this);
+  }
 
-	/**
-	 * Class for registering cauldron recipes. May be many different cauldron recipe types
-	 */
-	public static class RegisterCauldronRecipe extends RegisterEvent<ICauldronRecipe> {
-		public RegisterCauldronRecipe(ICauldronRecipe recipe) {
-			super(recipe);
-		}
-	}
+  /**
+   * Class for registering cauldron recipes. May be many different cauldron recipe types
+   */
+  public static class RegisterCauldronRecipe extends RegisterEvent<ICauldronRecipe> {
+    public RegisterCauldronRecipe(ICauldronRecipe recipe) {
+      super(recipe);
+    }
+  }
 }

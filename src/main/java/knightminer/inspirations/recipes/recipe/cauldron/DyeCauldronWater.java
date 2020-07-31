@@ -17,56 +17,57 @@ import java.util.stream.Collectors;
 @Deprecated
 public class DyeCauldronWater implements ISimpleCauldronRecipe {
 
-	private DyeColor color;
-	private Ingredient dye;
-	public DyeCauldronWater(DyeColor color) {
-		this.color = color;
-		this.dye = Ingredient.fromTag(ItemTags.getCollection().getOrCreate(
-				new ResourceLocation("forge", "dyes/" + color.getString()
-		)));
-	}
+  private DyeColor color;
+  private Ingredient dye;
 
-	@Override
-	public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		// special case water bottles
-		if(level == 0 || stack.getItem().isIn(InspirationsTags.Items.DYE_BOTTLES)) {
-			return false;
-		}
+  public DyeCauldronWater(DyeColor color) {
+    this.color = color;
+    this.dye = Ingredient.fromTag(ItemTags.getCollection().getOrCreate(
+        new ResourceLocation("forge", "dyes/" + color.getString()
+        )));
+  }
 
-		// type must be water or dye
-		// input must not be the same color as the original dye
-		return (state.isWater() || state.getColor() > -1)
-				&& dye.test(stack) && color.colorValue != state.getColor();
-	}
+  @Override
+  public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {
+    // special case water bottles
+    if (level == 0 || stack.getItem().isIn(InspirationsTags.Items.DYE_BOTTLES)) {
+      return false;
+    }
 
-	@Override
-	public List<ItemStack> getInput() {
-		// we want to ignore the dyed water bottle as that has special behavior
-		return Arrays.stream(dye.getMatchingStacks())
-				.filter(stack->!stack.getItem().isIn(InspirationsTags.Items.DYE_BOTTLES))
-				.collect(Collectors.toList());
-	}
+    // type must be water or dye
+    // input must not be the same color as the original dye
+    return (state.isWater() || state.getColor() > -1)
+           && dye.test(stack) && color.colorValue != state.getColor();
+  }
 
-	@Override
-	public CauldronState getState(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		int newColor = color.colorValue;
-		int color = state.getColor();
-		if(color > -1) {
-			color = Util.combineColors(newColor, color, level);
-		} else {
-			color = newColor;
-		}
+  @Override
+  public List<ItemStack> getInput() {
+    // we want to ignore the dyed water bottle as that has special behavior
+    return Arrays.stream(dye.getMatchingStacks())
+                 .filter(stack -> !stack.getItem().isIn(InspirationsTags.Items.DYE_BOTTLES))
+                 .collect(Collectors.toList());
+  }
 
-		return CauldronState.dye(color);
-	}
+  @Override
+  public CauldronState getState(ItemStack stack, boolean boiling, int level, CauldronState state) {
+    int newColor = color.colorValue;
+    int color = state.getColor();
+    if (color > -1) {
+      color = Util.combineColors(newColor, color, level);
+    } else {
+      color = newColor;
+    }
 
-	@Override
-	public Object getState() {
-		return color;
-	}
+    return CauldronState.dye(color);
+  }
 
-	@Override
-	public SoundEvent getSound(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		return null;
-	}
+  @Override
+  public Object getState() {
+    return color;
+  }
+
+  @Override
+  public SoundEvent getSound(ItemStack stack, boolean boiling, int level, CauldronState state) {
+    return null;
+  }
 }

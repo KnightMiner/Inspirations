@@ -11,12 +11,12 @@ import net.minecraft.tags.ItemTags;
  * Extension of a texture block item to make it burnable
  */
 public class BookshelfItem extends TextureBlockItem {
-	public BookshelfItem(Block block) {
-		super(block, new Item.Properties().group(ItemGroup.DECORATIONS), ItemTags.WOODEN_SLABS);
-	}
+  public BookshelfItem(Block block) {
+    super(block, new Item.Properties().group(ItemGroup.DECORATIONS), ItemTags.WOODEN_SLABS);
+  }
 
-	@Override
-	public int getBurnTime(ItemStack itemStack) {
-		return 300;
-	}
+  @Override
+  public int getBurnTime(ItemStack itemStack) {
+    return 300;
+  }
 }

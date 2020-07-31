@@ -23,95 +23,95 @@ import slimeknights.mantle.tileentity.InventoryTileEntity;
 import javax.annotation.Nullable;
 
 public class CollectorTileEntity extends InventoryTileEntity {
-	private static final ITextComponent TITLE = new TranslationTextComponent("gui.inspirations.collector");
+  private static final ITextComponent TITLE = new TranslationTextComponent("gui.inspirations.collector");
 
-	public CollectorTileEntity() {
-		super(InspirationsUtility.tileCollector, TITLE, 9);
-	}
+  public CollectorTileEntity() {
+    super(InspirationsUtility.tileCollector, TITLE, 9);
+  }
 
-	public void collect(Direction facing) {
-		if (world == null) {
-			return;
-		}
-		BlockPos offset = pos.offset(facing);
-		TileEntity te = world.getTileEntity(offset);
-		// if we have a TE and its an item handler, try extracting from that
-		if(te != null) {
-			te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing.getOpposite()).ifPresent((neighbor) -> {
-				// basically, we iterate every slot, trying to remove a single item
-				for(int i = 0; i < neighbor.getSlots(); i++) {
-					ItemStack simulated = neighbor.extractItem(i, 1, true);
-					// as soon as we find one we can extract, we try inserting it
-					if(!simulated.isEmpty()) {
-						// if it successfully inserts, extract it from the original inventory
-						if(ItemHandlerHelper.insertItemStacked(itemHandler, simulated, false).isEmpty()) {
-							neighbor.extractItem(i, 1, false);
-							break;
-						}
-					}
-				}
-			});
-		}
+  public void collect(Direction facing) {
+    if (world == null) {
+      return;
+    }
+    BlockPos offset = pos.offset(facing);
+    TileEntity te = world.getTileEntity(offset);
+    // if we have a TE and its an item handler, try extracting from that
+    if (te != null) {
+      te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing.getOpposite()).ifPresent((neighbor) -> {
+        // basically, we iterate every slot, trying to remove a single item
+        for (int i = 0; i < neighbor.getSlots(); i++) {
+          ItemStack simulated = neighbor.extractItem(i, 1, true);
+          // as soon as we find one we can extract, we try inserting it
+          if (!simulated.isEmpty()) {
+            // if it successfully inserts, extract it from the original inventory
+            if (ItemHandlerHelper.insertItemStacked(itemHandler, simulated, false).isEmpty()) {
+              neighbor.extractItem(i, 1, false);
+              break;
+            }
+          }
+        }
+      });
+    }
 
-		// collect items from world
-		AxisAlignedBB aabb = new AxisAlignedBB(offset.getX(), offset.getY(), offset.getZ(), offset.getX()+1, offset.getY()+1, offset.getZ()+1);
-		boolean collected = false;
-		for(ItemEntity entity : world.getEntitiesWithinAABB(ItemEntity.class, aabb)) {
-			ItemStack insert = entity.getItem();
-			// no need to simulate, if successful we have to modify the stack regardless
-			ItemStack remainder = ItemHandlerHelper.insertItemStacked(itemHandler, insert, false);
-			// if the stack changed, we were successful
-			if(remainder.getCount() < insert.getCount()) {
-				collected = true;
-				// empty means item is gone
-				if(remainder.isEmpty()) {
-					entity.remove();
-				} else {
-					entity.setItem(remainder);
-				}
-			}
-		}
-		// play sound. Plays dispenser dispense if success and dispenser fail if not
-		world.playEvent(collected ? 1000 : 1001, pos, 0);
-	}
+    // collect items from world
+    AxisAlignedBB aabb = new AxisAlignedBB(offset.getX(), offset.getY(), offset.getZ(), offset.getX() + 1, offset.getY() + 1, offset.getZ() + 1);
+    boolean collected = false;
+    for (ItemEntity entity : world.getEntitiesWithinAABB(ItemEntity.class, aabb)) {
+      ItemStack insert = entity.getItem();
+      // no need to simulate, if successful we have to modify the stack regardless
+      ItemStack remainder = ItemHandlerHelper.insertItemStacked(itemHandler, insert, false);
+      // if the stack changed, we were successful
+      if (remainder.getCount() < insert.getCount()) {
+        collected = true;
+        // empty means item is gone
+        if (remainder.isEmpty()) {
+          entity.remove();
+        } else {
+          entity.setItem(remainder);
+        }
+      }
+    }
+    // play sound. Plays dispenser dispense if success and dispenser fail if not
+    world.playEvent(collected ? 1000 : 1001, pos, 0);
+  }
 
-	@Override
-	public boolean isItemValidForSlot(int slot, ItemStack itemstack) {
-		// mantle checks stack size which breaks some things when using stacks bigger than 1
-		return slot < getSizeInventory();
-	}
+  @Override
+  public boolean isItemValidForSlot(int slot, ItemStack itemstack) {
+    // mantle checks stack size which breaks some things when using stacks bigger than 1
+    return slot < getSizeInventory();
+  }
 
-	/*
-	 * GUI
-	 */
+  /*
+   * GUI
+   */
 
-	@Nullable
-	@Override
-	public Container createMenu(int winId, PlayerInventory playerInv, PlayerEntity player) {
-		return new CollectorContainer(winId, playerInv, this);
-	}
+  @Nullable
+  @Override
+  public Container createMenu(int winId, PlayerInventory playerInv, PlayerEntity player) {
+    return new CollectorContainer(winId, playerInv, this);
+  }
 
 
-	/* Networking */
+  /* Networking */
 
-	@Override
-	public CompoundNBT getUpdateTag() {
-		// new tag instead of super since default implementation calls the super of writeToNBT
-		return write(new CompoundNBT());
-	}
+  @Override
+  public CompoundNBT getUpdateTag() {
+    // new tag instead of super since default implementation calls the super of writeToNBT
+    return write(new CompoundNBT());
+  }
 
-	@Override
-	public SUpdateTileEntityPacket getUpdatePacket() {
-		// note that this sends all of the tile data. you should change this if you use additional tile data
-		CompoundNBT tag = getTileData().copy();
-		write(tag);
-		return new SUpdateTileEntityPacket(this.getPos(), 0, tag);
-	}
+  @Override
+  public SUpdateTileEntityPacket getUpdatePacket() {
+    // note that this sends all of the tile data. you should change this if you use additional tile data
+    CompoundNBT tag = getTileData().copy();
+    write(tag);
+    return new SUpdateTileEntityPacket(this.getPos(), 0, tag);
+  }
 
-	@Override
-	public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
-		CompoundNBT tag = pkt.getNbtCompound();
-		// TODO: is this okay?
-		read(this.getBlockState(), tag);
-	}
+  @Override
+  public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
+    CompoundNBT tag = pkt.getNbtCompound();
+    // TODO: is this okay?
+    read(this.getBlockState(), tag);
+  }
 }

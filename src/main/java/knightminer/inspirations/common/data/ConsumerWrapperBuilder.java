@@ -27,7 +27,7 @@ public class ConsumerWrapperBuilder {
 
   /**
    * Creates a wrapper builder with the default serializer
-   * @return  Default serializer builder
+   * @return Default serializer builder
    */
   public static ConsumerWrapperBuilder wrap() {
     return new ConsumerWrapperBuilder(null);
@@ -35,8 +35,8 @@ public class ConsumerWrapperBuilder {
 
   /**
    * Creates a wrapper builder with a serializer override
-   * @param override  Serializer override
-   * @return  Default serializer builder
+   * @param override Serializer override
+   * @return Default serializer builder
    */
   public static ConsumerWrapperBuilder wrap(IRecipeSerializer<?> override) {
     return new ConsumerWrapperBuilder(override);
@@ -44,8 +44,8 @@ public class ConsumerWrapperBuilder {
 
   /**
    * Adds a conditional to the consumer
-   * @param condition  Condition to add
-   * @return  Added condition
+   * @param condition Condition to add
+   * @return Added condition
    */
   public ConsumerWrapperBuilder addCondition(ICondition condition) {
     conditions.add(condition);
@@ -54,8 +54,8 @@ public class ConsumerWrapperBuilder {
 
   /**
    * Builds the consumer for the wrapper builder
-   * @param consumer  Base consumer
-   * @return  Built wrapper consumer
+   * @param consumer Base consumer
+   * @return Built wrapper consumer
    */
   public Consumer<IFinishedRecipe> build(Consumer<IFinishedRecipe> consumer) {
     return (recipe) -> consumer.accept(new Wrapped(recipe, conditions, override));
@@ -77,7 +77,7 @@ public class ConsumerWrapperBuilder {
     public void serialize(JsonObject json) {
       // add conditions on top
       JsonArray conditionsArray = new JsonArray();
-      for(ICondition condition : conditions) {
+      for (ICondition condition : conditions) {
         conditionsArray.add(CraftingHelper.serialize(condition));
       }
       json.add("conditions", conditionsArray);

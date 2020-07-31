@@ -5,12 +5,12 @@ import net.minecraft.block.Block;
 
 public class SeedItem extends HidableBlockItem {
 
-	public SeedItem(Block block, Properties props) {
-		super(block, props);
-	}
+  public SeedItem(Block block, Properties props) {
+    super(block, props);
+  }
 
-	@Override
-	public String getTranslationKey() {
-		return getDefaultTranslationKey();
-	}
+  @Override
+  public String getTranslationKey() {
+    return getDefaultTranslationKey();
+  }
 }

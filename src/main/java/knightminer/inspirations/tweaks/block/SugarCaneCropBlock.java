@@ -11,27 +11,27 @@ import net.minecraft.world.IBlockReader;
 import net.minecraftforge.common.PlantType;
 
 public class SugarCaneCropBlock extends BlockCropBlock {
-	private static final VoxelShape[] BOUNDS = {
-			makeCuboidShape(2, 0, 2, 14,  2, 14),
-			makeCuboidShape(2, 0, 2, 14,  4, 14),
-			makeCuboidShape(2, 0, 2, 14,  6, 14),
-			makeCuboidShape(2, 0, 2, 14,  8, 14),
-			makeCuboidShape(2, 0, 2, 14, 10, 14),
-			makeCuboidShape(2, 0, 2, 14, 12, 14),
-			makeCuboidShape(2, 0, 2, 14, 14, 14)
-	};
+  private static final VoxelShape[] BOUNDS = {
+      makeCuboidShape(2, 0, 2, 14, 2, 14),
+      makeCuboidShape(2, 0, 2, 14, 4, 14),
+      makeCuboidShape(2, 0, 2, 14, 6, 14),
+      makeCuboidShape(2, 0, 2, 14, 8, 14),
+      makeCuboidShape(2, 0, 2, 14, 10, 14),
+      makeCuboidShape(2, 0, 2, 14, 12, 14),
+      makeCuboidShape(2, 0, 2, 14, 14, 14)
+  };
 
-	public SugarCaneCropBlock() {
-		super(Blocks.SUGAR_CANE, PlantType.BEACH);
-	}
+  public SugarCaneCropBlock() {
+    super(Blocks.SUGAR_CANE, PlantType.BEACH);
+  }
 
-	@Override
-	protected IItemProvider getSeedsItem() {
-		return InspirationsTweaks.cactusSeeds;
-	}
+  @Override
+  protected IItemProvider getSeedsItem() {
+    return InspirationsTweaks.cactusSeeds;
+  }
 
-	@Override
-	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-		return BOUNDS[this.getAge(state)];
-	}
+  @Override
+  public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+    return BOUNDS[this.getAge(state)];
+  }
 }

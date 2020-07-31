@@ -21,26 +21,26 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 @EventBusSubscriber(modid = Inspirations.modID, value = Dist.CLIENT, bus = Bus.MOD)
 public class ToolsClientEvents extends ClientEvents {
 
-	@SubscribeEvent
-	static void clientSetup(FMLClientSetupEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(InspirationsTools.entRSArrow, RedstoneArrowRenderer::new);
+  @SubscribeEvent
+  static void clientSetup(FMLClientSetupEvent event) {
+    RenderingRegistry.registerEntityRenderingHandler(InspirationsTools.entRSArrow, RedstoneArrowRenderer::new);
 
-		// item model properties
-		registerModelProperty(InspirationsTools.northCompass, "angle", new NorthCompassPropertyGetter());
-		registerModelProperty(InspirationsTools.barometer, "height", new BarometerPropertyGetter());
-		registerModelProperty(InspirationsTools.photometer, "light", new PhotometerPropertyGetter());
-		for (WaypointCompassItem item : InspirationsTools.waypointCompasses) {
-			registerModelProperty(item, "angle", new WaypointCompassPropertyGetter());
-		}
-	}
+    // item model properties
+    registerModelProperty(InspirationsTools.northCompass, "angle", new NorthCompassPropertyGetter());
+    registerModelProperty(InspirationsTools.barometer, "height", new BarometerPropertyGetter());
+    registerModelProperty(InspirationsTools.photometer, "light", new PhotometerPropertyGetter());
+    for (WaypointCompassItem item : InspirationsTools.waypointCompasses) {
+      registerModelProperty(item, "angle", new WaypointCompassPropertyGetter());
+    }
+  }
 
-	@SubscribeEvent
-	static void registerItemColors(ColorHandlerEvent.Item event) {
-		ItemColors itemColors = event.getItemColors();
+  @SubscribeEvent
+  static void registerItemColors(ColorHandlerEvent.Item event) {
+    ItemColors itemColors = event.getItemColors();
 
-		// Dyed waypoint compasses. This implements IItemColor itself.
-		for(WaypointCompassItem compass : InspirationsTools.waypointCompasses) {
-			registerItemColors(itemColors, compass::getColor, compass);
-		}
-	}
+    // Dyed waypoint compasses. This implements IItemColor itself.
+    for (WaypointCompassItem compass : InspirationsTools.waypointCompasses) {
+      registerItemColors(itemColors, compass::getColor, compass);
+    }
+  }
 }

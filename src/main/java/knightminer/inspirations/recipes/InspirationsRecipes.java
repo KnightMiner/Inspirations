@@ -25,67 +25,67 @@ import slimeknights.mantle.registration.object.EnumObject;
 
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class InspirationsRecipes extends ModuleBase {
-	public static final String pulseID = "InspirationsRecipes";
+  public static final String pulseID = "InspirationsRecipes";
 
-	// blocks
-	public static Block fullAnvil;
-	public static Block chippedAnvil;
-	public static Block damagedAnvil;
+  // blocks
+  public static Block fullAnvil;
+  public static Block chippedAnvil;
+  public static Block damagedAnvil;
 
-	public static EnhancedCauldronBlock cauldron;
+  public static EnhancedCauldronBlock cauldron;
 
-	// items
-	public static Item splashBottle;
-	public static Item lingeringBottle;
-	public static EnumObject<DyeColor,SimpleDyedBottleItem> simpleDyedWaterBottle;
-	public static MixedDyedBottleItem mixedDyedWaterBottle;
+  // items
+  public static Item splashBottle;
+  public static Item lingeringBottle;
+  public static EnumObject<DyeColor,SimpleDyedBottleItem> simpleDyedWaterBottle;
+  public static MixedDyedBottleItem mixedDyedWaterBottle;
 
-	// fluids
-	public static Fluid mushroomStew;
-	public static Fluid beetrootSoup;
-	public static Fluid rabbitStew;
-	public static Fluid milk;
+  // fluids
+  public static Fluid mushroomStew;
+  public static Fluid beetrootSoup;
+  public static Fluid rabbitStew;
+  public static Fluid milk;
 
 
-	@SubscribeEvent
-	void preInit(FMLCommonSetupEvent event) {
-		//TODO: reimplement
-		//if(Config.enableCauldronFluids()) {
-			//mushroomStew = registerColoredFluid("mushroom_stew", 0xFFCD8C6F);
-			//beetrootSoup = registerColoredFluid("beetroot_soup", 0xFFB82A30);
-			//rabbitStew = registerColoredFluid("rabbit_stew", 0xFF984A2C);
-			//if (Config.enableMilk()) {
-				///milk = registerFluid(new Fluid("milk", Util.getResource("blocks/milk"), Util.getResource("blocks/milk_flow")));
-			//}
-		//}
-	}
+  @SubscribeEvent
+  void preInit(FMLCommonSetupEvent event) {
+    //TODO: reimplement
+    //if(Config.enableCauldronFluids()) {
+    //mushroomStew = registerColoredFluid("mushroom_stew", 0xFFCD8C6F);
+    //beetrootSoup = registerColoredFluid("beetroot_soup", 0xFFB82A30);
+    //rabbitStew = registerColoredFluid("rabbit_stew", 0xFF984A2C);
+    //if (Config.enableMilk()) {
+    ///milk = registerFluid(new Fluid("milk", Util.getResource("blocks/milk"), Util.getResource("blocks/milk_flow")));
+    //}
+    //}
+  }
 
-	@SubscribeEvent
-	void registerBlocks(Register<Block> event) {
-		BlockRegistryAdapter registry = new BlockRegistryAdapter(event.getRegistry());
+  @SubscribeEvent
+  void registerBlocks(Register<Block> event) {
+    BlockRegistryAdapter registry = new BlockRegistryAdapter(event.getRegistry());
 
-		if(Config.enableAnvilSmashing.get()) {
-			registry.registerOverride(SmashingAnvilBlock::new, Blocks.ANVIL);
-			registry.registerOverride(SmashingAnvilBlock::new, Blocks.CHIPPED_ANVIL);
-			registry.registerOverride(SmashingAnvilBlock::new, Blocks.DAMAGED_ANVIL);
-		}
-		if(Config.enableExtendedCauldron()) {
-			cauldron = registry.registerOverride(EnhancedCauldronBlock::new, Blocks.CAULDRON);
-		}
-	}
+    if (Config.enableAnvilSmashing.get()) {
+      registry.registerOverride(SmashingAnvilBlock::new, Blocks.ANVIL);
+      registry.registerOverride(SmashingAnvilBlock::new, Blocks.CHIPPED_ANVIL);
+      registry.registerOverride(SmashingAnvilBlock::new, Blocks.DAMAGED_ANVIL);
+    }
+    if (Config.enableExtendedCauldron()) {
+      cauldron = registry.registerOverride(EnhancedCauldronBlock::new, Blocks.CAULDRON);
+    }
+  }
 
-	@SubscribeEvent
-	void registerItems(Register<Item> event) {
-		IForgeRegistry<Item> r = event.getRegistry();
-		ItemRegistryAdapter registry = new ItemRegistryAdapter(event.getRegistry());
-		Item.Properties brewingProps = new Item.Properties().group(ItemGroup.BREWING);
+  @SubscribeEvent
+  void registerItems(Register<Item> event) {
+    IForgeRegistry<Item> r = event.getRegistry();
+    ItemRegistryAdapter registry = new ItemRegistryAdapter(event.getRegistry());
+    Item.Properties brewingProps = new Item.Properties().group(ItemGroup.BREWING);
 
-		splashBottle = registry.register(new HidableItem(brewingProps, Config::enableCauldronPotions), "splash_bottle");
-		lingeringBottle = registry.register(new HidableItem(brewingProps, Config::enableCauldronPotions), "lingering_bottle");
+    splashBottle = registry.register(new HidableItem(brewingProps, Config::enableCauldronPotions), "splash_bottle");
+    lingeringBottle = registry.register(new HidableItem(brewingProps, Config::enableCauldronPotions), "lingering_bottle");
 
-		simpleDyedWaterBottle = registry.registerEnum(SimpleDyedBottleItem::new, DyeColor.values(), "dyed_bottle");
-		mixedDyedWaterBottle = registry.register(new MixedDyedBottleItem(), "mixed_dyed_bottle");
-	}
+    simpleDyedWaterBottle = registry.registerEnum(SimpleDyedBottleItem::new, DyeColor.values(), "dyed_bottle");
+    mixedDyedWaterBottle = registry.register(new MixedDyedBottleItem(), "mixed_dyed_bottle");
+  }
 
 	/* TODO: reimplement
 	@SubscribeEvent
@@ -125,20 +125,20 @@ public class InspirationsRecipes extends ModuleBase {
 		}
 	}*/
 
-	@SubscribeEvent
-	void init(FMLCommonSetupEvent event) {
-		if(Config.enableCauldronRecipes()) {
-			registerCauldronRecipes();
-		}
-		registerDispenserBehavior();
-	}
+  @SubscribeEvent
+  void init(FMLCommonSetupEvent event) {
+    if (Config.enableCauldronRecipes()) {
+      registerCauldronRecipes();
+    }
+    registerDispenserBehavior();
+  }
 
-	@SubscribeEvent
-	void postInit(InterModProcessEvent event) {
-		registerPostCauldronRecipes();
-	}
+  @SubscribeEvent
+  void postInit(InterModProcessEvent event) {
+    registerPostCauldronRecipes();
+  }
 
-	private void registerCauldronRecipes() {
+  private void registerCauldronRecipes() {
 		/* TODO: reimplement
 		InspirationsRegistry.registerDefaultCauldron();
 		InspirationsRegistry.addCauldronRecipe(new FillCauldronRecipe(RecipeMatch.of(Blocks.ICE), Fluids.WATER, Config.getCauldronMax(), ItemStack.EMPTY, true, SoundEvents.ITEM_BUCKET_EMPTY_LAVA));
@@ -226,12 +226,12 @@ public class InspirationsRecipes extends ModuleBase {
 			InspirationsRegistry.addCauldronFluidItem(new ItemStack(Items.WATER_BUCKET), new ItemStack(Items.BUCKET), Fluids.WATER, 3);
 		}
 		*/
-	}
+  }
 
-	/**
-	 * These recipes need to be registered later to prevent from conflicts or missing recipes
-	 */
-	private void registerPostCauldronRecipes() {
+  /**
+   * These recipes need to be registered later to prevent from conflicts or missing recipes
+   */
+  private void registerPostCauldronRecipes() {
 		/* TODO: reimplement
 		if(Config.enableCauldronBrewing()) {
 			for(Object recipe : PotionBrewing.POTION_TYPE_CONVERSIONS) {
@@ -248,21 +248,21 @@ public class InspirationsRecipes extends ModuleBase {
 			InspirationsRegistry.addCauldronRecipe(FluidContainerFillCauldron.INSTANCE);
 		}
 		 */
-	}
+  }
 
-	private static void addPotionBottle(Item potion, ItemStack bottle, String bottleTag) {
-		//InspirationsRegistry.addCauldronRecipe(new PotionFillCauldron(potion, bottle));
-		//InspirationsRegistry.addCauldronRecipe(new PotionEmptyCauldron(potion, ItemTags.makeWrapperTag("forge:" + bottleTag)));
-	}
+  private static void addPotionBottle(Item potion, ItemStack bottle, String bottleTag) {
+    //InspirationsRegistry.addCauldronRecipe(new PotionFillCauldron(potion, bottle));
+    //InspirationsRegistry.addCauldronRecipe(new PotionEmptyCauldron(potion, ItemTags.makeWrapperTag("forge:" + bottleTag)));
+  }
 
-	private static void addStewRecipes(ItemStack stew, Fluid fluid, ItemStack ingredient) {
-		//InspirationsRegistry.addCauldronScaledTransformRecipe(ingredient, Fluids.WATER, fluid, true);
-		// filling and emptying bowls
-		//InspirationsRegistry.addCauldronRecipe(new FluidCauldronRecipe(RecipeMatch.of(Items.BOWL), fluid, stew, null, SoundEvents.ITEM_BOTTLE_FILL));
-		//InspirationsRegistry.addCauldronRecipe(new FillCauldronRecipe(RecipeMatch.of(stew), fluid, 1, new ItemStack(Items.BOWL)));
-	}
+  private static void addStewRecipes(ItemStack stew, Fluid fluid, ItemStack ingredient) {
+    //InspirationsRegistry.addCauldronScaledTransformRecipe(ingredient, Fluids.WATER, fluid, true);
+    // filling and emptying bowls
+    //InspirationsRegistry.addCauldronRecipe(new FluidCauldronRecipe(RecipeMatch.of(Items.BOWL), fluid, stew, null, SoundEvents.ITEM_BOTTLE_FILL));
+    //InspirationsRegistry.addCauldronRecipe(new FillCauldronRecipe(RecipeMatch.of(stew), fluid, 1, new ItemStack(Items.BOWL)));
+  }
 
-	private void findRecipesFromBrewingRegistry() {
+  private void findRecipesFromBrewingRegistry() {
 		/* TODO: reimplement
 		for(IBrewingRecipe irecipe : BrewingRecipeRegistry.getRecipes()) {
 			if(irecipe instanceof BrewingRecipe) {
@@ -296,9 +296,9 @@ public class InspirationsRecipes extends ModuleBase {
 			}
 		}
 		 */
-	}
+  }
 
-	private void registerDispenserBehavior() {
+  private void registerDispenserBehavior() {
 		/* TODO: reimplement
 		if(Config.enableCauldronDispenser()) {
 			for(Item item : InspirationsRegistry.TAG_DISP_FLUID_TANKS.getAllElements()) {
@@ -308,5 +308,5 @@ public class InspirationsRecipes extends ModuleBase {
 				);
 			}
 		}*/
-	}
+  }
 }

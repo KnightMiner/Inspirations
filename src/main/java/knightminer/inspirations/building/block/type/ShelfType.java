@@ -13,7 +13,9 @@ public enum ShelfType implements IStringSerializable {
   RAINBOW,
   TOMES;
 
-  /** All bookshelves except normal */
+  /**
+   * All bookshelves except normal
+   */
   public static final ShelfType[] FANCY = {ANCIENT, RAINBOW, TOMES};
   private final String name = name().toLowerCase(Locale.ROOT);
 

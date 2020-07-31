@@ -39,7 +39,7 @@ public class PortalColorHandler implements IBlockColor {
 
     // Get the real world, not the fake one so we can look at the blocks far enough below us.
     if (world instanceof ChunkRenderCache) {
-      world = ((ChunkRenderCache) world).world;
+      world = ((ChunkRenderCache)world).world;
     }
 
     // if we are at the top of the chunk, notify the portal above that it needs to update
@@ -54,7 +54,7 @@ public class PortalColorHandler implements IBlockColor {
     // iterate down until the first non-portal block
     // can skip every other block as it takes at least 2 from a portal to below a portal
     pos = pos.down();
-    while(world.getBlockState(pos).getBlock() == Blocks.NETHER_PORTAL) {
+    while (world.getBlockState(pos).getBlock() == Blocks.NETHER_PORTAL) {
       pos = pos.down();
     }
 
@@ -63,15 +63,15 @@ public class PortalColorHandler implements IBlockColor {
 
   /**
    * Gets the color for a block in the world, uses the same logic as beacon beam colors
-   * @param access  Block access
-   * @param pos     Block pos
+   * @param access Block access
+   * @param pos    Block pos
    */
   private static int getColorValue(IBlockDisplayReader access, BlockPos pos) {
     BlockState state = access.getBlockState(pos);
     Block block = state.getBlock();
     // stained glass
     if (block instanceof IBeaconBeamColorProvider) {
-      return ((IBeaconBeamColorProvider) block).getColor().colorValue;
+      return ((IBeaconBeamColorProvider)block).getColor().colorValue;
     }
     // beacon color fallback
     if (!BEACON_COLOR_BLACKLIST.contains(block)) {

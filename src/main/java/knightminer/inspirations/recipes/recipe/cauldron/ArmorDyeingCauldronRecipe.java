@@ -9,40 +9,41 @@ import net.minecraft.item.ItemStack;
 @Deprecated
 public class ArmorDyeingCauldronRecipe implements ICauldronRecipe {
 
-	private final ArmorMaterial material;
-	public ArmorDyeingCauldronRecipe(ArmorMaterial material) {
-		this.material = material;
-	}
+  private final ArmorMaterial material;
 
-	@Override
-	public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		if(level == 0 || state.getColor() == -1) {
-			return false;
-		}
-		Item item = stack.getItem();
-		if(!(item instanceof DyeableArmorItem)) {
-			return false;
-		}
+  public ArmorDyeingCauldronRecipe(ArmorMaterial material) {
+    this.material = material;
+  }
 
-		// only color leather, and ensure we are changing the color
-		DyeableArmorItem armor = (DyeableArmorItem) item;
-		return armor.getArmorMaterial() == material && armor.getColor(stack) != state.getColor();
-	}
+  @Override
+  public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {
+    if (level == 0 || state.getColor() == -1) {
+      return false;
+    }
+    Item item = stack.getItem();
+    if (!(item instanceof DyeableArmorItem)) {
+      return false;
+    }
 
-	@Override
-	public ItemStack getResult(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		stack = stack.copy();
-		((DyeableArmorItem) stack.getItem()).setColor(stack, state.getColor());
-		return stack;
-	}
+    // only color leather, and ensure we are changing the color
+    DyeableArmorItem armor = (DyeableArmorItem)item;
+    return armor.getArmorMaterial() == material && armor.getColor(stack) != state.getColor();
+  }
 
-	@Override
-	public int getLevel(int level) {
-		return level - 1;
-	}
+  @Override
+  public ItemStack getResult(ItemStack stack, boolean boiling, int level, CauldronState state) {
+    stack = stack.copy();
+    ((DyeableArmorItem)stack.getItem()).setColor(stack, state.getColor());
+    return stack;
+  }
 
-	@Override
-	public ItemStack getContainer(ItemStack stack) {
-		return ItemStack.EMPTY;
-	}
+  @Override
+  public int getLevel(int level) {
+    return level - 1;
+  }
+
+  @Override
+  public ItemStack getContainer(ItemStack stack) {
+    return ItemStack.EMPTY;
+  }
 }

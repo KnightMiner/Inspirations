@@ -22,44 +22,44 @@ import java.util.Set;
  */
 @SuppressWarnings("WeakerAccess")
 public class FillTexturedBlockLootFunction extends LootFunction {
-	/**
-	 * Creates a new instance from the given conditions
-	 * @param conditions  Conditions list
-	 */
-	public FillTexturedBlockLootFunction(ILootCondition[] conditions) {
-		super(conditions);
-	}
+  /**
+   * Creates a new instance from the given conditions
+   * @param conditions Conditions list
+   */
+  public FillTexturedBlockLootFunction(ILootCondition[] conditions) {
+    super(conditions);
+  }
 
-	/**
-	 * Creates a new instance with no conditions
-	 */
-	public FillTexturedBlockLootFunction() {
-		super(new ILootCondition[0]);
-	}
+  /**
+   * Creates a new instance with no conditions
+   */
+  public FillTexturedBlockLootFunction() {
+    super(new ILootCondition[0]);
+  }
 
-	@Override
-	protected ItemStack doApply(ItemStack stack, LootContext context) {
-		TileEntity te = context.get(LootParameters.BLOCK_ENTITY);
-		if (te != null) {
-			TextureBlockUtil.setStackTexture(stack, TextureBlockUtil.getTextureBlockName(te));
-		}
-		return stack;
-	}
+  @Override
+  protected ItemStack doApply(ItemStack stack, LootContext context) {
+    TileEntity te = context.get(LootParameters.BLOCK_ENTITY);
+    if (te != null) {
+      TextureBlockUtil.setStackTexture(stack, TextureBlockUtil.getTextureBlockName(te));
+    }
+    return stack;
+  }
 
-	@Override
-	public Set<LootParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(LootParameters.BLOCK_ENTITY);
-	}
+  @Override
+  public Set<LootParameter<?>> getRequiredParameters() {
+    return ImmutableSet.of(LootParameters.BLOCK_ENTITY);
+  }
 
-	@Override
-	public LootFunctionType func_230425_b_() {
-		return InspirationsShared.textureFunction;
-	}
+  @Override
+  public LootFunctionType func_230425_b_() {
+    return InspirationsShared.textureFunction;
+  }
 
-	public static class Serializer extends LootFunction.Serializer<FillTexturedBlockLootFunction> {
-		@Override
-		public FillTexturedBlockLootFunction deserialize(JsonObject json, JsonDeserializationContext ctx, ILootCondition[] conditions) {
-			return new FillTexturedBlockLootFunction(conditions);
-		}
-	}
+  public static class Serializer extends LootFunction.Serializer<FillTexturedBlockLootFunction> {
+    @Override
+    public FillTexturedBlockLootFunction deserialize(JsonObject json, JsonDeserializationContext ctx, ILootCondition[] conditions) {
+      return new FillTexturedBlockLootFunction(conditions);
+    }
+  }
 }

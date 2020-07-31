@@ -52,7 +52,7 @@ public class WaypointCompassItem extends HidableItem {
   }
 
   public int getColor(ItemStack stack, int tintIndex) {
-    switch(tintIndex) {
+    switch (tintIndex) {
       case 0:
         return bodyColor;
       case 1:
@@ -82,11 +82,11 @@ public class WaypointCompassItem extends HidableItem {
         checkPos(stack, world, getPos(stack));
         // only update other dimensions half as often
       } else if (Config.waypointCompassCrossDimension.get() && world.getGameTime() % 320 == 20) {
-       // World other = DimensionManager.getWorld(world.getServer(), dimension, false, false);
+        // World other = DimensionManager.getWorld(world.getServer(), dimension, false, false);
         // TODO: clear NBT if null?
-//        if (other != null) {
-//          checkPos(stack, other, getPos(stack, dimension, other.getDimension().getType()));
-//        }
+        //        if (other != null) {
+        //          checkPos(stack, other, getPos(stack, dimension, other.getDimension().getType()));
+        //        }
       }
     }
   }
@@ -104,7 +104,9 @@ public class WaypointCompassItem extends HidableItem {
     return beacon.getLevels() > 0 && beacon.beamSegments.size() != 0;
   }
 
-  /** Checks a position in the world to see if the compass is valid */
+  /**
+   * Checks a position in the world to see if the compass is valid
+   */
   private void checkPos(ItemStack stack, World world, @Nullable BlockPos pos) {
     if (pos != null && world.isBlockLoaded(pos)) {
       TileEntity te = world.getTileEntity(pos);
@@ -140,7 +142,7 @@ public class WaypointCompassItem extends HidableItem {
         dimension = new ResourceLocation("null_dimension");
       }
       TranslationTextComponent prettyDim = new TranslationTextComponent(
-              "dimension." + dimension.getNamespace() + "." + dimension.getPath().replace('/', '.')
+          "dimension." + dimension.getNamespace() + "." + dimension.getPath().replace('/', '.')
       );
 
       IFormattableTextComponent dimensionTooltip;
@@ -163,10 +165,10 @@ public class WaypointCompassItem extends HidableItem {
       tooltip.add(dimensionTooltip);
     } else if (Config.craftWaypointCompass()) {
       tooltip.add(new TranslationTextComponent(getTranslationKey() + ".blank.tooltip").mergeStyle(TextFormatting.ITALIC)
-      );
+                 );
     } else {
       tooltip.add(new TranslationTextComponent(getTranslationKey() + ".vanilla.tooltip",
-              new TranslationTextComponent(Items.COMPASS.getTranslationKey()).mergeStyle(TextFormatting.ITALIC)
+                                               new TranslationTextComponent(Items.COMPASS.getTranslationKey()).mergeStyle(TextFormatting.ITALIC)
       ));
     }
   }
@@ -176,8 +178,8 @@ public class WaypointCompassItem extends HidableItem {
 
   /**
    * Gets the dimension ID from a stack, or null if it has none
-   * @param stack  Stack containing dimension
-   * @return  Dimension ID, or null if not present+
+   * @param stack Stack containing dimension
+   * @return Dimension ID, or null if not present+
    */
   @Nullable
   public static Integer getDimension(ItemStack stack) {
@@ -190,26 +192,26 @@ public class WaypointCompassItem extends HidableItem {
 
   /**
    * Gets the dimension from a given waypoint compass
-   * @param stack  Compass stack
-   * @return  Dimension type compass points to
+   * @param stack Compass stack
+   * @return Dimension type compass points to
    */
   @Nullable
   public static DimensionType getDimensionType(ItemStack stack) {
-//    Integer dimension = getDimension(stack);
-//    if (dimension != null) {
-//      try {
-//        return DimensionType.getById(dimension);
-//      } catch (IllegalArgumentException e) {
-//        return null;
-//      }
-//    }
+    //    Integer dimension = getDimension(stack);
+    //    if (dimension != null) {
+    //      try {
+    //        return DimensionType.getById(dimension);
+    //      } catch (IllegalArgumentException e) {
+    //        return null;
+    //      }
+    //    }
     return null;
   }
 
   /**
    * Gets the position from the given compass, ignoring dimension differences
-   * @param stack  Compass stack
-   * @return  Position from the compass
+   * @param stack Compass stack
+   * @return Position from the compass
    */
   @Nullable
   public static BlockPos getPos(ItemStack stack) {
@@ -221,10 +223,10 @@ public class WaypointCompassItem extends HidableItem {
 
   /**
    * Gets the position from the given compass, taking dimension differences into account
-   * @param stack             Compass stack
-   * @param compassDimension  Dimension on the compass
-   * @param worldDimension    Dimension in the player's world
-   * @return  Position for the compass, adjusted for the overworld/nether difference
+   * @param stack            Compass stack
+   * @param compassDimension Dimension on the compass
+   * @param worldDimension   Dimension in the player's world
+   * @return Position for the compass, adjusted for the overworld/nether difference
    */
   @Nullable
   public static BlockPos getPos(ItemStack stack, DimensionType compassDimension, DimensionType worldDimension) {
@@ -240,22 +242,22 @@ public class WaypointCompassItem extends HidableItem {
       }
 
       // from nether coords
-//      if (compassDimension == DimensionType.field_236000_d_) {
-//        return new BlockPos(pos.getX() * 8, pos.getY(), pos.getZ() * 8);
-//      }
-//      // to nether coords
-//      if (worldDimension == DimensionType.THE_NETHER) {
-//        return new BlockPos(Math.round(pos.getX() / 8f), pos.getY(), Math.round(pos.getZ() / 8f));
-//      }
+      //      if (compassDimension == DimensionType.field_236000_d_) {
+      //        return new BlockPos(pos.getX() * 8, pos.getY(), pos.getZ() * 8);
+      //      }
+      //      // to nether coords
+      //      if (worldDimension == DimensionType.THE_NETHER) {
+      //        return new BlockPos(Math.round(pos.getX() / 8f), pos.getY(), Math.round(pos.getZ() / 8f));
+      //      }
     }
     return pos;
   }
 
   /**
    * Sets the NBT for a compass based on the given world and block position
-   * @param stack  Stack to modify
-   * @param world  World
-   * @param pos    Block pos
+   * @param stack Stack to modify
+   * @param world World
+   * @param pos   Block pos
    */
   public static void setNBT(ItemStack stack, @Nullable World world, @Nullable BlockPos pos) {
     if (world == null || pos == null) {
@@ -265,7 +267,9 @@ public class WaypointCompassItem extends HidableItem {
     //setNBT(stack, world.getDimension().getType(), pos);
   }
 
-  /** Removes compass related NBT, but keeps the display name */
+  /**
+   * Removes compass related NBT, but keeps the display name
+   */
   private static void clearNBT(ItemStack stack) {
     if (stack.hasDisplayName()) {
       ITextComponent name = stack.getDisplayName();
@@ -278,8 +282,8 @@ public class WaypointCompassItem extends HidableItem {
 
   /**
    * Copies the waypoint from one compass to another
-   * @param stack     Stack to modify
-   * @param waypoint  Stack to copy from
+   * @param stack    Stack to modify
+   * @param waypoint Stack to copy from
    */
   public static void copyNBT(ItemStack stack, ItemStack waypoint) {
     if (!waypoint.hasTag()) {
@@ -301,35 +305,51 @@ public class WaypointCompassItem extends HidableItem {
 
   /**
    * Gets the color of the needle to complement the compass color
-   * @param color  Compass color
-   * @return  Needle color int
+   * @param color Compass color
+   * @return Needle color int
    */
   public static int getNeedleColor(DyeColor color) {
-    switch(color) {
-      case WHITE:      return 0xFFC100;
-      case LIGHT_GRAY: return DyeColor.WHITE.colorValue;
-      case GRAY:       return DyeColor.LIGHT_GRAY.colorValue;
-      case BLACK:      return DyeColor.RED.colorValue;
-      case RED:        return DyeColor.ORANGE.colorValue;
-      case ORANGE:     return DyeColor.YELLOW.colorValue;
-      case YELLOW:     return 0xDBA213;
-      case LIME:       return DyeColor.BROWN.colorValue;
-      case GREEN:      return DyeColor.LIME.colorValue;
-      case CYAN:       return DyeColor.LIGHT_BLUE.colorValue;
-      case LIGHT_BLUE: return 0x77A9FF;
-      case BLUE:       return 0x7E54FF;
-      case PURPLE:     return DyeColor.MAGENTA.colorValue;
-      case MAGENTA:    return DyeColor.PINK.colorValue;
-      case PINK:       return 0xF2BFCE;
-      case BROWN:      return 0xA59072;
+    switch (color) {
+      case WHITE:
+        return 0xFFC100;
+      case LIGHT_GRAY:
+        return DyeColor.WHITE.colorValue;
+      case GRAY:
+        return DyeColor.LIGHT_GRAY.colorValue;
+      case BLACK:
+        return DyeColor.RED.colorValue;
+      case RED:
+        return DyeColor.ORANGE.colorValue;
+      case ORANGE:
+        return DyeColor.YELLOW.colorValue;
+      case YELLOW:
+        return 0xDBA213;
+      case LIME:
+        return DyeColor.BROWN.colorValue;
+      case GREEN:
+        return DyeColor.LIME.colorValue;
+      case CYAN:
+        return DyeColor.LIGHT_BLUE.colorValue;
+      case LIGHT_BLUE:
+        return 0x77A9FF;
+      case BLUE:
+        return 0x7E54FF;
+      case PURPLE:
+        return DyeColor.MAGENTA.colorValue;
+      case MAGENTA:
+        return DyeColor.PINK.colorValue;
+      case PINK:
+        return 0xF2BFCE;
+      case BROWN:
+        return 0xA59072;
     }
     return -1;
   }
 
   /**
    * Checks if the given stack is a valid base as a waypoint compass
-   * @param stack  Stack to check
-   * @return  True if it can be used as a waypoint compass, false otherwise
+   * @param stack Stack to check
+   * @return True if it can be used as a waypoint compass, false otherwise
    */
   public static boolean isWaypointCompass(ItemStack stack) {
     Item item = stack.getItem();

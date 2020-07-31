@@ -12,20 +12,22 @@ import net.minecraft.util.text.ITextComponent;
 
 /**
  * Generic container screen that simply draws the given background
- * @param <T>  Container type
+ * @param <T> Container type
  */
 @SuppressWarnings("WeakerAccess")
 public class BackgroundContainerScreen<T extends Container> extends ContainerScreen<T> {
 
-  /** Background drawn for this screen */
+  /**
+   * Background drawn for this screen
+   */
   protected final ResourceLocation background;
 
   /**
    * Creates a new screen instance
-   * @param container    Container class
-   * @param inventory    Player inventory
-   * @param name         Container name
-   * @param background   Container background
+   * @param container  Container class
+   * @param inventory  Player inventory
+   * @param name       Container name
+   * @param background Container background
    */
   public BackgroundContainerScreen(T container, PlayerInventory inventory, ITextComponent name, int height, ResourceLocation background) {
     super(container, inventory, name);
@@ -61,8 +63,8 @@ public class BackgroundContainerScreen<T extends Container> extends ContainerScr
 
     /**
      * Creates a factory from the given background location
-     * @param height      Screen height
-     * @param background  Background location
+     * @param height     Screen height
+     * @param background Background location
      */
     public Factory(int height, ResourceLocation background) {
       this.height = height;
@@ -71,8 +73,8 @@ public class BackgroundContainerScreen<T extends Container> extends ContainerScr
 
     /**
      * Creates a factory from the container name
-     * @param height      Screen height
-     * @param name  Name of this container
+     * @param height Screen height
+     * @param name   Name of this container
      */
     public Factory(int height, String name) {
       this(height, Inspirations.getResource(String.format("textures/gui/%s.png", name)));

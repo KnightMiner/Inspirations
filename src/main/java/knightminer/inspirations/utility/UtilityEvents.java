@@ -27,74 +27,74 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 @SuppressWarnings("unused")
 @EventBusSubscriber(modid = Inspirations.modID, bus = Bus.FORGE)
 public class UtilityEvents {
-	@SubscribeEvent
-	public static void placeCarpetOnPressurePlate(RightClickBlock event) {
-		if(!Config.enableCarpetedPressurePlate.get()) {
-			return;
-		}
+  @SubscribeEvent
+  public static void placeCarpetOnPressurePlate(RightClickBlock event) {
+    if (!Config.enableCarpetedPressurePlate.get()) {
+      return;
+    }
 
-		// must be using carpet
-		ItemStack stack = event.getItemStack();
-		Block carpetBlock = Block.getBlockFromItem(stack.getItem());
-		if(!(carpetBlock instanceof CarpetBlock)) {
-			return;
-		}
+    // must be using carpet
+    ItemStack stack = event.getItemStack();
+    Block carpetBlock = Block.getBlockFromItem(stack.getItem());
+    if (!(carpetBlock instanceof CarpetBlock)) {
+      return;
+    }
 
-		// must be clicking a stone pressure plate or the block below one
-		World world = event.getWorld();
-		BlockPos pos = event.getPos();
-		BlockState current = world.getBlockState(pos);
-		if(current.getBlock() != Blocks.STONE_PRESSURE_PLATE) {
-			pos = pos.up();
-			current = world.getBlockState(pos);
-			if(current.getBlock() != Blocks.STONE_PRESSURE_PLATE) {
-				return;
-			}
-		}
+    // must be clicking a stone pressure plate or the block below one
+    World world = event.getWorld();
+    BlockPos pos = event.getPos();
+    BlockState current = world.getBlockState(pos);
+    if (current.getBlock() != Blocks.STONE_PRESSURE_PLATE) {
+      pos = pos.up();
+      current = world.getBlockState(pos);
+      if (current.getBlock() != Blocks.STONE_PRESSURE_PLATE) {
+        return;
+      }
+    }
 
-		// determine the state to place
-		DyeColor color = ((CarpetBlock)carpetBlock).getColor();
-		BlockState state = InspirationsUtility.carpetedPressurePlates.get(color).getDefaultState();
-		state = state.updatePostPlacement(Direction.DOWN, world.getBlockState(pos.down()), world, pos, pos.down());
+    // determine the state to place
+    DyeColor color = ((CarpetBlock)carpetBlock).getColor();
+    BlockState state = InspirationsUtility.carpetedPressurePlates.get(color).getDefaultState();
+    state = state.updatePostPlacement(Direction.DOWN, world.getBlockState(pos.down()), world, pos, pos.down());
 
-		// play sound
-		PlayerEntity player = event.getPlayer();
-		SoundType sound = state.getBlock().getSoundType(state, world, pos, player);
-		world.playSound(player, pos, sound.getPlaceSound(), SoundCategory.BLOCKS, (sound.getVolume() + 1.0F) / 2.0F, sound.getPitch() * 0.8F);
+    // play sound
+    PlayerEntity player = event.getPlayer();
+    SoundType sound = state.getBlock().getSoundType(state, world, pos, player);
+    world.playSound(player, pos, sound.getPlaceSound(), SoundCategory.BLOCKS, (sound.getVolume() + 1.0F) / 2.0F, sound.getPitch() * 0.8F);
 
-		// place the block
-		if(!world.isRemote) {
-			// and place it
-			world.setBlockState(pos, state);
+    // place the block
+    if (!world.isRemote) {
+      // and place it
+      world.setBlockState(pos, state);
 
-			// add statistic
-			if (player instanceof ServerPlayerEntity) {
-				CriteriaTriggers.PLACED_BLOCK.trigger((ServerPlayerEntity)player, pos, stack);
-			}
+      // add statistic
+      if (player instanceof ServerPlayerEntity) {
+        CriteriaTriggers.PLACED_BLOCK.trigger((ServerPlayerEntity)player, pos, stack);
+      }
 
-			// take one carpet
-			if(!player.isCreative()) {
-				stack.shrink(1);
-			}
-		}
-		event.setCanceled(true);
-		event.setCancellationResult(ActionResultType.SUCCESS);
-	}
+      // take one carpet
+      if (!player.isCreative()) {
+        stack.shrink(1);
+      }
+    }
+    event.setCanceled(true);
+    event.setCancellationResult(ActionResultType.SUCCESS);
+  }
 
-	/**
-	 * Makes clicking a hopper with a pipe place the pipe instead of opening the hopper's GUI
-	 */
-	@SubscribeEvent
-	static void clickHopperWithPipe(RightClickBlock event) {
-		if(!Config.enablePipe.get() || event.getItemStack().getItem() != InspirationsUtility.pipe.asItem()) {
-			return;
-		}
-		World world = event.getWorld();
-		if(world.isRemote || !(world.getBlockState(event.getPos()).getBlock() instanceof HopperBlock)) {
-			return;
-		}
+  /**
+   * Makes clicking a hopper with a pipe place the pipe instead of opening the hopper's GUI
+   */
+  @SubscribeEvent
+  static void clickHopperWithPipe(RightClickBlock event) {
+    if (!Config.enablePipe.get() || event.getItemStack().getItem() != InspirationsUtility.pipe.asItem()) {
+      return;
+    }
+    World world = event.getWorld();
+    if (world.isRemote || !(world.getBlockState(event.getPos()).getBlock() instanceof HopperBlock)) {
+      return;
+    }
 
-		event.setUseBlock(Event.Result.DENY);
-		event.setUseItem(Event.Result.ALLOW);
-	}
+    event.setUseBlock(Event.Result.DENY);
+    event.setUseItem(Event.Result.ALLOW);
+  }
 }

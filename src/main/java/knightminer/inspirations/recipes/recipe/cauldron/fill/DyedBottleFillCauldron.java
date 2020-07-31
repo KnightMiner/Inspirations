@@ -11,57 +11,57 @@ import net.minecraft.util.SoundEvents;
 
 @Deprecated
 public enum DyedBottleFillCauldron implements ICauldronRecipe {
-	INSTANCE;
+  INSTANCE;
 
-	@Override
-	public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		if(level == Config.getCauldronMax()) {
-			return false;
-		}
+  @Override
+  public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {
+    if (level == Config.getCauldronMax()) {
+      return false;
+    }
 
-		return (state.isWater() || state.getColor() > -1)
-				&& stack.getItem().isIn(InspirationsTags.Items.DYE_BOTTLES);
-	}
+    return (state.isWater() || state.getColor() > -1)
+           && stack.getItem().isIn(InspirationsTags.Items.DYE_BOTTLES);
+  }
 
-	@Override
-	public CauldronState getState(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		int newColor = MixedDyedBottleItem.dyeFromBottle(stack);
-		if(level == 0) {
-			return CauldronState.dye(newColor);
-		}
+  @Override
+  public CauldronState getState(ItemStack stack, boolean boiling, int level, CauldronState state) {
+    int newColor = MixedDyedBottleItem.dyeFromBottle(stack);
+    if (level == 0) {
+      return CauldronState.dye(newColor);
+    }
 
-		int color = state.getColor();
-		// if color is unchanged, use the old state
-		if(newColor == color) {
-			return state;
-		}
+    int color = state.getColor();
+    // if color is unchanged, use the old state
+    if (newColor == color) {
+      return state;
+    }
 
-		// otherwise combine colors
-		if(color == -1) {
-			color = 0x888888;
-		}
+    // otherwise combine colors
+    if (color == -1) {
+      color = 0x888888;
+    }
 
-		return CauldronState.dye(Util.combineColors(newColor, color, level));
-	}
+    return CauldronState.dye(Util.combineColors(newColor, color, level));
+  }
 
-	@Override
-	public int getLevel(int level) {
-		return level + 1;
-	}
+  @Override
+  public int getLevel(int level) {
+    return level + 1;
+  }
 
-	@Override
-	public ItemStack getResult(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		return stack.getItem().getContainerItem(stack);
-	}
+  @Override
+  public ItemStack getResult(ItemStack stack, boolean boiling, int level, CauldronState state) {
+    return stack.getItem().getContainerItem(stack);
+  }
 
-	@Override
-	public SoundEvent getSound(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		return SoundEvents.ITEM_BOTTLE_EMPTY;
-	}
+  @Override
+  public SoundEvent getSound(ItemStack stack, boolean boiling, int level, CauldronState state) {
+    return SoundEvents.ITEM_BOTTLE_EMPTY;
+  }
 
-	@Override
-	public ItemStack getContainer(ItemStack stack) {
-		return ItemStack.EMPTY;
-	}
+  @Override
+  public ItemStack getContainer(ItemStack stack) {
+    return ItemStack.EMPTY;
+  }
 }
 

@@ -21,37 +21,37 @@ import java.util.concurrent.CompletableFuture;
 @SuppressWarnings("unused")
 @EventBusSubscriber(modid = Inspirations.modID, value = Dist.CLIENT, bus = Bus.MOD)
 public class SharedClientEvents extends ClientEvents {
-	@SubscribeEvent
-	static void setup(FMLCommonSetupEvent event) {
-		// listener to clear color cache from client utils
-		IResourceManager manager = Minecraft.getInstance().getResourceManager();
-		// should always be true, but just in case
-		if(manager instanceof IReloadableResourceManager) {
-			((IReloadableResourceManager) manager).addReloadListener(
-					(stage, resMan, prepProp, reloadProf, bgExec, gameExec) -> CompletableFuture
-									.runAsync(ClientUtil::clearCache, gameExec)
-									.thenCompose(stage::markCompleteAwaitingOthers)
-			);
-		} else {
-			Inspirations.log.error("Failed to register resource reload listener, expected instance of IReloadableResourceManager but got {}", manager.getClass());
-		}
-	}
+  @SubscribeEvent
+  static void setup(FMLCommonSetupEvent event) {
+    // listener to clear color cache from client utils
+    IResourceManager manager = Minecraft.getInstance().getResourceManager();
+    // should always be true, but just in case
+    if (manager instanceof IReloadableResourceManager) {
+      ((IReloadableResourceManager)manager).addReloadListener(
+          (stage, resMan, prepProp, reloadProf, bgExec, gameExec) -> CompletableFuture
+              .runAsync(ClientUtil::clearCache, gameExec)
+              .thenCompose(stage::markCompleteAwaitingOthers)
+                                                             );
+    } else {
+      Inspirations.log.error("Failed to register resource reload listener, expected instance of IReloadableResourceManager but got {}", manager.getClass());
+    }
+  }
 
-	// For the textured blocks, we need to rebake the blocks with the new texture.
-	// Those are private, so grab copies from these two events when they fire.
-	public static ModelLoader modelLoader;
+  // For the textured blocks, we need to rebake the blocks with the new texture.
+  // Those are private, so grab copies from these two events when they fire.
+  public static ModelLoader modelLoader;
 
-	@SubscribeEvent
-	public void collectBakeParameters(ModelBakeEvent event) {
-		modelLoader = event.getModelLoader();
-	}
+  @SubscribeEvent
+  public void collectBakeParameters(ModelBakeEvent event) {
+    modelLoader = event.getModelLoader();
+  }
 
-	@SubscribeEvent
-	static void registerTextures(TextureStitchEvent.Pre event) {
-		// ensures the colorless fluid texture is loaded.
-		if (PlayerContainer.LOCATION_BLOCKS_TEXTURE.equals(event.getMap().getTextureLocation())) {
-			event.addSprite(Inspirations.getResource("block/fluid_colorless"));
-			event.addSprite(Inspirations.getResource("block/fluid_colorless_flow"));
-		}
-	}
+  @SubscribeEvent
+  static void registerTextures(TextureStitchEvent.Pre event) {
+    // ensures the colorless fluid texture is loaded.
+    if (PlayerContainer.LOCATION_BLOCKS_TEXTURE.equals(event.getMap().getTextureLocation())) {
+      event.addSprite(Inspirations.getResource("block/fluid_colorless"));
+      event.addSprite(Inspirations.getResource("block/fluid_colorless_flow"));
+    }
+  }
 }

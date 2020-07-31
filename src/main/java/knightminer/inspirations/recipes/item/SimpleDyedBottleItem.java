@@ -16,42 +16,44 @@ import net.minecraft.util.SoundEvents;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 public class SimpleDyedBottleItem extends HidableItem {
-	private DyeColor color;
+  private DyeColor color;
 
-	public SimpleDyedBottleItem(DyeColor color) {
-		super(new Item.Properties()
-				.group(ItemGroup.MATERIALS)
-				.maxStackSize(16)
-				.containerItem(Items.GLASS_BOTTLE),
-                Config::enableCauldronDyeing
-		);
-		this.color = color;
-	}
+  public SimpleDyedBottleItem(DyeColor color) {
+    super(new Item.Properties()
+              .group(ItemGroup.MATERIALS)
+              .maxStackSize(16)
+              .containerItem(Items.GLASS_BOTTLE),
+          Config::enableCauldronDyeing
+         );
+    this.color = color;
+  }
 
-	public DyeColor getColor() {
-		return color;
-	}
+  public DyeColor getColor() {
+    return color;
+  }
 
-	/** Dye sheep on right click with a bottle */
-	@Override
-	public ActionResultType itemInteractionForEntity(ItemStack stack, PlayerEntity player, LivingEntity target, Hand hand) {
-		if (target instanceof SheepEntity) {
-			SheepEntity sheep = (SheepEntity)target;
-			if (!sheep.getSheared() && sheep.getFleeceColor() != color) {
-				sheep.setFleeceColor(color);
-				player.playSound(SoundEvents.ITEM_BOTTLE_EMPTY, 1.0F, 1.0F);
+  /**
+   * Dye sheep on right click with a bottle
+   */
+  @Override
+  public ActionResultType itemInteractionForEntity(ItemStack stack, PlayerEntity player, LivingEntity target, Hand hand) {
+    if (target instanceof SheepEntity) {
+      SheepEntity sheep = (SheepEntity)target;
+      if (!sheep.getSheared() && sheep.getFleeceColor() != color) {
+        sheep.setFleeceColor(color);
+        player.playSound(SoundEvents.ITEM_BOTTLE_EMPTY, 1.0F, 1.0F);
 
-				// give back bottle;
-				ItemStack bottle = stack.getContainerItem();
-				if (stack.getCount() == 1) {
-					player.setHeldItem(hand, bottle);
-				} else {
-					stack.shrink(1);
-					ItemHandlerHelper.giveItemToPlayer(player, bottle);
-				}
-			}
-			return ActionResultType.SUCCESS;
-		}
-		return ActionResultType.PASS;
-	}
+        // give back bottle;
+        ItemStack bottle = stack.getContainerItem();
+        if (stack.getCount() == 1) {
+          player.setHeldItem(hand, bottle);
+        } else {
+          stack.shrink(1);
+          ItemHandlerHelper.giveItemToPlayer(player, bottle);
+        }
+      }
+      return ActionResultType.SUCCESS;
+    }
+    return ActionResultType.PASS;
+  }
 }

@@ -39,6 +39,7 @@ public enum PathType implements IStringSerializable {
   private final String name = name().toLowerCase(Locale.ROOT);
   private final MaterialColor color;
   private final VoxelShape shape;
+
   PathType(MaterialColor color, VoxelShape shape) {
     this.color = color;
     this.shape = shape;
@@ -46,7 +47,7 @@ public enum PathType implements IStringSerializable {
 
   /**
    * Gets the material color for this mulch type
-   * @return  Material color
+   * @return Material color
    */
   public MaterialColor getColor() {
     return this.color;
@@ -54,7 +55,7 @@ public enum PathType implements IStringSerializable {
 
   /**
    * Gets the shape for this path type
-   * @return  Path shape
+   * @return Path shape
    */
   public VoxelShape getShape() {
     return this.shape;

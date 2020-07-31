@@ -12,24 +12,24 @@ import net.minecraft.util.NonNullList;
  * Extension of a door item to make it hidable and not burnable
  */
 public class GlassDoorBlockItem extends TallBlockItem implements IHidable {
-    public GlassDoorBlockItem(Block blockIn, Properties builder) {
-        super(blockIn, builder);
-    }
+  public GlassDoorBlockItem(Block blockIn, Properties builder) {
+    super(blockIn, builder);
+  }
 
-    @Override
-    public int getBurnTime(ItemStack itemStack) {
-        return 0;
-    }
+  @Override
+  public int getBurnTime(ItemStack itemStack) {
+    return 0;
+  }
 
-    @Override
-    public boolean isEnabled() {
-        return Config.enableGlassDoor.get();
-    }
+  @Override
+  public boolean isEnabled() {
+    return Config.enableGlassDoor.get();
+  }
 
-    @Override
-    public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
-        if(shouldAddtoItemGroup(group)) {
-            super.fillItemGroup(group, items);
-        }
+  @Override
+  public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
+    if (shouldAddtoItemGroup(group)) {
+      super.fillItemGroup(group, items);
     }
+  }
 }

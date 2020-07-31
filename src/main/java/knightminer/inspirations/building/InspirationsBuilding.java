@@ -62,149 +62,149 @@ import java.util.function.Supplier;
  */
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class InspirationsBuilding extends ModuleBase {
-	// blocks
-	public static RopeBlock rope;
-	public static RopeBlock vine;
-	public static RopeBlock chain;
-	public static Block glassDoor;
-	public static Block glassTrapdoor;
-	// enum
-	public static EnumObject<ShelfType,BookshelfBlock> bookshelf = EnumObject.empty();
-	public static EnumObject<MulchType,MulchBlock> mulch = EnumObject.empty();
-	public static EnumObject<PathType,PathBlock> path = EnumObject.empty();
-	public static EnumObject<BushType,EnlightenedBushBlock> enlightenedBush = EnumObject.empty();
-	// flowers
-	public static EnumObject<FlowerType,FlowerBlock> flower = EnumObject.empty();
-	public static EnumObject<FlowerType,FlowerPotBlock> flowerPot = EnumObject.empty();
-	// overrides
-	public static Block ironBars;
+  // blocks
+  public static RopeBlock rope;
+  public static RopeBlock vine;
+  public static RopeBlock chain;
+  public static Block glassDoor;
+  public static Block glassTrapdoor;
+  // enum
+  public static EnumObject<ShelfType,BookshelfBlock> bookshelf = EnumObject.empty();
+  public static EnumObject<MulchType,MulchBlock> mulch = EnumObject.empty();
+  public static EnumObject<PathType,PathBlock> path = EnumObject.empty();
+  public static EnumObject<BushType,EnlightenedBushBlock> enlightenedBush = EnumObject.empty();
+  // flowers
+  public static EnumObject<FlowerType,FlowerBlock> flower = EnumObject.empty();
+  public static EnumObject<FlowerType,FlowerPotBlock> flowerPot = EnumObject.empty();
+  // overrides
+  public static Block ironBars;
 
-	// items
-	public static Item glassDoorItem;
-	public static Item redstoneBook;
-	// emum
-	public static EnumObject<DyeColor,Item> coloredBooks;
+  // items
+  public static Item glassDoorItem;
+  public static Item redstoneBook;
+  // emum
+  public static EnumObject<DyeColor,Item> coloredBooks;
 
-	// Tile Entities
-	public static TileEntityType<BookshelfTileEntity> tileBookshelf;
-	public static TileEntityType<EnlightenedBushTileEntity> tileEnlightenedBush;
+  // Tile Entities
+  public static TileEntityType<BookshelfTileEntity> tileBookshelf;
+  public static TileEntityType<EnlightenedBushTileEntity> tileEnlightenedBush;
 
-	// Container Types
-	public static ContainerType<BookshelfContainer> contBookshelf;
+  // Container Types
+  public static ContainerType<BookshelfContainer> contBookshelf;
 
-	@SubscribeEvent
-	void registerTE(Register<TileEntityType<?>> event) {
-		TileEntityTypeRegistryAdapter registry = new TileEntityTypeRegistryAdapter(event.getRegistry());
+  @SubscribeEvent
+  void registerTE(Register<TileEntityType<?>> event) {
+    TileEntityTypeRegistryAdapter registry = new TileEntityTypeRegistryAdapter(event.getRegistry());
 
-		tileBookshelf = registry.register(BookshelfTileEntity::new, bookshelf, "bookshelf");
-		tileEnlightenedBush = registry.register(EnlightenedBushTileEntity::new, enlightenedBush, "enlightened_bush");
-	}
+    tileBookshelf = registry.register(BookshelfTileEntity::new, bookshelf, "bookshelf");
+    tileEnlightenedBush = registry.register(EnlightenedBushTileEntity::new, enlightenedBush, "enlightened_bush");
+  }
 
-	@SubscribeEvent
-	void registerContainers(Register<ContainerType<?>> event) {
-		ContainerTypeRegistryAdapter registry = new ContainerTypeRegistryAdapter(event.getRegistry());
-		contBookshelf = registry.registerType(BookshelfContainer::new, "bookshelf");
-	}
+  @SubscribeEvent
+  void registerContainers(Register<ContainerType<?>> event) {
+    ContainerTypeRegistryAdapter registry = new ContainerTypeRegistryAdapter(event.getRegistry());
+    contBookshelf = registry.registerType(BookshelfContainer::new, "bookshelf");
+  }
 
-	@SubscribeEvent
-	public void registerBlocks(Register<Block> event) {
-		BlockRegistryAdapter registry = new BlockRegistryAdapter(event.getRegistry());
+  @SubscribeEvent
+  public void registerBlocks(Register<Block> event) {
+    BlockRegistryAdapter registry = new BlockRegistryAdapter(event.getRegistry());
 
-		// normal shelf uses a less regular naming
-		bookshelf = new EnumObject.Builder<ShelfType, BookshelfBlock>(ShelfType.class)
-				.putDelegate(ShelfType.NORMAL, registry.register(new BookshelfBlock(), "bookshelf").delegate)
-				.putAll(registry.registerEnum(type -> new BookshelfBlock(), ShelfType.FANCY, "bookshelf"))
-				.build();
-		rope = registry.register(new RopeBlock(Items.STICK, Block.Properties
-				.create(Material.CARPET, MaterialColor.OBSIDIAN)
-				.sound(SoundType.CLOTH)
-				.hardnessAndResistance(0.5F)
-		), "rope");
-		vine = registry.register(new RopeBlock(Items.BAMBOO, Block.Properties
-				.create(Material.CARPET, MaterialColor.FOLIAGE)
-				.sound(SoundType.PLANT)
-				.hardnessAndResistance(0.5F)
-		), "vine");
-		chain = registry.register(new ChainBlock(Items.IRON_NUGGET, Block.Properties
-				.create(Material.IRON, MaterialColor.STONE)
-				.sound(SoundType.METAL)
-				.hardnessAndResistance(5.0F)
-				.harvestTool(ToolType.PICKAXE)
-				.harvestLevel(0)
-		), "chain");
-		// iron bars override
-		if (Config.climbableIronBars.get()) {
-			ironBars = registry.register(new ClimbablePaneBlock(Block.Properties.create(Material.IRON, MaterialColor.AIR).hardnessAndResistance(5.0F, 6.0F).sound(SoundType.METAL)), new ResourceLocation("iron_bars"));
-		}
+    // normal shelf uses a less regular naming
+    bookshelf = new EnumObject.Builder<ShelfType,BookshelfBlock>(ShelfType.class)
+        .putDelegate(ShelfType.NORMAL, registry.register(new BookshelfBlock(), "bookshelf").delegate)
+        .putAll(registry.registerEnum(type -> new BookshelfBlock(), ShelfType.FANCY, "bookshelf"))
+        .build();
+    rope = registry.register(new RopeBlock(Items.STICK, Block.Properties
+        .create(Material.CARPET, MaterialColor.OBSIDIAN)
+        .sound(SoundType.CLOTH)
+        .hardnessAndResistance(0.5F)
+    ), "rope");
+    vine = registry.register(new RopeBlock(Items.BAMBOO, Block.Properties
+        .create(Material.CARPET, MaterialColor.FOLIAGE)
+        .sound(SoundType.PLANT)
+        .hardnessAndResistance(0.5F)
+    ), "vine");
+    chain = registry.register(new ChainBlock(Items.IRON_NUGGET, Block.Properties
+        .create(Material.IRON, MaterialColor.STONE)
+        .sound(SoundType.METAL)
+        .hardnessAndResistance(5.0F)
+        .harvestTool(ToolType.PICKAXE)
+        .harvestLevel(0)
+    ), "chain");
+    // iron bars override
+    if (Config.climbableIronBars.get()) {
+      ironBars = registry.register(new ClimbablePaneBlock(Block.Properties.create(Material.IRON, MaterialColor.AIR).hardnessAndResistance(5.0F, 6.0F).sound(SoundType.METAL)), new ResourceLocation("iron_bars"));
+    }
 
-		glassDoor = registry.register(new GlassDoorBlock(), "glass_door");
-		glassTrapdoor = registry.register(new GlassTrapdoorBlock(), "glass_trapdoor");
+    glassDoor = registry.register(new GlassDoorBlock(), "glass_door");
+    glassTrapdoor = registry.register(new GlassTrapdoorBlock(), "glass_trapdoor");
 
-		mulch = registry.registerEnum(type -> new MulchBlock(type.getColor()), MulchType.values(), "mulch");
-		path = registry.registerEnum(type -> new PathBlock(type.getShape(), type.getColor()), PathType.values(), "path");
-		enlightenedBush = registry.registerEnum(type -> new EnlightenedBushBlock(type.getColor()), BushType.values(), "enlightened_bush");
+    mulch = registry.registerEnum(type -> new MulchBlock(type.getColor()), MulchType.values(), "mulch");
+    path = registry.registerEnum(type -> new PathBlock(type.getShape(), type.getColor()), PathType.values(), "path");
+    enlightenedBush = registry.registerEnum(type -> new EnlightenedBushBlock(type.getColor()), BushType.values(), "enlightened_bush");
 
-		// flowers, have no base name
-		flower = new EnumObject.Builder<FlowerType,FlowerBlock>(FlowerType.class)
-				.putDelegate(FlowerType.CYAN, registry.register(new FlowerBlock(null), "cyan_flower").delegate)
-				.putDelegate(FlowerType.SYRINGA, registry.register(new FlowerBlock((DoublePlantBlock) Blocks.LILAC), "syringa").delegate)
-				.putDelegate(FlowerType.PAEONIA, registry.register(new FlowerBlock((DoublePlantBlock) Blocks.PEONY), "paeonia").delegate)
-				.putDelegate(FlowerType.ROSE, registry.register(new FlowerBlock((DoublePlantBlock) Blocks.ROSE_BUSH), "rose").delegate)
-				.build();
-		// flower pots
-		Supplier<FlowerPotBlock> emptyPot = () -> (FlowerPotBlock) Blocks.FLOWER_POT.delegate.get();
-		FlowerPotBlock vanillaPot = (FlowerPotBlock) Blocks.FLOWER_POT;
-		Block.Properties props = Block.Properties.from(Blocks.FLOWER_POT);
-		flowerPot = registry.registerEnum(type -> {
-			// create pot and register it with the vanilla pot.
-			Block plant = flower.get(type);
-			FlowerPotBlock pot = new FlowerPotBlock(emptyPot, plant.delegate, props);
-			vanillaPot.addPlant(Objects.requireNonNull(plant.getRegistryName()), pot.delegate);
-			return pot;
-		}, "potted", FlowerType.values());
-	}
+    // flowers, have no base name
+    flower = new EnumObject.Builder<FlowerType,FlowerBlock>(FlowerType.class)
+        .putDelegate(FlowerType.CYAN, registry.register(new FlowerBlock(null), "cyan_flower").delegate)
+        .putDelegate(FlowerType.SYRINGA, registry.register(new FlowerBlock((DoublePlantBlock)Blocks.LILAC), "syringa").delegate)
+        .putDelegate(FlowerType.PAEONIA, registry.register(new FlowerBlock((DoublePlantBlock)Blocks.PEONY), "paeonia").delegate)
+        .putDelegate(FlowerType.ROSE, registry.register(new FlowerBlock((DoublePlantBlock)Blocks.ROSE_BUSH), "rose").delegate)
+        .build();
+    // flower pots
+    Supplier<FlowerPotBlock> emptyPot = () -> (FlowerPotBlock)Blocks.FLOWER_POT.delegate.get();
+    FlowerPotBlock vanillaPot = (FlowerPotBlock)Blocks.FLOWER_POT;
+    Block.Properties props = Block.Properties.from(Blocks.FLOWER_POT);
+    flowerPot = registry.registerEnum(type -> {
+      // create pot and register it with the vanilla pot.
+      Block plant = flower.get(type);
+      FlowerPotBlock pot = new FlowerPotBlock(emptyPot, plant.delegate, props);
+      vanillaPot.addPlant(Objects.requireNonNull(plant.getRegistryName()), pot.delegate);
+      return pot;
+    }, "potted", FlowerType.values());
+  }
 
-	@SubscribeEvent
-	public void registerItems(Register<Item> event) {
-		ItemRegistryAdapter registry = new ItemRegistryAdapter(event.getRegistry());
-		// common props
-		Item.Properties materialProps = new Item.Properties().group(ItemGroup.MATERIALS);
-		Item.Properties decorationProps = new Item.Properties().group(ItemGroup.DECORATIONS);
-		Item.Properties buildingProps = new Item.Properties().group(ItemGroup.BUILDING_BLOCKS);
-		Item.Properties redstoneProps = new Item.Properties().group(ItemGroup.REDSTONE);
+  @SubscribeEvent
+  public void registerItems(Register<Item> event) {
+    ItemRegistryAdapter registry = new ItemRegistryAdapter(event.getRegistry());
+    // common props
+    Item.Properties materialProps = new Item.Properties().group(ItemGroup.MATERIALS);
+    Item.Properties decorationProps = new Item.Properties().group(ItemGroup.DECORATIONS);
+    Item.Properties buildingProps = new Item.Properties().group(ItemGroup.BUILDING_BLOCKS);
+    Item.Properties redstoneProps = new Item.Properties().group(ItemGroup.REDSTONE);
 
-		coloredBooks = registry.registerEnum(color -> new HidableItem(materialProps, Config::enableColoredBooks), DyeColor.values(), "book");
-		redstoneBook = registry.register(new HidableItem(materialProps, Config::enableRedstoneBook), "redstone_book");
+    coloredBooks = registry.registerEnum(color -> new HidableItem(materialProps, Config::enableColoredBooks), DyeColor.values(), "book");
+    redstoneBook = registry.register(new HidableItem(materialProps, Config::enableRedstoneBook), "redstone_book");
 
-		// item blocks
-		registry.registerBlockItem(bookshelf, BookshelfItem::new);
-		registry.registerBlockItem(rope, decorationProps);
-		registry.registerBlockItem(vine, decorationProps);
-		registry.registerBlockItem(chain, decorationProps);
-		if (ironBars != null) {
-			registry.registerBlockItem(ironBars, decorationProps);
-		}
+    // item blocks
+    registry.registerBlockItem(bookshelf, BookshelfItem::new);
+    registry.registerBlockItem(rope, decorationProps);
+    registry.registerBlockItem(vine, decorationProps);
+    registry.registerBlockItem(chain, decorationProps);
+    if (ironBars != null) {
+      registry.registerBlockItem(ironBars, decorationProps);
+    }
 
-		registry.registerBlockItem(mulch, buildingProps);
-		registry.registerBlockItem(path, decorationProps);
-		registry.registerBlockItem(flower, decorationProps);
-		registry.registerBlockItem(enlightenedBush, (bush) -> new TextureBlockItem(bush, decorationProps, ItemTags.LEAVES));
+    registry.registerBlockItem(mulch, buildingProps);
+    registry.registerBlockItem(path, decorationProps);
+    registry.registerBlockItem(flower, decorationProps);
+    registry.registerBlockItem(enlightenedBush, (bush) -> new TextureBlockItem(bush, decorationProps, ItemTags.LEAVES));
 
-		glassDoorItem = registry.register(new GlassDoorBlockItem(glassDoor, redstoneProps), glassDoor);
-		registry.registerBlockItem(glassTrapdoor, redstoneProps);
-	}
+    glassDoorItem = registry.register(new GlassDoorBlockItem(glassDoor, redstoneProps), glassDoor);
+    registry.registerBlockItem(glassTrapdoor, redstoneProps);
+  }
 
-	@SubscribeEvent
-	void gatherData(GatherDataEvent event) {
-		DataGenerator gen = event.getGenerator();
-		if (event.includeServer()) {
-			gen.addProvider(new BuildingRecipeProvider(gen));
-		}
-	}
+  @SubscribeEvent
+  void gatherData(GatherDataEvent event) {
+    DataGenerator gen = event.getGenerator();
+    if (event.includeServer()) {
+      gen.addProvider(new BuildingRecipeProvider(gen));
+    }
+  }
 
-	@SubscribeEvent
-	void init(FMLCommonSetupEvent event) {
-		registerCompostables();
+  @SubscribeEvent
+  void init(FMLCommonSetupEvent event) {
+    registerCompostables();
 
 		/*if(Config.enableFlowers.get() && Config.enableCauldronDyeing()) {
 			InspirationsRegistry.addCauldronRecipe(new DyeCauldronRecipe(
@@ -213,25 +213,25 @@ public class InspirationsBuilding extends ModuleBase {
 				new ItemStack(flower_cyan))
 			);
 		}*/
-	}
+  }
 
-	@SubscribeEvent
-	public static void loadLoad(LootTableLoadEvent event) {
-		// Add the drops for the small flowers.
-		flower.forEach((type, plant) -> {
-			if (type != FlowerType.CYAN) {
-				plant.injectLoot(event);
-			}
-		});
-	}
+  @SubscribeEvent
+  public static void loadLoad(LootTableLoadEvent event) {
+    // Add the drops for the small flowers.
+    flower.forEach((type, plant) -> {
+      if (type != FlowerType.CYAN) {
+        plant.injectLoot(event);
+      }
+    });
+  }
 
-	private static void registerCompostables() {
-		for (Block bush : enlightenedBush.values()) {
-			ComposterBlock.registerCompostable(0.3F, bush);
-		}
-		ComposterBlock.registerCompostable(0.5F, vine);
-		for (Block plant : flower.values()) {
-			ComposterBlock.registerCompostable(0.65F, plant);
-		}
-	}
+  private static void registerCompostables() {
+    for (Block bush : enlightenedBush.values()) {
+      ComposterBlock.registerCompostable(0.3F, bush);
+    }
+    ComposterBlock.registerCompostable(0.5F, vine);
+    for (Block plant : flower.values()) {
+      ComposterBlock.registerCompostable(0.65F, plant);
+    }
+  }
 }

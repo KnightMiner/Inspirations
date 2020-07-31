@@ -18,56 +18,57 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 
 public class DispenseFluidTank extends DefaultDispenseItemBehavior {
-	private static final DefaultDispenseItemBehavior DEFAULT = new DefaultDispenseItemBehavior();
-	private IDispenseItemBehavior fallback;
-	public DispenseFluidTank(IDispenseItemBehavior fallback) {
-		this.fallback = fallback;
-	}
+  private static final DefaultDispenseItemBehavior DEFAULT = new DefaultDispenseItemBehavior();
+  private IDispenseItemBehavior fallback;
 
-	@Override
-	protected ItemStack dispenseStack(IBlockSource source, ItemStack stack){
-		if(!stack.getItem().isIn(InspirationsTags.Items.DISP_FLUID_TANKS)) {
-			return fallback.dispense(source, stack);
-		}
+  public DispenseFluidTank(IDispenseItemBehavior fallback) {
+    this.fallback = fallback;
+  }
 
-		Direction side = source.getBlockState().get(DispenserBlock.FACING);
-		BlockPos pos = source.getBlockPos().offset(side);
-		World world = source.getWorld();
-		return FluidUtil.getFluidHandler(world, pos, side.getOpposite()).map((handler) -> {
-			FluidActionResult result;
-			LazyOptional<FluidStack> optFluid = FluidUtil.getFluidContained(stack);
-			if(optFluid.isPresent()) {
-				result = FluidUtil.tryEmptyContainer(stack, handler, Integer.MAX_VALUE, null, true);
-			} else {
-				result = FluidUtil.tryFillContainer(stack, handler, Integer.MAX_VALUE, null, true);
-			}
+  @Override
+  protected ItemStack dispenseStack(IBlockSource source, ItemStack stack) {
+    if (!stack.getItem().isIn(InspirationsTags.Items.DISP_FLUID_TANKS)) {
+      return fallback.dispense(source, stack);
+    }
 
-			if(result.isSuccess()) {
-				ItemStack resultStack = result.getResult();
-				// play sound
-				SoundEvent sound = optFluid.map(
-					(fluid) -> fluid.getFluid().getAttributes().getEmptySound(fluid)
-				).orElseGet(() -> {
-					FluidStack resultFluid = FluidUtil.getFluidContained(resultStack).orElseThrow(AssertionError::new);
-					return resultFluid.getFluid().getAttributes().getFillSound(resultFluid);
-				});
+    Direction side = source.getBlockState().get(DispenserBlock.FACING);
+    BlockPos pos = source.getBlockPos().offset(side);
+    World world = source.getWorld();
+    return FluidUtil.getFluidHandler(world, pos, side.getOpposite()).map((handler) -> {
+      FluidActionResult result;
+      LazyOptional<FluidStack> optFluid = FluidUtil.getFluidContained(stack);
+      if (optFluid.isPresent()) {
+        result = FluidUtil.tryEmptyContainer(stack, handler, Integer.MAX_VALUE, null, true);
+      } else {
+        result = FluidUtil.tryFillContainer(stack, handler, Integer.MAX_VALUE, null, true);
+      }
 
-				world.playSound(null, pos, sound, SoundCategory.BLOCKS, 1.0F, 1.0F);
+      if (result.isSuccess()) {
+        ItemStack resultStack = result.getResult();
+        // play sound
+        SoundEvent sound = optFluid.map(
+            (fluid) -> fluid.getFluid().getAttributes().getEmptySound(fluid)
+                                       ).orElseGet(() -> {
+          FluidStack resultFluid = FluidUtil.getFluidContained(resultStack).orElseThrow(AssertionError::new);
+          return resultFluid.getFluid().getAttributes().getFillSound(resultFluid);
+        });
 
-				if(stack.getCount() == 1) {
-					return resultStack;
-				}
+        world.playSound(null, pos, sound, SoundCategory.BLOCKS, 1.0F, 1.0F);
 
-				if(!resultStack.isEmpty() && ((DispenserTileEntity)source.getBlockTileEntity()).addItemStack(resultStack) < 0) {
-					DEFAULT.dispense(source, resultStack);
-				}
+        if (stack.getCount() == 1) {
+          return resultStack;
+        }
 
-				ItemStack shrink = stack.copy();
-				shrink.shrink(1);
-				return shrink;
-			}
-			// TODO: fallback?
-			return DEFAULT.dispense(source, stack);
-		}).orElseGet(() -> fallback.dispense(source, stack));
-	}
+        if (!resultStack.isEmpty() && ((DispenserTileEntity)source.getBlockTileEntity()).addItemStack(resultStack) < 0) {
+          DEFAULT.dispense(source, resultStack);
+        }
+
+        ItemStack shrink = stack.copy();
+        shrink.shrink(1);
+        return shrink;
+      }
+      // TODO: fallback?
+      return DEFAULT.dispense(source, stack);
+    }).orElseGet(() -> fallback.dispense(source, stack));
+  }
 }

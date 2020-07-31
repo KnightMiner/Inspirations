@@ -18,53 +18,54 @@ import net.minecraftforge.common.PlantType;
 
 public class CactusCropBlock extends BlockCropBlock {
 
-	private static final VoxelShape[] BOUNDS = {
-			makeCuboidShape(1, 0, 1, 15,  2, 15),
-			makeCuboidShape(1, 0, 1, 15,  4, 15),
-			makeCuboidShape(1, 0, 1, 15,  6, 15),
-			makeCuboidShape(1, 0, 1, 15,  8, 15),
-			makeCuboidShape(1, 0, 1, 15, 10, 15),
-			makeCuboidShape(1, 0, 1, 15, 12, 15),
-			makeCuboidShape(1, 0, 1, 15, 14, 15)
-	};
-	public CactusCropBlock() {
-		super(Blocks.CACTUS, PlantType.DESERT);
-	}
+  private static final VoxelShape[] BOUNDS = {
+      makeCuboidShape(1, 0, 1, 15, 2, 15),
+      makeCuboidShape(1, 0, 1, 15, 4, 15),
+      makeCuboidShape(1, 0, 1, 15, 6, 15),
+      makeCuboidShape(1, 0, 1, 15, 8, 15),
+      makeCuboidShape(1, 0, 1, 15, 10, 15),
+      makeCuboidShape(1, 0, 1, 15, 12, 15),
+      makeCuboidShape(1, 0, 1, 15, 14, 15)
+  };
 
-	@Override
-	protected IItemProvider getSeedsItem() {
-		return InspirationsTweaks.cactusSeeds;
-	}
+  public CactusCropBlock() {
+    super(Blocks.CACTUS, PlantType.DESERT);
+  }
 
-	@Override
-	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-		return BOUNDS[this.getAge(state)];
-	}
+  @Override
+  protected IItemProvider getSeedsItem() {
+    return InspirationsTweaks.cactusSeeds;
+  }
 
-	/* spiky! */
-	@Override
-	public void onEntityCollision(BlockState state, World worldIn, BlockPos pos, Entity entity) {
-		entity.attackEntityFrom(DamageSource.CACTUS, 1.0F);
-	}
+  @Override
+  public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+    return BOUNDS[this.getAge(state)];
+  }
 
-	@SuppressWarnings("deprecation")
-	@Deprecated
-	@Override
-	public boolean isValidPosition(BlockState state, IWorldReader world, BlockPos pos) {
-		// if true, vanilla cactus farms will now produce cactus seeds rather than full blocks
-		if (Config.nerfCactusFarms.get()) {
-			return super.isValidPosition(state, world, pos);
-		}
+  /* spiky! */
+  @Override
+  public void onEntityCollision(BlockState state, World worldIn, BlockPos pos, Entity entity) {
+    entity.attackEntityFrom(DamageSource.CACTUS, 1.0F);
+  }
 
-		// if not above cactus, also use base block logic
-		// prevents planting seeds in spots where they will break on growth
-		BlockPos down = pos.down();
-		BlockState soil = world.getBlockState(down);
-		if (soil.getBlock() != Blocks.CACTUS) {
-			return super.isValidPosition(state, world, pos);
-		}
+  @SuppressWarnings("deprecation")
+  @Deprecated
+  @Override
+  public boolean isValidPosition(BlockState state, IWorldReader world, BlockPos pos) {
+    // if true, vanilla cactus farms will now produce cactus seeds rather than full blocks
+    if (Config.nerfCactusFarms.get()) {
+      return super.isValidPosition(state, world, pos);
+    }
 
-		// otherwise, do cactus logic, but without the horizontal checks
-		return soil.canSustainPlant(world, down, Direction.UP, getPlant()) && !world.getBlockState(pos.up()).getMaterial().isLiquid();
-	}
+    // if not above cactus, also use base block logic
+    // prevents planting seeds in spots where they will break on growth
+    BlockPos down = pos.down();
+    BlockState soil = world.getBlockState(down);
+    if (soil.getBlock() != Blocks.CACTUS) {
+      return super.isValidPosition(state, world, pos);
+    }
+
+    // otherwise, do cactus logic, but without the horizontal checks
+    return soil.canSustainPlant(world, down, Direction.UP, getPlant()) && !world.getBlockState(pos.up()).getMaterial().isLiquid();
+  }
 }

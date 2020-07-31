@@ -76,26 +76,26 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
     // rope
     Consumer<IFinishedRecipe> ropeCondition = withCondition(ConfigEnabledCondition.ROPE);
     ShapedRecipeBuilder.shapedRecipe(InspirationsBuilding.rope, 3)
-              .addCriterion("has_string", hasItem(Tags.Items.STRING))
-              .key('S', Items.STRING)
-              .patternLine("SS")
-              .patternLine("SS")
-              .patternLine("SS")
-              .build(ropeCondition, prefix(InspirationsBuilding.rope, "building/"));
+                       .addCriterion("has_string", hasItem(Tags.Items.STRING))
+                       .key('S', Items.STRING)
+                       .patternLine("SS")
+                       .patternLine("SS")
+                       .patternLine("SS")
+                       .build(ropeCondition, prefix(InspirationsBuilding.rope, "building/"));
     ShapedRecipeBuilder.shapedRecipe(InspirationsBuilding.vine, 3)
-              .addCriterion("has_vines", hasItem(Items.VINE))
-              .key('V', Items.VINE)
-              .patternLine("V")
-              .patternLine("V")
-              .patternLine("V")
-              .build(ropeCondition, prefix(InspirationsBuilding.vine, "building/"));
+                       .addCriterion("has_vines", hasItem(Items.VINE))
+                       .key('V', Items.VINE)
+                       .patternLine("V")
+                       .patternLine("V")
+                       .patternLine("V")
+                       .build(ropeCondition, prefix(InspirationsBuilding.vine, "building/"));
     ShapedRecipeBuilder.shapedRecipe(InspirationsBuilding.chain, 6)
-              .addCriterion("has_bars", hasItem(Items.IRON_BARS))
-              .key('B', Items.IRON_BARS)
-              .patternLine("B")
-              .patternLine("B")
-              .patternLine("B")
-              .build(ropeCondition, prefix(InspirationsBuilding.chain, "building/"));
+                       .addCriterion("has_bars", hasItem(Items.IRON_BARS))
+                       .key('B', Items.IRON_BARS)
+                       .patternLine("B")
+                       .patternLine("B")
+                       .patternLine("B")
+                       .build(ropeCondition, prefix(InspirationsBuilding.chain, "building/"));
 
     // path
     Consumer<IFinishedRecipe> pathCondition = withCondition(ConfigEnabledCondition.PATH);
@@ -126,14 +126,14 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
     // colored books
     Consumer<IFinishedRecipe> bookConditions = withCondition(ConfigEnabledCondition.COLORED_BOOKS);
     String bookGroup = resourceName("colored_book");
-    InspirationsBuilding.coloredBooks.forEach((color, book) -> {
+    InspirationsBuilding.coloredBooks.forEach((color, book) ->
       ShapelessRecipeBuilder.shapelessRecipe(book)
                             .addCriterion("has_bookshelf", hasItem(InspirationsTags.Items.BOOKSHELVES))
                             .setGroup(bookGroup)
                             .addIngredient(Items.BOOK)
                             .addIngredient(color.getTag())
-                            .build(bookConditions, resource("building/books/" + color.getString()));
-    });
+                            .build(bookConditions, resource("building/books/" + color.getString()))
+    );
 
     // flowers
     // add dye crafting recipes
@@ -220,10 +220,10 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
 
   /**
    * Adds recipes for a path type.
-   * @param consumer     Recipe consumer
-   * @param type         Path type
-   * @param ingredient   Ingredient for crafting
-   * @param criteria     Criteria instance
+   * @param consumer   Recipe consumer
+   * @param type       Path type
+   * @param ingredient Ingredient for crafting
+   * @param criteria   Criteria instance
    */
   private void addPath(Consumer<IFinishedRecipe> consumer, PathType type, Ingredient ingredient, ICriterionInstance criteria) {
     // crafting
@@ -244,12 +244,13 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
 
   /**
    * Gets recipe variants for a shelf type
-   * @param type  Shelf type
-   * @return  Array of recipe variants
+   * @param type Shelf type
+   * @return Array of recipe variants
    */
   private static String[] getShelfVariants(ShelfType type) {
     switch (type) {
-      case NORMAL: default:
+      case NORMAL:
+      default:
         return new String[]{" S "};
       case ANCIENT:
         return new String[]{"PPP"};

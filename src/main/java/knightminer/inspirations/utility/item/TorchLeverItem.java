@@ -10,23 +10,23 @@ import net.minecraft.item.WallOrFloorItem;
 import net.minecraft.util.NonNullList;
 
 public class TorchLeverItem extends WallOrFloorItem implements IHidable {
-    public TorchLeverItem() {
-        super(
-                InspirationsUtility.torchLeverFloor,
-                InspirationsUtility.torchLeverWall,
-                new Item.Properties().group(ItemGroup.REDSTONE)
-        );
-    }
+  public TorchLeverItem() {
+    super(
+        InspirationsUtility.torchLeverFloor,
+        InspirationsUtility.torchLeverWall,
+        new Item.Properties().group(ItemGroup.REDSTONE)
+         );
+  }
 
-    @Override
-    public boolean isEnabled() {
-        return Config.enableTorchLever.get();
-    }
+  @Override
+  public boolean isEnabled() {
+    return Config.enableTorchLever.get();
+  }
 
-    @Override
-    public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
-        if(shouldAddtoItemGroup(group)) {
-            super.fillItemGroup(group, items);
-        }
+  @Override
+  public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
+    if (shouldAddtoItemGroup(group)) {
+      super.fillItemGroup(group, items);
     }
+  }
 }

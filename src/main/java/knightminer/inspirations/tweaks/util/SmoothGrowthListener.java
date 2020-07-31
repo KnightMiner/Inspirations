@@ -23,9 +23,9 @@ public class SmoothGrowthListener implements Consumer<Pre> {
 
   /**
    * Creates a new event listener for smooth growth
-   * @param crop    Original crop to listen for
-   * @param seed    Seed to replace for crop growth
-   * @param source  If true, the event is fired at the source, if false it is fired at the destination
+   * @param crop   Original crop to listen for
+   * @param seed   Seed to replace for crop growth
+   * @param source If true, the event is fired at the source, if false it is fired at the destination
    */
   public SmoothGrowthListener(Block crop, Block seed, boolean source) {
     this.crop = crop.delegate;
@@ -70,7 +70,7 @@ public class SmoothGrowthListener implements Consumer<Pre> {
 
     // update the block above and fire relevant events
     if (world instanceof World) {
-      World casted = (World) world;
+      World casted = (World)world;
       state.neighborChanged(casted, dest, seed.get(), source, false);
       ForgeHooks.onCropsGrowPost(casted, source, state);
     }

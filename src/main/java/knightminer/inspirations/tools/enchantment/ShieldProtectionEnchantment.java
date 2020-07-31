@@ -19,14 +19,14 @@ public class ShieldProtectionEnchantment extends ProtectionEnchantment {
   }
 
   @Override
-  public Map<EquipmentSlotType, ItemStack> getEntityEquipment(LivingEntity entity) {
+  public Map<EquipmentSlotType,ItemStack> getEntityEquipment(LivingEntity entity) {
     // only include the shield if blocking
-    Map<EquipmentSlotType, ItemStack> items = super.getEntityEquipment(entity);
+    Map<EquipmentSlotType,ItemStack> items = super.getEntityEquipment(entity);
     if (entity.isActiveItemStackBlocking()) {
       items.put(
-            entity.getActiveHand() == Hand.MAIN_HAND ? EquipmentSlotType.MAINHAND : EquipmentSlotType.OFFHAND,
-            entity.getActiveItemStack()
-      );
+          entity.getActiveHand() == Hand.MAIN_HAND ? EquipmentSlotType.MAINHAND : EquipmentSlotType.OFFHAND,
+          entity.getActiveItemStack()
+               );
     }
     return items;
   }

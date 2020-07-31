@@ -9,31 +9,31 @@ import net.minecraft.util.SoundEvents;
 
 @Deprecated
 public enum DyedBottleEmptyCauldron implements ICauldronRecipe {
-	INSTANCE;
+  INSTANCE;
 
-	@Override
-	public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		return level != 0 && state.getColor() > -1 && stack.getItem() == Items.GLASS_BOTTLE;
-	}
+  @Override
+  public boolean matches(ItemStack stack, boolean boiling, int level, CauldronState state) {
+    return level != 0 && state.getColor() > -1 && stack.getItem() == Items.GLASS_BOTTLE;
+  }
 
-	@Override
-	public ItemStack getResult(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		return MixedDyedBottleItem.bottleFromDye(state.getColor());
-	}
+  @Override
+  public ItemStack getResult(ItemStack stack, boolean boiling, int level, CauldronState state) {
+    return MixedDyedBottleItem.bottleFromDye(state.getColor());
+  }
 
-	@Override
-	public int getLevel(int level) {
-		return level - 1;
-	}
+  @Override
+  public int getLevel(int level) {
+    return level - 1;
+  }
 
-	@Override
-	public SoundEvent getSound(ItemStack stack, boolean boiling, int level, CauldronState state) {
-		return SoundEvents.ITEM_BOTTLE_FILL;
-	}
-	
-	@Override
-	public ItemStack getContainer(ItemStack stack) {
-		return ItemStack.EMPTY;
-	}
+  @Override
+  public SoundEvent getSound(ItemStack stack, boolean boiling, int level, CauldronState state) {
+    return SoundEvents.ITEM_BOTTLE_FILL;
+  }
+
+  @Override
+  public ItemStack getContainer(ItemStack stack) {
+    return ItemStack.EMPTY;
+  }
 }
 

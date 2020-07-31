@@ -16,17 +16,17 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 @EventBusSubscriber(modid = Inspirations.modID, value = Dist.CLIENT, bus = Bus.MOD)
 public class UtilityClientEvents extends ClientEvents {
 
-	@SubscribeEvent
-	static void clientSetup(FMLClientSetupEvent event) {
-		RenderType cutout = RenderType.getCutout();
-		setRenderLayer(InspirationsUtility.torchLeverFloor, cutout);
-		setRenderLayer(InspirationsUtility.torchLeverWall, cutout);
-	}
+  @SubscribeEvent
+  static void clientSetup(FMLClientSetupEvent event) {
+    RenderType cutout = RenderType.getCutout();
+    setRenderLayer(InspirationsUtility.torchLeverFloor, cutout);
+    setRenderLayer(InspirationsUtility.torchLeverWall, cutout);
+  }
 
-	@SubscribeEvent
-	static void commonSetup(FMLCommonSetupEvent event) {
-		// Register GUIs.
-		registerScreenFactory(InspirationsUtility.contCollector, new BackgroundContainerScreen.Factory<>(166, new ResourceLocation("textures/gui/container/dispenser.png")));
-		registerScreenFactory(InspirationsUtility.contPipe, new BackgroundContainerScreen.Factory<>(133, "pipe"));
-	}
+  @SubscribeEvent
+  static void commonSetup(FMLCommonSetupEvent event) {
+    // Register GUIs.
+    registerScreenFactory(InspirationsUtility.contCollector, new BackgroundContainerScreen.Factory<>(166, new ResourceLocation("textures/gui/container/dispenser.png")));
+    registerScreenFactory(InspirationsUtility.contPipe, new BackgroundContainerScreen.Factory<>(133, "pipe"));
+  }
 }

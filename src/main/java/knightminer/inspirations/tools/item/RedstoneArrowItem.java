@@ -14,29 +14,29 @@ import net.minecraft.world.World;
 
 public class RedstoneArrowItem extends ArrowItem implements IHidable {
 
-	public RedstoneArrowItem(Properties builder) {
-		super(builder);
-	}
+  public RedstoneArrowItem(Properties builder) {
+    super(builder);
+  }
 
-	@Override
-	public AbstractArrowEntity createArrow(World world, ItemStack stack, LivingEntity shooter) {
-		return new RedstoneArrow(world, shooter);
-	}
+  @Override
+  public AbstractArrowEntity createArrow(World world, ItemStack stack, LivingEntity shooter) {
+    return new RedstoneArrow(world, shooter);
+  }
 
-	@Override
-	public boolean isInfinite(ItemStack stack, ItemStack bow, PlayerEntity player) {
-		return false;
-	}
+  @Override
+  public boolean isInfinite(ItemStack stack, ItemStack bow, PlayerEntity player) {
+    return false;
+  }
 
-	@Override
-	public boolean isEnabled() {
-		return Config.enableRedstoneCharger.get();
-	}
+  @Override
+  public boolean isEnabled() {
+    return Config.enableRedstoneCharger.get();
+  }
 
-	@Override
-	public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
-		if(shouldAddtoItemGroup(group)) {
-			super.fillItemGroup(group, items);
-		}
-	}
+  @Override
+  public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
+    if (shouldAddtoItemGroup(group)) {
+      super.fillItemGroup(group, items);
+    }
+  }
 }

@@ -19,31 +19,31 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class TextureBlockItem extends HidableBlockItem {
-	private final ITag<Item> texTag;
+  private final ITag<Item> texTag;
 
-	public TextureBlockItem(Block block, BlockItem.Properties props, ITag<Item> texTag) {
-		super(block, props);
-		this.texTag = texTag;
-	}
+  public TextureBlockItem(Block block, BlockItem.Properties props, ITag<Item> texTag) {
+    super(block, props);
+    this.texTag = texTag;
+  }
 
-	@Override
-	public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
-		if (shouldAddtoItemGroup(group) && isInGroup(group)) {
-			TextureBlockUtil.addBlocksFromTag(this.getBlock(), texTag, items);
-		}
-	}
+  @Override
+  public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
+    if (shouldAddtoItemGroup(group) && isInGroup(group)) {
+      TextureBlockUtil.addBlocksFromTag(this.getBlock(), texTag, items);
+    }
+  }
 
-	@OnlyIn(Dist.CLIENT)
-	@Override
-	public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-		super.addInformation(stack, worldIn, tooltip, flagIn);
-		if(!stack.hasTag()) {
-			return;
-		}
+  @OnlyIn(Dist.CLIENT)
+  @Override
+  public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    super.addInformation(stack, worldIn, tooltip, flagIn);
+    if (!stack.hasTag()) {
+      return;
+    }
 
-		Block block = TextureBlockUtil.getTextureBlock(stack);
-		if(block != Blocks.AIR) {
-			tooltip.add(block.getTranslatedName());
-		}
-	}
+    Block block = TextureBlockUtil.getTextureBlock(stack);
+    if (block != Blocks.AIR) {
+      tooltip.add(block.getTranslatedName());
+    }
+  }
 }

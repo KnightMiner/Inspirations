@@ -13,62 +13,61 @@ import slimeknights.mantle.network.NetworkWrapper;
 import slimeknights.mantle.network.packet.ISimplePacket;
 
 public class InspirationsNetwork extends NetworkWrapper {
-	public static final InspirationsNetwork INSTANCE = new InspirationsNetwork();
+  public static final InspirationsNetwork INSTANCE = new InspirationsNetwork();
 
-	private InspirationsNetwork() {
-		super(Inspirations.getResource("network"));
-	}
+  private InspirationsNetwork() {
+    super(Inspirations.getResource("network"));
+  }
 
-	/**
-	 * Called during mod construction to register all packets
-	 */
-	public void setup() {
-		// register all the packets
+  /**
+   * Called during mod construction to register all packets
+   */
+  public void setup() {
+    // register all the packets
 
-		// bookshelf
-		registerPacket(InventorySlotSyncPacket.class, InventorySlotSyncPacket::new, NetworkDirection.PLAY_TO_CLIENT);
-		// milk cooldown
-		registerPacket(MilkablePacket.class, MilkablePacket::new, NetworkDirection.PLAY_TO_CLIENT);
-	}
+    // bookshelf
+    registerPacket(InventorySlotSyncPacket.class, InventorySlotSyncPacket::new, NetworkDirection.PLAY_TO_CLIENT);
+    // milk cooldown
+    registerPacket(MilkablePacket.class, MilkablePacket::new, NetworkDirection.PLAY_TO_CLIENT);
+  }
 
-	/**
-	 *
-	 * Sends a packet to a specific player
-	 * @param packet  Packet
-	 * @param player  Player receiving packet
-	 */
-	public static void sendTo(ISimplePacket packet, ServerPlayerEntity player) {
-		INSTANCE.network.send(PacketDistributor.PLAYER.with(() -> player), packet);
-	}
+  /**
+   * Sends a packet to a specific player
+   * @param packet Packet
+   * @param player Player receiving packet
+   */
+  public static void sendTo(ISimplePacket packet, ServerPlayerEntity player) {
+    INSTANCE.network.send(PacketDistributor.PLAYER.with(() -> player), packet);
+  }
 
-	/**
-	 * Sends a vanilla packet to a player
-	 * @param player  Player receiving packet
-	 * @param packet  Packet
-	 */
-	public static void sendPacket(Entity player, IPacket<?> packet) {
-		INSTANCE.sendVanillaPacket(packet, player);
-	}
+  /**
+   * Sends a vanilla packet to a player
+   * @param player Player receiving packet
+   * @param packet Packet
+   */
+  public static void sendPacket(Entity player, IPacket<?> packet) {
+    INSTANCE.sendVanillaPacket(packet, player);
+  }
 
-	/**
-	 * Sends a packet to all clients near a location
-	 * @param world   World, does nothing if not a WorldServer
-	 * @param pos     Players too far from this position will not receive the packet
-	 * @param packet  Packet
-	 */
-	public static void sendToClients(World world, BlockPos pos, ISimplePacket packet) {
-		if(world instanceof ServerWorld) {
-			sendToClients((ServerWorld)world, pos, packet);
-		}
-	}
+  /**
+   * Sends a packet to all clients near a location
+   * @param world  World, does nothing if not a WorldServer
+   * @param pos    Players too far from this position will not receive the packet
+   * @param packet Packet
+   */
+  public static void sendToClients(World world, BlockPos pos, ISimplePacket packet) {
+    if (world instanceof ServerWorld) {
+      sendToClients((ServerWorld)world, pos, packet);
+    }
+  }
 
-	/**
-	 * Sends a packet to all clients near a location
-	 * @param world   World
-	 * @param pos     Players too far from this position will not receive the packet
-	 * @param packet  Packet
-	 */
-	public static void sendToClients(ServerWorld world, BlockPos pos, ISimplePacket packet) {
-		INSTANCE.sendToClientsAround(packet, world, pos);
-	}
+  /**
+   * Sends a packet to all clients near a location
+   * @param world  World
+   * @param pos    Players too far from this position will not receive the packet
+   * @param packet Packet
+   */
+  public static void sendToClients(ServerWorld world, BlockPos pos, ISimplePacket packet) {
+    INSTANCE.sendToClientsAround(packet, world, pos);
+  }
 }

@@ -23,119 +23,119 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import slimeknights.mantle.tileentity.InventoryTileEntity;
 
 public class PipeTileEntity extends InventoryTileEntity implements ITickableTileEntity {
-	private static final ITextComponent TITLE = new TranslationTextComponent("gui.inspirations.pipe");
-	private short cooldown = 0;
+  private static final ITextComponent TITLE = new TranslationTextComponent("gui.inspirations.pipe");
+  private short cooldown = 0;
 
-	public PipeTileEntity() {
-		super(InspirationsUtility.tilePipe, TITLE, 1);
-	}
+  public PipeTileEntity() {
+    super(InspirationsUtility.tilePipe, TITLE, 1);
+  }
 
-	@Override
-	public void tick() {
-		if(world == null || world.isRemote) {
-			return;
-		}
+  @Override
+  public void tick() {
+    if (world == null || world.isRemote) {
+      return;
+    }
 
-		// do not function if facing up when disallowed
-		Direction facing = this.getFacing();
-		if(!Config.pipeUpwards.get() && facing == Direction.UP) {
-			return;
-		}
+    // do not function if facing up when disallowed
+    Direction facing = this.getFacing();
+    if (!Config.pipeUpwards.get() && facing == Direction.UP) {
+      return;
+    }
 
-		cooldown--;
-		if(cooldown > 0) {
-			return;
-		}
-		cooldown = 0;
-		// got just 1 stack, makes life easy
-		ItemStack stack = this.getStackInSlot(0);
-		if(stack.isEmpty()) {
-			return;
-		}
+    cooldown--;
+    if (cooldown > 0) {
+      return;
+    }
+    cooldown = 0;
+    // got just 1 stack, makes life easy
+    ItemStack stack = this.getStackInSlot(0);
+    if (stack.isEmpty()) {
+      return;
+    }
 
-		// if we have a TE and its an item handler, try inserting into that
-		TileEntity te = world.getTileEntity(pos.offset(facing));
-		if(te != null) {
-			te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing.getOpposite()).ifPresent((neighbor) -> {
-				ItemStack copy = stack.copy();
-				copy.setCount(1);
-				// if we successfully place it in, shrink it here
-				if(ItemHandlerHelper.insertItemStacked(neighbor, copy, false).isEmpty()) {
-					if(te instanceof HopperTileEntity) {
-						((HopperTileEntity)te).setTransferCooldown(7);
-					}
+    // if we have a TE and its an item handler, try inserting into that
+    TileEntity te = world.getTileEntity(pos.offset(facing));
+    if (te != null) {
+      te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing.getOpposite()).ifPresent((neighbor) -> {
+        ItemStack copy = stack.copy();
+        copy.setCount(1);
+        // if we successfully place it in, shrink it here
+        if (ItemHandlerHelper.insertItemStacked(neighbor, copy, false).isEmpty()) {
+          if (te instanceof HopperTileEntity) {
+            ((HopperTileEntity)te).setTransferCooldown(7);
+          }
 
-					// remove the stack if empty
-					stack.shrink(1);
-					if(stack.isEmpty()) {
-						this.setInventorySlotContents(0, ItemStack.EMPTY);
-					}
-					cooldown = 8;
+          // remove the stack if empty
+          stack.shrink(1);
+          if (stack.isEmpty()) {
+            this.setInventorySlotContents(0, ItemStack.EMPTY);
+          }
+          cooldown = 8;
 
-					this.markDirty();
-				}
-			});
-		}
-	}
+          this.markDirty();
+        }
+      });
+    }
+  }
 
-	@Override
-	public void setInventorySlotContents(int slot, ItemStack itemstack) {
-		super.setInventorySlotContents(slot, itemstack);
-		cooldown = 7; // set the cooldown to prevent instant retransfer
-	}
+  @Override
+  public void setInventorySlotContents(int slot, ItemStack itemstack) {
+    super.setInventorySlotContents(slot, itemstack);
+    cooldown = 7; // set the cooldown to prevent instant retransfer
+  }
 
-	private Direction getFacing() {
-		return this.getBlockState().get(PipeBlock.FACING);
-	}
-
-
-	/* GUI */
-
-	@Override
-	public Container createMenu(int winId, PlayerInventory inv, PlayerEntity entity) {
-		return new PipeContainer(winId, inv, this);
-	}
+  private Direction getFacing() {
+    return this.getBlockState().get(PipeBlock.FACING);
+  }
 
 
-	/* Networking */
+  /* GUI */
 
-	@Override
-	public CompoundNBT getUpdateTag() {
-		// new tag instead of super since default implementation calls the super of writeToNBT
-		return write(new CompoundNBT());
-	}
-
-	@Override
-	public SUpdateTileEntityPacket getUpdatePacket() {
-		// note that this sends all of the tile data. you should change this if you use additional tile data
-		CompoundNBT tag = getTileData().copy();
-		write(tag);
-		return new SUpdateTileEntityPacket(this.getPos(), 0, tag);
-	}
-
-	@Override
-	public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
-		CompoundNBT tag = pkt.getNbtCompound();
-		// TODO: this fine?
-		read(this.getBlockState(), tag);
-	}
+  @Override
+  public Container createMenu(int winId, PlayerInventory inv, PlayerEntity entity) {
+    return new PipeContainer(winId, inv, this);
+  }
 
 
-	/* NBT */
+  /* Networking */
 
-	private static final String TAG_COOLDOWN = "cooldown";
+  @Override
+  public CompoundNBT getUpdateTag() {
+    // new tag instead of super since default implementation calls the super of writeToNBT
+    return write(new CompoundNBT());
+  }
 
-	@Override
-	public void read(BlockState state, CompoundNBT tags) {
-		super.read(state, tags);
-		this.cooldown = tags.getShort(TAG_COOLDOWN);
-	}
+  @Override
+  public SUpdateTileEntityPacket getUpdatePacket() {
+    // note that this sends all of the tile data. you should change this if you use additional tile data
+    CompoundNBT tag = getTileData().copy();
+    write(tag);
+    return new SUpdateTileEntityPacket(this.getPos(), 0, tag);
+  }
 
-	@Override
-	public CompoundNBT write(CompoundNBT tags) {
-		super.write(tags);
-		tags.putShort(TAG_COOLDOWN, this.cooldown);
+  @Override
+  public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
+    CompoundNBT tag = pkt.getNbtCompound();
+    // TODO: this fine?
+    read(this.getBlockState(), tag);
+  }
 
-		return tags;
-	}
+
+  /* NBT */
+
+  private static final String TAG_COOLDOWN = "cooldown";
+
+  @Override
+  public void read(BlockState state, CompoundNBT tags) {
+    super.read(state, tags);
+    this.cooldown = tags.getShort(TAG_COOLDOWN);
+  }
+
+  @Override
+  public CompoundNBT write(CompoundNBT tags) {
+    super.write(tags);
+    tags.putShort(TAG_COOLDOWN, this.cooldown);
+
+    return tags;
+  }
 }

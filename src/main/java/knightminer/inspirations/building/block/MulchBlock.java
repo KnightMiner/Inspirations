@@ -23,42 +23,42 @@ import net.minecraftforge.common.ToolType;
 
 public class MulchBlock extends FallingBlock implements IHidable {
 
-	private static final VoxelShape SHAPE = Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 15.0D, 16.0D);
+  private static final VoxelShape SHAPE = Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 15.0D, 16.0D);
 
-	public MulchBlock(MaterialColor color) {
-		super(Properties.create(Material.WOOD, color)
-				.harvestTool(ToolType.SHOVEL)
-				.sound(SoundType.WET_GRASS)
-				.hardnessAndResistance(0.6F)
-		);
-	}
+  public MulchBlock(MaterialColor color) {
+    super(Properties.create(Material.WOOD, color)
+                    .harvestTool(ToolType.SHOVEL)
+                    .sound(SoundType.WET_GRASS)
+                    .hardnessAndResistance(0.6F)
+         );
+  }
 
-	@Override
-	public boolean isEnabled() {
-		return Config.enableMulch.get();
-	}
+  @Override
+  public boolean isEnabled() {
+    return Config.enableMulch.get();
+  }
 
-	@Override
-	public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
-		if(shouldAddtoItemGroup(group)) {
-			super.fillItemGroup(group, items);
-		}
-	}
+  @Override
+  public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
+    if (shouldAddtoItemGroup(group)) {
+      super.fillItemGroup(group, items);
+    }
+  }
 
-	@SuppressWarnings("deprecation")
-	@Deprecated
-	@Override
-	public VoxelShape getCollisionShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-		return SHAPE;
-	}
+  @SuppressWarnings("deprecation")
+  @Deprecated
+  @Override
+  public VoxelShape getCollisionShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+    return SHAPE;
+  }
 
-	/*
-	 * Plants
-	 */
-	@Override
-	public boolean canSustainPlant(BlockState state, IBlockReader world, BlockPos pos, Direction direction, IPlantable plantable) {
-		// we are fine with most plants, but saplings are a bit much
-		// this is mostly cop out since I have no way of stopping sapling growth
-		return plantable.getPlantType(world, pos.offset(direction)) == PlantType.PLAINS && !(plantable instanceof SaplingBlock);
-	}
+  /*
+   * Plants
+   */
+  @Override
+  public boolean canSustainPlant(BlockState state, IBlockReader world, BlockPos pos, Direction direction, IPlantable plantable) {
+    // we are fine with most plants, but saplings are a bit much
+    // this is mostly cop out since I have no way of stopping sapling growth
+    return plantable.getPlantType(world, pos.offset(direction)) == PlantType.PLAINS && !(plantable instanceof SaplingBlock);
+  }
 }

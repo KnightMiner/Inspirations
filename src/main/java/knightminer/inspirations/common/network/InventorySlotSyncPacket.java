@@ -41,18 +41,20 @@ public class InventorySlotSyncPacket implements IThreadsafePacket {
     HandleClient.handle(this);
   }
 
-  /** Simply a separate class to safely load the client side logic */
+  /**
+   * Simply a separate class to safely load the client side logic
+   */
   private static class HandleClient {
     private static void handle(InventorySlotSyncPacket packet) {
       // Only ever sent to players in the same dimension as the position
       // This should never be called on servers, but protect access to the clientside MC.
       assert Minecraft.getInstance().world != null;
       TileEntity tileEntity = Minecraft.getInstance().world.getTileEntity(packet.pos);
-      if(!(tileEntity instanceof InventoryTileEntity)) {
+      if (!(tileEntity instanceof InventoryTileEntity)) {
         return;
       }
 
-      InventoryTileEntity tile = (InventoryTileEntity) tileEntity;
+      InventoryTileEntity tile = (InventoryTileEntity)tileEntity;
       tile.setInventorySlotContents(packet.slot, packet.itemStack);
       Minecraft.getInstance().worldRenderer.notifyBlockUpdate(null, packet.pos, null, null, 3);
       ModelDataManager.requestModelDataRefresh(tile);

@@ -21,6 +21,7 @@ public enum MulchType implements IStringSerializable {
   @Nullable
   private final DyeColor dye;
   private final MaterialColor color;
+
   MulchType(@Nullable DyeColor dye, MaterialColor color) {
     this.dye = dye;
     this.color = color;
@@ -28,7 +29,7 @@ public enum MulchType implements IStringSerializable {
 
   /**
    * Gets the dye for this color
-   * @return  Dye color
+   * @return Dye color
    */
   @Nullable
   public DyeColor getDye() {
@@ -37,7 +38,7 @@ public enum MulchType implements IStringSerializable {
 
   /**
    * Gets the material color for this mulch type
-   * @return  Material color
+   * @return Material color
    */
   public MaterialColor getColor() {
     return this.color;

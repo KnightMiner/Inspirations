@@ -18,13 +18,14 @@ public enum FlowerType implements IStringSerializable {
 
   private final String name = name().toLowerCase(Locale.ROOT);
   private final IRegistryDelegate<Item> dye;
+
   FlowerType(Item dye) {
     this.dye = dye.delegate;
   }
 
   /**
    * Gets the dye for this color
-   * @return  Dye color
+   * @return Dye color
    */
   public Item getDye() {
     return dye.get();

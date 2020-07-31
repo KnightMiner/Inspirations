@@ -18,6 +18,7 @@ public enum BushType implements IStringSerializable {
   private final String name = name().toLowerCase(Locale.ROOT);
   private final DyeColor dye;
   private final int color;
+
   BushType(@Nullable DyeColor dye, int color) {
     this.dye = dye;
     this.color = color;
@@ -25,7 +26,7 @@ public enum BushType implements IStringSerializable {
 
   /**
    * Gets the dye for this color
-   * @return  Dye color
+   * @return Dye color
    */
   @Nullable
   public DyeColor getDye() {
@@ -34,7 +35,7 @@ public enum BushType implements IStringSerializable {
 
   /**
    * Gets the color of this bush for tinting
-   * @return  Tint color
+   * @return Tint color
    */
   public int getColor() {
     return color;

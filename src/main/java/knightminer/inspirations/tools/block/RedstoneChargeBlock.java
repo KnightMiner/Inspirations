@@ -33,163 +33,163 @@ import java.util.Random;
 
 public class RedstoneChargeBlock extends Block {
 
-	public static final BooleanProperty QUICK = BooleanProperty.create("quick");
-	public static final DirectionProperty FACING = DirectionalBlock.FACING;
+  public static final BooleanProperty QUICK = BooleanProperty.create("quick");
+  public static final DirectionProperty FACING = DirectionalBlock.FACING;
 
-	public RedstoneChargeBlock() {
-		super(Block.Properties.create(Material.MISCELLANEOUS)
-				.hardnessAndResistance(0)
-				.setLightLevel((state) -> 2)
-		);
+  public RedstoneChargeBlock() {
+    super(Block.Properties.create(Material.MISCELLANEOUS)
+                          .hardnessAndResistance(0)
+                          .setLightLevel((state) -> 2)
+         );
 
-		this.setDefaultState(this.getStateContainer().getBaseState().with(FACING, Direction.DOWN).with(QUICK, false));
-	}
+    this.setDefaultState(this.getStateContainer().getBaseState().with(FACING, Direction.DOWN).with(QUICK, false));
+  }
 
-	// These should be overwritten by everything.
+  // These should be overwritten by everything.
 
-	@Override
-	public boolean isAir(BlockState state, IBlockReader world, BlockPos pos) {
-		return true;
-	}
+  @Override
+  public boolean isAir(BlockState state, IBlockReader world, BlockPos pos) {
+    return true;
+  }
 
-	@SuppressWarnings("deprecation")
-	@Deprecated
-	@Override
-	public boolean isReplaceable(BlockState p_196253_1_, BlockItemUseContext p_196253_2_) {
-		return true;
-	}
+  @SuppressWarnings("deprecation")
+  @Deprecated
+  @Override
+  public boolean isReplaceable(BlockState p_196253_1_, BlockItemUseContext p_196253_2_) {
+    return true;
+  }
 
-	@SuppressWarnings("deprecation")
-	@Deprecated
-	@Override
-	public PushReaction getPushReaction(BlockState p_149656_1_) {
-		return PushReaction.DESTROY;
-	}
+  @SuppressWarnings("deprecation")
+  @Deprecated
+  @Override
+  public PushReaction getPushReaction(BlockState p_149656_1_) {
+    return PushReaction.DESTROY;
+  }
 
-	/* Blockstate */
+  /* Blockstate */
 
-	@Override
-	protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-		builder.add(FACING, QUICK);
-	}
+  @Override
+  protected void fillStateContainer(StateContainer.Builder<Block,BlockState> builder) {
+    builder.add(FACING, QUICK);
+  }
 
-	/* Fading */
+  /* Fading */
 
-	@Override
-	public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack stack) {
-		if (!world.isRemote()) {
-			world.notifyNeighborsOfStateChange(pos.offset(state.get(FACING)),this);
-			world.getPendingBlockTicks().scheduleTick(pos, this, state.get(QUICK) ? 2 : 20);
-		}
-		super.onBlockPlacedBy(world, pos, state, entity, stack);
-	}
+  @Override
+  public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack stack) {
+    if (!world.isRemote()) {
+      world.notifyNeighborsOfStateChange(pos.offset(state.get(FACING)), this);
+      world.getPendingBlockTicks().scheduleTick(pos, this, state.get(QUICK) ? 2 : 20);
+    }
+    super.onBlockPlacedBy(world, pos, state, entity, stack);
+  }
 
-	@SuppressWarnings("deprecation")
-	@Deprecated
-	@Override
-	public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-		if (!isMoving && state.getBlock() != newState.getBlock()) {
-         super.onReplaced(state, worldIn, pos, newState, false);
-         worldIn.notifyNeighborsOfStateChange(pos, this);
-         worldIn.notifyNeighborsOfStateChange(pos.offset(state.get(FACING)), this);
-      }
-	}
+  @SuppressWarnings("deprecation")
+  @Deprecated
+  @Override
+  public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
+    if (!isMoving && state.getBlock() != newState.getBlock()) {
+      super.onReplaced(state, worldIn, pos, newState, false);
+      worldIn.notifyNeighborsOfStateChange(pos, this);
+      worldIn.notifyNeighborsOfStateChange(pos.offset(state.get(FACING)), this);
+    }
+  }
 
-	@SuppressWarnings("deprecation")
-	@Deprecated
-	@Override
-	public void tick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-		if (!world.isRemote) {
-			world.removeBlock(pos, false);
-			world.playSound(null, pos, SoundEvents.BLOCK_REDSTONE_TORCH_BURNOUT, SoundCategory.BLOCKS, 0.5F, 2.6F + (world.rand.nextFloat() - world.rand.nextFloat()) * 0.8F);
-		}
-	}
-
-
-	/* Powering */
-
-	@SuppressWarnings("deprecation")
-	@Deprecated
-	@Override
-	public int getWeakPower(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
-		return 15;
-	}
-
-	@SuppressWarnings("deprecation")
-	@Deprecated
-	@Override
-	public int getStrongPower(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
-		return state.get(FACING).getOpposite() == side ? 15 : 0;
-	}
-
-	@SuppressWarnings("deprecation")
-	@Deprecated
-	@Override
-	public boolean canProvidePower(BlockState state) {
-		return true;
-	}
-
-	@Override
-	public boolean canConnectRedstone(BlockState state, IBlockReader world, BlockPos pos, @Nullable Direction side) {
-		return false;
-	}
+  @SuppressWarnings("deprecation")
+  @Deprecated
+  @Override
+  public void tick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    if (!world.isRemote) {
+      world.removeBlock(pos, false);
+      world.playSound(null, pos, SoundEvents.BLOCK_REDSTONE_TORCH_BURNOUT, SoundCategory.BLOCKS, 0.5F, 2.6F + (world.rand.nextFloat() - world.rand.nextFloat()) * 0.8F);
+    }
+  }
 
 
-	/* Bounds */
-	private static final VoxelShape BOUNDS = Block.makeCuboidShape(6, 6, 6, 10, 10, 10);
+  /* Powering */
 
-	@SuppressWarnings("deprecation")
-	@Deprecated
-	@Override
-	public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
-		return BOUNDS;
-	}
+  @SuppressWarnings("deprecation")
+  @Deprecated
+  @Override
+  public int getWeakPower(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
+    return 15;
+  }
 
-	@SuppressWarnings("deprecation")
-	@Deprecated
-	@Override
-	public VoxelShape getCollisionShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
-		return VoxelShapes.empty();
-	}
+  @SuppressWarnings("deprecation")
+  @Deprecated
+  @Override
+  public int getStrongPower(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
+    return state.get(FACING).getOpposite() == side ? 15 : 0;
+  }
+
+  @SuppressWarnings("deprecation")
+  @Deprecated
+  @Override
+  public boolean canProvidePower(BlockState state) {
+    return true;
+  }
+
+  @Override
+  public boolean canConnectRedstone(BlockState state, IBlockReader world, BlockPos pos, @Nullable Direction side) {
+    return false;
+  }
 
 
-	/* Properties */
+  /* Bounds */
+  private static final VoxelShape BOUNDS = Block.makeCuboidShape(6, 6, 6, 10, 10, 10);
 
-	@SuppressWarnings("deprecation")
-	@Deprecated
-	@Override
-	public boolean isValidPosition(BlockState state, IWorldReader world, BlockPos pos) {
-		return !world.getBlockState(pos).getFluidState().isEmpty();
-	}
+  @SuppressWarnings("deprecation")
+  @Deprecated
+  @Override
+  public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
+    return BOUNDS;
+  }
 
-	@Deprecated
-	@Nullable
-	@Override
-	public BlockState getStateForPlacement(BlockItemUseContext context) {
-		return isValidPosition(getDefaultState(), context.getWorld(), context.getPos()) ? getDefaultState() : Blocks.AIR.getDefaultState();
-	}
+  @SuppressWarnings("deprecation")
+  @Deprecated
+  @Override
+  public VoxelShape getCollisionShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
+    return VoxelShapes.empty();
+  }
 
-	@Override
-	@OnlyIn(Dist.CLIENT)
-	public void animateTick(BlockState stateIn, World worldIn, BlockPos pos, Random rand) {
-		Direction facing = stateIn.get(FACING);
 
-		int offX = facing.getXOffset();
-		int offY = facing.getYOffset();
-		int offZ = facing.getZOffset();
+  /* Properties */
 
-		double x = pos.getX() + 0.5;
-		double y = pos.getY() + 0.5;
-		double z = pos.getZ() + 0.5;
-		for(double i = 0; i <= 0.25; i += 0.05) {
-			worldIn.addParticle(RedstoneParticleData.REDSTONE_DUST, x + offX * i, y + offY * i, z + offZ * i, 0, 0, 0);
-		}
-	}
+  @SuppressWarnings("deprecation")
+  @Deprecated
+  @Override
+  public boolean isValidPosition(BlockState state, IWorldReader world, BlockPos pos) {
+    return !world.getBlockState(pos).getFluidState().isEmpty();
+  }
 
-	@SuppressWarnings("deprecation")
-	@Deprecated
-	@Override
-	public BlockRenderType getRenderType(BlockState state) {
-		return BlockRenderType.INVISIBLE;
-	}
+  @Deprecated
+  @Nullable
+  @Override
+  public BlockState getStateForPlacement(BlockItemUseContext context) {
+    return isValidPosition(getDefaultState(), context.getWorld(), context.getPos()) ? getDefaultState() : Blocks.AIR.getDefaultState();
+  }
+
+  @Override
+  @OnlyIn(Dist.CLIENT)
+  public void animateTick(BlockState stateIn, World worldIn, BlockPos pos, Random rand) {
+    Direction facing = stateIn.get(FACING);
+
+    int offX = facing.getXOffset();
+    int offY = facing.getYOffset();
+    int offZ = facing.getZOffset();
+
+    double x = pos.getX() + 0.5;
+    double y = pos.getY() + 0.5;
+    double z = pos.getZ() + 0.5;
+    for (double i = 0; i <= 0.25; i += 0.05) {
+      worldIn.addParticle(RedstoneParticleData.REDSTONE_DUST, x + offX * i, y + offY * i, z + offZ * i, 0, 0, 0);
+    }
+  }
+
+  @SuppressWarnings("deprecation")
+  @Deprecated
+  @Override
+  public BlockRenderType getRenderType(BlockState state) {
+    return BlockRenderType.INVISIBLE;
+  }
 }

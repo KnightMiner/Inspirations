@@ -14,32 +14,32 @@ import javax.annotation.Nullable;
 @Deprecated
 public class PotionCauldronRecipe extends RecipeMatchCauldronRecipe {
 
-	protected Potion potion;
+  protected Potion potion;
 
-	/**
-	 * @param input   Input recipe match entry
-	 * @param potion  Required potion in the cauldron
-	 * @param result  Resulting item stack
-	 * @param levels  Amount of levels consumed by the recipe, also determines how many levels are required to perform the recipe
-	 * @param boiling If true, the cauldron must be above fire, if false it must not be above fire. Set to null to ignore fire
-	 */
-	public PotionCauldronRecipe(RecipeMatch input, Potion potion, ItemStack result, int levels, @Nullable Boolean boiling) {
-		super(input, result, boiling, levels);
-		this.potion = potion;
-	}
+  /**
+   * @param input   Input recipe match entry
+   * @param potion  Required potion in the cauldron
+   * @param result  Resulting item stack
+   * @param levels  Amount of levels consumed by the recipe, also determines how many levels are required to perform the recipe
+   * @param boiling If true, the cauldron must be above fire, if false it must not be above fire. Set to null to ignore fire
+   */
+  public PotionCauldronRecipe(RecipeMatch input, Potion potion, ItemStack result, int levels, @Nullable Boolean boiling) {
+    super(input, result, boiling, levels);
+    this.potion = potion;
+  }
 
-	@Override
-	protected boolean matches(CauldronState state) {
-		return state.getPotion() == potion;
-	}
+  @Override
+  protected boolean matches(CauldronState state) {
+    return state.getPotion() == potion;
+  }
 
-	@Override
-	public Object getInputState() {
-		return potion == Potions.WATER ? Fluids.WATER : potion;
-	}
+  @Override
+  public Object getInputState() {
+    return potion == Potions.WATER ? Fluids.WATER : potion;
+  }
 
-	@Override
-	public String toString() {
-		return String.format("FluidCauldronRecipe: %s from %s", getResult().toString(), potion.getRegistryName());
-	}
+  @Override
+  public String toString() {
+    return String.format("FluidCauldronRecipe: %s from %s", getResult().toString(), potion.getRegistryName());
+  }
 }

@@ -24,8 +24,8 @@ public class TextureRecipeBuilder {
 
   /**
    * Creates a new builder instance based on the given builder
-   * @param parent  Parent recipe builder
-   * @return  Builder instance
+   * @param parent Parent recipe builder
+   * @return Builder instance
    */
   public static TextureRecipeBuilder fromShaped(ShapedRecipeBuilder parent) {
     return new TextureRecipeBuilder(parent);
@@ -33,8 +33,8 @@ public class TextureRecipeBuilder {
 
   /**
    * Sets the texture source to the given ingredient
-   * @param texture  Ingredient to use for texture
-   * @return  Builder instance
+   * @param texture Ingredient to use for texture
+   * @return Builder instance
    */
   public TextureRecipeBuilder setSource(Ingredient texture) {
     this.texture = texture;
@@ -43,8 +43,8 @@ public class TextureRecipeBuilder {
 
   /**
    * Sets the texture source to the given tag
-   * @param tag  Tag to use for texture
-   * @return  Builder instance
+   * @param tag Tag to use for texture
+   * @return Builder instance
    */
   public TextureRecipeBuilder setSource(ITag<Item> tag) {
     this.texture = Ingredient.fromTag(tag);
@@ -54,7 +54,7 @@ public class TextureRecipeBuilder {
   /**
    * Sets the match first property on the recipe.
    * If set, the recipe uses the first ingredient match for the texture. If unset, all items that match the ingredient must be the same or no texture is applied
-   * @return  Builder instance
+   * @return Builder instance
    */
   public TextureRecipeBuilder setMatchFirst() {
     this.matchFirst = true;
@@ -63,7 +63,7 @@ public class TextureRecipeBuilder {
 
   /**
    * Builds the recipe with the default name using the given consumer
-   * @param consumer  Recipe consumer
+   * @param consumer Recipe consumer
    */
   public void build(Consumer<IFinishedRecipe> consumer) {
     this.validate();
@@ -72,8 +72,8 @@ public class TextureRecipeBuilder {
 
   /**
    * Builds the recipe using the given consumer
-   * @param consumer  Recipe consumer
-   * @param location  Recipe location
+   * @param consumer Recipe consumer
+   * @param location Recipe location
    */
   public void build(Consumer<IFinishedRecipe> consumer, ResourceLocation location) {
     this.validate();

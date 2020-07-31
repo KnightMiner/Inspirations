@@ -25,198 +25,200 @@ import java.util.Objects;
 
 public final class TextureBlockUtil {
 
-	/** Tag name for texture blocks. Should not be used directly, use the utils to interact */
-	private static final String TAG_TEXTURE = "texture";
-	public static final ModelProperty<String> TEXTURE_PROP = new ModelProperty<>();
+  /**
+   * Tag name for texture blocks. Should not be used directly, use the utils to interact
+   */
+  private static final String TAG_TEXTURE = "texture";
+  public static final ModelProperty<String> TEXTURE_PROP = new ModelProperty<>();
 
-	private TextureBlockUtil() {}
+  private TextureBlockUtil() {}
 
-	/* Tile Entity Setting */
+  /* Tile Entity Setting */
 
-	/**
-	 * Call in {@link Block#onBlockPlacedBy(World, BlockPos, BlockState, LivingEntity, ItemStack)}
-	 * to set the texture tag to the Tile Entity
-	 * @param world  World where the block was placed
-	 * @param pos    Block position
-	 * @param stack  Item stack
-	 */
-	public static void updateTextureBlock(World world, BlockPos pos, ItemStack stack) {
-		TileEntity te = world.getTileEntity(pos);
-		if(te != null && stack.hasTag()) {
-			//noinspection ConstantConditions
-			updateTextureBlock(te, stack.getTag());
-		}
-	}
+  /**
+   * Call in {@link Block#onBlockPlacedBy(World, BlockPos, BlockState, LivingEntity, ItemStack)}
+   * to set the texture tag to the Tile Entity
+   * @param world World where the block was placed
+   * @param pos   Block position
+   * @param stack Item stack
+   */
+  public static void updateTextureBlock(World world, BlockPos pos, ItemStack stack) {
+    TileEntity te = world.getTileEntity(pos);
+    if (te != null && stack.hasTag()) {
+      //noinspection ConstantConditions
+      updateTextureBlock(te, stack.getTag());
+    }
+  }
 
-	/**
-	 * Updates the current texture block in the TE
-	 * @param tags  NBT tags containing update information
-	 */
-	public static void updateTextureBlock(@Nullable TileEntity te, CompoundNBT tags) {
-		if(te != null) {
-			String texture = tags.getString(TAG_TEXTURE);
-			if (!texture.isEmpty()) {
-				te.getTileData().putString(TAG_TEXTURE, texture);
-			}
-		}
-	}
-
-
-	/* Tile Entity Getting */
-
-	/**
-	 * Called in blocks to get the item stack for the current block
-	 * @param world  World
-	 * @param pos    Pos
-	 * @param state  State
-	 * @return  Pickblock stack with proper NBT
-	 */
-	public static ItemStack getPickBlock(IBlockReader world, BlockPos pos, BlockState state) {
-		Block block = state.getBlock();
-		ItemStack stack = new ItemStack(block);
-		TileEntity te = world.getTileEntity(pos);
-		if(te != null) {
-			String texture = getTextureBlockName(te);
-			if(!texture.isEmpty()) {
-				CompoundNBT tags = new CompoundNBT();
-				tags.putString(TAG_TEXTURE, texture);
-				stack.setTag(tags);
-			}
-		}
-		return stack;
-	}
-
-	/**
-	 * Gets the current texture block from the TE
-	 * @return  Block, or AIR if none is set
-	 */
-	public static Block getTextureBlock(@Nullable TileEntity te) {
-		if(te == null) {
-			return Blocks.AIR;
-		}
-		String blockName = getTextureBlockName(te);
-		if (blockName.isEmpty()) {
-			return Blocks.AIR;
-		}
-		Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(blockName));
-		return block == null ? Blocks.AIR : block;
-	}
-
-	/**
-	 * Gets the current texture block from the TE
-	 * @return  Texture block name from the TE
-	 */
-	public static String getTextureBlockName(@Nullable TileEntity te) {
-		if(te == null) {
-			return "";
-		}
-		return te.getTileData().getString(TextureBlockUtil.TAG_TEXTURE);
-	}
+  /**
+   * Updates the current texture block in the TE
+   * @param tags NBT tags containing update information
+   */
+  public static void updateTextureBlock(@Nullable TileEntity te, CompoundNBT tags) {
+    if (te != null) {
+      String texture = tags.getString(TAG_TEXTURE);
+      if (!texture.isEmpty()) {
+        te.getTileData().putString(TAG_TEXTURE, texture);
+      }
+    }
+  }
 
 
-	/* Item Stack Setting */
+  /* Tile Entity Getting */
 
-	/**
-	 * Creates a new item stack with the given block as it's texture tag
-	 * @param texturable  Base block to texture
-	 * @param block       Block to use as the texture
-	 * @return  The item stack with the proper NBT
-	 */
-	public static ItemStack createTexturedStack(Block texturable, @Nullable Block block) {
-		ItemStack stack = new ItemStack(texturable);
+  /**
+   * Called in blocks to get the item stack for the current block
+   * @param world World
+   * @param pos   Pos
+   * @param state State
+   * @return Pickblock stack with proper NBT
+   */
+  public static ItemStack getPickBlock(IBlockReader world, BlockPos pos, BlockState state) {
+    Block block = state.getBlock();
+    ItemStack stack = new ItemStack(block);
+    TileEntity te = world.getTileEntity(pos);
+    if (te != null) {
+      String texture = getTextureBlockName(te);
+      if (!texture.isEmpty()) {
+        CompoundNBT tags = new CompoundNBT();
+        tags.putString(TAG_TEXTURE, texture);
+        stack.setTag(tags);
+      }
+    }
+    return stack;
+  }
 
-		if(block != null && block != Blocks.AIR) {
-			setStackTexture(stack, Objects.requireNonNull(block.getRegistryName()).toString());
-		}
+  /**
+   * Gets the current texture block from the TE
+   * @return Block, or AIR if none is set
+   */
+  public static Block getTextureBlock(@Nullable TileEntity te) {
+    if (te == null) {
+      return Blocks.AIR;
+    }
+    String blockName = getTextureBlockName(te);
+    if (blockName.isEmpty()) {
+      return Blocks.AIR;
+    }
+    Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(blockName));
+    return block == null ? Blocks.AIR : block;
+  }
 
-		return stack;
-	}
-
-	/**
-	 * Creates a new item stack with the given block as it's texture tag
-	 * @param stack      Stack to modify
-	 * @param blockName  Block name to set
-	 * @return  The item stack with the proper NBT
-	 */
-	public static ItemStack setStackTexture(ItemStack stack, String blockName) {
-		if(!blockName.isEmpty()) {
-			CompoundNBT tag = stack.getOrCreateTag();
-			tag.putString(TextureBlockUtil.TAG_TEXTURE, blockName);
-			stack.setTag(tag);
-		}
-
-		return stack;
-	}
-
-	/**
-	 * Creates a new item stack with the given block as it's texture tag
-	 * @param stack  Stack to modify
-	 * @param block  Block to set
-	 * @return  The item stack with the proper NBT
-	 */
-	public static ItemStack setStackTexture(ItemStack stack, @Nullable Block block) {
-		if (block == null || block == Blocks.AIR) {
-			return stack;
-		}
-		return setStackTexture(stack, Objects.requireNonNull(block.getRegistryName()).toString());
-	}
-
-	/**
-	 * Adds all blocks from the block tag to the specified block for fillItemGroup
-	 */
-	public static void addBlocksFromTag(Block block, ITag<Item> tag, NonNullList<ItemStack> list) {
-		boolean added = false;
-		// using item tags as that is what will be present in the recipe
-		if (!ItemTags.getCollection().getRegisteredTags().isEmpty()) {
-			for(Item candidate : tag.getAllElements()) {
-				// non-block items don't have the textures we need
-				if (!(candidate instanceof BlockItem)) {
-					continue;
-				}
-				Block textureBlock = ((BlockItem)candidate).getBlock();
-				// Don't add instances of the block itself, see enlightened bushes
-				if (block.getClass().isInstance(textureBlock)) {
-					continue;
-				}
-				added = true;
-				list.add(createTexturedStack(block, textureBlock));
-				if(!Config.showAllVariants.get()) {
-					return;
-				}
-			}
-		}
-		// if we never got one, just add the textureless one
-		if (!added) {
-			list.add(new ItemStack(block));
-		}
-	}
+  /**
+   * Gets the current texture block from the TE
+   * @return Texture block name from the TE
+   */
+  public static String getTextureBlockName(@Nullable TileEntity te) {
+    if (te == null) {
+      return "";
+    }
+    return te.getTileData().getString(TextureBlockUtil.TAG_TEXTURE);
+  }
 
 
-	/* Item Stack Getting */
+  /* Item Stack Setting */
 
-	/**
-	 * Gets the itemstack that determines the block's texture from the stack.
-	 * @param stack  Input stack
-	 * @return  The block determining the blocks texture, or AIR if none
-	 */
-	public static String getTextureBlockName(ItemStack stack) {
-		return TagUtil.getTagSafe(stack).getString(TextureBlockUtil.TAG_TEXTURE);
-	}
+  /**
+   * Creates a new item stack with the given block as it's texture tag
+   * @param texturable Base block to texture
+   * @param block      Block to use as the texture
+   * @return The item stack with the proper NBT
+   */
+  public static ItemStack createTexturedStack(Block texturable, @Nullable Block block) {
+    ItemStack stack = new ItemStack(texturable);
 
-	/**
-	 * Gets the itemstack that determines the block's texture from the stack.
-	 * @param stack  Input stack
-	 * @return  The block determining the blocks texture, or AIR if none
-	 */
-	public static Block getTextureBlock(ItemStack stack) {
-		String texture = getTextureBlockName(stack);
-		if (texture.isEmpty()) {
-			return Blocks.AIR;
-		}
-		Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(texture));
-		if (block == null) {
-			return Blocks.AIR;
-		}
-		return block;
-	}
+    if (block != null && block != Blocks.AIR) {
+      setStackTexture(stack, Objects.requireNonNull(block.getRegistryName()).toString());
+    }
+
+    return stack;
+  }
+
+  /**
+   * Creates a new item stack with the given block as it's texture tag
+   * @param stack     Stack to modify
+   * @param blockName Block name to set
+   * @return The item stack with the proper NBT
+   */
+  public static ItemStack setStackTexture(ItemStack stack, String blockName) {
+    if (!blockName.isEmpty()) {
+      CompoundNBT tag = stack.getOrCreateTag();
+      tag.putString(TextureBlockUtil.TAG_TEXTURE, blockName);
+      stack.setTag(tag);
+    }
+
+    return stack;
+  }
+
+  /**
+   * Creates a new item stack with the given block as it's texture tag
+   * @param stack Stack to modify
+   * @param block Block to set
+   * @return The item stack with the proper NBT
+   */
+  public static ItemStack setStackTexture(ItemStack stack, @Nullable Block block) {
+    if (block == null || block == Blocks.AIR) {
+      return stack;
+    }
+    return setStackTexture(stack, Objects.requireNonNull(block.getRegistryName()).toString());
+  }
+
+  /**
+   * Adds all blocks from the block tag to the specified block for fillItemGroup
+   */
+  public static void addBlocksFromTag(Block block, ITag<Item> tag, NonNullList<ItemStack> list) {
+    boolean added = false;
+    // using item tags as that is what will be present in the recipe
+    if (!ItemTags.getCollection().getRegisteredTags().isEmpty()) {
+      for (Item candidate : tag.getAllElements()) {
+        // non-block items don't have the textures we need
+        if (!(candidate instanceof BlockItem)) {
+          continue;
+        }
+        Block textureBlock = ((BlockItem)candidate).getBlock();
+        // Don't add instances of the block itself, see enlightened bushes
+        if (block.getClass().isInstance(textureBlock)) {
+          continue;
+        }
+        added = true;
+        list.add(createTexturedStack(block, textureBlock));
+        if (!Config.showAllVariants.get()) {
+          return;
+        }
+      }
+    }
+    // if we never got one, just add the textureless one
+    if (!added) {
+      list.add(new ItemStack(block));
+    }
+  }
+
+
+  /* Item Stack Getting */
+
+  /**
+   * Gets the itemstack that determines the block's texture from the stack.
+   * @param stack Input stack
+   * @return The block determining the blocks texture, or AIR if none
+   */
+  public static String getTextureBlockName(ItemStack stack) {
+    return TagUtil.getTagSafe(stack).getString(TextureBlockUtil.TAG_TEXTURE);
+  }
+
+  /**
+   * Gets the itemstack that determines the block's texture from the stack.
+   * @param stack Input stack
+   * @return The block determining the blocks texture, or AIR if none
+   */
+  public static Block getTextureBlock(ItemStack stack) {
+    String texture = getTextureBlockName(stack);
+    if (texture.isEmpty()) {
+      return Blocks.AIR;
+    }
+    Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(texture));
+    if (block == null) {
+      return Blocks.AIR;
+    }
+    return block;
+  }
 }
