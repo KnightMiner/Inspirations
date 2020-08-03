@@ -3,6 +3,7 @@ package knightminer.inspirations.shared;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.ClientEvents;
 import knightminer.inspirations.library.client.ClientUtil;
+import knightminer.inspirations.library.client.model.BookshelfModel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.container.PlayerContainer;
 import net.minecraft.resources.IReloadableResourceManager;
@@ -11,6 +12,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
@@ -21,6 +23,16 @@ import java.util.concurrent.CompletableFuture;
 @SuppressWarnings("unused")
 @EventBusSubscriber(modid = Inspirations.modID, value = Dist.CLIENT, bus = Bus.MOD)
 public class SharedClientEvents extends ClientEvents {
+  /**
+   * Called during mod construction to register early events
+   */
+  public static void onConstruct() {
+    //noinspection ConstantConditions  Minecraft is null when running datagen
+    if (Minecraft.getInstance() != null) {
+      ModelLoaderRegistry.registerLoader(Inspirations.getResource("bookshelf"), BookshelfModel.Loader.INSTANCE);
+    }
+  }
+
   @SubscribeEvent
   static void setup(FMLCommonSetupEvent event) {
     // listener to clear color cache from client utils

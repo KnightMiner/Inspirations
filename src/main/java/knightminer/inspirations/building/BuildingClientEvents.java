@@ -1,15 +1,12 @@
 package knightminer.inspirations.building;
 
 import knightminer.inspirations.Inspirations;
-import knightminer.inspirations.building.block.BookshelfBlock;
 import knightminer.inspirations.building.block.type.BushType;
 import knightminer.inspirations.building.block.type.ShelfType;
-import knightminer.inspirations.building.client.BookshelfModel;
 import knightminer.inspirations.building.tileentity.BookshelfTileEntity;
 import knightminer.inspirations.common.ClientEvents;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.client.ClientUtil;
-import knightminer.inspirations.library.util.TextureBlockUtil;
 import knightminer.inspirations.shared.client.BackgroundContainerScreen;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -18,25 +15,21 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.ItemColors;
-import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.item.ItemStack;
-import net.minecraft.resources.IReloadableResourceManager;
-import net.minecraft.resources.IResourceManager;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
 import net.minecraft.world.FoliageColors;
 import net.minecraft.world.biome.BiomeColors;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ColorHandlerEvent;
-import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import slimeknights.mantle.item.RetexturedBlockItem;
+import slimeknights.mantle.tileentity.IRetexturedTileEntity;
+import slimeknights.mantle.util.TileEntityHelper;
 
-import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 @SuppressWarnings("unused")
@@ -72,23 +65,9 @@ public class BuildingClientEvents extends ClientEvents {
 
   @SubscribeEvent
   static void commonSetup(FMLCommonSetupEvent event) {
-    // listener to clear bookshelf model cache as its shared by all bookshelf model files
-    IResourceManager manager = Minecraft.getInstance().getResourceManager();
-    // should always be true, but just in case
-    if (manager instanceof IReloadableResourceManager) {
-      ((IReloadableResourceManager)manager).addReloadListener(
-          (stage, resMan, prepProp, reloadProf, bgExec, gameExec) -> CompletableFuture
-              .runAsync(BookshelfModel.BOOK_CACHE::invalidateAll, gameExec)
-              .thenCompose(stage::markCompleteAwaitingOthers)
-                                                             );
-    } else {
-      Inspirations.log.error("Failed to register resource reload listener, expected instance of IReloadableResourceManager but got {}", manager.getClass());
-    }
-
     // Register GUIs.
     registerScreenFactory(InspirationsBuilding.contBookshelf, new BackgroundContainerScreen.Factory<>(156, "bookshelf"));
   }
-
 
   @SubscribeEvent
   static void registerBlockColors(ColorHandlerEvent.Block event) {
@@ -137,9 +116,10 @@ public class BuildingClientEvents extends ClientEvents {
       if (tintIndex != 0 || world == null || pos == null) {
         return -1;
       }
-      TileEntity te = world.getTileEntity(pos);
+      // TODO: should probably pass block directly here
+      IRetexturedTileEntity te = TileEntityHelper.getTileEntity(IRetexturedTileEntity.class, world, pos);
       if (te != null) {
-        Block block = TextureBlockUtil.getTextureBlock(te);
+        Block block = te.getTexture();
         if (block != Blocks.AIR) {
           return ClientUtil.getStackBlockColorsSafe(new ItemStack(block), world, pos, 0);
         }
@@ -181,7 +161,7 @@ public class BuildingClientEvents extends ClientEvents {
         return -1;
       }
       // redirect to block for colors
-      Block block = TextureBlockUtil.getTextureBlock(stack);
+      Block block = RetexturedBlockItem.getTexture(stack);
       if (block != Blocks.AIR) {
         return itemColors.getColor(new ItemStack(block), 0);
       } else {
@@ -191,30 +171,5 @@ public class BuildingClientEvents extends ClientEvents {
 
     // We can't get the world position of the item, so use the default tint.
     registerItemColors(itemColors, (stack, tintIndex) -> FoliageColors.getDefault(), InspirationsBuilding.vine);
-  }
-
-  /**
-   * Replaces the bookshelf models with the dynamic texture model, which also handles books
-   */
-  @SubscribeEvent
-  static void onModelBake(ModelBakeEvent event) {
-    for (BookshelfBlock block : InspirationsBuilding.bookshelf.values()) {
-      replaceBookshelfModel(event, block);
-    }
-    for (Block block : InspirationsBuilding.enlightenedBush.values()) {
-      replaceBothTexturedModels(event, Objects.requireNonNull(block.getRegistryName()), "leaves");
-    }
-  }
-
-  @Deprecated
-  private static void replaceBookshelfModel(ModelBakeEvent event, BookshelfBlock shelf) {
-    if (shelf.getRegistryName() == null) {
-      throw new AssertionError("Null registry name");
-    }
-    for (Direction facing : Direction.Plane.HORIZONTAL) {
-      ModelResourceLocation location = new ModelResourceLocation(shelf.getRegistryName(), String.format("facing=%s", facing.getString()));
-      replaceModel(event, location, (loader, model) -> new BookshelfModel(location, loader, model));
-    }
-    replaceTexturedModel(event, new ModelResourceLocation(shelf.getRegistryName(), "inventory"), "texture", true);
   }
 }

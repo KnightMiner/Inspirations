@@ -8,7 +8,7 @@
           "type": "minecraft:item",
           "functions": [
             {
-              "function": "inspirations:fill_textured_block"
+              "function": "mantle:fill_retextured_block"
             }
           ],
           "name": "inspirations:red_enlightened_bush"

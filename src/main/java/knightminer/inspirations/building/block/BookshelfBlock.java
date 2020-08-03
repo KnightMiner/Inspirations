@@ -5,7 +5,6 @@ import knightminer.inspirations.building.tileentity.BookshelfTileEntity;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.IHidable;
 import knightminer.inspirations.library.InspirationsRegistry;
-import knightminer.inspirations.library.util.TextureBlockUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
@@ -40,6 +39,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import slimeknights.mantle.block.InventoryBlock;
+import slimeknights.mantle.block.RetexturedBlock;
 
 import javax.annotation.Nullable;
 
@@ -79,7 +79,7 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
   @Override
   public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
     super.onBlockPlacedBy(world, pos, state, placer, stack);
-    TextureBlockUtil.updateTextureBlock(world, pos, stack);
+    RetexturedBlock.updateTextureBlock(world, pos, stack);
   }
 
 
@@ -280,23 +280,8 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
 
   @Override
   public ItemStack getPickBlock(BlockState state, RayTraceResult target, IBlockReader world, BlockPos pos, PlayerEntity player) {
-    return TextureBlockUtil.getPickBlock(world, pos, state);
+    return RetexturedBlock.getPickBlock(world, pos, state);
   }
-
-  //	@Override
-  //	public boolean removedByPlayer(BlockState state, World world, BlockPos pos, PlayerEntity player, boolean willHarvest, IFluidState fluid) {
-  //		// we pull up a few calls to this point in time because we still have the TE here
-  //		// the execution otherwise is equivalent to vanilla order
-  //		this.onBlockHarvested(world, pos, state, player);
-  //		if(willHarvest) {
-  //			this.harvestBlock(world, player, pos, state, world.getTileEntity(pos), player.getHeldItemMainhand());
-  //		}
-  //
-  //		world.setBlockState(pos, Blocks.AIR.getDefaultState());
-  //		// return false to prevent the above called functions to be called again
-  //		// side effect of this is that no xp will be dropped. but it shoudln't anyway from a bookshelf :P
-  //		return false;
-  //	}
 
   @Override
   public float getEnchantPowerBonus(BlockState state, IWorldReader world, BlockPos pos) {

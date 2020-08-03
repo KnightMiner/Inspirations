@@ -1,5 +1,5 @@
 {
-  "type": "inspirations:texture_recipe",
+  "type": "mantle:crafting_shaped_retextured",
   "conditions": [
     {
       "prop": "building_module",
@@ -28,5 +28,5 @@
   "texture": {
     "tag": "minecraft:leaves"
   },
-  "match_first": true
+  "match_all": false
 }

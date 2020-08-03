@@ -8,7 +8,6 @@ import knightminer.inspirations.building.block.type.ShelfType;
 import knightminer.inspirations.common.data.ConfigEnabledCondition;
 import knightminer.inspirations.common.datagen.IRecipeBuilderUtils;
 import knightminer.inspirations.library.InspirationsTags;
-import knightminer.inspirations.library.recipe.crafting.TextureRecipeBuilder;
 import net.minecraft.advancements.ICriterionInstance;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.IFinishedRecipe;
@@ -25,6 +24,7 @@ import net.minecraft.util.IItemProvider;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
+import slimeknights.mantle.recipe.crafting.ShapedRetexturedRecipeBuilder;
 
 import java.util.Locale;
 import java.util.Objects;
@@ -179,9 +179,10 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
         }
         // add texture and build
         String suffix = variants.length > 1 ? "_" + variant.toLowerCase(Locale.US) : "";
-        TextureRecipeBuilder.fromShaped(builder)
-                            .setSource(ItemTags.WOODEN_SLABS)
-                            .build(bookshelfConditions, resource("building/bookshelves/" + type.getString() + suffix));
+        ShapedRetexturedRecipeBuilder.fromShaped(builder)
+                                     .setSource(ItemTags.WOODEN_SLABS)
+                                     .setMatchAll()
+                                     .build(bookshelfConditions, resource("building/bookshelves/" + type.getString() + suffix));
       }
     });
 
@@ -204,10 +205,9 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
       }
       builder.patternLine("GLG");
       // add texture and build
-      TextureRecipeBuilder.fromShaped(builder)
-                          .setSource(ItemTags.LEAVES)
-                          .setMatchFirst()
-                          .build(bushConditions, resource("building/enlightened_bush/" + type.getString()));
+      ShapedRetexturedRecipeBuilder.fromShaped(builder)
+                                   .setSource(ItemTags.LEAVES)
+                                   .build(bushConditions, resource("building/enlightened_bush/" + type.getString()));
     });
   }
 

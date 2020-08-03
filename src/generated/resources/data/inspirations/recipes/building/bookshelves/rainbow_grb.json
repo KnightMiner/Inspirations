@@ -1,5 +1,5 @@
 {
-  "type": "inspirations:texture_recipe",
+  "type": "mantle:crafting_shaped_retextured",
   "conditions": [
     {
       "prop": "building_module",
@@ -37,5 +37,5 @@
   "texture": {
     "tag": "minecraft:wooden_slabs"
   },
-  "match_first": false
+  "match_all": true
 }

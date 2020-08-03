@@ -5,15 +5,13 @@ import knightminer.inspirations.building.inventory.BookshelfContainer;
 import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.common.network.InventorySlotSyncPacket;
 import knightminer.inspirations.library.InspirationsRegistry;
-import knightminer.inspirations.library.client.ClientUtil;
-import knightminer.inspirations.library.util.TextureBlockUtil;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.util.Hand;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -23,13 +21,13 @@ import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelDataMap;
 import net.minecraftforge.client.model.data.ModelProperty;
 import net.minecraftforge.items.ItemHandlerHelper;
+import slimeknights.mantle.tileentity.IRetexturedTileEntity;
 import slimeknights.mantle.tileentity.InventoryTileEntity;
+import slimeknights.mantle.util.RetexturedHelper;
 
 import javax.annotation.Nullable;
 
-public class BookshelfTileEntity extends InventoryTileEntity {
-
-  public static final ModelProperty<String> TEXTURE = TextureBlockUtil.TEXTURE_PROP;
+public class BookshelfTileEntity extends InventoryTileEntity implements IRetexturedTileEntity {
   public static final ModelProperty<Integer> BOOKS = new ModelProperty<>();
   private static final ITextComponent TITLE = new TranslationTextComponent("gui.inspirations.bookshelf.name");
 
@@ -152,11 +150,11 @@ public class BookshelfTileEntity extends InventoryTileEntity {
         books |= 1 << i;
       }
     }
+    // get texture if present
     ModelDataMap.Builder data = new ModelDataMap.Builder().withInitial(BOOKS, books);
-    // texture not loaded
-    String texture = ClientUtil.getTexturePath(this);
-    if (!texture.isEmpty()) {
-      data = data.withInitial(TEXTURE, texture);
+    Block texture = getTexture();
+    if (texture != Blocks.AIR) {
+      data = data.withInitial(RetexturedHelper.BLOCK_PROPERTY, texture);
     }
     return data.build();
   }
@@ -170,22 +168,5 @@ public class BookshelfTileEntity extends InventoryTileEntity {
   public CompoundNBT getUpdateTag() {
     // new tag instead of super since default implementation calls the super of writeToNBT
     return write(new CompoundNBT());
-  }
-
-  @Override
-  public SUpdateTileEntityPacket getUpdatePacket() {
-    // note that this sends all of the tile data. you should change this if you use additional tile data
-    CompoundNBT tag = getTileData().copy();
-    write(tag);
-    // Tile entity type here is used for Vanilla only.
-    return new SUpdateTileEntityPacket(this.getPos(), 0, tag);
-  }
-
-  @Override
-  public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
-    CompoundNBT tag = pkt.getNbtCompound();
-    TextureBlockUtil.updateTextureBlock(this, tag);
-    // TODO: this okay?
-    read(this.getBlockState(), tag);
   }
 }

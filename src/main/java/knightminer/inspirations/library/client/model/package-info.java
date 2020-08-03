@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-package knightminer.inspirations.building.client;
+package knightminer.inspirations.library.client.model;
 
 import mcp.MethodsReturnNonnullByDefault;
 

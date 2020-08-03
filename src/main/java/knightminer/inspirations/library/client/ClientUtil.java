@@ -4,10 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.InspirationsRegistry;
-import knightminer.inspirations.library.util.TextureBlockUtil;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
@@ -20,7 +17,6 @@ import net.minecraft.inventory.container.PlayerContainer;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockDisplayReader;
@@ -147,34 +143,6 @@ public final class ClientUtil {
     bufferBuilder.pos(x + size, y + size - filled, 100).tex(uMax, vMin).endVertex();
     bufferBuilder.pos(x, y + size - filled, 100).tex(uMin, vMin).endVertex();
     tessellator.draw();
-  }
-
-  /**
-   * Gets the name of a particle texture for a block
-   * @param block Block to fetch
-   * @return Texture name for the block
-   */
-  @SuppressWarnings("deprecation")
-  public static ResourceLocation getTextureFromBlock(Block block) {
-    return mc.getModelManager().getBlockModelShapes().getModel(block.getDefaultState()).getParticleTexture().getName();
-  }
-
-  /**
-   * Gets the cached texture from the TileEntity, or stores it from the texture stack if none is cached
-   * @param te Tile Entity
-   * @return String of texture path, or empty string if none found
-   */
-  public static String getTexturePath(TileEntity te) {
-    String texture = te.getTileData().getString(TAG_TEXTURE_PATH);
-    if (texture.isEmpty()) {
-      // load it from saved block
-      Block block = TextureBlockUtil.getTextureBlock(te);
-      if (block != Blocks.AIR) {
-        texture = getTextureFromBlock(block).toString();
-        te.getTileData().putString(TAG_TEXTURE_PATH, texture);
-      }
-    }
-    return texture;
   }
 
   /**

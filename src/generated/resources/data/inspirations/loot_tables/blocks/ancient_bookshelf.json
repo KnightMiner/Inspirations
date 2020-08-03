@@ -12,7 +12,7 @@
               "source": "block_entity"
             },
             {
-              "function": "inspirations:fill_textured_block"
+              "function": "mantle:fill_retextured_block"
             }
           ],
           "name": "inspirations:ancient_bookshelf"

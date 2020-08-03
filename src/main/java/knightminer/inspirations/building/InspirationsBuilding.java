@@ -23,7 +23,7 @@ import knightminer.inspirations.building.tileentity.EnlightenedBushTileEntity;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.ModuleBase;
 import knightminer.inspirations.common.item.HidableItem;
-import knightminer.inspirations.common.item.TextureBlockItem;
+import knightminer.inspirations.common.item.HidableRetexturedBlockItem;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ComposterBlock;
@@ -177,7 +177,7 @@ public class InspirationsBuilding extends ModuleBase {
     registry.registerBlockItem(mulch, buildingProps);
     registry.registerBlockItem(path, decorationProps);
     registry.registerBlockItem(flower, decorationProps);
-    registry.registerBlockItem(enlightenedBush, (bush) -> new TextureBlockItem(bush, decorationProps, ItemTags.LEAVES));
+    registry.registerBlockItem(enlightenedBush, (bush) -> new HidableRetexturedBlockItem(bush, ItemTags.LEAVES, decorationProps));
 
     glassDoorItem = registry.register(new GlassDoorBlockItem(glassDoor, redstoneProps), glassDoor);
     registry.registerBlockItem(glassTrapdoor, redstoneProps);

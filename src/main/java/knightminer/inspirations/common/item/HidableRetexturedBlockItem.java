@@ -1,8 +1,7 @@
 package knightminer.inspirations.common.item;
 
-import knightminer.inspirations.library.util.TextureBlockUtil;
+import knightminer.inspirations.common.Config;
 import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -14,36 +13,30 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import slimeknights.mantle.item.RetexturedBlockItem;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class TextureBlockItem extends HidableBlockItem {
-  private final ITag<Item> texTag;
+public class HidableRetexturedBlockItem extends HidableBlockItem {
+  private final ITag<Item> textureTag;
 
-  public TextureBlockItem(Block block, BlockItem.Properties props, ITag<Item> texTag) {
+  public HidableRetexturedBlockItem(Block block, ITag<Item> textureTag, BlockItem.Properties props) {
     super(block, props);
-    this.texTag = texTag;
+    this.textureTag = textureTag;
   }
 
   @Override
   public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
     if (shouldAddtoItemGroup(group) && isInGroup(group)) {
-      TextureBlockUtil.addBlocksFromTag(this.getBlock(), texTag, items);
+      RetexturedBlockItem.addTagVariants(this.getBlock(), textureTag, items, Config.showAllVariants.get());
     }
   }
 
   @OnlyIn(Dist.CLIENT)
   @Override
   public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    RetexturedBlockItem.addTooltip(stack, tooltip);
     super.addInformation(stack, worldIn, tooltip, flagIn);
-    if (!stack.hasTag()) {
-      return;
-    }
-
-    Block block = TextureBlockUtil.getTextureBlock(stack);
-    if (block != Blocks.AIR) {
-      tooltip.add(block.getTranslatedName());
-    }
   }
 }

@@ -3,10 +3,8 @@ package knightminer.inspirations.shared;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.ModuleBase;
 import knightminer.inspirations.common.data.ConfigEnabledCondition;
-import knightminer.inspirations.common.data.FillTexturedBlockLootFunction;
 import knightminer.inspirations.library.recipe.ModItemList;
 import knightminer.inspirations.library.recipe.crafting.ShapelessNoContainerRecipe;
-import knightminer.inspirations.library.recipe.crafting.TextureRecipe;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.DyeColor;
@@ -55,7 +53,6 @@ public class InspirationsShared extends ModuleBase {
     // recipe serializers
     RegistryAdapter<IRecipeSerializer<?>> registry = new RegistryAdapter<>(event.getRegistry());
     registry.register(new ShapelessNoContainerRecipe.Serializer(), "shapeless_no_container");
-    registry.register(new TextureRecipe.Serializer(), "texture_recipe");
 
     // no event registries
     // config condition
@@ -65,8 +62,5 @@ public class InspirationsShared extends ModuleBase {
 
     // recipe ingredient type
     CraftingHelper.register(Inspirations.getResource("mod_item_list"), ModItemList.SERIALIZER);
-
-    // texture block function
-    textureFunction = register(Registry.LOOT_FUNCTION_TYPE, "fill_textured_block", new LootFunctionType(new FillTexturedBlockLootFunction.Serializer()));
   }
 }

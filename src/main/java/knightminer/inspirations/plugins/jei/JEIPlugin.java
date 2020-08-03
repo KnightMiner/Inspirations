@@ -3,23 +3,17 @@ package knightminer.inspirations.plugins.jei;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.common.IHidable;
-import knightminer.inspirations.library.recipe.crafting.TextureRecipe;
-import knightminer.inspirations.library.util.TextureBlockUtil;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
-import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
-import mezz.jei.api.recipe.IRecipeManager;
-import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.ISubtypeRegistration;
-import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IItemProvider;
 import net.minecraft.util.ResourceLocation;
+import slimeknights.mantle.item.RetexturedBlockItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,9 +21,6 @@ import java.util.function.Consumer;
 
 @JeiPlugin
 public class JEIPlugin implements IModPlugin {
-  static IRecipeManager recipeManager;
-  static ICraftingGridHelper vanillaCraftingHelper;
-  static IModIdHelper modIdHelper;
   private static IIngredientManager ingedientManager;
 
   // Store which items can be hidden, and their current state.
@@ -53,7 +44,7 @@ public class JEIPlugin implements IModPlugin {
 
   @Override
   public void registerItemSubtypes(ISubtypeRegistration registry) {
-    ISubtypeInterpreter texture = TextureBlockUtil::getTextureBlockName;
+    ISubtypeInterpreter texture = RetexturedBlockItem::getTextureName;
     Consumer<IItemProvider> setTextureSubtype = item -> registry.registerSubtypeInterpreter(item.asItem(), texture);
 
     // building
@@ -62,20 +53,7 @@ public class JEIPlugin implements IModPlugin {
   }
 
   @Override
-  public void registerRecipes(IRecipeRegistration registry) {
-    vanillaCraftingHelper = registry.getJeiHelpers().getGuiHelper().createCraftingGridHelper(1);
-    modIdHelper = registry.getJeiHelpers().getModIdHelper();
-  }
-
-
-  @Override
-  public void registerVanillaCategoryExtensions(IVanillaCategoryExtensionRegistration registry) {
-    registry.getCraftingCategory().addCategoryExtension(TextureRecipe.class, TextureRecipeExtension::new);
-  }
-
-  @Override
   public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
-    recipeManager = jeiRuntime.getRecipeManager();
     ingedientManager = jeiRuntime.getIngredientManager();
 
     hideableItems.clear();

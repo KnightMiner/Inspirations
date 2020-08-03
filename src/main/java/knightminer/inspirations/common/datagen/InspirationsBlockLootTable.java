@@ -4,7 +4,6 @@ import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.building.block.RopeBlock;
 import knightminer.inspirations.common.Config;
-import knightminer.inspirations.common.data.FillTexturedBlockLootFunction;
 import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import knightminer.inspirations.utility.InspirationsUtility;
@@ -24,6 +23,7 @@ import net.minecraft.loot.functions.CopyName;
 import net.minecraft.loot.functions.SetCount;
 import net.minecraft.state.properties.DoubleBlockHalf;
 import net.minecraftforge.registries.ForgeRegistries;
+import slimeknights.mantle.loot.RetexturedLootFunction;
 
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -147,7 +147,7 @@ public class InspirationsBlockLootTable extends BlockLootTables {
                     // tool check.
                     .addLootPool(LootPool.builder()
                                          .addEntry(ItemLootEntry.builder(bush)
-                                                                .acceptFunction(FillTexturedBlockLootFunction::new))
+                                                                .acceptFunction(RetexturedLootFunction::new))
                                          .acceptCondition(SILK_TOUCH_OR_SHEARS)
                                 );
   }
@@ -157,7 +157,7 @@ public class InspirationsBlockLootTable extends BlockLootTables {
                     .addLootPool(withSurvivesExplosion(block, LootPool.builder()
                                                                       .addEntry(ItemLootEntry.builder(block)
                                                                                              .acceptFunction(CopyName.builder(CopyName.Source.BLOCK_ENTITY))
-                                                                                             .acceptFunction(FillTexturedBlockLootFunction::new)
+                                                                                             .acceptFunction(RetexturedLootFunction::new)
                                                                                )));
   }
 
