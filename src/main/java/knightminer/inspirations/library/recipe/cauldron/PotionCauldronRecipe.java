@@ -4,7 +4,7 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.Potions;
-import slimeknights.mantle.util.RecipeMatch;
+import slimeknights.mantle.recipe.match.RecipeMatch;
 
 import javax.annotation.Nullable;
 

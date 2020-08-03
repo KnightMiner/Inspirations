@@ -5,7 +5,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
-import slimeknights.mantle.util.RecipeMatch;
+import slimeknights.mantle.recipe.match.RecipeMatch;
 
 import javax.annotation.Nullable;
 import java.util.List;

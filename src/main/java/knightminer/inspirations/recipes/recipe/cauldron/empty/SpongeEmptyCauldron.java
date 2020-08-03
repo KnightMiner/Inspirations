@@ -6,7 +6,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potions;
-import slimeknights.mantle.util.RecipeMatch;
+import slimeknights.mantle.recipe.match.RecipeMatch;
 
 @Deprecated
 public class SpongeEmptyCauldron extends FluidCauldronRecipe {

@@ -2,7 +2,7 @@ package knightminer.inspirations.library.recipe.cauldron;
 
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
-import slimeknights.mantle.util.RecipeMatch;
+import slimeknights.mantle.recipe.match.RecipeMatch;
 
 /**
  * Cauldron recipe to dye an item stack from colored cauldron water

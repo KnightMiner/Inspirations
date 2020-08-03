@@ -3,7 +3,7 @@ package knightminer.inspirations.library.recipe.cauldron;
 import knightminer.inspirations.common.Config;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
-import slimeknights.mantle.util.RecipeMatch;
+import slimeknights.mantle.recipe.match.RecipeMatch;
 
 import javax.annotation.Nullable;
 
