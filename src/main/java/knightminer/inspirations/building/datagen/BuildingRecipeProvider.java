@@ -6,7 +6,7 @@ import knightminer.inspirations.building.block.type.MulchType;
 import knightminer.inspirations.building.block.type.PathType;
 import knightminer.inspirations.building.block.type.ShelfType;
 import knightminer.inspirations.common.data.ConfigEnabledCondition;
-import knightminer.inspirations.common.datagen.IRecipeBuilderUtils;
+import knightminer.inspirations.common.datagen.IInspirationsRecipeBuilder;
 import knightminer.inspirations.library.InspirationsTags;
 import net.minecraft.advancements.ICriterionInstance;
 import net.minecraft.data.DataGenerator;
@@ -30,7 +30,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public class BuildingRecipeProvider extends RecipeProvider implements IConditionBuilder, IRecipeBuilderUtils {
+public class BuildingRecipeProvider extends RecipeProvider implements IConditionBuilder, IInspirationsRecipeBuilder {
   private Consumer<IFinishedRecipe> consumer;
 
   public BuildingRecipeProvider(DataGenerator gen) {

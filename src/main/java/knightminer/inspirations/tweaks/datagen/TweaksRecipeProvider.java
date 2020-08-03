@@ -1,7 +1,7 @@
 package knightminer.inspirations.tweaks.datagen;
 
 import knightminer.inspirations.common.data.ConfigEnabledCondition;
-import knightminer.inspirations.common.datagen.IRecipeBuilderUtils;
+import knightminer.inspirations.common.datagen.IInspirationsRecipeBuilder;
 import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraft.advancements.criterion.EnchantmentPredicate;
 import net.minecraft.advancements.criterion.ItemPredicate;
@@ -18,7 +18,7 @@ import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
 
 import java.util.function.Consumer;
 
-public class TweaksRecipeProvider extends RecipeProvider implements IConditionBuilder, IRecipeBuilderUtils {
+public class TweaksRecipeProvider extends RecipeProvider implements IConditionBuilder, IInspirationsRecipeBuilder {
   private Consumer<IFinishedRecipe> consumer;
 
   public TweaksRecipeProvider(DataGenerator gen) {

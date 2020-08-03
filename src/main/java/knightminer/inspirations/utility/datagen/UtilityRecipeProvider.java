@@ -2,7 +2,7 @@ package knightminer.inspirations.utility.datagen;
 
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.common.data.ConfigEnabledCondition;
-import knightminer.inspirations.common.datagen.IRecipeBuilderUtils;
+import knightminer.inspirations.common.datagen.IInspirationsRecipeBuilder;
 import knightminer.inspirations.library.InspirationsTags;
 import knightminer.inspirations.shared.InspirationsShared;
 import knightminer.inspirations.utility.InspirationsUtility;
@@ -19,7 +19,7 @@ import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
 
 import java.util.function.Consumer;
 
-public class UtilityRecipeProvider extends RecipeProvider implements IConditionBuilder, IRecipeBuilderUtils {
+public class UtilityRecipeProvider extends RecipeProvider implements IConditionBuilder, IInspirationsRecipeBuilder {
   private Consumer<IFinishedRecipe> consumer;
 
   public UtilityRecipeProvider(DataGenerator gen) {

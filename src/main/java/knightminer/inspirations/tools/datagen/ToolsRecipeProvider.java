@@ -1,8 +1,7 @@
 package knightminer.inspirations.tools.datagen;
 
 import knightminer.inspirations.common.data.ConfigEnabledCondition;
-import knightminer.inspirations.common.data.ConsumerWrapperBuilder;
-import knightminer.inspirations.common.datagen.IRecipeBuilderUtils;
+import knightminer.inspirations.common.datagen.IInspirationsRecipeBuilder;
 import knightminer.inspirations.common.datagen.NBTIngredient;
 import knightminer.inspirations.library.InspirationsTags;
 import knightminer.inspirations.library.recipe.RecipeSerializers;
@@ -26,10 +25,11 @@ import net.minecraft.potion.Potions;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
+import slimeknights.mantle.recipe.data.ConsumerWrapperBuilder;
 
 import java.util.function.Consumer;
 
-public class ToolsRecipeProvider extends RecipeProvider implements IConditionBuilder, IRecipeBuilderUtils {
+public class ToolsRecipeProvider extends RecipeProvider implements IConditionBuilder, IInspirationsRecipeBuilder {
   private Consumer<IFinishedRecipe> consumer;
 
   public ToolsRecipeProvider(DataGenerator gen) {
