@@ -36,6 +36,7 @@ public class BookshelfTileEntity extends InventoryTileEntity implements IRetextu
    */
   private float enchantBonus = Float.NaN;
 
+  private final IModelData data = new ModelDataMap.Builder().withProperty(BOOKS).withProperty(RetexturedHelper.BLOCK_PROPERTY).build();
   public BookshelfTileEntity() {
     super(InspirationsBuilding.tileBookshelf, TITLE, 14, 1);
   }
@@ -151,12 +152,12 @@ public class BookshelfTileEntity extends InventoryTileEntity implements IRetextu
       }
     }
     // get texture if present
-    ModelDataMap.Builder data = new ModelDataMap.Builder().withInitial(BOOKS, books);
+    data.setData(BOOKS, books);
     Block texture = getTexture();
     if (texture != Blocks.AIR) {
-      data = data.withInitial(RetexturedHelper.BLOCK_PROPERTY, texture);
+      data.setData(RetexturedHelper.BLOCK_PROPERTY, texture);
     }
-    return data.build();
+    return data;
   }
 
 
