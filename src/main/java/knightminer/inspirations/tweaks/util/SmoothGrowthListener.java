@@ -35,7 +35,7 @@ public class SmoothGrowthListener implements Consumer<Pre> {
 
   @Override
   public void accept(BlockEvent.CropGrowEvent.Pre event) {
-    if (!Config.smoothBlockCropGrowth()) {
+    if (!Config.smoothBlockCropGrowth.get()) {
       return;
     }
 

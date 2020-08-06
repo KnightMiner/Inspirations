@@ -1,21 +1,20 @@
 package knightminer.inspirations.common;
 
+import knightminer.inspirations.common.config.CachedBoolean;
+import knightminer.inspirations.common.config.CachedValue;
 import net.minecraftforge.common.ForgeConfigSpec;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 import static net.minecraftforge.common.ForgeConfigSpec.Builder;
 import static net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
-import static net.minecraftforge.common.ForgeConfigSpec.DoubleValue;
-import static net.minecraftforge.common.ForgeConfigSpec.EnumValue;
-import static net.minecraftforge.common.ForgeConfigSpec.IntValue;
 
 @SuppressWarnings("WeakerAccess")
 public class Config {
-  // modules
-  public static BooleanValue buildingModule;
-  public static BooleanValue utilityModule;
-  public static BooleanValue toolsModule;
-  public static BooleanValue tweaksModule;
+  /** List of all cached config values, for cache clearing */
+  private static final List<CachedValue<?>> CACHED_VALUES = new ArrayList<>();
 
   // TODO: add client config
   public static Builder BUILDER;
@@ -23,237 +22,133 @@ public class Config {
   public static Builder BUILDER_OVERRIDE;
   public static ForgeConfigSpec SPEC_OVERRIDE;
 
+  // modules
+  public static CachedBoolean buildingModule;
+  public static CachedBoolean utilityModule;
+  public static CachedBoolean toolsModule;
+  public static CachedBoolean tweaksModule;
+
   // general
-  public static BooleanValue showAllVariants;
+  public static CachedBoolean showAllVariants;
 
   // building
-  public static BooleanValue enableRope;
-  private static BooleanValue enableRopeLadder;
+  public static CachedBoolean enableRope;
+  public static CachedBoolean enableRopeLadder;
 
-  public static boolean enableRopeLadder() { return enableRopeLadder.get() && enableRope.get(); }
-
+  public static CachedBoolean enableGlassDoor;
+  public static CachedBoolean enableMulch;
+  public static CachedBoolean enablePath;
+  public static CachedBoolean enableFlowers;
+  public static CachedBoolean enableEnlightenedBush;
   // OVERRIDE
-  public static BooleanValue climbableIronBars;
-  public static BooleanValue enableGlassDoor;
-  public static BooleanValue enableMulch;
-  public static BooleanValue enablePath;
-  public static BooleanValue enableFlowers;
-  public static BooleanValue enableEnlightenedBush;
+  public static CachedBoolean climbableIronBars;
 
 
-  public static BooleanValue enableBookshelf;
-  private static BooleanValue enableColoredBooks;
-  public static BooleanValue bookshelvesBoostEnchanting;
-  public static DoubleValue defaultEnchantingPower;
+  public static CachedBoolean enableBookshelf;
+  public static CachedBoolean enableColoredBooks;
+  public static CachedBoolean bookshelvesBoostEnchanting;
+  public static CachedValue<Double> defaultEnchantingPower;
 
-  public static boolean enableColoredBooks() {
-    return enableColoredBooks.get() && enableBookshelf.get();
-  }
-
-  public static ConfigValue<String> bookKeywords;
+  public static CachedValue<String> bookKeywords;
   private static final String BOOK_KEYWORD_DEFAULTS = "almanac, atlas, book, catalogue, concordance, dictionary, directory, encyclopedia, guide, journal, lexicon, manual, thesaurus, tome";
 
   // utility
-  public static BooleanValue enableTorchLever;
-  private static BooleanValue enableRedstoneBook;
-  public static BooleanValue enableBricksButton;
-  public static BooleanValue enableCarpetedTrapdoor;
-  public static BooleanValue enableCarpetedPressurePlate;
-  public static BooleanValue enableCollector;
-  public static BooleanValue enablePipe;
-  public static BooleanValue pipeUpwards;
+  public static CachedBoolean enableTorchLever;
+  public static CachedBoolean enableRedstoneBook;
+  public static CachedBoolean enableBricksButton;
+  public static CachedBoolean enableCarpetedTrapdoor;
+  public static CachedBoolean enableCarpetedPressurePlate;
+  public static CachedBoolean enableCollector;
+  public static CachedBoolean enablePipe;
+  public static CachedBoolean pipeUpwards;
   //public static BooleanValue enableDispenserFluidTanks;
   //public static BooleanValue milkSquids;
   //public static IntValue milkSquidCooldown;
 
-  public static boolean enableRedstoneBook() { return enableRedstoneBook.get() && enableBookshelf.get(); }
-
   // recipes
 
-  // cauldron - extended
-  private static BooleanValue replaceCauldron;
-  private static BooleanValue enableCauldronRecipes;
-
+  // cauldron
   public static boolean enableCauldronRecipes() {
-    return enableCauldronRecipes.get();
+    return false;
   }
-
   public static boolean enableExtendedCauldron() {
-    return replaceCauldron.get() && replaceCauldron.get();
+    return false;
   }
-
-  // cauldron - extended options
-  private static BooleanValue enableBiggerCauldron;
-  private static BooleanValue fasterCauldronRain;
-
-  public static boolean enableBiggerCauldron() { return enableBiggerCauldron.get() && enableExtendedCauldron(); }
-
+  public static boolean enableBiggerCauldron() { return false; }
   public static int getCauldronMax()           { return enableBiggerCauldron() ? 4 : 3; }
-
-  public static boolean fasterCauldronRain()   { return fasterCauldronRain.get() && enableExtendedCauldron(); }
-
-  private enum SpongeEmptyCauldron {
-    DISABLED, // No emptying.
-    ANY, // For any amount of liquid.
-    FULL  // Allowed, but only full cauldrons.
-  }
-
-  private static EnumValue<SpongeEmptyCauldron> spongeEmptyCauldron;
-
-  public static boolean canSpongeEmptyCauldron() {
-    return spongeEmptyCauldron.get() != SpongeEmptyCauldron.DISABLED;
-  }
-
+  public static boolean fasterCauldronRain()   { return false; }
   public static boolean canSpongeEmptyFullOnly() {
-    return spongeEmptyCauldron.get() == SpongeEmptyCauldron.FULL;
+    return false;
   }
-
-  public static BooleanValue cauldronObsidian;
-
-  public static BooleanValue dropCauldronContents;
-
-  public static boolean dropCauldronContents() {
-    return dropCauldronContents.get() && enableExtendedCauldron();
-  }
-
-  // cauldron - fluids
-  private static BooleanValue enableCauldronFluids;
-  private static BooleanValue enableMilk;
-
-  public static boolean enableCauldronFluids() {
-    return enableCauldronFluids.get() && enableExtendedCauldron();
-  }
-
-  public static boolean enableMilk() {
-    return enableMilk.get() && enableExtendedCauldron();
-  }
-
-  // cauldron - dyeing
-  private static BooleanValue enableCauldronDyeing;
-  private static BooleanValue patchVanillaDyeRecipes;
-  private static BooleanValue extraBottleRecipes;
-
   public static boolean enableCauldronDyeing() {
-    return enableCauldronDyeing.get() && enableExtendedCauldron();
+    return false;
   }
-
-  public static boolean patchVanillaDyeRecipes() {
-    return patchVanillaDyeRecipes.get() && enableCauldronDyeing();
-  }
-
-  public static boolean extraBottleRecipes() {
-    return extraBottleRecipes.get() && enableCauldronDyeing();
-  }
-
-  // cauldron - potions
-  private static BooleanValue enableCauldronPotions;
-  private static BooleanValue enableCauldronBrewing;
-  private static BooleanValue expensiveCauldronBrewing;
-  private static BooleanValue cauldronTipArrows;
-
   public static boolean enableCauldronPotions() {
-    return enableCauldronPotions.get() && enableExtendedCauldron();
+    return false;
   }
-
-  public static boolean enableCauldronBrewing() {
-    return enableCauldronBrewing.get() && enableCauldronPotions();
-  }
-
   public static boolean expensiveCauldronBrewing() {
-    return expensiveCauldronBrewing.get() && enableCauldronPotions();
-  }
-
-  public static boolean cauldronTipArrows() {
-    return cauldronTipArrows.get() && enableCauldronPotions();
-  }
-
-  // cauldron - fluid containers
-  private static BooleanValue enableCauldronDispenser;
-
-  public static boolean enableCauldronDispenser() {
-    return enableCauldronDispenser.get() && enableCauldronPotions();
+    return false;
   }
 
   // anvil smashing
-  public static BooleanValue enableAnvilSmashing;
+  public static CachedBoolean enableAnvilSmashing;
 
   // tools
-  public static BooleanValue enableLock;
-  public static BooleanValue enableRedstoneCharger;
-  public static BooleanValue enableChargedArrow;
-  public static BooleanValue harvestHangingVines;
-  public static BooleanValue shearsReclaimMelons;
-  public static BooleanValue enableNorthCompass;
-  //public static BooleanValue renameVanillaCompass;
-  public static BooleanValue enableBarometer;
-  public static BooleanValue enablePhotometer;
+  public static CachedBoolean enableLock;
+  public static CachedBoolean enableRedstoneCharger;
+  public static CachedBoolean enableChargedArrow;
+  public static CachedBoolean harvestHangingVines;
+  public static CachedBoolean shearsReclaimMelons;
+  public static CachedBoolean enableNorthCompass;
+  public static CachedBoolean enableBarometer;
+  public static CachedBoolean enablePhotometer;
 
   // waypoint compass
-  public static BooleanValue enableWaypointCompass;
-  private static BooleanValue dyeWaypointCompass;
-  private static BooleanValue craftWaypointCompass;
-  private static BooleanValue copyWaypointCompass;
-  public static BooleanValue waypointCompassAdvTooltip;
-  public static BooleanValue waypointCompassCrossDimension;
-
-  public static boolean dyeWaypointCompass() {
-    return dyeWaypointCompass.get() && enableWaypointCompass.get();
-  }
-
-  public static boolean craftWaypointCompass() {
-    return craftWaypointCompass.get() && enableWaypointCompass.get();
-  }
-
-  public static boolean copyWaypointCompass() {
-    return copyWaypointCompass.get() && enableWaypointCompass.get();
-  }
+  public static CachedBoolean enableWaypointCompass;
+  public static CachedBoolean dyeWaypointCompass;
+  public static CachedBoolean craftWaypointCompass;
+  public static CachedBoolean copyWaypointCompass;
+  public static CachedBoolean waypointCompassAdvTooltip;
+  public static CachedBoolean waypointCompassCrossDimension;
 
   // enchantments
-  public static BooleanValue moreShieldEnchantments;
-  private static BooleanValue shieldEnchantmentTable;
+  public static CachedBoolean moreShieldEnchantments;
+  public static CachedBoolean shieldEnchantmentTable;
 
-  public static boolean shieldEnchantmentTable() {
-    return shieldEnchantmentTable.get() && moreShieldEnchantments.get();
-  }
-
-  public static BooleanValue fixShieldTooltip;
-  public static BooleanValue axeWeaponEnchants;
-  public static BooleanValue axeEnchantmentTable;
+  public static CachedBoolean fixShieldTooltip;
+  public static CachedBoolean axeWeaponEnchants;
+  public static CachedBoolean axeEnchantmentTable;
 
   // tweaks
-  public static BooleanValue enablePigDesaddle;
-  public static BooleanValue enableFittedCarpets;
-  public static BooleanValue coloredEnchantedRibbons;
-  public static BooleanValue coloredFireworkItems;
-  public static BooleanValue lilypadBreakFall;
-  public static BooleanValue betterCauldronItem;
-  public static BooleanValue unstackableRecipeAlts;
-  public static BooleanValue dispensersPlaceAnvils;
-  public static BooleanValue milkCooldown;
-  public static IntValue milkCooldownTime;
-  public static BooleanValue customPortalColor;
-  public static BooleanValue waterlogHopper;
+  public static CachedBoolean enablePigDesaddle;
+  public static CachedBoolean enableFittedCarpets;
+  public static CachedBoolean coloredEnchantedRibbons;
+  public static CachedBoolean coloredFireworkItems;
+  public static CachedBoolean lilypadBreakFall;
+  public static CachedBoolean betterCauldronItem;
+  public static CachedBoolean unstackableRecipeAlts;
+  public static CachedBoolean dispensersPlaceAnvils;
+  public static CachedBoolean milkCooldown;
+  public static CachedValue<Integer> milkCooldownTime;
+  public static CachedBoolean customPortalColor;
+  public static CachedBoolean waterlogHopper;
 
   // heartbeet
-  public static BooleanValue enableHeartbeet;
-  private static BooleanValue brewHeartbeet;
+  public static CachedBoolean enableHeartbeet;
+  private static CachedBoolean brewHeartbeet;
 
   public static boolean brewHeartbeet() {
     return brewHeartbeet.get() && enableHeartbeet.get();
   }
 
-  public static IntValue heartbeetChance;
+  public static CachedValue<Integer> heartbeetChance;
 
   // seeds
-  public static BooleanValue enableBlockCrops;
-  private static BooleanValue smoothBlockCropGrowth;
-  public static BooleanValue bonemealBlockCrop;
+  public static CachedBoolean enableBlockCrops;
+  public static CachedBoolean smoothBlockCropGrowth;
+  public static CachedBoolean bonemealBlockCrop;
 
-  public static boolean smoothBlockCropGrowth() {
-    return enableBlockCrops.get() && smoothBlockCropGrowth.get();
-  }
-
-  public static BooleanValue nerfCactusFarms;
+  public static CachedBoolean nerfCactusFarms;
   //  public static BooleanValue enableMoreSeeds;
   //	private static BooleanValue addGrassDrops;
   //	private static BooleanValue nerfCarrotPotatoDrops;
@@ -264,13 +159,13 @@ public class Config {
   //		return nerfCarrotPotatoDrops.get() && enableMoreSeeds.get();
   //	}
   // bonemeal
-  public static BooleanValue bonemealMushrooms;
-  public static BooleanValue bonemealDeadBush;
-  public static BooleanValue bonemealGrassSpread;
-  public static BooleanValue bonemealMyceliumSpread;
+  public static CachedBoolean bonemealMushrooms;
+  public static CachedBoolean bonemealDeadBush;
+  public static CachedBoolean bonemealGrassSpread;
+  public static CachedBoolean bonemealMyceliumSpread;
 
-  public static BooleanValue caveSpiderDrops;
-  public static BooleanValue skeletonSkull;
+  public static CachedBoolean caveSpiderDrops;
+  public static CachedBoolean skeletonSkull;
 
   static {
     BUILDER = new Builder();
@@ -282,117 +177,113 @@ public class Config {
 
   private static void configure(Builder builder, Builder builder_override) {
 
-    showAllVariants = builder
-        .comment("Shows all variants for dynamically textured blocks, like bookshelves. If false just the first will be shown")
-        .define("general.showAllVariants", true);
-
     builder.push("modules");
     {
-      buildingModule = builder
+      buildingModule = cached(builder
           .comment("Building blocks to improve decoration")
           .worldRestart()
-          .define("building", true);
+          .define("building", true));
 
-      utilityModule = builder
+      utilityModule = cached(builder
           .comment("Adds tools for automation and redstone interaction")
           .worldRestart()
-          .define("utility", true);
+          .define("utility", true));
 
-      tweaksModule = builder
+      tweaksModule = cached(builder
           .comment("Contains tweaks to vanilla features")
           .worldRestart()
-          .define("tweaks", true);
+          .define("tweaks", true));
 
-      toolsModule = builder
+      toolsModule = cached(builder
           .comment("Includes new tools to reduce dependency on debug features")
           .worldRestart()
-          .define("tools", true);
+          .define("tools", true));
     }
     builder.pop();
+
+    showAllVariants = cached(builder
+        .comment("Shows all variants for dynamically textured blocks, like bookshelves. If false just the first will be shown")
+        .define("general.showAllVariants", true));
 
     builder.push("building");
     {
       // bookshelves
-      enableBookshelf = builder
+      enableBookshelf = and(buildingModule, builder
           .comment("Enables the bookshelf: a decorative block to display books")
           .worldRestart()
-          .define("bookshelf.enable", true);
-      enableColoredBooks = builder
+          .define("bookshelf.enable", true));
+      enableColoredBooks = and(enableBookshelf, builder
           .comment("Enables colored books: basically colored versions of the vanilla book to decorate bookshelves")
           .worldRestart()
-          .define("bookshelf.coloredBooks", true);
-
-      bookshelvesBoostEnchanting = builder
+          .define("bookshelf.coloredBooks", true));
+      bookshelvesBoostEnchanting = and(buildingModule, builder
           .comment("If true, bookshelves will increase enchanting table power.")
-          .define("bookshelf.boostEnchanting", true);
-      defaultEnchantingPower = builder
+          .define("bookshelf.boostEnchanting", true));
+      defaultEnchantingPower = cached(builder
           .comment("Default power for a book for enchanting, can be overridden in the book overrides.")
-          .defineInRange("bookshelf.defaultEnchanting", 1.5f, 0.0f, 15.0f);
-
-      bookKeywords = builder
+          .defineInRange("bookshelf.defaultEnchanting", 1.5f, 0.0f, 15.0f));
+      bookKeywords = cached(builder
           .comment("List of keywords for valid books, used to determine valid books in the bookshelf. Separate each by commas.")
-          .define("bookshelf.bookKeywords", BOOK_KEYWORD_DEFAULTS);
+          .define("bookshelf.bookKeywords", BOOK_KEYWORD_DEFAULTS));
 
 
       // rope
-      enableRope = builder
+      enableRope = and(buildingModule, builder
           .comment("Enables rope: can be climbed like ladders and extended with additional rope")
           .worldRestart()
-          .define("rope", true);
-
-      enableRopeLadder = builder
+          .define("rope", true));
+      enableRopeLadder = and(enableRope, builder
           .comment("Enables rope ladders: right click ropes with sticks to extend the hitbox")
-          .define("ropeLadder", true);
-
-      climbableIronBars = builder_override
+          .define("ropeLadder", true));
+      climbableIronBars = override(builder_override
           .comment("Makes iron bars climbable if a rope is below them.")
           .worldRestart()
-          .define("rope.climbableBars", true);
+          .define("rope.climbableBars", true));
 
       // glass door
-      enableGlassDoor = builder
+      enableGlassDoor = and(buildingModule, builder
           .comment("Enables glass doors and trapdoors: basically doors, but made of glass. Not sure what you would expect.")
           .worldRestart()
-          .define("glassDoor", true);
+          .define("glassDoor", true));
 
       // mulch
-      enableMulch = builder
+      enableMulch = and(buildingModule, builder
           .comment("Enables mulch: a craftable falling block which supports plants such as flowers")
           .worldRestart()
-          .define("mulch", true);
+          .define("mulch", true));
 
       // path
-      enablePath = builder
+      enablePath = and(buildingModule, builder
           .comment("Enables stone paths: a carpet like decorative block for making decorative paths")
           .worldRestart()
-          .define("path", true);
+          .define("path", true));
 
       // flowers
-      enableFlowers = builder
+      enableFlowers = and(buildingModule, builder
           .comment("Enables additional flowers from breaking double flowers with shears.")
           .worldRestart()
-          .define("flowers", true);
+          .define("flowers", true));
 
       // enlightenedBush
-      enableEnlightenedBush = builder
+      enableEnlightenedBush = and(buildingModule, builder
           .comment("Enables enlightened bushes: bushes with lights.")
           .worldRestart()
-          .define("enlightenedBush", true);
+          .define("enlightenedBush", true));
     }
     builder.pop();
 
     builder.push("utility");
     {
-      enableRedstoneBook = builder
+      enableRedstoneBook = and(utilityModule, enableBookshelf, builder
           .comment("Enables the trapped book: will emit redstone power when placed in a bookshelf. Requires bookshelf.")
           .worldRestart()
-          .define("redstoneBook", true);
+          .define("redstoneBook", true));
 
       // torch lever
-      enableTorchLever = builder
+      enableTorchLever = and(utilityModule, builder
           .comment("Enables the torch lever: basically a lever which looks like a torch")
           .worldRestart()
-          .define("torchLever", true);
+          .define("torchLever", true));
 
       // bricks button
 			/*
@@ -403,31 +294,31 @@ public class Config {
 			 */
 
       // carpeted trapdoor
-      enableCarpetedTrapdoor = builder
+      enableCarpetedTrapdoor = and(utilityModule, builder
           .comment("Enables carpeted trapdoors: a trapdoor which appears to be a carpet when closed")
           .worldRestart()
-          .define("carpetedTrapdoor", true);
+          .define("carpetedTrapdoor", true));
 
       // carpeted pressure plate
-      enableCarpetedPressurePlate = builder
+      enableCarpetedPressurePlate = and(utilityModule, builder
           .comment("Allows placing a carpet on a stone pressure plate to hide it")
           .worldRestart()
-          .define("carpetedPressurePlate", true);
+          .define("carpetedPressurePlate", true));
 
       // collector
-      enableCollector = builder
+      enableCollector = and(utilityModule, builder
           .comment("Enables the collector: extracts items from inventories or the world similar to a hopper, but can face in all 6 directions and cannot place items in inventories")
           .worldRestart()
-          .define("collector", true);
+          .define("collector", true));
 
       // pipe
-      enablePipe = builder
+      enablePipe = and(utilityModule, builder
           .comment("Enables pipes: a more economical hopper that only outputs items, does not pull from inventories. Both cheaper and better for performance.")
           .worldRestart()
-          .define("pipe.enable", true);
-      pipeUpwards = builder
+          .define("pipe.enable", true));
+      pipeUpwards = cached(builder
           .comment("Allows pipes to output upwards. This removes a limitation on not being able to pipe items up without dropper elevators, but should be balanced alongside modded pipes.")
-          .define("pipe.upwards", true);
+          .define("pipe.upwards", true));
 
       // dispenser fluid containers
 			/*
@@ -532,37 +423,37 @@ public class Config {
     builder.push("tools");
     {
       // redstone charge
-      enableRedstoneCharger = builder
+      enableRedstoneCharger = and(toolsModule, builder
           .comment("Enables the redstone charger: a quick pulse created with a flint and steel like item")
           .worldRestart()
-          .define("redstoneCharger", true);
+          .define("redstoneCharger", true));
 
-      enableChargedArrow = builder
+      enableChargedArrow = and(toolsModule, builder
           .comment("Enables the charged arrow: places a redstone pulse where it lands")
           .worldRestart()
-          .define("chargedArrow", true);
+          .define("chargedArrow", true));
 
       // lock
-      enableLock = builder
+      enableLock = and(toolsModule, builder
           .comment("Enables locks and keys: an item allowing you to lock a tile entity to only open for a special named item")
           .worldRestart()
-          .define("lock", true);
+          .define("lock", true));
 
       // harvest hanging vines
-      harvestHangingVines = builder
+      harvestHangingVines = and(toolsModule, builder
           .comment("When shearing vines, any supported vines will also be sheared instead of just broken")
-          .define("shears.harvestHangingVines", true);
+          .define("shears.harvestHangingVines", true));
 
       // shears reclaim melons
-      shearsReclaimMelons = builder
+      shearsReclaimMelons = and(toolsModule, builder
           .comment("Breaking a melon block with shears will always return 9 slices")
-          .define("reclaimMelons", true);
+          .define("reclaimMelons", true));
 
       // compass
-      enableNorthCompass = builder
+      enableNorthCompass = and(toolsModule, builder
           .comment("Enables the north compass: a cheaper compass that always points north. Intended to either allow packs to replace the compass or as an alternative for F3 navigation")
           .worldRestart()
-          .define("northCompass.enable", true);
+          .define("northCompass.enable", true));
 			/*
 			renameVanillaCompass = builder
 					.comment("Renames the vanilla compass to 'origin compass' to help clarify the difference between the two compasses.")
@@ -571,170 +462,170 @@ public class Config {
 			 */
 
       // barometer
-      enableBarometer = builder
+      enableBarometer = and(toolsModule, builder
           .comment("Enables the barometer: a tool to measure the player's height in world.")
           .worldRestart()
-          .define("barometer", true);
+          .define("barometer", true));
 
       // photometer
-      enablePhotometer = builder
+      enablePhotometer = and(toolsModule, builder
           .comment("Enables the photometer: a tool to measure light in world. Can be pointed at a block to measure the light level of that block.")
           .worldRestart()
-          .define("photometer", true);
+          .define("photometer", true));
 
       // waypoint compass
-      enableWaypointCompass = builder
+      enableWaypointCompass = and(toolsModule, builder
           .comment("Enables the waypoint compass: a compass which points towards a full beacon.")
           .worldRestart()
-          .define("waypointCompass.enable", true);
-      dyeWaypointCompass = builder
+          .define("waypointCompass.enable", true));
+      dyeWaypointCompass = and(enableWaypointCompass, builder
           .comment("If true, waypoint compasses can be dyed all vanilla colors")
           .worldRestart()
-          .define("waypointCompass.dye", true);
-      craftWaypointCompass = builder
+          .define("waypointCompass.dye", true));
+      craftWaypointCompass = and(enableWaypointCompass, builder
           .comment("If true, waypoint compasses can be crafted using iron and a blaze rod. If false, they are obtained by using a vanilla compass on a beacon.")
           .worldRestart()
-          .define("waypointCompass.craft", true);
-      waypointCompassAdvTooltip = builder
+          .define("waypointCompass.craft", true));
+      waypointCompassAdvTooltip = cached(builder
           .comment("If true, waypoint compasses show the position target in the advanced item tooltip. Disable for packs that disable coordinates.")
-          .define("waypointCompass.advTooltip", true);
-      waypointCompassCrossDimension = builder
+          .define("waypointCompass.advTooltip", true));
+      waypointCompassCrossDimension = cached(builder
           .comment("If true, waypoint compasses work across dimensions. The coordinates between the overworld and nether will be adjusted, allowing for portal syncing.")
-          .define("waypointCompass.crossDimension", true);
-      copyWaypointCompass = builder
+          .define("waypointCompass.crossDimension", true));
+      copyWaypointCompass = and(enableWaypointCompass, builder
           .comment("If true, you can copy the position of one waypoint compass to another in a crafting table, similarly to maps or compasses")
           .worldRestart()
-          .define("waypointCompass.copy", true);
+          .define("waypointCompass.copy", true));
 
       // TODO: consider a way to allow the registry sub, but still have these props set by the server
       // enchantments
-      moreShieldEnchantments = builder_override
+      moreShieldEnchantments = cached(builder_override
           .comment("If true, shields can now be enchanted with enchantments such as protection, fire aspect, knockback, and thorns. This requires replacing these enchantments.")
           .worldRestart()
-          .define("enchantments.moreShield", true);
-      shieldEnchantmentTable = builder_override
+          .define("enchantments.moreShield", true));
+      shieldEnchantmentTable = andOverride(moreShieldEnchantments, builder_override
           .comment("If true, shields can be enchanted in an enchantment table. Does not support modded shields as it requires a registry substitution")
           .worldRestart()
-          .define("enchantments.shieldTable", true);
-      fixShieldTooltip = builder
+          .define("enchantments.shieldTable", true));
+      fixShieldTooltip = and(toolsModule, builder
           .comment("If true, fixes the tooltip on shield items so it looks better with both patterns and enchantments")
           .worldRestart()
-          .define("enchantments.fixShieldTooltip", true);
+          .define("enchantments.fixShieldTooltip", true));
 
-      axeWeaponEnchants = builder_override
+      axeWeaponEnchants = cached(builder_override
           .comment("If true, axes will be able to be enchanted with weapon enchants such as looting, fire aspect, and knockback")
           .worldRestart()
-          .define("enchantments.axeWeapon", true);
-      axeEnchantmentTable = builder_override
+          .define("enchantments.axeWeapon", true));
+      axeEnchantmentTable = cached(builder_override
           .comment("If true, axes can receive available weapon enchantments at the enchantment table")
           .worldRestart()
-          .define("enchantments.axeTable", true);
+          .define("enchantments.axeTable", true));
     }
     builder.pop();
 
     builder.push("tweaks");
     {
       // pig desaddle
-      enablePigDesaddle = builder
+      enablePigDesaddle = and(tweaksModule, builder
           .comment("Allows pigs to be desaddled by shift-right click with an empty hand")
-          .define("desaddlePig", true);
+          .define("desaddlePig", true));
 
       // fitted carpets
-      enableFittedCarpets = builder_override
+      enableFittedCarpets = override(builder_override
           .comment("Replace carpet blocks, allowing them to fit to stairs below them.")
           .worldRestart()
-          .define("fittedCarpets", true);
+          .define("fittedCarpets", true));
 
       // waterloggable hoppers
-      waterlogHopper = builder_override
+      waterlogHopper = override(builder_override
           .comment("Replace hopper blocks, allowing them to be waterlogged.")
           .worldRestart()
-          .define("hopper", true);
+          .define("hopper", true));
 
       // bonemeal
       builder.push("bonemeal");
-      bonemealMushrooms = builder
+      bonemealMushrooms = and(tweaksModule, builder
           .comment("Bonemeal can be used on mycelium to produce mushrooms")
-          .define("mushrooms", true);
-      bonemealDeadBush = builder
+          .define("mushrooms", true));
+      bonemealDeadBush = and(tweaksModule, builder
           .comment("Bonemeal can be used on sand to produce dead bushes")
-          .define("deadBush", true);
-      bonemealGrassSpread = builder
+          .define("deadBush", true));
+      bonemealGrassSpread = and(tweaksModule, builder
           .comment("Bonemeal can be used on dirt to produce grass if adjecent to grass")
-          .define("grassSpread", true);
-      bonemealMyceliumSpread = builder
+          .define("grassSpread", true));
+      bonemealMyceliumSpread = and(tweaksModule, builder
           .comment("Bonemeal can be used on dirt to produce mycelium if adjecent to mycelium")
-          .define("myceliumSpread", true);
+          .define("myceliumSpread", true));
       builder.pop();
 
       // heartroot
-      enableHeartbeet = builder
+      enableHeartbeet = and(tweaksModule, builder
           .comment("Enables heartbeets: a rare drop from beetroots which can be eaten to restore a bit of health")
           .worldRestart()
-          .define("heartbeet.enable", true);
-      brewHeartbeet = builder
+          .define("heartbeet.enable", true));
+      brewHeartbeet = and(enableHeartbeet, builder
           .comment("Allows heartbeets to be used as an alternative to ghast tears in making potions of regeneration")
           .worldRestart()
-          .define("heartbeet.brewRegeneration", true);  // && enableHeartbeet;
+          .define("heartbeet.brewRegeneration", true));  // && enableHeartbeet;
       // TODO: move to loot tables
-      heartbeetChance = builder
+      heartbeetChance = cached(builder
           .comment("Chance of a heartbeet to drop instead of a normal drop. Formula is two 1 in [chance] chances for it to drop each harvest")
-          .defineInRange("heartbeet.chance", 75, 10, 1000);
+          .defineInRange("heartbeet.chance", 75, 10, 1000));
 
       // dispensers place anvils
-      dispensersPlaceAnvils = builder
+      dispensersPlaceAnvils = and(tweaksModule, builder
           .comment("Dispensers will place anvils instead of dropping them. Plays well with anvil smashing.")
           .worldRestart()
-          .define("dispensersPlaceAnvils", true);
+          .define("dispensersPlaceAnvils", true));
 
       // better cauldron item
-      betterCauldronItem = builder
+      betterCauldronItem = and(tweaksModule, builder
           .comment("Replaces the flat cauldron sprite with the 3D cauldron block model")
           .worldRestart()
-          .define("betterCauldronItemModel", true);
+          .define("betterCauldronItemModel", true));
 
       // colored enchanted book ribbons
-      coloredEnchantedRibbons = builder
+      coloredEnchantedRibbons = and(tweaksModule, builder
           .comment("The ribbon on enchanted books colors based on the enchantment rarity")
           .worldRestart()
-          .define("coloredEnchantedRibbons", true);
+          .define("coloredEnchantedRibbons", true));
 
       // colored fireworks
-      coloredFireworkItems = builder
+      coloredFireworkItems = and(tweaksModule, builder
           .comment("Colors the fireworks item based on the colors of the stars")
           .worldRestart()
-          .define("coloredFireworkItems", true);
+          .define("coloredFireworkItems", true));
 
       // lilypad fall breaking
-      lilypadBreakFall = builder
+      lilypadBreakFall = and(tweaksModule, builder
           .comment("Lily pads prevent fall damage, but break in the process")
-          .define("lilypadBreakFall", true);
+          .define("lilypadBreakFall", true));
 
       // stackable alternative recipes
-      unstackableRecipeAlts = builder
+      unstackableRecipeAlts = and(tweaksModule, builder
           .comment("Adds stackable recipes to some vanilla or Inspriations items that require unstackable items to craft")
           .worldRestart()
-          .define("unstackableRecipeAlts", true);
+          .define("unstackableRecipeAlts", true));
 
       // seeds
       builder.push("seeds");
       {
         builder.push("blockCrops");
         {
-          enableBlockCrops = builder
+          enableBlockCrops = and(tweaksModule, builder
               .comment("If true, adds seeds for cactus and sugar cane, useful for recipes for the crops")
               .worldRestart()
-              .define("enable", true);
-          smoothBlockCropGrowth = builder
+              .define("enable", true));
+          smoothBlockCropGrowth = and(enableBlockCrops, builder
               .comment("If true, cactus and sugar cane will grow in 2 pixel increments using the block crops")
-              .define("smoothGrowth", true);
-          bonemealBlockCrop = builder
+              .define("smoothGrowth", true));
+          bonemealBlockCrop = and(tweaksModule, builder
               .comment("If true, allows bonemeal to be used to speed block crop growth")
-              .define("bonemeal", false);
-          nerfCactusFarms = builder
+              .define("bonemeal", false));
+          nerfCactusFarms = cached(builder
               .comment("If false, cactus seeds planted on cactus have fewer restrictions.",
                        "Setting to true means cactus seeds are broken by neighboring blocks, meaning classic cactus farms will drop cactus seeds instead of full cactus.")
-              .define("nerfCactusFarms", false);
+              .define("nerfCactusFarms", false));
         }
         builder.pop();
 				/*
@@ -757,12 +648,12 @@ public class Config {
       builder.pop();
 
       // milk cooldown
-      milkCooldown = builder
+      milkCooldown = cached(builder
           .comment("Adds a cooldown to milking cows, prevents practically infinite milk in modded worlds where milk is more useful.")
-          .define("milkCooldown.enable", false);
-      milkCooldownTime = builder
+          .define("milkCooldown.enable", false));
+      milkCooldownTime = cached(builder
           .comment("Delay in seconds after milking a cow before it can be milked again.")
-          .defineInRange("milkCooldown.time", 600, 1, Short.MAX_VALUE);
+          .defineInRange("milkCooldown.time", 600, 1, Short.MAX_VALUE));
 
       // milk squids
 			/*
@@ -776,18 +667,97 @@ public class Config {
 			 */
 
       // portal color
-      customPortalColor = builder
+      customPortalColor = and(tweaksModule, builder
           .comment("Allows the portal color to be changed by placing colored blocks under the portal. Any block that tints a beacon beam will work for the color.")
-          .define("customPortalColor", true);
+          .define("customPortalColor", true));
 
       // drops
-      caveSpiderDrops = builder
+      caveSpiderDrops = and(tweaksModule, builder
           .comment("If true, cave spiders will rarely drop webs, giving them an advantage to farm over regular spiders")
-          .define("caveSpiderWeb", true);
-      skeletonSkull = builder
+          .define("caveSpiderWeb", true));
+      skeletonSkull = and(tweaksModule, builder
           .comment("If true, skeletons will rarely drop their skull for consistency with wither skeletons. Does not affect creeper or zombie heads.")
-          .define("skeletonSkull", true);
+          .define("skeletonSkull", true));
     }
     builder.pop();
+  }
+
+
+  /* Helpers */
+
+  /**
+   * Creates a cached config value and adds it to the list to be invalidated on reload
+   * @param value  Config value
+   * @param <T>    Value type
+   * @return  Cached config value
+   */
+  private static <T> CachedValue<T> cached(ConfigValue<T> value) {
+    CachedValue<T> cached = new CachedValue<>(value);
+    CACHED_VALUES.add(cached);
+    return cached;
+  }
+
+  /**
+   * Creates a cached boolean value and adds it to the list to be invalidated on realod
+   * @param value  Boolean config value
+   * @return  Cached config value
+   */
+  private static CachedBoolean cached(BooleanValue value) {
+    CachedBoolean cached = new CachedBoolean(value);
+    CACHED_VALUES.add(cached);
+    return cached;
+  }
+
+  /**
+   * Creates a cached config value by anding two config values
+   * @param first   First config value, typically a module
+   * @param second  Property config value
+   * @return  Cached config value
+   */
+  private static CachedBoolean and(CachedBoolean first, BooleanValue second) {
+    CachedBoolean cached = new CachedBoolean(() -> first.get() && second.get());
+    CACHED_VALUES.add(cached);
+    return cached;
+  }
+
+  /**
+   * Creates a cached config value by anding three config values
+   * @param first   First config value, typically a module
+   * @param second  Second config value
+   * @param third   Property config value
+   * @return  Cached config value
+   */
+  private static CachedBoolean and(CachedBoolean first, CachedBoolean second, BooleanValue third) {
+    CachedBoolean cached = new CachedBoolean(() -> first.get() && second.get() && third.get());
+    CACHED_VALUES.add(cached);
+    return cached;
+  }
+
+  /* Override methods */
+
+  /**
+   * Creates a cached config value for an override config value. Unlike {@link #cached(BooleanValue)}, override does not invalidate as it does not reload.
+   * @param value  Config value
+   * @return  Cached config value
+   */
+  private static CachedBoolean override(BooleanValue value) {
+    return new CachedBoolean(value);
+  }
+
+  /**
+   * Ands two override config properties together, caching the result
+   * @param first   First config value
+   * @param second  Property config value
+   * @return  Cached config value
+   */
+  private static CachedBoolean andOverride(CachedBoolean first, BooleanValue second) {
+    return new CachedBoolean(() -> first.get() && second.get());
+  }
+
+  /**
+   * Clears the cache of all regular config values. Called during the config loaded event
+   */
+  public static void clearCache() {
+    CACHED_VALUES.forEach(CachedValue::invalidate);
   }
 }

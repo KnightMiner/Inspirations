@@ -45,7 +45,7 @@ public class BricksButtonBlock extends HidableBlock {
               .hardnessAndResistance(1.5F, 10.0F)
               .sound(SoundType.STONE)
               .tickRandomly(),
-          Config.enableBricksButton::get
+          Config.enableBricksButton
          );
     this.buttonBounds = buttonBounds;
 

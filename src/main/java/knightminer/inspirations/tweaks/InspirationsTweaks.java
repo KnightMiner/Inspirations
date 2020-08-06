@@ -135,7 +135,7 @@ public class InspirationsTweaks extends ModuleBase {
 
     heartbeet = registry.register(new HidableItem(new Item.Properties().group(ItemGroup.FOOD)
                                                                        .food(new Food.Builder().hunger(2).saturation(2.4f).effect(() -> new EffectInstance(Effects.REGENERATION, 100), 1).build()
-                                                                            ), Config.enableHeartbeet::get), "heartbeet");
+                                                                            ), Config.enableHeartbeet), "heartbeet");
 
     //		silverfishPowder = registerItem(r, new HidableItem(
     //				new Item.Properties().group(ItemGroup.BREWING),

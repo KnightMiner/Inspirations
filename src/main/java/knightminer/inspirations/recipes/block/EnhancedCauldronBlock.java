@@ -120,7 +120,7 @@ public class EnhancedCauldronBlock extends CauldronBlock {
   public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
     if (newState.getBlock() != state.getBlock() && !isMoving) {
       int level = getLevel(state);
-      if (Config.dropCauldronContents.get() && level > 0) {
+      if (/*Config.dropCauldronContents.get() && */ level > 0) {
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof CauldronTileEntity) {
           ((CauldronTileEntity)te).onBreak(pos, level);

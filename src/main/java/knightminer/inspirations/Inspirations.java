@@ -124,17 +124,22 @@ public class Inspirations {
 
   @SubscribeEvent
   void configChanged(final ModConfig.ModConfigEvent configEvent) {
-    configLoaded = true;
+    ModConfig config = configEvent.getConfig();
+    if (config.getModId().equals(modID)) {
+      Config.clearCache();
+      configLoaded = true;
 
-    InspirationsRegistry.setBookKeywords(Arrays.stream(Config.bookKeywords.get().split(","))
-                                               .map(String::trim)
-                                               .collect(Collectors.toList())
-                                        );
+      InspirationsRegistry.setBookKeywords(Arrays.stream(Config.bookKeywords.get().split(","))
+                                                 .map(String::trim)
+                                                 .collect(Collectors.toList())
+                                          );
 
-    // If we have JEI, this will be set. It needs to run on the main thread...
-    if (updateJEI != null) {
-      DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> Minecraft.getInstance().deferTask(updateJEI));
+      // If we have JEI, this will be set. It needs to run on the main thread...
+      if (updateJEI != null) {
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> Minecraft.getInstance().deferTask(updateJEI));
+      }
     }
+
   }
 
   /* Utilities */

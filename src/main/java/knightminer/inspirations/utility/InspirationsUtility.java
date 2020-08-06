@@ -2,6 +2,7 @@ package knightminer.inspirations.utility;
 
 
 import knightminer.inspirations.common.ModuleBase;
+import knightminer.inspirations.common.item.HidableBlockItem;
 import knightminer.inspirations.utility.block.CarpetedPressurePlateBlock;
 import knightminer.inspirations.utility.block.CarpetedTrapdoorBlock;
 import knightminer.inspirations.utility.block.CollectorBlock;
@@ -96,13 +97,15 @@ public class InspirationsUtility extends ModuleBase {
 
   @SubscribeEvent
   public void registerItems(Register<Item> event) {
-    ItemRegistryAdapter registry = new ItemRegistryAdapter(event.getRegistry(), new Item.Properties().group(ItemGroup.REDSTONE));
+    Item.Properties props = new Item.Properties().group(ItemGroup.REDSTONE);
+    ItemRegistryAdapter registry = new ItemRegistryAdapter(event.getRegistry(), props);
 
     // itemblocks
     torchLeverItem = registry.register(new TorchLeverItem(), "torch_lever");
     //registerBlockItem(r, bricksButton, ItemGroup.REDSTONE);
     //registerBlockItem(r, netherBricksButton, ItemGroup.REDSTONE);
-    registry.registerBlockItem(carpetedTrapdoors);
+    // TODO: never made a bifunction variant
+    registry.registerBlockItem(carpetedTrapdoors, (block) -> new HidableBlockItem(block, props));
     registry.registerBlockItem(collector);
     registry.registerBlockItem(pipe);
   }

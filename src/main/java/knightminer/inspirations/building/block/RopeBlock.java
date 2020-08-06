@@ -50,7 +50,7 @@ public class RopeBlock extends HidableBlock implements IWaterLoggable {
   private Item rungsItem;
 
   public RopeBlock(Item rungsItem, Properties props) {
-    super(props, Config.enableRope::get);
+    super(props, Config.enableRope);
     this.setDefaultState(this.stateContainer.getBaseState()
                                             .with(BOTTOM, false)
                                             .with(RUNGS, Rungs.NONE)

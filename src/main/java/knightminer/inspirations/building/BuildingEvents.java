@@ -28,7 +28,7 @@ public class BuildingEvents {
    */
   @SubscribeEvent
   static void toggleRopeLadder(PlayerInteractEvent.RightClickBlock event) {
-    if (!Config.enableRopeLadder() || event.getWorld().isRemote()) {
+    if (!Config.enableRopeLadder.get() || event.getWorld().isRemote()) {
       return;
     }
 

@@ -22,6 +22,7 @@ import knightminer.inspirations.building.tileentity.BookshelfTileEntity;
 import knightminer.inspirations.building.tileentity.EnlightenedBushTileEntity;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.ModuleBase;
+import knightminer.inspirations.common.item.HidableBlockItem;
 import knightminer.inspirations.common.item.HidableItem;
 import knightminer.inspirations.common.item.HidableRetexturedBlockItem;
 import net.minecraft.block.Block;
@@ -163,8 +164,8 @@ public class InspirationsBuilding extends ModuleBase {
     Item.Properties buildingProps = new Item.Properties().group(ItemGroup.BUILDING_BLOCKS);
     Item.Properties redstoneProps = new Item.Properties().group(ItemGroup.REDSTONE);
 
-    coloredBooks = registry.registerEnum(color -> new HidableItem(materialProps, Config::enableColoredBooks), DyeColor.values(), "book");
-    redstoneBook = registry.register(new HidableItem(materialProps, Config::enableRedstoneBook), "redstone_book");
+    coloredBooks = registry.registerEnum(color -> new HidableItem(materialProps, Config.enableColoredBooks), DyeColor.values(), "book");
+    redstoneBook = registry.register(new HidableItem(materialProps, Config.enableRedstoneBook), "redstone_book");
 
     // item blocks
     registry.registerBlockItem(bookshelf, BookshelfItem::new);
@@ -180,7 +181,7 @@ public class InspirationsBuilding extends ModuleBase {
     registry.registerBlockItem(enlightenedBush, (bush) -> new HidableRetexturedBlockItem(bush, ItemTags.LEAVES, decorationProps));
 
     glassDoorItem = registry.register(new GlassDoorBlockItem(glassDoor, redstoneProps), glassDoor);
-    registry.registerBlockItem(glassTrapdoor, redstoneProps);
+    registry.registerBlockItem(new HidableBlockItem(glassTrapdoor, redstoneProps));
   }
 
   @SubscribeEvent

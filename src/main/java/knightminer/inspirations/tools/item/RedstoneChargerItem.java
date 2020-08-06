@@ -1,5 +1,7 @@
 package knightminer.inspirations.tools.item;
 
+import knightminer.inspirations.common.Config;
+import knightminer.inspirations.common.item.HidableItem;
 import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.tools.block.RedstoneChargeBlock;
 import net.minecraft.advancements.CriteriaTriggers;
@@ -22,12 +24,11 @@ import net.minecraftforge.common.util.Constants;
 
 import static knightminer.inspirations.tools.InspirationsTools.redstoneCharge;
 
-public class RedstoneChargerItem extends Item {
+public class RedstoneChargerItem extends HidableItem {
   public RedstoneChargerItem() {
     super(new Item.Properties()
               .maxDamage(120)
-              .group(ItemGroup.TOOLS)
-         );
+              .group(ItemGroup.TOOLS), Config.enableRedstoneCharger);
   }
 
   @Override

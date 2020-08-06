@@ -100,16 +100,16 @@ public class InspirationsTools extends ModuleBase {
 
     redstoneCharger = registry.register(new RedstoneChargerItem(), "redstone_charger");
 
-    lock = registry.register(new HidableItem(materialsProps, Config.enableLock::get), "lock");
-    key = registry.register(new HidableItem(materialsProps, Config.enableLock::get), "key");
+    lock = registry.register(new HidableItem(materialsProps, Config.enableLock), "lock");
+    key = registry.register(new HidableItem(materialsProps, Config.enableLock), "key");
 
-    northCompass = registry.register(new HidableItem(toolProps, Config.enableNorthCompass::get), "north_compass");
-    barometer = registry.register(new HidableItem(toolProps, Config.enableBarometer::get), "barometer");
-    photometer = registry.register(new HidableItem(toolProps, Config.enablePhotometer::get), "photometer");
+    northCompass = registry.register(new HidableItem(toolProps, Config.enableNorthCompass), "north_compass");
+    barometer = registry.register(new HidableItem(toolProps, Config.enableBarometer), "barometer");
+    photometer = registry.register(new HidableItem(toolProps, Config.enablePhotometer), "photometer");
 
     // TODO: reevaluate
     // TODO: enum object
-    waypointCompasses[DyeColor.WHITE.getId()] = registry.register(new WaypointCompassItem(0xDDDDDD, 0xFFC100, Config.enableWaypointCompass::get), "waypoint_compass");
+    waypointCompasses[DyeColor.WHITE.getId()] = registry.register(new WaypointCompassItem(0xDDDDDD, 0xFFC100, Config.enableWaypointCompass), "waypoint_compass");
     waypointCompasses[DyeColor.BLACK.getId()] = registry.register(new WaypointCompassItem(0x444444, DyeColor.RED.colorValue), "black_waypoint_compass");
     registerWaypointCompass(registry, DyeColor.LIGHT_GRAY, DyeColor.WHITE.colorValue);
     registerWaypointCompass(registry, DyeColor.GRAY, DyeColor.LIGHT_GRAY.colorValue);
@@ -126,7 +126,7 @@ public class InspirationsTools extends ModuleBase {
     registerWaypointCompass(registry, DyeColor.PINK, 0xF2BFCE);
     registerWaypointCompass(registry, DyeColor.BROWN, 0xA59072);
 
-    if (Config.shieldEnchantmentTable()) {
+    if (Config.shieldEnchantmentTable.get()) {
       registry.register(new EnchantableShieldItem(new Item.Properties().maxDamage(Items.SHIELD.getMaxDamage()).group(ItemGroup.COMBAT)), Items.SHIELD);
     }
   }

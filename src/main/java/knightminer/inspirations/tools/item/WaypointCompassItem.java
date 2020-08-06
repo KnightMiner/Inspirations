@@ -41,7 +41,7 @@ public class WaypointCompassItem extends HidableItem {
   private final int needleColor;
 
   public WaypointCompassItem(int bodyColor, int needleColor) {
-    this(bodyColor, needleColor, Config::dyeWaypointCompass);
+    this(bodyColor, needleColor, Config.dyeWaypointCompass);
   }
 
   public WaypointCompassItem(int bodyColor, int needleColor, Supplier<Boolean> enableFunc) {
@@ -163,7 +163,7 @@ public class WaypointCompassItem extends HidableItem {
         }
       }
       tooltip.add(dimensionTooltip);
-    } else if (Config.craftWaypointCompass()) {
+    } else if (Config.craftWaypointCompass.get()) {
       tooltip.add(new TranslationTextComponent(getTranslationKey() + ".blank.tooltip").mergeStyle(TextFormatting.ITALIC)
                  );
     } else {
@@ -353,6 +353,6 @@ public class WaypointCompassItem extends HidableItem {
    */
   public static boolean isWaypointCompass(ItemStack stack) {
     Item item = stack.getItem();
-    return item instanceof WaypointCompassItem || (!Config.craftWaypointCompass() && item == Items.COMPASS);
+    return item instanceof WaypointCompassItem || (!Config.craftWaypointCompass.get() && item == Items.COMPASS);
   }
 }

@@ -13,7 +13,6 @@ import net.minecraft.loot.LootContext;
 import net.minecraft.loot.conditions.ILootCondition;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.crafting.conditions.IConditionSerializer;
 
@@ -100,16 +99,6 @@ public class ConfigEnabledCondition implements ICondition, ILootCondition {
     return conf;
   }
 
-  /**
-   * Adds a condition
-   * @param prop   Property name
-   * @param option Config option instance
-   * @return Added condition
-   */
-  private static ConfigEnabledCondition add(String prop, ForgeConfigSpec.BooleanValue option) {
-    return add(prop, option::get);
-  }
-
   /* Config conditions available */
 
   // modules
@@ -120,7 +109,7 @@ public class ConfigEnabledCondition implements ICondition, ILootCondition {
 
   // building
   public static final ConfigEnabledCondition BOOKSHELF = add("bookshelf", Config.enableBookshelf);
-  public static final ConfigEnabledCondition COLORED_BOOKS = add("colored_books", Config::enableColoredBooks);
+  public static final ConfigEnabledCondition COLORED_BOOKS = add("colored_books", Config.enableColoredBooks);
   public static final ConfigEnabledCondition ENLIGHTENED_BUSH = add("enlightened_bush", Config.enableEnlightenedBush);
   public static final ConfigEnabledCondition FLOWERS = add("flowers", Config.enableFlowers);
   public static final ConfigEnabledCondition GLASS_DOOR = add("glass_door", Config.enableGlassDoor);
@@ -133,15 +122,15 @@ public class ConfigEnabledCondition implements ICondition, ILootCondition {
   public static final ConfigEnabledCondition CARPETED_TRAPDOOR = add("carpeted_trapdoor", Config.enableCarpetedTrapdoor);
   public static final ConfigEnabledCondition COLLECTOR = add("collector", Config.enableCollector);
   public static final ConfigEnabledCondition PIPE = add("pipe", Config.enablePipe);
-  public static final ConfigEnabledCondition REDSTONE_BOOK = add("redstone_book", Config::enableRedstoneBook);
+  public static final ConfigEnabledCondition REDSTONE_BOOK = add("redstone_book", Config.enableRedstoneBook);
   public static final ConfigEnabledCondition TORCH_LEVER = add("torch_lever", Config.enableTorchLever);
 
   // tools
   public static final ConfigEnabledCondition BAROMETER = add("barometer", Config.enableBarometer);
   public static final ConfigEnabledCondition CHARGED_ARROW = add("charged_arrow", Config.enableChargedArrow);
-  public static final ConfigEnabledCondition CRAFT_WAYPOINT = add("craft_waypoint_compass", Config::craftWaypointCompass);
-  public static final ConfigEnabledCondition COPY_WAYPOINT = add("copy_waypoint_compass", Config::copyWaypointCompass);
-  public static final ConfigEnabledCondition DYE_WAYPOINT = add("dye_waypoint_compass", Config::dyeWaypointCompass);
+  public static final ConfigEnabledCondition CRAFT_WAYPOINT = add("craft_waypoint_compass", Config.craftWaypointCompass);
+  public static final ConfigEnabledCondition COPY_WAYPOINT = add("copy_waypoint_compass", Config.copyWaypointCompass);
+  public static final ConfigEnabledCondition DYE_WAYPOINT = add("dye_waypoint_compass", Config.dyeWaypointCompass);
   public static final ConfigEnabledCondition LOCK = add("lock", Config.enableLock);
   public static final ConfigEnabledCondition NORTH_COMPASS = add("north_compass", Config.enableNorthCompass);
   public static final ConfigEnabledCondition PHOTOMETER = add("photometer", Config.enablePhotometer);
@@ -155,9 +144,5 @@ public class ConfigEnabledCondition implements ICondition, ILootCondition {
 
   // recipes
   public static final ConfigEnabledCondition CAULDRON_DYEING = add("cauldron_dyeing", () -> false/* TODO: Config::enableCauldronDyeing */);
-  public static final ConfigEnabledCondition CAULDRON_FLUIDS = add("cauldron_fluids", () -> false/* TODO: Config::enableCauldronFluids */);
-  public static final ConfigEnabledCondition CAULDRON_POTIONS = add("cauldron_potions", () -> false/* TODO: Config::enableCauldronPotions */);
-  public static final ConfigEnabledCondition EXTRA_DYED_BOTTLE_RECIPES = add("extra_dyed_bottle_recipes", () -> false/* TODO: Config::extraBottleRecipes */);
-  public static final ConfigEnabledCondition PATCH_VANILLA_DYE_RECIPES = add("patch_vanilla_dye_recipes", () -> false/* TODO: Config::patchVanillaDyeRecipes */);
 
 }
