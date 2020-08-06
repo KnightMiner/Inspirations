@@ -1,8 +1,8 @@
 ---
-name: 1.15 Feature request
+name: 1.16 Feature request
 about: Suggest a new feature for this mod
 title: ''
-labels: enhancement, 1.15
+labels: 1.16, enhancement
 assignees: ''
 
 ---
