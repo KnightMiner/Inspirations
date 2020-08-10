@@ -289,6 +289,7 @@ ed609d879b511fc63075a70306670eca432041c0 data/inspirations/tags/items/small_flow
 f810dc54f6b45752b2d459d3e08e962dbcf82f19 data/inspirations/tags/items/waypoint_compasses.json
 99552ca43885337f75f5a3b8813d495bf4f7d799 data/minecraft/tags/blocks/bamboo_plantable_on.json
 85ffca6ba9dbf11c357e030212a6d171e185ac2e data/minecraft/tags/blocks/carpets.json
+5f68bb98fe3d1964c24b8e6a95116911769d5fe8 data/minecraft/tags/blocks/climbable.json
 00df993619a2f7d35c51e653f41bc1cda4577e0f data/minecraft/tags/blocks/flower_pots.json
 031a33f8bd31ca3b0aed413bbef3598d57bb741e data/minecraft/tags/blocks/leaves.json
 1101fc9d7fab05e322e9d9dbd36bceeee54770a7 data/minecraft/tags/blocks/wooden_trapdoors.json

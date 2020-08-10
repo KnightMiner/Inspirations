@@ -6,7 +6,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.IWaterLoggable;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -202,13 +201,6 @@ public class RopeBlock extends HidableBlock implements IWaterLoggable {
     super.onBlockHarvested(world, pos, state, player);
   }
 
-  /* Block properties */
-
-  @Override
-  public boolean isLadder(BlockState state, IWorldReader world, BlockPos pos, LivingEntity entity) {
-    return true;
-  }
-
 
   /* Bounds */
 
@@ -253,6 +245,14 @@ public class RopeBlock extends HidableBlock implements IWaterLoggable {
   @Override
   public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
     return (state.get(BOTTOM) ? SHAPE_BOTTOM : SHAPE)[state.get(RUNGS).ordinal()];
+  }
+
+  @Override
+  @SuppressWarnings("deprecation")
+  @Deprecated
+  public VoxelShape getCollisionShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+    // if no rungs, no collision
+    return state.get(RUNGS) != Rungs.NONE ? state.getShape(worldIn, pos) : VoxelShapes.empty();
   }
 
   public enum Rungs implements IStringSerializable {
