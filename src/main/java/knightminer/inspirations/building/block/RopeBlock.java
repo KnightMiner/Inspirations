@@ -11,7 +11,6 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.DirectionalPlaceContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.BooleanProperty;
@@ -29,6 +28,7 @@ import net.minecraft.util.math.shapes.IBooleanFunction;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
@@ -156,13 +156,7 @@ public class RopeBlock extends HidableBlock implements IWaterLoggable {
       next = next.down();
     }
     if (this.isValidPosition(state, world, next)) {
-      BlockItem itemBlock = (BlockItem)stack.getItem();
-      if (itemBlock.tryPlace(new DirectionalPlaceContext(world, next, hit.getFace(), stack, hit.getFace())) == ActionResultType.SUCCESS) {
-        if (player.isCreative()) {
-          // Refund the item.
-          stack.grow(1);
-        }
-      }
+      ((BlockItem)stack.getItem()).tryPlace(new BlockItemUseContext(player, hand, stack, new BlockRayTraceResult(Vector3d.copyCenteredHorizontally(next), Direction.UP, next, false)));
     }
 
     return ActionResultType.SUCCESS;
