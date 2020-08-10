@@ -4,12 +4,14 @@ import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.ClientEvents;
 import knightminer.inspirations.library.client.ClientUtil;
 import knightminer.inspirations.library.client.model.BookshelfModel;
+import knightminer.inspirations.library.client.model.TrimModel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.container.PlayerContainer;
 import net.minecraft.resources.IReloadableResourceManager;
 import net.minecraft.resources.IResourceManager;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ModelBakeEvent;
+import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
@@ -23,14 +25,10 @@ import java.util.concurrent.CompletableFuture;
 @SuppressWarnings("unused")
 @EventBusSubscriber(modid = Inspirations.modID, value = Dist.CLIENT, bus = Bus.MOD)
 public class SharedClientEvents extends ClientEvents {
-  /**
-   * Called during mod construction to register early events
-   */
-  public static void onConstruct() {
-    //noinspection ConstantConditions  Minecraft is null when running datagen
-    if (Minecraft.getInstance() != null) {
-      ModelLoaderRegistry.registerLoader(Inspirations.getResource("bookshelf"), BookshelfModel.Loader.INSTANCE);
-    }
+  @SubscribeEvent
+  static void registerModelLoaders(ModelRegistryEvent event) {
+    ModelLoaderRegistry.registerLoader(Inspirations.getResource("bookshelf"), BookshelfModel.LOADER);
+    ModelLoaderRegistry.registerLoader(Inspirations.getResource("trim"), TrimModel.LOADER);
   }
 
   @SubscribeEvent

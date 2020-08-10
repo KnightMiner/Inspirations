@@ -54,8 +54,13 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 
+/**
+ * Model that retextures a shelf while also adding in a list of books based on slot contents
+ */
 @SuppressWarnings("WeakerAccess")
 public class BookshelfModel implements IModelGeometry<BookshelfModel> {
+  /** Loader instance to register */
+  public static final Loader LOADER = new Loader();
   private final SimpleBlockModel model;
   private final Set<String> retextured;
   private final List<List<BlockPart>> books;
@@ -82,8 +87,7 @@ public class BookshelfModel implements IModelGeometry<BookshelfModel> {
   }
 
   /** Model loader logic */
-  public static class Loader implements IModelLoader<BookshelfModel> {
-    public static final Loader INSTANCE = new Loader();
+  private static class Loader implements IModelLoader<BookshelfModel> {
 
     @Override
     public void onResourceManagerReload(IResourceManager resourceManager) {}
