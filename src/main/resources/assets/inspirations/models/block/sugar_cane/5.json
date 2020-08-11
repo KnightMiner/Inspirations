@@ -1,5 +1,5 @@
 {
   "loader": "inspirations:trim",
   "parent": "block/sugar_cane",
-  "trim": 4
+  "trim": 10
 }

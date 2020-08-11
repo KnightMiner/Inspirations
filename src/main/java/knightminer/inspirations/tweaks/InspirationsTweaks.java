@@ -41,6 +41,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.PlantType;
 import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.RegistryEvent.Register;
@@ -86,7 +87,6 @@ public class InspirationsTweaks extends ModuleBase {
       EnumObject.Builder<DyeColor,FittedCarpetBlock> fittedBuilder = new EnumObject.Builder<>(DyeColor.class);
       for (DyeColor color : DyeColor.values()) {
         Block original = InspirationsShared.VANILLA_CARPETS.get(color);
-        assert original != null;
         Block.Properties props = Block.Properties.from(original);
         flatBuilder.putDelegate(color, registry.register(new FlatCarpetBlock(color, props), original).delegate);
         fittedBuilder.putDelegate(color, registry.register(new FittedCarpetBlock(color, props), color.getString() + "_fitted_carpet").delegate);
@@ -100,8 +100,8 @@ public class InspirationsTweaks extends ModuleBase {
       wetHopper = registry.register(new WetHopperBlock(Block.Properties.from(Blocks.HOPPER)), "wet_hopper");
     }
 
-    cactus = registry.register(new CactusCropBlock(), "cactus");
-    sugarCane = registry.register(new SugarCaneCropBlock(), "sugar_cane");
+    cactus = registry.register(new CactusCropBlock(Blocks.CACTUS, PlantType.DESERT), "cactus");
+    sugarCane = registry.register(new SugarCaneCropBlock(Blocks.SUGAR_CANE, PlantType.BEACH), "sugar_cane");
   }
 
   @SubscribeEvent
@@ -113,7 +113,6 @@ public class InspirationsTweaks extends ModuleBase {
     if (Config.enableFittedCarpets.get()) {
       for (DyeColor color : DyeColor.values()) {
         Block carpet = InspirationsShared.VANILLA_CARPETS.get(color);
-        assert carpet != null;
         BlockItem item = registry.registerBlockItem(carpet, decorationProps);
         Item.BLOCK_TO_ITEM.put(carpet, item);
         Item.BLOCK_TO_ITEM.put(Objects.requireNonNull(flatCarpets.get(color)), item);

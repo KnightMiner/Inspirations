@@ -2,6 +2,7 @@ package knightminer.inspirations.tweaks.block;
 
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -16,20 +17,18 @@ import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraftforge.common.PlantType;
 
+import java.util.function.Supplier;
+import java.util.stream.IntStream;
+
 public class CactusCropBlock extends BlockCropBlock {
 
-  private static final VoxelShape[] BOUNDS = {
-      makeCuboidShape(1, 0, 1, 15, 2, 15),
-      makeCuboidShape(1, 0, 1, 15, 4, 15),
-      makeCuboidShape(1, 0, 1, 15, 6, 15),
-      makeCuboidShape(1, 0, 1, 15, 8, 15),
-      makeCuboidShape(1, 0, 1, 15, 10, 15),
-      makeCuboidShape(1, 0, 1, 15, 12, 15),
-      makeCuboidShape(1, 0, 1, 15, 14, 15)
-  };
+  private static final VoxelShape[] BOUNDS = IntStream.range(1, 16).mapToObj(i -> makeCuboidShape(1, 0, 1, 15, i, 15)).toArray(VoxelShape[]::new);
+  public CactusCropBlock(Block base, PlantType plant) {
+    super(base, plant);
+  }
 
-  public CactusCropBlock() {
-    super(Blocks.CACTUS, PlantType.DESERT);
+  public CactusCropBlock(Supplier<Block> base, PlantType plant, Block.Properties properties) {
+    super(base, plant, properties);
   }
 
   @Override

@@ -14,8 +14,6 @@ import net.minecraftforge.eventbus.api.Event.Result;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import static net.minecraft.state.properties.BlockStateProperties.AGE_0_15;
-
 public class SmoothGrowthListener implements Consumer<Pre> {
 
   private final Supplier<Block> crop, seed;
@@ -41,7 +39,7 @@ public class SmoothGrowthListener implements Consumer<Pre> {
 
     BlockState current = event.getState();
     // at half growth place the seed, gives us 8 ticks on the block, 8 on the seed instead of 16 on the block
-    if (event.getState().getBlock() != crop.get() || !current.hasProperty(AGE_0_15) || current.get(AGE_0_15) < 7) {
+    if (event.getState().getBlock() != crop.get()) {
       return;
     }
 

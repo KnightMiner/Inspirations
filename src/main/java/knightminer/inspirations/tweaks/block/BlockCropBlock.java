@@ -11,26 +11,27 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.PlantType;
 
 import java.util.Random;
 import java.util.function.Supplier;
 
+@SuppressWarnings("WeakerAccess")
 public abstract class BlockCropBlock extends CropsBlock implements IHidable, IPlantable {
-
-  public static final IntegerProperty SMALL_AGE = IntegerProperty.create("age", 0, 6);
+  public static final IntegerProperty LARGE_AGE = IntegerProperty.create("age", 0, 14);
 
   protected Supplier<Block> block;
   protected PlantType type;
-
-  public BlockCropBlock(Supplier<Block> block, PlantType type, Properties props) {
+  protected BlockCropBlock(Supplier<Block> block, PlantType type, Properties props) {
     super(props);
     this.block = block;
     this.type = type;
   }
 
-  public BlockCropBlock(Block block, PlantType type) {
+  protected BlockCropBlock(Block block, PlantType type) {
     this(block.delegate, type, Properties.from(block));
   }
 
@@ -44,7 +45,12 @@ public abstract class BlockCropBlock extends CropsBlock implements IHidable, IPl
 
   @Override
   public IntegerProperty getAgeProperty() {
-    return SMALL_AGE;
+    return LARGE_AGE;
+  }
+
+  @Override
+  public int getMaxAge() {
+    return 15;
   }
 
   @Override
