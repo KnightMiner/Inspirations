@@ -39,7 +39,7 @@ public final class ClientUtil {
 
   private ClientUtil() { }
 
-  private static Map<Item,Integer> colorCache = new HashMap<>();
+  private static final Map<Item,Integer> COLOR_CACHE = new HashMap<>();
 
   /**
    * Gets the color for an Item
@@ -47,7 +47,7 @@ public final class ClientUtil {
    * @return Color for the stack
    */
   public static int getItemColor(Item item) {
-    return colorCache.computeIfAbsent(item, ClientUtil::getItemColorRaw);
+    return COLOR_CACHE.computeIfAbsent(item, ClientUtil::getItemColorRaw);
   }
 
   /**
@@ -104,7 +104,7 @@ public final class ClientUtil {
    * Called on resource reload to clear any resource based cache
    */
   public static void clearCache() {
-    colorCache.clear();
+    COLOR_CACHE.clear();
     unsafe.clear();
   }
 
