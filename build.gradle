@@ -157,6 +157,8 @@ jar {
     }
 }
 
+jar.finalizedBy('reobfJar')
+
 // because the normal output has been made to be obfuscated
 task sourcesJar(type: Jar) {
     from sourceSets.main.allJava
