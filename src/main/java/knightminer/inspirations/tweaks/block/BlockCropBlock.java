@@ -61,6 +61,31 @@ public abstract class BlockCropBlock extends CropsBlock implements IHidable, IPl
     return false;
   }
 
+  @Override
+  public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    // Forge: prevent loading unloaded chunks when checking neighbor's light
+    if (!world.isAreaLoaded(pos, 1)) return;
+    // age will always be less than max, but safe to check
+    int age = this.getAge(state);
+    int max = this.getMaxAge();
+    if (age < max) {
+      if (ForgeHooks.onCropsGrowPre(world, pos, state, true)) {
+        age++;
+        BlockState newState = this.withAge(age);
+        // update again if max age, for the sake of cactus placement
+        if (age == max) {
+          world.setBlockState(pos, newState, 3);
+          if (!newState.isValidPosition(world, pos)) {
+            world.getPendingBlockTicks().scheduleTick(pos, block.get(), 1);
+          }
+        } else {
+          world.setBlockState(pos, newState, 2);
+        }
+        ForgeHooks.onCropsGrowPost(world, pos, state);
+      }
+    }
+  }
+
   /* Crop logic */
   @Override
   public PlantType getPlantType(IBlockReader world, BlockPos pos) {
