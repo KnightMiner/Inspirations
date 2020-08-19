@@ -3,16 +3,20 @@ package knightminer.inspirations.recipes;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.ModuleBase;
 import knightminer.inspirations.common.item.HidableItem;
+import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.recipes.block.EnhancedCauldronBlock;
 import knightminer.inspirations.recipes.item.MixedDyedBottleItem;
 import knightminer.inspirations.recipes.item.SimpleDyedBottleItem;
+import knightminer.inspirations.recipes.recipe.cauldron.contents.CauldronWater;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.potion.Potions;
 import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -127,7 +131,17 @@ public class InspirationsRecipes extends ModuleBase {
 	}*/
 
   @SubscribeEvent
-  void init(FMLCommonSetupEvent event) {
+  void commonSetup(FMLCommonSetupEvent event) {
+    // add water as an override to fluids and potions
+    CauldronWater water = CauldronContentTypes.WATER.get();
+    CauldronContentTypes.FLUID.addOverride(Fluids.WATER, water);
+    CauldronContentTypes.POTION.addOverride(Potions.WATER, water);
+
+    // add all dyes as overrides into color
+    for (DyeColor color : DyeColor.values()) {
+      CauldronContentTypes.COLOR.addOverride(color.getColorValue(), CauldronContentTypes.DYE.of(color));
+    }
+
     if (Config.enableCauldronRecipes()) {
       registerCauldronRecipes();
     }
