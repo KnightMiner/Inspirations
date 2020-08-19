@@ -1,4 +1,4 @@
-package knightminer.inspirations.library.recipe.cauldron;
+package knightminer.inspirations.library.recipe.cauldron.legacy;
 
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;

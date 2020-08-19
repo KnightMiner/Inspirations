@@ -1,7 +1,7 @@
 package knightminer.inspirations.recipes.tank;
 
 import knightminer.inspirations.common.Config;
-import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe.CauldronState;
+import knightminer.inspirations.library.recipe.cauldron.legacy.ICauldronRecipe.CauldronState;
 import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;

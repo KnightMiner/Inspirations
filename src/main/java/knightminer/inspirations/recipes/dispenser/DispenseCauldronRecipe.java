@@ -2,8 +2,8 @@ package knightminer.inspirations.recipes.dispenser;
 
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.InspirationsTags;
-import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
-import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe.CauldronState;
+import knightminer.inspirations.library.recipe.cauldron.legacy.ICauldronRecipe;
+import knightminer.inspirations.library.recipe.cauldron.legacy.ICauldronRecipe.CauldronState;
 import knightminer.inspirations.recipes.block.EnhancedCauldronBlock;
 import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
 import net.minecraft.block.Block;

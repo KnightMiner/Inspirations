@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-package knightminer.inspirations.recipes.recipe.cauldron.fill;
+package knightminer.inspirations.library.recipe.cauldron.legacy;
 
 import mcp.MethodsReturnNonnullByDefault;
 
