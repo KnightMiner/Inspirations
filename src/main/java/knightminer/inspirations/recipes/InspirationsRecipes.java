@@ -8,6 +8,8 @@ import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronRecipe;
 import knightminer.inspirations.recipes.block.EnhancedCauldronBlock;
 import knightminer.inspirations.recipes.item.MixedDyedBottleItem;
 import knightminer.inspirations.recipes.item.SimpleDyedBottleItem;
+import knightminer.inspirations.recipes.recipe.cauldron.EmptyBucketCauldronRecipe;
+import knightminer.inspirations.recipes.recipe.cauldron.FillBucketCauldronRecipe;
 import knightminer.inspirations.recipes.recipe.cauldron.contents.CauldronWater;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -17,6 +19,7 @@ import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.crafting.IRecipeSerializer;
+import net.minecraft.item.crafting.SpecialRecipeSerializer;
 import net.minecraft.potion.Potions;
 import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -51,6 +54,8 @@ public class InspirationsRecipes extends ModuleBase {
 
   // cauldron serializers
   public static CauldronRecipe.Serializer cauldronSerializer;
+  public static SpecialRecipeSerializer<EmptyBucketCauldronRecipe> emptyBucketSerializer;
+  public static SpecialRecipeSerializer<FillBucketCauldronRecipe> fillBucketSerializer;
 
 
   @SubscribeEvent
@@ -98,6 +103,8 @@ public class InspirationsRecipes extends ModuleBase {
   void registerSerializers(Register<IRecipeSerializer<?>> event) {
     RegistryAdapter<IRecipeSerializer<?>> registry = new RegistryAdapter<>(event.getRegistry());
     cauldronSerializer = registry.register(new CauldronRecipe.Serializer(), "cauldron");
+    emptyBucketSerializer = registry.register(new SpecialRecipeSerializer<>(EmptyBucketCauldronRecipe::new), "cauldron_empty_bucket");
+    fillBucketSerializer = registry.register(new SpecialRecipeSerializer<>(FillBucketCauldronRecipe::new), "cauldron_fill_bucket");
 
     // add water as an override to fluids and potions
     CauldronWater water = CauldronContentTypes.WATER.get();

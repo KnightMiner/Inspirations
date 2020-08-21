@@ -2,7 +2,6 @@ package knightminer.inspirations.library.recipe.cauldron.inventory;
 
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.MathHelper;
 
 import java.util.function.IntUnaryOperator;
 
@@ -58,7 +57,7 @@ public interface IModifyableCauldronInventory extends ICauldronInventory {
    * @return  True if the cauldron is now empty, false otherwise
    */
   default boolean updateLevel(IntUnaryOperator updater) {
-    int newLevel = MathHelper.clamp(updater.applyAsInt(getLevel()), 0, 3);
+    int newLevel = updater.applyAsInt(getLevel());
     setLevel(newLevel);
     return newLevel == 0;
   }
