@@ -1,0 +1,33 @@
+{
+  "type": "inspirations:cauldron",
+  "conditions": [
+    {
+      "prop": "recipes_module",
+      "type": "inspirations:config"
+    },
+    {
+      "prop": "cauldron_recipes",
+      "type": "inspirations:config"
+    }
+  ],
+  "input": {
+    "item": {
+      "item": "minecraft:ice"
+    },
+    "contents": {
+      "type": "inspirations:content_type",
+      "name": "inspirations:water"
+    },
+    "level": {
+      "max": 2
+    }
+  },
+  "output": {
+    "contents": {
+      "type": "inspirations:water"
+    },
+    "level": {
+      "set": 3
+    }
+  }
+}

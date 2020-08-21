@@ -1,0 +1,33 @@
+{
+  "type": "inspirations:cauldron",
+  "conditions": [
+    {
+      "prop": "recipes_module",
+      "type": "inspirations:config"
+    },
+    {
+      "prop": "cauldron_fluids",
+      "type": "inspirations:config"
+    }
+  ],
+  "input": {
+    "item": {
+      "item": "minecraft:baked_potato"
+    },
+    "amount": 4,
+    "contents": {
+      "type": "inspirations:fluid",
+      "name": "inspirations:mushroom_stew"
+    },
+    "level": {
+      "min": 2
+    },
+    "temperature": "hot"
+  },
+  "output": {
+    "contents": {
+      "type": "inspirations:fluid",
+      "name": "inspirations:potato_soup"
+    }
+  }
+}

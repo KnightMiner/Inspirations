@@ -1,0 +1,40 @@
+{
+  "type": "inspirations:cauldron",
+  "conditions": [
+    {
+      "prop": "recipes_module",
+      "type": "inspirations:config"
+    },
+    {
+      "prop": "cauldron_fluids",
+      "type": "inspirations:config"
+    }
+  ],
+  "input": {
+    "item": {
+      "item": "minecraft:mushroom_stew"
+    },
+    "contents": {
+      "type": "inspirations:fluid",
+      "name": "inspirations:mushroom_stew"
+    },
+    "level": {
+      "max": 2
+    }
+  },
+  "output": {
+    "item": {
+      "item": "minecraft:bowl"
+    },
+    "container": {
+      "empty": true
+    },
+    "contents": {
+      "type": "inspirations:fluid",
+      "name": "inspirations:mushroom_stew"
+    },
+    "level": {
+      "add": 1
+    }
+  }
+}

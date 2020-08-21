@@ -1,0 +1,37 @@
+{
+  "type": "inspirations:cauldron",
+  "conditions": [
+    {
+      "prop": "recipes_module",
+      "type": "inspirations:config"
+    },
+    {
+      "prop": "cauldron_dyeing",
+      "type": "inspirations:config"
+    },
+    {
+      "prop": "carpeted_trapdoor",
+      "type": "inspirations:config"
+    }
+  ],
+  "input": {
+    "item": {
+      "tag": "inspirations:carpeted_trapdoors"
+    },
+    "contents": {
+      "type": "inspirations:dye",
+      "name": "brown"
+    },
+    "level": {
+      "min": 1
+    }
+  },
+  "output": {
+    "item": {
+      "item": "inspirations:brown_carpeted_trapdoor"
+    },
+    "level": {
+      "add": -1
+    }
+  }
+}

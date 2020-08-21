@@ -1,0 +1,33 @@
+{
+  "type": "inspirations:cauldron",
+  "conditions": [
+    {
+      "prop": "recipes_module",
+      "type": "inspirations:config"
+    },
+    {
+      "prop": "cauldron_dyeing",
+      "type": "inspirations:config"
+    }
+  ],
+  "input": {
+    "item": {
+      "tag": "minecraft:carpets"
+    },
+    "contents": {
+      "type": "inspirations:dye",
+      "name": "orange"
+    },
+    "level": {
+      "min": 1
+    }
+  },
+  "output": {
+    "item": {
+      "item": "minecraft:orange_carpet"
+    },
+    "level": {
+      "add": -1
+    }
+  }
+}

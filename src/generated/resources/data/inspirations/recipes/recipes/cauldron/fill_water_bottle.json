@@ -1,0 +1,34 @@
+{
+  "type": "inspirations:cauldron",
+  "conditions": [
+    {
+      "prop": "recipes_module",
+      "type": "inspirations:config"
+    },
+    {
+      "prop": "cauldron_recipes",
+      "type": "inspirations:config"
+    }
+  ],
+  "input": {
+    "item": {
+      "item": "minecraft:glass_bottle"
+    },
+    "contents": {
+      "type": "inspirations:content_type",
+      "name": "inspirations:water"
+    },
+    "level": {
+      "min": 1
+    }
+  },
+  "output": {
+    "item": {
+      "item": "minecraft:potion",
+      "nbt": "{Potion:\"minecraft:water\"}"
+    },
+    "level": {
+      "add": -1
+    }
+  }
+}

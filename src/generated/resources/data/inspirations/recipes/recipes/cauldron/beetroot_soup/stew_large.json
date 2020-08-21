@@ -1,0 +1,33 @@
+{
+  "type": "inspirations:cauldron",
+  "conditions": [
+    {
+      "prop": "recipes_module",
+      "type": "inspirations:config"
+    },
+    {
+      "prop": "cauldron_fluids",
+      "type": "inspirations:config"
+    }
+  ],
+  "input": {
+    "item": {
+      "tag": "forge:crops/beetroot"
+    },
+    "amount": 12,
+    "contents": {
+      "type": "inspirations:content_type",
+      "name": "inspirations:water"
+    },
+    "level": {
+      "min": 2
+    },
+    "temperature": "hot"
+  },
+  "output": {
+    "contents": {
+      "type": "inspirations:fluid",
+      "name": "inspirations:beetroot_soup"
+    }
+  }
+}

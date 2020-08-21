@@ -1,0 +1,33 @@
+{
+  "type": "inspirations:cauldron",
+  "conditions": [
+    {
+      "prop": "recipes_module",
+      "type": "inspirations:config"
+    },
+    {
+      "prop": "cauldron_concrete",
+      "type": "inspirations:config"
+    }
+  ],
+  "input": {
+    "item": {
+      "item": "minecraft:black_concrete_powder"
+    },
+    "contents": {
+      "type": "inspirations:content_type",
+      "name": "inspirations:water"
+    },
+    "level": {
+      "min": 1
+    }
+  },
+  "output": {
+    "item": {
+      "item": "minecraft:black_concrete"
+    },
+    "level": {
+      "add": -1
+    }
+  }
+}

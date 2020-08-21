@@ -1,0 +1,13 @@
+{
+  "type": "inspirations:cauldron_empty_bucket",
+  "conditions": [
+    {
+      "prop": "recipes_module",
+      "type": "inspirations:config"
+    },
+    {
+      "prop": "cauldron_recipes",
+      "type": "inspirations:config"
+    }
+  ]
+}

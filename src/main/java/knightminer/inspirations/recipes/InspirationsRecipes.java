@@ -6,6 +6,7 @@ import knightminer.inspirations.common.ModuleBase;
 import knightminer.inspirations.common.item.HidableItem;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronRecipe;
+import knightminer.inspirations.recipes.data.RecipesRecipeProvider;
 import knightminer.inspirations.recipes.item.MixedDyedBottleItem;
 import knightminer.inspirations.recipes.item.SimpleDyedBottleItem;
 import knightminer.inspirations.recipes.recipe.cauldron.EmptyBucketCauldronRecipe;
@@ -14,6 +15,7 @@ import knightminer.inspirations.recipes.recipe.cauldron.contents.CauldronWater;
 import net.minecraft.block.Block;
 import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.block.material.Material;
+import net.minecraft.data.DataGenerator;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.BucketItem;
@@ -31,6 +33,7 @@ import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
+import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import slimeknights.mantle.registration.FluidBuilder;
 import slimeknights.mantle.registration.adapter.BlockRegistryAdapter;
 import slimeknights.mantle.registration.adapter.FluidRegistryAdapter;
@@ -163,6 +166,14 @@ public class InspirationsRecipes extends ModuleBase {
     // add all dyes as overrides into color
     for (DyeColor color : DyeColor.values()) {
       CauldronContentTypes.COLOR.addOverride(color.getColorValue(), CauldronContentTypes.DYE.of(color));
+    }
+  }
+
+  @SubscribeEvent
+  void gatherData(GatherDataEvent event) {
+    DataGenerator gen = event.getGenerator();
+    if (event.includeServer()) {
+      gen.addProvider(new RecipesRecipeProvider(gen));
     }
   }
 

@@ -1,0 +1,33 @@
+{
+  "type": "inspirations:cauldron",
+  "conditions": [
+    {
+      "prop": "recipes_module",
+      "type": "inspirations:config"
+    },
+    {
+      "prop": "cauldron_fluids",
+      "type": "inspirations:config"
+    }
+  ],
+  "input": {
+    "item": {
+      "item": "minecraft:bowl"
+    },
+    "contents": {
+      "type": "inspirations:fluid",
+      "name": "inspirations:rabbit_stew"
+    },
+    "level": {
+      "min": 1
+    }
+  },
+  "output": {
+    "item": {
+      "item": "minecraft:rabbit_stew"
+    },
+    "level": {
+      "add": -1
+    }
+  }
+}
