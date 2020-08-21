@@ -4,9 +4,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import io.netty.handler.codec.DecoderException;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
+import knightminer.inspirations.library.recipe.cauldron.CauldronIngredients;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.contenttype.CauldronContentType;
-import knightminer.inspirations.recipes.InspirationsRecipes;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
@@ -41,7 +41,7 @@ public class ContentTypeIngredient implements ICauldronIngredient {
 
   @Override
   public ICauldronIngredientSerializer<?> getSerializer() {
-    return InspirationsRecipes.contentTypeIngredient;
+    return CauldronIngredients.TYPE;
   }
 
   public static class Serializer implements ICauldronIngredientSerializer<ContentTypeIngredient> {
