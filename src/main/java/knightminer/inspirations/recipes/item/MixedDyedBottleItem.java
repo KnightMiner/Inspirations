@@ -6,23 +6,14 @@ import knightminer.inspirations.library.Util;
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.util.Constants;
 
 public class MixedDyedBottleItem extends HidableItem {
-
   private static final String TAG_COLOR = "color";
-
-  public MixedDyedBottleItem() {
-    super(new Item.Properties()
-              .group(ItemGroup.MATERIALS)
-              .maxStackSize(16)
-              .containerItem(Items.GLASS_BOTTLE),
-          Config::enableCauldronDyeing
-         );
+  public MixedDyedBottleItem(Properties props) {
+    super(props, Config::enableCauldronDyeing);
   }
 
   /**

@@ -106,6 +106,7 @@ public class ConfigEnabledCondition implements ICondition, ILootCondition {
   public static final ConfigEnabledCondition MODULE_UTILITY = add("utility_module", Config.utilityModule);
   public static final ConfigEnabledCondition MODULE_TOOLS = add("tools_module", Config.toolsModule);
   public static final ConfigEnabledCondition MODULE_TWEAKS = add("tweaks_module", Config.tweaksModule);
+  public static final ConfigEnabledCondition MODULE_RECIPES = add("recipes_module", Config.recipesModule);
 
   // building
   public static final ConfigEnabledCondition BOOKSHELF = add("bookshelf", Config.enableBookshelf);
@@ -143,6 +144,17 @@ public class ConfigEnabledCondition implements ICondition, ILootCondition {
   public static final ConfigEnabledCondition CAVE_SPIDER_WEB = add("cave_spider_web", Config.caveSpiderDrops);
 
   // recipes
-  public static final ConfigEnabledCondition CAULDRON_DYEING = add("cauldron_dyeing", () -> false/* TODO: Config::enableCauldronDyeing */);
+  public static final ConfigEnabledCondition CAULDRON_RECIPES = add("cauldron_recipes", Config.cauldronRecipes);
+  public static final ConfigEnabledCondition CAULDRON_CONCRETE = add("cauldron_concrete", Config.cauldronConcrete);
+  public static final ConfigEnabledCondition EXTENDED_CAULDRON = add("extended_cauldron_recipes", Config.extendedCaulronRecipes);
+  // fluids
+  public static final ConfigEnabledCondition CAULDRON_FLUIDS = add("cauldron_fluids", Config.enableCauldronFluids);
+  // dyes
+  public static final ConfigEnabledCondition CAULDRON_DYEING = add("cauldron_dyeing", Config.enableCauldronDyeing);
+  public static final ConfigEnabledCondition EXTRA_BOTTLE_RECIPES = add("extra_bottle_recipes", Config.extraBottleRecipes);
+  // potions
+  public static final ConfigEnabledCondition CAULDRON_POTIONS = add("cauldron_potions", Config.enableCauldronPotions);
+  public static final ConfigEnabledCondition CAULDRON_BREWING = add("cauldron_brewing", Config.enableCauldronBrewing);
+  public static final ConfigEnabledCondition CAULDRON_TIP_ARROWS = add("cauldron_tip_arrows", Config.cauldronTipArrows);
 
 }

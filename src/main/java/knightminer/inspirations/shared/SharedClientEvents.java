@@ -8,13 +8,11 @@ import knightminer.inspirations.library.client.ConfigurableResourcePack;
 import knightminer.inspirations.library.client.model.BookshelfModel;
 import knightminer.inspirations.library.client.model.TrimModel;
 import net.minecraft.client.Minecraft;
-import net.minecraft.inventory.container.PlayerContainer;
 import net.minecraft.resources.IReloadableResourceManager;
 import net.minecraft.resources.IResourceManager;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -63,14 +61,5 @@ public class SharedClientEvents extends ClientEvents {
   @SubscribeEvent
   public void collectBakeParameters(ModelBakeEvent event) {
     modelLoader = event.getModelLoader();
-  }
-
-  @SubscribeEvent
-  static void registerTextures(TextureStitchEvent.Pre event) {
-    // ensures the colorless fluid texture is loaded.
-    if (PlayerContainer.LOCATION_BLOCKS_TEXTURE.equals(event.getMap().getTextureLocation())) {
-      event.addSprite(Inspirations.getResource("block/fluid_colorless"));
-      event.addSprite(Inspirations.getResource("block/fluid_colorless_flow"));
-    }
   }
 }

@@ -129,10 +129,28 @@
     "item.inspirations.green_dyed_bottle": "Green Dyed Water Bottle",
     "item.inspirations.red_dyed_bottle": "Red Dyed Water Bottle",
     "item.inspirations.black_dyed_bottle": "Black Dyed Water Bottle",
-
-    "fluid.inspirations.mushroom_stew": "Mushroom Stew",
+    
+    "block.inspirations.beetroot_soup_fluid": "Beetroot Soup",
     "fluid.inspirations.beetroot_soup": "Beetroot Soup",
+    "fluid.inspirations.flowing_beetroot_soup": "Flowing Beetroot Soup",
+    "item.inspirations.beetroot_soup_bucket": "Beetroot Soup Bucket",
+    
+    "block.inspirations.mushroom_stew_fluid": "Mushroom Stew",
+    "fluid.inspirations.mushroom_stew": "Mushroom Stew",
+    "fluid.inspirations.flowing_mushroom_stew": "Flowing Mushroom Stew",
+    "item.inspirations.mushroom_stew_bucket": "Mushroom Stew Bucket",
+    
+    "item.inspirations.potato_soup": "Potato Soup",
+    "block.inspirations.potato_soup_fluid": "Potato Soup",
+    "fluid.inspirations.potato_soup": "Potato Soup",
+    "fluid.inspirations.flowing_potato_soup": "Flowing Potato Soup",
+    "item.inspirations.potato_soup_bucket": "Potato Soup Bucket",
+    
+    "block.inspirations.rabbit_stew_fluid": "Rabbit Stew",
     "fluid.inspirations.rabbit_stew": "Rabbit Stew",
+    "fluid.inspirations.flowing_rabbit_stew": "Flowing Rabbit Stew",
+    "item.inspirations.rabbit_stew_bucket": "Rabbit Stew Bucket",
+    
     "fluid.inspirations.milk": "Milk",
 
     "death.attack.inspirations.boiling": "%s was boiled alive",

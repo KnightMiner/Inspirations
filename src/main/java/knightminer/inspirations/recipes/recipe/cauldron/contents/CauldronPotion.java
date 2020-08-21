@@ -9,7 +9,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.IRegistryDelegate;
 
 public class CauldronPotion implements ICauldronPotion {
-  public static final ResourceLocation TEXTURE = Inspirations.getResource("block/fluid_potion");
+  public static final ResourceLocation TEXTURE = Inspirations.getResource("block/fluid/potion");
 
   private final IRegistryDelegate<Potion> potion;
   public CauldronPotion(Potion potion) {

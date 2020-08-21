@@ -6,25 +6,16 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.DyeColor;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.SoundEvents;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 public class SimpleDyedBottleItem extends HidableItem {
-  private DyeColor color;
-
-  public SimpleDyedBottleItem(DyeColor color) {
-    super(new Item.Properties()
-              .group(ItemGroup.MATERIALS)
-              .maxStackSize(16)
-              .containerItem(Items.GLASS_BOTTLE),
-          Config::enableCauldronDyeing
-         );
+  private final DyeColor color;
+  public SimpleDyedBottleItem(Properties props, DyeColor color) {
+    super(props, Config::enableCauldronDyeing);
     this.color = color;
   }
 

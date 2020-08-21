@@ -10,7 +10,7 @@ import net.minecraft.util.ResourceLocation;
  * Standard implementation of {@link ICauldronColor}
  */
 public class CauldronColor implements ICauldronColor {
-  public static final ResourceLocation TEXTURE = Inspirations.getResource("block/fluid_dye");
+  public static final ResourceLocation TEXTURE = Inspirations.getResource("block/fluid/colorless");
 
   private final int color;
   public CauldronColor(int color) {

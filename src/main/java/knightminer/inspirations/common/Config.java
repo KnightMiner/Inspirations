@@ -28,6 +28,7 @@ public class Config {
   public static final CachedBoolean utilityModule;
   public static final CachedBoolean toolsModule;
   public static final CachedBoolean tweaksModule;
+  public static final CachedBoolean recipesModule;
 
   // general
   public static final CachedBoolean showAllVariants;
@@ -68,6 +69,21 @@ public class Config {
   // recipes
 
   // cauldron
+  public static CachedBoolean cauldronRecipes;
+  public static CachedBoolean cauldronConcrete;
+  // extended
+  public static CachedBoolean extendedCaulronRecipes;
+  public static CachedBoolean extendedCauldron;
+  // fluids
+  public static CachedBoolean enableCauldronFluids;
+  // dyes
+  public static CachedBoolean enableCauldronDyeing;
+  public static CachedBoolean extraBottleRecipes;
+  // potions
+  public static CachedBoolean enableCauldronPotions;
+  public static CachedBoolean enableCauldronBrewing;
+  public static CachedBoolean cauldronTipArrows;
+
   public static boolean enableCauldronRecipes() {
     return false;
   }
@@ -187,6 +203,11 @@ public class Config {
 
       toolsModule = server(server
           .comment("Includes new tools to reduce dependency on debug features")
+          .worldRestart()
+          .define("tools", true));
+
+      recipesModule = server(server
+          .comment("Includes new blocks that add new types of recipes")
           .worldRestart()
           .define("tools", true));
     }
@@ -329,94 +350,82 @@ public class Config {
     server.pop();
 
     // recipes
-		/*
-		builder.push("recipes");
+		server.push("recipes");
 		{
+		  /*
 			// anvil smashing
 			// configFile.moveProperty("tweaks", "anvilSmashing", "recipes");
 			enableAnvilSmashing = builder_override
 					.comment("Anvils break glass blocks and transform blocks into other blocks on landing. Uses a block override, so disable if another mod replaces anvils.")
 					.worldRestart()
 					.define("anvilSmashing", true);
+			*/
 
 			// cauldron //
 
-			// basic config
-			spongeEmptyCauldron = builder
-					.comment("Allows sponges to be used to empty the cauldron of dye, water, or potions. Can be 'disabled', 'full' or 'any'. If set to 'full', requires the cauldron to be full, prevents duplicating water but is less useful for removing unwanted fluids.")
-					.defineEnum("spongeEmpty", SpongeEmptyCauldron.ANY);
-
-			// extended options
-			replaceCauldron = builder_override
-					.comment("Replace the cauldron block to allow it to hold other liquids and perform recipes.")
+      // extended options
+      extendedCauldron = override(override
+					.comment("Replace the cauldron block to allow it to hold other liquids and perform extended recipes.")
 					.worldRestart()
-					.define("cauldron", true);
-			enableCauldronRecipes = builder
-					.comment("Allows additional recipes to be performed in the cauldron. If the block replacement is disabled, functionality will be limited to water in cauldrons.")
-					.define("extendCauldron", true);
+					.define("cauldron", true));
 
-			builder.push("cauldron");
+			server.push("cauldron");
 			{
+			  // base config
+        cauldronRecipes = and(recipesModule, server
+            .comment("Allows additional recipes to be performed in the cauldron. If the block replacement is disabled, functionality will be limited to water in cauldrons.")
+            .define("enable", true));
+        extendedCaulronRecipes = and(extendedCauldron, cauldronRecipes);
 
-				enableBiggerCauldron = builder
-						.comment("Makes the cauldron hold 4 bottle per bucket instead of 3. Translates better to modded fluids.")
-						.worldRestart()
-						.define("bigger", false);
-
-				fasterCauldronRain = builder
-						.comment("Cauldrons fill faster in the rain than vanilla painfully slow rate.")
-						.define("fasterRain", true);
-				dropCauldronContents = builder
-						.comment("Cauldrons will drop their contents when broken.")
-						.define("dropContents", true);
-
-
-				cauldronObsidian = builder
-						.comment("Allows making obsidian in a cauldron by using a lava bucket on a water filled cauldron. Supports modded buckets. If cauldron fluids is enabled, you can also use a water bucket on a lava filled cauldron.")
-						.define("obsidian", true);
+        // vanilla recipes
+        cauldronConcrete = and(cauldronRecipes, server
+            .comment("Allows concrete to be made in the cauldron")
+            .define("concrete", true));
 
 				// fluids
-				enableCauldronFluids = builder
+				enableCauldronFluids = and(extendedCaulronRecipes, server
 						.comment("Allows cauldrons to be filled with any fluid and use them in recipes")
-						.define("fluids.enable", true);
-				enableMilk = builder
-						.comment("Registers milk as a fluid so it can be used in cauldron recipes.")
-						.define("fluids.milk", true);
+						.define("fluids.enable", true));
 
 				// dyeing
-				enableCauldronDyeing = builder
+				enableCauldronDyeing = and(extendedCaulronRecipes, server
 						.comment("Allows cauldrons to be filled with dyes and dye items using cauldrons")
-						.define("dyeing.enable", true);
+						.define("dyeing.enable", true));
+				/* TODO: reimplement
 				patchVanillaDyeRecipes = builder
 						.comment("Makes crafting two dyed water bottles together produce a dyed water bottle. Requires modifying vanilla recipes to prevent a conflict")
 						.define("dyeing.patchVanillaRecipes", true);
-				extraBottleRecipes = builder
+				*/
+				extraBottleRecipes = and(enableCauldronDyeing, server
 						.comment("Adds extra dyed bottle recipes to craft green and brown")
-						.define("dyeing.extraBottleRecipes", true);
+						.define("dyeing.extraBottleRecipes", true));
 
 				// potions
-				enableCauldronPotions = builder
+				enableCauldronPotions = and(cauldronRecipes, extendedCauldron, server
 						.comment("Allows cauldrons to be filled with potions and support brewing")
-						.define("potions.enable", true);
-				enableCauldronBrewing = builder
+						.define("potions.enable", true));
+				enableCauldronBrewing = and(enableCauldronPotions, server
 						.comment("Allows cauldrons to perform brewing recipes.")
-						.define("potions.brewing", true);
+						.define("potions.brewing", true));
+				/* TODO: reconsider
 				expensiveCauldronBrewing = builder
 						.comment("Caps brewing at 2 potions per ingredient, requiring 2 ingredients for a full cauldron. Makes the brewing stand still useful and balances better against the bigger cauldron.")
 						.define("potions.brewingExpensive", true);
-				cauldronTipArrows = builder
+				*/
+				cauldronTipArrows = and(enableCauldronPotions, server
 						.comment("Allows cauldrons to tip arrows with potions.")
-						.define("potions.tippedArrow", true);
+						.define("potions.tippedArrow", true));
 
 				// dispensers
+        /* TODO: reconsider
 				enableCauldronDispenser = builder
 						.comment("Allows dispensers to perform some recipes in the cauldron. Intended to be used for recipes to fill and empty fluid containers as droppers can already be used for recipes")
 						.define("dispenser", true);
+						*/
 			}
-			builder.pop();
+      server.pop();
 		}
-		builder.pop();
-		 */
+    server.pop();
 
     /*
      * Tools module
@@ -741,6 +750,18 @@ public class Config {
    * @return  Cached config value
    */
   private static CachedBoolean and(CachedBoolean first, BooleanValue second) {
+    CachedBoolean cached = new CachedBoolean(() -> first.get() && second.get());
+    SERVER_VALUES.add(cached);
+    return cached;
+  }
+
+  /**
+   * Creates a cached config value by anding two config values
+   * @param first   First config value, typically a module
+   * @param second  Property config value
+   * @return  Cached config value
+   */
+  private static CachedBoolean and(CachedBoolean first, CachedBoolean second) {
     CachedBoolean cached = new CachedBoolean(() -> first.get() && second.get());
     SERVER_VALUES.add(cached);
     return cached;
