@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import io.netty.handler.codec.DecoderException;
 import knightminer.inspirations.Inspirations;
+import knightminer.inspirations.library.recipe.cauldron.contents.EmptyCauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronColor;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronDye;
@@ -43,6 +44,9 @@ public class CauldronContentTypes {
   private static final BiMap<ResourceLocation,CauldronContentType<?>> TYPES = HashBiMap.create();
 
   /* Public constants */
+
+  /** Generic water type */
+  public static final SingletonContentType<EmptyCauldronContents> EMPTY = register("empty", new SingletonContentType<>(EmptyCauldronContents.class, EmptyCauldronContents.INSTANCE));
 
   /** Generic water type */
   public static final SingletonContentType<CauldronWater> WATER = register("water", new SingletonContentType<>(CauldronWater.class, new CauldronWater()));
