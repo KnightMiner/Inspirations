@@ -15,8 +15,8 @@
       "item": "minecraft:sticky_piston"
     },
     "contents": {
-      "type": "inspirations:content_type",
-      "name": "inspirations:water"
+      "type": "inspirations:fluid",
+      "name": "minecraft:water"
     },
     "level": {
       "min": 1

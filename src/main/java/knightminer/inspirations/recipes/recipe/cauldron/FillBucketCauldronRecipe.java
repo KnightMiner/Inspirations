@@ -1,7 +1,6 @@
 package knightminer.inspirations.recipes.recipe.cauldron;
 
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
-import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronFluid;
 import knightminer.inspirations.library.recipe.cauldron.inventory.ICauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.inventory.IModifyableCauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
@@ -35,8 +34,7 @@ public class FillBucketCauldronRecipe implements ICauldronRecipe {
 
     // must be a fluid
     return inv.getContents()
-              .as(CauldronContentTypes.FLUID)
-              .map(ICauldronFluid::getFluid)
+              .get(CauldronContentTypes.FLUID)
               // must have a fluid handler, I really wish you could flatmap a lazy optional
               .map(fluid -> FluidUtil.getFluidHandler(inv.getStack())
                                      // handler must be fillable with the given fluid and must take 1000mb
@@ -48,8 +46,7 @@ public class FillBucketCauldronRecipe implements ICauldronRecipe {
   @Override
   public void handleRecipe(IModifyableCauldronInventory inv) {
     inv.getContents()
-       .as(CauldronContentTypes.FLUID)
-       .map(ICauldronFluid::getFluid)
+       .get(CauldronContentTypes.FLUID)
        // must have a fluid handler, I really wish you could flatmap a lazy optional
        .ifPresent(fluid -> FluidUtil.getFluidHandler(inv.getStack()).ifPresent(handler -> {
          // if we successfully fill the handler, update the cauldron
@@ -81,8 +78,7 @@ public class FillBucketCauldronRecipe implements ICauldronRecipe {
   public ItemStack getCraftingResult(ICauldronInventory inv) {
     // return filled bucket for the contained fluid, or empty bucket if invalid fluid
     return new ItemStack(inv.getContents()
-                            .as(CauldronContentTypes.FLUID)
-                            .map(ICauldronFluid::getFluid)
+                            .get(CauldronContentTypes.FLUID)
                             .map(Fluid::getFilledBucket)
                             .orElse(Items.BUCKET));
   }

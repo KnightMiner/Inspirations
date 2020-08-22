@@ -5,8 +5,6 @@ import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.CauldronIngredients;
 import knightminer.inspirations.library.recipe.cauldron.contents.EmptyCauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
-import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronFluid;
-import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronPotion;
 import knightminer.inspirations.library.recipe.cauldron.ingredient.ICauldronIngredient;
 import knightminer.inspirations.library.recipe.cauldron.util.LevelPredicate;
 import knightminer.inspirations.library.recipe.cauldron.util.LevelUpdate;
@@ -244,13 +242,13 @@ public class CauldronRecipeBuilder extends AbstractRecipeBuilder<CauldronRecipeB
     }
     if (newContents != EmptyCauldronContents.INSTANCE) {
       // try fluid next
-      Optional<Fluid> fluid = newContents.as(CauldronContentTypes.FLUID).map(ICauldronFluid::getFluid);
+      Optional<Fluid> fluid = newContents.get(CauldronContentTypes.FLUID);
       if (fluid.isPresent()) {
         build(consumer, Objects.requireNonNull(fluid.get().getRegistryName()));
         return;
       }
       // try potion
-      Optional<Potion> potion = newContents.as(CauldronContentTypes.POTION).map(ICauldronPotion::getPotion);
+      Optional<Potion> potion = newContents.get(CauldronContentTypes.POTION);
       if (potion.isPresent()) {
         build(consumer, Objects.requireNonNull(potion.get().getRegistryName()));
         return;

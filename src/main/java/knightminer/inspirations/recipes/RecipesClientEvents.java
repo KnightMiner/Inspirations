@@ -3,8 +3,8 @@ package knightminer.inspirations.recipes;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.ClientEvents;
 import knightminer.inspirations.recipes.item.MixedDyedBottleItem;
-import knightminer.inspirations.recipes.recipe.cauldron.contents.CauldronColor;
-import knightminer.inspirations.recipes.recipe.cauldron.contents.CauldronPotion;
+import knightminer.inspirations.recipes.recipe.cauldron.contents.ColorContentType;
+import knightminer.inspirations.recipes.recipe.cauldron.contents.PotionContentType;
 import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.inventory.container.PlayerContainer;
 import net.minecraftforge.api.distmarker.Dist;
@@ -14,6 +14,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 
+@SuppressWarnings("unused")
 @EventBusSubscriber(modid = Inspirations.modID, value = Dist.CLIENT, bus = Bus.MOD)
 public class RecipesClientEvents extends ClientEvents {
 	/* TODO: reimplement
@@ -45,9 +46,8 @@ public class RecipesClientEvents extends ClientEvents {
 		ItemColors itemColors = event.getItemColors();
 
 		// dyed water bottles
-    InspirationsRecipes.simpleDyedWaterBottle.forEach((color, bottle) -> {
-      itemColors.register((stack, index) -> index == 1 ? color.getColorValue() : -1, bottle);
-    });
+    InspirationsRecipes.simpleDyedWaterBottle.forEach((color, bottle) ->
+			itemColors.register((stack, index) -> index == 1 ? color.getColorValue() : -1, bottle));
     registerItemColors(itemColors, (stack, index) -> index == 1 ? MixedDyedBottleItem.dyeFromBottle(stack) : -1, InspirationsRecipes.mixedDyedWaterBottle);
 	}
 
@@ -56,8 +56,8 @@ public class RecipesClientEvents extends ClientEvents {
 	  if (PlayerContainer.LOCATION_BLOCKS_TEXTURE.equals(event.getMap().getTextureLocation())) {
 	    event.addSprite(InspirationsRecipes.STILL_FLUID);
       event.addSprite(InspirationsRecipes.FLOWING_FLUID);
-      event.addSprite(CauldronColor.TEXTURE);
-      event.addSprite(CauldronPotion.TEXTURE);
+      event.addSprite(ColorContentType.TEXTURE);
+      event.addSprite(PotionContentType.TEXTURE);
     }
 	}
 }

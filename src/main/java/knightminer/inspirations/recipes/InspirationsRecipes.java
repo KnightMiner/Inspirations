@@ -5,13 +5,13 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.ModuleBase;
 import knightminer.inspirations.common.item.HidableItem;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
+import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronRecipe;
 import knightminer.inspirations.recipes.data.RecipesRecipeProvider;
 import knightminer.inspirations.recipes.item.MixedDyedBottleItem;
 import knightminer.inspirations.recipes.item.SimpleDyedBottleItem;
 import knightminer.inspirations.recipes.recipe.cauldron.EmptyBucketCauldronRecipe;
 import knightminer.inspirations.recipes.recipe.cauldron.FillBucketCauldronRecipe;
-import knightminer.inspirations.recipes.recipe.cauldron.contents.CauldronWater;
 import net.minecraft.block.Block;
 import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.block.material.Material;
@@ -158,14 +158,13 @@ public class InspirationsRecipes extends ModuleBase {
     emptyBucketSerializer = registry.register(new SpecialRecipeSerializer<>(EmptyBucketCauldronRecipe::new), "cauldron_empty_bucket");
     fillBucketSerializer = registry.register(new SpecialRecipeSerializer<>(FillBucketCauldronRecipe::new), "cauldron_fill_bucket");
 
-    // add water as an override to fluids and potions
-    CauldronWater water = CauldronContentTypes.WATER.get();
-    CauldronContentTypes.FLUID.addOverride(Fluids.WATER, water);
-    CauldronContentTypes.POTION.addOverride(Potions.WATER, water);
+    // add water as an override to potions
+    ICauldronContents water = CauldronContentTypes.FLUID.of(Fluids.WATER);
+    CauldronContentTypes.POTION.setResult(Potions.WATER, water);
 
     // add all dyes as overrides into color
     for (DyeColor color : DyeColor.values()) {
-      CauldronContentTypes.COLOR.addOverride(color.getColorValue(), CauldronContentTypes.DYE.of(color));
+      CauldronContentTypes.COLOR.setResult(color.getColorValue(), CauldronContentTypes.DYE.of(color));
     }
   }
 

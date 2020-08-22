@@ -1,7 +1,6 @@
 package knightminer.inspirations.recipes.recipe.cauldron;
 
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
-import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronFluid;
 import knightminer.inspirations.library.recipe.cauldron.inventory.ICauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.inventory.IModifyableCauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
@@ -44,8 +43,7 @@ public class EmptyBucketCauldronRecipe implements ICauldronRecipe {
 
     // if filled, drain a specific fluid
     return inv.getContents()
-              .as(CauldronContentTypes.FLUID)
-              .map(ICauldronFluid::getFluid)
+              .get(CauldronContentTypes.FLUID)
               .map(fluid -> handler.drain(new FluidStack(fluid, BUCKET_VOLUME), action))
               .orElse(FluidStack.EMPTY);
   }

@@ -8,7 +8,6 @@ import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.CauldronIngredients;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.ingredient.ContentMatchIngredient;
-import knightminer.inspirations.library.recipe.cauldron.ingredient.ContentTypeIngredient;
 import knightminer.inspirations.library.recipe.cauldron.ingredient.FluidCauldronIngredient;
 import knightminer.inspirations.library.recipe.cauldron.ingredient.ICauldronIngredient;
 import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronRecipeBuilder;
@@ -75,7 +74,7 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
     this.consumer = consumer;
     String folder = "recipes/cauldron/";
 
-    ICauldronIngredient waterIngredient = ContentTypeIngredient.of(CauldronContentTypes.WATER);
+    ICauldronIngredient waterIngredient = FluidCauldronIngredient.of(Fluids.WATER);
     Consumer<IFinishedRecipe> cauldronRecipes = withCondition(ConfigEnabledCondition.CAULDRON_RECIPES);
 
     // vanilla recipes //
@@ -129,7 +128,7 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
     CauldronRecipeBuilder.cauldron(Ingredient.fromItems(Blocks.ICE), waterIngredient)
                          .maxLevels(2)
                          .setFull()
-                         .setOutput(CauldronContentTypes.WATER.get())
+                         .setOutput(CauldronContentTypes.FLUID.of(Fluids.WATER))
                          .addCriterion("has_item", hasItem(Blocks.ICE))
                          .build(cauldronRecipes, wrapE(Fluids.WATER, folder, "_from_ice"));
 
@@ -212,7 +211,7 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
     // undyed
     Ingredient ingredient = Ingredient.fromTag(tag);
     ICriterionInstance criteria = hasItem(tag);
-    CauldronRecipeBuilder.cauldron(ingredient, ContentTypeIngredient.of(CauldronContentTypes.WATER))
+    CauldronRecipeBuilder.cauldron(ingredient, FluidCauldronIngredient.of(Fluids.WATER))
                          .minLevels(1)
                          .addLevels(-1)
                          .setOutput(enumObject.get(DyeColor.WHITE))

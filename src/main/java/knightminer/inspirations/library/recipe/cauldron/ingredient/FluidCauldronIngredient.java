@@ -5,7 +5,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.CauldronIngredients;
-import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronFluid;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tags.FluidTags;
@@ -21,7 +20,7 @@ import java.util.Objects;
 /**
  * Cauldron ingredient type for fluid contents, mostly an extension of {@link ContentMatchIngredient}, but also includes tags
  */
-public class FluidCauldronIngredient extends ContentMatchIngredient<ICauldronFluid,Fluid> {
+public class FluidCauldronIngredient extends ContentMatchIngredient<Fluid> {
   private final ITag<Fluid> tag;
   private FluidCauldronIngredient(ITag<Fluid> tag) {
     super(CauldronIngredients.FLUID, CauldronContentTypes.FLUID);
@@ -33,7 +32,7 @@ public class FluidCauldronIngredient extends ContentMatchIngredient<ICauldronFlu
    * @param fluid  Fluid to match
    * @return  Ingredient
    */
-  public static ContentMatchIngredient<ICauldronFluid, Fluid> of(Fluid fluid) {
+  public static ContentMatchIngredient<Fluid> of(Fluid fluid) {
     return of(CauldronIngredients.FLUID, fluid);
   }
 
@@ -42,7 +41,7 @@ public class FluidCauldronIngredient extends ContentMatchIngredient<ICauldronFlu
    * @param fluids  Fluids to match
    * @return  Ingredient
    */
-  public static ContentMatchIngredient<ICauldronFluid, Fluid> of(Collection<Fluid> fluids) {
+  public static ContentMatchIngredient<Fluid> of(Collection<Fluid> fluids) {
     return of(CauldronIngredients.FLUID, ImmutableSet.copyOf(fluids));
   }
 
@@ -74,7 +73,7 @@ public class FluidCauldronIngredient extends ContentMatchIngredient<ICauldronFlu
     }
   }
 
-  public static class Serializer extends ContentMatchIngredient.Serializer<ICauldronFluid,Fluid> {
+  public static class Serializer extends ContentMatchIngredient.Serializer<Fluid> {
     /**
      * Creates a new serializer instance
      */
@@ -83,7 +82,7 @@ public class FluidCauldronIngredient extends ContentMatchIngredient<ICauldronFlu
     }
 
     @Override
-    public ContentMatchIngredient<ICauldronFluid, Fluid> read(JsonObject json) {
+    public ContentMatchIngredient<Fluid> read(JsonObject json) {
       // single fluid or array
       if (json.has("name")) {
         return super.read(json);

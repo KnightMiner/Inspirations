@@ -7,9 +7,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import io.netty.handler.codec.DecoderException;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
+import knightminer.inspirations.library.recipe.cauldron.contents.CauldronContentType;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
-import knightminer.inspirations.library.recipe.cauldron.contenttype.CauldronContentType;
-import knightminer.inspirations.library.recipe.cauldron.contenttype.MapContentType;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
@@ -24,16 +23,15 @@ import java.util.Set;
 import java.util.function.Function;
 
 /**
- * Type that can match a value or list of values. Only supports {@link MapContentType} at this time, but the base logic can be extracted if needed.
- * @param <C>  Content type to match
+ * Type that can match a value or list of values.
  * @param <T>  Value type
  */
-public abstract class ContentMatchIngredient<C extends ICauldronContents,T> implements ICauldronIngredient {
+public abstract class ContentMatchIngredient<T> implements ICauldronIngredient {
   private final ICauldronIngredientSerializer<?> serializer;
-  protected final MapContentType<C,T> type;
+  protected final CauldronContentType<T> type;
 
   @SuppressWarnings("WeakerAccess")
-  protected ContentMatchIngredient(ICauldronIngredientSerializer<?> serializer, MapContentType<C,T> type) {
+  protected ContentMatchIngredient(ICauldronIngredientSerializer<?> serializer, CauldronContentType<T> type) {
     this.serializer = serializer;
     this.type = type;
   }
@@ -42,11 +40,10 @@ public abstract class ContentMatchIngredient<C extends ICauldronContents,T> impl
    * Creates an instance from the given type and value
    * @param type   Type
    * @param value  Value
-   * @param <C>    Content type
    * @param <T>    Value type
    * @return  Ingredient
    */
-  public static <C extends ICauldronContents,T> ContentMatchIngredient<C,T> of(MapContentType<C,T> type, T value) {
+  public static <C extends ICauldronContents,T> ContentMatchIngredient<T> of(CauldronContentType<T> type, T value) {
     return new Single<>(Serializer.GENERIC, type, value);
   }
 
@@ -54,11 +51,10 @@ public abstract class ContentMatchIngredient<C extends ICauldronContents,T> impl
    * Creates an instance from the given type and values
    * @param type    Type
    * @param values  Values
-   * @param <C>     Content type
    * @param <T>     Value type
    * @return  Ingredient
    */
-  public static <C extends ICauldronContents,T> ContentMatchIngredient<C,T> of(MapContentType<C,T> type, Collection<T> values) {
+  public static <T> ContentMatchIngredient<T> of(CauldronContentType<T> type, Collection<T> values) {
     return new Multi<>(Serializer.GENERIC, type, ImmutableSet.copyOf(values));
   }
 
@@ -66,11 +62,10 @@ public abstract class ContentMatchIngredient<C extends ICauldronContents,T> impl
    * Creates an instance from the given serializer and value
    * @param serializer  Serializer to use
    * @param value       Value
-   * @param <C>         Content type
    * @param <T>         Value type
    * @return  Ingredient
    */
-  public static <C extends ICauldronContents,T> ContentMatchIngredient<C,T> of(Serializer<C,T> serializer, T value) {
+  public static <T> ContentMatchIngredient<T> of(Serializer<T> serializer, T value) {
     return new Single<>(serializer, Objects.requireNonNull(serializer.type), value);
   }
 
@@ -78,11 +73,10 @@ public abstract class ContentMatchIngredient<C extends ICauldronContents,T> impl
    * Creates an instance from the given serializer and values
    * @param serializer  Serializer to use
    * @param values      Values
-   * @param <C>         Content type
    * @param <T>         Value type
    * @return  Ingredient
    */
-  public static <C extends ICauldronContents,T> ContentMatchIngredient<C,T> of(Serializer<C,T> serializer, Collection<T> values) {
+  public static <T> ContentMatchIngredient<T> of(Serializer<T> serializer, Collection<T> values) {
     return new Multi<>(serializer, Objects.requireNonNull(serializer.type), ImmutableSet.copyOf(values));
   }
 
@@ -107,8 +101,7 @@ public abstract class ContentMatchIngredient<C extends ICauldronContents,T> impl
 
   @Override
   public boolean test(ICauldronContents contents) {
-    return contents.as(type)
-                   .map(type::getValue)
+    return contents.get(type)
                    .map(this::testValue)
                    .orElse(false);
   }
@@ -119,9 +112,9 @@ public abstract class ContentMatchIngredient<C extends ICauldronContents,T> impl
   }
 
   /** Matches a single value */
-  private static class Single<C extends ICauldronContents, T> extends ContentMatchIngredient<C,T> {
+  private static class Single<T> extends ContentMatchIngredient<T> {
     private final T value;
-    private Single(ICauldronIngredientSerializer<?> serializer, MapContentType<C,T> type, T value) {
+    private Single(ICauldronIngredientSerializer<?> serializer, CauldronContentType<T> type, T value) {
       super(serializer, type);
       this.value = value;
     }
@@ -143,9 +136,9 @@ public abstract class ContentMatchIngredient<C extends ICauldronContents,T> impl
   }
 
   /** Matches from a set */
-  private static class Multi<C extends ICauldronContents, T> extends ContentMatchIngredient<C,T> {
+  private static class Multi<T> extends ContentMatchIngredient<T> {
     private final Set<T> values;
-    private Multi(ICauldronIngredientSerializer<?> serializer, MapContentType<C,T> type, Set<T> values) {
+    private Multi(ICauldronIngredientSerializer<?> serializer, CauldronContentType<T> type, Set<T> values) {
       super(serializer, type);
       this.values = values;
     }
@@ -173,20 +166,20 @@ public abstract class ContentMatchIngredient<C extends ICauldronContents,T> impl
     }
   }
 
-  public static class Serializer<C extends ICauldronContents,T> implements ICauldronIngredientSerializer<ContentMatchIngredient<C,T>> {
+  public static class Serializer<T> implements ICauldronIngredientSerializer<ContentMatchIngredient<T>> {
     /**
      * Generic recipe serializer, requires both JSON and packets to include the contents type
      */
-    public static final Serializer<?,?> GENERIC = new Serializer<>();
+    public static final Serializer<?> GENERIC = new Serializer<>();
 
     @Nullable
-    private final MapContentType<C,T> type;
+    private final CauldronContentType<T> type;
 
     /**
      * Creates a new serializer using the given type
      * @param type  Serializer type
      */
-    public Serializer(MapContentType<C,T> type) {
+    public Serializer(CauldronContentType<T> type) {
       this.type = type;
     }
 
@@ -201,11 +194,10 @@ public abstract class ContentMatchIngredient<C extends ICauldronContents,T> impl
      * Helper to get a single value from a string
      * @param type       Content type
      * @param name       Value name
-     * @param <C>  Type of contents
      * @param <T>  Type of value
      * @return  Content match ingredient
      */
-    private static <C extends ICauldronContents, T> ContentMatchIngredient<C,T> getSingle(MapContentType<C,T> type, String name) {
+    private static <T> ContentMatchIngredient<T> getSingle(CauldronContentType<T> type, String name) {
       T value = type.getEntry(name);
       if (value == null) {
         throw new JsonSyntaxException("Invalid value '" + name + "' for type " + type);
@@ -220,19 +212,15 @@ public abstract class ContentMatchIngredient<C extends ICauldronContents,T> impl
      * @return  Type instance
      * @throws RuntimeException  if the type is missing or the wrong class type
      */
-    private static <C extends ICauldronContents, T> MapContentType<C,T> getType(ResourceLocation name, Function<String,RuntimeException> exception) {
+    private static <T> CauldronContentType<T> getType(ResourceLocation name, Function<String,RuntimeException> exception) {
       CauldronContentType<?> type = CauldronContentTypes.get(name);
       // must exist
       if (type == null) {
         throw exception.apply("Unknown cauldron content type '" + name + "'");
       }
-      // must match type
-      if (!(type instanceof MapContentType)) {
-        throw exception.apply("Cauldron content type '" + name + "' does not support content match");
-      }
       // only used by generic type, so type has ?,? generics
       //noinspection unchecked
-      return (MapContentType<C,T>) type;
+      return (CauldronContentType<T>) type;
     }
 
 
@@ -241,11 +229,10 @@ public abstract class ContentMatchIngredient<C extends ICauldronContents,T> impl
      * @param type       Content type
      * @param names      Value names
      * @param exception  Exception function
-     * @param <C>  Type of contents
      * @param <T>  Type of value
      * @return  Content match ingredient
      */
-    private static <C extends ICauldronContents, T> ContentMatchIngredient<C,T> getList(MapContentType<C,T> type, List<String> names, Function<String,RuntimeException> exception) {
+    private static <T> ContentMatchIngredient<T> getList(CauldronContentType<T> type, List<String> names, Function<String,RuntimeException> exception) {
       List<T> values = new ArrayList<>();
       for (String name : names) {
         T value = type.getEntry(name);
@@ -262,9 +249,9 @@ public abstract class ContentMatchIngredient<C extends ICauldronContents,T> impl
     }
 
     @Override
-    public ContentMatchIngredient<C,T> read(JsonObject json) {
+    public ContentMatchIngredient<T> read(JsonObject json) {
       // use the instance type if present
-      MapContentType<C,T> type = this.type;
+      CauldronContentType<T> type = this.type;
       // if generic, find a type using the match key
       if (type == null) {
         type = getType(new ResourceLocation(JSONUtils.getString(json, "match")), JsonSyntaxException::new);
@@ -289,7 +276,7 @@ public abstract class ContentMatchIngredient<C extends ICauldronContents,T> impl
     }
 
     @Override
-    public void write(ContentMatchIngredient<C,T> ingredient, JsonObject json) {
+    public void write(ContentMatchIngredient<T> ingredient, JsonObject json) {
       if (this.type == null) {
         json.addProperty("match", CauldronContentTypes.getName(ingredient.type).toString());
       }
@@ -297,9 +284,9 @@ public abstract class ContentMatchIngredient<C extends ICauldronContents,T> impl
     }
 
     @Override
-    public ContentMatchIngredient<C,T> read(PacketBuffer buffer) {
+    public ContentMatchIngredient<T> read(PacketBuffer buffer) {
       // use the instance type if present
-      MapContentType<C,T> type = this.type;
+      CauldronContentType<T> type = this.type;
       // if generic, find a type using the match key
       if (type == null) {
         type = getType(buffer.readResourceLocation(), DecoderException::new);
@@ -317,7 +304,7 @@ public abstract class ContentMatchIngredient<C extends ICauldronContents,T> impl
     }
 
     @Override
-    public void write(ContentMatchIngredient<C,T> ingredient, PacketBuffer buffer) {
+    public void write(ContentMatchIngredient<T> ingredient, PacketBuffer buffer) {
       // only write the type to the buffer if this is the generic type
       if (this.type == null) {
         buffer.writeResourceLocation(CauldronContentTypes.getName(ingredient.type));

@@ -1,17 +1,34 @@
 package knightminer.inspirations.recipes.recipe.cauldron.contents;
 
-import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronColor;
-import knightminer.inspirations.library.recipe.cauldron.contenttype.MapContentType;
+import io.netty.handler.codec.DecoderException;
+import knightminer.inspirations.Inspirations;
+import knightminer.inspirations.library.recipe.cauldron.contents.CauldronContentType;
+import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nullable;
+import java.util.Optional;
 
 /**
- * Content type for {@link CauldronColor}
+ * Content type for colors in the cauldron
  */
-public class ColorContentType extends MapContentType<ICauldronColor, Integer> {
-  public ColorContentType() {
-    super(ICauldronColor.class, CauldronColor::new, ICauldronColor::getColor, "color");
+public class ColorContentType extends CauldronContentType<Integer> {
+  public static final ResourceLocation TEXTURE = Inspirations.getResource("block/fluid/colorless");
+
+  @Override
+  public String getKey() {
+    return "color";
+  }
+
+  @Override
+  public ResourceLocation getTexture(Integer value) {
+    return TEXTURE;
+  }
+
+  @Override
+  public int getColor(Integer value) {
+    return value;
   }
 
   @Override
@@ -31,12 +48,17 @@ public class ColorContentType extends MapContentType<ICauldronColor, Integer> {
   }
 
   @Override
-  public ICauldronColor read(PacketBuffer buffer) {
+  public ICauldronContents read(PacketBuffer buffer) {
     return of(buffer.readInt());
   }
 
   @Override
-  public void write(ICauldronColor contents, PacketBuffer buffer) {
-    buffer.writeInt(contents.getColor());
+  public void write(ICauldronContents contents, PacketBuffer buffer) {
+    Optional<Integer> optional = contents.get(this);
+    if (optional.isPresent()) {
+      buffer.writeInt(optional.get());
+    } else {
+      throw new DecoderException("Invalid class type for cauldron contents");
+    }
   }
 }

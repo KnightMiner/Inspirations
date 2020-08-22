@@ -1,6 +1,5 @@
 package knightminer.inspirations.library.recipe.cauldron.contents;
 
-import knightminer.inspirations.library.recipe.cauldron.contenttype.CauldronContentType;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.Optional;
@@ -9,57 +8,63 @@ import java.util.Optional;
  * Base interface for all cauldron contents
  */
 public interface ICauldronContents {
+
   /**
-   * Copy of {@link net.minecraft.client.renderer.texture.MissingTextureSprite#getLocation} for reference on a server.
-   * Used as an error state so {@link #getTextureName()} will not crash a server
+   * Gets this value as the given type
+   * @param type  Type to get
+   * @param <T>  Type of return
+   * @return  Value, or empty optional if this does not have the given type
    */
-  ResourceLocation NO_TEXTURE = new ResourceLocation("missingno");
+  <T> Optional <T> get(CauldronContentType<T> type);
+
+  /**
+   * Gets the main type of these contents, used for serializing
+   * @return  Main content type
+   */
+  CauldronContentType<?> getType();
+
 
   /* Display */
 
   /**
-   * Gets the name of the texture for these contents.
-   * Note that this method exists on the server. Use {@link net.minecraftforge.fml.DistExecutor} and return {@link #NO_TEXTURE} on the server if needed to prevent clientside access
+   * Gets the name of the texture for these contents. Should generally delegate to the type
    * @return  Texture location for this contents
    */
   ResourceLocation getTextureName();
 
   /**
-   * Gets the color for this content type for tinting
+   * Gets the color for this content type for tinting. Should generally delegate to the type
    * @return  Tint color
    */
-  default int getTintColor() {
-    return -1;
-  }
+  int getTintColor();
 
 
-  /* Serializing */
+  /* Mapping */
 
   /**
-   * Gets the type of this contents
-   * @return  Content type
+   * Checks if these cauldron contents match the given arguments. Use this for {@link #equals(Object)} implementations
+   * @param type   Content type
+   * @param value  Value of the content
+   * @param <T>  Content class
+   * @return True if they match
    */
-  CauldronContentType<?> getType();
-
-
-  /* Helper methods */
+  <T> boolean matches(CauldronContentType<T> type, T value);
 
   /**
-   * Checks if this is the given type
-   * @param type  Type to check
-   * @return  True if it matches
+   * For consistency, hash code should be {@code 31 * type.hashCode() + value.hashCode()}
+   * @return  Hash code for the given type and value
    */
-  default boolean is(CauldronContentType<?> type) {
-    return type.matches(this);
-  }
+  @Override
+  int hashCode();
 
   /**
-   * Gets this type as the given value
-   * @param type  Type to get
-   * @param <C>   Content type
-   * @return  Optional of the given type, empty if wrong type
+   * Checks if the contents contain the given value. Unlike {@link #matches(CauldronContentType, Object)}, supports overrides.
+   * @param type   Content type
+   * @param value  Value of the content
+   * @param <T>  Content class
+   * @return  True if get would return this value
    */
-  default <C extends ICauldronContents> Optional<C> as(CauldronContentType<C> type) {
-    return type.get(this);
+  default <T> boolean contains(CauldronContentType<T> type, T value) {
+    return get(type).map(value::equals).orElse(false);
   }
 }

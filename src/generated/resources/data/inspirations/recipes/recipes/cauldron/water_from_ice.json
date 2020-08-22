@@ -15,8 +15,8 @@
       "item": "minecraft:ice"
     },
     "contents": {
-      "type": "inspirations:content_type",
-      "name": "inspirations:water"
+      "type": "inspirations:fluid",
+      "name": "minecraft:water"
     },
     "level": {
       "max": 2
@@ -24,7 +24,8 @@
   },
   "output": {
     "contents": {
-      "type": "inspirations:water"
+      "type": "inspirations:fluid",
+      "name": "minecraft:water"
     },
     "level": {
       "set": 3

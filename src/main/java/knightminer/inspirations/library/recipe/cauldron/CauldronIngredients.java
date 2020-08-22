@@ -6,13 +6,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import io.netty.handler.codec.DecoderException;
 import knightminer.inspirations.Inspirations;
-import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronColor;
+import knightminer.inspirations.library.recipe.cauldron.contents.CauldronContentType;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
-import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronDye;
-import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronPotion;
-import knightminer.inspirations.library.recipe.cauldron.contenttype.MapContentType;
 import knightminer.inspirations.library.recipe.cauldron.ingredient.ContentMatchIngredient;
-import knightminer.inspirations.library.recipe.cauldron.ingredient.ContentTypeIngredient;
 import knightminer.inspirations.library.recipe.cauldron.ingredient.FluidCauldronIngredient;
 import knightminer.inspirations.library.recipe.cauldron.ingredient.ICauldronIngredient;
 import knightminer.inspirations.library.recipe.cauldron.ingredient.ICauldronIngredientSerializer;
@@ -32,18 +28,16 @@ public class CauldronIngredients {
   /* Public constants */
 
   /** Generic content match serializer */
-  public static final ContentMatchIngredient.Serializer<?,?> MATCH = register("match_content", ContentMatchIngredient.Serializer.GENERIC);
-  /** Generic content match serializer */
-  public static final ContentTypeIngredient.Serializer TYPE = register("content_type", new ContentTypeIngredient.Serializer());
+  public static final ContentMatchIngredient.Serializer<?> MATCH = register("match_content", ContentMatchIngredient.Serializer.GENERIC);
 
   /** Fluid content match serializer */
   public static final FluidCauldronIngredient.Serializer FLUID = register("fluid", new FluidCauldronIngredient.Serializer());
   /** Color content match serializer */
-  public static final ContentMatchIngredient.Serializer<ICauldronColor,Integer> COLOR = registerMatch(CauldronContentTypes.COLOR);
+  public static final ContentMatchIngredient.Serializer<Integer> COLOR = registerMatch(CauldronContentTypes.COLOR);
   /** Dye content match serializer */
-  public static final ContentMatchIngredient.Serializer<ICauldronDye,DyeColor> DYE = registerMatch(CauldronContentTypes.DYE);
+  public static final ContentMatchIngredient.Serializer<DyeColor> DYE = registerMatch(CauldronContentTypes.DYE);
   /** Fluid content match serializer */
-  public static final ContentMatchIngredient.Serializer<ICauldronPotion,Potion> POTION = registerMatch(CauldronContentTypes.POTION);
+  public static final ContentMatchIngredient.Serializer<Potion> POTION = registerMatch(CauldronContentTypes.POTION);
 
   /**
    * Registers a new content type
@@ -76,8 +70,8 @@ public class CauldronIngredients {
    * @param <T>  Map value type
    * @return  Registered serializer
    */
-  public static <C extends ICauldronContents, T> ContentMatchIngredient.Serializer<C,T> registerMatch(MapContentType<C,T> mapType) {
-    ContentMatchIngredient.Serializer<C,T> serializer = new ContentMatchIngredient.Serializer<>(mapType);
+  public static <C extends ICauldronContents, T> ContentMatchIngredient.Serializer<T> registerMatch(CauldronContentType<T> mapType) {
+    ContentMatchIngredient.Serializer<T> serializer = new ContentMatchIngredient.Serializer<>(mapType);
     register(CauldronContentTypes.getName(mapType), serializer);
     return serializer;
   }

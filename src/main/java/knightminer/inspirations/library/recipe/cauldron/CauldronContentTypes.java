@@ -6,22 +6,14 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import io.netty.handler.codec.DecoderException;
 import knightminer.inspirations.Inspirations;
+import knightminer.inspirations.library.recipe.cauldron.contents.CauldronContentType;
 import knightminer.inspirations.library.recipe.cauldron.contents.EmptyCauldronContents;
-import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronColor;
+import knightminer.inspirations.library.recipe.cauldron.contents.EmptyContentType;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
-import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronDye;
-import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronFluid;
-import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronPotion;
-import knightminer.inspirations.library.recipe.cauldron.contenttype.CauldronContentType;
-import knightminer.inspirations.library.recipe.cauldron.contenttype.MapContentType;
-import knightminer.inspirations.library.recipe.cauldron.contenttype.NamedContentType;
-import knightminer.inspirations.library.recipe.cauldron.contenttype.RegistryContentType;
-import knightminer.inspirations.library.recipe.cauldron.contenttype.SingletonContentType;
-import knightminer.inspirations.recipes.recipe.cauldron.contents.CauldronDye;
-import knightminer.inspirations.recipes.recipe.cauldron.contents.CauldronFluid;
-import knightminer.inspirations.recipes.recipe.cauldron.contents.CauldronPotion;
-import knightminer.inspirations.recipes.recipe.cauldron.contents.CauldronWater;
 import knightminer.inspirations.recipes.recipe.cauldron.contents.ColorContentType;
+import knightminer.inspirations.recipes.recipe.cauldron.contents.DyeContentType;
+import knightminer.inspirations.recipes.recipe.cauldron.contents.FluidContentType;
+import knightminer.inspirations.recipes.recipe.cauldron.contents.PotionContentType;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.DyeColor;
 import net.minecraft.nbt.CompoundNBT;
@@ -30,8 +22,6 @@ import net.minecraft.potion.Potion;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.Constants.NBT;
-import net.minecraftforge.registries.ForgeRegistries;
-import org.apache.logging.log4j.util.BiConsumer;
 
 import javax.annotation.Nullable;
 
@@ -46,23 +36,20 @@ public class CauldronContentTypes {
   /* Public constants */
 
   /** Generic water type */
-  public static final SingletonContentType<EmptyCauldronContents> EMPTY = register("empty", new SingletonContentType<>(EmptyCauldronContents.class, EmptyCauldronContents.INSTANCE));
-
-  /** Generic water type */
-  public static final SingletonContentType<CauldronWater> WATER = register("water", new SingletonContentType<>(CauldronWater.class, new CauldronWater()));
+  public static final EmptyContentType EMPTY = register("empty", new EmptyContentType());
 
   /** Contains an arbitrary color */
-  public static final MapContentType<ICauldronColor, Integer> COLOR = register("color", new ColorContentType());
+  public static final CauldronContentType<Integer> COLOR = register("color", new ColorContentType());
 
   /** Contains a specific color */
   @SuppressWarnings("ConstantConditions")
-  public static final MapContentType<ICauldronDye, DyeColor> DYE = register("dye", new NamedContentType<>(ICauldronDye.class, CauldronDye::new, name -> DyeColor.byTranslationKey(name, null), ICauldronDye::getDye));
+  public static final CauldronContentType<DyeColor> DYE = register("dye", new DyeContentType());
 
   /** Contains a specific color */
-  public static final MapContentType<ICauldronPotion, Potion> POTION = register("potion", new RegistryContentType<>(ICauldronPotion.class, CauldronPotion::new, ForgeRegistries.POTION_TYPES, ICauldronPotion::getPotion));
+  public static final CauldronContentType<Potion> POTION = register("potion", new PotionContentType());
 
   /** Contains a specific fluid */
-  public static final MapContentType<ICauldronFluid, Fluid> FLUID = register("fluid", new RegistryContentType<>(ICauldronFluid.class, CauldronFluid::new, ForgeRegistries.FLUIDS, ICauldronFluid::getFluid));
+  public static final CauldronContentType<Fluid> FLUID = register("fluid", new FluidContentType());
 
   /**
    * Registers a new content type
@@ -99,17 +86,6 @@ public class CauldronContentTypes {
   }
 
   /**
-   * Handles the generics for an unknown type generics
-   * @param type      Type to check
-   * @param contents  Contents
-   * @param consumer  Logic to run
-   * @param <T>  Type class
-   */
-  private static <T extends ICauldronContents> void write(CauldronContentType<T> type, ICauldronContents contents, BiConsumer<CauldronContentType<T>, T> consumer) {
-    type.get(contents).ifPresent(cont -> consumer.accept(type, cont));
-  }
-
-  /**
    * Gets the name for a content type
    * @param type  Type to get
    * @return  Type registry name
@@ -131,7 +107,7 @@ public class CauldronContentTypes {
     JsonObject json = new JsonObject();
     CauldronContentType<?> type = contents.getType();
     json.addProperty(KEY_TYPE, getName(type).toString());
-    write(type, contents, (t,c) -> t.write(c, json));
+    type.write(contents, json);
     return json;
   }
 
@@ -158,7 +134,7 @@ public class CauldronContentTypes {
     CompoundNBT nbt = new CompoundNBT();
     CauldronContentType<?> type = contents.getType();
     nbt.putString(KEY_TYPE, getName(type).toString());
-    write(type, contents, (t,c) -> t.write(c, nbt));
+    type.write(contents, nbt);
     return nbt;
   }
 
@@ -178,7 +154,7 @@ public class CauldronContentTypes {
         }
       }
     }
-    return CauldronContentTypes.WATER.get();
+    return EmptyCauldronContents.INSTANCE;
   }
 
   /**
@@ -189,7 +165,7 @@ public class CauldronContentTypes {
   public static void write(ICauldronContents contents, PacketBuffer buffer) {
     CauldronContentType<?> type = contents.getType();
     buffer.writeResourceLocation(getName(type));
-    write(type, contents, (t,c) -> t.write(c, buffer));
+    type.write(contents, buffer);
   }
 
   /**
