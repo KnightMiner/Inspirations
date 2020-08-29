@@ -3,6 +3,7 @@ package knightminer.inspirations.tweaks;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.ClientEvents;
 import knightminer.inspirations.common.Config;
+import knightminer.inspirations.library.client.model.TrimModel;
 import knightminer.inspirations.shared.SharedClientEvents;
 import knightminer.inspirations.tweaks.client.PortalColorHandler;
 import net.minecraft.block.Blocks;
@@ -23,6 +24,7 @@ import net.minecraft.world.biome.BiomeColors;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
@@ -51,6 +53,11 @@ public class TweaksClientEvents extends ClientEvents {
     SharedClientEvents.configPack.addItemModelReplacement(Config.coloredEnchantedRibbons, Items.ENCHANTED_BOOK, "enchanted_book");
     SharedClientEvents.configPack.addItemModelReplacement(Config.coloredFireworkItems, Items.FIREWORK_ROCKET, "fireworks");
     SharedClientEvents.configPack.addItemModelReplacement(Config.betterCauldronItem, Items.CAULDRON, () -> Config.extendedCauldron.getAsBoolean() ? "cauldron" : "cauldron_vanilla");
+  }
+
+  @SubscribeEvent
+  static void registerModelLoaders(ModelRegistryEvent event) {
+    ModelLoaderRegistry.registerLoader(Inspirations.getResource("trim"), TrimModel.LOADER);
   }
 
   @SubscribeEvent

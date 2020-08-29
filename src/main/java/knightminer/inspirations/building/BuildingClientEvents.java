@@ -7,6 +7,7 @@ import knightminer.inspirations.building.tileentity.BookshelfTileEntity;
 import knightminer.inspirations.common.ClientEvents;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.client.ClientUtil;
+import knightminer.inspirations.library.client.model.BookshelfModel;
 import knightminer.inspirations.shared.client.BackgroundContainerScreen;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -21,6 +22,8 @@ import net.minecraft.world.FoliageColors;
 import net.minecraft.world.biome.BiomeColors;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ColorHandlerEvent;
+import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
@@ -61,6 +64,11 @@ public class BuildingClientEvents extends ClientEvents {
     // flower
     InspirationsBuilding.flower.forEach(setCutout);
     InspirationsBuilding.flowerPot.forEach(setCutout);
+  }
+
+  @SubscribeEvent
+  static void registerModelLoaders(ModelRegistryEvent event) {
+    ModelLoaderRegistry.registerLoader(Inspirations.getResource("bookshelf"), BookshelfModel.LOADER);
   }
 
   @SubscribeEvent
