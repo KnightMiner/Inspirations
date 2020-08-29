@@ -4,7 +4,6 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.ModuleBase;
 import knightminer.inspirations.common.item.HidableItem;
 import knightminer.inspirations.recipes.block.EnhancedCauldronBlock;
-import knightminer.inspirations.recipes.block.SmashingAnvilBlock;
 import knightminer.inspirations.recipes.item.MixedDyedBottleItem;
 import knightminer.inspirations.recipes.item.SimpleDyedBottleItem;
 import net.minecraft.block.Block;
@@ -64,11 +63,13 @@ public class InspirationsRecipes extends ModuleBase {
   void registerBlocks(Register<Block> event) {
     BlockRegistryAdapter registry = new BlockRegistryAdapter(event.getRegistry());
 
+    /*
     if (Config.enableAnvilSmashing.get()) {
       registry.registerOverride(SmashingAnvilBlock::new, Blocks.ANVIL);
       registry.registerOverride(SmashingAnvilBlock::new, Blocks.CHIPPED_ANVIL);
       registry.registerOverride(SmashingAnvilBlock::new, Blocks.DAMAGED_ANVIL);
     }
+    */
     if (Config.enableExtendedCauldron()) {
       cauldron = registry.registerOverride(EnhancedCauldronBlock::new, Blocks.CAULDRON);
     }

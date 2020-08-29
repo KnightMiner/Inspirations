@@ -30,6 +30,7 @@ import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.config.ModConfig.Type;
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
@@ -58,18 +59,19 @@ public class Inspirations {
   public static Runnable updateJEI = null;
 
   public Inspirations() {
-    ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, Config.SPEC);
+    ModLoadingContext.get().registerConfig(Type.SERVER, Config.SERVER_SPEC);
+    ModLoadingContext.get().registerConfig(Type.CLIENT, Config.CLIENT_SPEC);
 
     log.info("Loading replacements config file...");
-    CommentedFileConfig repl_config = CommentedFileConfig
+    CommentedFileConfig replacementConfig = CommentedFileConfig
         .builder(FMLPaths.CONFIGDIR.get().resolve(modID + "-replacements.toml"))
         .sync()
         .preserveInsertionOrder()
         .writingMode(WritingMode.REPLACE)
         .build();
-    repl_config.load();
-    repl_config.save();
-    Config.SPEC_OVERRIDE.setConfig(repl_config);
+    replacementConfig.load();
+    replacementConfig.save();
+    Config.OVERRIDE_SPEC.setConfig(replacementConfig);
     log.info("Config loaded.");
 
     FMLJavaModLoadingContext.get().getModEventBus().register(this);
@@ -124,17 +126,18 @@ public class Inspirations {
   void configChanged(final ModConfig.ModConfigEvent configEvent) {
     ModConfig config = configEvent.getConfig();
     if (config.getModId().equals(modID)) {
-      Config.clearCache();
-      configLoaded = true;
+      Config.clearCache(config.getSpec());
+      if (config.getSpec() == Config.SERVER_SPEC) {
+        configLoaded = true;
+        InspirationsRegistry.setBookKeywords(Arrays.stream(Config.bookKeywords.get().split(","))
+                                                   .map(String::trim)
+                                                   .collect(Collectors.toList())
+                                            );
 
-      InspirationsRegistry.setBookKeywords(Arrays.stream(Config.bookKeywords.get().split(","))
-                                                 .map(String::trim)
-                                                 .collect(Collectors.toList())
-                                          );
-
-      // If we have JEI, this will be set. It needs to run on the main thread...
-      if (updateJEI != null) {
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> Minecraft.getInstance().deferTask(updateJEI));
+        // If we have JEI, this will be set. It needs to run on the main thread...
+        if (updateJEI != null) {
+          DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> Minecraft.getInstance().deferTask(updateJEI));
+        }
       }
     }
 

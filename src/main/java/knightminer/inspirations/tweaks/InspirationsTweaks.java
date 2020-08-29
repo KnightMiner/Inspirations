@@ -169,10 +169,10 @@ public class InspirationsTweaks extends ModuleBase {
     // brew heartbeets into regen potions
     Ingredient heartbeet = Ingredient.fromItems(InspirationsTweaks.heartbeet);
     BrewingRecipeRegistry.addRecipe(
-        new NormalBrewingRecipe(Potions.WATER, heartbeet, Potions.MUNDANE, Config::brewHeartbeet)
+        new NormalBrewingRecipe(Potions.WATER, heartbeet, Potions.MUNDANE, Config.brewHeartbeet)
                                    );
     BrewingRecipeRegistry.addRecipe(
-        new NormalBrewingRecipe(Potions.AWKWARD, heartbeet, Potions.REGENERATION, Config::brewHeartbeet
+        new NormalBrewingRecipe(Potions.AWKWARD, heartbeet, Potions.REGENERATION, Config.brewHeartbeet
         ));
 
     registerCompostables();

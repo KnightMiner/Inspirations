@@ -1,7 +1,6 @@
 package knightminer.inspirations.utility.block;
 
 import com.google.common.collect.ImmutableMap;
-import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.block.HidableBlock;
 import net.minecraft.block.AbstractButtonBlock;
 import net.minecraft.block.Block;
@@ -45,7 +44,7 @@ public class BricksButtonBlock extends HidableBlock {
               .hardnessAndResistance(1.5F, 10.0F)
               .sound(SoundType.STONE)
               .tickRandomly(),
-          Config.enableBricksButton
+          () -> false
          );
     this.buttonBounds = buttonBounds;
 
