@@ -35,13 +35,8 @@ public class SharedClientEvents extends ClientEvents {
   static void setup(FMLCommonSetupEvent event) {
     // listener to clear color cache from client utils
     IResourceManager manager = Minecraft.getInstance().getResourceManager();
-    // should always be true, but just in case
     if (manager instanceof IReloadableResourceManager) {
-      ((IReloadableResourceManager)manager).addReloadListener(
-          (stage, resMan, prepProp, reloadProf, bgExec, gameExec) -> CompletableFuture
-              .runAsync(ClientUtil::clearCache, gameExec)
-              .thenCompose(stage::markCompleteAwaitingOthers)
-                                                             );
+      ((IReloadableResourceManager)manager).addReloadListener(ClientUtil.RELOAD_LISTENER);
     } else {
       Inspirations.log.error("Failed to register resource reload listener, expected instance of IReloadableResourceManager but got {}", manager.getClass());
     }

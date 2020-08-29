@@ -21,6 +21,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockDisplayReader;
 import net.minecraftforge.client.model.data.EmptyModelData;
+import net.minecraftforge.resource.ISelectiveResourceReloadListener;
+import net.minecraftforge.resource.VanillaResourceType;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.lwjgl.opengl.GL11;
@@ -34,7 +36,6 @@ import java.util.Set;
 
 @SuppressWarnings("WeakerAccess")
 public final class ClientUtil {
-  private static final String TAG_TEXTURE_PATH = "texture_path";
   private static final Minecraft mc = Minecraft.getInstance();
 
   private ClientUtil() { }
@@ -101,14 +102,6 @@ public final class ClientUtil {
   }
 
   /**
-   * Called on resource reload to clear any resource based cache
-   */
-  public static void clearCache() {
-    COLOR_CACHE.clear();
-    unsafe.clear();
-  }
-
-  /**
    * Gets the sprite for the given texture location, or Missing Texture if no sprite is found
    */
   public static TextureAtlasSprite getSprite(@Nullable ResourceLocation location) {
@@ -148,7 +141,7 @@ public final class ClientUtil {
   /**
    * Any items which have blockColors methods that throw an exception
    */
-  private static Set<Item> unsafe = new HashSet<>();
+  private static final Set<Item> UNSAFE_COLORS = new HashSet<>();
 
   /**
    * Gets the block colors for a block from an itemstack, logging an exception if it fails. Use this to get block colors when the implementation is unknown
@@ -165,13 +158,13 @@ public final class ClientUtil {
 
     // do not try if it failed before
     Item item = stack.getItem();
-    if (!unsafe.contains(item)) {
+    if (!UNSAFE_COLORS.contains(item)) {
       try {
         return getStackBlockColors(stack, world, pos, index);
       } catch (Exception e) {
         // catch and log possible exceptions. Most likely exception is ClassCastException if they do not perform safety checks
         Inspirations.log.error(String.format("Caught exception getting block colors for %s", item.getRegistryName()), e);
-        unsafe.add(item);
+        UNSAFE_COLORS.add(item);
       }
     }
 
@@ -231,4 +224,11 @@ public final class ClientUtil {
   public static String normalizeName(String name) {
     return NORMALIZED_NAMES.computeIfAbsent(name, (s) -> WordUtils.capitalizeFully(name.replace('_', ' ')));
   }
+
+  /** Reload listener for client utils */
+  public static final ISelectiveResourceReloadListener RELOAD_LISTENER = (manager, predicate) -> {
+    if (predicate.test(VanillaResourceType.MODELS) || predicate.test(VanillaResourceType.TEXTURES)) {
+      COLOR_CACHE.clear();
+    }
+  };
 }
