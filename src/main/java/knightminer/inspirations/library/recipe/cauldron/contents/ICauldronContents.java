@@ -1,5 +1,7 @@
 package knightminer.inspirations.library.recipe.cauldron.contents;
 
+import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.Optional;
@@ -66,5 +68,13 @@ public interface ICauldronContents {
    */
   default <T> boolean contains(CauldronContentType<T> type, T value) {
     return get(type).map(value::equals).orElse(false);
+  }
+
+  /**
+   * If true, this is a simple content type, meaning it can be held in the vanilla cauldron
+   * @return  True if the content type is simple
+   */
+  default boolean isSimple() {
+    return contains(CauldronContentTypes.FLUID, Fluids.WATER);
   }
 }

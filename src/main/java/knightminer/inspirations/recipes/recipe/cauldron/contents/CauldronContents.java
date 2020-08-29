@@ -69,4 +69,9 @@ public class CauldronContents<C> implements ICauldronContents {
   public int hashCode() {
     return 31 * type.hashCode() + value.hashCode();
   }
+
+  @Override
+  public String toString() {
+    return String.format("CauldronContents(%s,%s)", type.toString(), value.toString());
+  }
 }

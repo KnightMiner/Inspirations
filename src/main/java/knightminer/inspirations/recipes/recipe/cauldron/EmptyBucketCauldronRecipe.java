@@ -5,6 +5,7 @@ import knightminer.inspirations.library.recipe.cauldron.inventory.ICauldronInven
 import knightminer.inspirations.library.recipe.cauldron.inventory.IModifyableCauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
 import knightminer.inspirations.recipes.InspirationsRecipes;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.crafting.IRecipeSerializer;
@@ -33,9 +34,6 @@ public class EmptyBucketCauldronRecipe implements ICauldronRecipe {
    * @return  Fluid stack drained, or empty if nothing drained
    */
   private static FluidStack drain(ICauldronInventory inv, IFluidHandlerItem handler, FluidAction action) {
-    // drain the fluid from the handler
-    FluidStack drained;
-
     // if empty, drain anything
     if (inv.getLevel() == 0) {
       return handler.drain(BUCKET_VOLUME, action);
@@ -62,7 +60,7 @@ public class EmptyBucketCauldronRecipe implements ICauldronRecipe {
       FluidStack drained = drain(inv, handler, FluidAction.SIMULATE);
 
       // ensure the fluid is valid
-      return !drained.isEmpty() && drained.getAmount() == BUCKET_VOLUME && !drained.hasTag();
+      return !drained.isEmpty() && drained.getAmount() == BUCKET_VOLUME && !drained.hasTag() && (!inv.isSimple() || drained.getFluid() == Fluids.WATER);
     }).orElse(false);
   }
 

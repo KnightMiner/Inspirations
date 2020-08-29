@@ -69,7 +69,7 @@ public class EnhancedCauldronBlock extends CauldronBlock {
   public void fillWithRain(World world, BlockPos pos) {
     TileEntity te = world.getTileEntity(pos);
     // do not fill unless the current contents are water
-    if (te instanceof CauldronTileEntity && !((CauldronTileEntity)te).isVanilla()) {
+    if (te instanceof CauldronTileEntity && !((CauldronTileEntity)te).getContents().isSimple()) {
       return;
     }
 

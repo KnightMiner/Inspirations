@@ -36,4 +36,9 @@ public class EmptyCauldronContents implements ICauldronContents {
   public <T> boolean matches(CauldronContentType<T> type, T value) {
     return type == CauldronContentTypes.EMPTY;
   }
+
+  @Override
+  public boolean isSimple() {
+    return true;
+  }
 }

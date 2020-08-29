@@ -20,6 +20,10 @@ public class TileCauldronInventory extends CauldronItemInventory {
     this.tile = tile;
   }
 
+  @Override
+  public boolean isSimple() {
+    return false;
+  }
 
   /* Item handling */
 

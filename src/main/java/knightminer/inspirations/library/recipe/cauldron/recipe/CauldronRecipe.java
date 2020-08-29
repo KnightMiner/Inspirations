@@ -73,6 +73,11 @@ public class CauldronRecipe implements ICauldronRecipe {
 
   @Override
   public boolean matches(ICauldronInventory inv, World worldIn) {
+    // if this cauldron only supports simple recipes, block if the result is not simple
+    if (inv.isSimple() && !newContents.isSimple()) {
+      return false;
+    }
+
     // boiling must match, must have right level
     // contents must match, but if the current level of 0 matches skip contents check (used for fill recipes)
     int current = inv.getLevel();

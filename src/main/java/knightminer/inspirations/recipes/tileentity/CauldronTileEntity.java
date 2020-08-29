@@ -78,14 +78,6 @@ public class CauldronTileEntity extends TileEntity {
     this.cauldronBlock = block;
   }
 
-  /**
-   * Checks if this TE currently has water in it
-   * @return True if the cauldron contains water or is empty
-   */
-  public boolean isVanilla() {
-    return contents == EmptyCauldronContents.INSTANCE || contents.get(CauldronContentTypes.FLUID).map(FluidTags.WATER::contains).orElse(false);
-  }
-
   @Override
   public IModelData getModelData() {
     return data;

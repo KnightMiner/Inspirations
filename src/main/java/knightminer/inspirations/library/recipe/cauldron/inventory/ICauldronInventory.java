@@ -25,4 +25,10 @@ public interface ICauldronInventory extends ISingleItemInventory {
    * @return  True if the cauldron is boiling
    */
   boolean isBoiling();
+
+  /**
+   * If true, the cauldron is simple and does not support fluids other than water
+   * @return  True if the cauldron is simple
+   */
+  boolean isSimple();
 }

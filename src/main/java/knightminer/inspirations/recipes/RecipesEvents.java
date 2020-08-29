@@ -52,7 +52,7 @@ public class RecipesEvents {
       if (cauldron != null) {
         // TODO: blacklist?
         // stop further processing if we did a recipe or the cauldron does not contain water
-        if (cauldron.interact(player, hand) || !cauldron.isVanilla()) {
+        if (cauldron.interact(player, hand) || !cauldron.getContents().isSimple()) {
           event.setCanceled(true);
           event.setCancellationResult(ActionResultType.SUCCESS);
         }

@@ -1,5 +1,6 @@
 package knightminer.inspirations.recipes.recipe.inventory;
 
+import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.recipe.RecipeTypes;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.contents.EmptyCauldronContents;
@@ -56,6 +57,11 @@ public class VanillaCauldronInventory extends CauldronItemInventory {
     this(world, pos, state, stack, EMPTY_CONSUMER, itemAdder);
   }
 
+  @Override
+  public boolean isSimple() {
+    return true;
+  }
+
   /* Levels */
 
   @Override
@@ -84,9 +90,8 @@ public class VanillaCauldronInventory extends CauldronItemInventory {
 
   @Override
   public void setContents(ICauldronContents contents) {
-    // TODO: simple check for matches to avoid this exception
-    if (contents != EmptyCauldronContents.INSTANCE && !contents.contains(CauldronContentTypes.FLUID, Fluids.WATER)) {
-      throw new IllegalArgumentException("Cannot set cauldron contents of vanilla cauldron to non-water");
+    if (contents != EmptyCauldronContents.INSTANCE && !contents.isSimple()) {
+      Inspirations.log.error("Cannot set cauldron contents of vanilla cauldron to non-water " + contents);
     }
   }
 
