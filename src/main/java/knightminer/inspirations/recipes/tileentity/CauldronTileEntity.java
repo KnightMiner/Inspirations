@@ -1,269 +1,230 @@
 package knightminer.inspirations.recipes.tileentity;
 
 import knightminer.inspirations.Inspirations;
-import knightminer.inspirations.common.Config;
-import knightminer.inspirations.library.InspirationsTags;
-import knightminer.inspirations.library.recipe.cauldron.legacy.ICauldronRecipe;
-import knightminer.inspirations.library.recipe.cauldron.legacy.ICauldronRecipe.CauldronState;
+import knightminer.inspirations.library.recipe.RecipeTypes;
+import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
+import knightminer.inspirations.library.recipe.cauldron.contents.EmptyCauldronContents;
+import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
+import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
+import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.recipes.block.EnhancedCauldronBlock;
-import knightminer.inspirations.recipes.block.EnhancedCauldronBlock.CauldronContents;
-import knightminer.inspirations.recipes.tank.CauldronTank;
+import knightminer.inspirations.recipes.recipe.inventory.CauldronItemInventory;
+import knightminer.inspirations.recipes.recipe.inventory.TileCauldronInventory;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.CampfireBlock;
-import net.minecraft.block.CauldronBlock;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionUtils;
-import net.minecraft.potion.Potions;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.client.model.data.EmptyModelData;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.data.IModelData;
-import net.minecraftforge.client.model.data.ModelDataMap;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.client.model.data.ModelProperty;
+import slimeknights.mantle.client.model.data.SinglePropertyData;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 public class CauldronTileEntity extends TileEntity {
   private static final DamageSource DAMAGE_BOIL = new DamageSource(Inspirations.prefix("boiling")).setDamageBypassesArmor();
+  public static final ModelProperty<ResourceLocation> TEXTURE = new ModelProperty<>();
 
-  private CauldronState state;
-  private final CauldronTank tank;
+  // data objects
+  private final IModelData data = new SinglePropertyData<>(TEXTURE, EmptyCauldronContents.INSTANCE.getTextureName());
+  private final TileCauldronInventory craftingInventory = new TileCauldronInventory(this);
 
+  // mutable properties
+  private ICauldronContents contents;
+  EnhancedCauldronBlock cauldronBlock;
+  private ICauldronRecipe lastRecipe;
+
+  /**
+   * Creates a new cauldron with no block set
+   */
   public CauldronTileEntity() {
-    super(TileEntityType.BARREL);
-    this.state = CauldronState.WATER;
-    this.tank = new CauldronTank(this);
+    this(InspirationsRecipes.cauldron);
   }
 
   /**
-   * Checks if a state is considered fire in a cauldron
-   * @param state State to check
-   * @return True if the state is considered fire
+   * Creates a new cauldron for the given block
+   * @param block  Parent block
    */
-  public static boolean isCauldronFire(BlockState state) {
-    if (state.getBlock().isIn(InspirationsTags.Blocks.CAULDRON_FIRE)) {
-      return true;
-    }
-    return state.getBlock() == Blocks.CAMPFIRE && state.get(CampfireBlock.LIT);
+  public CauldronTileEntity(EnhancedCauldronBlock block) {
+    this(InspirationsRecipes.tileCauldron, block);
   }
 
   /**
-   * Gets the type of contents contained in the cauldron
-   * @return Content type
+   * Extendable constructor to swap tile entity type
+   * @param type   Tile entity type
+   * @param block  Parent block
    */
-  public CauldronContents getContentType() {
-    if (state.getFluid() != Fluids.EMPTY) {
-      return CauldronContents.FLUID;
-    }
-    if (state.getColor() > -1) {
-      return CauldronContents.DYE;
-    }
-    if (state.getPotion() != Potions.EMPTY) {
-      return CauldronContents.POTION;
-    }
-
-    return CauldronContents.FLUID;
+  protected CauldronTileEntity(TileEntityType<?> type, EnhancedCauldronBlock block) {
+    super(type);
+    this.contents = CauldronContentTypes.FLUID.of(Fluids.WATER);
+    this.cauldronBlock = block;
   }
 
   /**
    * Checks if this TE currently has water in it
-   * @return True if the cauldron contains water
+   * @return True if the cauldron contains water or is empty
    */
-  public boolean isWater() {
-    return state.isWater();
-  }
-
-  /**
-   * Gets the current cauldron state
-   * @return current state
-   */
-  public CauldronState getState() {
-    return state;
-  }
-
-  /**
-   * Returns the current color for tinting
-   * @return block colors color
-   */
-  public int getColor() {
-    switch (getContentType()) {
-      case DYE:
-        return state.getColor();
-      case POTION:
-        return PotionUtils.getPotionColor(state.getPotion());
-    }
-
-    Fluid fluid = state.getFluid();
-    if (fluid != Fluids.EMPTY) {
-      return fluid.getAttributes().getColor();
-    }
-
-    return -1;
+  public boolean isVanilla() {
+    return contents == EmptyCauldronContents.INSTANCE || contents.get(CauldronContentTypes.FLUID).map(FluidTags.WATER::contains).orElse(false);
   }
 
   @Override
   public IModelData getModelData() {
-    // just pull the texture right from the fluid
-    if (getFluidLevel() > 0 && this.state != CauldronState.WATER && getContentType() == CauldronContents.FLUID) {
-      Fluid fluid = this.state.getFluid();
-      if (fluid != Fluids.EMPTY) {
-        return new ModelDataMap.Builder()
-            .withInitial(EnhancedCauldronBlock.TEXTURE, fluid.getAttributes().getStillTexture().toString())
-            .build();
-      }
+    return data;
+  }
+
+  /**
+   * Gets the level of fluid in the cauldron
+   * @return  Cauldron fluid level
+   */
+  public int getLevel() {
+    return craftingInventory.getLevel();
+  }
+
+  /**
+   * Sets the fluid level in the cauldron
+   * @param level  New fluid level
+   */
+  public void setLevel(int level) {
+    if (world != null) {
+      cauldronBlock.setWaterLevel(world, pos, getBlockState(), level);
     }
-    return EmptyModelData.INSTANCE;
+  }
+
+  /**
+   * Gets the current cauldron contents
+   * @return current contents
+   */
+  public ICauldronContents getContents() {
+    if (getLevel() == 0) {
+      return EmptyCauldronContents.INSTANCE;
+    }
+    return contents;
+  }
+
+  /**
+   * Gets the block instance responsible for this cauldron
+   * @return  Block instance
+   */
+  public EnhancedCauldronBlock getBlock() {
+    return cauldronBlock;
+  }
+
+  /**
+   * Updates the cauldron contents
+   * @param contents  New contents
+   */
+  public void setContents(ICauldronContents contents) {
+    if (contents == EmptyCauldronContents.INSTANCE) {
+      contents = CauldronContentTypes.FLUID.of(Fluids.WATER);;
+    }
+    this.contents = contents;
+
+    // TODO: serverside safe?
+    if (world != null && world.isRemote) {
+      this.data.setData(TEXTURE, contents.getTextureName());
+      this.requestModelDataUpdate();
+    }
   }
 
 
   /* behavior */
 
   /**
-   * Method to run cauldron interaction code. Used for both CauldronTileEntity and simple cauldron
-   * @return True if successful, false for pass
+   * Handles a cauldron recipe. Will do everything except update the cauldron level
+   * @param stack       Stack to match for recipes
+   * @param itemSetter  Logic to update the stack in the context. If null, have to manually handle item setting (for dispensers)
+   * @param itemAdder   Logic to add a new stack to the context
+   * @return  True if the recipe matched, false otherwise
    */
-  public static boolean interact(World world, BlockPos pos, BlockState blockState, PlayerEntity player, Hand hand) {
-    // ensure we have a stack
-    ItemStack stack = player.getHeldItem(hand);
-    if (stack.isEmpty()) {
+  private boolean handleRecipe(ItemStack stack, @Nullable Consumer<ItemStack> itemSetter, Consumer<ItemStack> itemAdder) {
+    if (world == null) {
       return false;
     }
 
-    // grab the TE if extended
-    CauldronTileEntity cauldron = null;
-    CauldronState state = CauldronState.WATER;
-    boolean boiling = false;
-    Block block = blockState.getBlock();
-    if (Config.enableExtendedCauldron() && block instanceof EnhancedCauldronBlock) {
-      TileEntity te = world.getTileEntity(pos);
-      if (te instanceof CauldronTileEntity) {
-        cauldron = (CauldronTileEntity)te;
-        state = cauldron.state;
-        boiling = blockState.get(EnhancedCauldronBlock.BOILING);
-      }
-    } else {
-      boiling = isCauldronFire(world.getBlockState(pos.down()));
-    }
-
-    // other properties
-    int level = EnhancedCauldronBlock.getCauldronLevel(blockState);
+    // update the stack context
+    craftingInventory.setItemContext(stack, itemSetter, itemAdder);
 
     // grab recipe
-    ICauldronRecipe recipe = null;//InspirationsRegistry.getCauldronResult(stack, boiling, level, state);
+    ICauldronRecipe recipe;
+    if (lastRecipe != null && lastRecipe.matches(craftingInventory, world)) {
+      recipe = lastRecipe;
+    } else {
+      recipe = world.getRecipeManager().getRecipe(RecipeTypes.CAULDRON, craftingInventory, world).orElse(null);
+    }
+
+    // if we found a match
+    boolean success = false;
     if (recipe != null) {
-      // update properties based on the recipe
+      lastRecipe = recipe;
+      success = true;
       if (!world.isRemote) {
-        // grab state first since we may need to back out
-        CauldronState newState = recipe.getState(stack, boiling, level, state);
-
-        // if its not a TE, stop right here and disallow any recipes which do not return water
-        if (!Config.enableExtendedCauldron() && !CauldronState.WATER.matches(newState)) {
-          return true;
-        }
-
-        // play sound
-        SoundEvent sound = recipe.getSound(stack, boiling, level, state);
-        if (sound != null) {
-          world.playSound(null, pos, sound, SoundCategory.BLOCKS, recipe.getVolume(sound), 1.0F);
-        }
-
-        // update level
-        int newLevel = recipe.getLevel(level);
-        if (newLevel != level || !state.matches(newState)) {
-          // if it was not a cauldron before, replace it with a vanilla cauldron
-          if (!(block instanceof CauldronBlock)) {
-            ((CauldronBlock)Blocks.CAULDRON).setWaterLevel(world, pos, Blocks.CAULDRON.getDefaultState(), newLevel);
-
-            // missing the tile entity
-            if (Config.enableExtendedCauldron()) {
-              TileEntity te = world.getTileEntity(pos);
-              if (te instanceof CauldronTileEntity) {
-                cauldron = (CauldronTileEntity)te;
-              }
-            }
-          } else {
-            ((CauldronBlock)block).setWaterLevel(world, pos, blockState, newLevel);
-          }
-          if (newLevel == 0) {
-            newState = CauldronState.WATER;
-          }
-        }
-
-        // update the state
-        if (cauldron != null) {
-          cauldron.setState(newState, true);
-        }
-
-        // result
-        ItemStack result = recipe.getResult(stack, boiling, level, state);
-        // update held item
-        if (!player.isCreative()) {
-          ItemStack container = recipe.getContainer(stack);
-          int original = stack.getCount();
-
-          // transform input
-          ItemStack transform = recipe.transformInput(stack, boiling, level, state);
-          // if nothing left, set container to main hand
-          if (transform.isEmpty()) {
-            if (!container.isEmpty()) {
-              container.setCount(container.getCount() * original);
-              player.setHeldItem(hand, container);
-            }
-          } else {
-            // else give container to player
-            player.setHeldItem(hand, transform);
-            if (!container.isEmpty()) {
-              container.setCount(container.getCount() * (original - transform.getCount()));
-              ItemHandlerHelper.giveItemToPlayer(player, container, player.inventory.currentItem);
-            }
-          }
-        }
-        // and give the new item to the player
-        if (!result.isEmpty()) {
-          ItemHandlerHelper.giveItemToPlayer(player, result, player.inventory.currentItem);
-        }
+        recipe.handleRecipe(craftingInventory);
+        // TODO: how do contents update on the client?
+        // TODO: play sound based on (old?) contents
       }
+    }
 
+    // clear any extra context and return
+    craftingInventory.clearContext();
+    return success;
+  }
+
+  /**
+   * Method to run cauldron interaction code
+   * @return True if successful, false for pass
+   */
+  public boolean interact(PlayerEntity player, Hand hand) {
+    // ensure we have a stack, or we can be done
+    if (world == null || player.getHeldItem(hand).isEmpty()) {
+      return false;
+    }
+
+    // handle the recipe using the common function
+    boolean success = handleRecipe(player.getHeldItem(hand), stack -> player.setHeldItem(hand, stack), CauldronItemInventory.getPlayerAdder(player));
+    if (success) {
+      setLevel(craftingInventory.getLevel());
       return true;
     }
+    return false;
+  }
 
-    // if we have water, allow default actions to run, otherwise block
-    if (state.isWater()) {
-      // though skip default interactions for water bottles and water buckets if not pure water
-      Item item = stack.getItem();
-      return state != CauldronState.WATER && (item == Items.POTION || item == Items.WATER_BUCKET);
+  /**
+   * Logic to run when a dispenser interacts with the cauldron
+   * @param stack      Stack in the dispenser
+   * @param itemAdder  Logic to add items to the dispenser
+   * @return  Item stack after running the recipe, or null if no recipe ran
+   */
+  @Nullable
+  public ItemStack handleDispenser(ItemStack stack, Consumer<ItemStack> itemAdder) {
+    if (world == null) {
+      return null;
     }
 
-    return true;
+    // update level from the recipe and return the updated stack
+    if (handleRecipe(stack, null, itemAdder)) {
+      setLevel(craftingInventory.getLevel());
+      return craftingInventory.getStack();
+    }
+    return null;
   }
 
   private static final String TAG_CAULDRON_CRAFTED = "cauldron_crafted";
@@ -276,6 +237,10 @@ public class CauldronTileEntity extends TileEntity {
    * @return New cauldron level after the collision
    */
   public int onEntityCollide(Entity entity, int level, BlockState currentState) {
+    if (world == null) {
+      return level;
+    }
+
     // if an entity item, try crafting with it
     if (entity instanceof ItemEntity) {
       // skip items that we have already processed
@@ -284,154 +249,110 @@ public class CauldronTileEntity extends TileEntity {
       // if it was tagged, skip it
       if (entityTags.getBoolean(TAG_CAULDRON_CRAFTED)) {
         return level;
-      } else {
-        // otherwise, if it has a cooldown, reduce the cooldown
-        int cooldown = entityTags.getInt(TAG_CAULDRON_COOLDOWN);
-        if (cooldown > 0) {
-          entityTags.putInt(TAG_CAULDRON_COOLDOWN, cooldown - 1);
-          return level;
-        }
       }
 
-      // try and find a recipe
-      boolean boiling = currentState.get(EnhancedCauldronBlock.BOILING);
-      ItemStack stack = entityItem.getItem();
-      ICauldronRecipe recipe = null;//InspirationsRegistry.getCauldronResult(stack, boiling, level, state);
-      if (recipe != null) {
-        CauldronState state = this.state;
+      // otherwise, if it has a cooldown, reduce the cooldown
+      int cooldown = entityTags.getInt(TAG_CAULDRON_COOLDOWN);
+      if (cooldown > 0) {
+        entityTags.putInt(TAG_CAULDRON_COOLDOWN, cooldown - 1);
+        return level;
+      }
 
-        // play sound first, so its not looped
-        SoundEvent sound = recipe.getSound(stack, boiling, level, state);
-        if (sound != null) {
-          world.playSound(null, pos, sound, SoundCategory.BLOCKS, recipe.getVolume(sound), 1.0F);
-        }
-
-        int matches = 0;
-        int oldCount;
-        do {
-          // update properties based on the recipe
-          CauldronState newState = recipe.getState(stack, boiling, level, state);
-
-          // update level
-          level = recipe.getLevel(level);
-          if (level == 0) {
-            newState = CauldronState.WATER;
-          }
-
-          // spawn the new item in the world
-          ItemStack result = recipe.getResult(stack, boiling, level, state);
-          if (!result.isEmpty()) {
-            spawnItem(result, entityItem);
-          }
-
-          // grab container data
-          ItemStack container = recipe.getContainer(stack);
-          oldCount = stack.getCount();
-
-          // update the stack for later
-          stack = recipe.transformInput(stack, boiling, level, state);
-
-          // add container
-          if (!container.isEmpty()) {
-            container.setCount(container.getCount() * (oldCount - stack.getCount()));
-            spawnItem(container, entityItem);
-          }
-
-          // update the state for the next round
-          state = newState;
-          matches++;
-        } while (recipe.matches(stack, boiling, level, state) && matches < 10);
-
-        // safety check, recipes should never really match more than 4 times, but 10 just in case
-        // basically, they should either be lowering/raising the level (max 4 times), or changing the state (not repeatable)
-        if (matches == 10) {
-          Inspirations.log.warn("Recipe '{}' matched too many times in a single tick. Either the level or the state should change to make it no longer match.", recipe);
-        }
-
-        // kill the old item, or update its item
+      // run recipe
+      boolean success = handleRecipe(entityItem.getItem(), stack -> {
         if (stack.isEmpty()) {
           entityItem.remove();
         } else {
           entityItem.setItem(stack);
-          entityTags.putBoolean(TAG_CAULDRON_CRAFTED, true);
+        }
+      }, stack -> {
+        ItemEntity newItem = new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, stack);
+        newItem.getPersistentData().putBoolean(CauldronTileEntity.TAG_CAULDRON_CRAFTED, true);
+        world.addEntity(newItem);
+      });
+
+      // on success, run the recipe a few more times
+      if (success) {
+        int matches = 0;
+        while (lastRecipe.matches(craftingInventory, world) && matches < 10) {
+          lastRecipe.handleRecipe(craftingInventory);
+          matches++;
         }
 
-        // if the state changed, update that too
-        if (!state.matches(this.state)) {
-          this.state = state;
-          world.notifyBlockUpdate(pos, currentState, currentState, 2);
+        // safety check, recipes should never really match more than 4 times, but 10 just in case
+        // basically, they should either be lowering/raising the level (max 4 times), or changing the state (not repeatable)
+        if (matches == 10) {
+          Inspirations.log.warn("Recipe '{}' matched too many times in a single tick. Either the level or the state should change to make it no longer match.", lastRecipe.getId());
         }
-      } else {
-        // set a cooldown to reduce lag, so we are not searching the registry every tick
-        // we do not just set crafted as that would prevent dropping in items one at a time where multiple are required
-        entityTags.putInt(TAG_CAULDRON_COOLDOWN, 60);
       }
 
-      // otherwise apply fluid special effects
+      // if alive, prevent another craft
+      if (entityItem.isAlive()) {
+        if (success) {
+          entityTags.putBoolean(TAG_CAULDRON_CRAFTED, true);
+        } else {
+          // set a cooldown to reduce lag, so we are not searching the registry every tick
+          // we do not just set crafted as that would prevent dropping in items one at a time where multiple are required
+          entityTags.putInt(TAG_CAULDRON_COOLDOWN, 60);
+        }
+      }
+
+      // return the final level update
+      return craftingInventory.getLevel();
+
     } else if (level > 0) {
-      switch (this.getContentType()) {
-        case FLUID:
-          // water estinguishs fire
-          if (this.isWater()) {
-            if (entity.isBurning()) {
-              entity.extinguish();
-              level = level - 1;
-            }
-          } else {
-            // hot fluids set fire to the entity
-            Fluid fluid = state.getFluid();
-            if (fluid.getAttributes().getTemperature() > 450 && !entity.isImmuneToFire()) {
-              entity.attackEntityFrom(DamageSource.LAVA, 4.0F);
-              entity.setFire(15);
-              break;
-            }
+      Optional<Fluid> fluidType = contents.get(CauldronContentTypes.FLUID);
+      if (fluidType.isPresent()) {
+        // water estinguishs fire
+        Fluid fluid = fluidType.get();
+        if (FluidTags.WATER.contains(fluid)) {
+          if (entity.isBurning()) {
+            entity.extinguish();
+            level = level - 1;
           }
-          // continue for boiling
-        case DYE:
-          // if the cauldron is boiling, boiling the entity
-          if (currentState.get(EnhancedCauldronBlock.BOILING)) {
-            entity.attackEntityFrom(DAMAGE_BOIL, 2.0F);
-          }
-          break;
-        case POTION:
-          // potions apply potion effects
-          if (entity instanceof LivingEntity) {
-            LivingEntity living = (LivingEntity)entity;
-            List<EffectInstance> effects = state.getPotion().getEffects();
-            // if any of the effects are not currently on the player, apply it and lower the level
-            if (effects.stream().anyMatch(effect -> !living.isPotionActive(effect.getPotion()))) {
-              for (EffectInstance effect : effects) {
-                if (effect.getPotion().isInstant()) {
-                  effect.getPotion().affectEntity(null, null, living, effect.getAmplifier(), 1.0D);
-                } else {
-                  living.addPotionEffect(new EffectInstance(effect));
-                }
+        }
+
+        // hot fluids set fire to the entity
+        else if (fluid.getAttributes().getTemperature() > 450 && !entity.isImmuneToFire()) {
+          entity.attackEntityFrom(DamageSource.LAVA, 4.0F);
+          entity.setFire(15);
+          return level;
+        }
+      } else {
+        // potions apply potion effects
+        Optional<Potion> potionType = contents.get(CauldronContentTypes.POTION);
+        if (potionType.isPresent() && entity instanceof LivingEntity) {
+          LivingEntity living = (LivingEntity)entity;
+
+          // if any of the effects are not currently on the player, apply it and lower the level
+          List<EffectInstance> effects = potionType.get().getEffects();
+          if (effects.stream().anyMatch(effect -> !living.isPotionActive(effect.getPotion()))) {
+            for (EffectInstance effect : effects) {
+              if (effect.getPotion().isInstant()) {
+                effect.getPotion().affectEntity(null, null, living, effect.getAmplifier(), 1.0D);
+              } else {
+                living.addPotionEffect(new EffectInstance(effect));
               }
-              level = level - 1;
             }
+            level = level - 1;
           }
-          break;
+          return level;
+        }
+      }
+
+      // if the cauldron is boiling, boiling the entity
+      if (cauldronBlock.isBoiling(currentState)) {
+        entity.attackEntityFrom(DAMAGE_BOIL, 2.0F);
       }
     }
     return level;
   }
 
-  private void spawnItem(ItemStack stack, ItemEntity base) {
-    if (world != null) {
-      ItemEntity entityItem = new ItemEntity(world, base.getPosX(), base.getPosY(), base.getPosZ(), stack);
-
-      // tag the entity so it does not craft again
-      // prevents something like a water bottle from emptying and filling constantly
-      entityItem.getPersistentData().putBoolean(TAG_CAULDRON_CRAFTED, true);
-      world.addEntity(entityItem);
-    }
-  }
-
-  /**
+  /*
    * Called when the cauldron is broken
    * @param pos   Position of the cauldron
    * @param level Cauldron level
-   */
+   *
   public void onBreak(BlockPos pos, int level) {
     if (world == null) {
       return;
@@ -464,62 +385,10 @@ public class CauldronTileEntity extends TileEntity {
         break;
     }
   }
-
-
-  /* fluid tank stuff */
-
-  @Override
-  public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
-    if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
-      return LazyOptional.of(() -> (IFluidHandler)tank).cast();
-    }
-    return super.getCapability(cap, side);
-  }
-
-  public int getFluidLevel() {
-    if (world == null) {
-      return 0;
-    }
-    BlockState state = world.getBlockState(pos);
-    Block block = state.getBlock();
-    if (block instanceof EnhancedCauldronBlock) {
-      return ((EnhancedCauldronBlock)block).getLevel(state);
-    }
-    return 0;
-  }
-
-  public void setFluidLevel(int levels) {
-    if (world == null) {
-      return;
-    }
-    BlockState state = world.getBlockState(pos);
-    Block block = state.getBlock();
-    if (block instanceof EnhancedCauldronBlock) {
-      if (levels == 0) {
-        this.state = CauldronState.WATER;
-      }
-      ((EnhancedCauldronBlock)block).setWaterLevel(world, pos, state, levels);
-    }
-  }
-
-  public void setState(CauldronState newState, boolean doBlockUpdate) {
-    if (world == null) {
-      return;
-    }
-    if (!state.matches(newState)) {
-      this.state = newState;
-      if (doBlockUpdate) {
-        BlockState blockstate = world.getBlockState(pos);
-        world.notifyBlockUpdate(pos, blockstate, blockstate, 2);
-      } else {
-        this.markDirty();
-      }
-    }
-  }
-
+   */
 
   /* NBT */
-  private static final String TAG_STATE = "state";
+  private static final String TAG_CONTENTS = "contents";
 
   @Override
   public CompoundNBT getUpdateTag() {
@@ -530,32 +399,29 @@ public class CauldronTileEntity extends TileEntity {
   @Override
   public CompoundNBT write(CompoundNBT tags) {
     tags = super.write(tags);
-
-    tags.put(TAG_STATE, state.writeToNBT());
-
+    tags.put(TAG_CONTENTS, CauldronContentTypes.toNbt(getContents()));
     return tags;
   }
 
   @Override
   public void read(BlockState state, CompoundNBT tags) {
     super.read(state, tags);
+    setContents(CauldronContentTypes.read(tags.getCompound(TAG_CONTENTS)));
 
-    this.state = CauldronState.fromNBT(tags.getCompound(TAG_STATE));
+    // update block reference
+    Block block = state.getBlock();
+    if (block instanceof EnhancedCauldronBlock) {
+      this.cauldronBlock = (EnhancedCauldronBlock)block;
+    }
   }
 
   @Override
   public SUpdateTileEntityPacket getUpdatePacket() {
-    return new SUpdateTileEntityPacket(this.getPos(), 0, state.writeToNBT());
+    return new SUpdateTileEntityPacket(this.getPos(), 0, CauldronContentTypes.toNbt(getContents()));
   }
 
   @Override
   public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
-    CauldronState newState = CauldronState.fromNBT(pkt.getNbtCompound());
-    if (!this.state.matches(newState)) {
-      this.state = newState;
-      if (world != null && world.isRemote) {
-        Minecraft.getInstance().worldRenderer.notifyBlockUpdate(null, pos, null, null, 0);
-      }
-    }
+    setContents(CauldronContentTypes.read(pkt.getNbtCompound()));
   }
 }

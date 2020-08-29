@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-package knightminer.inspirations.library.recipe.cauldron.legacy;
+package knightminer.inspirations.recipes.recipe.inventory;
 
 import mcp.MethodsReturnNonnullByDefault;
 

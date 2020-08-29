@@ -186,7 +186,7 @@ public class CauldronRecipe implements ICauldronRecipe {
       }
       ItemStack container = null;
       if (outputJson.has("container")) {
-        JsonObject data = JSONUtils.getJsonObject(outputJson, "item");
+        JsonObject data = JSONUtils.getJsonObject(outputJson, "container");
         // special case for empty
         boolean empty = JSONUtils.getBoolean(data, "empty", false);
         if (empty) {

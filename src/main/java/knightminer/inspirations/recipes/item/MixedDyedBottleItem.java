@@ -13,7 +13,7 @@ import net.minecraftforge.common.util.Constants;
 public class MixedDyedBottleItem extends HidableItem {
   private static final String TAG_COLOR = "color";
   public MixedDyedBottleItem(Properties props) {
-    super(props, Config::enableCauldronDyeing);
+    super(props, Config.enableCauldronDyeing);
   }
 
   /**

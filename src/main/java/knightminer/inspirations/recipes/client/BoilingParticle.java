@@ -1,7 +1,11 @@
 package knightminer.inspirations.recipes.client;
 
 import net.minecraft.client.particle.BubbleParticle;
+import net.minecraft.client.particle.IAnimatedSprite;
+import net.minecraft.client.particle.IParticleFactory;
+import net.minecraft.client.particle.Particle;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.particles.BasicParticleType;
 
 public class BoilingParticle extends BubbleParticle {
 
@@ -32,5 +36,19 @@ public class BoilingParticle extends BubbleParticle {
     this.posX += x;
     this.posY += y;
     this.posZ += z;
+  }
+
+  public static class Factory implements IParticleFactory<BasicParticleType> {
+    private final IAnimatedSprite spriteSet;
+    public Factory(IAnimatedSprite spriteSet) {
+      this.spriteSet = spriteSet;
+    }
+
+    @Override
+    public Particle makeParticle(BasicParticleType typeIn, ClientWorld worldIn, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
+      BoilingParticle bubble = new BoilingParticle(worldIn, x, y, z, xSpeed, ySpeed, zSpeed);
+      bubble.selectSpriteRandomly(this.spriteSet);
+      return bubble;
+    }
   }
 }

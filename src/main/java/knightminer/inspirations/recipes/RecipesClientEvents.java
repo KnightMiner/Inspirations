@@ -2,9 +2,11 @@ package knightminer.inspirations.recipes;
 
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.ClientEvents;
+import knightminer.inspirations.recipes.client.BoilingParticle;
 import knightminer.inspirations.recipes.item.MixedDyedBottleItem;
 import knightminer.inspirations.recipes.recipe.cauldron.contents.ColorContentType;
 import knightminer.inspirations.recipes.recipe.cauldron.contents.PotionContentType;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.inventory.container.PlayerContainer;
 import net.minecraftforge.api.distmarker.Dist;
@@ -13,6 +15,7 @@ import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 @SuppressWarnings("unused")
 @EventBusSubscriber(modid = Inspirations.modID, value = Dist.CLIENT, bus = Bus.MOD)
@@ -40,6 +43,11 @@ public class RecipesClientEvents extends ClientEvents {
 		}, InspirationsRecipes.cauldron);
 	}
 	*/
+
+	@SubscribeEvent
+	static void clientSetup(FMLClientSetupEvent event) {
+		Minecraft.getInstance().particles.registerFactory(InspirationsRecipes.boilingParticle, BoilingParticle.Factory::new);
+	}
 
 	@SubscribeEvent
 	static void registerItemColors(ColorHandlerEvent.Item event) {

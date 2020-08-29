@@ -2,61 +2,59 @@ package knightminer.inspirations.recipes.block;
 
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.InspirationsTags;
-import knightminer.inspirations.recipes.client.BoilingParticle;
+import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.CauldronBlock;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.ParticleManager;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.EnumProperty;
-import net.minecraft.state.IntegerProperty;
-import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
-import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.model.data.ModelProperty;
+import slimeknights.mantle.util.TileEntityHelper;
 
-import java.util.Locale;
 import java.util.Random;
 
 @SuppressWarnings("WeakerAccess")
 public class EnhancedCauldronBlock extends CauldronBlock {
-
-  public static final EnumProperty<CauldronContents> CONTENTS = EnumProperty.create("contents", CauldronContents.class);
-  public static final IntegerProperty LEVEL_EXT = IntegerProperty.create("levels", 0, 4);
-  public static final BooleanProperty BOILING = BooleanProperty.create("boiling");
-  public static final ModelProperty<String> TEXTURE = new ModelProperty<>();
-
   public EnhancedCauldronBlock(Block.Properties props) {
     super(props);
-
-    BlockState state = this.getDefaultState()
-                           .with(LEVEL, 0)
-                           .with(BOILING, false)
-                           .with(CONTENTS, CauldronContents.FLUID);
-    if (Config.enableBiggerCauldron()) {
-      state = state.with(LEVEL_EXT, 0);
-    }
-    this.setDefaultState(state);
   }
 
+  /**
+   * Gets the level of fluid in the cauldron
+   * @param state  State to check
+   * @return  Water level of state
+   */
+  public int getLevel(BlockState state) {
+    return state.get(LEVEL);
+  }
+
+  @Override
+  public void setWaterLevel(World world, BlockPos pos, BlockState state, int level) {
+    if (level != getLevel(state)) {
+      super.setWaterLevel(world, pos, state, level);
+    }
+  }
 
   /* TE behavior */
+  @Override
+  public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult ray) {
+    // all moved to the cauldron registry
+    return ActionResultType.SUCCESS;
+  }
+
   @Override
   public boolean hasTileEntity(BlockState state) {
     return true;
@@ -64,63 +62,55 @@ public class EnhancedCauldronBlock extends CauldronBlock {
 
   @Override
   public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-    return new CauldronTileEntity();
+    return new CauldronTileEntity(this);
   }
 
   @Override
   public void fillWithRain(World world, BlockPos pos) {
     TileEntity te = world.getTileEntity(pos);
     // do not fill unless the current contents are water
-    if (te instanceof CauldronTileEntity && !((CauldronTileEntity)te).isWater()) {
+    if (te instanceof CauldronTileEntity && !((CauldronTileEntity)te).isVanilla()) {
       return;
     }
 
     // allow disabling the random 1/20 chance
-    if ((Config.fasterCauldronRain() || world.rand.nextInt(20) == 0)
-        && world.getBiome(pos).getTemperature(pos) >= 0.15F) {
+    if ((Config.fasterCauldronRain.get() || world.rand.nextInt(20) == 0) && world.getBiome(pos).getTemperature(pos) >= 0.15F) {
       BlockState state = world.getBlockState(pos);
       int level = getLevel(state);
-      if (level < (Config.enableBiggerCauldron() ? 4 : 3)) {
+      if (level < 3) {
         setWaterLevel(world, pos, state, level + 1);
       }
     }
   }
 
-  /**
-   * Called When an Entity Collided with the Block
-   */
   @Override
   public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-    TileEntity te = world.getTileEntity(pos);
-    // do not estinguish unless the current contents are water
-    if (!(te instanceof CauldronTileEntity)) {
-      return;
-    }
     if (world.isRemote) {
       return;
     }
 
-    // ensure the entity is touching the fluid inside
+    // check if an entity hit within the water
     int level = getLevel(state);
-    float f = pos.getY() + ((Config.enableBiggerCauldron() ? 2.5F : 5.5F) + 3 * Math.max(level, 1)) / 16.0F;
-    if (entity.getBoundingBox().minY <= f) {
+    if (entity.getBoundingBox().minY <= (pos.getY() + (5.5F + (3 * Math.max(level, 1))) / 16.0F)) {
       // if so, have the TE handle it
-      int newLevel = ((CauldronTileEntity)te).onEntityCollide(entity, level, state);
-      // if the level changed, update it
-      if (level != newLevel) {
-        this.setWaterLevel(world, pos, state, newLevel);
-      }
-
+      TileEntityHelper.getTile(CauldronTileEntity.class, world, pos).ifPresent(te -> {
+        int newLevel = te.onEntityCollide(entity, level, state);
+        // if the level changed, update it
+        if (level != newLevel) {
+          this.setWaterLevel(world, pos, state, newLevel);
+        }
+      });
     }
   }
 
+  /*
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
     if (newState.getBlock() != state.getBlock() && !isMoving) {
       int level = getLevel(state);
-      if (/*Config.dropCauldronContents.get() && */ level > 0) {
+      if (Config.dropCauldronContents.get() && level > 0) {
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof CauldronTileEntity) {
           ((CauldronTileEntity)te).onBreak(pos, level);
@@ -129,63 +119,55 @@ public class EnhancedCauldronBlock extends CauldronBlock {
     }
     super.onReplaced(state, world, pos, newState, isMoving);
   }
+  */
 
-	/* TODO: reimplement
-	@Override
-	public boolean removedByPlayer(BlockState state, World world, BlockPos pos, PlayerEntity player, boolean willHarvest) {
-		this.onBlockHarvested(world, pos, state, player);
-		world.setBlockState(pos, Blocks.AIR.getDefaultState(), world.isRemote ? 11 : 3);
-		return world.getBlockState(pos).getBlock() != Blocks.CAULDRON;
-	}*/
 
-  /* Content texture */
+  /* Boiling property */
 
-  @Override
-  protected void fillStateContainer(StateContainer.Builder<Block,BlockState> builder) {
-    builder.add(CONTENTS, BOILING, LEVEL);
-    if (Config.enableBiggerCauldron()) {
-      builder.add(LEVEL_EXT);
+  /**
+   * Checks if a state is considered fire in a cauldron
+   * @param state State to check
+   * @return True if the state is considered fire
+   */
+  public static boolean isCauldronFire(BlockState state) {
+    if (state.getBlock().isIn(InspirationsTags.Blocks.CAULDRON_FIRE)) {
+      return true;
     }
+    return state.getBlock() == Blocks.CAMPFIRE && state.get(CampfireBlock.LIT);
+  }
+
+  /**
+   * Checks if the given block state is boiling. Provided to make it easy to override for a non-vanilla override to use a block property.
+   * @param state  State to check
+   * @return  True if boiling
+   */
+  public boolean isBoiling(BlockState state) {
+    return state.getBlock() == InspirationsRecipes.boilingCauldron;
   }
 
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public BlockState updatePostPlacement(BlockState state, Direction facing, BlockState facingState, IWorld world, BlockPos pos, BlockPos facingPos) {
-    TileEntity te = world.getTileEntity(pos);
-    if (te instanceof CauldronTileEntity) {
-      state = state.with(CONTENTS, ((CauldronTileEntity)te).getContentType());
+    // if you are not doing a vanilla override, you can save yourself a ton of work here and just use a block property boolean
+    if (facing == Direction.DOWN) {
+      // if boiling changed, swap blocks
+      boolean boiling = isCauldronFire(facingState);
+      if (boiling != isBoiling(state)) {
+        // swap blocks, copy properties
+        return (boiling ? InspirationsRecipes.boilingCauldron : InspirationsRecipes.cauldron).getDefaultState()
+            .with(LEVEL, getLevel(state));
+      }
     }
+    // no change
     return state;
-  }
-
-  @Override
-  public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult ray) {
-    // all moved to the cauldron registry
-    return ActionResultType.SUCCESS;
-  }
-
-
-  /* boiling */
-
-  @SuppressWarnings("deprecation")
-  @Deprecated
-  @Override
-  public void neighborChanged(BlockState state, World world, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
-    setBoiling(world, pos, state);
-  }
-
-  private static void setBoiling(World world, BlockPos pos, BlockState state) {
-    world.setBlockState(pos, state.with(BOILING,
-                                        world.getBlockState(pos.down()).getBlock().isIn(InspirationsTags.Blocks.CAULDRON_FIRE)
-                                       ));
   }
 
   @Deprecated
   @Override
   @OnlyIn(Dist.CLIENT)
   public void animateTick(BlockState state, World world, BlockPos pos, Random rand) {
-    if (!state.get(BOILING)) {
+    if (!isBoiling(state)) {
       return;
     }
 
@@ -194,82 +176,11 @@ public class EnhancedCauldronBlock extends CauldronBlock {
       return;
     }
 
-    ParticleManager manager = Minecraft.getInstance().particles;
     for (int i = 0; i < 2; i++) {
       double x = pos.getX() + 0.1875D + (rand.nextFloat() * 0.625D);
-      double y = pos.getY() + (Config.enableBiggerCauldron() ? 0.1875 : 0.375D) + (level * 0.1875D);
+      double y = pos.getY() + 0.375D  + (level * 0.1875D);
       double z = pos.getZ() + 0.1875D + (rand.nextFloat() * 0.625D);
-      manager.addEffect(new BoilingParticle((ClientWorld)world, x, y, z, 0, 0, 0));
-    }
-  }
-
-
-  /* 4 bottle support */
-  @Override
-  public void setWaterLevel(World worldIn, BlockPos pos, BlockState state, int level) {
-    // if 4, set 4 prop
-    if (Config.enableBiggerCauldron()) {
-      state = state.with(LEVEL_EXT, MathHelper.clamp(level, 0, 4));
-    }
-    worldIn.setBlockState(pos, state.with(LEVEL, MathHelper.clamp(level, 0, 3)), 2);
-    worldIn.updateComparatorOutputLevel(pos, this);
-  }
-
-  /**
-   * Gets the level of a cauldron from the given state
-   * @param state Block state
-   * @return Cauldron level
-   */
-  public static int getCauldronLevel(BlockState state) {
-    Block block = state.getBlock();
-    if (state.getBlock() instanceof EnhancedCauldronBlock) {
-      return ((EnhancedCauldronBlock)block).getLevel(state);
-    }
-    if (state.hasProperty(LEVEL)) {
-      return state.get(LEVEL);
-    }
-    return Config.getCauldronMax();
-  }
-
-  public int getLevel(BlockState state) {
-    if (Config.enableBiggerCauldron()) {
-      return state.get(LEVEL_EXT);
-    }
-    return state.get(LEVEL);
-  }
-
-  @Deprecated
-  @Override
-  public int getComparatorInputOverride(BlockState state, World world, BlockPos pos) {
-    return getLevel(state);
-  }
-
-  public enum CauldronContents implements IStringSerializable {
-    FLUID,
-    DYE,
-    POTION;
-
-    private int meta;
-
-    CauldronContents() {
-      this.meta = ordinal();
-    }
-
-    @Override
-    public String getString() {
-      return name().toLowerCase(Locale.US);
-    }
-
-    public int getMeta() {
-      return meta;
-    }
-
-    public static CauldronContents fromMeta(int meta) {
-      if (meta > values().length) {
-        meta = 0;
-      }
-
-      return values()[meta];
+      world.addParticle(InspirationsRecipes.boilingParticle, x, y, z, 0, 0, 0);
     }
   }
 }

@@ -2,8 +2,8 @@ package knightminer.inspirations.library.client;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import knightminer.inspirations.Inspirations;
-import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.InspirationsRegistry;
+import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -207,7 +207,7 @@ public final class ClientUtil {
     if (level == 0) {
       ClientUtil.renderFilledSprite(sprite, x, y, 16, 16);
     } else {
-      int height = ((10 * level) / Config.getCauldronMax());
+      int height = ((10 * level) / ICauldronRecipe.MAX);
       ClientUtil.renderFilledSprite(sprite, x, y, 10, height);
     }
     GlStateManager.color4f(1, 1, 1, 1);

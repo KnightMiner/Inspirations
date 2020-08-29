@@ -1,20 +1,22 @@
 package knightminer.inspirations.recipes.tank;
 
-import knightminer.inspirations.common.Config;
-import knightminer.inspirations.library.recipe.cauldron.legacy.ICauldronRecipe.CauldronState;
+import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
+import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
 import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
 import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.Fluids;
+import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
+/**
+ * Logic to treat the cauldron as a fluid tank
+ */
 public class CauldronTank implements IFluidHandler {
-
-  private CauldronTileEntity cauldron;
-
+  private final CauldronTileEntity cauldron;
   public CauldronTank(CauldronTileEntity cauldron) {
     this.cauldron = cauldron;
   }
+
 
   /* Properties */
 
@@ -35,8 +37,10 @@ public class CauldronTank implements IFluidHandler {
 
   @Override
   public FluidStack getFluidInTank(int tank) {
-    Fluid fluid = cauldron.getState().getFluid();
-    return fluid == Fluids.EMPTY ? FluidStack.EMPTY : new FluidStack(fluid, 1000);
+    return cauldron.getContents()
+                   .get(CauldronContentTypes.FLUID)
+                   .map(fluid -> new FluidStack(fluid, 1000))
+                   .orElse(FluidStack.EMPTY);
   }
 
 
@@ -49,58 +53,43 @@ public class CauldronTank implements IFluidHandler {
       return 0;
     }
 
-    // if the fluid is different, its not allowed
-    // note the fluid will be null if a non-fluid type, but will be water for an empty cauldron
-    int level = cauldron.getFluidLevel();
-    int max = Config.getCauldronMax();
-    if (level == max) {
+    // if full, block
+    int level = cauldron.getLevel();
+    if (level == ICauldronRecipe.MAX) {
       return 0;
     }
 
-    // validate fluid
-    CauldronState state = cauldron.getState();
-    if (level > 0 && state.getFluid() != stack.getFluid()) {
+    // if the fluid is different, block
+    Fluid fluid = stack.getFluid();
+    if (level > 0 && !cauldron.getContents().matches(CauldronContentTypes.FLUID, fluid)) {
       return 0;
     }
 
     // determine how much fluid we can insert
-    int toInsert = Math.min(getLevels(stack.getAmount()), max - level);
+    int toInsert = Math.min(getLevels(stack.getAmount()), ICauldronRecipe.MAX - level);
     if (toInsert == 0) {
       return 0;
     }
 
+    // update on execute
     if (action == FluidAction.EXECUTE) {
-      cauldron.setState(CauldronState.fluid(stack.getFluid()), false);
-      cauldron.setFluidLevel(toInsert + level);
+      cauldron.setContents(CauldronContentTypes.FLUID.of(fluid));
+      cauldron.setLevel(toInsert + level);
     }
 
     return getAmount(toInsert);
   }
 
-  @Override
-  public FluidStack drain(FluidStack stack, FluidAction action) {
-    // cannot drain with NBT stacks
-    if (stack.hasTag()) {
-      return FluidStack.EMPTY;
-    }
-
-    CauldronState state = cauldron.getState();
-    if (state.getFluid() != stack.getFluid()) {
-      return FluidStack.EMPTY;
-    }
-
-    return drain(stack.getAmount(), action);
-  }
-
-  @Override
-  public FluidStack drain(int maxDrain, FluidAction action) {
-    CauldronState state = cauldron.getState();
-    if (state.getFluid() == Fluids.EMPTY) {
-      return FluidStack.EMPTY;
-    }
-
+  /**
+   * Shared logic for fluid draining
+   * @param fluid     Fluid to drain
+   * @param maxDrain  Amount to drain
+   * @param action    Whether to execute the drain
+   * @return  Drained fluid stack
+   */
+  private FluidStack drain(Fluid fluid, int maxDrain, FluidAction action) {
     // nothing to drain
-    int level = cauldron.getFluidLevel();
+    int level = cauldron.getLevel();
     if (level == 0) {
       return FluidStack.EMPTY;
     }
@@ -111,29 +100,58 @@ public class CauldronTank implements IFluidHandler {
       return FluidStack.EMPTY;
     }
 
+    // update on execute
     if (action == FluidAction.EXECUTE) {
-      cauldron.setFluidLevel(level - toDrain);
+      cauldron.setLevel(level - toDrain);
     }
 
-    return new FluidStack(state.getFluid(), getAmount(toDrain));
+    // return fluid
+    return new FluidStack(fluid, getAmount(toDrain));
+  }
+
+  @Override
+  public FluidStack drain(FluidStack stack, FluidAction action) {
+    // cannot drain with NBT stacks
+    if (stack.hasTag()) {
+      return FluidStack.EMPTY;
+    }
+
+    // need contents as a fluid type matching the given fluid
+    return cauldron.getContents()
+                   .get(CauldronContentTypes.FLUID)
+                   .filter(stack.getFluid()::equals)
+                   .map(fluid -> drain(fluid, stack.getAmount(), action))
+                   .orElse(FluidStack.EMPTY);
+  }
+
+  @Override
+  public FluidStack drain(int maxDrain, FluidAction action) {
+    // simply need contents to be a fluid type
+    return cauldron.getContents()
+                   .get(CauldronContentTypes.FLUID)
+                   .map(fluid -> drain(fluid, maxDrain, action))
+                   .orElse(FluidStack.EMPTY);
   }
 
 
   /* Helpers */
 
+  /**
+   * Converts a fluid amount to cauldron levels
+   * @param amount  Amount to convert
+   * @return  Cauldron levels amount
+   */
   private static int getLevels(int amount) {
-    // if bigger, we got between 0 and 4
-    if (Config.enableBiggerCauldron()) {
-      return amount / 250;
-    }
     // regular is just 3 or 0
-    return amount >= 1000 ? 3 : 0;
+    return amount >= FluidAttributes.BUCKET_VOLUME ? ICauldronRecipe.MAX : 0;
   }
 
+  /**
+   * Converts a level amount to a fluid amount
+   * @param levels  Levels amount
+   * @return  Fluid amount
+   */
   private static int getAmount(int levels) {
-    if (Config.enableBiggerCauldron()) {
-      return levels * 250;
-    }
-    return levels == 3 ? 1000 : 0;
+    return levels == ICauldronRecipe.MAX ? FluidAttributes.BUCKET_VOLUME : 0;
   }
 }

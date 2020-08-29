@@ -15,7 +15,7 @@ import net.minecraftforge.items.ItemHandlerHelper;
 public class SimpleDyedBottleItem extends HidableItem {
   private final DyeColor color;
   public SimpleDyedBottleItem(Properties props, DyeColor color) {
-    super(props, Config::enableCauldronDyeing);
+    super(props, Config.enableCauldronDyeing);
     this.color = color;
   }
 

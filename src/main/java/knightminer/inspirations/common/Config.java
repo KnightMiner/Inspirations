@@ -83,28 +83,8 @@ public class Config {
   public static CachedBoolean enableCauldronPotions;
   public static CachedBoolean enableCauldronBrewing;
   public static CachedBoolean cauldronTipArrows;
-
-  public static boolean enableCauldronRecipes() {
-    return false;
-  }
-  public static boolean enableExtendedCauldron() {
-    return false;
-  }
-  public static boolean enableBiggerCauldron() { return false; }
-  public static int getCauldronMax()           { return enableBiggerCauldron() ? 4 : 3; }
-  public static boolean fasterCauldronRain()   { return false; }
-  public static boolean canSpongeEmptyFullOnly() {
-    return false;
-  }
-  public static boolean enableCauldronDyeing() {
-    return false;
-  }
-  public static boolean enableCauldronPotions() {
-    return false;
-  }
-  public static boolean expensiveCauldronBrewing() {
-    return false;
-  }
+  // misc
+  public static CachedBoolean fasterCauldronRain;
 
   // tools
   public static final CachedBoolean enableLock;
@@ -415,6 +395,10 @@ public class Config {
 				cauldronTipArrows = and(enableCauldronPotions, server
 						.comment("Allows cauldrons to tip arrows with potions.")
 						.define("potions.tippedArrow", true));
+
+        fasterCauldronRain = and(recipesModule, extendedCauldron, server
+            .comment("If true, cauldrons fill faster in the rain.")
+            .define("fasterRain", true));
 
 				// dispensers
         /* TODO: reconsider

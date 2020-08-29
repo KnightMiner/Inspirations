@@ -7,12 +7,16 @@ import knightminer.inspirations.common.item.HidableItem;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronRecipe;
+import knightminer.inspirations.recipes.block.EnhancedCauldronBlock;
 import knightminer.inspirations.recipes.data.RecipesRecipeProvider;
 import knightminer.inspirations.recipes.item.MixedDyedBottleItem;
 import knightminer.inspirations.recipes.item.SimpleDyedBottleItem;
 import knightminer.inspirations.recipes.recipe.cauldron.EmptyBucketCauldronRecipe;
 import knightminer.inspirations.recipes.recipe.cauldron.FillBucketCauldronRecipe;
+import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.block.material.Material;
 import net.minecraft.data.DataGenerator;
@@ -27,7 +31,10 @@ import net.minecraft.item.Items;
 import net.minecraft.item.SoupItem;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.SpecialRecipeSerializer;
+import net.minecraft.particles.BasicParticleType;
+import net.minecraft.particles.ParticleType;
 import net.minecraft.potion.Potions;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -39,6 +46,7 @@ import slimeknights.mantle.registration.adapter.BlockRegistryAdapter;
 import slimeknights.mantle.registration.adapter.FluidRegistryAdapter;
 import slimeknights.mantle.registration.adapter.ItemRegistryAdapter;
 import slimeknights.mantle.registration.adapter.RegistryAdapter;
+import slimeknights.mantle.registration.adapter.TileEntityTypeRegistryAdapter;
 import slimeknights.mantle.registration.object.EnumObject;
 
 @SuppressWarnings({"WeakerAccess", "unused"})
@@ -51,7 +59,9 @@ public class InspirationsRecipes extends ModuleBase {
   public static Block chippedAnvil;
   public static Block damagedAnvil;
 
-  //public static EnhancedCauldronBlock cauldron;
+  public static EnhancedCauldronBlock cauldron;
+  public static EnhancedCauldronBlock boilingCauldron;
+  public static TileEntityType<CauldronTileEntity> tileCauldron;
 
   // items
   public static Item splashBottle;
@@ -79,6 +89,8 @@ public class InspirationsRecipes extends ModuleBase {
   public static CauldronRecipe.Serializer cauldronSerializer;
   public static SpecialRecipeSerializer<EmptyBucketCauldronRecipe> emptyBucketSerializer;
   public static SpecialRecipeSerializer<FillBucketCauldronRecipe> fillBucketSerializer;
+
+  public static BasicParticleType boilingParticle;
 
   @SubscribeEvent
   void registerFluids(Register<Fluid> event) {
@@ -114,10 +126,11 @@ public class InspirationsRecipes extends ModuleBase {
       registry.registerOverride(SmashingAnvilBlock::new, Blocks.CHIPPED_ANVIL);
       registry.registerOverride(SmashingAnvilBlock::new, Blocks.DAMAGED_ANVIL);
     }
-    if (Config.enableExtendedCauldron()) {
+    */
+    if (Config.extendedCauldron.get()) {
       cauldron = registry.registerOverride(EnhancedCauldronBlock::new, Blocks.CAULDRON);
     }
-     */
+    boilingCauldron = registry.register(new EnhancedCauldronBlock(AbstractBlock.Properties.from(Blocks.CAULDRON)), "boiling_cauldron");
   }
 
   @SubscribeEvent
@@ -139,8 +152,8 @@ public class InspirationsRecipes extends ModuleBase {
 
     // empty bottles
     Item.Properties brewingProps = new Item.Properties().group(ItemGroup.BREWING);
-    splashBottle = registry.register(new HidableItem(brewingProps, Config::enableCauldronPotions), "splash_bottle");
-    lingeringBottle = registry.register(new HidableItem(brewingProps, Config::enableCauldronPotions), "lingering_bottle");
+    splashBottle = registry.register(new HidableItem(brewingProps, Config.enableCauldronPotions), "splash_bottle");
+    lingeringBottle = registry.register(new HidableItem(brewingProps, Config.enableCauldronPotions), "lingering_bottle");
 
     // dyed bottles
     Item.Properties bottleProps = new Item.Properties()
@@ -149,6 +162,30 @@ public class InspirationsRecipes extends ModuleBase {
         .containerItem(Items.GLASS_BOTTLE);
     simpleDyedWaterBottle = registry.registerEnum(color -> new SimpleDyedBottleItem(bottleProps, color), DyeColor.values(), "dyed_bottle");
     mixedDyedWaterBottle = registry.register(new MixedDyedBottleItem(bottleProps), "mixed_dyed_bottle");
+
+    // boiling cauldron item
+    Item cauldronItem = Items.CAULDRON;
+    if (Config.extendedCauldron.getAsBoolean()) {
+      cauldronItem = registry.registerBlockItem(cauldron, brewingProps);
+    }
+    Item.BLOCK_TO_ITEM.put(boilingCauldron, cauldronItem);
+  }
+
+  @SubscribeEvent
+  void registerTileEntities(Register<TileEntityType<?>> event) {
+    TileEntityTypeRegistryAdapter registry = new TileEntityTypeRegistryAdapter(event.getRegistry());
+
+    if (Config.extendedCauldron.get()) {
+      tileCauldron = registry.register(CauldronTileEntity::new, "cauldron", blocks -> {
+        blocks.add(cauldron, boilingCauldron);
+      });
+    }
+  }
+
+  @SubscribeEvent
+  void registerParticleTypes(Register<ParticleType<?>> event) {
+    RegistryAdapter<ParticleType<?>> registry = new RegistryAdapter<>(event.getRegistry());
+    boilingParticle = registry.register(new BasicParticleType(false), "boiling");
   }
 
   @SubscribeEvent

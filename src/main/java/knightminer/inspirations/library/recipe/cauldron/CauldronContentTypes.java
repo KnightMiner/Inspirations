@@ -145,7 +145,7 @@ public class CauldronContentTypes {
    */
   public static ICauldronContents read(CompoundNBT nbt) {
     if (nbt.contains(KEY_TYPE, NBT.TAG_STRING)) {
-      ResourceLocation location = new ResourceLocation(nbt.getString());
+      ResourceLocation location = new ResourceLocation(nbt.getString(KEY_TYPE));
       CauldronContentType<?> type = get(location);
       if (type != null) {
         ICauldronContents contents = type.read(nbt);
