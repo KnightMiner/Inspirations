@@ -10,6 +10,7 @@ import knightminer.inspirations.common.datagen.InspirationsLootTableProvider;
 import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.shared.InspirationsShared;
+import knightminer.inspirations.shared.SharedClientEvents;
 import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import knightminer.inspirations.utility.InspirationsUtility;
@@ -85,6 +86,8 @@ public class Inspirations {
     //		pulseManager.registerPulse(new InspirationsRecipes());
 
     InspirationsNetwork.INSTANCE.setup();
+
+    DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> SharedClientEvents::onConstruct);
   }
 
   @SubscribeEvent

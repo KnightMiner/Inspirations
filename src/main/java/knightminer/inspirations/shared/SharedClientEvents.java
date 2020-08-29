@@ -1,8 +1,10 @@
 package knightminer.inspirations.shared;
 
+import com.google.common.collect.ImmutableSet;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.ClientEvents;
 import knightminer.inspirations.library.client.ClientUtil;
+import knightminer.inspirations.library.client.ConfigurableResourcePack;
 import knightminer.inspirations.library.client.model.BookshelfModel;
 import knightminer.inspirations.library.client.model.TrimModel;
 import net.minecraft.client.Minecraft;
@@ -20,11 +22,23 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
-import java.util.concurrent.CompletableFuture;
-
 @SuppressWarnings("unused")
 @EventBusSubscriber(modid = Inspirations.modID, value = Dist.CLIENT, bus = Bus.MOD)
 public class SharedClientEvents extends ClientEvents {
+  public static ConfigurableResourcePack configPack;
+
+  /**
+   * Called during mod constructor to run early events
+   */
+  public static void onConstruct() {
+    Minecraft minecraft = Minecraft.getInstance();
+    //noinspection ConstantConditions  Not constant as minecraft is null during datagen
+    if (minecraft != null) {
+      configPack = new ConfigurableResourcePack(Inspirations.class, Inspirations.getResource("config_resources"), "Inspirations Config", ImmutableSet.of("minecraft"));
+      minecraft.getResourcePackList().addPackFinder(configPack);
+    }
+  }
+
   @SubscribeEvent
   static void registerModelLoaders(ModelRegistryEvent event) {
     ModelLoaderRegistry.registerLoader(Inspirations.getResource("bookshelf"), BookshelfModel.LOADER);

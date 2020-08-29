@@ -1,0 +1,7 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "inspirations:item/book_enchanted",
+    "layer1": "inspirations:item/book_enchanted_overlay"
+  }
+}

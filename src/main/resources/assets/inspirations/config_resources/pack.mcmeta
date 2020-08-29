@@ -1,0 +1,6 @@
+{
+  "pack": {
+    "description": "Internal pack to handle resource replacements based on Inspirations client config. Use the config to configure them.",
+    "pack_format": 5
+  }
+}

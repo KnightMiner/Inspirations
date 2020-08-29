@@ -3,14 +3,13 @@ package knightminer.inspirations.tweaks;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.ClientEvents;
 import knightminer.inspirations.common.Config;
+import knightminer.inspirations.shared.SharedClientEvents;
 import knightminer.inspirations.tweaks.client.PortalColorHandler;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.ItemColors;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.ItemStack;
@@ -23,9 +22,7 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.biome.BiomeColors;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ColorHandlerEvent;
-import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
@@ -35,25 +32,9 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import java.util.Map;
-
 @SuppressWarnings({"unused", "WeakerAccess"})
 @EventBusSubscriber(modid = Inspirations.modID, value = Dist.CLIENT, bus = Bus.MOD)
 public class TweaksClientEvents extends ClientEvents {
-  private static final ResourceLocation ENCHANTED_BOOK_VANILLA = new ModelResourceLocation("enchanted_book", "inventory");
-  private static final ResourceLocation ENCHANTED_BOOK_TINTED = Inspirations.getResource("item/enchanted_book");
-
-  private static final ResourceLocation FIREWORKS_VANILLA = new ModelResourceLocation("firework_rocket", "inventory");
-  private static final ResourceLocation FIREWORKS_TINTED = Inspirations.getResource("item/fireworks");
-
-  private static final ResourceLocation PORTAL_EW_VANILLA = new ModelResourceLocation("minecraft:nether_portal", "axis=z");
-  private static final ResourceLocation PORTAL_NS_VANILLA = new ModelResourceLocation("minecraft:nether_portal", "axis=x");
-  private static final ResourceLocation PORTAL_EW_TINTED = Inspirations.getResource("block/nether_portal_tinted_ew");
-  private static final ResourceLocation PORTAL_NS_TINTED = Inspirations.getResource("block/nether_portal_tinted_ns");
-
-  private static final ResourceLocation CAULDRON_MODEL_VANILLA = new ModelResourceLocation("cauldron", "inventory");
-  private static final ResourceLocation CAULDRON_ITEM_MODEL = new ModelResourceLocation(Inspirations.getResource("cauldron"), "inventory");
-
   @SubscribeEvent
   static void clientSetup(FMLClientSetupEvent event) {
     RenderType cutout = RenderType.getCutout();
@@ -64,37 +45,12 @@ public class TweaksClientEvents extends ClientEvents {
   }
 
   @SubscribeEvent
-  static void loadCustomModels(ModelRegistryEvent event) {
-    // Register these models to be loaded in directly.
-    ModelLoader.addSpecialModel(PORTAL_EW_TINTED);
-    ModelLoader.addSpecialModel(PORTAL_NS_TINTED);
-    ModelLoader.addSpecialModel(ENCHANTED_BOOK_TINTED);
-    ModelLoader.addSpecialModel(FIREWORKS_TINTED);
-    ModelLoader.addSpecialModel(CAULDRON_ITEM_MODEL);
-  }
-
-
-  @SubscribeEvent
-  static void swapModels(ModelBakeEvent event) {
-    // Switch to the custom versions when loading models.
-    Map<ResourceLocation,IBakedModel> map = event.getModelRegistry();
-
-    if (Config.betterCauldronItem.get()) {
-      map.put(CAULDRON_MODEL_VANILLA, map.get(CAULDRON_ITEM_MODEL));
-    }
-
-    if (Config.customPortalColor.get()) {
-      map.put(PORTAL_EW_VANILLA, map.get(PORTAL_EW_TINTED));
-      map.put(PORTAL_NS_VANILLA, map.get(PORTAL_NS_TINTED));
-    }
-
-    if (Config.coloredEnchantedRibbons.get()) {
-      map.put(ENCHANTED_BOOK_VANILLA, map.get(ENCHANTED_BOOK_TINTED));
-    }
-
-    if (Config.coloredFireworkItems.get()) {
-      map.put(FIREWORKS_VANILLA, map.get(FIREWORKS_TINTED));
-    }
+  static void modelRegistry(ModelRegistryEvent event) {
+    // add model replacements to the config pack
+    SharedClientEvents.configPack.addBlockstateReplacement(Config.customPortalColor, Blocks.NETHER_PORTAL, "nether_portal");
+    SharedClientEvents.configPack.addItemModelReplacement(Config.coloredEnchantedRibbons, Items.ENCHANTED_BOOK, "enchanted_book");
+    SharedClientEvents.configPack.addItemModelReplacement(Config.coloredFireworkItems, Items.FIREWORK_ROCKET, "fireworks");
+    SharedClientEvents.configPack.addItemModelReplacement(Config.betterCauldronItem, Items.CAULDRON, () -> Config.enableExtendedCauldron() ? "cauldron" : "cauldron_vanilla");
   }
 
   @SubscribeEvent
@@ -128,7 +84,7 @@ public class TweaksClientEvents extends ClientEvents {
             Enchantment enchantment = ForgeRegistries.ENCHANTMENTS.getValue(id);
             if (enchantment != null) {
               Enchantment.Rarity newRarity = enchantment.getRarity();
-              if (newRarity != null && newRarity.getWeight() < rarity.getWeight()) {
+              if (newRarity.getWeight() < rarity.getWeight()) {
                 rarity = newRarity;
               }
             }
