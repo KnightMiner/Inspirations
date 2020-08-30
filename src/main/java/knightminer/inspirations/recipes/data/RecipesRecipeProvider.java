@@ -182,6 +182,7 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
     addColoredRecipes(ItemTags.WOOL, VanillaEnum.WOOL, folder + "wool/", null);
     addColoredRecipes(ItemTags.BEDS, VanillaEnum.BED, folder + "bed/", null);
     addColoredRecipes(ItemTags.CARPETS, InspirationsShared.VANILLA_CARPETS, folder + "carpet/", null);
+    addColoredRecipes(InspirationsTags.Items.SHULKER_BOXES, VanillaEnum.SHULKER_BOX, Items.SHULKER_BOX, folder + "shulker_box/", true, null);
     // Inspirations blocks
     addColoredRecipes(InspirationsTags.Items.CARPETED_TRAPDOORS, InspirationsUtility.carpetedTrapdoors, folder + "carpeted_trapdoor/", ConfigEnabledCondition.CARPETED_TRAPDOOR);
 
@@ -193,7 +194,6 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
     addDyeableRecipes(Items.LEATHER_HORSE_ARMOR, folder);
 
     // TODO: banners
-    // TODO: shulker boxes
 
 
     // potions //
@@ -271,6 +271,19 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
    * @param condition   Extra condition to add, if null uses base conditions
    */
   private void addColoredRecipes(ITag<Item> tag, EnumObject<DyeColor,? extends IItemProvider> enumObject, String folder, @Nullable ICondition condition) {
+    addColoredRecipes(tag, enumObject, enumObject.get(DyeColor.WHITE), folder, false, condition);
+  }
+
+  /**
+   * Adds cauldron recipes to dye and undye colored blocks
+   * @param tag         Tag for colored block
+   * @param enumObject  Object of items
+   * @param folder      Folder for output
+   * @param undyedItem  Undyed variant
+   * @param copyNBT     If true, copies NBT
+   * @param condition   Extra condition to add, if null uses base conditions
+   */
+  private void addColoredRecipes(ITag<Item> tag, EnumObject<DyeColor,? extends IItemProvider> enumObject, IItemProvider undyedItem, String folder, boolean copyNBT, @Nullable ICondition condition) {
     // add condition if present
     Consumer<IFinishedRecipe> dyed, undyed;
     if (condition == null) {
@@ -284,21 +297,30 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
     // undyed
     Ingredient ingredient = Ingredient.fromTag(tag);
     ICriterionInstance criteria = hasItem(tag);
-    CauldronRecipeBuilder.cauldron(ingredient, FluidCauldronIngredient.of(Fluids.WATER))
-                         .minLevels(1)
-                         .addLevels(-1)
-                         .setOutput(enumObject.get(DyeColor.WHITE))
-                         .addCriterion("has_item", criteria)
-                         .build(undyed, resource(folder + "undye"));
+    CauldronRecipeBuilder undyedBuilder = CauldronRecipeBuilder
+        .cauldron(ingredient, FluidCauldronIngredient.of(Fluids.WATER))
+        .minLevels(1)
+        .addLevels(-1)
+        .setOutput(undyedItem)
+        .addCriterion("has_item", criteria);
+    if (copyNBT) {
+      undyedBuilder.setCopyNBT();
+    }
+    undyedBuilder.build(undyed, resource(folder + "undye"));
 
     // dyed recipes need one more condition
-    enumObject.forEach((color, block) ->
-      CauldronRecipeBuilder.cauldron(ingredient, ContentMatchIngredient.of(CauldronIngredients.DYE, color))
-                           .minLevels(1)
-                           .addLevels(-1)
-                           .setOutput(block)
-                           .addCriterion("has_item", criteria)
-                           .build(dyed, resource(folder + color.getString())));
+    enumObject.forEach((color, block) -> {
+      CauldronRecipeBuilder coloredBuilder = CauldronRecipeBuilder
+          .cauldron(ingredient, ContentMatchIngredient.of(CauldronIngredients.DYE, color))
+          .minLevels(1)
+          .addLevels(-1)
+          .setOutput(block)
+          .addCriterion("has_item", criteria);
+      if (copyNBT) {
+        coloredBuilder.setCopyNBT();
+      }
+      coloredBuilder.build(dyed, resource(folder + color.getString()));
+    });
   }
 
   /**

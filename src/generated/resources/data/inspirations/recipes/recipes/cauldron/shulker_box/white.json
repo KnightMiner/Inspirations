@@ -1,0 +1,34 @@
+{
+  "type": "inspirations:cauldron",
+  "conditions": [
+    {
+      "prop": "recipes_module",
+      "type": "inspirations:config"
+    },
+    {
+      "prop": "cauldron_dyeing",
+      "type": "inspirations:config"
+    }
+  ],
+  "input": {
+    "item": {
+      "tag": "inspirations:shulker_boxes"
+    },
+    "contents": {
+      "type": "inspirations:dye",
+      "name": "white"
+    },
+    "level": {
+      "min": 1
+    }
+  },
+  "output": {
+    "item": {
+      "item": "minecraft:white_shulker_box"
+    },
+    "copy_nbt": true,
+    "level": {
+      "add": -1
+    }
+  }
+}

@@ -81,4 +81,23 @@ public class VanillaEnum {
       .put(DyeColor.RED,        Blocks.RED_BED.delegate)
       .put(DyeColor.BLACK,      Blocks.BLACK_BED.delegate)
       .build();
+
+  public static final EnumObject<DyeColor,Block> SHULKER_BOX = new EnumObject.Builder<DyeColor,Block>(DyeColor.class)
+      .put(DyeColor.WHITE, Blocks.WHITE_SHULKER_BOX.delegate)
+      .put(DyeColor.ORANGE,     Blocks.ORANGE_SHULKER_BOX.delegate)
+      .put(DyeColor.MAGENTA,    Blocks.MAGENTA_SHULKER_BOX.delegate)
+      .put(DyeColor.LIGHT_BLUE, Blocks.LIGHT_BLUE_SHULKER_BOX.delegate)
+      .put(DyeColor.YELLOW,     Blocks.YELLOW_SHULKER_BOX.delegate)
+      .put(DyeColor.LIME,       Blocks.LIME_SHULKER_BOX.delegate)
+      .put(DyeColor.PINK,       Blocks.PINK_SHULKER_BOX.delegate)
+      .put(DyeColor.GRAY,       Blocks.GRAY_SHULKER_BOX.delegate)
+      .put(DyeColor.LIGHT_GRAY, Blocks.LIGHT_GRAY_SHULKER_BOX.delegate)
+      .put(DyeColor.CYAN,       Blocks.CYAN_SHULKER_BOX.delegate)
+      .put(DyeColor.PURPLE,     Blocks.PURPLE_SHULKER_BOX.delegate)
+      .put(DyeColor.BLUE,       Blocks.BLUE_SHULKER_BOX.delegate)
+      .put(DyeColor.BROWN,      Blocks.BROWN_SHULKER_BOX.delegate)
+      .put(DyeColor.GREEN,      Blocks.GREEN_SHULKER_BOX.delegate)
+      .put(DyeColor.RED,        Blocks.RED_SHULKER_BOX.delegate)
+      .put(DyeColor.BLACK,      Blocks.BLACK_SHULKER_BOX.delegate)
+      .build();
 }

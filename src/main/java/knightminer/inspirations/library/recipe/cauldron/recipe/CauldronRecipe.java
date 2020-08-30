@@ -17,6 +17,7 @@ import knightminer.inspirations.recipes.InspirationsRecipes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
@@ -37,6 +38,7 @@ public class CauldronRecipe implements ICauldronRecipe {
   private final LevelPredicate level;
   private final TemperaturePredicate temperature;
   private final ItemStack output;
+  private final boolean copyNBT;
   private final ICauldronContents newContents;
   private final LevelUpdate levelUpdate;
   @Nullable
@@ -52,12 +54,13 @@ public class CauldronRecipe implements ICauldronRecipe {
    * @param level        Input level
    * @param temperature  Predicate for required cauldron temperature
    * @param output       Output stack, use empty for no output
+   * @param copyNBT      If true, copies the input NBT to the output
    * @param newContents  Output contents, use {@link EmptyCauldronContents#INSTANCE} to keep old contents
    * @param levelUpdate  Level updater
    * @param container    Container output. If null, fetches container from the item. If empty, no container
    */
   public CauldronRecipe(ResourceLocation id, String group, Ingredient input, int amount, ICauldronIngredient contents, LevelPredicate level,
-                        TemperaturePredicate temperature, ItemStack output, ICauldronContents newContents, LevelUpdate levelUpdate, @Nullable ItemStack container) {
+                        TemperaturePredicate temperature, ItemStack output, boolean copyNBT, ICauldronContents newContents, LevelUpdate levelUpdate, @Nullable ItemStack container) {
     this.id = id;
     this.group = group;
     this.input = input;
@@ -66,6 +69,7 @@ public class CauldronRecipe implements ICauldronRecipe {
     this.level = level;
     this.temperature = temperature;
     this.output = output;
+    this.copyNBT = copyNBT;
     this.newContents = newContents;
     this.levelUpdate = levelUpdate;
     this.container = container;
@@ -98,9 +102,11 @@ public class CauldronRecipe implements ICauldronRecipe {
     }
 
     // determine container item if passed container is null
+    ItemStack original = inventory.getStack();
+    CompoundNBT originalTag = original.getTag();
     ItemStack container = this.container;
     if (container == null) {
-      container = inventory.getStack().getContainerItem().copy();
+      container = original.getContainerItem().copy();
       if (!container.isEmpty()) {
         container.setCount(amount);
       }
@@ -112,8 +118,14 @@ public class CauldronRecipe implements ICauldronRecipe {
     inventory.shrinkStack(amount);
     inventory.setOrGiveStack(container);
 
-    // give output
-    inventory.setOrGiveStack(output.copy());
+    // give output, copying NBT if asked
+    if (!output.isEmpty()) {
+      ItemStack output = this.output.copy();
+      if (copyNBT && originalTag != null) {
+        output.setTag(originalTag.copy());
+      }
+      inventory.setOrGiveStack(output);
+    }
   }
 
   @Override
@@ -172,8 +184,10 @@ public class CauldronRecipe implements ICauldronRecipe {
       // parse outputs
       JsonObject outputJson = JSONUtils.getJsonObject(json, "output");
       ItemStack output = ItemStack.EMPTY;
+      boolean copyNBT = false;
       if (outputJson.has("item")) {
         output = CraftingHelper.getItemStack(JSONUtils.getJsonObject(outputJson, "item"), true);
+        copyNBT = JSONUtils.getBoolean(outputJson, "copy_nbt", false);
       }
       ICauldronContents newContents = EmptyCauldronContents.INSTANCE;
       if (outputJson.has("contents")) {
@@ -196,7 +210,7 @@ public class CauldronRecipe implements ICauldronRecipe {
       }
 
       // finally, after all that return the recipe
-      return new CauldronRecipe(id, group, input, amount, contents, levels, temperature, output, newContents, levelUpdate, container);
+      return new CauldronRecipe(id, group, input, amount, contents, levels, temperature, output, copyNBT, newContents, levelUpdate, container);
     }
 
     @Override
@@ -208,6 +222,7 @@ public class CauldronRecipe implements ICauldronRecipe {
       recipe.level.write(buffer);
       buffer.writeEnumValue(recipe.temperature);
       buffer.writeItemStack(recipe.output);
+      buffer.writeBoolean(recipe.copyNBT);
       CauldronContentTypes.write(recipe.newContents, buffer);
       recipe.levelUpdate.write(buffer);
       if (recipe.container == null) {
@@ -228,6 +243,7 @@ public class CauldronRecipe implements ICauldronRecipe {
       LevelPredicate levels = LevelPredicate.read(buffer);
       TemperaturePredicate boiling = buffer.readEnumValue(TemperaturePredicate.class);
       ItemStack output = buffer.readItemStack();
+      boolean copyNBT = buffer.readBoolean();
       ICauldronContents newContents = CauldronContentTypes.read(buffer);
       LevelUpdate levelUpdate = LevelUpdate.read(buffer);
       ItemStack container = null;
@@ -236,7 +252,7 @@ public class CauldronRecipe implements ICauldronRecipe {
       }
 
       // finally, after all that return the recipe
-      return new CauldronRecipe(id, group, input, amount, contents, levels, boiling, output, newContents, levelUpdate, container);
+      return new CauldronRecipe(id, group, input, amount, contents, levels, boiling, output, copyNBT, newContents, levelUpdate, container);
     }
   }
 }

@@ -4,10 +4,13 @@ import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.library.InspirationsTags;
 import knightminer.inspirations.recipes.InspirationsRecipes;
+import knightminer.inspirations.recipes.data.VanillaEnum;
+import knightminer.inspirations.shared.InspirationsShared;
 import knightminer.inspirations.tools.InspirationsTools;
 import net.minecraft.data.BlockTagsProvider;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.ItemTagsProvider;
+import net.minecraft.data.TagsProvider;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.tags.BlockTags;
@@ -48,23 +51,14 @@ public class InspirationsItemTagsProvider extends ItemTagsProvider {
         .add(Items.ENCHANTED_BOOK, Items.KNOWLEDGE_BOOK);
 
     // item list of all relevant carpets
-    this.getOrCreateBuilder(InspirationsTags.Items.CARPETS)
-        .add(Items.WHITE_CARPET)
-        .add(Items.ORANGE_CARPET)
-        .add(Items.MAGENTA_CARPET)
-        .add(Items.LIGHT_BLUE_CARPET)
-        .add(Items.YELLOW_CARPET)
-        .add(Items.LIME_CARPET)
-        .add(Items.PINK_CARPET)
-        .add(Items.GRAY_CARPET)
-        .add(Items.LIGHT_GRAY_CARPET)
-        .add(Items.CYAN_CARPET)
-        .add(Items.PURPLE_CARPET)
-        .add(Items.BLUE_CARPET)
-        .add(Items.BROWN_CARPET)
-        .add(Items.GREEN_CARPET)
-        .add(Items.RED_CARPET)
-        .add(Items.BLACK_CARPET);
+    TagsProvider.Builder<Item> carpetBuilder = this.getOrCreateBuilder(InspirationsTags.Items.CARPETS);
+    InspirationsShared.VANILLA_CARPETS.forEach(block -> carpetBuilder.add(block.asItem()));
+
+    // item list of all relevant shulker boxes
+    TagsProvider.Builder<Item> shulkerBoxBuilder = this.getOrCreateBuilder(InspirationsTags.Items.SHULKER_BOXES);
+    shulkerBoxBuilder.add(Items.SHULKER_BOX);
+    VanillaEnum.SHULKER_BOX.forEach(block -> shulkerBoxBuilder.add(block.asItem()));
+
     this.getOrCreateBuilder(InspirationsTags.Items.WAYPOINT_COMPASSES).add(InspirationsTools.waypointCompasses);
 
   }

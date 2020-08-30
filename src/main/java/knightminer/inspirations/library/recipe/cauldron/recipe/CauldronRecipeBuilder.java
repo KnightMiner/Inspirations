@@ -37,6 +37,7 @@ public class CauldronRecipeBuilder extends AbstractRecipeBuilder<CauldronRecipeB
   private LevelPredicate levels;
   private TemperaturePredicate temperature = TemperaturePredicate.ANY;
   private ItemStack output = ItemStack.EMPTY;
+  private boolean copyNBT = false;
   private ICauldronContents newContents = EmptyCauldronContents.INSTANCE;
   private LevelUpdate levelUpdate = LevelUpdate.IDENTITY;
   @Nullable
@@ -161,6 +162,15 @@ public class CauldronRecipeBuilder extends AbstractRecipeBuilder<CauldronRecipeB
   }
 
   /**
+   * Sets the recipe to copy input NBT to the output
+   * @return  Builder instance
+   */
+  public CauldronRecipeBuilder setCopyNBT() {
+    copyNBT = true;
+    return this;
+  }
+
+  /**
    * Sets the container result
    * @param container  Container, use {@link ItemStack#EMPTY} to block vanilla containers
    * @return  Builder instance
@@ -264,7 +274,7 @@ public class CauldronRecipeBuilder extends AbstractRecipeBuilder<CauldronRecipeB
     }
 
     ResourceLocation advancementId = this.buildAdvancement(id, "cauldron");
-    consumer.accept(new Result(id, getGroup(), input, amount, contents, levels, temperature, output,
+    consumer.accept(new Result(id, getGroup(), input, amount, contents, levels, temperature, output, copyNBT,
                                newContents, levelUpdate, container, advancementBuilder, advancementId));
   }
 
@@ -277,6 +287,7 @@ public class CauldronRecipeBuilder extends AbstractRecipeBuilder<CauldronRecipeB
     private final LevelPredicate level;
     private final TemperaturePredicate temperature;
     private final ItemStack output;
+    private final boolean copyNBT;
     private final ICauldronContents newContents;
     private final LevelUpdate levelUpdate;
     @Nullable
@@ -284,7 +295,7 @@ public class CauldronRecipeBuilder extends AbstractRecipeBuilder<CauldronRecipeB
     private final Advancement.Builder advancementBuilder;
     private final ResourceLocation advancementId;
 
-    private Result(ResourceLocation id, String group, Ingredient input, int amount, ICauldronIngredient contents, LevelPredicate level, TemperaturePredicate temperature, ItemStack output, ICauldronContents newContents, LevelUpdate levelUpdate, @Nullable ItemStack container, Builder advancementBuilder, ResourceLocation advancementId) {
+    private Result(ResourceLocation id, String group, Ingredient input, int amount, ICauldronIngredient contents, LevelPredicate level, TemperaturePredicate temperature, ItemStack output, boolean copyNBT, ICauldronContents newContents, LevelUpdate levelUpdate, @Nullable ItemStack container, Builder advancementBuilder, ResourceLocation advancementId) {
       this.id = id;
       this.group = group;
       this.input = input;
@@ -293,6 +304,7 @@ public class CauldronRecipeBuilder extends AbstractRecipeBuilder<CauldronRecipeB
       this.level = level;
       this.temperature = temperature;
       this.output = output;
+      this.copyNBT = copyNBT;
       this.newContents = newContents;
       this.levelUpdate = levelUpdate;
       this.container = container;
@@ -338,6 +350,9 @@ public class CauldronRecipeBuilder extends AbstractRecipeBuilder<CauldronRecipeB
       JsonObject outputJson = new JsonObject();
       if (!output.isEmpty()) {
         outputJson.add("item", toJson(output));
+        if (copyNBT) {
+          outputJson.addProperty("copy_nbt", true);
+        }
       }
       // container
       if (container != null) {
