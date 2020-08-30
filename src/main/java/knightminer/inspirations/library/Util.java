@@ -7,11 +7,13 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.DyeColor;
+import net.minecraft.item.IDyeableArmorItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.loot.LootContext;
 import net.minecraft.loot.LootParameters;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.potion.Effect;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.EffectUtils;
@@ -20,7 +22,6 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
@@ -31,6 +32,8 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.common.util.Constants.NBT;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
@@ -39,11 +42,8 @@ import java.util.List;
 
 @SuppressWarnings("deprecation")
 public class Util {
-  public static boolean clickedAABB(AxisAlignedBB aabb, Vector3d hit) {
-    return aabb.minX <= hit.x && hit.x <= aabb.maxX
-           && aabb.minY <= hit.y && hit.y <= aabb.maxY
-           && aabb.minZ <= hit.z && hit.z <= aabb.maxZ;
-  }
+  private static final String TAG_DISPLAY = "display";
+  private static final String TAG_COLOR = "color";
 
   /**
    * Compute a voxelshape, rotated by the provided yaw.
@@ -60,8 +60,7 @@ public class Util {
 
   // An item with Silk Touch, to make blocks drop their silk touch items if they have any.
   // Using a Stick makes sure it won't be damaged.
-  private static ItemStack silkTouchItem = new ItemStack(Items.STICK);
-
+  private static final ItemStack silkTouchItem = new ItemStack(Items.STICK);
   static {
     silkTouchItem.addEnchantment(Enchantments.SILK_TOUCH, 1);
   }
@@ -196,11 +195,85 @@ public class Util {
   @Nullable
   public static DyeColor getDyeForColor(int color) {
     for (DyeColor dyeColor : DyeColor.values()) {
-      if (dyeColor.getId() == color) {
+      if (dyeColor.getColorValue() == color) {
         return dyeColor;
       }
     }
     return null;
+  }
+
+  /**
+   * Gets the color from the given stack
+   * @param stack  Stack
+   * @return  Stack color
+   */
+  public static int getColor(ItemStack stack) {
+    Item item = stack.getItem();
+    // use the interface if present
+    if (item instanceof IDyeableArmorItem) {
+      return ((IDyeableArmorItem) item).getColor(stack);
+    }
+
+    // default to NBT
+    CompoundNBT tags = stack.getTag();
+    if (tags != null) {
+      CompoundNBT display = tags.getCompound(TAG_DISPLAY);
+      if (display.contains(TAG_COLOR, Constants.NBT.TAG_INT)) {
+        return display.getInt(TAG_COLOR);
+      }
+    }
+    return -1;
+  }
+
+  /**
+   * Checks if the stack currently has color
+   * @param stack  Stack to check
+   * @return  True if it has color
+   */
+  public static boolean hasColor(ItemStack stack) {
+    Item item = stack.getItem();
+    // use the interface if present
+    if (item instanceof IDyeableArmorItem) {
+      return ((IDyeableArmorItem) item).hasColor(stack);
+    }
+    CompoundNBT tags = stack.getChildTag(TAG_COLOR);
+    return tags != null && tags.contains(TAG_COLOR, NBT.TAG_ANY_NUMERIC);
+  }
+
+  /**
+   * Sets the color on the given stack
+   * @param stack  Stack
+   * @param color  Color to set
+   * @return  Stack with color
+   */
+  public static ItemStack setColor(ItemStack stack, int color) {
+    Item item = stack.getItem();
+    // use the interface if present
+    if (item instanceof IDyeableArmorItem) {
+      ((IDyeableArmorItem) item).setColor(stack, color);
+    } else {
+      stack.getOrCreateChildTag(TAG_DISPLAY).putInt(TAG_COLOR, color);
+    }
+    return stack;
+  }
+
+  /**
+   * Clears the color on a stack
+   * @param stack  Stack instance
+   * @return  Stack without color
+   */
+  public static ItemStack clearColor(ItemStack stack) {
+    Item item = stack.getItem();
+    // use the interface if present
+    if (item instanceof IDyeableArmorItem) {
+      ((IDyeableArmorItem) item).removeColor(stack);
+    } else {
+      CompoundNBT displayTag = stack.getChildTag(TAG_DISPLAY);
+      if (displayTag != null && displayTag.contains(TAG_COLOR)) {
+        displayTag.remove(TAG_COLOR);
+      }
+    }
+    return stack;
   }
 
   /**

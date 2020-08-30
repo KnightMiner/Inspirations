@@ -6,6 +6,7 @@ import knightminer.inspirations.common.ModuleBase;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronRecipe;
+import knightminer.inspirations.library.recipe.cauldron.recipe.DyeableCauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.recipe.EmptyPotionCauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.recipe.FillPotionCauldronRecipe;
 import knightminer.inspirations.recipes.block.EnhancedCauldronBlock;
@@ -96,6 +97,8 @@ public class InspirationsRecipes extends ModuleBase {
   public static FillPotionCauldronRecipe.Serializer fillPotionSerializer;
   public static DyeCauldronWaterRecipe.Serializer dyeCauldronWaterSerializer;
   public static MixCauldronDyeRecipe.Serializer mixCauldronDyeSerializer;
+  public static DyeableCauldronRecipe.Serializer dyeDyeableSerializer;
+  public static DyeableCauldronRecipe.Serializer clearDyeableSerializer;
 
   public static SpecialRecipeSerializer<EmptyBucketCauldronRecipe> emptyBucketSerializer;
   public static SpecialRecipeSerializer<FillBucketCauldronRecipe> fillBucketSerializer;
@@ -205,6 +208,8 @@ public class InspirationsRecipes extends ModuleBase {
     fillPotionSerializer = registry.register(new FillPotionCauldronRecipe.Serializer(), "cauldron_fill_potion");
     dyeCauldronWaterSerializer = registry.register(new DyeCauldronWaterRecipe.Serializer(), "cauldron_dye_water");
     mixCauldronDyeSerializer = registry.register(new MixCauldronDyeRecipe.Serializer(), "cauldron_mix_dye");
+    dyeDyeableSerializer = registry.register(new DyeableCauldronRecipe.Serializer(DyeableCauldronRecipe.Dye::new), "cauldron_dye_dyeable");
+    clearDyeableSerializer = registry.register(new DyeableCauldronRecipe.Serializer(DyeableCauldronRecipe.Clear::new), "cauldron_clear_dyeable");
 
     emptyBucketSerializer = registry.register(new SpecialRecipeSerializer<>(EmptyBucketCauldronRecipe::new), "cauldron_empty_bucket");
     fillBucketSerializer = registry.register(new SpecialRecipeSerializer<>(FillBucketCauldronRecipe::new), "cauldron_fill_bucket");

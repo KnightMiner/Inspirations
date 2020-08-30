@@ -32,9 +32,7 @@ public class MixedDyedBottleItem extends Item {
       return new ItemStack(InspirationsRecipes.simpleDyedWaterBottle.get(dyeColor));
     }
 
-    ItemStack result = new ItemStack(InspirationsRecipes.mixedDyedWaterBottle);
-    result.getOrCreateChildTag("display").putInt(TAG_COLOR, color);
-    return result;
+    return Util.setColor(new ItemStack(InspirationsRecipes.mixedDyedWaterBottle), color);
   }
 
   /**

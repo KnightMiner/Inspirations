@@ -11,6 +11,7 @@ import knightminer.inspirations.library.recipe.cauldron.ingredient.ContentMatchI
 import knightminer.inspirations.library.recipe.cauldron.ingredient.FluidCauldronIngredient;
 import knightminer.inspirations.library.recipe.cauldron.ingredient.ICauldronIngredient;
 import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronRecipeBuilder;
+import knightminer.inspirations.library.recipe.cauldron.recipe.DyeableCauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.recipe.EmptyPotionCauldronRecipeBuilder;
 import knightminer.inspirations.library.recipe.cauldron.recipe.FillPotionCauldronRecipeBuilder;
 import knightminer.inspirations.library.recipe.cauldron.util.TemperaturePredicate;
@@ -183,7 +184,14 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
     addColoredRecipes(ItemTags.CARPETS, InspirationsShared.VANILLA_CARPETS, folder + "carpet/", null);
     // Inspirations blocks
     addColoredRecipes(InspirationsTags.Items.CARPETED_TRAPDOORS, InspirationsUtility.carpetedTrapdoors, folder + "carpeted_trapdoor/", ConfigEnabledCondition.CARPETED_TRAPDOOR);
-    // TODO: armor dyeing
+
+    // leather dyeing and clearing
+    addDyeableRecipes(Items.LEATHER_HELMET, folder);
+    addDyeableRecipes(Items.LEATHER_CHESTPLATE, folder);
+    addDyeableRecipes(Items.LEATHER_LEGGINGS, folder);
+    addDyeableRecipes(Items.LEATHER_BOOTS, folder);
+    addDyeableRecipes(Items.LEATHER_HORSE_ARMOR, folder);
+
     // TODO: banners
     // TODO: shulker boxes
 
@@ -291,6 +299,19 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
                            .setOutput(block)
                            .addCriterion("has_item", criteria)
                            .build(dyed, resource(folder + color.getString())));
+  }
+
+  /**
+   * Adds recipes to dye and clear a dyeable item
+   * @param dyeable  Dyeable item
+   * @param folder   Folder for recipes
+   */
+  private void addDyeableRecipes(IItemProvider dyeable, String folder) {
+    Ingredient ingredient = Ingredient.fromItems(dyeable);
+    withCondition(ConfigEnabledCondition.CAULDRON_RECIPES)
+        .accept(DyeableCauldronRecipe.FinishedRecipe.clear(prefix(dyeable, folder + "dyeable/clear_"), ingredient));
+    withCondition(ConfigEnabledCondition.CAULDRON_DYEING)
+        .accept(DyeableCauldronRecipe.FinishedRecipe.dye(prefix(dyeable, folder + "dyeable/dye_"), ingredient));
   }
 
   /**

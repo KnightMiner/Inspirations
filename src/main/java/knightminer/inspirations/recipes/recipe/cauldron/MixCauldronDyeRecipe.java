@@ -2,6 +2,7 @@ package knightminer.inspirations.recipes.recipe.cauldron;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.recipe.RecipeSerializer;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.contents.EmptyCauldronContents;
@@ -10,7 +11,6 @@ import knightminer.inspirations.library.recipe.cauldron.inventory.ICauldronInven
 import knightminer.inspirations.library.recipe.cauldron.inventory.IModifyableCauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
 import knightminer.inspirations.recipes.InspirationsRecipes;
-import knightminer.inspirations.recipes.item.MixedDyedBottleItem;
 import net.minecraft.data.IFinishedRecipe;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.DyeColor;
@@ -60,7 +60,7 @@ public class MixCauldronDyeRecipe implements ICauldronRecipe {
     // can set the color to null to read color from NBT
     int newColor;
     if (this.color == null) {
-      newColor = MixedDyedBottleItem.dyeFromBottle(inv.getStack());
+      newColor = Util.getColor(inv.getStack());
     } else {
       newColor = this.color;
     }
