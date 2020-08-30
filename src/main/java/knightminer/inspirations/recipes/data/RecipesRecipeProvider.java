@@ -82,7 +82,11 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
   @Override
   protected void registerRecipes(Consumer<IFinishedRecipe> consumer) {
     this.consumer = consumer;
-    String folder = "recipes/cauldron/";
+    this.addCauldronRecipes();
+  }
+
+  private void addCauldronRecipes() {
+    String folder = "cauldron/";
 
     ICauldronIngredient waterIngredient = FluidCauldronIngredient.of(Fluids.WATER);
     Consumer<IFinishedRecipe> cauldronRecipes = withCondition(ConfigEnabledCondition.CAULDRON_RECIPES);

@@ -1,0 +1,43 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "inspirations:cauldron/dye/bottle/mix/lime_from_green_white"
+    ]
+  },
+  "criteria": {
+    "has_green": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "inspirations:green_dyed_bottle"
+          }
+        ]
+      }
+    },
+    "has_white": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "inspirations:white_dyed_bottle"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "inspirations:cauldron/dye/bottle/mix/lime_from_green_white"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_green",
+      "has_white",
+      "has_the_recipe"
+    ]
+  ]
+}

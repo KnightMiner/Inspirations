@@ -1,0 +1,43 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "inspirations:cauldron/dye/bottle/mix/gray_from_black_white"
+    ]
+  },
+  "criteria": {
+    "has_black": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "inspirations:black_dyed_bottle"
+          }
+        ]
+      }
+    },
+    "has_white": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "inspirations:white_dyed_bottle"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "inspirations:cauldron/dye/bottle/mix/gray_from_black_white"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_black",
+      "has_white",
+      "has_the_recipe"
+    ]
+  ]
+}

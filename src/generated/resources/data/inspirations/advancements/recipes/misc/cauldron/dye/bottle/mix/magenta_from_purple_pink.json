@@ -1,0 +1,43 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "inspirations:cauldron/dye/bottle/mix/magenta_from_purple_pink"
+    ]
+  },
+  "criteria": {
+    "has_purple": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "inspirations:purple_dyed_bottle"
+          }
+        ]
+      }
+    },
+    "has_pink": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "inspirations:pink_dyed_bottle"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "inspirations:cauldron/dye/bottle/mix/magenta_from_purple_pink"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_purple",
+      "has_pink",
+      "has_the_recipe"
+    ]
+  ]
+}

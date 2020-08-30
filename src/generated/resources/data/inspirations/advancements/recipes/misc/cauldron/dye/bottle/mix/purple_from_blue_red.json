@@ -1,0 +1,43 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "inspirations:cauldron/dye/bottle/mix/purple_from_blue_red"
+    ]
+  },
+  "criteria": {
+    "has_blue": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "inspirations:blue_dyed_bottle"
+          }
+        ]
+      }
+    },
+    "has_red": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "inspirations:red_dyed_bottle"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "inspirations:cauldron/dye/bottle/mix/purple_from_blue_red"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_blue",
+      "has_red",
+      "has_the_recipe"
+    ]
+  ]
+}
