@@ -193,7 +193,8 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
     addDyeableRecipes(Items.LEATHER_BOOTS, folder);
     addDyeableRecipes(Items.LEATHER_HORSE_ARMOR, folder);
 
-    // TODO: banners
+    // banner pattern removing
+    CustomRecipeBuilder.customRecipe(InspirationsRecipes.removeBannerPatternSerializer).build(cauldronRecipes, resourceName(folder + "remove_banner_pattern"));
 
 
     // potions //

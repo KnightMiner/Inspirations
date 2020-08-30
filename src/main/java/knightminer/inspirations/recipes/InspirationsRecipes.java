@@ -19,6 +19,7 @@ import knightminer.inspirations.recipes.recipe.cauldron.EmptyBucketCauldronRecip
 import knightminer.inspirations.recipes.recipe.cauldron.FillBucketCauldronRecipe;
 import knightminer.inspirations.recipes.recipe.cauldron.FillDyedBottleRecipe;
 import knightminer.inspirations.recipes.recipe.cauldron.MixCauldronDyeRecipe;
+import knightminer.inspirations.recipes.recipe.cauldron.RemoveBannerPatternCauldronRecipe;
 import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -103,6 +104,7 @@ public class InspirationsRecipes extends ModuleBase {
   public static SpecialRecipeSerializer<EmptyBucketCauldronRecipe> emptyBucketSerializer;
   public static SpecialRecipeSerializer<FillBucketCauldronRecipe> fillBucketSerializer;
   public static SpecialRecipeSerializer<FillDyedBottleRecipe> fillDyedBottleSerializer;
+  public static SpecialRecipeSerializer<RemoveBannerPatternCauldronRecipe> removeBannerPatternSerializer;
 
   public static BasicParticleType boilingParticle;
 
@@ -214,6 +216,7 @@ public class InspirationsRecipes extends ModuleBase {
     emptyBucketSerializer = registry.register(new SpecialRecipeSerializer<>(EmptyBucketCauldronRecipe::new), "cauldron_empty_bucket");
     fillBucketSerializer = registry.register(new SpecialRecipeSerializer<>(FillBucketCauldronRecipe::new), "cauldron_fill_bucket");
     fillDyedBottleSerializer = registry.register(new SpecialRecipeSerializer<>(FillDyedBottleRecipe::new), "cauldron_fill_dyed_bottle");
+    removeBannerPatternSerializer = registry.register(new SpecialRecipeSerializer<>(RemoveBannerPatternCauldronRecipe::new), "cauldron_remove_banner_pattern");
 
     // add water as an override to potions
     ICauldronContents water = CauldronContentTypes.FLUID.of(Fluids.WATER);
