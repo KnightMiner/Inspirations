@@ -71,7 +71,7 @@ public class PortalColorHandler implements IBlockColor {
     Block block = state.getBlock();
     // stained glass
     if (block instanceof IBeaconBeamColorProvider) {
-      return ((IBeaconBeamColorProvider)block).getColor().colorValue;
+      return ((IBeaconBeamColorProvider)block).getColor().getColorValue();
     }
     // beacon color fallback
     if (!BEACON_COLOR_BLACKLIST.contains(block)) {

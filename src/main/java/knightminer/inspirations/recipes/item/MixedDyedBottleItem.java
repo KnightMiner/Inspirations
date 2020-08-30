@@ -44,7 +44,7 @@ public class MixedDyedBottleItem extends HidableItem {
   public static int dyeFromBottle(ItemStack bottle) {
     Item item = bottle.getItem();
     if (item instanceof SimpleDyedBottleItem) {
-      return ((SimpleDyedBottleItem)item).getColor().colorValue;
+      return ((SimpleDyedBottleItem)item).getColor().getColorValue();
     } else if (item == InspirationsRecipes.mixedDyedWaterBottle) {
       CompoundNBT tags = bottle.getTag();
 

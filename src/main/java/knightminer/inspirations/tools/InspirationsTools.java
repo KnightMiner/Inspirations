@@ -110,19 +110,19 @@ public class InspirationsTools extends ModuleBase {
     // TODO: reevaluate
     // TODO: enum object
     waypointCompasses[DyeColor.WHITE.getId()] = registry.register(new WaypointCompassItem(0xDDDDDD, 0xFFC100, Config.enableWaypointCompass), "waypoint_compass");
-    waypointCompasses[DyeColor.BLACK.getId()] = registry.register(new WaypointCompassItem(0x444444, DyeColor.RED.colorValue), "black_waypoint_compass");
-    registerWaypointCompass(registry, DyeColor.LIGHT_GRAY, DyeColor.WHITE.colorValue);
-    registerWaypointCompass(registry, DyeColor.GRAY, DyeColor.LIGHT_GRAY.colorValue);
-    registerWaypointCompass(registry, DyeColor.RED, DyeColor.ORANGE.colorValue);
-    registerWaypointCompass(registry, DyeColor.ORANGE, DyeColor.YELLOW.colorValue);
+    waypointCompasses[DyeColor.BLACK.getId()] = registry.register(new WaypointCompassItem(0x444444, DyeColor.RED.getColorValue()), "black_waypoint_compass");
+    registerWaypointCompass(registry, DyeColor.LIGHT_GRAY, DyeColor.WHITE.getColorValue());
+    registerWaypointCompass(registry, DyeColor.GRAY, DyeColor.LIGHT_GRAY.getColorValue());
+    registerWaypointCompass(registry, DyeColor.RED, DyeColor.ORANGE.getColorValue());
+    registerWaypointCompass(registry, DyeColor.ORANGE, DyeColor.YELLOW.getColorValue());
     registerWaypointCompass(registry, DyeColor.YELLOW, 0xDBA213);
-    registerWaypointCompass(registry, DyeColor.LIME, DyeColor.BROWN.colorValue);
-    registerWaypointCompass(registry, DyeColor.GREEN, DyeColor.LIME.colorValue);
-    registerWaypointCompass(registry, DyeColor.CYAN, DyeColor.LIGHT_BLUE.colorValue);
+    registerWaypointCompass(registry, DyeColor.LIME, DyeColor.BROWN.getColorValue());
+    registerWaypointCompass(registry, DyeColor.GREEN, DyeColor.LIME.getColorValue());
+    registerWaypointCompass(registry, DyeColor.CYAN, DyeColor.LIGHT_BLUE.getColorValue());
     registerWaypointCompass(registry, DyeColor.LIGHT_BLUE, 0x77A9FF);
     registerWaypointCompass(registry, DyeColor.BLUE, 0x7E54FF);
-    registerWaypointCompass(registry, DyeColor.PURPLE, DyeColor.MAGENTA.colorValue);
-    registerWaypointCompass(registry, DyeColor.MAGENTA, DyeColor.PINK.colorValue);
+    registerWaypointCompass(registry, DyeColor.PURPLE, DyeColor.MAGENTA.getColorValue());
+    registerWaypointCompass(registry, DyeColor.MAGENTA, DyeColor.PINK.getColorValue());
     registerWaypointCompass(registry, DyeColor.PINK, 0xF2BFCE);
     registerWaypointCompass(registry, DyeColor.BROWN, 0xA59072);
 
@@ -132,7 +132,7 @@ public class InspirationsTools extends ModuleBase {
   }
 
   private void registerWaypointCompass(ItemRegistryAdapter registry, DyeColor body, int needle) {
-    waypointCompasses[body.getId()] = registry.register(new WaypointCompassItem(body.colorValue, needle), body.getString() + "_waypoint_compass");
+    waypointCompasses[body.getId()] = registry.register(new WaypointCompassItem(body.getColorValue(), needle), body.getString() + "_waypoint_compass");
   }
 
   @SubscribeEvent

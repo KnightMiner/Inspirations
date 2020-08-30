@@ -33,6 +33,7 @@ import slimeknights.mantle.item.RetexturedBlockItem;
 import slimeknights.mantle.tileentity.IRetexturedTileEntity;
 import slimeknights.mantle.util.TileEntityHelper;
 
+import java.util.Optional;
 import java.util.function.Consumer;
 
 @SuppressWarnings("unused")
@@ -125,9 +126,9 @@ public class BuildingClientEvents extends ClientEvents {
         return -1;
       }
       // TODO: should probably pass block directly here
-      IRetexturedTileEntity te = TileEntityHelper.getTileEntity(IRetexturedTileEntity.class, world, pos);
-      if (te != null) {
-        Block block = te.getTexture();
+      Optional<IRetexturedTileEntity> te = TileEntityHelper.getTile(IRetexturedTileEntity.class, world, pos);
+      if (te.isPresent()) {
+        Block block = te.get().getTexture();
         if (block != Blocks.AIR) {
           return ClientUtil.getStackBlockColorsSafe(new ItemStack(block), world, pos, 0);
         }
@@ -150,7 +151,7 @@ public class BuildingClientEvents extends ClientEvents {
 
     // book covers, too lazy to make 16 cover textures
     InspirationsBuilding.coloredBooks.forEach((color, book) -> {
-      int hexColor = color.colorValue;
+      int hexColor = color.getColorValue();
       itemColors.register((stack, tintIndex) -> (tintIndex == 0) ? hexColor : -1, book);
     });
 

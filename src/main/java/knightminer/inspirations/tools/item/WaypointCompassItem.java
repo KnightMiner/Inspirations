@@ -313,31 +313,31 @@ public class WaypointCompassItem extends HidableItem {
       case WHITE:
         return 0xFFC100;
       case LIGHT_GRAY:
-        return DyeColor.WHITE.colorValue;
+        return DyeColor.WHITE.getColorValue();
       case GRAY:
-        return DyeColor.LIGHT_GRAY.colorValue;
+        return DyeColor.LIGHT_GRAY.getColorValue();
       case BLACK:
-        return DyeColor.RED.colorValue;
+        return DyeColor.RED.getColorValue();
       case RED:
-        return DyeColor.ORANGE.colorValue;
+        return DyeColor.ORANGE.getColorValue();
       case ORANGE:
-        return DyeColor.YELLOW.colorValue;
+        return DyeColor.YELLOW.getColorValue();
       case YELLOW:
         return 0xDBA213;
       case LIME:
-        return DyeColor.BROWN.colorValue;
+        return DyeColor.BROWN.getColorValue();
       case GREEN:
-        return DyeColor.LIME.colorValue;
+        return DyeColor.LIME.getColorValue();
       case CYAN:
-        return DyeColor.LIGHT_BLUE.colorValue;
+        return DyeColor.LIGHT_BLUE.getColorValue();
       case LIGHT_BLUE:
         return 0x77A9FF;
       case BLUE:
         return 0x7E54FF;
       case PURPLE:
-        return DyeColor.MAGENTA.colorValue;
+        return DyeColor.MAGENTA.getColorValue();
       case MAGENTA:
-        return DyeColor.PINK.colorValue;
+        return DyeColor.PINK.getColorValue();
       case PINK:
         return 0xF2BFCE;
       case BROWN:
