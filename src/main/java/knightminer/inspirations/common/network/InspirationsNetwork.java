@@ -23,12 +23,9 @@ public class InspirationsNetwork extends NetworkWrapper {
    * Called during mod construction to register all packets
    */
   public void setup() {
-    // register all the packets
-
-    // bookshelf
     registerPacket(InventorySlotSyncPacket.class, InventorySlotSyncPacket::new, NetworkDirection.PLAY_TO_CLIENT);
-    // milk cooldown
     registerPacket(MilkablePacket.class, MilkablePacket::new, NetworkDirection.PLAY_TO_CLIENT);
+    registerPacket(CauldronContentUpatePacket.class, CauldronContentUpatePacket::new, NetworkDirection.PLAY_TO_CLIENT);
   }
 
   /**

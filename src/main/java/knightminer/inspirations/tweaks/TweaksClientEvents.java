@@ -52,7 +52,7 @@ public class TweaksClientEvents extends ClientEvents {
     SharedClientEvents.configPack.addBlockstateReplacement(Config.customPortalColor, Blocks.NETHER_PORTAL, "nether_portal");
     SharedClientEvents.configPack.addItemModelReplacement(Config.coloredEnchantedRibbons, Items.ENCHANTED_BOOK, "enchanted_book");
     SharedClientEvents.configPack.addItemModelReplacement(Config.coloredFireworkItems, Items.FIREWORK_ROCKET, "fireworks");
-    SharedClientEvents.configPack.addItemModelReplacement(Config.betterCauldronItem, Items.CAULDRON, () -> Config.extendedCauldron.getAsBoolean() ? "cauldron" : "cauldron_vanilla");
+    SharedClientEvents.configPack.addItemModelReplacement(Config.betterCauldronItem, Items.CAULDRON, "cauldron");
   }
 
   @SubscribeEvent

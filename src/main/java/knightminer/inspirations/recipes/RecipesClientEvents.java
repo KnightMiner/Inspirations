@@ -2,16 +2,29 @@ package knightminer.inspirations.recipes;
 
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.ClientEvents;
+import knightminer.inspirations.common.Config;
+import knightminer.inspirations.library.client.model.CauldronModel;
+import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
+import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import knightminer.inspirations.recipes.client.BoilingParticle;
 import knightminer.inspirations.recipes.item.MixedDyedBottleItem;
 import knightminer.inspirations.recipes.recipe.cauldron.contents.ColorContentType;
 import knightminer.inspirations.recipes.recipe.cauldron.contents.PotionContentType;
+import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
+import knightminer.inspirations.shared.SharedClientEvents;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.ItemColors;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.inventory.container.PlayerContainer;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.biome.BiomeColors;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ColorHandlerEvent;
+import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
+import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
@@ -20,29 +33,36 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 @SuppressWarnings("unused")
 @EventBusSubscriber(modid = Inspirations.modID, value = Dist.CLIENT, bus = Bus.MOD)
 public class RecipesClientEvents extends ClientEvents {
-	/* TODO: reimplement
 	@SubscribeEvent
-	static void registerModels(ModelRegistryEvent event) {
-		setModelStateMapper(InspirationsRecipes.cauldron, new CauldronStateMapper(CAULDRON_MODEL));
+	static void registerModelLoaders(ModelRegistryEvent event) {
+		ModelLoaderRegistry.registerLoader(Inspirations.getResource("cauldron"), CauldronModel.LOADER);
+		SharedClientEvents.configPack.addBlockstateReplacement(Config.extendedCauldron, Blocks.CAULDRON, "cauldron");
 	}
 
 	@SubscribeEvent
 	static void registerBlockColors(ColorHandlerEvent.Block event) {
 		BlockColors blockColors = event.getBlockColors();
 
-		// coloring of liquid inside, either for potions or dyes
+		// coloring of liquid inside, for fluids, potions, and dyes
 		registerBlockColors(blockColors, (state, world, pos, tintIndex) -> {
-			if(tintIndex == 1) {
+			// skip tint index 0, that is particles
+			if (tintIndex > 0 && world != null && pos != null) {
+				// must be cauldron TE
 				TileEntity te = world.getTileEntity(pos);
 				if(te instanceof CauldronTileEntity) {
-					return ((CauldronTileEntity) te).getColor();
+					// if it contains water, run vanilla tinting
+					ICauldronContents contents = ((CauldronTileEntity) te).getContents();
+					if (!contents.matches(CauldronContentTypes.FLUID, Fluids.WATER)) {
+						return contents.getTintColor();
+					}
 				}
+				// water tinting if contains water or TE is missing
+				return BiomeColors.getWaterColor(world, pos);
 			}
 
 			return -1;
-		}, InspirationsRecipes.cauldron);
+		}, InspirationsRecipes.cauldron, InspirationsRecipes.boilingCauldron);
 	}
-	*/
 
 	@SubscribeEvent
 	static void clientSetup(FMLClientSetupEvent event) {

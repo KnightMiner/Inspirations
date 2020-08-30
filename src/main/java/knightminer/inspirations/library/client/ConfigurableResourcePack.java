@@ -24,7 +24,6 @@ import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 /**
  * Resource pack that overrides resources based on config
@@ -65,7 +64,7 @@ public class ConfigurableResourcePack extends ResourcePack implements IPackFinde
   private ConfigurableResourcePack(Class<?> resourceLoader, String packId, String pathPrefix, String displayName, Set<String> namespaces) {
     super(new File(pathPrefix));
     this.resourceLoader = resourceLoader;
-    this.packId = packId.toString();
+    this.packId = packId;
     this.displayName = displayName;
     this.pathPrefix = pathPrefix;
     this.namespaces = namespaces;
@@ -138,7 +137,7 @@ public class ConfigurableResourcePack extends ResourcePack implements IPackFinde
    * @param originalPath  Original resource path
    * @param resource      Path to the replacement resource relative to the pack root
    */
-  protected void addReplacement(BooleanSupplier condition, String originalPath, Supplier<String> resource) {
+  public void addReplacement(BooleanSupplier condition, String originalPath, String resource) {
     if (replacements.containsKey(originalPath)) {
       throw new IllegalArgumentException("Duplicate replacement '" + originalPath + "' for configurable pack " + packId);
     }
@@ -162,7 +161,7 @@ public class ConfigurableResourcePack extends ResourcePack implements IPackFinde
    * @param resource   Name of blockstate replacement
    */
   public void addBlockstateReplacement(BooleanSupplier condition, Block block, String resource) {
-    addReplacement(condition, makePath(Objects.requireNonNull(block.getRegistryName()), "blockstates", "json"), () -> "blockstates/" + resource + ".json");
+    addReplacement(condition, makePath(Objects.requireNonNull(block.getRegistryName()), "blockstates", "json"), "blockstates/" + resource + ".json");
   }
 
   /**
@@ -171,18 +170,8 @@ public class ConfigurableResourcePack extends ResourcePack implements IPackFinde
    * @param item       Item to replace the model
    * @param resource   New name supplier
    */
-  public void addItemModelReplacement(BooleanSupplier condition, IItemProvider item, Supplier<String> resource) {
-    addReplacement(condition, makePath(Objects.requireNonNull(item.asItem().getRegistryName()), "models/item", "json"), () -> "item_models/" + resource.get() + ".json");
-  }
-
-  /**
-   * Adds a replacement for a blockstate JSON
-   * @param condition  Condition for replacement
-   * @param item       Item to replace the model
-   * @param resource   New name supplier
-   */
   public void addItemModelReplacement(BooleanSupplier condition, IItemProvider item, String resource) {
-    addItemModelReplacement(condition, item, () -> resource);
+    addReplacement(condition, makePath(Objects.requireNonNull(item.asItem().getRegistryName()), "models/item", "json"), "item_models/" + resource + ".json");
   }
 
   /**
@@ -190,20 +179,20 @@ public class ConfigurableResourcePack extends ResourcePack implements IPackFinde
    */
   private static class Replacement {
     private final BooleanSupplier condition;
-    private final Supplier<String> name;
+    private final String name;
 
     /**
      * Creates a new replacement
      * @param condition  Condition for the replacement
      * @param name       New file name, relative to pack root
      */
-    public Replacement(BooleanSupplier condition, Supplier<String> name) {
+    public Replacement(BooleanSupplier condition, String name) {
       this.name = name;
       this.condition = condition;
     }
 
     public String getName() {
-      return name.get();
+      return name;
     }
 
     /**

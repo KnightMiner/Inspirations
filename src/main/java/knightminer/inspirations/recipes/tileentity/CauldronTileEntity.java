@@ -1,6 +1,8 @@
 package knightminer.inspirations.recipes.tileentity;
 
 import knightminer.inspirations.Inspirations;
+import knightminer.inspirations.common.network.CauldronContentUpatePacket;
+import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.library.recipe.RecipeTypes;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.contents.EmptyCauldronContents;
@@ -20,8 +22,6 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Potion;
 import net.minecraft.tags.FluidTags;
@@ -74,7 +74,8 @@ public class CauldronTileEntity extends TileEntity {
    */
   protected CauldronTileEntity(TileEntityType<?> type, EnhancedCauldronBlock block) {
     super(type);
-    this.contents = CauldronContentTypes.FLUID.of(Fluids.WATER);
+    this.contents = EmptyCauldronContents.INSTANCE;
+    this.data.setData(TEXTURE, contents.getTextureName());
     this.cauldronBlock = block;
   }
 
@@ -125,15 +126,25 @@ public class CauldronTileEntity extends TileEntity {
    * @param contents  New contents
    */
   public void setContents(ICauldronContents contents) {
+    // noting to do
+    if (this.contents.equals(contents)) {
+      return;
+    }
+
+    // normalize empty into water
     if (contents == EmptyCauldronContents.INSTANCE) {
-      contents = CauldronContentTypes.FLUID.of(Fluids.WATER);;
+      contents = CauldronContentTypes.FLUID.of(Fluids.WATER);
     }
     this.contents = contents;
 
-    // TODO: serverside safe?
-    if (world != null && world.isRemote) {
-      this.data.setData(TEXTURE, contents.getTextureName());
-      this.requestModelDataUpdate();
+    // update display client side, sync to client serverside
+    if (world != null) {
+      if (world.isRemote) {
+        this.data.setData(TEXTURE, contents.getTextureName());
+        this.requestModelDataUpdate();
+      } else {
+        InspirationsNetwork.sendToClients(world,pos,new CauldronContentUpatePacket(pos, contents));
+      }
     }
   }
 
@@ -405,15 +416,5 @@ public class CauldronTileEntity extends TileEntity {
     if (block instanceof EnhancedCauldronBlock) {
       this.cauldronBlock = (EnhancedCauldronBlock)block;
     }
-  }
-
-  @Override
-  public SUpdateTileEntityPacket getUpdatePacket() {
-    return new SUpdateTileEntityPacket(this.getPos(), 0, CauldronContentTypes.toNbt(getContents()));
-  }
-
-  @Override
-  public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
-    setContents(CauldronContentTypes.read(pkt.getNbtCompound()));
   }
 }
