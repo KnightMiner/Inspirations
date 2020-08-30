@@ -69,22 +69,22 @@ public class Config {
   // recipes
 
   // cauldron
-  public static CachedBoolean cauldronRecipes;
-  public static CachedBoolean cauldronConcrete;
+  public static final CachedBoolean cauldronRecipes;
+  public static final CachedBoolean cauldronConcrete;
   // extended
-  public static CachedBoolean extendedCaulronRecipes;
-  public static CachedBoolean extendedCauldron;
+  public static final CachedBoolean extendedCaulronRecipes;
+  public static final CachedBoolean extendedCauldron;
   // fluids
-  public static CachedBoolean enableCauldronFluids;
+  public static final CachedBoolean enableCauldronFluids;
   // dyes
-  public static CachedBoolean enableCauldronDyeing;
-  public static CachedBoolean extraBottleRecipes;
+  public static final CachedBoolean enableCauldronDyeing;
+  public static final CachedBoolean extraBottleRecipes;
   // potions
-  public static CachedBoolean enableCauldronPotions;
-  public static CachedBoolean enableCauldronBrewing;
-  public static CachedBoolean cauldronTipArrows;
+  public static final CachedBoolean enableCauldronPotions;
+  public static final CachedBoolean enableCauldronBrewing;
+  public static final CachedBoolean cauldronTipArrows;
   // misc
-  public static CachedBoolean fasterCauldronRain;
+  public static final CachedBoolean fasterCauldronRain;
 
   // tools
   public static final CachedBoolean enableLock;
