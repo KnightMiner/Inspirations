@@ -15,6 +15,8 @@ import knightminer.inspirations.library.recipe.cauldron.recipe.EmptyPotionCauldr
 import knightminer.inspirations.library.recipe.cauldron.recipe.FillPotionCauldronRecipeBuilder;
 import knightminer.inspirations.library.recipe.cauldron.util.TemperaturePredicate;
 import knightminer.inspirations.recipes.InspirationsRecipes;
+import knightminer.inspirations.recipes.recipe.cauldron.DyeCauldronWaterRecipe;
+import knightminer.inspirations.recipes.recipe.cauldron.MixCauldronDyeRecipe;
 import knightminer.inspirations.shared.InspirationsShared;
 import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraft.advancements.ICriterionInstance;
@@ -157,6 +159,23 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
 
 
     // dyes //
+
+    // dye cauldron water
+    String dyeFolder = folder + "dye/";
+    Consumer<IFinishedRecipe> dyeConsumer = withCondition(ConfigEnabledCondition.CAULDRON_DYEING);
+    for (DyeColor color : DyeColor.values()) {
+      // normal dye to set color
+      dyeConsumer.accept(new DyeCauldronWaterRecipe.FinishedRecipe(resource(dyeFolder + "dye_" + color.getString()), color));
+      // dyed bottle to mix color
+      dyeConsumer.accept(new MixCauldronDyeRecipe.FinishedRecipe(
+          resource(dyeFolder + "bottle_" + color.getString()),
+          Ingredient.fromItems(InspirationsRecipes.simpleDyedWaterBottle.get(color)),
+          color.getColorValue()));
+    }
+    // mixed dyed bottle
+    dyeConsumer.accept(new MixCauldronDyeRecipe.FinishedRecipe(resource(dyeFolder + "bottle_mixed"), Ingredient.fromItems(InspirationsRecipes.mixedDyedWaterBottle)));
+    // fill dyed bottle
+    CustomRecipeBuilder.customRecipe(InspirationsRecipes.fillDyedBottleSerializer).build(dyeConsumer, resourceName(dyeFolder + "fill_bottle"));
 
     // undye and dye vanilla blocks
     addColoredRecipes(ItemTags.WOOL, VanillaEnum.WOOL, folder + "wool/", null);

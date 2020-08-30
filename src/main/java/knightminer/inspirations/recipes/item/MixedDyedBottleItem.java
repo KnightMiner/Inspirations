@@ -1,19 +1,24 @@
 package knightminer.inspirations.recipes.item;
 
-import knightminer.inspirations.common.Config;
-import knightminer.inspirations.common.item.HidableItem;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.common.util.Constants;
 
-public class MixedDyedBottleItem extends HidableItem {
+public class MixedDyedBottleItem extends Item {
   private static final String TAG_COLOR = "color";
   public MixedDyedBottleItem(Properties props) {
-    super(props, Config.enableCauldronDyeing);
+    super(props);
+  }
+
+  @Override
+  public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
+    // hide from creative as means nothing without NBT, and the simple ones do the NBT
   }
 
   /**
@@ -28,11 +33,7 @@ public class MixedDyedBottleItem extends HidableItem {
     }
 
     ItemStack result = new ItemStack(InspirationsRecipes.mixedDyedWaterBottle);
-    CompoundNBT tags = new CompoundNBT();
-    CompoundNBT display = new CompoundNBT();
-    display.putInt(TAG_COLOR, color);
-    tags.put("display", display);
-    result.setTag(tags);
+    result.getOrCreateChildTag("display").putInt(TAG_COLOR, color);
     return result;
   }
 

@@ -32,6 +32,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelProperty;
+import net.minecraftforge.common.util.Constants.BlockFlags;
 import slimeknights.mantle.client.model.data.SinglePropertyData;
 
 import javax.annotation.Nullable;
@@ -142,6 +143,8 @@ public class CauldronTileEntity extends TileEntity {
       if (world.isRemote) {
         this.data.setData(TEXTURE, contents.getTextureName());
         this.requestModelDataUpdate();
+        BlockState state = getBlockState();
+        world.notifyBlockUpdate(pos, state, state, BlockFlags.NO_RERENDER | BlockFlags.NO_NEIGHBOR_DROPS);
       } else {
         InspirationsNetwork.sendToClients(world,pos,new CauldronContentUpatePacket(pos, contents));
       }
@@ -181,7 +184,6 @@ public class CauldronTileEntity extends TileEntity {
       success = true;
       if (!world.isRemote) {
         recipe.handleRecipe(craftingInventory);
-        // TODO: how do contents update on the client?
         // TODO: play sound based on (old?) contents
       }
     }

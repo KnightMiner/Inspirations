@@ -13,8 +13,11 @@ import knightminer.inspirations.recipes.data.RecipesRecipeProvider;
 import knightminer.inspirations.recipes.item.EmptyBottleItem;
 import knightminer.inspirations.recipes.item.MixedDyedBottleItem;
 import knightminer.inspirations.recipes.item.SimpleDyedBottleItem;
+import knightminer.inspirations.recipes.recipe.cauldron.DyeCauldronWaterRecipe;
 import knightminer.inspirations.recipes.recipe.cauldron.EmptyBucketCauldronRecipe;
 import knightminer.inspirations.recipes.recipe.cauldron.FillBucketCauldronRecipe;
+import knightminer.inspirations.recipes.recipe.cauldron.FillDyedBottleRecipe;
+import knightminer.inspirations.recipes.recipe.cauldron.MixCauldronDyeRecipe;
 import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -91,8 +94,12 @@ public class InspirationsRecipes extends ModuleBase {
   public static CauldronRecipe.Serializer cauldronSerializer;
   public static EmptyPotionCauldronRecipe.Serializer emptyPotionSerializer;
   public static FillPotionCauldronRecipe.Serializer fillPotionSerializer;
+  public static DyeCauldronWaterRecipe.Serializer dyeCauldronWaterSerializer;
+  public static MixCauldronDyeRecipe.Serializer mixCauldronDyeSerializer;
+
   public static SpecialRecipeSerializer<EmptyBucketCauldronRecipe> emptyBucketSerializer;
   public static SpecialRecipeSerializer<FillBucketCauldronRecipe> fillBucketSerializer;
+  public static SpecialRecipeSerializer<FillDyedBottleRecipe> fillDyedBottleSerializer;
 
   public static BasicParticleType boilingParticle;
 
@@ -196,8 +203,12 @@ public class InspirationsRecipes extends ModuleBase {
     cauldronSerializer = registry.register(new CauldronRecipe.Serializer(), "cauldron");
     emptyPotionSerializer = registry.register(new EmptyPotionCauldronRecipe.Serializer(), "cauldron_empty_potion");
     fillPotionSerializer = registry.register(new FillPotionCauldronRecipe.Serializer(), "cauldron_fill_potion");
+    dyeCauldronWaterSerializer = registry.register(new DyeCauldronWaterRecipe.Serializer(), "cauldron_dye_water");
+    mixCauldronDyeSerializer = registry.register(new MixCauldronDyeRecipe.Serializer(), "cauldron_mix_dye");
+
     emptyBucketSerializer = registry.register(new SpecialRecipeSerializer<>(EmptyBucketCauldronRecipe::new), "cauldron_empty_bucket");
     fillBucketSerializer = registry.register(new SpecialRecipeSerializer<>(FillBucketCauldronRecipe::new), "cauldron_fill_bucket");
+    fillDyedBottleSerializer = registry.register(new SpecialRecipeSerializer<>(FillDyedBottleRecipe::new), "cauldron_fill_dyed_bottle");
 
     // add water as an override to potions
     ICauldronContents water = CauldronContentTypes.FLUID.of(Fluids.WATER);

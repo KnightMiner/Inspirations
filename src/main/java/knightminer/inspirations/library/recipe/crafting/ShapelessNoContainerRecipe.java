@@ -1,6 +1,7 @@
 package knightminer.inspirations.library.recipe.crafting;
 
 import com.google.gson.JsonObject;
+import knightminer.inspirations.library.recipe.RecipeSerializer;
 import knightminer.inspirations.library.recipe.RecipeSerializers;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
@@ -10,7 +11,6 @@ import net.minecraft.item.crafting.ShapelessRecipe;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nullable;
 
@@ -35,7 +35,7 @@ public class ShapelessNoContainerRecipe extends ShapelessRecipe {
   }
 
   // This recipe has the exact same options as the parent type, redirect to that code.
-  public static class Serializer extends ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<ShapelessNoContainerRecipe> {
+  public static class Serializer extends RecipeSerializer<ShapelessNoContainerRecipe> {
     @Nullable
     @Override
     public ShapelessNoContainerRecipe read(ResourceLocation recipeID, PacketBuffer buffer) {

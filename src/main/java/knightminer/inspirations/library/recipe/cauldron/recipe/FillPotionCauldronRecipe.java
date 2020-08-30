@@ -2,6 +2,7 @@ package knightminer.inspirations.library.recipe.cauldron.recipe;
 
 import com.google.gson.JsonObject;
 import knightminer.inspirations.library.Util;
+import knightminer.inspirations.library.recipe.RecipeSerializer;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.inventory.ICauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.inventory.IModifyableCauldronInventory;
@@ -19,7 +20,6 @@ import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 import slimeknights.mantle.recipe.RecipeHelper;
 import slimeknights.mantle.util.JsonHelper;
 
@@ -94,7 +94,7 @@ public class FillPotionCauldronRecipe implements ICauldronRecipe {
     return InspirationsRecipes.fillPotionSerializer;
   }
 
-  public static class Serializer extends ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<FillPotionCauldronRecipe> {
+  public static class Serializer extends RecipeSerializer<FillPotionCauldronRecipe> {
     @Override
     public FillPotionCauldronRecipe read(ResourceLocation id, JsonObject json) {
       Ingredient bottle = CraftingHelper.getIngredient(JsonHelper.getElement(json, "bottle"));

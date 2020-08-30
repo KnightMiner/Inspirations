@@ -75,8 +75,8 @@ public class RecipesClientEvents extends ClientEvents {
 
 		// dyed water bottles
     InspirationsRecipes.simpleDyedWaterBottle.forEach((color, bottle) ->
-			itemColors.register((stack, index) -> index == 1 ? color.getColorValue() : -1, bottle));
-    registerItemColors(itemColors, (stack, index) -> index == 1 ? MixedDyedBottleItem.dyeFromBottle(stack) : -1, InspirationsRecipes.mixedDyedWaterBottle);
+			itemColors.register((stack, index) -> index == 0 ? color.getColorValue() : -1, bottle));
+    registerItemColors(itemColors, (stack, index) -> index == 0 ? MixedDyedBottleItem.dyeFromBottle(stack) : -1, InspirationsRecipes.mixedDyedWaterBottle);
 	}
 
 	@SubscribeEvent
