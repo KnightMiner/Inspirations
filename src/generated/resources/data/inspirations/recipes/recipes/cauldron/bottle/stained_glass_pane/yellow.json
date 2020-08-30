@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "conditions": [
+    {
+      "prop": "recipes_module",
+      "type": "inspirations:config"
+    },
+    {
+      "prop": "cauldron_dyeing",
+      "type": "inspirations:config"
+    }
+  ],
+  "group": "stained_glass_pane",
+  "pattern": [
+    "###",
+    "#x#",
+    "###"
+  ],
+  "key": {
+    "#": {
+      "tag": "forge:glass_panes/colorless"
+    },
+    "x": {
+      "item": "inspirations:yellow_dyed_bottle"
+    }
+  },
+  "result": {
+    "item": "minecraft:yellow_stained_glass_pane",
+    "count": 8
+  }
+}

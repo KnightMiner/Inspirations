@@ -1,0 +1,28 @@
+{
+  "type": "inspirations:shapeless_no_container",
+  "conditions": [
+    {
+      "prop": "cauldron_dyeing",
+      "type": "inspirations:config"
+    }
+  ],
+  "group": "inspirations:magenta_dyed_bottle",
+  "ingredients": [
+    {
+      "item": "inspirations:blue_dyed_bottle"
+    },
+    {
+      "item": "inspirations:red_dyed_bottle"
+    },
+    {
+      "item": "inspirations:red_dyed_bottle"
+    },
+    {
+      "item": "inspirations:white_dyed_bottle"
+    }
+  ],
+  "result": {
+    "item": "inspirations:magenta_dyed_bottle",
+    "count": 4
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "type": "inspirations:shapeless_no_container",
+  "conditions": [
+    {
+      "prop": "cauldron_dyeing",
+      "type": "inspirations:config"
+    }
+  ],
+  "group": "inspirations:cyan_dyed_bottle",
+  "ingredients": [
+    {
+      "item": "inspirations:blue_dyed_bottle"
+    },
+    {
+      "item": "inspirations:green_dyed_bottle"
+    }
+  ],
+  "result": {
+    "item": "inspirations:cyan_dyed_bottle",
+    "count": 2
+  }
+}

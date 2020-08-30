@@ -4,6 +4,7 @@ import knightminer.inspirations.common.data.ConfigEnabledCondition;
 import knightminer.inspirations.common.datagen.IInspirationsRecipeBuilder;
 import knightminer.inspirations.common.datagen.NBTIngredient;
 import knightminer.inspirations.library.InspirationsTags;
+import knightminer.inspirations.library.recipe.RecipeSerializers;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.CauldronIngredients;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
@@ -27,6 +28,7 @@ import net.minecraft.data.CustomRecipeBuilder;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.IFinishedRecipe;
 import net.minecraft.data.RecipeProvider;
+import net.minecraft.data.ShapedRecipeBuilder;
 import net.minecraft.data.ShapelessRecipeBuilder;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
@@ -45,10 +47,13 @@ import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
 import net.minecraftforge.registries.IForgeRegistryEntry;
+import slimeknights.mantle.recipe.data.ConsumerWrapperBuilder;
 import slimeknights.mantle.registration.object.EnumObject;
 
 import javax.annotation.Nullable;
+import java.util.EnumSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class RecipesRecipeProvider extends RecipeProvider implements IConditionBuilder, IInspirationsRecipeBuilder {
@@ -169,14 +174,29 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
       dyeConsumer.accept(new DyeCauldronWaterRecipe.FinishedRecipe(resource(dyeFolder + "dye_" + color.getString()), color));
       // dyed bottle to mix color
       dyeConsumer.accept(new MixCauldronDyeRecipe.FinishedRecipe(
-          resource(dyeFolder + "bottle_" + color.getString()),
+          resource(dyeFolder + "bottle/" + color.getString()),
           Ingredient.fromItems(InspirationsRecipes.simpleDyedWaterBottle.get(color)),
           color.getColorValue()));
     }
     // mixed dyed bottle
-    dyeConsumer.accept(new MixCauldronDyeRecipe.FinishedRecipe(resource(dyeFolder + "bottle_mixed"), Ingredient.fromItems(InspirationsRecipes.mixedDyedWaterBottle)));
+    dyeConsumer.accept(new MixCauldronDyeRecipe.FinishedRecipe(resource(dyeFolder + "bottle/mixed"), Ingredient.fromItems(InspirationsRecipes.mixedDyedWaterBottle)));
     // fill dyed bottle
-    CustomRecipeBuilder.customRecipe(InspirationsRecipes.fillDyedBottleSerializer).build(dyeConsumer, resourceName(dyeFolder + "fill_bottle"));
+    CustomRecipeBuilder.customRecipe(InspirationsRecipes.fillDyedBottleSerializer).build(dyeConsumer, resourceName(dyeFolder + "bottle/fill"));
+
+    // mix dyed bottles
+    String mixFolder = dyeFolder + "bottle/mix/";
+    addDyedBottleMix(mixFolder, DyeColor.CYAN, DyeColor.BLUE, DyeColor.GREEN);
+    addDyedBottleMix(mixFolder, DyeColor.GRAY, DyeColor.BLACK, DyeColor.WHITE);
+    addDyedBottleMix(mixFolder, DyeColor.LIGHT_BLUE, DyeColor.BLUE, DyeColor.WHITE);
+    addDyedBottleMix(mixFolder, DyeColor.LIGHT_GRAY, DyeColor.BLACK, DyeColor.WHITE, DyeColor.WHITE);
+    addDyedBottleMix(mixFolder, DyeColor.LIGHT_GRAY, DyeColor.GRAY, DyeColor.WHITE);
+    addDyedBottleMix(mixFolder, DyeColor.LIME, DyeColor.GREEN, DyeColor.WHITE);
+    addDyedBottleMix(mixFolder, DyeColor.MAGENTA, DyeColor.BLUE, DyeColor.RED, DyeColor.PINK);
+    addDyedBottleMix(mixFolder, DyeColor.MAGENTA, DyeColor.BLUE, DyeColor.RED, DyeColor.RED, DyeColor.WHITE);
+    addDyedBottleMix(mixFolder, DyeColor.MAGENTA, DyeColor.PURPLE, DyeColor.PINK);
+    addDyedBottleMix(mixFolder, DyeColor.ORANGE, DyeColor.RED, DyeColor.YELLOW);
+    addDyedBottleMix(mixFolder, DyeColor.PINK, DyeColor.RED, DyeColor.WHITE);
+    addDyedBottleMix(mixFolder, DyeColor.PURPLE, DyeColor.BLUE, DyeColor.RED);
 
     // undye and dye vanilla blocks
     addColoredRecipes(ItemTags.WOOL, VanillaEnum.WOOL, folder + "wool/", null);
@@ -185,6 +205,40 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
     addColoredRecipes(InspirationsTags.Items.SHULKER_BOXES, VanillaEnum.SHULKER_BOX, Items.SHULKER_BOX, folder + "shulker_box/", true, null);
     // Inspirations blocks
     addColoredRecipes(InspirationsTags.Items.CARPETED_TRAPDOORS, InspirationsUtility.carpetedTrapdoors, folder + "carpeted_trapdoor/", ConfigEnabledCondition.CARPETED_TRAPDOOR);
+
+    // craft vanilla blocks using dyed bottles, as Forge did not reimplement the tags
+    // since I have to add recipes, a little more generous with them
+    Consumer<IFinishedRecipe> bottleConsumer = withCondition(ConfigEnabledCondition.CAULDRON_DYEING);
+    String bottleFolder = folder + "bottle/";
+    InspirationsRecipes.simpleDyedWaterBottle.forEach((dye, bottle) -> {
+      String name = dye.getString();
+      ICriterionInstance hasBottle = hasItem(bottle);
+
+      // wool
+      addComboRecipe(bottleConsumer, VanillaEnum.WOOL.get(dye), "wool", ItemTags.WOOL, bottle, resource(bottleFolder + "wool/" + name));
+      addSurroundRecipe(bottleConsumer, VanillaEnum.CARPET.get(dye), "carpet", InspirationsTags.Items.CARPETS, bottle, resource(bottleFolder + "carpet/" + name));
+      addComboRecipe(bottleConsumer, VanillaEnum.BED.get(dye), "dyed_bed", ItemTags.BEDS, bottle, resource(bottleFolder + "beds/" + name));
+
+      // stained glass
+      addSurroundRecipe(bottleConsumer, VanillaEnum.STAINED_GLASS.get(dye), "stained_glass", Tags.Items.GLASS_COLORLESS, bottle, resource(bottleFolder + "stained_glass/" + name));
+      addSurroundRecipe(bottleConsumer, VanillaEnum.STAINED_GLASS_PANE.get(dye), "stained_glass_pane", Tags.Items.GLASS_PANES_COLORLESS, bottle, resource(bottleFolder + "stained_glass_pane/" + name));
+      // terracotta
+      addSurroundRecipe(bottleConsumer, VanillaEnum.TERRACOTTA.get(dye), "stained_terracotta", InspirationsTags.Items.TERRACOTTA, bottle, resource(bottleFolder + "terracotta/" + name));
+      // concrete powder
+      ShapelessRecipeBuilder.shapelessRecipe(VanillaEnum.CONCRETE_POWDER.get(dye), 8)
+                            .setGroup("concrete_powder")
+                            .addIngredient(bottle)
+                            .addIngredient(ItemTags.SAND)
+                            .addIngredient(ItemTags.SAND)
+                            .addIngredient(ItemTags.SAND)
+                            .addIngredient(ItemTags.SAND)
+                            .addIngredient(Tags.Items.GRAVEL)
+                            .addIngredient(Tags.Items.GRAVEL)
+                            .addIngredient(Tags.Items.GRAVEL)
+                            .addIngredient(Tags.Items.GRAVEL)
+                            .addCriterion("has_item", hasBottle)
+                            .build(consumer, resource(bottleFolder + "concrete_powder/" + name));
+    });
 
     // leather dyeing and clearing
     addDyeableRecipes(Items.LEATHER_HELMET, folder);
@@ -383,6 +437,94 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
                          .setOutput(stewContents)
                          .addCriterion("has_item", criteria)
                          .build(consumer, resource(folder + "stew_large"));
+  }
+
+  /**
+   * Adds a shapless recipe to mix dyed bottles
+   * @param folder          Output folder
+   * @param output          Output color
+   * @param inputs          List of color inputs
+   */
+  private void addDyedBottleMix(String folder, DyeColor output, DyeColor... inputs) {
+    addDyedBottleMix(folder, output, null, inputs);
+  }
+
+  /**
+   * Adds a shapless recipe to mix dyed bottles
+   * @param folder          Output folder
+   * @param output          Output color
+   * @param extraCondition  Additional condition to add to the recipe
+   * @param inputs          List of color inputs
+   */
+  private void addDyedBottleMix(String folder, DyeColor output, @Nullable ICondition extraCondition, DyeColor... inputs) {
+    // set serializer to shapeless no container and add conditions
+    ConsumerWrapperBuilder consumerBuilder = ConsumerWrapperBuilder
+        .wrap(RecipeSerializers.SHAPELESS_NO_CONTAINER)
+        .addCondition(ConfigEnabledCondition.CAULDRON_DYEING);
+    if (extraCondition != null) {
+      consumerBuilder.addCondition(extraCondition);
+    }
+    Consumer<IFinishedRecipe> consumer = consumerBuilder.build(getConsumer());
+
+    // build recipe name
+    StringBuilder name = new StringBuilder(folder + output.getString() + "_from");
+    Item outputItem = InspirationsRecipes.simpleDyedWaterBottle.get(output);
+    ShapelessRecipeBuilder builder = ShapelessRecipeBuilder.shapelessRecipe(outputItem, inputs.length)
+        .setGroup(Objects.requireNonNull(outputItem.getRegistryName()).toString());
+    Set<DyeColor> seen = EnumSet.noneOf(DyeColor.class);
+    for (DyeColor input : inputs) {
+      IItemProvider bottle = InspirationsRecipes.simpleDyedWaterBottle.get(input);
+      builder.addIngredient(bottle);
+      // only add each color to the name and criteria once
+      if (!seen.contains(input)) {
+        builder.addCriterion("has_" + input.getString(), hasItem(bottle));
+        name.append("_").append(input.getString());
+        seen.add(input);
+      }
+    }
+    // build the recipe with the built name
+    builder.build(consumer, resourceName(name.toString()));
+  }
+
+  /**
+   * Adds a recipe that surrounds an item with a tag
+   * @param consumer  Recipe consumer
+   * @param output    Recipe output
+   * @param group     Recipe group
+   * @param surround  Item for surrounding
+   * @param center    Center item
+   * @param location  Recipe output location
+   */
+  private void addSurroundRecipe(Consumer<IFinishedRecipe> consumer, IItemProvider output, String group, ITag<Item> surround, IItemProvider center, ResourceLocation location) {
+    ShapedRecipeBuilder.shapedRecipe(output, 8)
+                       .setGroup(group)
+                       .key('#', surround)
+                       .key('x', center)
+                       .patternLine("###")
+                       .patternLine("#x#")
+                       .patternLine("###")
+                       .addCriterion("has_item", hasItem(center))
+                       .build(consumer, location);
+
+  }
+
+  /**
+   * Adds a recipe that combines two items in a shapeless manner
+   * @param consumer  Recipe consumer
+   * @param output    Recipe output
+   * @param group     Recipe group
+   * @param input     Tag like the output
+   * @param modifier  Item consumed to modify it
+   * @param location  Recipe output location
+   */
+  private void addComboRecipe(Consumer<IFinishedRecipe> consumer, IItemProvider output, String group, ITag<Item> input, IItemProvider modifier, ResourceLocation location) {
+    ShapelessRecipeBuilder.shapelessRecipe(output)
+                          .setGroup(group)
+                          .addIngredient(input)
+                          .addIngredient(modifier)
+                          .addCriterion("has_item", hasItem(modifier))
+                          .build(consumer, location);
+
   }
 
   private ResourceLocation prefixE(IForgeRegistryEntry<?> entry, String prefix) {

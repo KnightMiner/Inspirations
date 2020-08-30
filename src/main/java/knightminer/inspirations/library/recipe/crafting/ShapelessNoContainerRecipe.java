@@ -14,12 +14,25 @@ import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nullable;
 
+/**
+ * Shapeless recipe variant that suppresses container returns. Use {@link slimeknights.mantle.recipe.data.ConsumerWrapperBuilder} for data gen.
+ */
 public class ShapelessNoContainerRecipe extends ShapelessRecipe {
-
-  public ShapelessNoContainerRecipe(ResourceLocation id, String group, ItemStack result, NonNullList<Ingredient> input) {
-    super(id, group, result, input);
+  /**
+   * Creates a new recipe using all required properties
+   * @param id      Recipe ID
+   * @param group   Recipe group
+   * @param result  Recipe result
+   * @param inputs  Recipe inputs
+   */
+  public ShapelessNoContainerRecipe(ResourceLocation id, String group, ItemStack result, NonNullList<Ingredient> inputs) {
+    super(id, group, result, inputs);
   }
 
+  /**
+   * Create a new recipe instance by copying an existing shapeless recipe
+   * @param orig  Shapeless recipe to copy
+   */
   private ShapelessNoContainerRecipe(ShapelessRecipe orig) {
     super(orig.getId(), orig.getGroup(), orig.getRecipeOutput(), orig.getIngredients());
   }
@@ -34,7 +47,9 @@ public class ShapelessNoContainerRecipe extends ShapelessRecipe {
     return RecipeSerializers.SHAPELESS_NO_CONTAINER;
   }
 
-  // This recipe has the exact same options as the parent type, redirect to that code.
+  /**
+   * Serializer to redirect to the shapeless serializer
+   */
   public static class Serializer extends RecipeSerializer<ShapelessNoContainerRecipe> {
     @Nullable
     @Override

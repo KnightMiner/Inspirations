@@ -14,6 +14,7 @@ import net.minecraft.data.TagsProvider;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.ITag.INamedTag;
 import net.minecraft.tags.ItemTags;
 import net.minecraftforge.common.Tags;
 import slimeknights.mantle.registration.object.EnumObject;
@@ -59,6 +60,12 @@ public class InspirationsItemTagsProvider extends ItemTagsProvider {
     shulkerBoxBuilder.add(Items.SHULKER_BOX);
     VanillaEnum.SHULKER_BOX.forEach(block -> shulkerBoxBuilder.add(block.asItem()));
 
+    // relevant terracotta
+    TagsProvider.Builder<Item> terracottaBuilder = this.getOrCreateBuilder(InspirationsTags.Items.TERRACOTTA);
+    terracottaBuilder.add(Items.TERRACOTTA);
+    VanillaEnum.TERRACOTTA.forEach(block -> terracottaBuilder.add(block.asItem()));
+
+    // compasses
     this.getOrCreateBuilder(InspirationsTags.Items.WAYPOINT_COMPASSES).add(InspirationsTools.waypointCompasses);
 
   }
@@ -68,6 +75,9 @@ public class InspirationsItemTagsProvider extends ItemTagsProvider {
 
     this.getOrCreateBuilder(InspirationsTags.Items.SPLASH_BOTTLES).add(InspirationsRecipes.splashBottle);
     this.getOrCreateBuilder(InspirationsTags.Items.LINGERING_BOTTLES).add(InspirationsRecipes.lingeringBottle);
+
+    // add dyed bottles to dye tag, forge tag are always INamedTag
+    InspirationsRecipes.simpleDyedWaterBottle.forEach((color, bottle) -> this.getOrCreateBuilder((INamedTag<Item>)color.getTag()).add(bottle));
 
 		/*
 		for(DyeColor color : DyeColor.values()) {

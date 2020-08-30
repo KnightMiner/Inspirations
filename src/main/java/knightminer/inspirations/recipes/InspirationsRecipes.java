@@ -31,6 +31,7 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.BucketItem;
 import net.minecraft.item.DyeColor;
+import net.minecraft.item.DyeItem;
 import net.minecraft.item.Food;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -176,7 +177,7 @@ public class InspirationsRecipes extends ModuleBase {
         .group(ItemGroup.MATERIALS)
         .maxStackSize(16)
         .containerItem(Items.GLASS_BOTTLE);
-    simpleDyedWaterBottle = registry.registerEnum(color -> new SimpleDyedBottleItem(bottleProps, color), DyeColor.values(), "dyed_bottle");
+    simpleDyedWaterBottle = registry.registerEnum(color -> new SimpleDyedBottleItem(bottleProps, DyeItem.getItem(color)), DyeColor.values(), "dyed_bottle");
     mixedDyedWaterBottle = registry.register(new MixedDyedBottleItem(bottleProps), "mixed_dyed_bottle");
 
     // boiling cauldron item
@@ -243,42 +244,4 @@ public class InspirationsRecipes extends ModuleBase {
   private static FluidAttributes.Builder coloredFluid() {
     return FluidAttributes.builder(STILL_FLUID, FLOWING_FLUID);
   }
-
-	/* TODO: reimplement
-	@SubscribeEvent
-	public void registerRecipes(Register<IRecipe<ICraftingRecipe>> event) {
-		if(!Config.patchVanillaDyeRecipes()) {
-			return;
-		}
-		IForgeRegistry<IRecipe> r = event.getRegistry();
-		String[] recipes = {
-				"purple_dye",
-				"cyan_dye",
-				"light_gray_dye_from_ink_bonemeal",
-				"light_gray_dye_from_gray_bonemeal",
-				"gray_dye",
-				"pink_dye_from_red_bonemeal",
-				"lime_dye",
-				"light_blue_dye_from_lapis_bonemeal",
-				"magenta_dye_from_purple_and_pink",
-				"magenta_dye_from_lapis_red_pink",
-				"magenta_dye_from_lapis_ink_bonemeal",
-				"orange_dye_from_red_yellow"
-		};
-		for(String recipeName : recipes) {
-			IRecipe irecipe = r.getValue(new ResourceLocation(recipeName));
-			if(irecipe instanceof ShapelessRecipe) {
-				// simply find all current ingredients and wrap them in my class which removes bottles
-				ShapelessRecipe recipe = (ShapelessRecipe) irecipe;
-				NonNullList<Ingredient> newIngredients = NonNullList.create();
-				recipe.getIngredients().forEach(i->newIngredients.add(new DyeIngredientWrapper(i)));
-				recipe.getIngredients().clear();
-				recipe.getIngredients().addAll(newIngredients);
-			} else {
-				// another mod modified or removed recipe
-				String error = irecipe == null ? "recipe removed" : "recipe unexpected class " + irecipe.getClass();
-				Inspirations.log.warn("Error modifying dye recipe '{}', {}", recipeName, error);
-			}
-		}
-	}*/
 }

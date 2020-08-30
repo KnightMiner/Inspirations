@@ -60,6 +60,7 @@ public class InspirationsTags {
      */
     public static final INamedTag<Item> CARPETS = tag("carpets");
     public static final INamedTag<Item> SHULKER_BOXES = tag("shulker_boxes");
+    public static final INamedTag<Item> TERRACOTTA = tag("terracotta");
 
     public static final INamedTag<Item> WAYPOINT_COMPASSES = tag("waypoint_compasses");
     public static final INamedTag<Item> DYE_BOTTLES = tag("dyed_water_bottles");
