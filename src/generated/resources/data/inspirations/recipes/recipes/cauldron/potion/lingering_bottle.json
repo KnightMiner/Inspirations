@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "conditions": [
+    {
+      "prop": "recipes_module",
+      "type": "inspirations:config"
+    },
+    {
+      "prop": "cauldron_potions",
+      "type": "inspirations:config"
+    }
+  ],
+  "ingredients": [
+    {
+      "tag": "forge:splash_bottles"
+    },
+    {
+      "tag": "forge:splash_bottles"
+    },
+    {
+      "tag": "forge:splash_bottles"
+    },
+    {
+      "item": "minecraft:dragon_breath"
+    }
+  ],
+  "result": {
+    "item": "inspirations:lingering_bottle"
+  }
+}

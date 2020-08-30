@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "conditions": [
+    {
+      "prop": "recipes_module",
+      "type": "inspirations:config"
+    },
+    {
+      "prop": "cauldron_potions",
+      "type": "inspirations:config"
+    }
+  ],
+  "ingredients": [
+    {
+      "item": "minecraft:glass_bottle"
+    },
+    {
+      "item": "minecraft:glass_bottle"
+    },
+    {
+      "item": "minecraft:glass_bottle"
+    },
+    {
+      "tag": "forge:gunpowder"
+    }
+  ],
+  "result": {
+    "item": "inspirations:splash_bottle"
+  }
+}

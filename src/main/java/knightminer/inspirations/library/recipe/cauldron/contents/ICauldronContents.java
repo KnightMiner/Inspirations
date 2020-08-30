@@ -60,6 +60,16 @@ public interface ICauldronContents {
   int hashCode();
 
   /**
+   * Checks if the contents contain the given type
+   * @param type   Content type
+   * @param <T>  Content class
+   * @return  True if get would return this value
+   */
+  default <T> boolean contains(CauldronContentType<T> type) {
+    return get(type).isPresent();
+  }
+
+  /**
    * Checks if the contents contain the given value. Unlike {@link #matches(CauldronContentType, Object)}, supports overrides.
    * @param type   Content type
    * @param value  Value of the content

@@ -1,0 +1,17 @@
+{
+  "type": "inspirations:cauldron_fill_potion",
+  "conditions": [
+    {
+      "prop": "recipes_module",
+      "type": "inspirations:config"
+    },
+    {
+      "prop": "cauldron_potions",
+      "type": "inspirations:config"
+    }
+  ],
+  "bottle": {
+    "item": "minecraft:glass_bottle"
+  },
+  "potion": "minecraft:potion"
+}

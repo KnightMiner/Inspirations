@@ -11,6 +11,8 @@ import knightminer.inspirations.library.recipe.cauldron.ingredient.ContentMatchI
 import knightminer.inspirations.library.recipe.cauldron.ingredient.FluidCauldronIngredient;
 import knightminer.inspirations.library.recipe.cauldron.ingredient.ICauldronIngredient;
 import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronRecipeBuilder;
+import knightminer.inspirations.library.recipe.cauldron.recipe.EmptyPotionCauldronRecipeBuilder;
+import knightminer.inspirations.library.recipe.cauldron.recipe.FillPotionCauldronRecipeBuilder;
 import knightminer.inspirations.library.recipe.cauldron.util.TemperaturePredicate;
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.shared.InspirationsShared;
@@ -101,6 +103,7 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
                          .maxLevels(2)
                          .addLevels(1)
                          .setOutput(Items.GLASS_BOTTLE)
+                         .setOutput(CauldronContentTypes.FLUID.of(Fluids.WATER))
                          .noContainer()
                          .addCriterion("has_item", hasItem(
                              ItemPredicate.Builder.create()
@@ -167,8 +170,51 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
 
 
     // potions //
-    // TODO: potion bottling
-    // TODO: tipped arrow recipe (might be same internal logic, just uses a stack of 16)
+    String potionFolder = folder + "potion/";
+    Consumer<IFinishedRecipe> potionConsumer = withCondition(ConfigEnabledCondition.CAULDRON_POTIONS);
+    // normal
+    EmptyPotionCauldronRecipeBuilder.empty(Items.POTION, Items.GLASS_BOTTLE)
+                                    .addCriterion("has_item", hasItem(Items.POTION))
+                                    .build(potionConsumer, resource(potionFolder + "normal_empty"));
+    FillPotionCauldronRecipeBuilder.fill(Ingredient.fromItems(Items.GLASS_BOTTLE), Items.POTION)
+                                   .addCriterion("has_item", hasItem(Items.GLASS_BOTTLE))
+                                   .build(potionConsumer, resource(potionFolder + "normal_fill"));
+    // splash
+    EmptyPotionCauldronRecipeBuilder.empty(Items.SPLASH_POTION, InspirationsRecipes.splashBottle)
+                                    .addCriterion("has_item", hasItem(Items.SPLASH_POTION))
+                                    .build(potionConsumer, resource(potionFolder + "splash_empty"));
+    FillPotionCauldronRecipeBuilder.fill(Ingredient.fromTag(InspirationsTags.Items.SPLASH_BOTTLES), Items.SPLASH_POTION)
+                                   .addCriterion("has_item", hasItem(InspirationsTags.Items.SPLASH_BOTTLES))
+                                   .build(potionConsumer, resource(potionFolder + "splash_fill"));
+    // lingering
+    EmptyPotionCauldronRecipeBuilder.empty(Items.LINGERING_POTION, InspirationsRecipes.lingeringBottle)
+                                    .addCriterion("has_item", hasItem(Items.LINGERING_POTION))
+                                    .build(potionConsumer, resource(potionFolder + "lingering_empty"));
+    FillPotionCauldronRecipeBuilder.fill(Ingredient.fromTag(InspirationsTags.Items.LINGERING_BOTTLES), Items.LINGERING_POTION)
+                                   .addCriterion("has_item", hasItem(InspirationsTags.Items.LINGERING_BOTTLES))
+                                   .build(potionConsumer, resource(potionFolder + "lingering_fill"));
+    // tipped arrows
+    FillPotionCauldronRecipeBuilder.fill(Ingredient.fromItems(Items.ARROW), 16, Items.TIPPED_ARROW)
+                                   .addCriterion("has_item", hasItem(Items.ARROW))
+                                   .build(potionConsumer, resource(potionFolder + "tipped_arrow"));
+
+    // craft the bottles
+    ShapelessRecipeBuilder.shapelessRecipe(InspirationsRecipes.splashBottle)
+                          .addIngredient(Items.GLASS_BOTTLE)
+                          .addIngredient(Items.GLASS_BOTTLE)
+                          .addIngredient(Items.GLASS_BOTTLE)
+                          .addIngredient(Tags.Items.GUNPOWDER)
+                          .addCriterion("has_item", hasItem(Tags.Items.GUNPOWDER))
+                          .build(potionConsumer, prefix(InspirationsRecipes.splashBottle, potionFolder));
+    ShapelessRecipeBuilder.shapelessRecipe(InspirationsRecipes.lingeringBottle)
+                          .addIngredient(InspirationsTags.Items.SPLASH_BOTTLES)
+                          .addIngredient(InspirationsTags.Items.SPLASH_BOTTLES)
+                          .addIngredient(InspirationsTags.Items.SPLASH_BOTTLES)
+                          .addIngredient(Items.DRAGON_BREATH)
+                          .addCriterion("has_item", hasItem(Items.DRAGON_BREATH))
+                          .build(potionConsumer, prefix(InspirationsRecipes.lingeringBottle, potionFolder));
+
+    // TODO: potion brewing
 
     // fluid recipes //
     // beetroot is just water based

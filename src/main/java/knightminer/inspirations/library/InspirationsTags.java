@@ -63,11 +63,18 @@ public class InspirationsTags {
     public static final INamedTag<Item> WAYPOINT_COMPASSES = tag("waypoint_compasses");
     public static final INamedTag<Item> DYE_BOTTLES = tag("dyed_water_bottles");
 
+    /* Inputs for potion cauldron recipes */
+    public static final INamedTag<Item> SPLASH_BOTTLES = forgeTag("splash_bottles");
+    public static final INamedTag<Item> LINGERING_BOTTLES = forgeTag("lingering_bottles");
+
     /**
      * Creates an item tag for Inspirations
      */
     private static INamedTag<Item> tag(String name) {
       return ItemTags.makeWrapperTag(Inspirations.modID + ":" + name);
+    }
+    private static INamedTag<Item> forgeTag(String name) {
+      return ItemTags.makeWrapperTag("forge:" + name);
     }
   }
 }

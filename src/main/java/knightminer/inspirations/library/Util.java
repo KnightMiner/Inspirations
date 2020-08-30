@@ -1,5 +1,7 @@
 package knightminer.inspirations.library;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -15,7 +17,9 @@ import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.EffectUtils;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.Direction;
+import net.minecraft.util.JSONUtils;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.VoxelShape;
@@ -27,6 +31,7 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
@@ -34,7 +39,6 @@ import java.util.List;
 
 @SuppressWarnings("deprecation")
 public class Util {
-
   public static boolean clickedAABB(AxisAlignedBB aabb, Vector3d hit) {
     return aabb.minX <= hit.x && hit.x <= aabb.maxX
            && aabb.minY <= hit.y && hit.y <= aabb.maxY
@@ -197,5 +201,21 @@ public class Util {
       }
     }
     return null;
+  }
+
+  /**
+   * Reads an iem from a string
+   * @param parent  Parent object
+   * @param key     JSON key of object
+   * @return  Item
+   * @throws JsonSyntaxException  If item is invalid or missing
+   */
+  public static Item deserializeItem(JsonObject parent, String key) {
+    String name = JSONUtils.getString(parent, key);
+    Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(name));
+    if (item == null) {
+      throw new JsonSyntaxException("Invalid " + key + ": Unknown item " + name + "'");
+    }
+    return item;
   }
 }

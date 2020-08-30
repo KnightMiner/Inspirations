@@ -39,16 +39,30 @@ public interface IModifyableCauldronInventory extends ICauldronInventory {
   /**
    * Decreases the size of the held stack
    * @param amount  Amount to shrink by
-   * @return updated stack
+   * @return true if the stack is now empty, false otherwise
    */
-  default ItemStack shrinkStack(int amount) {
+  default boolean shrinkStack(int amount) {
     ItemStack stack = getStack();
     stack.shrink(amount);
     if (stack.isEmpty()) {
       stack = ItemStack.EMPTY;
     }
     setStack(stack);
-    return stack;
+    return stack.isEmpty();
+  }
+
+  /**
+   * Sets the given stack if the stack is empty, gives otherwise
+   * @param stack  New stack to give
+   */
+  default void setOrGiveStack(ItemStack stack) {
+    if (!stack.isEmpty()) {
+      if (getStack().isEmpty()) {
+        setStack(stack);
+      } else {
+        giveStack(stack);
+      }
+    }
   }
 
   /**
@@ -58,6 +72,17 @@ public interface IModifyableCauldronInventory extends ICauldronInventory {
    */
   default boolean updateLevel(IntUnaryOperator updater) {
     int newLevel = updater.applyAsInt(getLevel());
+    setLevel(newLevel);
+    return newLevel == 0;
+  }
+
+  /**
+   * Adds the given amount to the cauldron level
+   * @param amount Amount to add, can be negative
+   * @return  True if the cauldron is now empty, false otherwise
+   */
+  default boolean addLevel(int amount) {
+    int newLevel = getLevel() + amount;
     setLevel(newLevel);
     return newLevel == 0;
   }

@@ -3,12 +3,14 @@ package knightminer.inspirations.recipes;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.ModuleBase;
-import knightminer.inspirations.common.item.HidableItem;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronRecipe;
+import knightminer.inspirations.library.recipe.cauldron.recipe.EmptyPotionCauldronRecipe;
+import knightminer.inspirations.library.recipe.cauldron.recipe.FillPotionCauldronRecipe;
 import knightminer.inspirations.recipes.block.EnhancedCauldronBlock;
 import knightminer.inspirations.recipes.data.RecipesRecipeProvider;
+import knightminer.inspirations.recipes.item.EmptyBottleItem;
 import knightminer.inspirations.recipes.item.MixedDyedBottleItem;
 import knightminer.inspirations.recipes.item.SimpleDyedBottleItem;
 import knightminer.inspirations.recipes.recipe.cauldron.EmptyBucketCauldronRecipe;
@@ -87,6 +89,8 @@ public class InspirationsRecipes extends ModuleBase {
 
   // cauldron serializers
   public static CauldronRecipe.Serializer cauldronSerializer;
+  public static EmptyPotionCauldronRecipe.Serializer emptyPotionSerializer;
+  public static FillPotionCauldronRecipe.Serializer fillPotionSerializer;
   public static SpecialRecipeSerializer<EmptyBucketCauldronRecipe> emptyBucketSerializer;
   public static SpecialRecipeSerializer<FillBucketCauldronRecipe> fillBucketSerializer;
 
@@ -152,8 +156,8 @@ public class InspirationsRecipes extends ModuleBase {
 
     // empty bottles
     Item.Properties brewingProps = new Item.Properties().group(ItemGroup.BREWING);
-    splashBottle = registry.register(new HidableItem(brewingProps, Config.enableCauldronPotions), "splash_bottle");
-    lingeringBottle = registry.register(new HidableItem(brewingProps, Config.enableCauldronPotions), "lingering_bottle");
+    splashBottle = registry.register(new EmptyBottleItem(brewingProps, Items.SPLASH_POTION.delegate), "splash_bottle");
+    lingeringBottle = registry.register(new EmptyBottleItem(brewingProps, Items.LINGERING_POTION.delegate), "lingering_bottle");
 
     // dyed bottles
     Item.Properties bottleProps = new Item.Properties()
@@ -176,9 +180,7 @@ public class InspirationsRecipes extends ModuleBase {
     TileEntityTypeRegistryAdapter registry = new TileEntityTypeRegistryAdapter(event.getRegistry());
 
     if (Config.extendedCauldron.get()) {
-      tileCauldron = registry.register(CauldronTileEntity::new, "cauldron", blocks -> {
-        blocks.add(cauldron, boilingCauldron);
-      });
+      tileCauldron = registry.register(CauldronTileEntity::new, "cauldron", blocks -> blocks.add(cauldron, boilingCauldron));
     }
   }
 
@@ -192,6 +194,8 @@ public class InspirationsRecipes extends ModuleBase {
   void registerSerializers(Register<IRecipeSerializer<?>> event) {
     RegistryAdapter<IRecipeSerializer<?>> registry = new RegistryAdapter<>(event.getRegistry());
     cauldronSerializer = registry.register(new CauldronRecipe.Serializer(), "cauldron");
+    emptyPotionSerializer = registry.register(new EmptyPotionCauldronRecipe.Serializer(), "cauldron_empty_potion");
+    fillPotionSerializer = registry.register(new FillPotionCauldronRecipe.Serializer(), "cauldron_fill_potion");
     emptyBucketSerializer = registry.register(new SpecialRecipeSerializer<>(EmptyBucketCauldronRecipe::new), "cauldron_empty_bucket");
     fillBucketSerializer = registry.register(new SpecialRecipeSerializer<>(FillBucketCauldronRecipe::new), "cauldron_fill_bucket");
 

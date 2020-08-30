@@ -3,6 +3,7 @@ package knightminer.inspirations.common.datagen;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.library.InspirationsTags;
+import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.tools.InspirationsTools;
 import net.minecraft.data.BlockTagsProvider;
 import net.minecraft.data.DataGenerator;
@@ -70,6 +71,9 @@ public class InspirationsItemTagsProvider extends ItemTagsProvider {
 
   private void registerForgeTags() {
     this.getOrCreateBuilder(Tags.Items.BOOKSHELVES).addTag(InspirationsTags.Items.BOOKSHELVES);
+
+    this.getOrCreateBuilder(InspirationsTags.Items.SPLASH_BOTTLES).add(InspirationsRecipes.splashBottle);
+    this.getOrCreateBuilder(InspirationsTags.Items.LINGERING_BOTTLES).add(InspirationsRecipes.lingeringBottle);
 
 		/*
 		for(DyeColor color : DyeColor.values()) {

@@ -52,7 +52,8 @@ public class FillBucketCauldronRecipe implements ICauldronRecipe {
          // if we successfully fill the handler, update the cauldron
          if (handler.fill(new FluidStack(fluid, FluidAttributes.BUCKET_VOLUME), FluidAction.EXECUTE) == FluidAttributes.BUCKET_VOLUME) {
            inv.setLevel(0);
-           inv.setStack(handler.getContainer());
+           inv.shrinkStack(1);
+           inv.setOrGiveStack(handler.getContainer());
          }
        }));
   }

@@ -104,22 +104,16 @@ public class CauldronRecipe implements ICauldronRecipe {
       if (!container.isEmpty()) {
         container.setCount(amount);
       }
+    } else {
+      container = container.copy();
     }
 
     // update hand item and container item
-    ItemStack hand = inventory.shrinkStack(amount);
-    if (!container.isEmpty()) {
-      if (hand.isEmpty()) {
-        inventory.setStack(container.copy());
-      } else {
-        inventory.giveStack(container.copy());
-      }
-    }
+    inventory.shrinkStack(amount);
+    inventory.setOrGiveStack(container);
 
     // give output
-    if (!output.isEmpty()) {
-      inventory.giveStack(output.copy());
-    }
+    inventory.setOrGiveStack(output.copy());
   }
 
   @Override

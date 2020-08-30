@@ -75,7 +75,8 @@ public class EmptyBucketCauldronRecipe implements ICauldronRecipe {
         // update contents
         inv.setContents(CauldronContentTypes.FLUID.of(drained.getFluid()));
         // replace held item with container
-        inv.setStack(handler.getContainer());
+        inv.shrinkStack(1);
+        inv.setOrGiveStack(handler.getContainer());
       }
     });
   }
