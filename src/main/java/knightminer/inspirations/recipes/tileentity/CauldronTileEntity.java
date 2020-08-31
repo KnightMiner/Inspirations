@@ -2,11 +2,13 @@ package knightminer.inspirations.recipes.tileentity;
 
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.network.CauldronContentUpatePacket;
+import knightminer.inspirations.common.network.CauldronTransformUpatePacket;
 import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.library.recipe.RecipeTypes;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.contents.EmptyCauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
+import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronTransform;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.recipes.block.EnhancedCauldronBlock;
@@ -25,22 +27,32 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Potion;
 import net.minecraft.tags.FluidTags;
+import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvents;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelProperty;
 import net.minecraftforge.common.util.Constants.BlockFlags;
+import net.minecraftforge.common.util.Constants.NBT;
 import slimeknights.mantle.client.model.data.SinglePropertyData;
+import slimeknights.mantle.recipe.RecipeHelper;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public class CauldronTileEntity extends TileEntity {
+/**
+ * Tile entity logic for the cauldron, handles more complex content types
+ */
+public class CauldronTileEntity extends TileEntity implements ITickableTileEntity {
   private static final DamageSource DAMAGE_BOIL = new DamageSource(Inspirations.prefix("boiling")).setDamageBypassesArmor();
   public static final ModelProperty<ResourceLocation> TEXTURE = new ModelProperty<>();
 
@@ -50,8 +62,19 @@ public class CauldronTileEntity extends TileEntity {
 
   // mutable properties
   private ICauldronContents contents;
-  EnhancedCauldronBlock cauldronBlock;
+  private EnhancedCauldronBlock cauldronBlock;
   private ICauldronRecipe lastRecipe;
+
+  // transform recipes
+  private int timer;
+  /** Name of the in progress transform recipe */
+  private ResourceLocation currentTransformName;
+  /** Transform recipe currently in progress */
+  private CauldronTransform currentTransform;
+  /** Last successful transform found */
+  private CauldronTransform lastTransform;
+  /** If true, updates the transform recipe during the next tick */
+  private boolean updateTransform;
 
   /**
    * Creates a new cauldron with no block set
@@ -146,7 +169,8 @@ public class CauldronTileEntity extends TileEntity {
         BlockState state = getBlockState();
         world.notifyBlockUpdate(pos, state, state, BlockFlags.NO_RERENDER | BlockFlags.NO_NEIGHBOR_DROPS);
       } else {
-        InspirationsNetwork.sendToClients(world,pos,new CauldronContentUpatePacket(pos, contents));
+        InspirationsNetwork.sendToClients(world, pos, new CauldronContentUpatePacket(pos, contents));
+        this.updateTransform();
       }
     }
   }
@@ -353,6 +377,105 @@ public class CauldronTileEntity extends TileEntity {
     return level;
   }
 
+  /* Transform recipes */
+
+  @Override
+  public void updateContainingBlockInfo() {
+    super.updateContainingBlockInfo();
+    this.updateTransform = true;
+  }
+
+  /**
+   * Update the in progress transform recipe
+   */
+  public void updateTransform() {
+    // stop if we have a non-loaded transform
+    if (currentTransformName != null) {
+      return;
+    }
+
+    // if the current transform matches, do nothing
+    craftingInventory.refreshLevel();
+    if (world == null || (currentTransform != null && currentTransform.matches(craftingInventory, world))) {
+      return;
+    }
+
+    // recipe changing means reset the timer
+    timer = 0;
+
+    // try to find a recipe
+    CauldronTransform transform = null;
+    if (getLevel() > 0) {
+      if (lastTransform != null && lastTransform.matches(craftingInventory, world)) {
+        transform = lastTransform;
+      } else {
+        Optional<CauldronTransform> newTransform = world.getRecipeManager().getRecipe(RecipeTypes.CAULDRON_TRANSFORM, craftingInventory, world);
+        if (newTransform.isPresent()) {
+          transform = lastTransform = newTransform.get();
+        }
+      }
+    }
+
+    // handles both null mostly, but also the odd case of it matching again
+    if (currentTransform != transform) {
+      // update and sync to clients
+      currentTransform = transform;
+      InspirationsNetwork.sendToClients(world, pos, new CauldronTransformUpatePacket(pos, transform));
+    }
+  }
+
+  @Override
+  public void tick() {
+    if (world == null) {
+      return;
+    }
+
+    // updates the transform recipe
+    if (updateTransform && !world.isRemote) {
+      this.updateTransform();
+      updateTransform = false;
+    }
+
+    // if we have a recipe
+    if (currentTransform == null) {
+      return;
+    }
+
+    // timer updates on both sides, easier than syncing
+    timer++;
+
+    // if the recipe is done, run recipe
+    if (!world.isRemote && timer >= currentTransform.getTime(craftingInventory)) {
+      timer = 0;
+
+      // set contents will clear the current transform if no longer current
+      setContents(currentTransform.getOutput(craftingInventory));
+
+      // play sound effect
+      world.playSound(null, pos, SoundEvents.BLOCK_BREWING_STAND_BREW, SoundCategory.BLOCKS, 1.0f, 1.0f);
+    }
+  }
+
+  /**
+   * Called on the client to update the current transform recipe
+   * @param recipe  New recipe
+   */
+  public void setTransformRecipe(@Nullable CauldronTransform recipe) {
+    this.currentTransform = recipe;
+    timer = 0;
+  }
+
+  /**
+   * Gets the number of fluid transform particles to display
+   * @return  Particle count, 0 for no particles
+   */
+  public int getTransformParticles() {
+    if (currentTransform == null) {
+      return 0;
+    }
+    return timer * 5 / currentTransform.getTime(craftingInventory);
+  }
+
   /*
    * Called when the cauldron is broken
    * @param pos   Position of the cauldron
@@ -394,6 +517,27 @@ public class CauldronTileEntity extends TileEntity {
 
   /* NBT */
   private static final String TAG_CONTENTS = "contents";
+  private static final String TAG_TRANSFORM = "transform";
+  private static final String TAG_TIMER = "timer";
+
+  @Override
+  public void setWorldAndPos(World world, BlockPos pos) {
+    super.setWorldAndPos(world, pos);
+    // if we have a recipe name, swap recipe name for recipe instance
+    if (currentTransformName != null) {
+      loadTransform(world, currentTransformName);
+      currentTransformName = null;
+    }
+  }
+
+  /**
+   * Updates the current transform based on the given name
+   * @param world  World instance
+   * @param name   Recipe name
+   */
+  private void loadTransform(World world, ResourceLocation name) {
+    RecipeHelper.getRecipe(world.getRecipeManager(), name, CauldronTransform.class).ifPresent(recipe -> this.currentTransform = recipe);
+  }
 
   @Override
   public CompoundNBT getUpdateTag() {
@@ -405,18 +549,43 @@ public class CauldronTileEntity extends TileEntity {
   public CompoundNBT write(CompoundNBT tags) {
     tags = super.write(tags);
     tags.put(TAG_CONTENTS, CauldronContentTypes.toNbt(getContents()));
+    // write transform if present, or transform name if we somehow wrote before world is set
+    if (currentTransform != null) {
+      tags.putString(TAG_TRANSFORM, currentTransform.getId().toString());
+    } else if (currentTransformName != null) {
+      tags.putString(TAG_TRANSFORM, currentTransformName.toString());
+    }
+    // update the timer from NBT
+    tags.putInt(TAG_TIMER, timer);
     return tags;
   }
 
   @Override
   public void read(BlockState state, CompoundNBT tags) {
     super.read(state, tags);
-    setContents(CauldronContentTypes.read(tags.getCompound(TAG_CONTENTS)));
 
     // update block reference
     Block block = state.getBlock();
     if (block instanceof EnhancedCauldronBlock) {
       this.cauldronBlock = (EnhancedCauldronBlock)block;
     }
+
+    // update current transform
+    if (tags.contains(TAG_TRANSFORM, NBT.TAG_STRING)) {
+      ResourceLocation name = new ResourceLocation(tags.getString(TAG_TRANSFORM));
+      // if we have a world, fetch the recipe
+      if (world != null) {
+        loadTransform(world, name);
+      } else {
+        // otherwise fetch the recipe when the world is set
+        currentTransformName = name;
+      }
+    }
+
+    // update contents
+    setContents(CauldronContentTypes.read(tags.getCompound(TAG_CONTENTS)));
+
+    // update the timer from NBT
+    timer = tags.getInt(TAG_TIMER);
   }
 }

@@ -11,6 +11,8 @@ import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.CauldronBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.particles.IParticleData;
+import net.minecraft.particles.ParticleTypes;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
@@ -26,6 +28,9 @@ import slimeknights.mantle.util.TileEntityHelper;
 
 import java.util.Random;
 
+/**
+ * Cauldron block exteneded to have a tile entity
+ */
 @SuppressWarnings("WeakerAccess")
 public class EnhancedCauldronBlock extends CauldronBlock {
   public EnhancedCauldronBlock(Block.Properties props) {
@@ -103,6 +108,21 @@ public class EnhancedCauldronBlock extends CauldronBlock {
     }
   }
 
+  @Override
+  public boolean matchesBlock(Block block) {
+    return this == block || block == InspirationsRecipes.cauldron || block == InspirationsRecipes.boilingCauldron;
+  }
+
+  @Override
+  @Deprecated
+  public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
+    // if the block is the same, update transform recipe
+    if (!newState.isIn(this)) {
+      // keep TE on switch between boiling and non-boiling
+      world.removeTileEntity(pos);
+    }
+  }
+
   /*
   @SuppressWarnings("deprecation")
   @Deprecated
@@ -167,20 +187,37 @@ public class EnhancedCauldronBlock extends CauldronBlock {
   @Override
   @OnlyIn(Dist.CLIENT)
   public void animateTick(BlockState state, World world, BlockPos pos, Random rand) {
-    if (!isBoiling(state)) {
-      return;
-    }
-
     int level = getLevel(state);
     if (level == 0) {
       return;
     }
+    // boiling particles
+    if (isBoiling(state)) {
+      addParticles(InspirationsRecipes.boilingParticle, world, pos, 2, level, rand);
+    }
 
-    for (int i = 0; i < 2; i++) {
+    // transform particles
+    TileEntity te = world.getTileEntity(pos);
+    if (te instanceof CauldronTileEntity) {
+      int count = ((CauldronTileEntity) te).getTransformParticles();
+      addParticles(ParticleTypes.HAPPY_VILLAGER, world, pos, count, level, rand);
+    }
+  }
+
+  /**
+   * Adds particles
+   * @param type   Particle type
+   * @param world  World instance
+   * @param pos    Block position
+   * @param level  Fluid level
+   * @param rand   Random instance
+   */
+  private static void addParticles(IParticleData type, World world, BlockPos pos, int count, int level, Random rand) {
+    for (int i = 0; i < count; i++) {
       double x = pos.getX() + 0.1875D + (rand.nextFloat() * 0.625D);
       double y = pos.getY() + 0.375D  + (level * 0.1875D);
       double z = pos.getZ() + 0.1875D + (rand.nextFloat() * 0.625D);
-      world.addParticle(InspirationsRecipes.boilingParticle, x, y, z, 0, 0, 0);
+      world.addParticle(type, x, y, z, 0, 0, 0);
     }
   }
 }

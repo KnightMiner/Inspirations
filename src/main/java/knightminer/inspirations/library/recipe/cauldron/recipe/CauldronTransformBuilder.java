@@ -1,0 +1,197 @@
+package knightminer.inspirations.library.recipe.cauldron.recipe;
+
+import com.google.gson.JsonObject;
+import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
+import knightminer.inspirations.library.recipe.cauldron.CauldronIngredients;
+import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
+import knightminer.inspirations.library.recipe.cauldron.ingredient.ICauldronIngredient;
+import knightminer.inspirations.library.recipe.cauldron.util.LevelPredicate;
+import knightminer.inspirations.library.recipe.cauldron.util.TemperaturePredicate;
+import knightminer.inspirations.recipes.InspirationsRecipes;
+import net.minecraft.advancements.Advancement;
+import net.minecraft.data.IFinishedRecipe;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.item.crafting.IRecipeSerializer;
+import net.minecraft.potion.Potion;
+import net.minecraft.util.ResourceLocation;
+import slimeknights.mantle.recipe.data.AbstractRecipeBuilder;
+
+import javax.annotation.Nullable;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Consumer;
+
+/**
+ * Builds a recipe that converts one fluid in the cauldron to another over time
+ */
+public class CauldronTransformBuilder extends AbstractRecipeBuilder<CauldronTransformBuilder> {
+  private final ICauldronIngredient ingredient;
+  private final ICauldronContents output;
+  private final int time;
+  @Nullable
+  private LevelPredicate level;
+  private TemperaturePredicate temperature = TemperaturePredicate.ANY;
+
+  private CauldronTransformBuilder(ICauldronIngredient ingredient, ICauldronContents output, int time) {
+    this.ingredient = ingredient;
+    this.output = output;
+    this.time = time;
+  }
+
+  /**
+   * Creates a new builder instance
+   * @param ingredient  Input ingredient
+   * @param output      Output contents
+   * @param time        Recipe duration
+   * @return  Builder instance
+   */
+  public static CauldronTransformBuilder transform(ICauldronIngredient ingredient, ICauldronContents output, int time) {
+    if (time <= 0) {
+      throw new IllegalArgumentException("Time must be greater than zero");
+    }
+    return new CauldronTransformBuilder(ingredient, output, time);
+  }
+
+  /**
+   * Sets the required temperature
+   * @param temp  Temperature
+   * @return  Builder instance
+   */
+  public CauldronTransformBuilder setTemperature(TemperaturePredicate temp) {
+    this.temperature = temp;
+    return this;
+  }
+
+  /* Levels */
+
+  /**
+   * Sets the minimum number of levels required to match
+   * @param min  Minimum levels
+   * @return  Builder instance
+   */
+  public CauldronTransformBuilder minLevels(int min) {
+    this.level = LevelPredicate.min(min);
+    return this;
+  }
+
+  /**
+   * Sets the minimum number of levels required to match
+   * @param max  Maximum levels
+   * @return  Builder instance
+   */
+  public CauldronTransformBuilder maxLevels(int max) {
+    this.level = LevelPredicate.max(max);
+    return this;
+  }
+
+  /**
+   * Sets the required number of levels to be a empty cauldron
+   * @return  Builder instance
+   */
+  public CauldronTransformBuilder matchEmpty() {
+    return maxLevels(0);
+  }
+
+  /**
+   * Sets the required number of levels to be a full cauldron
+   * @return  Builder instance
+   */
+  public CauldronTransformBuilder matchFull() {
+    return minLevels(ICauldronRecipe.MAX);
+  }
+
+  /**
+   * Sets the range of levels required to match
+   * @param min  Minimum levels
+   * @param max  Maximum levels
+   * @return  Builder instance
+   */
+  public CauldronTransformBuilder levelRange(int min, int max) {
+    this.level = LevelPredicate.range(min, max);
+    return this;
+  }
+
+  @Override
+  public void build(Consumer<IFinishedRecipe> consumer) {
+    // try fluid next
+    Optional<Fluid> fluid = output.get(CauldronContentTypes.FLUID);
+    if (fluid.isPresent()) {
+      build(consumer, Objects.requireNonNull(fluid.get().getRegistryName()));
+      return;
+    }
+    // try potion
+    Optional<Potion> potion = output.get(CauldronContentTypes.POTION);
+    if (potion.isPresent()) {
+      build(consumer, Objects.requireNonNull(potion.get().getRegistryName()));
+      return;
+    }
+    throw new IllegalStateException("Unable to create automatic recipe ID");
+  }
+
+  @Override
+  public void build(Consumer<IFinishedRecipe> consumer, ResourceLocation id) {
+    ResourceLocation advancementId = this.buildAdvancement(id, "cauldron");
+    consumer.accept(new Result(id, ingredient, level, temperature, output, time, advancementBuilder, advancementId));
+  }
+
+  /**
+   * Result class
+   */
+  private static class Result implements IFinishedRecipe {
+    private final ResourceLocation id;
+    private final ICauldronIngredient ingredient;
+    @Nullable
+    private final LevelPredicate level;
+    private final TemperaturePredicate temperature;
+    private final ICauldronContents output;
+    private final int time;
+    private final Advancement.Builder advancementBuilder;
+    private final ResourceLocation advancementId;
+
+    private Result(ResourceLocation id, ICauldronIngredient ingredient, @Nullable LevelPredicate level, TemperaturePredicate temperature, ICauldronContents output, int time, Advancement.Builder advancementBuilder, ResourceLocation advancementId) {
+      this.id = id;
+      this.ingredient = ingredient;
+      this.level = level;
+      this.temperature = temperature;
+      this.output = output;
+      this.time = time;
+      this.advancementBuilder = advancementBuilder;
+      this.advancementId = advancementId;
+    }
+
+    @Override
+    public void serialize(JsonObject json) {
+      json.add("input", CauldronIngredients.toJson(ingredient));
+      if (level != null) {
+        json.add("level", level.toJson());
+      }
+      if (temperature != TemperaturePredicate.ANY) {
+        json.addProperty("temperature", temperature.getName());
+      }
+      json.add("output", CauldronContentTypes.toJson(output));
+      json.addProperty("time", time);
+    }
+
+    @Override
+    public ResourceLocation getID() {
+      return id;
+    }
+
+    @Override
+    public IRecipeSerializer<?> getSerializer() {
+      return InspirationsRecipes.cauldronTransformSerializer;
+    }
+
+    @Nullable
+    @Override
+    public JsonObject getAdvancementJson() {
+      return advancementBuilder.serialize();
+    }
+
+    @Nullable
+    @Override
+    public ResourceLocation getAdvancementID() {
+      return advancementId;
+    }
+  }
+}

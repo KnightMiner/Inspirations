@@ -26,6 +26,7 @@ public class InspirationsNetwork extends NetworkWrapper {
     registerPacket(InventorySlotSyncPacket.class, InventorySlotSyncPacket::new, NetworkDirection.PLAY_TO_CLIENT);
     registerPacket(MilkablePacket.class, MilkablePacket::new, NetworkDirection.PLAY_TO_CLIENT);
     registerPacket(CauldronContentUpatePacket.class, CauldronContentUpatePacket::new, NetworkDirection.PLAY_TO_CLIENT);
+    registerPacket(CauldronTransformUpatePacket.class, CauldronTransformUpatePacket::new, NetworkDirection.PLAY_TO_CLIENT);
   }
 
   /**

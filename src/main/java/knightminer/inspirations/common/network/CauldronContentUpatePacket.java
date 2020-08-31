@@ -10,6 +10,9 @@ import net.minecraftforge.fml.network.NetworkEvent.Context;
 import slimeknights.mantle.network.packet.IThreadsafePacket;
 import slimeknights.mantle.util.TileEntityHelper;
 
+/**
+ * Packet to update the client when cauldron contents change
+ */
 public class CauldronContentUpatePacket implements IThreadsafePacket {
   private final BlockPos pos;
   private final ICauldronContents contents;
