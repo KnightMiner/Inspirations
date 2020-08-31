@@ -20,6 +20,7 @@ import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.IItemProvider;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
 import slimeknights.mantle.recipe.data.AbstractRecipeBuilder;
 
 import javax.annotation.Nullable;
@@ -42,6 +43,7 @@ public class CauldronRecipeBuilder extends AbstractRecipeBuilder<CauldronRecipeB
   private LevelUpdate levelUpdate = LevelUpdate.IDENTITY;
   @Nullable
   private ItemStack container = null;
+  private SoundEvent sound = null;
 
   private CauldronRecipeBuilder(Ingredient input, int amount, ICauldronIngredient contents) {
     this.input = input;
@@ -197,6 +199,9 @@ public class CauldronRecipeBuilder extends AbstractRecipeBuilder<CauldronRecipeB
     return setContainer(new ItemStack(container));
   }
 
+
+  /* Cauldron output */
+
   /**
    * Sets the cauldron contents output
    * @param contents  Contents output
@@ -243,6 +248,11 @@ public class CauldronRecipeBuilder extends AbstractRecipeBuilder<CauldronRecipeB
     return this;
   }
 
+  public CauldronRecipeBuilder setSound(SoundEvent sound) {
+    this.sound = sound;
+    return this;
+  }
+
   @Override
   public void build(Consumer<IFinishedRecipe> consumer) {
     // try output first
@@ -275,7 +285,7 @@ public class CauldronRecipeBuilder extends AbstractRecipeBuilder<CauldronRecipeB
 
     ResourceLocation advancementId = this.buildAdvancement(id, "cauldron");
     consumer.accept(new Result(id, getGroup(), input, amount, contents, levels, temperature, output, copyNBT,
-                               newContents, levelUpdate, container, advancementBuilder, advancementId));
+                               newContents, levelUpdate, container, sound, advancementBuilder, advancementId));
   }
 
   private static class Result implements IFinishedRecipe {
@@ -292,10 +302,12 @@ public class CauldronRecipeBuilder extends AbstractRecipeBuilder<CauldronRecipeB
     private final LevelUpdate levelUpdate;
     @Nullable
     private final ItemStack container;
+    @Nullable
+    private final SoundEvent sound;
     private final Advancement.Builder advancementBuilder;
     private final ResourceLocation advancementId;
 
-    private Result(ResourceLocation id, String group, Ingredient input, int amount, ICauldronIngredient contents, LevelPredicate level, TemperaturePredicate temperature, ItemStack output, boolean copyNBT, ICauldronContents newContents, LevelUpdate levelUpdate, @Nullable ItemStack container, Builder advancementBuilder, ResourceLocation advancementId) {
+    private Result(ResourceLocation id, String group, Ingredient input, int amount, ICauldronIngredient contents, LevelPredicate level, TemperaturePredicate temperature, ItemStack output, boolean copyNBT, ICauldronContents newContents, LevelUpdate levelUpdate, @Nullable ItemStack container, @Nullable SoundEvent sound, Builder advancementBuilder, ResourceLocation advancementId) {
       this.id = id;
       this.group = group;
       this.input = input;
@@ -308,6 +320,7 @@ public class CauldronRecipeBuilder extends AbstractRecipeBuilder<CauldronRecipeB
       this.newContents = newContents;
       this.levelUpdate = levelUpdate;
       this.container = container;
+      this.sound = sound;
       this.advancementBuilder = advancementBuilder;
       this.advancementId = advancementId;
     }
@@ -371,6 +384,9 @@ public class CauldronRecipeBuilder extends AbstractRecipeBuilder<CauldronRecipeB
         outputJson.add("level", levelUpdate.toJson());
       }
       json.add("output", outputJson);
+      if (sound != null) {
+        json.addProperty("sound", Objects.requireNonNull(sound.getRegistryName()).toString());
+      }
     }
 
     @Override

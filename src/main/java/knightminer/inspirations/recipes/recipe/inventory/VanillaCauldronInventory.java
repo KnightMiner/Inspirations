@@ -12,6 +12,8 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.CauldronBlock;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -24,7 +26,6 @@ public class VanillaCauldronInventory extends CauldronItemInventory {
   private final World world;
   private final BlockPos pos;
   private final BlockState state;
-  private ItemStack stack;
 
   // cached boiling value
   private Boolean boiling;
@@ -60,6 +61,11 @@ public class VanillaCauldronInventory extends CauldronItemInventory {
   @Override
   public boolean isSimple() {
     return true;
+  }
+
+  @Override
+  public void playSound(SoundEvent sound) {
+    world.playSound(null, pos, sound, SoundCategory.BLOCKS, 1.0f, 1.0f);
   }
 
   /* Levels */
@@ -114,7 +120,6 @@ public class VanillaCauldronInventory extends CauldronItemInventory {
     Optional<ICauldronRecipe> recipe = world.getRecipeManager().getRecipe(RecipeTypes.CAULDRON, this, world);
     if (recipe.isPresent()) {
       recipe.get().handleRecipe(this);
-      // TODO: sounds
       return true;
     }
     return false;

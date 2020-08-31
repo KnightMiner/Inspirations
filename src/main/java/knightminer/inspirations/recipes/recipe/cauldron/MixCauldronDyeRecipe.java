@@ -20,6 +20,7 @@ import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.world.World;
 import slimeknights.mantle.util.JsonHelper;
 
@@ -80,6 +81,9 @@ public class MixCauldronDyeRecipe implements ICauldronRecipe {
       // update contents
       inv.addLevel(1);
       inv.setContents(CauldronContentTypes.COLOR.of(DyeCauldronWaterRecipe.addColors(newColor, existing)));
+
+      // play sound
+      inv.playSound(SoundEvents.ITEM_BOTTLE_EMPTY);
     } else {
       contents.get(CauldronContentTypes.COLOR).ifPresent(color -> {
         // update dye stack and return container
@@ -93,6 +97,9 @@ public class MixCauldronDyeRecipe implements ICauldronRecipe {
         // set contents
         inv.addLevel(1);
         inv.setContents(CauldronContentTypes.COLOR.of(DyeCauldronWaterRecipe.addColors(newColor, existing)));
+
+        // play sound
+        inv.playSound(SoundEvents.ITEM_BOTTLE_EMPTY);
       });
     }
   }

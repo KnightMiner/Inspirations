@@ -12,6 +12,7 @@ import knightminer.inspirations.library.recipe.cauldron.ingredient.ContentMatchI
 import knightminer.inspirations.library.recipe.cauldron.ingredient.FluidCauldronIngredient;
 import knightminer.inspirations.library.recipe.cauldron.ingredient.ICauldronIngredient;
 import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronRecipeBuilder;
+import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronTransformBuilder;
 import knightminer.inspirations.library.recipe.cauldron.recipe.DyeableCauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.recipe.EmptyPotionCauldronRecipeBuilder;
 import knightminer.inspirations.library.recipe.cauldron.recipe.FillPotionCauldronRecipeBuilder;
@@ -24,6 +25,7 @@ import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraft.advancements.ICriterionInstance;
 import net.minecraft.advancements.criterion.ItemPredicate;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.SoundType;
 import net.minecraft.data.CustomRecipeBuilder;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.IFinishedRecipe;
@@ -43,6 +45,7 @@ import net.minecraft.tags.ITag;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.IItemProvider;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvents;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
@@ -103,6 +106,7 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
                          .minLevels(1)
                          .addLevels(-1)
                          .setOutput(waterBottle.copy())
+                         .setSound(SoundEvents.ITEM_BOTTLE_FILL)
                          .addCriterion("has_item", hasItem(Items.GLASS_BOTTLE))
                          .build(cauldronRecipes, resource(folder + "fill_water_bottle"));
 
@@ -117,6 +121,7 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
                          .setOutput(Items.GLASS_BOTTLE)
                          .setOutput(CauldronContentTypes.FLUID.of(Fluids.WATER))
                          .noContainer()
+                         .setSound(SoundEvents.ITEM_BOTTLE_EMPTY)
                          .addCriterion("has_item", hasItem(
                              ItemPredicate.Builder.create()
                                                   .item(Items.POTION)
@@ -137,6 +142,7 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
                          .setEmpty()
                          .setOutput(Blocks.WET_SPONGE)
                          .addCriterion("has_item", hasItem(Blocks.SPONGE))
+                         .setSound(SoundType.PLANT.getPlaceSound())
                          .build(cauldronRecipes, resource(folder + "dry_cauldron"));
 
     // melt ice if boiling
@@ -144,6 +150,7 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
                          .maxLevels(2)
                          .setFull()
                          .setOutput(CauldronContentTypes.FLUID.of(Fluids.WATER))
+                         .setSound(SoundEvents.ITEM_BUCKET_FILL)
                          .addCriterion("has_item", hasItem(Blocks.ICE))
                          .build(cauldronRecipes, wrapE(Fluids.WATER, folder, "_from_ice"));
 
@@ -201,6 +208,11 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
     addDyedBottleMix(mixFolder, DyeColor.ORANGE, DyeColor.RED, DyeColor.YELLOW);
     addDyedBottleMix(mixFolder, DyeColor.PINK, DyeColor.RED, DyeColor.WHITE);
     addDyedBottleMix(mixFolder, DyeColor.PURPLE, DyeColor.BLUE, DyeColor.RED);
+
+
+    // extra color mixes not supported by vanilla
+    //addDyedBottleMix(mixFolder, DyeColor.GREEN, ConfigEnabledCondition.EXTRA_DYE_RECIPES, DyeColor.BLUE, DyeColor.YELLOW);
+    //addDyedBottleMix(mixFolder, DyeColor.GREEN, ConfigEnabledCondition.EXTRA_DYE_RECIPES, DyeColor.BLUE, DyeColor.YELLOW);
 
     // undye and dye vanilla blocks
     addColoredRecipes(ItemTags.WOOL, VanillaEnum.WOOL, folder + "wool/", null);
@@ -320,6 +332,12 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
                           .addIngredient(Tags.Items.MUSHROOMS)
                           .addCriterion("has_item", hasItem(Items.BAKED_POTATO))
                           .build(withCondition(), resource(folder + "potato_soup/item"));
+
+
+    CauldronTransformBuilder.transform(ContentMatchIngredient.of(CauldronIngredients.POTION, Potions.POISON), CauldronContentTypes.POTION.of(Potions.HARMING), 200)
+                            .setTemperature(TemperaturePredicate.HOT)
+                            .addCriterion("has_item", hasItem(Items.POTION))
+                            .build(consumer, resource("temp_test_transform"));
   }
 
   /**
@@ -414,6 +432,7 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
                          .minLevels(1)
                          .addLevels(-1)
                          .setOutput(stewItem)
+                         .setSound(SoundEvents.ITEM_BOTTLE_FILL)
                          .addCriterion("has_item", hasItem(Items.BOWL))
                          .build(consumer, resource(folder + "fill_bowl"));
 
@@ -424,6 +443,7 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
                          .setOutput(Items.BOWL)
                          .setOutput(stewContents)
                          .noContainer()
+                         .setSound(SoundEvents.ITEM_BOTTLE_EMPTY)
                          .addCriterion("has_item", hasItem(stewItem))
                          .build(consumer, resource(folder + "empty_bowl"));
 

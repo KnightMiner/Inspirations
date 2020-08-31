@@ -13,6 +13,7 @@ import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tileentity.BannerTileEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.world.World;
 
 /**
@@ -41,6 +42,9 @@ public class RemoveBannerPatternCauldronRecipe implements ICauldronRecipe {
     inv.setOrGiveStack(stack);
     // use one level of water
     inv.addLevel(-1);
+
+    // play sound
+    inv.playSound(SoundEvents.ENTITY_FISHING_BOBBER_SPLASH);
   }
 
   /**

@@ -21,10 +21,14 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.world.World;
 import net.minecraftforge.common.crafting.CraftingHelper;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 /**
  * Base cauldron recipe implementation
@@ -43,6 +47,7 @@ public class CauldronRecipe implements ICauldronRecipe {
   private final LevelUpdate levelUpdate;
   @Nullable
   private final ItemStack container;
+  private final SoundEvent sound;
 
   /**
    * Creates a new cauldron recipe
@@ -59,8 +64,8 @@ public class CauldronRecipe implements ICauldronRecipe {
    * @param levelUpdate  Level updater
    * @param container    Container output. If null, fetches container from the item. If empty, no container
    */
-  public CauldronRecipe(ResourceLocation id, String group, Ingredient input, int amount, ICauldronIngredient contents, LevelPredicate level,
-                        TemperaturePredicate temperature, ItemStack output, boolean copyNBT, ICauldronContents newContents, LevelUpdate levelUpdate, @Nullable ItemStack container) {
+  public CauldronRecipe(ResourceLocation id, String group, Ingredient input, int amount, ICauldronIngredient contents, LevelPredicate level, TemperaturePredicate temperature,
+                        ItemStack output, boolean copyNBT, ICauldronContents newContents, LevelUpdate levelUpdate, @Nullable ItemStack container, SoundEvent sound) {
     this.id = id;
     this.group = group;
     this.input = input;
@@ -73,6 +78,7 @@ public class CauldronRecipe implements ICauldronRecipe {
     this.newContents = newContents;
     this.levelUpdate = levelUpdate;
     this.container = container;
+    this.sound = sound;
   }
 
   @Override
@@ -126,6 +132,9 @@ public class CauldronRecipe implements ICauldronRecipe {
       }
       inventory.setOrGiveStack(output);
     }
+
+    // play sound
+    inventory.playSound(sound);
   }
 
   @Override
@@ -164,7 +173,22 @@ public class CauldronRecipe implements ICauldronRecipe {
     return boiling;
   }
 
+  /**
+   * Serializer class for the recipe
+   */
   public static class Serializer extends RecipeSerializer<CauldronRecipe> {
+    /**
+     * Gets a sound event, or the default if missing
+     * @param name  Sound name
+     * @return  Sound event
+     */
+    private static SoundEvent getSound(ResourceLocation name) {
+      if (ForgeRegistries.SOUND_EVENTS.containsKey(name)) {
+        return Objects.requireNonNull(ForgeRegistries.SOUND_EVENTS.getValue(name));
+      }
+      return SoundEvents.ENTITY_GENERIC_SPLASH;
+    }
+
     @Override
     public CauldronRecipe read(ResourceLocation id, JsonObject json) {
       String group = JSONUtils.getString(json, "group", "");
@@ -209,8 +233,14 @@ public class CauldronRecipe implements ICauldronRecipe {
         }
       }
 
+      // sound
+      SoundEvent sound = SoundEvents.ENTITY_FISHING_BOBBER_SPLASH;
+      if (json.has("sound")) {
+        sound = getSound(new ResourceLocation(JSONUtils.getString(json, "sound")));
+      }
+
       // finally, after all that return the recipe
-      return new CauldronRecipe(id, group, input, amount, contents, levels, temperature, output, copyNBT, newContents, levelUpdate, container);
+      return new CauldronRecipe(id, group, input, amount, contents, levels, temperature, output, copyNBT, newContents, levelUpdate, container, sound);
     }
 
     @Override
@@ -231,6 +261,7 @@ public class CauldronRecipe implements ICauldronRecipe {
         buffer.writeBoolean(true);
         buffer.writeItemStack(recipe.container);
       }
+      buffer.writeResourceLocation(Objects.requireNonNull(recipe.sound.getRegistryName()));
     }
 
     @Nullable
@@ -250,9 +281,10 @@ public class CauldronRecipe implements ICauldronRecipe {
       if (buffer.readBoolean()) {
         container = buffer.readItemStack();
       }
+      SoundEvent sound = getSound(buffer.readResourceLocation());
 
       // finally, after all that return the recipe
-      return new CauldronRecipe(id, group, input, amount, contents, levels, boiling, output, copyNBT, newContents, levelUpdate, container);
+      return new CauldronRecipe(id, group, input, amount, contents, levels, boiling, output, copyNBT, newContents, levelUpdate, container, sound);
     }
   }
 }

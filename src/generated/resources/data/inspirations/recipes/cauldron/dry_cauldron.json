@@ -29,5 +29,6 @@
     "level": {
       "set": 0
     }
-  }
+  },
+  "sound": "minecraft:block.grass.place"
 }

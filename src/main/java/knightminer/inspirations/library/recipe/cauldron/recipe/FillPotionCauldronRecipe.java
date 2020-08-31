@@ -18,6 +18,7 @@ import net.minecraft.potion.PotionUtils;
 import net.minecraft.potion.Potions;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.world.World;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import slimeknights.mantle.recipe.RecipeHelper;
@@ -64,6 +65,9 @@ public class FillPotionCauldronRecipe implements ICauldronRecipe {
 
       // update level
       inv.addLevel(-1);
+
+      // play sound
+      inv.playSound(SoundEvents.ITEM_BOTTLE_FILL);
     });
   }
 

@@ -16,6 +16,7 @@ import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.world.World;
 import slimeknights.mantle.util.JsonHelper;
 
@@ -63,6 +64,9 @@ public abstract class DyeableCauldronRecipe implements ICauldronRecipe {
 
     // remove a level of dye
     inventory.addLevel(-1);
+
+    // play sound
+    inventory.playSound(SoundEvents.ENTITY_GENERIC_SPLASH);
   }
 
   /**

@@ -15,6 +15,7 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.potion.Potions;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.world.World;
 import slimeknights.mantle.recipe.RecipeHelper;
 
@@ -66,6 +67,9 @@ public class EmptyPotionCauldronRecipe implements ICauldronRecipe {
       // shrink stack
       inv.shrinkStack(1);
       inv.setOrGiveStack(new ItemStack(bottle));
+
+      // play sound
+      inv.playSound(SoundEvents.ITEM_BOTTLE_EMPTY);
     }
   }
 

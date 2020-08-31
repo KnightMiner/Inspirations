@@ -11,6 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.world.World;
 
 /**
@@ -33,6 +34,9 @@ public class FillDyedBottleRecipe implements ICauldronRecipe {
       inventory.shrinkStack(1);
       inventory.setOrGiveStack(MixedDyedBottleItem.bottleFromDye(color));
       inventory.addLevel(-1);
+
+      // play sound
+      inventory.playSound(SoundEvents.ITEM_BOTTLE_FILL);
     });
   }
 

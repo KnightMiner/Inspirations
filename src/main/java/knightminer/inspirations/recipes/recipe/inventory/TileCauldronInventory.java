@@ -4,7 +4,10 @@ import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronConten
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
 import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
@@ -23,6 +26,14 @@ public class TileCauldronInventory extends CauldronItemInventory {
   @Override
   public boolean isSimple() {
     return false;
+  }
+
+  @Override
+  public void playSound(SoundEvent sound) {
+    World world = tile.getWorld();
+    if (world != null) {
+      world.playSound(null, tile.getPos(), sound, SoundCategory.BLOCKS, 1.0f, 1.0f);
+    }
   }
 
   /* Item handling */

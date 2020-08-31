@@ -5,11 +5,15 @@ import knightminer.inspirations.library.recipe.cauldron.inventory.ICauldronInven
 import knightminer.inspirations.library.recipe.cauldron.inventory.IModifyableCauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
 import knightminer.inspirations.recipes.InspirationsRecipes;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.crafting.IRecipeSerializer;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
@@ -70,13 +74,21 @@ public class EmptyBucketCauldronRecipe implements ICauldronRecipe {
       // if we drain less or more, unfortunately the non bucket amount is lost. It passed in simulate, so this is a mod problem
       FluidStack drained = drain(inv, handler, FluidAction.EXECUTE);
       if (drained.getAmount() >= BUCKET_VOLUME) {
+        // update contents
+        Fluid fluid = drained.getFluid();
+        inv.setContents(CauldronContentTypes.FLUID.of(fluid));
         // fill cauldron
         inv.setLevel(3);
-        // update contents
-        inv.setContents(CauldronContentTypes.FLUID.of(drained.getFluid()));
         // replace held item with container
         inv.shrinkStack(1);
         inv.setOrGiveStack(handler.getContainer());
+
+        // play sound
+        SoundEvent sound = drained.getFluid().getAttributes().getEmptySound(drained);
+        if (sound == null) {
+          sound = fluid.isIn(FluidTags.LAVA) ? SoundEvents.ITEM_BUCKET_EMPTY_LAVA : SoundEvents.ITEM_BUCKET_EMPTY;
+        }
+        inv.playSound(sound);
       }
     });
   }

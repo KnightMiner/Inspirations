@@ -9,7 +9,10 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.crafting.IRecipeSerializer;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
@@ -54,6 +57,13 @@ public class FillBucketCauldronRecipe implements ICauldronRecipe {
            inv.setLevel(0);
            inv.shrinkStack(1);
            inv.setOrGiveStack(handler.getContainer());
+
+           // play sound
+           SoundEvent sound = fluid.getAttributes().getFillSound();
+           if (sound == null) {
+             sound = fluid.isIn(FluidTags.LAVA) ? SoundEvents.ITEM_BUCKET_FILL_LAVA : SoundEvents.ITEM_BUCKET_FILL;
+           }
+           inv.playSound(sound);
          }
        }));
   }

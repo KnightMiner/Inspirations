@@ -17,6 +17,7 @@ import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -60,6 +61,9 @@ public class DyeCauldronWaterRecipe implements ICauldronRecipe {
 
       // update contents
       inv.setContents(CauldronContentTypes.DYE.of(dye));
+
+      // play sound
+      inv.playSound(SoundEvents.ENTITY_FISHING_BOBBER_SPLASH);
     } else {
       contents.get(CauldronContentTypes.COLOR).ifPresent(color -> {
         // update dye stack
@@ -67,6 +71,9 @@ public class DyeCauldronWaterRecipe implements ICauldronRecipe {
 
         // update contents
         inv.setContents(CauldronContentTypes.COLOR.of(addColors(dye.getColorValue(), color)));
+
+        // play sound
+        inv.playSound(SoundEvents.ENTITY_GENERIC_SPLASH);
       });
     }
   }

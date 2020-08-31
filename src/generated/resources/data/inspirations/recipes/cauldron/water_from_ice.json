@@ -30,5 +30,6 @@
     "level": {
       "set": 3
     }
-  }
+  },
+  "sound": "minecraft:item.bucket.fill"
 }

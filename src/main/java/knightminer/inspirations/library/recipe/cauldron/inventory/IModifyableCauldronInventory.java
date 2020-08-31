@@ -2,6 +2,7 @@ package knightminer.inspirations.library.recipe.cauldron.inventory;
 
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.SoundEvent;
 
 import java.util.function.IntUnaryOperator;
 
@@ -32,6 +33,12 @@ public interface IModifyableCauldronInventory extends ICauldronInventory {
    * @param level  New cauldron level
    */
   void setLevel(int level);
+
+  /**
+   * Plays the given sound at the cauldron location
+   * @param sound  Sound to play
+   */
+  void playSound(SoundEvent sound);
 
 
   /* Helper methods */

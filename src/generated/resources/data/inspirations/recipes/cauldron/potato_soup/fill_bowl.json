@@ -29,5 +29,6 @@
     "level": {
       "add": -1
     }
-  }
+  },
+  "sound": "minecraft:item.bottle.fill"
 }
