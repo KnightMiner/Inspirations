@@ -35,11 +35,19 @@ public class FillBucketCauldronRecipe implements ICauldronRecipe {
       return false;
     }
 
+    // forge requires a stack size of 1 for empty containers. Means I have to make a copy for matches
+    ItemStack stack;
+    if (inv.getStack().getCount() != 1) {
+      stack = inv.getStack().copy();
+      stack.setCount(1);
+    } else {
+      stack = inv.getStack();
+    }
     // must be a fluid
     return inv.getContents()
               .get(CauldronContentTypes.FLUID)
               // must have a fluid handler, I really wish you could flatmap a lazy optional
-              .map(fluid -> FluidUtil.getFluidHandler(inv.getStack())
+              .map(fluid -> FluidUtil.getFluidHandler(stack)
                                      // handler must be fillable with the given fluid and must take 1000mb
                                      .map(handler -> handler.fill(new FluidStack(fluid, FluidAttributes.BUCKET_VOLUME), FluidAction.SIMULATE) == FluidAttributes.BUCKET_VOLUME)
                                      .orElse(false))
@@ -48,24 +56,22 @@ public class FillBucketCauldronRecipe implements ICauldronRecipe {
 
   @Override
   public void handleRecipe(IModifyableCauldronInventory inv) {
-    inv.getContents()
-       .get(CauldronContentTypes.FLUID)
-       // must have a fluid handler, I really wish you could flatmap a lazy optional
-       .ifPresent(fluid -> FluidUtil.getFluidHandler(inv.getStack()).ifPresent(handler -> {
-         // if we successfully fill the handler, update the cauldron
-         if (handler.fill(new FluidStack(fluid, FluidAttributes.BUCKET_VOLUME), FluidAction.EXECUTE) == FluidAttributes.BUCKET_VOLUME) {
-           inv.setLevel(0);
-           inv.shrinkStack(1);
-           inv.setOrGiveStack(handler.getContainer());
+    // must have a fluid handler, I really wish you could flatmap a lazy optional
+    ItemStack stack = inv.getStack().split(1);
+    inv.getContents().get(CauldronContentTypes.FLUID).ifPresent(fluid -> FluidUtil.getFluidHandler(stack).ifPresent(handler -> {
+      // if we successfully fill the handler, update the cauldron
+      if (handler.fill(new FluidStack(fluid, FluidAttributes.BUCKET_VOLUME), FluidAction.EXECUTE) == FluidAttributes.BUCKET_VOLUME) {
+        inv.setLevel(0);
+        inv.setOrGiveStack(handler.getContainer());
 
-           // play sound
-           SoundEvent sound = fluid.getAttributes().getFillSound();
-           if (sound == null) {
-             sound = fluid.isIn(FluidTags.LAVA) ? SoundEvents.ITEM_BUCKET_FILL_LAVA : SoundEvents.ITEM_BUCKET_FILL;
-           }
-           inv.playSound(sound);
-         }
-       }));
+        // play sound
+        SoundEvent sound = fluid.getAttributes().getFillSound();
+        if (sound == null) {
+          sound = fluid.isIn(FluidTags.LAVA) ? SoundEvents.ITEM_BUCKET_FILL_LAVA : SoundEvents.ITEM_BUCKET_FILL;
+        }
+        inv.playSound(sound);
+      }
+    }));
   }
 
   @Override
