@@ -170,7 +170,7 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
         world.notifyBlockUpdate(pos, state, state, BlockFlags.NO_RERENDER | BlockFlags.NO_NEIGHBOR_DROPS);
       } else {
         InspirationsNetwork.sendToClients(world, pos, new CauldronContentUpatePacket(pos, contents));
-        this.updateTransform();
+        this.updateTransform = true;
       }
     }
   }
