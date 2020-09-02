@@ -12,9 +12,9 @@
   ],
   "input": {
     "item": {
-      "tag": "forge:mushrooms"
+      "tag": "forge:mushrooms",
+      "amount_needed": 2
     },
-    "amount": 2,
     "contents": {
       "type": "inspirations:fluid",
       "name": "minecraft:water"

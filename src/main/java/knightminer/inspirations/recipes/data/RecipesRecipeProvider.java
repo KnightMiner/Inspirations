@@ -9,6 +9,7 @@ import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.CauldronIngredients;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.ingredient.ICauldronIngredient;
+import knightminer.inspirations.library.recipe.cauldron.ingredient.SizedIngredient;
 import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronRecipeBuilder;
 import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronTransformBuilder;
 import knightminer.inspirations.library.recipe.cauldron.recipe.DyeableCauldronRecipe;
@@ -100,7 +101,7 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
                        .build(withCondition(ConfigEnabledCondition.CAULDRON_RECIPES), resourceName(folder + "fill_bucket"));
     // glass bottles
     ItemStack waterBottle = PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), Potions.WATER);
-    CauldronRecipeBuilder.cauldron(Ingredient.fromItems(Items.GLASS_BOTTLE), waterIngredient)
+    CauldronRecipeBuilder.cauldron(SizedIngredient.fromItems(Items.GLASS_BOTTLE), waterIngredient)
                          .minLevels(1)
                          .addLevels(-1)
                          .setOutput(waterBottle.copy())
@@ -113,7 +114,7 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
     CustomRecipeBuilder.customRecipe(InspirationsRecipes.emptyBucketSerializer)
                        .build(cauldronRecipes, resourceName(folder + "empty_bucket"));
     // water bottle
-    CauldronRecipeBuilder.cauldron(new NBTIngredient(waterBottle), waterIngredient)
+    CauldronRecipeBuilder.cauldron(SizedIngredient.of(new NBTIngredient(waterBottle)), waterIngredient)
                          .maxLevels(2)
                          .addLevels(1)
                          .setOutput(Items.GLASS_BOTTLE)
@@ -135,7 +136,7 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
     // custom recipes //
 
     // sponge dry cauldron
-    CauldronRecipeBuilder.cauldron(Ingredient.fromItems(Blocks.SPONGE), waterIngredient)
+    CauldronRecipeBuilder.cauldron(SizedIngredient.fromItems(Blocks.SPONGE), waterIngredient)
                          .minLevels(1)
                          .setEmpty()
                          .setOutput(Blocks.WET_SPONGE)
@@ -145,9 +146,10 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
 
     // melt ice if boiling
     String iceFolder = folder + "ice/";
-    CauldronRecipeBuilder.cauldron(Ingredient.fromItems(Blocks.ICE), waterIngredient)
+    CauldronRecipeBuilder.cauldron(SizedIngredient.fromItems(Blocks.ICE), waterIngredient)
                          .maxLevels(2)
                          .setFull()
+                         .setTemperature(TemperaturePredicate.HOT)
                          .setOutput(CauldronContentTypes.FLUID.of(Fluids.WATER))
                          .setSound(SoundEvents.ITEM_BUCKET_FILL)
                          .addCriterion("has_item", hasItem(Blocks.ICE))
@@ -202,7 +204,7 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
 
 
     // clean sticky pistons
-    CauldronRecipeBuilder.cauldron(Ingredient.fromItems(Blocks.STICKY_PISTON), waterIngredient)
+    CauldronRecipeBuilder.cauldron(SizedIngredient.fromItems(Blocks.STICKY_PISTON), waterIngredient)
                          .minLevels(1)
                          .addLevels(-1)
                          .setOutput(Blocks.PISTON)
@@ -213,7 +215,7 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
     String concreteFolder = folder + "concrete/";
     Consumer<IFinishedRecipe> concrete = withCondition(ConfigEnabledCondition.CAULDRON_CONCRETE);
     VanillaEnum.CONCRETE_POWDER.forEach((color, powder) -> {
-      CauldronRecipeBuilder.cauldron(Ingredient.fromItems(powder), waterIngredient)
+      CauldronRecipeBuilder.cauldron(SizedIngredient.fromItems(powder), waterIngredient)
                            .minLevels(1)
                            .addLevels(-1)
                            .setOutput(VanillaEnum.CONCRETE.get(color))
@@ -369,7 +371,7 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
     // potato comes from mushroom
     addStewRecipe(InspirationsRecipes.potatoSoupItem, Ingredient.fromItems(Items.BAKED_POTATO), 2, InspirationsRecipes.potatoSoup, CauldronIngredients.FLUID.of(InspirationsRecipes.mushroomStew), folder + "potato_soup/");
     // add in some rabbit for rabbit stew
-    addStewRecipe(Items.RABBIT_STEW, Ingredient.fromItems(Items.RABBIT_STEW), 1, InspirationsRecipes.rabbitStew, CauldronIngredients.FLUID.of(InspirationsRecipes.potatoSoup), folder + "rabbit_stew/");
+    addStewRecipe(Items.RABBIT_STEW, Ingredient.fromItems(Items.COOKED_RABBIT), 1, InspirationsRecipes.rabbitStew, CauldronIngredients.FLUID.of(InspirationsRecipes.potatoSoup), folder + "rabbit_stew/");
 
     // normal potato soup crafting
     ShapelessRecipeBuilder.shapelessRecipe(InspirationsRecipes.potatoSoupItem)
@@ -413,7 +415,7 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
     }
 
     // undyed
-    Ingredient ingredient = Ingredient.fromTag(tag);
+    SizedIngredient ingredient = SizedIngredient.fromTag(tag);
     ICriterionInstance criteria = hasItem(tag);
     CauldronRecipeBuilder undyedBuilder = CauldronRecipeBuilder
         .cauldron(ingredient, CauldronIngredients.FLUID.of(Fluids.WATER))
@@ -469,7 +471,7 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
     ICauldronContents stewContents = CauldronContentTypes.FLUID.of(stewFluid);
 
     // fill the bowl
-    CauldronRecipeBuilder.cauldron(Ingredient.fromItems(Items.BOWL), stewIngredient)
+    CauldronRecipeBuilder.cauldron(SizedIngredient.fromItems(Items.BOWL), stewIngredient)
                          .minLevels(1)
                          .addLevels(-1)
                          .setOutput(stewItem)
@@ -478,7 +480,7 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
                          .build(consumer, resource(folder + "fill_bowl"));
 
     // empty the bowl
-    CauldronRecipeBuilder.cauldron(Ingredient.fromItems(stewItem), stewIngredient)
+    CauldronRecipeBuilder.cauldron(SizedIngredient.fromItems(stewItem), stewIngredient)
                          .maxLevels(2)
                          .addLevels(1)
                          .setOutput(Items.BOWL)
@@ -490,13 +492,13 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
 
     // if the cauldron has 1 level, takes 1 item. If it has 2 or 3, take twice as many
     ICriterionInstance criteria = hasItem(Blocks.CAULDRON);
-    CauldronRecipeBuilder.cauldron(ingredient, amount, base)
+    CauldronRecipeBuilder.cauldron(SizedIngredient.of(ingredient, amount), base)
                          .levelRange(1, 1)
                          .setTemperature(TemperaturePredicate.HOT)
                          .setOutput(stewContents)
                          .addCriterion("has_item", criteria)
                          .build(consumer, resource(folder + "stew_small"));
-    CauldronRecipeBuilder.cauldron(ingredient, amount * 2, base)
+    CauldronRecipeBuilder.cauldron(SizedIngredient.of(ingredient, amount * 2), base)
                          .minLevels(2)
                          .setTemperature(TemperaturePredicate.HOT)
                          .setOutput(stewContents)

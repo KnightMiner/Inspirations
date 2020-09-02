@@ -8,6 +8,7 @@ import knightminer.inspirations.library.recipe.cauldron.CauldronIngredients;
 import knightminer.inspirations.library.recipe.cauldron.contents.EmptyCauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.ingredient.ICauldronIngredient;
+import knightminer.inspirations.library.recipe.cauldron.ingredient.SizedIngredient;
 import knightminer.inspirations.library.recipe.cauldron.inventory.ICauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.inventory.IModifyableCauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.util.LevelPredicate;
@@ -16,7 +17,6 @@ import knightminer.inspirations.library.recipe.cauldron.util.TemperaturePredicat
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.JSONUtils;
@@ -36,8 +36,7 @@ import java.util.Objects;
 public class CauldronRecipe implements ICauldronRecipe {
   private final ResourceLocation id;
   private final String group;
-  private final Ingredient input;
-  private final int amount;
+  private final SizedIngredient input;
   private final ICauldronIngredient contents;
   private final LevelPredicate level;
   private final TemperaturePredicate temperature;
@@ -54,7 +53,6 @@ public class CauldronRecipe implements ICauldronRecipe {
    * @param id           Recipe ID
    * @param group        Recipe group
    * @param input        Ingredient input
-   * @param amount       Number of input to match
    * @param contents     Cauldron contents
    * @param level        Input level
    * @param temperature  Predicate for required cauldron temperature
@@ -64,12 +62,11 @@ public class CauldronRecipe implements ICauldronRecipe {
    * @param levelUpdate  Level updater
    * @param container    Container output. If null, fetches container from the item. If empty, no container
    */
-  public CauldronRecipe(ResourceLocation id, String group, Ingredient input, int amount, ICauldronIngredient contents, LevelPredicate level, TemperaturePredicate temperature,
+  public CauldronRecipe(ResourceLocation id, String group, SizedIngredient input, ICauldronIngredient contents, LevelPredicate level, TemperaturePredicate temperature,
                         ItemStack output, boolean copyNBT, ICauldronContents newContents, LevelUpdate levelUpdate, @Nullable ItemStack container, SoundEvent sound) {
     this.id = id;
     this.group = group;
     this.input = input;
-    this.amount = amount;
     this.contents = contents;
     this.level = level;
     this.temperature = temperature;
@@ -96,7 +93,7 @@ public class CauldronRecipe implements ICauldronRecipe {
     }
     // stack must have enough items and match the ingredient
     ItemStack stack = inv.getStack();
-    return stack.getCount() >= amount && input.test(stack);
+    return (input == SizedIngredient.EMPTY || input.test(stack));
   }
 
   @Override
@@ -114,14 +111,14 @@ public class CauldronRecipe implements ICauldronRecipe {
     if (container == null) {
       container = original.getContainerItem().copy();
       if (!container.isEmpty()) {
-        container.setCount(amount);
+        container.setCount(input.getAmountNeeded());
       }
     } else {
       container = container.copy();
     }
 
     // update hand item and container item
-    inventory.shrinkStack(amount);
+    inventory.shrinkStack(input.getAmountNeeded());
     inventory.setOrGiveStack(container);
 
     // give output, copying NBT if asked
@@ -195,11 +192,9 @@ public class CauldronRecipe implements ICauldronRecipe {
 
       // parse inputs
       JsonObject inputJson = JSONUtils.getJsonObject(json, "input");
-      Ingredient input = Ingredient.EMPTY;
-      int amount = 0;
+      SizedIngredient input = SizedIngredient.EMPTY;
       if (inputJson.has("item")) {
-        input = CraftingHelper.getIngredient(inputJson.get("item"));
-        amount = JSONUtils.getInt(json, "amount", 1);
+        input = SizedIngredient.deserialize(JSONUtils.getJsonObject(inputJson, "item"));
       }
       ICauldronIngredient contents = CauldronIngredients.read(JSONUtils.getJsonObject(inputJson, "contents"));
       LevelPredicate levels = LevelPredicate.read(JSONUtils.getJsonObject(inputJson, "level"));
@@ -240,14 +235,13 @@ public class CauldronRecipe implements ICauldronRecipe {
       }
 
       // finally, after all that return the recipe
-      return new CauldronRecipe(id, group, input, amount, contents, levels, temperature, output, copyNBT, newContents, levelUpdate, container, sound);
+      return new CauldronRecipe(id, group, input, contents, levels, temperature, output, copyNBT, newContents, levelUpdate, container, sound);
     }
 
     @Override
     public void write(PacketBuffer buffer, CauldronRecipe recipe) {
       buffer.writeString(recipe.group);
       recipe.input.write(buffer);
-      buffer.writeVarInt(recipe.amount);
       CauldronIngredients.write(recipe.contents, buffer);
       recipe.level.write(buffer);
       buffer.writeEnumValue(recipe.temperature);
@@ -268,8 +262,7 @@ public class CauldronRecipe implements ICauldronRecipe {
     @Override
     public CauldronRecipe read(ResourceLocation id, PacketBuffer buffer) {
       String group = buffer.readString();
-      Ingredient input = Ingredient.read(buffer);
-      int amount = buffer.readVarInt();
+      SizedIngredient input = SizedIngredient.read(buffer);
       ICauldronIngredient contents = CauldronIngredients.read(buffer);
       LevelPredicate levels = LevelPredicate.read(buffer);
       TemperaturePredicate boiling = buffer.readEnumValue(TemperaturePredicate.class);
@@ -284,7 +277,7 @@ public class CauldronRecipe implements ICauldronRecipe {
       SoundEvent sound = getSound(buffer.readResourceLocation(), SoundEvents.ENTITY_GENERIC_SPLASH);
 
       // finally, after all that return the recipe
-      return new CauldronRecipe(id, group, input, amount, contents, levels, boiling, output, copyNBT, newContents, levelUpdate, container, sound);
+      return new CauldronRecipe(id, group, input, contents, levels, boiling, output, copyNBT, newContents, levelUpdate, container, sound);
     }
   }
 }

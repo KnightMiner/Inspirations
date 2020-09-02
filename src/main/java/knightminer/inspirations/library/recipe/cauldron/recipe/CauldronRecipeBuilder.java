@@ -6,6 +6,7 @@ import knightminer.inspirations.library.recipe.cauldron.CauldronIngredients;
 import knightminer.inspirations.library.recipe.cauldron.contents.EmptyCauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.ingredient.ICauldronIngredient;
+import knightminer.inspirations.library.recipe.cauldron.ingredient.SizedIngredient;
 import knightminer.inspirations.library.recipe.cauldron.util.LevelPredicate;
 import knightminer.inspirations.library.recipe.cauldron.util.LevelUpdate;
 import knightminer.inspirations.library.recipe.cauldron.util.TemperaturePredicate;
@@ -16,7 +17,6 @@ import net.minecraft.data.IFinishedRecipe;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.IItemProvider;
 import net.minecraft.util.ResourceLocation;
@@ -32,8 +32,7 @@ import java.util.function.Consumer;
  * Builder for a standard cauldron recipe
  */
 public class CauldronRecipeBuilder extends AbstractRecipeBuilder<CauldronRecipeBuilder> {
-  private final Ingredient input;
-  private final int amount;
+  private final SizedIngredient input;
   private final ICauldronIngredient contents;
   private LevelPredicate levels;
   private TemperaturePredicate temperature = TemperaturePredicate.ANY;
@@ -45,31 +44,19 @@ public class CauldronRecipeBuilder extends AbstractRecipeBuilder<CauldronRecipeB
   private ItemStack container = null;
   private SoundEvent sound = null;
 
-  private CauldronRecipeBuilder(Ingredient input, int amount, ICauldronIngredient contents) {
+  private CauldronRecipeBuilder(SizedIngredient input, ICauldronIngredient contents) {
     this.input = input;
-    this.amount = amount;
     this.contents = contents;
   }
 
   /**
    * Creates a recipe matching the given input
    * @param input     Input item
-   * @param amount    Number to match
    * @param contents  Contents to match
    * @return  Builder instance
    */
-  public static CauldronRecipeBuilder cauldron(Ingredient input, int amount, ICauldronIngredient contents) {
-    return new CauldronRecipeBuilder(input, amount, contents);
-  }
-
-  /**
-   * Creates a recipe matching one of the given input
-   * @param input     Input item
-   * @param contents  Contents to match
-   * @return  Builder instance
-   */
-  public static CauldronRecipeBuilder cauldron(Ingredient input, ICauldronIngredient contents) {
-    return cauldron(input, 1, contents);
+  public static CauldronRecipeBuilder cauldron(SizedIngredient input, ICauldronIngredient contents) {
+    return new CauldronRecipeBuilder(input, contents);
   }
 
   /**
@@ -78,7 +65,7 @@ public class CauldronRecipeBuilder extends AbstractRecipeBuilder<CauldronRecipeB
    * @return  Builder instance
    */
   public static CauldronRecipeBuilder cauldron(ICauldronIngredient contents) {
-    return cauldron(Ingredient.EMPTY, 0, contents);
+    return cauldron(SizedIngredient.EMPTY, contents);
   }
 
 
@@ -298,15 +285,14 @@ public class CauldronRecipeBuilder extends AbstractRecipeBuilder<CauldronRecipeB
     }
 
     ResourceLocation advancementId = this.buildAdvancement(id, "cauldron");
-    consumer.accept(new Result(id, getGroup(), input, amount, contents, levels, temperature, output, copyNBT,
+    consumer.accept(new Result(id, getGroup(), input, contents, levels, temperature, output, copyNBT,
                                newContents, levelUpdate, container, sound, advancementBuilder, advancementId));
   }
 
   private static class Result implements IFinishedRecipe {
     private final ResourceLocation id;
     private final String group;
-    private final Ingredient input;
-    private final int amount;
+    private final SizedIngredient input;
     private final ICauldronIngredient contents;
     private final LevelPredicate level;
     private final TemperaturePredicate temperature;
@@ -321,11 +307,10 @@ public class CauldronRecipeBuilder extends AbstractRecipeBuilder<CauldronRecipeB
     private final Advancement.Builder advancementBuilder;
     private final ResourceLocation advancementId;
 
-    private Result(ResourceLocation id, String group, Ingredient input, int amount, ICauldronIngredient contents, LevelPredicate level, TemperaturePredicate temperature, ItemStack output, boolean copyNBT, ICauldronContents newContents, LevelUpdate levelUpdate, @Nullable ItemStack container, @Nullable SoundEvent sound, Builder advancementBuilder, ResourceLocation advancementId) {
+    private Result(ResourceLocation id, String group, SizedIngredient input, ICauldronIngredient contents, LevelPredicate level, TemperaturePredicate temperature, ItemStack output, boolean copyNBT, ICauldronContents newContents, LevelUpdate levelUpdate, @Nullable ItemStack container, @Nullable SoundEvent sound, Builder advancementBuilder, ResourceLocation advancementId) {
       this.id = id;
       this.group = group;
       this.input = input;
-      this.amount = amount;
       this.contents = contents;
       this.level = level;
       this.temperature = temperature;
@@ -360,11 +345,8 @@ public class CauldronRecipeBuilder extends AbstractRecipeBuilder<CauldronRecipeB
 
       // inputs
       JsonObject inputJson = new JsonObject();
-      if (input != Ingredient.EMPTY) {
+      if (input != SizedIngredient.EMPTY) {
         inputJson.add("item", input.serialize());
-        if (amount != 1) {
-          inputJson.addProperty("amount", amount);
-        }
       }
       inputJson.add("contents", CauldronIngredients.toJson(contents));
       inputJson.add("level", level.toJson());

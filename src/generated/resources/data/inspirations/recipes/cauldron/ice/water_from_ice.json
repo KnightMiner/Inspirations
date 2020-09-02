@@ -20,7 +20,8 @@
     },
     "level": {
       "max": 2
-    }
+    },
+    "temperature": "hot"
   },
   "output": {
     "contents": {

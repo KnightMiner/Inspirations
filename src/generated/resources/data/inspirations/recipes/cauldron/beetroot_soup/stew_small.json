@@ -12,9 +12,9 @@
   ],
   "input": {
     "item": {
-      "tag": "forge:crops/beetroot"
+      "tag": "forge:crops/beetroot",
+      "amount_needed": 6
     },
-    "amount": 6,
     "contents": {
       "type": "inspirations:fluid",
       "name": "minecraft:water"

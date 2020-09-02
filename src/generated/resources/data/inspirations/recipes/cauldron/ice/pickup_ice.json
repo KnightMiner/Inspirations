@@ -17,5 +17,5 @@
       "set": 0
     }
   },
-  "sound": "minecraft:block.glass.place"
+  "sound": "minecraft:block.glass.break"
 }

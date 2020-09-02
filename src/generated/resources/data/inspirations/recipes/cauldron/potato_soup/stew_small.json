@@ -12,9 +12,9 @@
   ],
   "input": {
     "item": {
-      "item": "minecraft:baked_potato"
+      "item": "minecraft:baked_potato",
+      "amount_needed": 2
     },
-    "amount": 2,
     "contents": {
       "type": "inspirations:fluid",
       "name": "inspirations:mushroom_stew"

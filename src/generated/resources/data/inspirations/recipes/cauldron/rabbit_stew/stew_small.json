@@ -12,7 +12,7 @@
   ],
   "input": {
     "item": {
-      "item": "minecraft:rabbit_stew"
+      "item": "minecraft:cooked_rabbit"
     },
     "contents": {
       "type": "inspirations:fluid",
