@@ -8,8 +8,6 @@ import knightminer.inspirations.library.recipe.RecipeSerializers;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.CauldronIngredients;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
-import knightminer.inspirations.library.recipe.cauldron.ingredient.ContentMatchIngredient;
-import knightminer.inspirations.library.recipe.cauldron.ingredient.FluidCauldronIngredient;
 import knightminer.inspirations.library.recipe.cauldron.ingredient.ICauldronIngredient;
 import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronRecipeBuilder;
 import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronTransformBuilder;
@@ -91,7 +89,7 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
   private void addCauldronRecipes() {
     String folder = "cauldron/";
 
-    ICauldronIngredient waterIngredient = FluidCauldronIngredient.of(Fluids.WATER);
+    ICauldronIngredient waterIngredient = CauldronIngredients.FLUID.of(Fluids.WATER);
     Consumer<IFinishedRecipe> cauldronRecipes = withCondition(ConfigEnabledCondition.CAULDRON_RECIPES);
 
     // vanilla recipes //
@@ -320,9 +318,9 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
     // mushroom water based
     addStewRecipe(Items.MUSHROOM_STEW, Ingredient.fromTag(Tags.Items.MUSHROOMS), 2, InspirationsRecipes.mushroomStew, waterIngredient, folder + "mushroom_stew/");
     // potato comes from mushroom
-    addStewRecipe(InspirationsRecipes.potatoSoupItem, Ingredient.fromItems(Items.BAKED_POTATO), 2, InspirationsRecipes.potatoSoup, FluidCauldronIngredient.of(InspirationsRecipes.mushroomStew), folder + "potato_soup/");
+    addStewRecipe(InspirationsRecipes.potatoSoupItem, Ingredient.fromItems(Items.BAKED_POTATO), 2, InspirationsRecipes.potatoSoup, CauldronIngredients.FLUID.of(InspirationsRecipes.mushroomStew), folder + "potato_soup/");
     // add in some rabbit for rabbit stew
-    addStewRecipe(Items.RABBIT_STEW, Ingredient.fromItems(Items.RABBIT_STEW), 1, InspirationsRecipes.rabbitStew, FluidCauldronIngredient.of(InspirationsRecipes.potatoSoup), folder + "rabbit_stew/");
+    addStewRecipe(Items.RABBIT_STEW, Ingredient.fromItems(Items.RABBIT_STEW), 1, InspirationsRecipes.rabbitStew, CauldronIngredients.FLUID.of(InspirationsRecipes.potatoSoup), folder + "rabbit_stew/");
 
     // normal potato soup crafting
     ShapelessRecipeBuilder.shapelessRecipe(InspirationsRecipes.potatoSoupItem)
@@ -375,7 +373,7 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
     Ingredient ingredient = Ingredient.fromTag(tag);
     ICriterionInstance criteria = hasItem(tag);
     CauldronRecipeBuilder undyedBuilder = CauldronRecipeBuilder
-        .cauldron(ingredient, FluidCauldronIngredient.of(Fluids.WATER))
+        .cauldron(ingredient, CauldronIngredients.FLUID.of(Fluids.WATER))
         .minLevels(1)
         .addLevels(-1)
         .setOutput(undyedItem)
@@ -388,7 +386,7 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
     // dyed recipes need one more condition
     enumObject.forEach((color, block) -> {
       CauldronRecipeBuilder coloredBuilder = CauldronRecipeBuilder
-          .cauldron(ingredient, ContentMatchIngredient.of(CauldronIngredients.DYE, color))
+          .cauldron(ingredient, CauldronIngredients.DYE.of(color))
           .minLevels(1)
           .addLevels(-1)
           .setOutput(block)
@@ -424,7 +422,7 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
    */
   private void addStewRecipe(IItemProvider stewItem, Ingredient ingredient, int amount, Fluid stewFluid, ICauldronIngredient base, String folder) {
     Consumer<IFinishedRecipe> consumer = withCondition(ConfigEnabledCondition.CAULDRON_FLUIDS);
-    ICauldronIngredient stewIngredient = FluidCauldronIngredient.of(stewFluid);
+    ICauldronIngredient stewIngredient = CauldronIngredients.FLUID.of(stewFluid);
     ICauldronContents stewContents = CauldronContentTypes.FLUID.of(stewFluid);
 
     // fill the bowl

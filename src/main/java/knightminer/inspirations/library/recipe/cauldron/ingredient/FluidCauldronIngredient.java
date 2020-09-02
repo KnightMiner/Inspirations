@@ -1,6 +1,5 @@
 package knightminer.inspirations.library.recipe.cauldron.ingredient;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
@@ -13,7 +12,6 @@ import net.minecraft.tags.TagCollectionManager;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -23,35 +21,8 @@ import java.util.Objects;
 public class FluidCauldronIngredient extends ContentMatchIngredient<Fluid> {
   private final ITag<Fluid> tag;
   private FluidCauldronIngredient(ITag<Fluid> tag) {
-    super(CauldronIngredients.FLUID, CauldronContentTypes.FLUID);
+    super(CauldronIngredients.FLUID);
     this.tag = tag;
-  }
-
-  /**
-   * Creates an ingredient matching a single fluid
-   * @param fluid  Fluid to match
-   * @return  Ingredient
-   */
-  public static ContentMatchIngredient<Fluid> of(Fluid fluid) {
-    return of(CauldronIngredients.FLUID, fluid);
-  }
-
-  /**
-   * Creates an ingredient matching a set of fluids
-   * @param fluids  Fluids to match
-   * @return  Ingredient
-   */
-  public static ContentMatchIngredient<Fluid> of(Collection<Fluid> fluids) {
-    return of(CauldronIngredients.FLUID, ImmutableSet.copyOf(fluids));
-  }
-
-  /**
-   * Creates an ingredient matching a fluid tag
-   * @param tag  Fluids to match
-   * @return  Ingredient
-   */
-  public static FluidCauldronIngredient of(ITag<Fluid> tag) {
-    return new FluidCauldronIngredient(tag);
   }
 
   @Override
@@ -73,12 +44,22 @@ public class FluidCauldronIngredient extends ContentMatchIngredient<Fluid> {
     }
   }
 
+  /** Specific fluid serializer class */
   public static class Serializer extends ContentMatchIngredient.Serializer<Fluid> {
     /**
      * Creates a new serializer instance
      */
     public Serializer() {
       super(CauldronContentTypes.FLUID);
+    }
+
+    /**
+     * Creates a new ingredient from the given tag
+     * @param tag  Tag instance
+     * @return  Ingredient instance
+     */
+    public ContentMatchIngredient<Fluid> of(ITag<Fluid> tag) {
+      return new FluidCauldronIngredient(tag);
     }
 
     @Override

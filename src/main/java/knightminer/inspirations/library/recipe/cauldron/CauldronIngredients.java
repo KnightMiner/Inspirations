@@ -27,9 +27,6 @@ public class CauldronIngredients {
 
   /* Public constants */
 
-  /** Generic content match serializer */
-  public static final ContentMatchIngredient.Serializer<?> MATCH = register("match_content", ContentMatchIngredient.Serializer.GENERIC);
-
   /** Fluid content match serializer */
   public static final FluidCauldronIngredient.Serializer FLUID = register("fluid", new FluidCauldronIngredient.Serializer());
   /** Color content match serializer */
