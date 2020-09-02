@@ -14,6 +14,7 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
 import slimeknights.mantle.recipe.data.AbstractRecipeBuilder;
 
 import javax.annotation.Nullable;
@@ -31,6 +32,8 @@ public class CauldronTransformBuilder extends AbstractRecipeBuilder<CauldronTran
   @Nullable
   private LevelPredicate level;
   private TemperaturePredicate temperature = TemperaturePredicate.ANY;
+  @Nullable
+  private SoundEvent sound = null;
 
   private CauldronTransformBuilder(ICauldronIngredient ingredient, ICauldronContents output, int time) {
     this.ingredient = ingredient;
@@ -111,6 +114,16 @@ public class CauldronTransformBuilder extends AbstractRecipeBuilder<CauldronTran
     return this;
   }
 
+  /**
+   * Sets the sound to play upon performing this recipe
+   * @param sound  Recipe sound
+   * @return  Sound played after recipe is done
+   */
+  public CauldronTransformBuilder setSound(SoundEvent sound) {
+    this.sound = sound;
+    return this;
+  }
+
   @Override
   public void build(Consumer<IFinishedRecipe> consumer) {
     // try fluid next
@@ -131,7 +144,7 @@ public class CauldronTransformBuilder extends AbstractRecipeBuilder<CauldronTran
   @Override
   public void build(Consumer<IFinishedRecipe> consumer, ResourceLocation id) {
     ResourceLocation advancementId = this.buildAdvancement(id, "cauldron");
-    consumer.accept(new Result(id, ingredient, level, temperature, output, time, advancementBuilder, advancementId));
+    consumer.accept(new Result(id, ingredient, level, temperature, output, time, sound, advancementBuilder, advancementId));
   }
 
   /**
@@ -145,16 +158,19 @@ public class CauldronTransformBuilder extends AbstractRecipeBuilder<CauldronTran
     private final TemperaturePredicate temperature;
     private final ICauldronContents output;
     private final int time;
+    @Nullable
+    private final SoundEvent sound;
     private final Advancement.Builder advancementBuilder;
     private final ResourceLocation advancementId;
 
-    private Result(ResourceLocation id, ICauldronIngredient ingredient, @Nullable LevelPredicate level, TemperaturePredicate temperature, ICauldronContents output, int time, Advancement.Builder advancementBuilder, ResourceLocation advancementId) {
+    private Result(ResourceLocation id, ICauldronIngredient ingredient, @Nullable LevelPredicate level, TemperaturePredicate temperature, ICauldronContents output, int time, @Nullable SoundEvent sound, Advancement.Builder advancementBuilder, ResourceLocation advancementId) {
       this.id = id;
       this.ingredient = ingredient;
       this.level = level;
       this.temperature = temperature;
       this.output = output;
       this.time = time;
+      this.sound = sound;
       this.advancementBuilder = advancementBuilder;
       this.advancementId = advancementId;
     }
@@ -170,6 +186,9 @@ public class CauldronTransformBuilder extends AbstractRecipeBuilder<CauldronTran
       }
       json.add("output", CauldronContentTypes.toJson(output));
       json.addProperty("time", time);
+      if (sound != null) {
+        json.addProperty("sound", Objects.requireNonNull(sound.getRegistryName()).toString());
+      }
     }
 
     @Override

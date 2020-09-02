@@ -34,7 +34,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.data.IModelData;
@@ -448,11 +448,12 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
     if (!world.isRemote && timer >= currentTransform.getTime(craftingInventory)) {
       timer = 0;
 
+      // play sound effect, note its before contents update
+      SoundEvent sound = currentTransform.getSound(craftingInventory);
+      world.playSound(null, pos, sound, SoundCategory.BLOCKS, 1.0f, 1.0f);
+
       // set contents will clear the current transform if no longer current
       setContents(currentTransform.getOutput(craftingInventory));
-
-      // play sound effect
-      world.playSound(null, pos, SoundEvents.BLOCK_BREWING_STAND_BREW, SoundCategory.BLOCKS, 1.0f, 1.0f);
     }
   }
 

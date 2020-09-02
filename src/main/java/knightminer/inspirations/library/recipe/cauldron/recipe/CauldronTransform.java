@@ -16,10 +16,13 @@ import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.world.World;
 import slimeknights.mantle.recipe.ICustomOutputRecipe;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 /**
  * Base cauldron transform implementation
@@ -33,6 +36,7 @@ public class CauldronTransform implements ICustomOutputRecipe<ICauldronState> {
   private final TemperaturePredicate temperature;
   private final ICauldronContents output;
   private final int time;
+  private final SoundEvent sound;
 
   /**
    * Creates a new cauldron recipe
@@ -43,8 +47,9 @@ public class CauldronTransform implements ICustomOutputRecipe<ICauldronState> {
    * @param temperature  Predicate for required cauldron temperature
    * @param output       Output stack, use empty for no output
    * @param time         Time it takes the recipe
+   * @param sound        Sound to play after transforming
    */
-  public CauldronTransform(ResourceLocation id, String group, ICauldronIngredient ingredient, LevelPredicate level, TemperaturePredicate temperature, ICauldronContents output, int time) {
+  public CauldronTransform(ResourceLocation id, String group, ICauldronIngredient ingredient, LevelPredicate level, TemperaturePredicate temperature, ICauldronContents output, int time, SoundEvent sound) {
     this.id = id;
     this.group = group;
     this.ingredient = ingredient;
@@ -52,6 +57,7 @@ public class CauldronTransform implements ICustomOutputRecipe<ICauldronState> {
     this.temperature = temperature;
     this.output = output;
     this.time = time;
+    this.sound = sound;
   }
 
   @Override
@@ -66,6 +72,15 @@ public class CauldronTransform implements ICustomOutputRecipe<ICauldronState> {
    */
   public ICauldronContents getOutput(ICauldronState state) {
     return output;
+  }
+
+  /**
+   * Gets the sound to play for this recipe
+   * @param state  Existing cauldron state
+   * @return  Recipe sound
+   */
+  public SoundEvent getSound(ICauldronState state) {
+    return sound;
   }
 
   /**
@@ -104,6 +119,7 @@ public class CauldronTransform implements ICustomOutputRecipe<ICauldronState> {
     @Override
     public CauldronTransform read(ResourceLocation id, JsonObject json) {
       String group = JSONUtils.getString(json, "group", "");
+      // input
       ICauldronIngredient ingredient = CauldronIngredients.read(JSONUtils.getJsonObject(json, "input"));
       TemperaturePredicate temperature = CauldronRecipe.getBoiling(json, "temperature");
       LevelPredicate level;
@@ -112,9 +128,17 @@ public class CauldronTransform implements ICustomOutputRecipe<ICauldronState> {
       } else {
         level = LevelPredicate.range(1, ICauldronRecipe.MAX);
       }
+
+      // output
       ICauldronContents output = CauldronContentTypes.read(JSONUtils.getJsonObject(json, "output"));
       int time = JSONUtils.getInt(json, "time");
-      return new CauldronTransform(id, group, ingredient, level, temperature, output, time);
+
+      // sound
+      SoundEvent sound = SoundEvents.BLOCK_BREWING_STAND_BREW;
+      if (json.has("sound")) {
+        sound = CauldronRecipe.Serializer.getSound(new ResourceLocation(JSONUtils.getString(json, "sound")), sound);
+      }
+      return new CauldronTransform(id, group, ingredient, level, temperature, output, time, sound);
     }
 
     @Nullable
@@ -126,7 +150,8 @@ public class CauldronTransform implements ICustomOutputRecipe<ICauldronState> {
       LevelPredicate level = LevelPredicate.read(buffer);
       ICauldronContents output = CauldronContentTypes.read(buffer);
       int time = buffer.readVarInt();
-      return new CauldronTransform(id, group, ingredient, level, temperature, output, time);
+      SoundEvent sound = CauldronRecipe.Serializer.getSound(buffer.readResourceLocation(), SoundEvents.BLOCK_BREWING_STAND_BREW);
+      return new CauldronTransform(id, group, ingredient, level, temperature, output, time, sound);
     }
 
     @Override
@@ -137,6 +162,7 @@ public class CauldronTransform implements ICustomOutputRecipe<ICauldronState> {
       recipe.level.write(buffer);
       CauldronContentTypes.write(recipe.output, buffer);
       buffer.writeVarInt(recipe.time);
+      buffer.writeResourceLocation(Objects.requireNonNull(recipe.sound.getRegistryName()));
     }
   }
 }

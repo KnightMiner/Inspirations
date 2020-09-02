@@ -248,6 +248,11 @@ public class CauldronRecipeBuilder extends AbstractRecipeBuilder<CauldronRecipeB
     return this;
   }
 
+  /**
+   * Sets the sound to play upon performing this recipe
+   * @param sound  Recipe sound
+   * @return  Sound played after recipe is done
+   */
   public CauldronRecipeBuilder setSound(SoundEvent sound) {
     this.sound = sound;
     return this;

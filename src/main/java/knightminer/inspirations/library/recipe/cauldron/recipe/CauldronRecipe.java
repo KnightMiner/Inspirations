@@ -182,11 +182,11 @@ public class CauldronRecipe implements ICauldronRecipe {
      * @param name  Sound name
      * @return  Sound event
      */
-    private static SoundEvent getSound(ResourceLocation name) {
+    public static SoundEvent getSound(ResourceLocation name, SoundEvent def) {
       if (ForgeRegistries.SOUND_EVENTS.containsKey(name)) {
         return Objects.requireNonNull(ForgeRegistries.SOUND_EVENTS.getValue(name));
       }
-      return SoundEvents.ENTITY_GENERIC_SPLASH;
+      return def;
     }
 
     @Override
@@ -234,9 +234,9 @@ public class CauldronRecipe implements ICauldronRecipe {
       }
 
       // sound
-      SoundEvent sound = SoundEvents.ENTITY_FISHING_BOBBER_SPLASH;
+      SoundEvent sound = SoundEvents.ENTITY_GENERIC_SPLASH;
       if (json.has("sound")) {
-        sound = getSound(new ResourceLocation(JSONUtils.getString(json, "sound")));
+        sound = getSound(new ResourceLocation(JSONUtils.getString(json, "sound")), sound);
       }
 
       // finally, after all that return the recipe
@@ -281,7 +281,7 @@ public class CauldronRecipe implements ICauldronRecipe {
       if (buffer.readBoolean()) {
         container = buffer.readItemStack();
       }
-      SoundEvent sound = getSound(buffer.readResourceLocation());
+      SoundEvent sound = getSound(buffer.readResourceLocation(), SoundEvents.ENTITY_GENERIC_SPLASH);
 
       // finally, after all that return the recipe
       return new CauldronRecipe(id, group, input, amount, contents, levels, boiling, output, copyNBT, newContents, levelUpdate, container, sound);
