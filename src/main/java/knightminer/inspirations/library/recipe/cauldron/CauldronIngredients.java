@@ -35,6 +35,8 @@ public class CauldronIngredients {
   public static final ContentMatchIngredient.Serializer<DyeColor> DYE = registerMatch(CauldronContentTypes.DYE);
   /** Fluid content match serializer */
   public static final ContentMatchIngredient.Serializer<Potion> POTION = registerMatch(CauldronContentTypes.POTION);
+  /** Custom content match serializer */
+  public static final ContentMatchIngredient.Serializer<ResourceLocation> CUSTOM = registerMatch(CauldronContentTypes.CUSTOM);
 
   /**
    * Registers a new content type

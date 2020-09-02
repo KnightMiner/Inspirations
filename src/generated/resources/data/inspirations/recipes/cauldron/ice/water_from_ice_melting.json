@@ -1,0 +1,17 @@
+{
+  "type": "inspirations:cauldron_transform",
+  "input": {
+    "type": "inspirations:custom",
+    "name": "minecraft:ice"
+  },
+  "level": {
+    "min": 3
+  },
+  "temperature": "hot",
+  "output": {
+    "type": "inspirations:fluid",
+    "name": "minecraft:water"
+  },
+  "time": 200,
+  "sound": "minecraft:block.glass.break"
+}

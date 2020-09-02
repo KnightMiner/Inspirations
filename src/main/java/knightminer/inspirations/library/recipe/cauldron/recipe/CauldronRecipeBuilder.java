@@ -266,20 +266,29 @@ public class CauldronRecipeBuilder extends AbstractRecipeBuilder<CauldronRecipeB
       return;
     }
     if (newContents != EmptyCauldronContents.INSTANCE) {
-      // try fluid next
-      Optional<Fluid> fluid = newContents.get(CauldronContentTypes.FLUID);
-      if (fluid.isPresent()) {
-        build(consumer, Objects.requireNonNull(fluid.get().getRegistryName()));
-        return;
-      }
-      // try potion
-      Optional<Potion> potion = newContents.get(CauldronContentTypes.POTION);
-      if (potion.isPresent()) {
-        build(consumer, Objects.requireNonNull(potion.get().getRegistryName()));
-        return;
+      ResourceLocation name = nameFromContents(newContents);
+      if (name != null) {
+        build(consumer, name);
       }
     }
     throw new IllegalStateException("Unable to create automatic recipe ID");
+  }
+
+  @Nullable
+  public static ResourceLocation nameFromContents(ICauldronContents contents) {
+    // try fluid next
+    Optional<Fluid> fluid = contents.get(CauldronContentTypes.FLUID);
+    if (fluid.isPresent()) {
+      return Objects.requireNonNull(fluid.get().getRegistryName());
+    }
+    // try potion
+    Optional<Potion> potion = contents.get(CauldronContentTypes.POTION);
+    if (potion.isPresent()) {
+      return Objects.requireNonNull(potion.get().getRegistryName());
+    }
+    // try custom
+    Optional<ResourceLocation> custom = contents.get(CauldronContentTypes.CUSTOM);
+    return custom.orElse(null);
   }
 
   @Override

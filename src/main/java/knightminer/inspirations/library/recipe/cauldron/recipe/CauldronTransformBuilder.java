@@ -10,16 +10,13 @@ import knightminer.inspirations.library.recipe.cauldron.util.TemperaturePredicat
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.data.IFinishedRecipe;
-import net.minecraft.fluid.Fluid;
 import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.potion.Potion;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import slimeknights.mantle.recipe.data.AbstractRecipeBuilder;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
@@ -126,17 +123,9 @@ public class CauldronTransformBuilder extends AbstractRecipeBuilder<CauldronTran
 
   @Override
   public void build(Consumer<IFinishedRecipe> consumer) {
-    // try fluid next
-    Optional<Fluid> fluid = output.get(CauldronContentTypes.FLUID);
-    if (fluid.isPresent()) {
-      build(consumer, Objects.requireNonNull(fluid.get().getRegistryName()));
-      return;
-    }
-    // try potion
-    Optional<Potion> potion = output.get(CauldronContentTypes.POTION);
-    if (potion.isPresent()) {
-      build(consumer, Objects.requireNonNull(potion.get().getRegistryName()));
-      return;
+    ResourceLocation name = CauldronRecipeBuilder.nameFromContents(output);
+    if (name != null) {
+      build(consumer, name);
     }
     throw new IllegalStateException("Unable to create automatic recipe ID");
   }

@@ -1,0 +1,21 @@
+{
+  "type": "inspirations:cauldron",
+  "input": {
+    "contents": {
+      "type": "inspirations:custom",
+      "name": "minecraft:ice"
+    },
+    "level": {
+      "min": 3
+    }
+  },
+  "output": {
+    "item": {
+      "item": "minecraft:ice"
+    },
+    "level": {
+      "set": 0
+    }
+  },
+  "sound": "minecraft:block.glass.place"
+}

@@ -2,7 +2,7 @@
   "parent": "minecraft:recipes/root",
   "rewards": {
     "recipes": [
-      "inspirations:cauldron/water_from_ice"
+      "inspirations:cauldron/ice/water_from_ice"
     ]
   },
   "criteria": {
@@ -19,7 +19,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "inspirations:cauldron/water_from_ice"
+        "recipe": "inspirations:cauldron/ice/water_from_ice"
       }
     }
   },

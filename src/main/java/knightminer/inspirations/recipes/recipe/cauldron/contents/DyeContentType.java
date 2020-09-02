@@ -1,5 +1,6 @@
 package knightminer.inspirations.recipes.recipe.cauldron.contents;
 
+import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.recipe.cauldron.contents.NamedContentType;
 import net.minecraft.item.DyeColor;
 import net.minecraft.util.ResourceLocation;
@@ -8,6 +9,8 @@ import net.minecraft.util.ResourceLocation;
  * Content type for the 16 dye enum values
  */
 public class DyeContentType extends NamedContentType<DyeColor> {
+  private static final ResourceLocation TEXTURE_NAME = Inspirations.getResource("dye");
+
   /**
    * Creates a new type instance
    */
@@ -18,7 +21,7 @@ public class DyeContentType extends NamedContentType<DyeColor> {
 
   @Override
   public ResourceLocation getTexture(DyeColor value) {
-    return ColorContentType.TEXTURE;
+    return TEXTURE_NAME;
   }
 
   @Override

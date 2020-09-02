@@ -3,6 +3,7 @@ package knightminer.inspirations.library.client.model;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
+import knightminer.inspirations.recipes.RecipesClientEvents;
 import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.model.BakedQuad;
@@ -112,7 +113,7 @@ public class CauldronModel implements IModelGeometry<CauldronModel> {
 
     /**
      * Bakes the baked model for the given fluid
-     * @param fluid  Fluid texture
+     * @param fluid  Cauldron content name
      * @return  Baked model
      */
     private IBakedModel getFluidModel(ResourceLocation fluid) {
@@ -125,7 +126,8 @@ public class CauldronModel implements IModelGeometry<CauldronModel> {
       if (texture == null) {
         return originalModel.getQuads(state, direction, random, data);
       }
-      return fluidCache.computeIfAbsent(texture, this::getFluidModel).getQuads(state, direction, random, data);
+      // serverside uses texture "name" rather than path, use the sprite getter to translate
+      return fluidCache.computeIfAbsent(RecipesClientEvents.cauldronTextures.getTexture(texture), this::getFluidModel).getQuads(state, direction, random, data);
     }
   }
 

@@ -1,0 +1,17 @@
+{
+  "type": "inspirations:cauldron_transform",
+  "input": {
+    "type": "inspirations:custom",
+    "name": "minecraft:ice"
+  },
+  "level": {
+    "min": 3
+  },
+  "temperature": "cold",
+  "output": {
+    "type": "inspirations:custom",
+    "name": "minecraft:packed_ice"
+  },
+  "time": 2000,
+  "sound": "minecraft:block.glass.place"
+}

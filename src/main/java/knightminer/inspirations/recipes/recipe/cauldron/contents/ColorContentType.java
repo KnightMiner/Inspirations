@@ -14,7 +14,7 @@ import java.util.Optional;
  * Content type for colors in the cauldron
  */
 public class ColorContentType extends CauldronContentType<Integer> {
-  public static final ResourceLocation TEXTURE = Inspirations.getResource("block/fluid/colorless");
+  private static final ResourceLocation TEXTURE_NAME = Inspirations.getResource("color");
 
   @Override
   public String getKey() {
@@ -23,7 +23,7 @@ public class ColorContentType extends CauldronContentType<Integer> {
 
   @Override
   public ResourceLocation getTexture(Integer value) {
-    return TEXTURE;
+    return TEXTURE_NAME;
   }
 
   @Override

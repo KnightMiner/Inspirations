@@ -87,7 +87,8 @@ public abstract class CauldronContentType<T> {
   /* Display methods */
 
   /**
-   * Gets the texture for the given type
+   * Gets the texture name for the given type.
+   * The name will be passed through {@link knightminer.inspirations.recipes.RecipesClientEvents#cauldronTextures} to convert from a generic location to a texture path
    * @param value  Value to fetch texture
    * @return  Texture location
    */

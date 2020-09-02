@@ -29,7 +29,8 @@ public interface ICauldronContents {
   /* Display */
 
   /**
-   * Gets the name of the texture for these contents. Should generally delegate to the type
+   * Gets the name of the texture for these contents. Should generally delegate to the type.
+   * The name will be passed through {@link knightminer.inspirations.recipes.RecipesClientEvents#cauldronTextures} to convert from a generic location to a texture path
    * @return  Texture location for this contents
    */
   ResourceLocation getTextureName();

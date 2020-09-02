@@ -11,7 +11,7 @@ import net.minecraftforge.registries.ForgeRegistries;
  * Potion content type
  */
 public class PotionContentType extends RegistryContentType<Potion> {
-  public static final ResourceLocation TEXTURE = Inspirations.getResource("block/fluid/potion");
+  public static final ResourceLocation TEXTURE_NAME = Inspirations.getResource("potion");
 
   /**
    * Creates a new instance
@@ -22,7 +22,7 @@ public class PotionContentType extends RegistryContentType<Potion> {
 
   @Override
   public ResourceLocation getTexture(Potion value) {
-    return TEXTURE;
+    return TEXTURE_NAME;
   }
 
   @Override

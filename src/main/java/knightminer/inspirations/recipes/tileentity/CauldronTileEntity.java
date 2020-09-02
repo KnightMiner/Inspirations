@@ -223,7 +223,7 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
    */
   public boolean interact(PlayerEntity player, Hand hand) {
     // ensure we have a stack, or we can be done
-    if (world == null || player.getHeldItem(hand).isEmpty()) {
+    if (world == null) {
       return false;
     }
 

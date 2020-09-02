@@ -144,13 +144,62 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
                          .build(cauldronRecipes, resource(folder + "dry_cauldron"));
 
     // melt ice if boiling
+    String iceFolder = folder + "ice/";
     CauldronRecipeBuilder.cauldron(Ingredient.fromItems(Blocks.ICE), waterIngredient)
                          .maxLevels(2)
                          .setFull()
                          .setOutput(CauldronContentTypes.FLUID.of(Fluids.WATER))
                          .setSound(SoundEvents.ITEM_BUCKET_FILL)
                          .addCriterion("has_item", hasItem(Blocks.ICE))
-                         .build(cauldronRecipes, wrapE(Fluids.WATER, folder, "_from_ice"));
+                         .build(cauldronRecipes, wrapE(Fluids.WATER, iceFolder, "_from_ice"));
+
+    // freeze water into ice when cold
+    ResourceLocation ice = Objects.requireNonNull(Blocks.ICE.getRegistryName());
+    CauldronTransformBuilder.transform(CauldronIngredients.FLUID.of(Fluids.WATER), CauldronContentTypes.CUSTOM.of(ice), 200)
+                            .matchFull()
+                            .setTemperature(TemperaturePredicate.COLD)
+                            .addCriterion("has_item", hasItem(Items.ICE))
+                            .setSound(SoundType.GLASS.getPlaceSound())
+                            .build(consumer, resource(iceFolder + "ice_from_water"));
+    // freeze ice into packed ice
+    ResourceLocation packedIce = Objects.requireNonNull(Blocks.PACKED_ICE.getRegistryName());
+    CauldronTransformBuilder.transform(CauldronIngredients.CUSTOM.of(ice), CauldronContentTypes.CUSTOM.of(packedIce), 2000)
+                            .matchFull()
+                            .setTemperature(TemperaturePredicate.COLD)
+                            .addCriterion("has_item", hasItem(Items.PACKED_ICE))
+                            .setSound(SoundType.GLASS.getPlaceSound())
+                            .build(consumer, resource(iceFolder + "packed_ice_from_ice"));
+    // melt back again when hot
+    CauldronTransformBuilder.transform(CauldronIngredients.CUSTOM.of(ice), CauldronContentTypes.FLUID.of(Fluids.WATER), 200)
+                            .matchFull()
+                            .setTemperature(TemperaturePredicate.HOT)
+                            .addCriterion("has_item", hasItem(Items.ICE))
+                            .setSound(SoundEvents.ITEM_BUCKET_EMPTY)
+                            .build(consumer, resource(iceFolder + "water_from_ice_melting"));
+    CauldronTransformBuilder.transform(CauldronIngredients.CUSTOM.of(packedIce), CauldronContentTypes.CUSTOM.of(ice), 2000)
+                            .matchFull()
+                            .setTemperature(TemperaturePredicate.HOT)
+                            .addCriterion("has_item", hasItem(Items.PACKED_ICE))
+                            .setSound(SoundType.GLASS.getPlaceSound())
+                            .build(consumer, resource(iceFolder + "ice_from_packed_ice"));
+
+    // grab ice and packed from cauldron
+    CauldronRecipeBuilder.cauldron(CauldronIngredients.CUSTOM.of(ice))
+                         .matchFull()
+                         .setEmpty()
+                         .setOutput(Blocks.ICE)
+                         .setSound(SoundType.GLASS.getBreakSound())
+                         .addCriterion("has_item", hasItem(Items.ICE))
+                         .build(consumer, resource(iceFolder + "pickup_ice"));
+    CauldronRecipeBuilder.cauldron(CauldronIngredients.CUSTOM.of(packedIce))
+                         .matchFull()
+                         .setEmpty()
+                         .setOutput(Blocks.PACKED_ICE)
+                         .setSound(SoundType.GLASS.getBreakSound())
+                         .addCriterion("has_item", hasItem(Items.PACKED_ICE))
+                         .build(consumer, resource(iceFolder + "pickup_packed_ice"));
+
+
 
     // clean sticky pistons
     CauldronRecipeBuilder.cauldron(Ingredient.fromItems(Blocks.STICKY_PISTON), waterIngredient)
@@ -330,12 +379,6 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
                           .addIngredient(Tags.Items.MUSHROOMS)
                           .addCriterion("has_item", hasItem(Items.BAKED_POTATO))
                           .build(withCondition(), resource(folder + "potato_soup/item"));
-
-
-    CauldronTransformBuilder.transform(ContentMatchIngredient.of(CauldronIngredients.POTION, Potions.POISON), CauldronContentTypes.POTION.of(Potions.HARMING), 200)
-                            .setTemperature(TemperaturePredicate.HOT)
-                            .addCriterion("has_item", hasItem(Items.POTION))
-                            .build(consumer, resource("temp_test_transform"));
   }
 
   /**

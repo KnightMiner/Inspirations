@@ -11,6 +11,7 @@ import knightminer.inspirations.library.recipe.cauldron.contents.EmptyCauldronCo
 import knightminer.inspirations.library.recipe.cauldron.contents.EmptyContentType;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import knightminer.inspirations.recipes.recipe.cauldron.contents.ColorContentType;
+import knightminer.inspirations.recipes.recipe.cauldron.contents.CustomContentType;
 import knightminer.inspirations.recipes.recipe.cauldron.contents.DyeContentType;
 import knightminer.inspirations.recipes.recipe.cauldron.contents.FluidContentType;
 import knightminer.inspirations.recipes.recipe.cauldron.contents.PotionContentType;
@@ -42,7 +43,6 @@ public class CauldronContentTypes {
   public static final CauldronContentType<Integer> COLOR = register("color", new ColorContentType());
 
   /** Contains a specific color */
-  @SuppressWarnings("ConstantConditions")
   public static final CauldronContentType<DyeColor> DYE = register("dye", new DyeContentType());
 
   /** Contains a specific color */
@@ -50,6 +50,9 @@ public class CauldronContentTypes {
 
   /** Contains a specific fluid */
   public static final CauldronContentType<Fluid> FLUID = register("fluid", new FluidContentType());
+
+  /** Contains a specific fluid */
+  public static final CauldronContentType<ResourceLocation> CUSTOM = register("custom", new CustomContentType());
 
   /**
    * Registers a new content type
