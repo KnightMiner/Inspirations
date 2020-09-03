@@ -1,5 +1,15 @@
 {
   "type": "minecraft:crafting_shapeless",
+  "conditions": [
+    {
+      "prop": "recipes_module",
+      "type": "inspirations:config"
+    },
+    {
+      "prop": "cauldron_dyeing",
+      "type": "inspirations:config"
+    }
+  ],
   "group": "concrete_powder",
   "ingredients": [
     {

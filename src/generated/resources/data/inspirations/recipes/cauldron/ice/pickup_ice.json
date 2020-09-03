@@ -1,5 +1,15 @@
 {
   "type": "inspirations:cauldron",
+  "conditions": [
+    {
+      "prop": "recipes_module",
+      "type": "inspirations:config"
+    },
+    {
+      "prop": "extended_cauldron_recipes",
+      "type": "inspirations:config"
+    }
+  ],
   "input": {
     "contents": {
       "type": "inspirations:custom",
