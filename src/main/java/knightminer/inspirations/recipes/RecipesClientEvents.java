@@ -24,12 +24,12 @@ import net.minecraft.world.biome.BiomeColors;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 @SuppressWarnings("unused")
 @EventBusSubscriber(modid = Inspirations.modID, value = Dist.CLIENT, bus = Bus.MOD)
@@ -82,7 +82,7 @@ public class RecipesClientEvents extends ClientEvents {
   }
 
   @SubscribeEvent
-  static void clientSetup(FMLClientSetupEvent event) {
+  static void registerParticleFactories(ParticleFactoryRegisterEvent event) {
     Minecraft.getInstance().particles.registerFactory(InspirationsRecipes.boilingParticle, BoilingParticle.Factory::new);
   }
 
