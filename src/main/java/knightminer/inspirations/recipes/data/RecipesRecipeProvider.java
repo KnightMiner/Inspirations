@@ -225,6 +225,25 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
                            .build(concrete, resource(concreteFolder + color.getString()));
     });
 
+    // temporary milk recipes until Forge merges one of my milk bucket fixes
+    ICauldronIngredient milkIngredient = CauldronIngredients.FLUID.of(InspirationsTags.Fluids.MILK);
+    CauldronRecipeBuilder.cauldron(SizedIngredient.fromItems(Items.MILK_BUCKET), milkIngredient)
+                         .maxLevels(2)
+                         .setFull()
+                         .setOutput(Items.BUCKET)
+                         .setOutput(CauldronContentTypes.FLUID.of(InspirationsRecipes.milk))
+                         .noContainer()
+                         .addCriterion("has_item", hasItem(Items.MILK_BUCKET))
+                         .setSound(SoundEvents.ITEM_BUCKET_EMPTY)
+                         .build(cauldronRecipes, resource(folder + "empty_milk_bucket"));
+    CauldronRecipeBuilder.cauldron(SizedIngredient.fromItems(Items.MILK_BUCKET), milkIngredient)
+                         .matchFull()
+                         .setEmpty()
+                         .setOutput(Items.MILK_BUCKET)
+                         .addCriterion("has_item", hasItem(Items.MILK_BUCKET))
+                         .setSound(SoundEvents.ITEM_BUCKET_FILL)
+                         .build(cauldronRecipes, resource(folder + "fill_milk_bucket"));
+
 
     // dyes //
 

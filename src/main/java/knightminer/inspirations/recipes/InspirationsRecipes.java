@@ -62,6 +62,8 @@ import slimeknights.mantle.registration.object.EnumObject;
 public class InspirationsRecipes extends ModuleBase {
   public static final ResourceLocation STILL_FLUID = Inspirations.getResource("block/fluid/colorless");
   public static final ResourceLocation FLOWING_FLUID = Inspirations.getResource("block/fluid/colorless_flow");
+  public static final ResourceLocation STILL_MILK = Inspirations.getResource("block/fluid/milk");
+  public static final ResourceLocation FLOWING_MILK = Inspirations.getResource("block/fluid/milk_flow");
 
   // blocks
   public static Block fullAnvil;
@@ -92,7 +94,7 @@ public class InspirationsRecipes extends ModuleBase {
   public static ForgeFlowingFluid potatoSoup;
   public static BucketItem potatoSoupBucket;
   public static FlowingFluidBlock potatoSoupBlock;
-  //public static Fluid milk;
+  public static ForgeFlowingFluid milk;
 
   // cauldron serializers
   public static CauldronRecipe.Serializer cauldronSerializer;
@@ -127,7 +129,8 @@ public class InspirationsRecipes extends ModuleBase {
     potatoSoup = adapter.register(new FluidBuilder(coloredFluid().color(0xFFF2DA9F).temperature(373))
                                       .block(() -> potatoSoupBlock)
                                       .bucket(() -> potatoSoupBucket), "potato_soup");
-    //milk = adapter.register(new FluidBuilder(FluidAttributes.builder(Inspirations.getResource("block/milk"), Inspirations.getResource("block/milk_flow")).color(0xFFCD8C6F)), "milk");
+    milk = adapter.register(new FluidBuilder(FluidAttributes.builder(STILL_MILK, FLOWING_MILK).density(1024).viscosity(1024))
+                                      .bucket(Items.MILK_BUCKET.delegate), "milk");
   }
 
   @SubscribeEvent

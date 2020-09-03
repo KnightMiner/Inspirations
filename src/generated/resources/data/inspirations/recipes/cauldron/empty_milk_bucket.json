@@ -1,0 +1,41 @@
+{
+  "type": "inspirations:cauldron",
+  "conditions": [
+    {
+      "prop": "recipes_module",
+      "type": "inspirations:config"
+    },
+    {
+      "prop": "cauldron_recipes",
+      "type": "inspirations:config"
+    }
+  ],
+  "input": {
+    "item": {
+      "item": "minecraft:milk_bucket"
+    },
+    "contents": {
+      "type": "inspirations:fluid",
+      "tag": "forge:milk"
+    },
+    "level": {
+      "max": 2
+    }
+  },
+  "output": {
+    "item": {
+      "item": "minecraft:bucket"
+    },
+    "container": {
+      "empty": true
+    },
+    "contents": {
+      "type": "inspirations:fluid",
+      "name": "inspirations:milk"
+    },
+    "level": {
+      "set": 3
+    }
+  },
+  "sound": "minecraft:item.bucket.empty"
+}

@@ -8,9 +8,6 @@ buildscript {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
     }
 }
-plugins {
-  id "com.wynprice.cursemaven" version "1.1.0"
-}
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'maven'
 apply plugin: 'maven-publish'
@@ -119,12 +116,8 @@ repositories {
         name 'tterrag maven'
         url "https://maven.tterrag.com/"
     }
-	maven { // WAILA
-        name "Tehnut Maven FS"
-        url "https://tehnut.info/maven"
-    }
-	maven { // LLibrary
-        url = "http://maven.mcmoddev.com"
+    maven {
+        url = "https://www.cursemaven.com"
     }
 }
 
@@ -137,10 +130,10 @@ dependencies {
     runtimeOnly fg.deobf("mezz.jei:jei-${config.minecraft_version}:${config.jei_version}")
 
     compile fg.deobf("slimeknights.mantle:Mantle:${config.minecraft_version}-${config.mantle_version}")
-    //deobfCompile curse.resolve("leather-works", "2695934")
-    //deobfCompile "net.ilexiconn:llibrary:1.7.9-1.12.2"
-    //deobfCompile curse.resolve("rats", "2732516")
-    //deobfCompile curse.resolve("the-twilight-forest", "2618264")
+
+    // rats plugin
+    //runtimeOnly fg.deobf("curse.maven:citadel:2992577")
+    //runtimeOnly fg.deobf("curse.maven:rats:3041056")
 }
 
 jar {

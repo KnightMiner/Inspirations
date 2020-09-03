@@ -4,5 +4,7 @@
   
   "inspirations:color": "inspirations:block/fluid/colorless",
   "inspirations:dye": "inspirations:block/fluid/colorless",
-  "inspirations:potion": "inspirations:block/fluid/potion"
+  "inspirations:potion": "inspirations:block/fluid/potion",
+  
+  "rats:cheese": "rats:block/cheese"
 }

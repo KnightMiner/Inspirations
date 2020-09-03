@@ -1,0 +1,31 @@
+{
+  "type": "inspirations:cauldron",
+  "conditions": [
+    {
+      "prop": "extended_cauldron_recipes",
+      "type": "inspirations:config"
+    },
+    {
+      "modid": "rats",
+      "type": "forge:mod_loaded"
+    }
+  ],
+  "input": {
+    "contents": {
+      "type": "inspirations:custom",
+      "name": "rats:cheese"
+    },
+    "level": {
+      "min": 3
+    }
+  },
+  "output": {
+    "item": {
+      "item": "rats:block_of_cheese"
+    },
+    "level": {
+      "set": 0
+    }
+  },
+  "sound": "minecraft:block.slime_block.break"
+}

@@ -5,6 +5,7 @@ import com.electronwill.nightconfig.core.io.WritingMode;
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.datagen.InspirationsBlockTagsProvider;
+import knightminer.inspirations.common.datagen.InspirationsFluidTagsProvider;
 import knightminer.inspirations.common.datagen.InspirationsItemTagsProvider;
 import knightminer.inspirations.common.datagen.InspirationsLootTableProvider;
 import knightminer.inspirations.common.network.InspirationsNetwork;
@@ -98,6 +99,7 @@ public class Inspirations {
       BlockTagsProvider blockTags = new InspirationsBlockTagsProvider(gen);
       gen.addProvider(blockTags);
       gen.addProvider(new InspirationsItemTagsProvider(gen, blockTags));
+      gen.addProvider(new InspirationsFluidTagsProvider(gen));
       gen.addProvider(new InspirationsLootTableProvider(gen));
     }
   }

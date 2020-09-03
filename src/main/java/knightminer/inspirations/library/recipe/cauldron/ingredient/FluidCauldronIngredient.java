@@ -6,7 +6,6 @@ import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.CauldronIngredients;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.ITag;
 import net.minecraft.tags.TagCollectionManager;
 import net.minecraft.util.JSONUtils;
@@ -72,7 +71,7 @@ public class FluidCauldronIngredient extends ContentMatchIngredient<Fluid> {
       // tag
       if (json.has("tag")) {
         ResourceLocation tagName = new ResourceLocation(JSONUtils.getString(json, "tag"));
-        ITag<Fluid> tag = FluidTags.getCollection().get(tagName);
+        ITag<Fluid> tag = TagCollectionManager.func_232928_e_().func_232926_c_().get(tagName);
         if (tag == null) {
           throw new JsonSyntaxException("Unknown fluid tag '" + tagName + "'");
         }
