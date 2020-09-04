@@ -146,6 +146,7 @@ public class ConfigEnabledCondition implements ICondition, ILootCondition {
   // recipes
   public static final ConfigEnabledCondition CAULDRON_RECIPES = add("cauldron_recipes", Config.cauldronRecipes);
   public static final ConfigEnabledCondition CAULDRON_CONCRETE = add("cauldron_concrete", Config.cauldronConcrete);
+  public static final ConfigEnabledCondition CAULDRON_ICE = add("cauldron_ice", Config.cauldronIce);
   public static final ConfigEnabledCondition EXTENDED_CAULDRON = add("extended_cauldron_recipes", Config.extendedCaulronRecipes);
   // fluids
   public static final ConfigEnabledCondition CAULDRON_FLUIDS = add("cauldron_fluids", Config.enableCauldronFluids);

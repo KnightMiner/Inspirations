@@ -31,6 +31,7 @@ import slimeknights.mantle.client.model.util.SimpleBlockModel;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
@@ -45,14 +46,13 @@ import java.util.function.Function;
  */
 public class CauldronModel implements IModelGeometry<CauldronModel> {
   public static final Loader LOADER = new Loader();
-
   private final SimpleBlockModel model;
   private final Set<String> retextured;
 
   /**
    * Creates a new model instance
    * @param model       Model instance
-   * @param retextured  Names of fluid textures to retexture
+   * @param retextured  Names of fluid textures to retexture. If empty, assumes no fluid exists
    */
   protected CauldronModel(SimpleBlockModel model, Set<String> retextured) {
     this.model = model;
@@ -61,54 +61,79 @@ public class CauldronModel implements IModelGeometry<CauldronModel> {
 
   @Override
   public Collection<RenderMaterial> getTextures(IModelConfiguration owner, Function<ResourceLocation,IUnbakedModel> modelGetter, Set<Pair<String,String>> missingTextureErrors) {
-    return model.getTextures(owner, modelGetter, missingTextureErrors);
+    Collection<RenderMaterial> textures = model.getTextures(owner, modelGetter, missingTextureErrors);
+    // get special frost texture
+    if (owner.isTexturePresent("frost")) {
+      textures.add(owner.resolveTexture("frost"));
+    } else {
+      missingTextureErrors.add(Pair.of("frost", owner.getModelName()));
+    }
+    return textures;
   }
 
   @Override
   public IBakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<RenderMaterial,TextureAtlasSprite> spriteGetter, IModelTransform modelTransform, ItemOverrideList overrides, ResourceLocation modelLocation) {
-    List<BlockPart> elements = new ArrayList<>();
+    // fetch textures before rebaking
+    Set<String> retextured = this.retextured.isEmpty() ? Collections.emptySet() : RetexturedModel.getAllRetextured(owner, model, this.retextured);
+    // making two models, normal and frosted
+    List<BlockPart> warmElements = new ArrayList<>();
+    List<BlockPart> frostElements = new ArrayList<>();
     for (BlockPart part : model.getElements()) {
       boolean updated = false;
       Map<Direction, BlockPartFace> newFaces = new EnumMap<>(Direction.class);
+      Map<Direction, BlockPartFace> frostFaces = new EnumMap<>(Direction.class);
       for (Entry<Direction,BlockPartFace> entry : part.mapFaces.entrySet()) {
         BlockPartFace face = entry.getValue();
+        // if the texture is liquid, update the tint index
         if (face.tintIndex != 1 && retextured.contains(face.texture.substring(1))) {
           updated = true;
           newFaces.put(entry.getKey(), new BlockPartFace(face.cullFace, 1, face.texture, face.blockFaceUV));
         } else {
+          // otherwise use original face and make a copy for frost
           newFaces.put(entry.getKey(), face);
+          frostFaces.put(entry.getKey(), new BlockPartFace(face.cullFace, -1, "frost", face.blockFaceUV));
         }
       }
-      if (updated) {
-        elements.add(new BlockPart(part.positionFrom, part.positionTo, newFaces, part.partRotation, part.shade));
-      } else {
-        elements.add(part);
+      // frosted has all elements of normal, plus an overlay when relevant
+      BlockPart newPart = updated ? new BlockPart(part.positionFrom, part.positionTo, newFaces, part.partRotation, part.shade) : part;
+      warmElements.add(newPart);
+      frostElements.add(newPart);
+      // add frost element if anything happened
+      if (!frostFaces.isEmpty()) {
+        frostElements.add(new BlockPart(part.positionFrom, part.positionTo, frostFaces, part.partRotation, part.shade));
       }
     }
 
-    IBakedModel baked = SimpleBlockModel.bakeModel(owner, elements, modelTransform, overrides, spriteGetter, modelLocation);
-    return new BakedModel(baked, owner, elements, modelTransform, RetexturedModel.getAllRetextured(owner, model, retextured));
+    // if nothing retextured, bake frosted and return simple baked model
+    IBakedModel baked = SimpleBlockModel.bakeModel(owner, warmElements, modelTransform, overrides, spriteGetter, modelLocation);
+    if (retextured.isEmpty()) {
+      IBakedModel frosted = SimpleBlockModel.bakeModel(owner, frostElements, modelTransform, overrides, spriteGetter, modelLocation);
+      return new FrostedBakedModel(baked, frosted);
+    }
+
+    // full dynamic baked model
+    return new TexturedBakedModel(baked, owner, warmElements, frostElements, modelTransform, retextured);
   }
 
-  /** Baked model, to swap out textures dynamically */
-  private static class BakedModel extends DynamicBakedWrapper<IBakedModel> {
-    private final Map<ResourceLocation,IBakedModel> fluidCache = new HashMap<>();
+  /** Full baked model, does frost and fluid textures */
+  private static class TexturedBakedModel extends DynamicBakedWrapper<IBakedModel> {
+    private final Map<ResourceLocation,IBakedModel> warmCache = new HashMap<>();
+    private final Map<ResourceLocation,IBakedModel> frostedCache = new HashMap<>();
     // data needed to rebake
     private final IModelConfiguration owner;
-    private final List<BlockPart> elements;
     private final IModelTransform transform;
     private final Set<String> retextured;
-    protected BakedModel(IBakedModel originalModel, IModelConfiguration owner, List<BlockPart> elements, IModelTransform transform, Set<String> fluidNames) {
+    /** Function to bake a warm model for the given texture */
+    private final Function<ResourceLocation, IBakedModel> warmBakery;
+    /** Function to bake a frosted model for the given texture */
+    private final Function<ResourceLocation, IBakedModel> frostedBakery;
+    protected TexturedBakedModel(IBakedModel originalModel, IModelConfiguration owner, List<BlockPart> warmElements, List<BlockPart> frostElements, IModelTransform transform, Set<String> fluidNames) {
       super(originalModel);
       this.owner = owner;
-      this.elements = elements;
       this.transform = transform;
       this.retextured = fluidNames;
-
-      // for each part face using the fluid texture, set the tint index to 1. Saves having to recreate models
-      // the vanilla model does this using tint index 0, but that is problematic as that also tints the particle texture
-      // plus, ensures resource pack support if a resource pack does weird cauldron stuff
-
+      this.warmBakery = name -> getFluidModel(name, warmElements);
+      this.frostedBakery = name -> getFluidModel(name, frostElements);
     }
 
     /**
@@ -116,18 +141,39 @@ public class CauldronModel implements IModelGeometry<CauldronModel> {
      * @param fluid  Cauldron content name
      * @return  Baked model
      */
-    private IBakedModel getFluidModel(ResourceLocation fluid) {
+    private IBakedModel getFluidModel(ResourceLocation fluid, List<BlockPart> elements) {
       return SimpleBlockModel.bakeDynamic(new RetexturedConfiguration(owner, retextured, fluid), elements, transform);
     }
 
     @Override
     public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction direction, Random random, IModelData data) {
-      ResourceLocation texture = data.getData(CauldronTileEntity.TEXTURE);
-      if (texture == null) {
+      ResourceLocation textureName = data.getData(CauldronTileEntity.TEXTURE);
+      if (textureName == null) {
         return originalModel.getQuads(state, direction, random, data);
       }
+
       // serverside uses texture "name" rather than path, use the sprite getter to translate
-      return fluidCache.computeIfAbsent(RecipesClientEvents.cauldronTextures.getTexture(texture), this::getFluidModel).getQuads(state, direction, random, data);
+      ResourceLocation texture = RecipesClientEvents.cauldronTextures.getTexture(textureName);
+      // determine model variant
+      IBakedModel baked = (data.getData(CauldronTileEntity.FROSTED) == Boolean.TRUE)
+                          ? frostedCache.computeIfAbsent(texture, frostedBakery)
+                          : warmCache.computeIfAbsent(texture, warmBakery);
+      // return quads
+      return baked.getQuads(state, direction, random, data);
+    }
+  }
+
+  /** Simplier baked model for when textures are not needed */
+  private static class FrostedBakedModel extends DynamicBakedWrapper<IBakedModel> {
+    private final IBakedModel frosted;
+    private FrostedBakedModel(IBakedModel originalModel, IBakedModel frosted) {
+      super(originalModel);
+      this.frosted = frosted;
+    }
+
+    @Override
+    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction direction, Random random, IModelData data) {
+      return (data.getData(CauldronTileEntity.FROSTED) == Boolean.TRUE ? frosted : originalModel).getQuads(state, direction, random, data);
     }
   }
 
@@ -141,7 +187,7 @@ public class CauldronModel implements IModelGeometry<CauldronModel> {
     @Override
     public CauldronModel read(JsonDeserializationContext context, JsonObject json) {
       SimpleBlockModel model = SimpleBlockModel.deserialize(context, json);
-      Set<String> retextured = RetexturedModel.Loader.getRetextured(json);
+      Set<String> retextured = json.has("retextured") ? RetexturedModel.Loader.getRetextured(json) : Collections.emptySet();
       return new CauldronModel(model, retextured);
     }
   }

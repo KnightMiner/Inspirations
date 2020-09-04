@@ -19,10 +19,10 @@ public class InspirationsTags {
     public static final INamedTag<Block> BOOKSHELVES = tag("bookshelves");
     public static final INamedTag<Block> ENLIGHTENED_BUSHES = tag("enlightened_bushes");
 
-    /**
-     * Blocks with this tag act as fire for the cauldron.
-     */
+    /** Blocks with this tag act as fire for the cauldron */
     public static final INamedTag<Block> CAULDRON_FIRE = tag("cauldron_fire");
+    /** Blocks that act as ice to surround the cauldron */
+    public static final INamedTag<Block> CAULDRON_ICE = tag("cauldron_ice");
 
     /**
      * Creates a block tag for Inspirations

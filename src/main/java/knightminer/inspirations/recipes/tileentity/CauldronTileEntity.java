@@ -4,12 +4,14 @@ import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.network.CauldronContentUpatePacket;
 import knightminer.inspirations.common.network.CauldronTransformUpatePacket;
 import knightminer.inspirations.common.network.InspirationsNetwork;
+import knightminer.inspirations.library.InspirationsTags;
 import knightminer.inspirations.library.recipe.RecipeTypes;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.contents.EmptyCauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronTransform;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
+import knightminer.inspirations.library.recipe.cauldron.util.CauldronTemperature;
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.recipes.block.EnhancedCauldronBlock;
 import knightminer.inspirations.recipes.recipe.inventory.CauldronItemInventory;
@@ -26,22 +28,26 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Potion;
+import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Direction.Axis;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.data.IModelData;
+import net.minecraftforge.client.model.data.ModelDataMap;
 import net.minecraftforge.client.model.data.ModelProperty;
 import net.minecraftforge.common.util.Constants.BlockFlags;
 import net.minecraftforge.common.util.Constants.NBT;
-import slimeknights.mantle.client.model.data.SinglePropertyData;
 import slimeknights.mantle.recipe.RecipeHelper;
 
 import javax.annotation.Nullable;
@@ -55,15 +61,25 @@ import java.util.function.Consumer;
 public class CauldronTileEntity extends TileEntity implements ITickableTileEntity {
   private static final DamageSource DAMAGE_BOIL = new DamageSource(Inspirations.prefix("boiling")).setDamageBypassesArmor();
   public static final ModelProperty<ResourceLocation> TEXTURE = new ModelProperty<>();
+  public static final ModelProperty<Boolean> FROSTED = new ModelProperty<>();
 
   // data objects
-  private final IModelData data = new SinglePropertyData<>(TEXTURE, EmptyCauldronContents.INSTANCE.getTextureName());
+  private final IModelData data = new ModelDataMap.Builder()
+      .withInitial(TEXTURE, EmptyCauldronContents.INSTANCE.getTextureName())
+      .withInitial(FROSTED, false).build();
   private final TileCauldronInventory craftingInventory = new TileCauldronInventory(this);
 
   // mutable properties
   private ICauldronContents contents;
   private EnhancedCauldronBlock cauldronBlock;
   private ICauldronRecipe lastRecipe;
+  // temperature cache
+  /** If true, the cauldron is above a block that makes it boil */
+  private Boolean isBoiling;
+  /** If true, the cauldron is surrounded by blocks that make it freeze */
+  private Boolean isFreezing;
+  /** Last temperature of the cauldron */
+  private CauldronTemperature temperature;
 
   // transform recipes
   private int timer;
@@ -105,6 +121,8 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
 
   @Override
   public IModelData getModelData() {
+    // ensure temperature is fetched so data is accurate
+    getTemperature(false);
     return data;
   }
 
@@ -127,6 +145,17 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
   }
 
   /**
+   * Gets the block instance responsible for this cauldron
+   * @return  Block instance
+   */
+  public EnhancedCauldronBlock getBlock() {
+    return cauldronBlock;
+  }
+
+
+  /* contents */
+
+  /**
    * Gets the current cauldron contents
    * @return current contents
    */
@@ -135,14 +164,6 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
       return EmptyCauldronContents.INSTANCE;
     }
     return contents;
-  }
-
-  /**
-   * Gets the block instance responsible for this cauldron
-   * @return  Block instance
-   */
-  public EnhancedCauldronBlock getBlock() {
-    return cauldronBlock;
   }
 
   /**
@@ -166,11 +187,143 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
       if (world.isRemote) {
         this.data.setData(TEXTURE, contents.getTextureName());
         this.requestModelDataUpdate();
-        BlockState state = getBlockState();
-        world.notifyBlockUpdate(pos, state, state, BlockFlags.NO_RERENDER | BlockFlags.NO_NEIGHBOR_DROPS);
+        this.notifyClientUpdate();
       } else {
         InspirationsNetwork.sendToClients(world, pos, new CauldronContentUpatePacket(pos, contents));
         this.updateTransform = true;
+      }
+    }
+  }
+
+
+  /* temperature */
+
+  /**
+   * Checks if a state is considered fire in a cauldron
+   * @param state State to check
+   * @return True if the state is considered fire
+   */
+  public static boolean isCauldronFire(BlockState state) {
+    if (state.getBlock().isIn(InspirationsTags.Blocks.CAULDRON_FIRE)) {
+      // if it has a lit property, use that (campfires, furnaces). Otherwise just needs to be in the tag
+      return !state.hasProperty(BlockStateProperties.LIT) || state.get(BlockStateProperties.LIT);
+    }
+    return false;
+  }
+
+  /**
+   * Checks if the given direction has enough ice
+   * @param world      World
+   * @param pos        Position
+   * @param direction  Direction to check. Also checks opposite direction
+   * @return  True if the direction has enough ice
+   */
+  private static boolean isDirectionFreezing(World world, BlockPos pos, Direction direction) {
+    return world.getBlockState(pos.offset(direction)).isIn(InspirationsTags.Blocks.CAULDRON_ICE)
+           && world.getBlockState(pos.offset(direction.getOpposite())).isIn(InspirationsTags.Blocks.CAULDRON_ICE);
+  }
+
+  /**
+   * Checks if two ice blocks on opposite sides
+   * @param world  World
+   * @param pos    Cauldron position
+   * @return True if the state is considered freezing
+   */
+  public static boolean isFreezing(World world, BlockPos pos) {
+    // either axis must have two ice blocks
+    return isDirectionFreezing(world, pos, Direction.NORTH) || isDirectionFreezing(world, pos, Direction.WEST);
+  }
+
+  /**
+   * Calculates and caches the temperature
+   * @return  Calculated temperature for the world and positions
+   */
+  public static CauldronTemperature calcTemperature(IWorld world, BlockPos pos, boolean boiling, boolean freezing) {
+    // overrides from neighbors
+    if (boiling) {
+      return freezing ? CauldronTemperature.NORMAL : CauldronTemperature.BOILING;
+    }
+    // freezing is freezing of course
+    if (freezing) return CauldronTemperature.FREEZING;
+
+    // boil if water evaporates
+    if (world.func_230315_m_().func_236040_e_()) {
+      return CauldronTemperature.BOILING;
+    }
+    // freeze if biome is cold enough for snow/ice. direct methods do a bunch of ice/snow checks
+    if (world.getBiome(pos).getTemperature(pos) < 0.15F) {
+      return CauldronTemperature.FREEZING;
+    }
+    // normal otherwise
+    return CauldronTemperature.NORMAL;
+  }
+
+  /**
+   * Gets the current cauldron temperature
+   * @param updateModelData  If true, updates model data on change
+   * @return  Temperature at current location
+   */
+  private CauldronTemperature getTemperature(boolean updateModelData) {
+    if (world == null) {
+      return CauldronTemperature.NORMAL;
+    }
+    // if no temperature cache, calculate
+    if (temperature == null) {
+      // ensure we have cached freezing and boiling
+      if (isBoiling == null) isBoiling = isCauldronFire(world.getBlockState(pos.down()));
+      if (isFreezing == null) isFreezing = isFreezing(world, pos);
+      temperature = calcTemperature(world, pos, isBoiling, isFreezing);
+      data.setData(FROSTED, temperature == CauldronTemperature.FREEZING);
+      if (updateModelData) requestModelDataUpdate();
+    }
+    // return cached value
+    return temperature;
+  }
+
+  /**
+   * Gets the current cauldron temperature
+   * @return  Temperature at current location
+   */
+  public CauldronTemperature getTemperature() {
+    return getTemperature(true);
+  }
+
+
+  /**
+   * Gets the direction based on the given offset
+   * @param offset  Offset
+   * @return  Direction based on position offset
+   */
+  private static Direction getDirection(BlockPos offset) {
+    for (Direction direction : Direction.values()) {
+      if (direction.getDirectionVec().equals(offset)) {
+        return direction;
+      }
+    }
+    return Direction.UP;
+  }
+
+  /**
+   * Called when a neighbor changes to invalidate the temperature cache
+   * @param neighbor  Neighbor that changed
+   */
+  public void neighborChanged(BlockPos neighbor) {
+    Direction direction = getDirection(neighbor.subtract(pos));
+    CauldronTemperature oldTemperature = temperature;
+    if (direction == Direction.DOWN) {
+      isBoiling = null;
+      temperature = null;
+      updateTransform = true;
+    } else if (direction.getAxis() != Axis.Y) {
+      isFreezing = null;
+      temperature = null;
+      updateTransform = true;
+    }
+    // on the client, immediately update temperature
+    if (world != null && world.isRemote) {
+      temperature = getTemperature();
+      if (temperature != oldTemperature) {
+        notifyClientUpdate();
       }
     }
   }
@@ -370,7 +523,7 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
       }
 
       // if the cauldron is boiling, boiling the entity
-      if (cauldronBlock.isBoiling(currentState)) {
+      if (getTemperature() == CauldronTemperature.BOILING) {
         entity.attackEntityFrom(DAMAGE_BOIL, 2.0F);
       }
     }
@@ -515,6 +668,16 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
     }
   }
    */
+
+  /* Utils */
+
+  /** Notifies the world on the client side to redraw this block */
+  private void notifyClientUpdate() {
+    if (world != null && world.isRemote) {
+      BlockState state = getBlockState();
+      world.notifyBlockUpdate(pos, state, state, BlockFlags.NO_RERENDER | BlockFlags.NO_NEIGHBOR_DROPS);
+    }
+  }
 
   /* NBT */
   private static final String TAG_CONTENTS = "contents";

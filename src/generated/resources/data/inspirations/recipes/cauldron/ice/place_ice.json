@@ -11,21 +11,25 @@
     }
   ],
   "input": {
+    "item": {
+      "item": "minecraft:ice"
+    },
     "contents": {
       "type": "inspirations:custom",
       "name": "minecraft:ice"
     },
     "level": {
-      "min": 3
+      "max": 0
     }
   },
   "output": {
-    "item": {
-      "item": "minecraft:ice"
+    "contents": {
+      "type": "inspirations:custom",
+      "name": "minecraft:ice"
     },
     "level": {
-      "set": 0
+      "set": 3
     }
   },
-  "sound": "minecraft:block.glass.break"
+  "sound": "minecraft:block.glass.place"
 }

@@ -1,13 +1,11 @@
 package knightminer.inspirations.recipes.block;
 
 import knightminer.inspirations.common.Config;
-import knightminer.inspirations.library.InspirationsTags;
+import knightminer.inspirations.library.recipe.cauldron.util.CauldronTemperature;
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.CauldronBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -53,23 +51,6 @@ public class EnhancedCauldronBlock extends CauldronBlock {
     }
   }
 
-  /* TE behavior */
-  @Override
-  public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult ray) {
-    // all moved to the cauldron registry
-    return ActionResultType.SUCCESS;
-  }
-
-  @Override
-  public boolean hasTileEntity(BlockState state) {
-    return true;
-  }
-
-  @Override
-  public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-    return new CauldronTileEntity(this);
-  }
-
   @Override
   public void fillWithRain(World world, BlockPos pos) {
     TileEntity te = world.getTileEntity(pos);
@@ -86,6 +67,24 @@ public class EnhancedCauldronBlock extends CauldronBlock {
         setWaterLevel(world, pos, state, level + 1);
       }
     }
+  }
+
+  /* TE behavior */
+
+  @Override
+  public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult ray) {
+    // all moved to the cauldron registry
+    return ActionResultType.SUCCESS;
+  }
+
+  @Override
+  public boolean hasTileEntity(BlockState state) {
+    return true;
+  }
+
+  @Override
+  public TileEntity createTileEntity(BlockState state, IBlockReader world) {
+    return new CauldronTileEntity(this);
   }
 
   @Override
@@ -108,80 +107,17 @@ public class EnhancedCauldronBlock extends CauldronBlock {
     }
   }
 
-  @Override
-  public boolean matchesBlock(Block block) {
-    return this == block || block == InspirationsRecipes.cauldron || block == InspirationsRecipes.boilingCauldron;
-  }
-
-  @Override
-  @Deprecated
-  public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
-    // if the block is the same, update transform recipe
-    if (!newState.isIn(this)) {
-      // keep TE on switch between boiling and non-boiling
-      world.removeTileEntity(pos);
-    }
-  }
-
-  /*
   @SuppressWarnings("deprecation")
-  @Deprecated
   @Override
-  public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
-    if (newState.getBlock() != state.getBlock() && !isMoving) {
-      int level = getLevel(state);
-      if (Config.dropCauldronContents.get() && level > 0) {
-        TileEntity te = world.getTileEntity(pos);
-        if (te instanceof CauldronTileEntity) {
-          ((CauldronTileEntity)te).onBreak(pos, level);
-        }
-      }
-    }
-    super.onReplaced(state, world, pos, newState, isMoving);
-  }
-  */
-
-
-  /* Boiling property */
-
-  /**
-   * Checks if a state is considered fire in a cauldron
-   * @param state State to check
-   * @return True if the state is considered fire
-   */
-  public static boolean isCauldronFire(BlockState state) {
-    if (state.getBlock().isIn(InspirationsTags.Blocks.CAULDRON_FIRE)) {
-      return true;
-    }
-    return state.getBlock() == Blocks.CAMPFIRE && state.get(CampfireBlock.LIT);
-  }
-
-  /**
-   * Checks if the given block state is boiling. Provided to make it easy to override for a non-vanilla override to use a block property.
-   * @param state  State to check
-   * @return  True if boiling
-   */
-  public boolean isBoiling(BlockState state) {
-    return state.getBlock() == InspirationsRecipes.boilingCauldron;
-  }
-
-  @SuppressWarnings("deprecation")
   @Deprecated
-  @Override
-  public BlockState updatePostPlacement(BlockState state, Direction facing, BlockState facingState, IWorld world, BlockPos pos, BlockPos facingPos) {
-    // if you are not doing a vanilla override, you can save yourself a ton of work here and just use a block property boolean
-    if (facing == Direction.DOWN) {
-      // if boiling changed, swap blocks
-      boolean boiling = isCauldronFire(facingState);
-      if (boiling != isBoiling(state)) {
-        // swap blocks, copy properties
-        return (boiling ? InspirationsRecipes.boilingCauldron : InspirationsRecipes.cauldron).getDefaultState()
-            .with(LEVEL, getLevel(state));
-      }
-    }
-    // no change
+  public BlockState updatePostPlacement(BlockState state, Direction facing, BlockState facingState, IWorld world, BlockPos currentPos, BlockPos facingPos) {
+    // need a method called on both sides, neighborChanged is server only
+    TileEntityHelper.getTile(CauldronTileEntity.class, world, currentPos).ifPresent(te -> te.neighborChanged(facingPos));
     return state;
   }
+
+
+  /* Particles */
 
   @Deprecated
   @Override
@@ -191,15 +127,19 @@ public class EnhancedCauldronBlock extends CauldronBlock {
     if (level == 0) {
       return;
     }
-    // boiling particles
-    if (isBoiling(state)) {
-      addParticles(InspirationsRecipes.boilingParticle, world, pos, 2, level, rand);
-    }
 
     // transform particles
     TileEntity te = world.getTileEntity(pos);
     if (te instanceof CauldronTileEntity) {
-      int count = ((CauldronTileEntity) te).getTransformParticles();
+      CauldronTileEntity cauldron = (CauldronTileEntity)te;
+
+      // boiling particles if boiling
+      if (cauldron.getTemperature() == CauldronTemperature.BOILING) {
+        addParticles(InspirationsRecipes.boilingParticle, world, pos, 2, level, rand);
+      }
+
+      // transform particles if performing a recipe
+      int count = cauldron.getTransformParticles();
       addParticles(ParticleTypes.HAPPY_VILLAGER, world, pos, count, level, rand);
     }
   }

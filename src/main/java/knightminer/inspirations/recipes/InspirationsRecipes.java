@@ -22,7 +22,6 @@ import knightminer.inspirations.recipes.recipe.cauldron.FillDyedBottleRecipe;
 import knightminer.inspirations.recipes.recipe.cauldron.MixCauldronDyeRecipe;
 import knightminer.inspirations.recipes.recipe.cauldron.RemoveBannerPatternCauldronRecipe;
 import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
-import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FlowingFluidBlock;
@@ -71,7 +70,6 @@ public class InspirationsRecipes extends ModuleBase {
   public static Block damagedAnvil;
 
   public static EnhancedCauldronBlock cauldron;
-  public static EnhancedCauldronBlock boilingCauldron;
   public static TileEntityType<CauldronTileEntity> tileCauldron;
 
   // items
@@ -152,7 +150,6 @@ public class InspirationsRecipes extends ModuleBase {
     if (Config.extendedCauldron.get()) {
       cauldron = registry.registerOverride(EnhancedCauldronBlock::new, Blocks.CAULDRON);
     }
-    boilingCauldron = registry.register(new EnhancedCauldronBlock(AbstractBlock.Properties.from(Blocks.CAULDRON)), "boiling_cauldron");
   }
 
   @SubscribeEvent
@@ -185,12 +182,10 @@ public class InspirationsRecipes extends ModuleBase {
     simpleDyedWaterBottle = registry.registerEnum(color -> new SimpleDyedBottleItem(bottleProps, DyeItem.getItem(color)), DyeColor.values(), "dyed_bottle");
     mixedDyedWaterBottle = registry.register(new MixedDyedBottleItem(bottleProps), "mixed_dyed_bottle");
 
-    // boiling cauldron item
-    Item cauldronItem = Items.CAULDRON;
+    // cauldron item
     if (Config.extendedCauldron.getAsBoolean()) {
-      cauldronItem = registry.registerBlockItem(cauldron, brewingProps);
+      registry.registerBlockItem(cauldron, brewingProps);
     }
-    Item.BLOCK_TO_ITEM.put(boilingCauldron, cauldronItem);
   }
 
   @SubscribeEvent
@@ -198,7 +193,7 @@ public class InspirationsRecipes extends ModuleBase {
     TileEntityTypeRegistryAdapter registry = new TileEntityTypeRegistryAdapter(event.getRegistry());
 
     if (Config.extendedCauldron.get()) {
-      tileCauldron = registry.register(CauldronTileEntity::new, "cauldron", blocks -> blocks.add(cauldron, boilingCauldron));
+      tileCauldron = registry.register(CauldronTileEntity::new, cauldron, "cauldron");
     }
   }
 

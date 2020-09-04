@@ -72,8 +72,9 @@ public class Config {
   public static final CachedBoolean cauldronRecipes;
   public static final CachedBoolean cauldronConcrete;
   // extended
-  public static final CachedBoolean extendedCaulronRecipes;
   public static final CachedBoolean extendedCauldron;
+  public static final CachedBoolean extendedCaulronRecipes;
+  public static final CachedBoolean cauldronIce;
   // fluids
   public static final CachedBoolean enableCauldronFluids;
   // dyes
@@ -356,11 +357,14 @@ public class Config {
             .comment("Allows additional recipes to be performed in the cauldron. If the block replacement is disabled, functionality will be limited to water in cauldrons.")
             .define("enable", true));
         extendedCaulronRecipes = and(extendedCauldron, cauldronRecipes);
-
-        // vanilla recipes
+        
+        // base recipes
         cauldronConcrete = and(cauldronRecipes, server
             .comment("Allows concrete to be made in the cauldron")
             .define("concrete", true));
+        cauldronIce = and(extendedCaulronRecipes, server
+            .comment("If true, the cauldron can be used to make ice when in a cold biome or surrounded with ice")
+            .define("ice", true));
 
 				// fluids
 				enableCauldronFluids = and(extendedCaulronRecipes, server

@@ -11,13 +11,13 @@
     }
   ],
   "input": {
+    "type": "inspirations:custom",
+    "name": "inspirations:wet_ice"
+  },
+  "temperature": "boiling",
+  "output": {
     "type": "inspirations:fluid",
     "name": "minecraft:water"
-  },
-  "temperature": "freezing",
-  "output": {
-    "type": "inspirations:custom",
-    "name": "minecraft:ice"
   },
   "time": 500,
   "sound": "minecraft:block.glass.place"

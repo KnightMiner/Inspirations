@@ -62,7 +62,7 @@ public class CauldronTransform implements ICustomOutputRecipe<ICauldronState> {
 
   @Override
   public boolean matches(ICauldronState inv, World worldIn) {
-    return temperature.test(inv.isBoiling()) && level.test(inv.getLevel()) && ingredient.test(inv.getContents());
+    return temperature.test(inv.getTemperature()) && level.test(inv.getLevel()) && ingredient.test(inv.getContents());
   }
 
   /**

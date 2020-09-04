@@ -6,7 +6,7 @@
       "type": "inspirations:config"
     },
     {
-      "prop": "extended_cauldron_recipes",
+      "prop": "cauldron_ice",
       "type": "inspirations:config"
     }
   ],
@@ -14,14 +14,11 @@
     "type": "inspirations:custom",
     "name": "minecraft:ice"
   },
-  "level": {
-    "min": 3
-  },
-  "temperature": "hot",
+  "temperature": "boiling",
   "output": {
     "type": "inspirations:fluid",
     "name": "minecraft:water"
   },
-  "time": 200,
+  "time": 500,
   "sound": "minecraft:item.bucket.empty"
 }

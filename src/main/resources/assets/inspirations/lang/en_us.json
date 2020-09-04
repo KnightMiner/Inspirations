@@ -153,7 +153,6 @@
     
     "fluid.inspirations.milk": "Milk",
 
-    "block.inspirations.boiling_cauldron": "Cauldron",
     "death.attack.inspirations.boiling": "%s was boiled alive",
 
     "_comment": "GUI",

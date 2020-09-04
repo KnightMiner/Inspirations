@@ -1,6 +1,7 @@
 package knightminer.inspirations.library.recipe.cauldron.inventory;
 
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
+import knightminer.inspirations.library.recipe.cauldron.util.CauldronTemperature;
 import slimeknights.mantle.recipe.inventory.IEmptyInventory;
 
 /**
@@ -22,8 +23,8 @@ public interface ICauldronState extends IEmptyInventory {
   int getLevel();
 
   /**
-   * If true, the cauldron was placed above blocks causing it to boil
-   * @return  True if the cauldron is boiling
+   * Gets the temperature of this cauldron
+   * @return  Cauldron temperature
    */
-  boolean isBoiling();
+  CauldronTemperature getTemperature();
 }

@@ -2,6 +2,7 @@ package knightminer.inspirations.recipes.recipe.inventory;
 
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
+import knightminer.inspirations.library.recipe.cauldron.util.CauldronTemperature;
 import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundCategory;
@@ -99,7 +100,7 @@ public class TileCauldronInventory extends CauldronItemInventory {
   }
 
   @Override
-  public boolean isBoiling() {
-    return tile.getBlock().isBoiling(tile.getBlockState());
+  public CauldronTemperature getTemperature() {
+    return tile.getTemperature();
   }
 }

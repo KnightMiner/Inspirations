@@ -88,7 +88,7 @@ public class CauldronRecipe implements ICauldronRecipe {
     // boiling must match, must have right level
     // contents must match, but if the current level of 0 matches skip contents check (used for fill recipes)
     int current = inv.getLevel();
-    if (!temperature.test(inv.isBoiling()) || !level.test(current) || (current != 0 && !contents.test(inv.getContents()))) {
+    if (!temperature.test(inv.getTemperature()) || !level.test(current) || (current != 0 && !contents.test(inv.getContents()))) {
       return false;
     }
     // stack must have enough items and match the ingredient

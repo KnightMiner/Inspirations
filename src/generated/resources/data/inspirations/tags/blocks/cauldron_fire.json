@@ -1,6 +1,8 @@
 {
   "replace": false,
   "values": [
-    "minecraft:fire"
+    "minecraft:fire",
+    "minecraft:soul_fire",
+    "#minecraft:campfires"
   ]
 }

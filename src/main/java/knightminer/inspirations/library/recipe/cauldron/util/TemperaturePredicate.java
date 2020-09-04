@@ -7,26 +7,44 @@ import java.util.function.Predicate;
 /**
  * Predicate to check cauldron boiling state
  */
-public enum TemperaturePredicate implements Predicate<Boolean> {
-  ANY,
-  HOT,
-  COLD;
+public enum TemperaturePredicate implements Predicate<CauldronTemperature> {
+  /** Any temperature matches */
+  ANY {
+    @Override
+    public boolean test(CauldronTemperature temperature) {
+      return true;
+    }
+  },
+  /** Cauldron must be boiling */
+  BOILING {
+    @Override
+    public boolean test(CauldronTemperature temperature) {
+      return temperature == CauldronTemperature.BOILING;
+    }
+  },
+  /** Cauldorn must be freezing */
+  FREEZING {
+    @Override
+    public boolean test(CauldronTemperature temperature) {
+      return temperature == CauldronTemperature.FREEZING;
+    }
+  },
+  /** Cauldron must not be freezing */
+  WARM {
+    @Override
+    public boolean test(CauldronTemperature temperature) {
+      return temperature != CauldronTemperature.FREEZING;
+    }
+  },
+  /** Cauldron must not be boiling */
+  COOL {
+    @Override
+    public boolean test(CauldronTemperature temperature) {
+      return temperature != CauldronTemperature.BOILING;
+    }
+  };
 
   private final String name = name().toLowerCase(Locale.US);
-
-  /**
-   * Checks if this matches the given boiling predicate
-   * @param boiling  Boiling type to match
-   * @return  True if this type matches the given boiling state
-   */
-  public boolean test(boolean boiling) {
-    return this == ANY || this == (boiling ? HOT : COLD);
-  }
-
-  @Override
-  public boolean test(Boolean bool) {
-    return test(bool == Boolean.TRUE);
-  }
 
   /**
    * Gets the name of this type

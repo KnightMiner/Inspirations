@@ -8,6 +8,13 @@
     {
       "prop": "cauldron_recipes",
       "type": "inspirations:config"
+    },
+    {
+      "value": {
+        "prop": "cauldron_ice",
+        "type": "inspirations:config"
+      },
+      "type": "forge:not"
     }
   ],
   "input": {
@@ -21,7 +28,7 @@
     "level": {
       "max": 2
     },
-    "temperature": "hot"
+    "temperature": "boiling"
   },
   "output": {
     "contents": {

@@ -6,7 +6,7 @@
       "type": "inspirations:config"
     },
     {
-      "prop": "extended_cauldron_recipes",
+      "prop": "cauldron_ice",
       "type": "inspirations:config"
     }
   ],
@@ -14,13 +14,10 @@
     "type": "inspirations:custom",
     "name": "minecraft:packed_ice"
   },
-  "level": {
-    "min": 3
-  },
-  "temperature": "hot",
+  "temperature": "boiling",
   "output": {
     "type": "inspirations:custom",
-    "name": "minecraft:ice"
+    "name": "inspirations:wet_ice"
   },
   "time": 2000,
   "sound": "minecraft:block.glass.place"

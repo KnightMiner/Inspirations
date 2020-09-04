@@ -11,21 +11,22 @@
     }
   ],
   "input": {
+    "item": {
+      "item": "minecraft:ice"
+    },
     "contents": {
-      "type": "inspirations:custom",
-      "name": "minecraft:ice"
+      "type": "inspirations:fluid",
+      "name": "minecraft:water"
     },
     "level": {
       "min": 3
     }
   },
   "output": {
-    "item": {
-      "item": "minecraft:ice"
-    },
-    "level": {
-      "set": 0
+    "contents": {
+      "type": "inspirations:custom",
+      "name": "inspirations:wet_ice"
     }
   },
-  "sound": "minecraft:block.glass.break"
+  "sound": "minecraft:block.glass.place"
 }

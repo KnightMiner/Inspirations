@@ -13,6 +13,8 @@ import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
 import knightminer.inspirations.shared.SharedClientEvents;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.fluid.Fluids;
@@ -30,6 +32,7 @@ import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 @SuppressWarnings("unused")
 @EventBusSubscriber(modid = Inspirations.modID, value = Dist.CLIENT, bus = Bus.MOD)
@@ -47,6 +50,13 @@ public class RecipesClientEvents extends ClientEvents {
       ((IReloadableResourceManager)manager).addReloadListener(cauldronTextures);
     } else {
       Inspirations.log.error("Failed to register resource reload listener, expected instance of IReloadableResourceManager but got {}", manager.getClass());
+    }
+  }
+
+  @SubscribeEvent
+  static void clientSetup(FMLClientSetupEvent event) {
+    if (Config.extendedCauldron.getAsBoolean()) {
+      RenderTypeLookup.setRenderLayer(Blocks.CAULDRON, RenderType.getCutout());
     }
   }
 
@@ -78,7 +88,7 @@ public class RecipesClientEvents extends ClientEvents {
       }
 
       return -1;
-    }, InspirationsRecipes.cauldron, InspirationsRecipes.boilingCauldron);
+    }, InspirationsRecipes.cauldron);
   }
 
   @SubscribeEvent

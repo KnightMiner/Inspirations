@@ -6,18 +6,15 @@
       "type": "inspirations:config"
     },
     {
-      "prop": "extended_cauldron_recipes",
+      "prop": "cauldron_ice",
       "type": "inspirations:config"
     }
   ],
   "input": {
     "type": "inspirations:custom",
-    "name": "minecraft:ice"
+    "name": "inspirations:wet_ice"
   },
-  "level": {
-    "min": 3
-  },
-  "temperature": "cold",
+  "temperature": "freezing",
   "output": {
     "type": "inspirations:custom",
     "name": "minecraft:packed_ice"

@@ -4,13 +4,11 @@ import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.building.block.RopeBlock;
 import knightminer.inspirations.common.Config;
-import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraft.advancements.criterion.StatePropertiesPredicate;
 import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.DoorBlock;
 import net.minecraft.data.loot.BlockLootTables;
 import net.minecraft.item.DyeColor;
@@ -51,7 +49,6 @@ public class InspirationsBlockLootTable extends BlockLootTables {
     this.addBuilding();
     this.addTools();
     this.addTweaks();
-    this.addRecipes();
     this.addUtility();
   }
 
@@ -102,10 +99,6 @@ public class InspirationsBlockLootTable extends BlockLootTables {
     this.registerLootTable(InspirationsTweaks.wetHopper, droppingWithName(InspirationsTweaks.dryHopper));
     this.registerDropping(InspirationsTweaks.sugarCane, InspirationsTweaks.sugarCaneSeeds);
     this.registerDropping(InspirationsTweaks.cactus, InspirationsTweaks.cactusSeeds);
-  }
-
-  private void addRecipes() {
-    this.registerRedirect(InspirationsRecipes.boilingCauldron, Blocks.CAULDRON);
   }
 
   private void addUtility() {

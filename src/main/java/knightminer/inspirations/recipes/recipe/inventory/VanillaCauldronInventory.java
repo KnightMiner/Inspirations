@@ -6,7 +6,8 @@ import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.contents.EmptyCauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
-import knightminer.inspirations.recipes.block.EnhancedCauldronBlock;
+import knightminer.inspirations.library.recipe.cauldron.util.CauldronTemperature;
+import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CauldronBlock;
@@ -27,8 +28,8 @@ public class VanillaCauldronInventory extends CauldronItemInventory {
   private final BlockPos pos;
   private final BlockState state;
 
-  // cached boiling value
-  private Boolean boiling;
+  // cached temperate value
+  private CauldronTemperature temperature;
 
   /**
    * Main constructor with all parameters
@@ -102,11 +103,13 @@ public class VanillaCauldronInventory extends CauldronItemInventory {
   }
 
   @Override
-  public boolean isBoiling() {
-    if (boiling == null) {
-      boiling = EnhancedCauldronBlock.isCauldronFire(world.getBlockState(pos.down()));
+  public CauldronTemperature getTemperature() {
+    if (temperature == null) {
+      temperature = CauldronTileEntity.calcTemperature(world, pos,
+        CauldronTileEntity.isCauldronFire(world.getBlockState(pos.down())),
+        CauldronTileEntity.isFreezing(world, pos));
     }
-    return boiling;
+    return temperature;
   }
 
 

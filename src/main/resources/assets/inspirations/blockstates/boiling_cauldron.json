@@ -1,8 +1,0 @@
-{
-  "variants": {
-    "level=0": { "model": "minecraft:block/cauldron" },
-    "level=1": { "model": "inspirations:block/cauldron/level_1" },
-    "level=2": { "model": "inspirations:block/cauldron/level_2" },
-    "level=3": { "model": "inspirations:block/cauldron/level_3" }
-  }
-}
