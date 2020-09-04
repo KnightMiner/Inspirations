@@ -216,14 +216,14 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
     // concrete powder
     String concreteFolder = folder + "concrete/";
     Consumer<IFinishedRecipe> concrete = withCondition(ConfigEnabledCondition.CAULDRON_CONCRETE);
-    VanillaEnum.CONCRETE_POWDER.forEach((color, powder) -> {
+    VanillaEnum.CONCRETE_POWDER.forEach((color, powder) ->
       CauldronRecipeBuilder.cauldron(SizedIngredient.fromItems(powder), waterIngredient)
                            .minLevels(1)
                            .addLevels(-1)
                            .setOutput(VanillaEnum.CONCRETE.get(color))
                            .addCriterion("has_item", hasItem(powder))
-                           .build(concrete, resource(concreteFolder + color.getString()));
-    });
+                           .build(concrete, resource(concreteFolder + color.getString()))
+    );
 
     // temporary milk recipes until Forge merges one of my milk bucket fixes
     ICauldronIngredient milkIngredient = CauldronIngredients.FLUID.of(InspirationsTags.Fluids.MILK);
@@ -364,7 +364,7 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
     // tipped arrows
     FillPotionCauldronRecipeBuilder.fill(Ingredient.fromItems(Items.ARROW), 16, Items.TIPPED_ARROW)
                                    .addCriterion("has_item", hasItem(Items.ARROW))
-                                   .build(potionConsumer, resource(potionFolder + "tipped_arrow"));
+                                   .build(withCondition(ConfigEnabledCondition.CAULDRON_TIP_ARROWS), resource(potionFolder + "tipped_arrow"));
 
     // craft the bottles
     ShapelessRecipeBuilder.shapelessRecipe(InspirationsRecipes.splashBottle)
