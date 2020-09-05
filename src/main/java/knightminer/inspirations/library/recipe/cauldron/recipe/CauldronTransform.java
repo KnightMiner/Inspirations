@@ -57,7 +57,7 @@ public class CauldronTransform extends AbstractCauldronRecipe implements ICustom
 
   @Override
   public boolean matches(ICauldronState inv, World worldIn) {
-    return matches(inv);
+    return inv.getLevel() != 0 && matches(inv);
   }
 
   /**

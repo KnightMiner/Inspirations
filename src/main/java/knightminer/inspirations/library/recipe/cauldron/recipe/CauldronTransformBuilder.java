@@ -70,6 +70,9 @@ public class CauldronTransformBuilder extends AbstractRecipeBuilder<CauldronTran
    * @return  Builder instance
    */
   public CauldronTransformBuilder minLevels(int min) {
+    if (min <= 0) {
+      throw new IllegalArgumentException("Cannot match 0 levels");
+    }
     this.level = LevelPredicate.min(min);
     return this;
   }
@@ -80,16 +83,11 @@ public class CauldronTransformBuilder extends AbstractRecipeBuilder<CauldronTran
    * @return  Builder instance
    */
   public CauldronTransformBuilder maxLevels(int max) {
-    this.level = LevelPredicate.max(max);
+    if (max <= 0) {
+      throw new IllegalArgumentException("Cannot match 0 levels");
+    }
+    this.level = LevelPredicate.range(1, max);
     return this;
-  }
-
-  /**
-   * Sets the required number of levels to be a empty cauldron
-   * @return  Builder instance
-   */
-  public CauldronTransformBuilder matchEmpty() {
-    return maxLevels(0);
   }
 
   /**
@@ -107,6 +105,9 @@ public class CauldronTransformBuilder extends AbstractRecipeBuilder<CauldronTran
    * @return  Builder instance
    */
   public CauldronTransformBuilder levelRange(int min, int max) {
+    if (min <= 0) {
+      throw new IllegalArgumentException("Cannot match 0 levels");
+    }
     this.level = LevelPredicate.range(min, max);
     return this;
   }
