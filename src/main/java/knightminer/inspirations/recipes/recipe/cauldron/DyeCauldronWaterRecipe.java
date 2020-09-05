@@ -3,6 +3,7 @@ package knightminer.inspirations.recipes.recipe.cauldron;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import knightminer.inspirations.library.recipe.RecipeSerializer;
+import knightminer.inspirations.library.recipe.RecipeSerializers;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.inventory.ICauldronInventory;
@@ -10,7 +11,6 @@ import knightminer.inspirations.library.recipe.cauldron.inventory.IModifyableCau
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipeDisplay;
 import knightminer.inspirations.library.recipe.cauldron.util.TemperaturePredicate;
-import knightminer.inspirations.recipes.InspirationsRecipes;
 import net.minecraft.data.IFinishedRecipe;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.DyeColor;
@@ -160,7 +160,7 @@ public class DyeCauldronWaterRecipe implements ICauldronRecipe, ICauldronRecipeD
 
   @Override
   public IRecipeSerializer<?> getSerializer() {
-    return InspirationsRecipes.dyeCauldronWaterSerializer;
+    return RecipeSerializers.CAULDRON_DYE_WATER;
   }
 
 
@@ -258,7 +258,7 @@ public class DyeCauldronWaterRecipe implements ICauldronRecipe, ICauldronRecipeD
 
     @Override
     public IRecipeSerializer<?> getSerializer() {
-      return InspirationsRecipes.dyeCauldronWaterSerializer;
+      return RecipeSerializers.CAULDRON_DYE_WATER;
     }
 
     @Nullable

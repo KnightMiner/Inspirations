@@ -2,6 +2,7 @@ package knightminer.inspirations.library.recipe.cauldron.recipe;
 
 import com.google.gson.JsonObject;
 import knightminer.inspirations.library.recipe.RecipeSerializer;
+import knightminer.inspirations.library.recipe.RecipeSerializers;
 import knightminer.inspirations.library.recipe.RecipeTypes;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.CauldronIngredients;
@@ -10,7 +11,6 @@ import knightminer.inspirations.library.recipe.cauldron.ingredient.ICauldronIngr
 import knightminer.inspirations.library.recipe.cauldron.inventory.ICauldronState;
 import knightminer.inspirations.library.recipe.cauldron.util.LevelPredicate;
 import knightminer.inspirations.library.recipe.cauldron.util.TemperaturePredicate;
-import knightminer.inspirations.recipes.InspirationsRecipes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.IRecipeType;
@@ -116,7 +116,7 @@ public class CauldronTransform extends AbstractCauldronRecipe implements ICustom
 
   @Override
   public IRecipeSerializer<?> getSerializer() {
-    return InspirationsRecipes.cauldronTransformSerializer;
+    return RecipeSerializers.CAULDRON_TRANSFORM;
   }
 
   /**

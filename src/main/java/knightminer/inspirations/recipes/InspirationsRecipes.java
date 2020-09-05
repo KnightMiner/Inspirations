@@ -94,21 +94,6 @@ public class InspirationsRecipes extends ModuleBase {
   public static FlowingFluidBlock potatoSoupBlock;
   public static ForgeFlowingFluid milk;
 
-  // cauldron serializers
-  public static CauldronRecipe.Serializer cauldronSerializer;
-  public static EmptyPotionCauldronRecipe.Serializer emptyPotionSerializer;
-  public static FillPotionCauldronRecipe.Serializer fillPotionSerializer;
-  public static DyeCauldronWaterRecipe.Serializer dyeCauldronWaterSerializer;
-  public static MixCauldronDyeRecipe.Serializer mixCauldronDyeSerializer;
-  public static DyeableCauldronRecipe.Serializer dyeDyeableSerializer;
-  public static DyeableCauldronRecipe.Serializer clearDyeableSerializer;
-  public static CauldronTransform.Serializer cauldronTransformSerializer;
-
-  public static SpecialRecipeSerializer<EmptyBucketCauldronRecipe> emptyBucketSerializer;
-  public static SpecialRecipeSerializer<FillBucketCauldronRecipe> fillBucketSerializer;
-  public static SpecialRecipeSerializer<FillDyedBottleRecipe> fillDyedBottleSerializer;
-  public static SpecialRecipeSerializer<RemoveBannerPatternCauldronRecipe> removeBannerPatternSerializer;
-
   public static BasicParticleType boilingParticle;
 
   @SubscribeEvent
@@ -206,19 +191,19 @@ public class InspirationsRecipes extends ModuleBase {
   @SubscribeEvent
   void registerSerializers(Register<IRecipeSerializer<?>> event) {
     RegistryAdapter<IRecipeSerializer<?>> registry = new RegistryAdapter<>(event.getRegistry());
-    cauldronSerializer = registry.register(new CauldronRecipe.Serializer(), "cauldron");
-    emptyPotionSerializer = registry.register(new EmptyPotionCauldronRecipe.Serializer(), "cauldron_empty_potion");
-    fillPotionSerializer = registry.register(new FillPotionCauldronRecipe.Serializer(), "cauldron_fill_potion");
-    dyeCauldronWaterSerializer = registry.register(new DyeCauldronWaterRecipe.Serializer(), "cauldron_dye_water");
-    mixCauldronDyeSerializer = registry.register(new MixCauldronDyeRecipe.Serializer(), "cauldron_mix_dye");
-    dyeDyeableSerializer = registry.register(new DyeableCauldronRecipe.Serializer(DyeableCauldronRecipe.Dye::new), "cauldron_dye_dyeable");
-    clearDyeableSerializer = registry.register(new DyeableCauldronRecipe.Serializer(DyeableCauldronRecipe.Clear::new), "cauldron_clear_dyeable");
-    cauldronTransformSerializer = registry.register(new CauldronTransform.Serializer(), "cauldron_transform");
+    registry.register(new CauldronRecipe.Serializer(), "cauldron");
+    registry.register(new EmptyPotionCauldronRecipe.Serializer(), "cauldron_empty_potion");
+    registry.register(new FillPotionCauldronRecipe.Serializer(), "cauldron_fill_potion");
+    registry.register(new DyeCauldronWaterRecipe.Serializer(), "cauldron_dye_water");
+    registry.register(new MixCauldronDyeRecipe.Serializer(), "cauldron_mix_dye");
+    registry.register(new DyeableCauldronRecipe.Serializer(DyeableCauldronRecipe.Dye::new), "cauldron_dye_dyeable");
+    registry.register(new DyeableCauldronRecipe.Serializer(DyeableCauldronRecipe.Clear::new), "cauldron_clear_dyeable");
+    registry.register(new CauldronTransform.Serializer(), "cauldron_transform");
 
-    emptyBucketSerializer = registry.register(new SpecialRecipeSerializer<>(EmptyBucketCauldronRecipe::new), "cauldron_empty_bucket");
-    fillBucketSerializer = registry.register(new SpecialRecipeSerializer<>(FillBucketCauldronRecipe::new), "cauldron_fill_bucket");
-    fillDyedBottleSerializer = registry.register(new SpecialRecipeSerializer<>(FillDyedBottleRecipe::new), "cauldron_fill_dyed_bottle");
-    removeBannerPatternSerializer = registry.register(new SpecialRecipeSerializer<>(RemoveBannerPatternCauldronRecipe::new), "cauldron_remove_banner_pattern");
+    registry.register(new SpecialRecipeSerializer<>(EmptyBucketCauldronRecipe::new), "cauldron_empty_bucket");
+    registry.register(new SpecialRecipeSerializer<>(FillBucketCauldronRecipe::new), "cauldron_fill_bucket");
+    registry.register(new SpecialRecipeSerializer<>(FillDyedBottleRecipe::new), "cauldron_fill_dyed_bottle");
+    registry.register(new SpecialRecipeSerializer<>(RemoveBannerPatternCauldronRecipe::new), "cauldron_remove_banner_pattern");
 
     // add water as an override to potions
     ICauldronContents water = CauldronContentTypes.FLUID.of(Fluids.WATER);

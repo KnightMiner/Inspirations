@@ -97,7 +97,7 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
 
     // fill containers
     // bucket
-    CustomRecipeBuilder.customRecipe(InspirationsRecipes.fillBucketSerializer)
+    CustomRecipeBuilder.customRecipe(RecipeSerializers.CAULDRON_FILL_BUCKET)
                        .build(withCondition(ConfigEnabledCondition.CAULDRON_RECIPES), resourceName(folder + "fill_bucket"));
     // glass bottles
     ItemStack waterBottle = PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), Potions.WATER);
@@ -111,7 +111,7 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
 
     // empty container
     // bucket
-    CustomRecipeBuilder.customRecipe(InspirationsRecipes.emptyBucketSerializer)
+    CustomRecipeBuilder.customRecipe(RecipeSerializers.CAULDRON_EMPTY_BUCKET)
                        .build(cauldronRecipes, resourceName(folder + "empty_bucket"));
     // water bottle
     CauldronRecipeBuilder.cauldron(SizedIngredient.of(new NBTIngredient(waterBottle)), waterIngredient)
@@ -292,7 +292,7 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
     // mixed dyed bottle
     dyeConsumer.accept(new MixCauldronDyeRecipe.FinishedRecipe(resource(dyeFolder + "bottle/mixed"), Ingredient.fromItems(InspirationsRecipes.mixedDyedWaterBottle)));
     // fill dyed bottle
-    CustomRecipeBuilder.customRecipe(InspirationsRecipes.fillDyedBottleSerializer).build(dyeConsumer, resourceName(dyeFolder + "bottle/fill"));
+    CustomRecipeBuilder.customRecipe(RecipeSerializers.CAULDRON_FILL_DYED_BOTTLE).build(dyeConsumer, resourceName(dyeFolder + "bottle/fill"));
 
     // mix dyed bottles
     String mixFolder = dyeFolder + "bottle/mix/";
@@ -364,7 +364,7 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
     addDyeableRecipes(Items.LEATHER_HORSE_ARMOR, folder);
 
     // banner pattern removing
-    CustomRecipeBuilder.customRecipe(InspirationsRecipes.removeBannerPatternSerializer).build(cauldronRecipes, resourceName(folder + "remove_banner_pattern"));
+    CustomRecipeBuilder.customRecipe(RecipeSerializers.CAULDRON_REMOVE_BANNER_PATTERN).build(cauldronRecipes, resourceName(folder + "remove_banner_pattern"));
 
 
     // potions //

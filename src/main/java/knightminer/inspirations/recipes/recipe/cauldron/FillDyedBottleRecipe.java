@@ -1,5 +1,6 @@
 package knightminer.inspirations.recipes.recipe.cauldron;
 
+import knightminer.inspirations.library.recipe.RecipeSerializers;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.inventory.ICauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.inventory.IModifyableCauldronInventory;
@@ -45,6 +46,6 @@ public class FillDyedBottleRecipe implements ICauldronRecipe {
 
   @Override
   public IRecipeSerializer<?> getSerializer() {
-    return InspirationsRecipes.fillDyedBottleSerializer;
+    return RecipeSerializers.CAULDRON_FILL_DYED_BOTTLE;
   }
 }

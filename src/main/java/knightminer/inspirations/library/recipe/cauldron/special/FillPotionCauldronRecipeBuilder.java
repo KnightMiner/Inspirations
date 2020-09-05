@@ -1,7 +1,7 @@
 package knightminer.inspirations.library.recipe.cauldron.special;
 
 import com.google.gson.JsonObject;
-import knightminer.inspirations.recipes.InspirationsRecipes;
+import knightminer.inspirations.library.recipe.RecipeSerializers;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.data.IFinishedRecipe;
 import net.minecraft.item.Item;
@@ -96,7 +96,7 @@ public class FillPotionCauldronRecipeBuilder extends AbstractRecipeBuilder<FillP
 
     @Override
     public IRecipeSerializer<?> getSerializer() {
-      return InspirationsRecipes.fillPotionSerializer;
+      return RecipeSerializers.CAULDRON_FILL_POTION;
     }
 
     @Nullable

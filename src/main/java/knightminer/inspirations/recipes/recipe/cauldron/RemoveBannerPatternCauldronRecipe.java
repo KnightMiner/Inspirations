@@ -1,14 +1,12 @@
 package knightminer.inspirations.recipes.recipe.cauldron;
 
+import knightminer.inspirations.library.recipe.RecipeSerializers;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.inventory.ICauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.inventory.IModifyableCauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
-import knightminer.inspirations.recipes.InspirationsRecipes;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tileentity.BannerTileEntity;
@@ -47,22 +45,6 @@ public class RemoveBannerPatternCauldronRecipe implements ICauldronRecipe {
     inv.playSound(SoundEvents.ENTITY_FISHING_BOBBER_SPLASH);
   }
 
-  /**
-   * @deprecated  Use {@link #getCraftingResult(IInventory)}
-   */
-  @Deprecated
-  @Override
-  public ItemStack getRecipeOutput() {
-    return new ItemStack(Items.WHITE_BANNER);
-  }
-
-  @Override
-  public ItemStack getCraftingResult(ICauldronInventory inv) {
-    ItemStack stack = inv.getStack().copy();
-    BannerTileEntity.removeBannerData(stack);
-    return stack;
-  }
-
   @Override
   public ResourceLocation getId() {
     return id;
@@ -70,6 +52,6 @@ public class RemoveBannerPatternCauldronRecipe implements ICauldronRecipe {
 
   @Override
   public IRecipeSerializer<?> getSerializer() {
-    return InspirationsRecipes.removeBannerPatternSerializer;
+    return RecipeSerializers.CAULDRON_REMOVE_BANNER_PATTERN;
   }
 }

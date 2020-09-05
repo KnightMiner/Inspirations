@@ -1,10 +1,10 @@
 package knightminer.inspirations.recipes.recipe.cauldron;
 
+import knightminer.inspirations.library.recipe.RecipeSerializers;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.inventory.ICauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.inventory.IModifyableCauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
-import knightminer.inspirations.recipes.InspirationsRecipes;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.crafting.IRecipeSerializer;
@@ -98,6 +98,6 @@ public class EmptyBucketCauldronRecipe implements ICauldronRecipe {
 
   @Override
   public IRecipeSerializer<?> getSerializer() {
-    return InspirationsRecipes.emptyBucketSerializer;
+    return RecipeSerializers.CAULDRON_EMPTY_BUCKET;
   }
 }

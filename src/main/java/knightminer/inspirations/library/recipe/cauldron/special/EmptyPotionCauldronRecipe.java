@@ -3,11 +3,11 @@ package knightminer.inspirations.library.recipe.cauldron.special;
 import com.google.gson.JsonObject;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.recipe.RecipeSerializer;
+import knightminer.inspirations.library.recipe.RecipeSerializers;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.inventory.ICauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.inventory.IModifyableCauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
-import knightminer.inspirations.recipes.InspirationsRecipes;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;
@@ -90,7 +90,7 @@ public class EmptyPotionCauldronRecipe implements ICauldronRecipe {
 
   @Override
   public IRecipeSerializer<?> getSerializer() {
-    return InspirationsRecipes.emptyPotionSerializer;
+    return RecipeSerializers.CAULDRON_EMPTY_POTION;
   }
 
   public static class Serializer extends RecipeSerializer<EmptyPotionCauldronRecipe> {

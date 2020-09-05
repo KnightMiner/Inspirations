@@ -4,13 +4,13 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.recipe.RecipeSerializer;
+import knightminer.inspirations.library.recipe.RecipeSerializers;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.contents.EmptyCauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.inventory.ICauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.inventory.IModifyableCauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
-import knightminer.inspirations.recipes.InspirationsRecipes;
 import net.minecraft.data.IFinishedRecipe;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.DyeColor;
@@ -110,18 +110,13 @@ public class MixCauldronDyeRecipe implements ICauldronRecipe {
   }
 
   @Override
-  public ItemStack getRecipeOutput() {
-    return ItemStack.EMPTY;
-  }
-
-  @Override
   public ResourceLocation getId() {
     return id;
   }
 
   @Override
   public IRecipeSerializer<?> getSerializer() {
-    return InspirationsRecipes.mixCauldronDyeSerializer;
+    return RecipeSerializers.CAULDRON_MIX_DYE;
   }
 
   public static class Serializer extends RecipeSerializer<MixCauldronDyeRecipe> {
@@ -221,7 +216,7 @@ public class MixCauldronDyeRecipe implements ICauldronRecipe {
 
     @Override
     public IRecipeSerializer<?> getSerializer() {
-      return InspirationsRecipes.mixCauldronDyeSerializer;
+      return RecipeSerializers.CAULDRON_MIX_DYE;
     }
 
     @Nullable

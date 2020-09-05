@@ -1,7 +1,7 @@
 package knightminer.inspirations.library.recipe.cauldron.special;
 
 import com.google.gson.JsonObject;
-import knightminer.inspirations.recipes.InspirationsRecipes;
+import knightminer.inspirations.library.recipe.RecipeSerializers;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.data.IFinishedRecipe;
 import net.minecraft.item.Item;
@@ -75,7 +75,7 @@ public class EmptyPotionCauldronRecipeBuilder extends AbstractRecipeBuilder<Empt
 
     @Override
     public IRecipeSerializer<?> getSerializer() {
-      return InspirationsRecipes.emptyPotionSerializer;
+      return RecipeSerializers.CAULDRON_EMPTY_POTION;
     }
 
     @Nullable

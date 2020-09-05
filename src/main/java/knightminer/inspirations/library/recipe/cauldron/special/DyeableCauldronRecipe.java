@@ -3,12 +3,12 @@ package knightminer.inspirations.library.recipe.cauldron.special;
 import com.google.gson.JsonObject;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.recipe.RecipeSerializer;
+import knightminer.inspirations.library.recipe.RecipeSerializers;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.inventory.ICauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.inventory.IModifyableCauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
-import knightminer.inspirations.recipes.InspirationsRecipes;
 import net.minecraft.data.IFinishedRecipe;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
@@ -108,7 +108,7 @@ public abstract class DyeableCauldronRecipe implements ICauldronRecipe {
 
     @Override
     public IRecipeSerializer<?> getSerializer() {
-      return InspirationsRecipes.dyeDyeableSerializer;
+      return RecipeSerializers.CAULDRON_DYE_DYEABLE;
     }
   }
 
@@ -132,7 +132,7 @@ public abstract class DyeableCauldronRecipe implements ICauldronRecipe {
 
     @Override
     public IRecipeSerializer<?> getSerializer() {
-      return InspirationsRecipes.clearDyeableSerializer;
+      return RecipeSerializers.CAULDRON_CLEAR_DYEABLE;
     }
   }
 
@@ -193,7 +193,7 @@ public abstract class DyeableCauldronRecipe implements ICauldronRecipe {
      * @return  Recipe
      */
     public static FinishedRecipe dye(ResourceLocation id, Ingredient ingredient) {
-      return new FinishedRecipe(id, ingredient, InspirationsRecipes.dyeDyeableSerializer);
+      return new FinishedRecipe(id, ingredient, RecipeSerializers.CAULDRON_DYE_DYEABLE);
     }
 
     /**
@@ -203,7 +203,7 @@ public abstract class DyeableCauldronRecipe implements ICauldronRecipe {
      * @return  Recipe
      */
     public static FinishedRecipe clear(ResourceLocation id, Ingredient ingredient) {
-      return new FinishedRecipe(id, ingredient, InspirationsRecipes.clearDyeableSerializer);
+      return new FinishedRecipe(id, ingredient, RecipeSerializers.CAULDRON_CLEAR_DYEABLE);
     }
 
     @Override
