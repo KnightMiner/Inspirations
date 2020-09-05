@@ -125,6 +125,18 @@ public abstract class LevelPredicate implements IntPredicate {
   }
 
   /**
+   * Gets the minimum number that matches for display. Use {@link #test(int)} for testing
+   * @return  Minumum match
+   */
+  public abstract int getMin();
+
+  /**
+   * Gets the maximum number that matches for display. Use {@link #test(int)} for testing
+   * @return  Maximum match
+   */
+  public abstract int getMax();
+
+  /**
    * Writes this to the packet buffer
    * @param buffer  Buffer instance
    */
@@ -161,6 +173,16 @@ public abstract class LevelPredicate implements IntPredicate {
     }
 
     @Override
+    public int getMin() {
+      return min;
+    }
+
+    @Override
+    public int getMax() {
+      return MAX;
+    }
+
+    @Override
     public void write(PacketBuffer buffer) {
       buffer.writeEnumValue(Type.MIN);
       buffer.writeVarInt(min);
@@ -185,6 +207,16 @@ public abstract class LevelPredicate implements IntPredicate {
     @Override
     public boolean test(int value) {
       return value <= max;
+    }
+
+    @Override
+    public int getMin() {
+      return 0;
+    }
+
+    @Override
+    public int getMax() {
+      return max;
     }
 
     @Override
@@ -213,6 +245,16 @@ public abstract class LevelPredicate implements IntPredicate {
     @Override
     public boolean test(int value) {
       return value <= max && value >= min;
+    }
+
+    @Override
+    public int getMin() {
+      return min;
+    }
+
+    @Override
+    public int getMax() {
+      return max;
     }
 
     @Override

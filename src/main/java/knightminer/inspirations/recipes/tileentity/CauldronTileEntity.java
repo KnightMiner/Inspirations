@@ -598,15 +598,15 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
     timer++;
 
     // if the recipe is done, run recipe
-    if (!world.isRemote && timer >= currentTransform.getTime(craftingInventory)) {
+    if (!world.isRemote && timer >= currentTransform.getTime()) {
       timer = 0;
 
       // play sound effect, note its before contents update
-      SoundEvent sound = currentTransform.getSound(craftingInventory);
+      SoundEvent sound = currentTransform.getSound();
       world.playSound(null, pos, sound, SoundCategory.BLOCKS, 1.0f, 1.0f);
 
       // set contents will clear the current transform if no longer current
-      setContents(currentTransform.getOutput(craftingInventory));
+      setContents(currentTransform.getContentOutput());
     }
   }
 
@@ -627,7 +627,7 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
     if (currentTransform == null) {
       return 0;
     }
-    return timer * 5 / currentTransform.getTime(craftingInventory);
+    return timer * 5 / currentTransform.getTime();
   }
 
   /*

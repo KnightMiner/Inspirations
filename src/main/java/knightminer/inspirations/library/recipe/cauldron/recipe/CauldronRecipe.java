@@ -1,7 +1,6 @@
 package knightminer.inspirations.library.recipe.cauldron.recipe;
 
 import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
 import knightminer.inspirations.library.recipe.RecipeSerializer;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.CauldronIngredients;
@@ -28,21 +27,18 @@ import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.Objects;
 
 /**
  * Base cauldron recipe implementation
  */
-public class CauldronRecipe implements ICauldronRecipe {
+public class CauldronRecipe extends AbstractCauldronRecipe implements ICauldronRecipe {
   private final ResourceLocation id;
   private final String group;
   private final SizedIngredient input;
-  private final ICauldronIngredient contents;
-  private final LevelPredicate level;
-  private final TemperaturePredicate temperature;
   private final ItemStack output;
   private final boolean copyNBT;
-  private final ICauldronContents newContents;
   private final LevelUpdate levelUpdate;
   @Nullable
   private final ItemStack container;
@@ -64,31 +60,28 @@ public class CauldronRecipe implements ICauldronRecipe {
    */
   public CauldronRecipe(ResourceLocation id, String group, SizedIngredient input, ICauldronIngredient contents, LevelPredicate level, TemperaturePredicate temperature,
                         ItemStack output, boolean copyNBT, ICauldronContents newContents, LevelUpdate levelUpdate, @Nullable ItemStack container, SoundEvent sound) {
+    super(contents, level, temperature, newContents);
     this.id = id;
     this.group = group;
     this.input = input;
-    this.contents = contents;
-    this.level = level;
-    this.temperature = temperature;
     this.output = output;
     this.copyNBT = copyNBT;
-    this.newContents = newContents;
     this.levelUpdate = levelUpdate;
     this.container = container;
     this.sound = sound;
   }
 
+
+  /* Behavior */
+
   @Override
   public boolean matches(ICauldronInventory inv, World worldIn) {
     // if this cauldron only supports simple recipes, block if the result is not simple
-    if (inv.isSimple() && !newContents.isSimple()) {
+    if (inv.isSimple() && !outputContents.isSimple()) {
       return false;
     }
-
-    // boiling must match, must have right level
-    // contents must match, but if the current level of 0 matches skip contents check (used for fill recipes)
-    int current = inv.getLevel();
-    if (!temperature.test(inv.getTemperature()) || !level.test(current) || (current != 0 && !contents.test(inv.getContents()))) {
+    // check common matches logic
+    if (!this.matches(inv)) {
       return false;
     }
     // stack must have enough items and match the ingredient
@@ -100,8 +93,8 @@ public class CauldronRecipe implements ICauldronRecipe {
   public void handleRecipe(IModifyableCauldronInventory inventory) {
     // update level
     // only update contents if the level is not empty and we have new contents
-    if (!inventory.updateLevel(levelUpdate) && newContents != EmptyCauldronContents.INSTANCE) {
-      inventory.setContents(newContents);
+    if (!inventory.updateLevel(levelUpdate) && outputContents != EmptyCauldronContents.INSTANCE) {
+      inventory.setContents(outputContents);
     }
 
     // determine container item if passed container is null
@@ -134,6 +127,33 @@ public class CauldronRecipe implements ICauldronRecipe {
     inventory.playSound(sound);
   }
 
+
+  /* Display */
+
+  @Override
+  public List<ItemStack> getItemInputs() {
+    return input.getMatchingStacks();
+  }
+
+  @Override
+  public int getLevelInput() {
+    // when the amount is unchanged, we typically want to know how much we can do at most
+    return levelUpdate == LevelUpdate.IDENTITY ? level.getMax() : level.getMin();
+  }
+
+  @Override
+  public int getLevelOutput() {
+    return levelUpdate.applyAsInt(getLevelInput());
+  }
+
+  @Override
+  public ItemStack getItemOutput() {
+    return output;
+  }
+
+
+  /* Recipe basics */
+
   @Override
   public ResourceLocation getId() {
     return id;
@@ -145,29 +165,8 @@ public class CauldronRecipe implements ICauldronRecipe {
   }
 
   @Override
-  public ItemStack getRecipeOutput() {
-    return output;
-  }
-
-  @Override
   public IRecipeSerializer<?> getSerializer() {
     return InspirationsRecipes.cauldronSerializer;
-  }
-
-  /**
-   * Gets the boiling predicate for the given JSON
-   * @param json  Parent json object
-   * @param key   Key in json
-   * @return  Boiling predicate
-   * @throws JsonSyntaxException  If the value is invalid
-   */
-  public static TemperaturePredicate getBoiling(JsonObject json, String key) {
-    String name = JSONUtils.getString(json, key, "any");
-    TemperaturePredicate boiling = TemperaturePredicate.byName(name);
-    if (boiling == null) {
-      throw new JsonSyntaxException("Invalid boiling predicate '" + name + "'");
-    }
-    return boiling;
   }
 
   /**
@@ -242,12 +241,12 @@ public class CauldronRecipe implements ICauldronRecipe {
     public void write(PacketBuffer buffer, CauldronRecipe recipe) {
       buffer.writeString(recipe.group);
       recipe.input.write(buffer);
-      CauldronIngredients.write(recipe.contents, buffer);
+      CauldronIngredients.write(recipe.ingredient, buffer);
       recipe.level.write(buffer);
       buffer.writeEnumValue(recipe.temperature);
       buffer.writeItemStack(recipe.output);
       buffer.writeBoolean(recipe.copyNBT);
-      CauldronContentTypes.write(recipe.newContents, buffer);
+      CauldronContentTypes.write(recipe.outputContents, buffer);
       recipe.levelUpdate.write(buffer);
       if (recipe.container == null) {
         buffer.writeBoolean(false);

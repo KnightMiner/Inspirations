@@ -1,4 +1,4 @@
-package knightminer.inspirations.library.recipe.cauldron.recipe;
+package knightminer.inspirations.library.recipe.cauldron.special;
 
 import com.google.gson.JsonObject;
 import knightminer.inspirations.library.Util;
@@ -6,16 +6,14 @@ import knightminer.inspirations.library.recipe.RecipeSerializer;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.inventory.ICauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.inventory.IModifyableCauldronInventory;
+import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
 import knightminer.inspirations.recipes.InspirationsRecipes;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtils;
-import net.minecraft.potion.Potions;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvents;
@@ -69,23 +67,6 @@ public class FillPotionCauldronRecipe implements ICauldronRecipe {
       // play sound
       inv.playSound(SoundEvents.ITEM_BOTTLE_FILL);
     });
-  }
-
-  /**
-   * @deprecated use {@link #getCraftingResult(IInventory)}
-   */
-  @Deprecated
-  @Override
-  public ItemStack getRecipeOutput() {
-    return new ItemStack(potionItem, amount);
-  }
-
-  @Override
-  public ItemStack getCraftingResult(ICauldronInventory inv) {
-    Potion potion = inv.getContents()
-                       .get(CauldronContentTypes.POTION)
-                       .orElse(Potions.EMPTY);
-    return PotionUtils.addPotionToItemStack(new ItemStack(potionItem, amount), potion);
   }
 
   @Override

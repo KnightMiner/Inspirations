@@ -2,6 +2,8 @@ package knightminer.inspirations.library.recipe.cauldron.contents;
 
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 
 import javax.annotation.Nullable;
 
@@ -12,6 +14,11 @@ public class EmptyContentType extends CauldronContentType<Void> {
   @Override
   public ResourceLocation getTexture(Void type) {
     return CauldronContentType.NO_TEXTURE;
+  }
+
+  @Override
+  public ITextComponent getDisplayName(Void value) {
+    return StringTextComponent.EMPTY;
   }
 
   @Override

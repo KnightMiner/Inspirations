@@ -3,7 +3,9 @@ package knightminer.inspirations.recipes.recipe.cauldron.contents;
 import knightminer.inspirations.library.recipe.cauldron.contents.CauldronContentType;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 
+import javax.annotation.Nullable;
 import java.util.Optional;
 
 /**
@@ -38,6 +40,9 @@ public class CauldronContents<C> implements ICauldronContents {
     return type;
   }
 
+
+  /* Display */
+
   @Override
   public ResourceLocation getTextureName() {
     return type.getTexture(value);
@@ -47,6 +52,25 @@ public class CauldronContents<C> implements ICauldronContents {
   public int getTintColor() {
     return type.getColor(value);
   }
+
+  @Override
+  public ITextComponent getDisplayName() {
+    return type.getDisplayName(value);
+  }
+
+  @Nullable
+  @Override
+  public String getModId() {
+    return type.getModId(value);
+  }
+
+  @Override
+  public String getName() {
+    return type.getName(value);
+  }
+
+
+  /* Equality */
 
   @Override
   public <T> boolean matches(CauldronContentType<T> type, T value) {

@@ -4,14 +4,14 @@ import knightminer.inspirations.library.recipe.RecipeTypes;
 import knightminer.inspirations.library.recipe.cauldron.inventory.ICauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.inventory.IModifyableCauldronInventory;
 import net.minecraft.item.crafting.IRecipeType;
-import slimeknights.mantle.recipe.ICommonRecipe;
+import slimeknights.mantle.recipe.ICustomOutputRecipe;
 
 /**
  * Base interface for all cauldron recipes based on direct interaction
  */
-public interface ICauldronRecipe extends ICommonRecipe<ICauldronInventory> {
+public interface ICauldronRecipe extends ICustomOutputRecipe<ICauldronInventory> {
   /** Maximum fill level of the cauldron */
-  static int MAX = 3;
+  int MAX = 3;
 
   /**
    * Updates the cauldron based on the results of the recipe

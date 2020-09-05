@@ -3,14 +3,15 @@ package knightminer.inspirations.library.recipe.cauldron.contents;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 
+import javax.annotation.Nullable;
 import java.util.Optional;
 
 /**
  * Base interface for all cauldron contents
  */
 public interface ICauldronContents {
-
   /**
    * Gets this value as the given type
    * @param type  Type to get
@@ -40,6 +41,27 @@ public interface ICauldronContents {
    * @return  Tint color
    */
   int getTintColor();
+
+  /**
+   * Gets the text component to display for this contents name
+   * @return  Name text component
+   */
+  ITextComponent getDisplayName();
+
+  /**
+   * Gets the relevant mod ID for this contents
+   * @return  Contents mod ID
+   */
+  @Nullable
+  default String getModId() {
+    return null;
+  }
+
+  /**
+   * Gets the unique name relative to the ingredient type
+   * @return  Resource searching name
+   */
+  String getName();
 
 
   /* Mapping */

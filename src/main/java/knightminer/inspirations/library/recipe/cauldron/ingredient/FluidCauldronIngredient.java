@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.CauldronIngredients;
+import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tags.ITag;
@@ -13,12 +14,14 @@ import net.minecraft.util.ResourceLocation;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Cauldron ingredient type for fluid contents, mostly an extension of {@link ContentMatchIngredient}, but also includes tags
  */
 public class FluidCauldronIngredient extends ContentMatchIngredient<Fluid> {
   private final ITag<Fluid> tag;
+  private List<ICauldronContents> displayValues;
   private FluidCauldronIngredient(ITag<Fluid> tag) {
     super(CauldronIngredients.FLUID);
     this.tag = tag;
@@ -41,6 +44,14 @@ public class FluidCauldronIngredient extends ContentMatchIngredient<Fluid> {
     for (Fluid fluid : elements) {
       buffer.writeResourceLocation(Objects.requireNonNull(fluid.getRegistryName()));
     }
+  }
+
+  @Override
+  public List<ICauldronContents> getMatchingContents() {
+    if (displayValues == null) {
+      displayValues = tag.getAllElements().stream().map(CauldronContentTypes.FLUID::of).collect(Collectors.toList());
+    }
+    return displayValues;
   }
 
   /** Specific fluid serializer class */

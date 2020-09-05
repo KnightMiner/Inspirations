@@ -12,9 +12,9 @@ import knightminer.inspirations.library.recipe.cauldron.ingredient.ICauldronIngr
 import knightminer.inspirations.library.recipe.cauldron.ingredient.SizedIngredient;
 import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronRecipeBuilder;
 import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronTransformBuilder;
-import knightminer.inspirations.library.recipe.cauldron.recipe.DyeableCauldronRecipe;
-import knightminer.inspirations.library.recipe.cauldron.recipe.EmptyPotionCauldronRecipeBuilder;
-import knightminer.inspirations.library.recipe.cauldron.recipe.FillPotionCauldronRecipeBuilder;
+import knightminer.inspirations.library.recipe.cauldron.special.DyeableCauldronRecipe;
+import knightminer.inspirations.library.recipe.cauldron.special.EmptyPotionCauldronRecipeBuilder;
+import knightminer.inspirations.library.recipe.cauldron.special.FillPotionCauldronRecipeBuilder;
 import knightminer.inspirations.library.recipe.cauldron.util.TemperaturePredicate;
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.recipes.recipe.cauldron.DyeCauldronWaterRecipe;

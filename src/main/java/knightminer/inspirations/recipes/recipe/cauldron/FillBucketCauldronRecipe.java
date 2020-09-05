@@ -5,9 +5,7 @@ import knightminer.inspirations.library.recipe.cauldron.inventory.ICauldronInven
 import knightminer.inspirations.library.recipe.cauldron.inventory.IModifyableCauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
 import knightminer.inspirations.recipes.InspirationsRecipes;
-import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.ResourceLocation;
@@ -82,21 +80,5 @@ public class FillBucketCauldronRecipe implements ICauldronRecipe {
   @Override
   public IRecipeSerializer<?> getSerializer() {
     return InspirationsRecipes.fillBucketSerializer;
-  }
-
-  /** @deprecated Use {@link #getCraftingResult(ICauldronInventory)} */
-  @Deprecated
-  @Override
-  public ItemStack getRecipeOutput() {
-    return new ItemStack(Items.WATER_BUCKET);
-  }
-
-  @Override
-  public ItemStack getCraftingResult(ICauldronInventory inv) {
-    // return filled bucket for the contained fluid, or empty bucket if invalid fluid
-    return new ItemStack(inv.getContents()
-                            .get(CauldronContentTypes.FLUID)
-                            .map(Fluid::getFilledBucket)
-                            .orElse(Items.BUCKET));
   }
 }

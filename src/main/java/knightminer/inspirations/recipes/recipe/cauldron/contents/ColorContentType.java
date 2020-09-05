@@ -6,6 +6,9 @@ import knightminer.inspirations.library.recipe.cauldron.contents.CauldronContent
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Util;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -15,6 +18,7 @@ import java.util.Optional;
  */
 public class ColorContentType extends CauldronContentType<Integer> {
   private static final ResourceLocation TEXTURE_NAME = Inspirations.getResource("color");
+  private static final String TRANSLATION_KEY = Util.makeTranslationKey("cauldron_contents", Inspirations.getResource("color"));
 
   @Override
   public String getKey() {
@@ -32,8 +36,13 @@ public class ColorContentType extends CauldronContentType<Integer> {
   }
 
   @Override
+  public ITextComponent getDisplayName(Integer value) {
+    return new TranslationTextComponent(TRANSLATION_KEY, getName(value));
+  }
+
+  @Override
   public String getName(Integer value) {
-    return Integer.toHexString(value);
+    return String.format("%06X", value);
   }
 
   @Nullable

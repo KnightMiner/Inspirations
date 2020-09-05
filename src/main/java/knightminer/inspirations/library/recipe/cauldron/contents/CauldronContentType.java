@@ -11,6 +11,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.util.Constants.NBT;
 
 import javax.annotation.Nullable;
@@ -101,6 +102,23 @@ public abstract class CauldronContentType<T> {
    */
   public int getColor(T value) {
     return -1;
+  }
+
+  /**
+   * Gets the name from the given value
+   * @param value  Value to fetch name
+   * @return  Value name
+   */
+  public abstract ITextComponent getDisplayName(T value);
+
+  /**
+   * Gets the mod ID for the given value
+   * @param value  Value
+   * @return  Mod ID
+   */
+  @Nullable
+  public String getModId(T value) {
+    return null;
   }
 
 

@@ -1,4 +1,4 @@
-package knightminer.inspirations.library.recipe.cauldron.recipe;
+package knightminer.inspirations.library.recipe.cauldron.special;
 
 import com.google.gson.JsonObject;
 import knightminer.inspirations.library.Util;
@@ -6,6 +6,7 @@ import knightminer.inspirations.library.recipe.RecipeSerializer;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.inventory.ICauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.inventory.IModifyableCauldronInventory;
+import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -21,11 +22,20 @@ import slimeknights.mantle.recipe.RecipeHelper;
 
 import javax.annotation.Nullable;
 
+/**
+ * Recipe that drains a potion into the cauldron
+ */
 public class EmptyPotionCauldronRecipe implements ICauldronRecipe {
   private final ResourceLocation id;
   private final Item potionItem;
   private final Item bottle;
 
+  /**
+   * Creates a new instance
+   * @param id      Recipe ID
+   * @param potion  Potion item to drain
+   * @param bottle  Potion bottle
+   */
   public EmptyPotionCauldronRecipe(ResourceLocation id, Item potion, Item bottle) {
     this.id = id;
     this.potionItem = potion;
@@ -76,11 +86,6 @@ public class EmptyPotionCauldronRecipe implements ICauldronRecipe {
   @Override
   public ResourceLocation getId() {
     return id;
-  }
-
-  @Override
-  public ItemStack getRecipeOutput() {
-    return new ItemStack(bottle);
   }
 
   @Override

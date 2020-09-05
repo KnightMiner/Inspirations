@@ -6,8 +6,6 @@ import knightminer.inspirations.library.recipe.cauldron.inventory.IModifyableCau
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.recipes.item.MixedDyedBottleItem;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.util.ResourceLocation;
@@ -38,23 +36,6 @@ public class FillDyedBottleRecipe implements ICauldronRecipe {
       // play sound
       inventory.playSound(SoundEvents.ITEM_BOTTLE_FILL);
     });
-  }
-
-  /**
-   * @deprecated Use {@link #getCraftingResult(IInventory)}
-   */
-  @Deprecated
-  @Override
-  public ItemStack getRecipeOutput() {
-    return new ItemStack(InspirationsRecipes.mixedDyedWaterBottle);
-  }
-
-  @Override
-  public ItemStack getCraftingResult(ICauldronInventory inv) {
-    return inv.getContents()
-              .get(CauldronContentTypes.COLOR)
-              .map(MixedDyedBottleItem::bottleFromDye)
-              .orElseGet(() -> new ItemStack(Items.GLASS_BOTTLE));
   }
 
   @Override

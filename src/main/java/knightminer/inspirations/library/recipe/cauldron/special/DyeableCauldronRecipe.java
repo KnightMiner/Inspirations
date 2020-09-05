@@ -1,4 +1,4 @@
-package knightminer.inspirations.library.recipe.cauldron.recipe;
+package knightminer.inspirations.library.recipe.cauldron.special;
 
 import com.google.gson.JsonObject;
 import knightminer.inspirations.library.Util;
@@ -7,10 +7,10 @@ import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.inventory.ICauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.inventory.IModifyableCauldronInventory;
+import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import net.minecraft.data.IFinishedRecipe;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.Ingredient;
@@ -30,6 +30,11 @@ public abstract class DyeableCauldronRecipe implements ICauldronRecipe {
   private final ResourceLocation id;
   private final Ingredient ingredient;
 
+  /**
+   * Recipe to remove dye from an item
+   * @param id          Recipe ID
+   * @param ingredient  Ingredient for input
+   */
   public DyeableCauldronRecipe(ResourceLocation id, Ingredient ingredient) {
     this.id = id;
     this.ingredient = ingredient;
@@ -76,20 +81,6 @@ public abstract class DyeableCauldronRecipe implements ICauldronRecipe {
    * @return  Updated stack
    */
   protected abstract ItemStack updateColor(ICauldronContents contents, ItemStack stack);
-
-  /**
-   * @deprecated  Use {@link #getCraftingResult(IInventory)}
-   */
-  @Deprecated
-  @Override
-  public ItemStack getRecipeOutput() {
-    return ItemStack.EMPTY;
-  }
-
-  @Override
-  public ItemStack getCraftingResult(ICauldronInventory inv) {
-    return updateColor(inv.getContents(), inv.getStack());
-  }
 
   @Override
   public ResourceLocation getId() {

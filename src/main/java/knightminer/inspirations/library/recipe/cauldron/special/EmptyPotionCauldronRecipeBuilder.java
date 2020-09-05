@@ -1,4 +1,4 @@
-package knightminer.inspirations.library.recipe.cauldron.recipe;
+package knightminer.inspirations.library.recipe.cauldron.special;
 
 import com.google.gson.JsonObject;
 import knightminer.inspirations.recipes.InspirationsRecipes;
@@ -6,7 +6,6 @@ import net.minecraft.advancements.Advancement;
 import net.minecraft.data.IFinishedRecipe;
 import net.minecraft.item.Item;
 import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.IItemProvider;
 import net.minecraft.util.ResourceLocation;
 import slimeknights.mantle.recipe.data.AbstractRecipeBuilder;
@@ -18,75 +17,55 @@ import java.util.function.Consumer;
 /**
  * Builder for a recipe that fills a bottle with a potion
  */
-public class FillPotionCauldronRecipeBuilder extends AbstractRecipeBuilder<FillPotionCauldronRecipeBuilder> {
-  private final Ingredient bottle;
-  private final int amount;
+public class EmptyPotionCauldronRecipeBuilder extends AbstractRecipeBuilder<EmptyPotionCauldronRecipeBuilder> {
+  private final Item bottle;
   private final Item potionItem;
 
-  private FillPotionCauldronRecipeBuilder(Ingredient bottle, int amount, Item potionItem) {
-    this.bottle = bottle;
-    this.amount = amount;
+  private EmptyPotionCauldronRecipeBuilder(Item potionItem, Item bottle) {
     this.potionItem = potionItem;
+    this.bottle = bottle;
   }
 
   /**
-   * Creates a new builder with a specific amount
-   * @param bottle      Bottle ingredient
-   * @param amount      Amount needed and crafted
-   * @param potionItem  Potion item for output
+   * Creates a new builder instance
+   * @param potionItem  Potion item for input
+   * @param bottle      Bottle output
    * @return  Builder instance
    */
-  public static FillPotionCauldronRecipeBuilder fill(Ingredient bottle, int amount, IItemProvider potionItem) {
-    return new FillPotionCauldronRecipeBuilder(bottle, amount, potionItem.asItem());
-  }
-
-  /**
-   * Creates a new builder with an amount of 1
-   * @param bottle      Bottle ingredient
-   * @param potionItem  Potion item for output
-   * @return  Builder instance
-   */
-  public static FillPotionCauldronRecipeBuilder fill(Ingredient bottle, IItemProvider potionItem) {
-    return fill(bottle, 1, potionItem);
+  public static EmptyPotionCauldronRecipeBuilder empty(IItemProvider potionItem, IItemProvider bottle) {
+    return new EmptyPotionCauldronRecipeBuilder(potionItem.asItem(), bottle.asItem());
   }
 
   @Override
   public void build(Consumer<IFinishedRecipe> consumer) {
-    build(consumer, Objects.requireNonNull(potionItem.getRegistryName()));
+    build(consumer, Objects.requireNonNull(bottle.getRegistryName()));
   }
 
   @Override
   public void build(Consumer<IFinishedRecipe> consumer, ResourceLocation id) {
-    if (amount < 1) {
-      throw new IllegalStateException("Amount must be at least 1");
-    }
     ResourceLocation advancementID = this.buildAdvancement(id, "cauldron");
-    consumer.accept(new Result(id, bottle, amount, potionItem, advancementBuilder, advancementID));
+    consumer.accept(new Result(id, potionItem, bottle, advancementBuilder, advancementID));
   }
 
+  /** Recipe result to put in the consumer */
   private static class Result implements IFinishedRecipe {
     private final ResourceLocation id;
-    private final Ingredient bottle;
-    private final int amount;
     private final Item potionItem;
+    private final Item bottle;
     private final Advancement.Builder advancementBuilder;
     private final ResourceLocation advancementId;
-    private Result(ResourceLocation id, Ingredient bottle, int amount, Item potionItem, Advancement.Builder advancementBuilder, ResourceLocation advancementId) {
+    private Result(ResourceLocation id, Item potionItem, Item bottle, Advancement.Builder advancementBuilder, ResourceLocation advancementId) {
       this.id = id;
-      this.bottle = bottle;
-      this.amount = amount;
       this.potionItem = potionItem;
+      this.bottle = bottle;
       this.advancementBuilder = advancementBuilder;
       this.advancementId = advancementId;
     }
 
     @Override
     public void serialize(JsonObject json) {
-      json.add("bottle", bottle.serialize());
-      if (amount != 1) {
-        json.addProperty("amount", amount);
-      }
       json.addProperty("potion", Objects.requireNonNull(potionItem.getRegistryName()).toString());
+      json.addProperty("bottle", Objects.requireNonNull(bottle.getRegistryName()).toString());
     }
 
     @Override
@@ -96,7 +75,7 @@ public class FillPotionCauldronRecipeBuilder extends AbstractRecipeBuilder<FillP
 
     @Override
     public IRecipeSerializer<?> getSerializer() {
-      return InspirationsRecipes.fillPotionSerializer;
+      return InspirationsRecipes.emptyPotionSerializer;
     }
 
     @Nullable

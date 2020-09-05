@@ -2,6 +2,9 @@ package knightminer.inspirations.recipes.recipe.cauldron.contents;
 
 import knightminer.inspirations.library.recipe.cauldron.contents.CauldronContentType;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Util;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 
 import javax.annotation.Nullable;
 
@@ -12,6 +15,16 @@ public class CustomContentType extends CauldronContentType<ResourceLocation> {
   @Override
   public ResourceLocation getTexture(ResourceLocation value) {
     return value;
+  }
+
+  @Override
+  public ITextComponent getDisplayName(ResourceLocation value) {
+    return new TranslationTextComponent(Util.makeTranslationKey("cauldron_contents", value));
+  }
+
+  @Override
+  public String getModId(ResourceLocation value) {
+    return value.getNamespace();
   }
 
   @Override

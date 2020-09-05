@@ -8,6 +8,8 @@ import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronConten
 import knightminer.inspirations.library.recipe.cauldron.inventory.ICauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.inventory.IModifyableCauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
+import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipeDisplay;
+import knightminer.inspirations.library.recipe.cauldron.util.TemperaturePredicate;
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import net.minecraft.data.IFinishedRecipe;
 import net.minecraft.fluid.Fluids;
@@ -16,18 +18,25 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.JSONUtils;
+import net.minecraft.util.LazyValue;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Recipe that takes a solid dye and mixes it with liquid in the cauldron
  */
-public class DyeCauldronWaterRecipe implements ICauldronRecipe {
+public class DyeCauldronWaterRecipe implements ICauldronRecipe, ICauldronRecipeDisplay {
+  private static LazyValue<List<ICauldronContents>> WATER = new LazyValue<>(() -> Collections.singletonList(CauldronContentTypes.FLUID.of(Fluids.WATER)));
+
   private final ResourceLocation id;
   private final DyeColor dye;
+  private List<ItemStack> inputs;
   public DyeCauldronWaterRecipe(ResourceLocation id, DyeColor dye) {
     this.id = id;
     this.dye = dye;
@@ -145,11 +154,6 @@ public class DyeCauldronWaterRecipe implements ICauldronRecipe {
   }
 
   @Override
-  public ItemStack getRecipeOutput() {
-    return ItemStack.EMPTY;
-  }
-
-  @Override
   public ResourceLocation getId() {
     return id;
   }
@@ -159,6 +163,54 @@ public class DyeCauldronWaterRecipe implements ICauldronRecipe {
     return InspirationsRecipes.dyeCauldronWaterSerializer;
   }
 
+
+  /* Display */
+
+  @Override
+  public List<ItemStack> getItemInputs() {
+    if (inputs == null) {
+      inputs = dye.getTag()
+                  .getAllElements()
+                  .stream()
+                  .map(ItemStack::new)
+                  .filter(stack -> !stack.hasContainerItem())
+                  .collect(Collectors.toList());
+    }
+    return inputs;
+  }
+
+
+  @Override
+  public List<ICauldronContents> getContentInputs() {
+    return WATER.getValue();
+  }
+
+  @Override
+  public ICauldronContents getContentOutput() {
+    return CauldronContentTypes.DYE.of(dye);
+  }
+
+  @Override
+  public int getLevelInput() {
+    return 3;
+  }
+
+  @Override
+  public int getLevelOutput() {
+    return 3;
+  }
+
+  @Override
+  public TemperaturePredicate getTemperature() {
+    return TemperaturePredicate.ANY;
+  }
+
+  @Override
+  public ItemStack getItemOutput() {
+    return ItemStack.EMPTY;
+  }
+
+  /* Serializer for the recipe */
   public static class Serializer extends RecipeSerializer<DyeCauldronWaterRecipe> {
     @SuppressWarnings("ConstantConditions")
     @Override

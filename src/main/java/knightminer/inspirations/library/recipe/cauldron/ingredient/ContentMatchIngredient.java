@@ -14,9 +14,11 @@ import slimeknights.mantle.util.JsonHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Type that can match a value or list of values.
@@ -64,6 +66,7 @@ public abstract class ContentMatchIngredient<T> implements ICauldronIngredient {
   /** Matches a single value */
   private static class Single<T> extends ContentMatchIngredient<T> {
     private final T value;
+    private List<ICauldronContents> displayValue;
     private Single(Serializer<T> serializer, T value) {
       super(serializer);
       this.value = value;
@@ -83,11 +86,20 @@ public abstract class ContentMatchIngredient<T> implements ICauldronIngredient {
     protected void write(PacketBuffer buffer) {
       buffer.writeString(serializer.type.getName(value));
     }
+
+    @Override
+    public List<ICauldronContents> getMatchingContents() {
+      if (displayValue == null) {
+        displayValue = Collections.singletonList(serializer.type.of(value));
+      }
+      return displayValue;
+    }
   }
 
   /** Matches from a set */
   private static class Multi<T> extends ContentMatchIngredient<T> {
     private final Set<T> values;
+    private List<ICauldronContents> displayValues;
     private Multi(Serializer<T> serializer, Set<T> values) {
       super(serializer);
       this.values = values;
@@ -113,6 +125,14 @@ public abstract class ContentMatchIngredient<T> implements ICauldronIngredient {
       for (T value : values) {
         buffer.writeString(serializer.type.getName(value));
       }
+    }
+
+    @Override
+    public List<ICauldronContents> getMatchingContents() {
+      if (displayValues == null) {
+        displayValues = values.stream().map(serializer.type::of).collect(Collectors.toList());
+      }
+      return displayValues;
     }
   }
 

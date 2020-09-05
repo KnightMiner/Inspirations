@@ -7,8 +7,6 @@ import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.ResourceLocation;
@@ -101,20 +99,5 @@ public class EmptyBucketCauldronRecipe implements ICauldronRecipe {
   @Override
   public IRecipeSerializer<?> getSerializer() {
     return InspirationsRecipes.emptyBucketSerializer;
-  }
-
-
-  /* Extra methods for completion, even though they are mostly unneeded */
-
-  /** @deprecated Use {@link #getCraftingResult(ICauldronInventory)} */
-  @Deprecated
-  @Override
-  public ItemStack getRecipeOutput() {
-    return new ItemStack(Items.BUCKET);
-  }
-
-  @Override
-  public ItemStack getCraftingResult(ICauldronInventory inv) {
-    return inv.getStack().getContainerItem().copy();
   }
 }

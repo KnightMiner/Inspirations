@@ -5,6 +5,8 @@ import knightminer.inspirations.library.recipe.cauldron.contents.RegistryContent
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.registries.ForgeRegistries;
 
 /**
@@ -12,6 +14,7 @@ import net.minecraftforge.registries.ForgeRegistries;
  */
 public class PotionContentType extends RegistryContentType<Potion> {
   public static final ResourceLocation TEXTURE_NAME = Inspirations.getResource("potion");
+  private static final String PREFIX = "item.minecraft.potion.effect.";
 
   /**
    * Creates a new instance
@@ -28,5 +31,10 @@ public class PotionContentType extends RegistryContentType<Potion> {
   @Override
   public int getColor(Potion value) {
     return PotionUtils.getPotionColor(value);
+  }
+
+  @Override
+  public ITextComponent getDisplayName(Potion value) {
+    return new TranslationTextComponent(value.getNamePrefixed(PREFIX));
   }
 }

@@ -36,6 +36,12 @@ public class MixCauldronDyeRecipe implements ICauldronRecipe {
   @Nullable
   private final Integer color;
 
+  /**
+   * Creates a new recipe instance
+   * @param id          Recipe ID
+   * @param ingredient  Input ingredient
+   * @param color       Ingredient color
+   */
   public MixCauldronDyeRecipe(ResourceLocation id, Ingredient ingredient, @Nullable Integer color) {
     this.id = id;
     this.ingredient = ingredient;
@@ -54,7 +60,6 @@ public class MixCauldronDyeRecipe implements ICauldronRecipe {
     return (level == 0 || contents.contains(CauldronContentTypes.FLUID, Fluids.WATER) || contents.contains(CauldronContentTypes.COLOR))
            && ingredient.test(inv.getStack());
   }
-
 
   @Override
   public void handleRecipe(IModifyableCauldronInventory inv) {

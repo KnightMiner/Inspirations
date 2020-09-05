@@ -41,4 +41,9 @@ public abstract class RegistryContentType<T extends IForgeRegistryEntry<T>> exte
     }
     return null;
   }
+
+  @Override
+  public String getModId(T value) {
+    return Objects.requireNonNull(value.getRegistryName()).getNamespace();
+  }
 }

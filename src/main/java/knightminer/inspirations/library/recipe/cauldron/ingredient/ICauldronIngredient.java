@@ -2,6 +2,7 @@ package knightminer.inspirations.library.recipe.cauldron.ingredient;
 
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 
+import java.util.List;
 import java.util.function.Predicate;
 
 /**
@@ -13,4 +14,10 @@ public interface ICauldronIngredient extends Predicate<ICauldronContents> {
    * @return  Ingredient serializer
    */
   ICauldronIngredientSerializer<?> getSerializer();
+
+  /**
+   * Gets a list of cauldron contents matching this ingredient
+   * @return  Matching contents
+   */
+  List<ICauldronContents> getMatchingContents();
 }
