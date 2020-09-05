@@ -12,7 +12,7 @@
   ],
   "input": {
     "item": {
-      "item": "minecraft:milk_bucket"
+      "item": "minecraft:bucket"
     },
     "contents": {
       "type": "inspirations:fluid",

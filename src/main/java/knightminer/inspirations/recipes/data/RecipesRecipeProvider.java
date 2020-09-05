@@ -266,7 +266,7 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
                          .addCriterion("has_item", hasItem(Items.MILK_BUCKET))
                          .setSound(SoundEvents.ITEM_BUCKET_EMPTY)
                          .build(cauldronRecipes, resource(folder + "empty_milk_bucket"));
-    CauldronRecipeBuilder.cauldron(SizedIngredient.fromItems(Items.MILK_BUCKET), milkIngredient)
+    CauldronRecipeBuilder.cauldron(SizedIngredient.fromItems(Items.BUCKET), milkIngredient)
                          .matchFull()
                          .setEmpty()
                          .setOutput(Items.MILK_BUCKET)
