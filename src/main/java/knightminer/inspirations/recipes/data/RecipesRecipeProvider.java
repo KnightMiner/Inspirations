@@ -137,7 +137,7 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
 
     // sponge dry cauldron
     CauldronRecipeBuilder.cauldron(SizedIngredient.fromItems(Blocks.SPONGE), waterIngredient)
-                         .minLevels(1)
+                         .matchFull()
                          .setEmpty()
                          .setOutput(Blocks.WET_SPONGE)
                          .addCriterion("has_item", hasItem(Blocks.SPONGE))

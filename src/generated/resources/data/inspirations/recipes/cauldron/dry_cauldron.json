@@ -19,7 +19,7 @@
       "name": "minecraft:water"
     },
     "level": {
-      "min": 1
+      "min": 3
     }
   },
   "output": {
