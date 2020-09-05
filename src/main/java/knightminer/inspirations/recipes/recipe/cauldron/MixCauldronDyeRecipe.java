@@ -11,6 +11,7 @@ import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronConten
 import knightminer.inspirations.library.recipe.cauldron.inventory.ICauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.inventory.IModifyableCauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
+import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipeDisplay;
 import net.minecraft.data.IFinishedRecipe;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.DyeColor;
@@ -26,15 +27,22 @@ import slimeknights.mantle.util.JsonHelper;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Cauldron recipe that takes a liquid container filled with dye and increases the cauldron liquid
  */
-public class MixCauldronDyeRecipe implements ICauldronRecipe {
+public class MixCauldronDyeRecipe implements ICauldronRecipe, ICauldronRecipeDisplay {
   private final ResourceLocation id;
   private final Ingredient ingredient;
   @Nullable
   private final Integer color;
+
+  // display
+  private List<ItemStack> inputDisplay;
+  private ItemStack outputDisplay;
+  private ICauldronContents outputContents;
 
   /**
    * Creates a new recipe instance
@@ -117,6 +125,58 @@ public class MixCauldronDyeRecipe implements ICauldronRecipe {
   @Override
   public IRecipeSerializer<?> getSerializer() {
     return RecipeSerializers.CAULDRON_MIX_DYE;
+  }
+
+  /* Display */
+
+  @Override
+  public List<ItemStack> getItemInputs() {
+    if (inputDisplay == null) {
+      inputDisplay = Arrays.asList(ingredient.getMatchingStacks());
+    }
+    return inputDisplay;
+  }
+
+  @Override
+  public List<ICauldronContents> getContentInputs() {
+    return Collections.emptyList();
+  }
+
+  @Override
+  public int getLevelInput() {
+    return 0;
+  }
+
+  @Override
+  public int getLevelOutput() {
+    return 1;
+  }
+
+  @Override
+  public ItemStack getItemOutput() {
+    if (outputDisplay == null) {
+      ItemStack[] items = ingredient.getMatchingStacks();
+      if (items.length != 0) {
+        outputDisplay = items[0].getContainerItem();
+      } else {
+        outputDisplay = ItemStack.EMPTY;
+      }
+    }
+    return outputDisplay;
+  }
+
+  @Override
+  public ICauldronContents getContentOutput() {
+    if (outputContents == null) {
+      assert color != null;
+      outputContents = CauldronContentTypes.COLOR.of(color);
+    }
+    return outputContents;
+  }
+
+  @Override
+  public boolean isSimple() {
+    return color != null;
   }
 
   public static class Serializer extends RecipeSerializer<MixCauldronDyeRecipe> {

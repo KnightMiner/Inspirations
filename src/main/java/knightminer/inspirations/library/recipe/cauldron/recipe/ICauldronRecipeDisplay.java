@@ -44,7 +44,9 @@ public interface ICauldronRecipeDisplay {
    * Gets the temperature required for input
    * @return  Input temperature
    */
-  TemperaturePredicate getTemperature();
+  default TemperaturePredicate getTemperature() {
+    return TemperaturePredicate.ANY;
+  }
 
   /**
    * Gets the duration of this recipe. Return -1 for no duration
@@ -81,5 +83,13 @@ public interface ICauldronRecipeDisplay {
    */
   default FluidStack getFluidOutput() {
     return FluidStack.EMPTY;
+  }
+
+  /**
+   * Method to override for recipes that are simple, but have a non-simple variant
+   * @return  True if the recipe is simple and should be shown
+   */
+  default boolean isSimple() {
+    return true;
   }
 }

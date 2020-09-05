@@ -10,6 +10,7 @@ import knightminer.inspirations.library.recipe.cauldron.inventory.ICauldronInven
 import knightminer.inspirations.library.recipe.cauldron.inventory.IModifyableCauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipeDisplay;
+import knightminer.inspirations.library.recipe.cauldron.util.DisplayCauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.util.TemperaturePredicate;
 import net.minecraft.data.IFinishedRecipe;
 import net.minecraft.fluid.Fluids;
@@ -18,13 +19,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.JSONUtils;
-import net.minecraft.util.LazyValue;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.world.World;
+import net.minecraftforge.fluids.FluidStack;
 
 import javax.annotation.Nullable;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,8 +32,6 @@ import java.util.stream.Collectors;
  * Recipe that takes a solid dye and mixes it with liquid in the cauldron
  */
 public class DyeCauldronWaterRecipe implements ICauldronRecipe, ICauldronRecipeDisplay {
-  private static LazyValue<List<ICauldronContents>> WATER = new LazyValue<>(() -> Collections.singletonList(CauldronContentTypes.FLUID.of(Fluids.WATER)));
-
   private final ResourceLocation id;
   private final DyeColor dye;
   private List<ItemStack> inputs;
@@ -182,7 +180,12 @@ public class DyeCauldronWaterRecipe implements ICauldronRecipe, ICauldronRecipeD
 
   @Override
   public List<ICauldronContents> getContentInputs() {
-    return WATER.getValue();
+    return DisplayCauldronRecipe.WATER_CONTENTS.getValue();
+  }
+
+  @Override
+  public List<FluidStack> getFluidInputs() {
+    return DisplayCauldronRecipe.WATER_FLUID.getValue();
   }
 
   @Override

@@ -9,8 +9,10 @@ import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronConten
 import knightminer.inspirations.library.recipe.cauldron.inventory.ICauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.inventory.IModifyableCauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
+import knightminer.inspirations.library.recipe.cauldron.util.DisplayCauldronRecipe;
 import net.minecraft.data.IFinishedRecipe;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.Ingredient;
@@ -18,17 +20,24 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.world.World;
+import slimeknights.mantle.recipe.IMultiRecipe;
 import slimeknights.mantle.util.JsonHelper;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Shared logic between dyeing and clearing dye
  */
-public abstract class DyeableCauldronRecipe implements ICauldronRecipe {
+public abstract class DyeableCauldronRecipe implements ICauldronRecipe, IMultiRecipe<DisplayCauldronRecipe> {
   private final ResourceLocation id;
   private final Ingredient ingredient;
+  private List<DisplayCauldronRecipe> displayRecipes;
 
   /**
    * Recipe to remove dye from an item
@@ -87,10 +96,28 @@ public abstract class DyeableCauldronRecipe implements ICauldronRecipe {
     return id;
   }
 
+  /* Display */
+
+  /**
+   * Gets a stream of recipes for the given input stack
+   * @param stack  Input stack
+   * @return  Stream of recipes for display
+   */
+  protected abstract Stream<DisplayCauldronRecipe> getDisplayRecipes(ItemStack stack);
+
+  @Override
+  public List<DisplayCauldronRecipe> getRecipes() {
+    if (displayRecipes == null) {
+      displayRecipes = Arrays.stream(ingredient.getMatchingStacks()).flatMap(this::getDisplayRecipes).collect(Collectors.toList());
+    }
+    return displayRecipes;
+  }
+
   /**
    * Recipe to dye a dyeable
    */
   public static class Dye extends DyeableCauldronRecipe {
+    private List<DisplayCauldronRecipe> displayRecipes;
     public Dye(ResourceLocation id, Ingredient ingredient) {
       super(id, ingredient);
     }
@@ -104,6 +131,17 @@ public abstract class DyeableCauldronRecipe implements ICauldronRecipe {
     protected ItemStack updateColor(ICauldronContents contents, ItemStack stack) {
       int color = contents.get(CauldronContentTypes.COLOR).orElse(-1);
       return Util.setColor(stack, color);
+    }
+
+    @Override
+    protected Stream<DisplayCauldronRecipe> getDisplayRecipes(ItemStack stack) {
+      List<ItemStack> inputs = Collections.singletonList(stack);
+      return Arrays.stream(DyeColor.values())
+                   .map(color -> DisplayCauldronRecipe.builder(1, 0)
+                                                      .setItemInputs(inputs)
+                                                      .setContentInputs(CauldronContentTypes.DYE.of(color))
+                                                      .setItemOutput(Util.setColor(stack.copy(), color.getColorValue()))
+                                                      .build());
     }
 
     @Override
@@ -128,6 +166,16 @@ public abstract class DyeableCauldronRecipe implements ICauldronRecipe {
     @Override
     protected ItemStack updateColor(ICauldronContents contents, ItemStack stack) {
       return Util.clearColor(stack);
+    }
+
+    @Override
+    protected Stream<DisplayCauldronRecipe> getDisplayRecipes(ItemStack stack) {
+      List<ItemStack> inputs = Arrays.stream(DyeColor.values()).map(color -> Util.setColor(stack.copy(), color.getColorValue())).collect(Collectors.toList());
+      return Stream.of(DisplayCauldronRecipe.builder(1, 0)
+                                            .setItemInputs(inputs)
+                                            .setContentInputs(DisplayCauldronRecipe.WATER_CONTENTS.getValue())
+                                            .setItemOutput(Util.clearColor(stack.copy()))
+                                            .build());
     }
 
     @Override

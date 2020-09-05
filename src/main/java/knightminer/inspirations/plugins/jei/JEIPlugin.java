@@ -78,6 +78,7 @@ public class JEIPlugin implements IModPlugin {
                  .flatMap((recipe) -> recipe instanceof IMultiRecipe ? ((IMultiRecipe<?>)recipe).getRecipes().stream() : Stream.of(recipe))
                  .filter(recipe -> recipe instanceof ICauldronRecipeDisplay)
                  .map(recipe -> (ICauldronRecipeDisplay) recipe)
+                 .filter(ICauldronRecipeDisplay::isSimple)
                  .collect(Collectors.toList());
   }
 
