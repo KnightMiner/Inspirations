@@ -128,10 +128,6 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
                                                   .build()))
                          .build(cauldronRecipes, resource(folder + "empty_water_bottle"));
 
-    // TODO: remove dye recipe
-    // TODO: remove banner pattern
-    // TODO: clean shulker box
-
 
     // custom recipes //
 
@@ -412,7 +408,12 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
                           .addCriterion("has_item", hasItem(Items.DRAGON_BREATH))
                           .build(potionConsumer, prefix(InspirationsRecipes.lingeringBottle, potionFolder));
 
-    // TODO: potion brewing
+    // brew the potions
+    Consumer<IFinishedRecipe> brewingConsumer = withCondition(ConfigEnabledCondition.CAULDRON_BREWING);
+    CustomRecipeBuilder.customRecipe(RecipeSerializers.CAULDRON_POTION_BREWING)
+                       .build(brewingConsumer, resourceName(potionFolder + "potion_brewing"));
+    CustomRecipeBuilder.customRecipe(RecipeSerializers.CAULDRON_FORGE_BREWING)
+                       .build(brewingConsumer, resourceName(potionFolder + "forge_brewing"));
 
     // fluid recipes //
     // beetroot is just water based

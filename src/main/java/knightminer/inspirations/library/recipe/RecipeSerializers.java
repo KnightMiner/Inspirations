@@ -7,6 +7,7 @@ import knightminer.inspirations.library.recipe.cauldron.special.DyeableCauldronR
 import knightminer.inspirations.library.recipe.cauldron.special.EmptyPotionCauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.special.FillPotionCauldronRecipe;
 import knightminer.inspirations.library.recipe.crafting.ShapelessNoContainerRecipe;
+import knightminer.inspirations.recipes.recipe.cauldron.BrewingCauldronRecipe;
 import knightminer.inspirations.recipes.recipe.cauldron.DyeCauldronWaterRecipe;
 import knightminer.inspirations.recipes.recipe.cauldron.EmptyBucketCauldronRecipe;
 import knightminer.inspirations.recipes.recipe.cauldron.FillBucketCauldronRecipe;
@@ -47,4 +48,6 @@ public class RecipeSerializers {
   public static final SpecialRecipeSerializer<FillBucketCauldronRecipe> CAULDRON_FILL_BUCKET = injected();
   public static final SpecialRecipeSerializer<FillDyedBottleRecipe> CAULDRON_FILL_DYED_BOTTLE = injected();
   public static final SpecialRecipeSerializer<RemoveBannerPatternCauldronRecipe> CAULDRON_REMOVE_BANNER_PATTERN = injected();
+  public static final SpecialRecipeSerializer<BrewingCauldronRecipe.Vanilla> CAULDRON_POTION_BREWING = injected();
+  public static final SpecialRecipeSerializer<BrewingCauldronRecipe.Forge> CAULDRON_FORGE_BREWING = injected();
 }

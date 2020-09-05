@@ -60,11 +60,14 @@ public class NormalBrewingRecipe implements IHidable, IBrewingRecipe {
 
   @Override
   public ItemStack getOutput(ItemStack input, ItemStack ingredient) {
+    if (!isEnabled()) {
+      return ItemStack.EMPTY;
+    }
     if (!catalyst.test(ingredient)) {
       return ItemStack.EMPTY;
     }
     Item item = input.getItem();
-    if (item == Items.POTION || item == Items.SPLASH_POTION || item == Items.LINGERING_POTION) {
+    if (isInput(input)) {
       return PotionUtils.addPotionToItemStack(new ItemStack(item), output);
     }
     return ItemStack.EMPTY;

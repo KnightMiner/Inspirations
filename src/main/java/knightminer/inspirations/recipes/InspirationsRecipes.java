@@ -15,6 +15,7 @@ import knightminer.inspirations.recipes.data.RecipesRecipeProvider;
 import knightminer.inspirations.recipes.item.EmptyBottleItem;
 import knightminer.inspirations.recipes.item.MixedDyedBottleItem;
 import knightminer.inspirations.recipes.item.SimpleDyedBottleItem;
+import knightminer.inspirations.recipes.recipe.cauldron.BrewingCauldronRecipe;
 import knightminer.inspirations.recipes.recipe.cauldron.DyeCauldronWaterRecipe;
 import knightminer.inspirations.recipes.recipe.cauldron.EmptyBucketCauldronRecipe;
 import knightminer.inspirations.recipes.recipe.cauldron.FillBucketCauldronRecipe;
@@ -204,6 +205,8 @@ public class InspirationsRecipes extends ModuleBase {
     registry.register(new SpecialRecipeSerializer<>(FillBucketCauldronRecipe::new), "cauldron_fill_bucket");
     registry.register(new SpecialRecipeSerializer<>(FillDyedBottleRecipe::new), "cauldron_fill_dyed_bottle");
     registry.register(new SpecialRecipeSerializer<>(RemoveBannerPatternCauldronRecipe::new), "cauldron_remove_banner_pattern");
+    registry.register(new SpecialRecipeSerializer<>(BrewingCauldronRecipe.Vanilla::new), "cauldron_potion_brewing");
+    registry.register(new SpecialRecipeSerializer<>(BrewingCauldronRecipe.Forge::new), "cauldron_forge_brewing");
 
     // add water as an override to potions
     ICauldronContents water = CauldronContentTypes.FLUID.of(Fluids.WATER);
