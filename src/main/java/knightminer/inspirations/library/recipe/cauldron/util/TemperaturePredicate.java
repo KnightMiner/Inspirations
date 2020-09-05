@@ -22,11 +22,18 @@ public enum TemperaturePredicate implements Predicate<CauldronTemperature> {
       return temperature == CauldronTemperature.BOILING;
     }
   },
-  /** Cauldorn must be freezing */
+  /** Cauldron must be freezing */
   FREEZING {
     @Override
     public boolean test(CauldronTemperature temperature) {
       return temperature == CauldronTemperature.FREEZING;
+    }
+  },
+  /** Cauldron must not be boiling or freezing */
+  NORMAL {
+    @Override
+    public boolean test(CauldronTemperature temperature) {
+      return temperature == CauldronTemperature.NORMAL;
     }
   },
   /** Cauldron must not be freezing */
