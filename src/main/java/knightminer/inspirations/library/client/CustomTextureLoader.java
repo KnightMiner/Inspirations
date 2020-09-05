@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 
 /**
  * Class that will load a list of textures from a JSON file
- * TODO: does this load before texture stitch fires?
  */
 public class CustomTextureLoader implements IEarlySelectiveReloadListener {
   /** Map of resource name to texture name */

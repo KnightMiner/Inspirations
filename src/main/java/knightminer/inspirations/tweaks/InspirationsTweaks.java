@@ -69,8 +69,6 @@ public class InspirationsTweaks extends ModuleBase {
   public static EnumObject<DyeColor,FlatCarpetBlock> flatCarpets = EnumObject.empty();
 
   // items
-  //public static Item potatoSeeds;
-  //public static Item carrotSeeds;
   public static Item sugarCaneSeeds;
   public static Item cactusSeeds;
   //public static Item silverfishPowder;
@@ -126,12 +124,6 @@ public class InspirationsTweaks extends ModuleBase {
     Item.Properties props = new Item.Properties().group(ItemGroup.FOOD);
     cactusSeeds = registry.register(new SeedItem(cactus, props), "cactus_seeds");
     sugarCaneSeeds = registry.register(new SeedItem(sugarCane, props), "sugar_cane_seeds");
-
-		/*
-		carrotSeeds = registerItem(r, new SeedItem((CropsBlock) Blocks.CARROTS, PlantType.Crop), "carrot_seeds");
-		potatoSeeds = registerItem(r, new SeedItem((CropsBlock) Blocks.POTATOES, PlantType.Crop), "potato_seeds");
-		*/
-
     heartbeet = registry.register(new HidableItem(new Item.Properties().group(ItemGroup.FOOD)
                                                                        .food(new Food.Builder().hunger(2).saturation(2.4f).effect(() -> new EffectInstance(Effects.REGENERATION, 100), 1).build()
                                                                             ), Config.enableHeartbeet), "heartbeet");
@@ -159,13 +151,6 @@ public class InspirationsTweaks extends ModuleBase {
 
   @SubscribeEvent
   public void setup(FMLCommonSetupEvent event) {
-    // TODO: Forge needs to implement the ability to inject these into the loot tables.
-    // See MinecraftForge#
-    //if(Config.addGrassDrops()) {
-    //	MinecraftForge.addGrassSeed(new ItemStack(InspirationsTweaks.carrotSeeds), 4);
-    //	MinecraftForge.addGrassSeed(new ItemStack(InspirationsTweaks.potatoSeeds), 3);
-    //}
-
     // brew heartbeets into regen potions
     Ingredient heartbeet = Ingredient.fromItems(InspirationsTweaks.heartbeet);
     BrewingRecipeRegistry.addRecipe(

@@ -35,9 +35,6 @@ import java.util.List;
 
 /**
  * Implementation to show cauldron recipes in JEI
- * TODO: time string
- * TODO: freezing and boiling
- * TODO: time arrow
  */
 public class CauldronCategory implements IRecipeCategory<ICauldronRecipeDisplay> {
   /** Unique ID for this category */

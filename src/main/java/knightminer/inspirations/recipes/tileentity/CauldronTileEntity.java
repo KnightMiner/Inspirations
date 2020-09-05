@@ -361,7 +361,6 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
       success = true;
       if (!world.isRemote) {
         recipe.handleRecipe(craftingInventory);
-        // TODO: play sound based on (old?) contents
       }
     }
 

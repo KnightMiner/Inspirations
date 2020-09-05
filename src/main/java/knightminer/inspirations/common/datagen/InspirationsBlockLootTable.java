@@ -62,16 +62,16 @@ public class InspirationsBlockLootTable extends BlockLootTables {
     // glass doors
     this.registerSilkTouch(InspirationsBuilding.glassTrapdoor);
     // For glass doors, they need to only drop from one of the blocks so it doesn't dupe.
-    this.registerLootTable(InspirationsBuilding.glassDoor, LootTable.builder()
-                                                                    .addLootPool(LootPool.builder().addEntry(ItemLootEntry.builder(InspirationsBuilding.glassDoor))
-                                                                                         .acceptCondition(BlockStateProperty.builder(InspirationsBuilding.glassDoor)
-                                                                                                                            .fromProperties(StatePropertiesPredicate.Builder.newBuilder()
-                                                                                                                                                                            .withProp(DoorBlock.HALF, DoubleBlockHalf.LOWER)
-                                                                                                                                           )
-                                                                                                         )
-                                                                                         .acceptCondition(SILK_TOUCH)
-                                                                                )
-                          );
+    this.registerLootTable(InspirationsBuilding.glassDoor,
+                           LootTable.builder().addLootPool(
+                               LootPool.builder()
+                                       .addEntry(ItemLootEntry.builder(InspirationsBuilding.glassDoor))
+                                       .acceptCondition(
+                                           BlockStateProperty.builder(InspirationsBuilding.glassDoor)
+                                                             .fromProperties(
+                                                                 StatePropertiesPredicate.Builder.newBuilder()
+                                                                                                 .withProp(DoorBlock.HALF, DoubleBlockHalf.LOWER)))
+                                       .acceptCondition(SILK_TOUCH)));
 
     // flowers
     InspirationsBuilding.flower.values().forEach(this::registerDropSelfLootTable);

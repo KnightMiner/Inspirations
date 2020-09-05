@@ -116,7 +116,6 @@ public class PipeTileEntity extends InventoryTileEntity implements ITickableTile
   @Override
   public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
     CompoundNBT tag = pkt.getNbtCompound();
-    // TODO: this fine?
     read(this.getBlockState(), tag);
   }
 

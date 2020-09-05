@@ -18,9 +18,11 @@ public class Config {
   /** List of all cached client config values, for cache clearing */
   private static final List<CachedValue<?>> CLIENT_VALUES = new ArrayList<>();
 
-  // TODO: add client config
+  /** Config for anything that affects gameplay */
   public static final ForgeConfigSpec SERVER_SPEC;
+  /** Config for anything that is visual only */
   public static final ForgeConfigSpec CLIENT_SPEC;
+  /** Config for things affecting gameplay that must load before registration */
   public static final ForgeConfigSpec OVERRIDE_SPEC;
 
   // modules
@@ -375,11 +377,6 @@ public class Config {
 				enableCauldronDyeing = and(extendedCaulronRecipes, server
 						.comment("Allows cauldrons to be filled with dyes and dye items using cauldrons")
 						.define("dyeing.enable", true));
-				/* TODO: reimplement
-				patchVanillaDyeRecipes = builder
-						.comment("Makes crafting two dyed water bottles together produce a dyed water bottle. Requires modifying vanilla recipes to prevent a conflict")
-						.define("dyeing.patchVanillaRecipes", true);
-				*/
 				extraBottleRecipes = and(enableCauldronDyeing, server
 						.comment("Adds extra dyed bottle recipes to craft green and brown")
 						.define("dyeing.extraBottleRecipes", true));
