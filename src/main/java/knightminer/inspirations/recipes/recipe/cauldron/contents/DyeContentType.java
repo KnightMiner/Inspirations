@@ -2,11 +2,14 @@ package knightminer.inspirations.recipes.recipe.cauldron.contents;
 
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.recipe.cauldron.contents.NamedContentType;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.DyeColor;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Util;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+
+import java.util.List;
 
 /**
  * Content type for the 16 dye enum values
@@ -36,5 +39,12 @@ public class DyeContentType extends NamedContentType<DyeColor> {
   @Override
   public ITextComponent getDisplayName(DyeColor value) {
     return new TranslationTextComponent(TRANSLATION_KEY, new TranslationTextComponent("color.minecraft." + value.getString()));
+  }
+
+  @Override
+  public void addInformation(DyeColor value, List<ITextComponent> tooltip, ITooltipFlag tooltipFlag) {
+    if (tooltipFlag.isAdvanced()) {
+      tooltip.add(ColorContentType.getColorTooltip(value.getColorValue()));
+    }
   }
 }

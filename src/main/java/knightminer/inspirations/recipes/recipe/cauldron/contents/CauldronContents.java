@@ -2,10 +2,12 @@ package knightminer.inspirations.recipes.recipe.cauldron.contents;
 
 import knightminer.inspirations.library.recipe.cauldron.contents.CauldronContentType;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -56,6 +58,11 @@ public class CauldronContents<C> implements ICauldronContents {
   @Override
   public ITextComponent getDisplayName() {
     return type.getDisplayName(value);
+  }
+
+  @Override
+  public void addInformation(List<ITextComponent> tooltip, ITooltipFlag tooltipFlag) {
+    type.addInformation(value, tooltip, tooltipFlag);
   }
 
   @Nullable

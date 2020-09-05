@@ -1,11 +1,13 @@
 package knightminer.inspirations.library.recipe.cauldron.contents;
 
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -47,6 +49,13 @@ public interface ICauldronContents {
    * @return  Name text component
    */
   ITextComponent getDisplayName();
+
+  /**
+   * Gets tooltip information for these contents
+   * @param tooltip      Existing tooltip
+   * @param tooltipFlag  Tooltip context flag
+   */
+  default void addInformation(List<ITextComponent> tooltip, ITooltipFlag tooltipFlag) {}
 
   /**
    * Gets the relevant mod ID for this contents

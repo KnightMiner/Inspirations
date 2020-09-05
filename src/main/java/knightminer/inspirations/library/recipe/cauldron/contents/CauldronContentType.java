@@ -7,6 +7,7 @@ import io.netty.handler.codec.EncoderException;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.recipes.recipe.cauldron.contents.CauldronContents;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.JSONUtils;
@@ -16,6 +17,7 @@ import net.minecraftforge.common.util.Constants.NBT;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
@@ -110,6 +112,14 @@ public abstract class CauldronContentType<T> {
    * @return  Value name
    */
   public abstract ITextComponent getDisplayName(T value);
+
+  /**
+   * Gets tooltip information for these contents
+   * @param value        Contents value
+   * @param tooltip      Existing tooltip
+   * @param tooltipFlag  Tooltip context flag
+   */
+  public void addInformation(T value, List<ITextComponent> tooltip, ITooltipFlag tooltipFlag) {}
 
   /**
    * Gets the mod ID for the given value

@@ -207,12 +207,13 @@ public class CauldronRenderer {
     }
 
     @Override
-    public List<ITextComponent> getTooltip(ICauldronContents contents, ITooltipFlag iTooltipFlag) {
+    public List<ITextComponent> getTooltip(ICauldronContents contents, ITooltipFlag flag) {
       List<ITextComponent> list = new ArrayList<>();
       if (!isList && amount == 0) {
         list.add(getAmountText(0));
       } else {
         list.add(contents.getDisplayName());
+        contents.addInformation(list, flag);
         if (!isList) {
           list.add(getAmountText(amount));
         }

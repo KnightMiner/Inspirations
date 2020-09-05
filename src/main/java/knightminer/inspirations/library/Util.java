@@ -14,10 +14,6 @@ import net.minecraft.item.Items;
 import net.minecraft.loot.LootContext;
 import net.minecraft.loot.LootParameters;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.potion.Effect;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.EffectUtils;
-import net.minecraft.potion.Potion;
 import net.minecraft.util.Direction;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.NonNullList;
@@ -26,11 +22,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.IFormattableTextComponent;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.Constants.NBT;
@@ -156,35 +147,6 @@ public class Util {
     return ((int)(component[0] * 255) & 0xFF) << 16
            | ((int)(component[1] * 255) & 0xFF) << 8
            | ((int)(component[2] * 255) & 0xFF);
-  }
-
-  /**
-   * Adds the tooltips for the potion type into the given string list
-   * @param potionType Potion type input
-   * @param lores      List to add the tooltips into
-   */
-  public static void addPotionTooltip(Potion potionType, List<ITextComponent> lores) {
-    List<EffectInstance> effects = potionType.getEffects();
-
-    if (effects.isEmpty()) {
-      lores.add(new TranslationTextComponent("effect.none").mergeStyle(TextFormatting.GRAY));
-      return;
-    }
-
-    for (EffectInstance effect : effects) {
-      IFormattableTextComponent effectString = new TranslationTextComponent(effect.getPotion().getName());
-      Effect potion = effect.getPotion();
-
-      if (effect.getAmplifier() > 0) {
-        effectString.appendString(" ");
-        effectString.append(new TranslationTextComponent("potion.potency." + effect.getAmplifier()));
-      }
-      if (effect.getDuration() > 20) {
-        effectString.append(new StringTextComponent(" (" + EffectUtils.getPotionDurationString(effect, 1.0f) + ")"));
-      }
-      effectString.mergeStyle(potion.isBeneficial() ? TextFormatting.BLUE : TextFormatting.RED);
-      lores.add(effectString);
-    }
   }
 
   /**

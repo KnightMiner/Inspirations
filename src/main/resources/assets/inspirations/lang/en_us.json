@@ -158,7 +158,7 @@
     
     "_comment": "Cauldron Contents",
     "cauldron_contents.inspirations.empty": "Empty",
-    "cauldron_contents.inspirations.color": "#%s Dyed Water",
+    "cauldron_contents.inspirations.color": "Dyed Water",
     "cauldron_contents.inspirations.dye": "%s Dyed Water",
     
     "cauldron_contents.minecraft.ice": "Ice",
