@@ -117,7 +117,7 @@ public class ToolsRecipeProvider extends RecipeProvider implements IConditionBui
 
     // waypoint compasses
     // white
-    Item undyedCompass = InspirationsTools.waypointCompasses[DyeColor.WHITE.getId()];
+    Item undyedCompass = InspirationsTools.waypointCompasses.get(DyeColor.WHITE);
     ShapedRecipeBuilder.shapedRecipe(undyedCompass)
                        .addCriterion("has_blaze", hasItem(Tags.Items.RODS_BLAZE))
                        .key('I', Tags.Items.INGOTS_IRON)
@@ -136,14 +136,14 @@ public class ToolsRecipeProvider extends RecipeProvider implements IConditionBui
                               .addCondition(ConfigEnabledCondition.DYE_WAYPOINT)
                               .build(consumer);
     String dyeGroup = resourceName("dye_waypoint_compass");
-    for (DyeColor color : DyeColor.values()) {
-      ShapelessRecipeBuilder.shapelessRecipe(InspirationsTools.waypointCompasses[color.getId()])
+    InspirationsTools.waypointCompasses.forEach((color, compass) ->
+      ShapelessRecipeBuilder.shapelessRecipe(compass)
                             .addCriterion("has_compass", hasItem(InspirationsTags.Items.WAYPOINT_COMPASSES))
                             .setGroup(dyeGroup)
                             .addIngredient(InspirationsTags.Items.WAYPOINT_COMPASSES)
                             .addIngredient(color.getTag())
-                            .build(dyeWaypoint, resource("tools/waypoint_compass/" + color.getString()));
-    }
+                            .build(dyeWaypoint, resource("tools/waypoint_compass/" + color.getString()))
+    );
 
     // redstone arrow
     ShapedRecipeBuilder.shapedRecipe(InspirationsTools.redstoneArrow, 8)

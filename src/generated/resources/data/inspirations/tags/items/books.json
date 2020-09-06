@@ -1,6 +1,12 @@
 {
   "replace": false,
   "values": [
+    "inspirations:redstone_book",
+    "minecraft:book",
+    "minecraft:writable_book",
+    "minecraft:written_book",
+    "minecraft:enchanted_book",
+    "minecraft:knowledge_book",
     "inspirations:white_book",
     "inspirations:orange_book",
     "inspirations:magenta_book",
@@ -16,12 +22,6 @@
     "inspirations:brown_book",
     "inspirations:green_book",
     "inspirations:red_book",
-    "inspirations:black_book",
-    "inspirations:redstone_book",
-    "minecraft:book",
-    "minecraft:writable_book",
-    "minecraft:written_book",
-    "minecraft:enchanted_book",
-    "minecraft:knowledge_book"
+    "inspirations:black_book"
   ]
 }

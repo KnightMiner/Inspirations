@@ -55,6 +55,7 @@ import slimeknights.mantle.registration.adapter.BlockRegistryAdapter;
 import slimeknights.mantle.registration.adapter.EntityTypeRegistryAdapter;
 import slimeknights.mantle.registration.adapter.ItemRegistryAdapter;
 import slimeknights.mantle.registration.adapter.RegistryAdapter;
+import slimeknights.mantle.registration.object.EnumObject;
 
 @SuppressWarnings("unused")
 public class InspirationsTools extends ModuleBase {
@@ -70,7 +71,7 @@ public class InspirationsTools extends ModuleBase {
   public static ArrowItem redstoneArrow;
 
   // The "undyed" compass is White.
-  public static WaypointCompassItem[] waypointCompasses = new WaypointCompassItem[16];
+  public static EnumObject<DyeColor, WaypointCompassItem> waypointCompasses = EnumObject.empty();
 
   // blocks
   public static Block redstoneCharge;
@@ -108,31 +109,14 @@ public class InspirationsTools extends ModuleBase {
     photometer = registry.register(new HidableItem(toolProps, Config.enablePhotometer), "photometer");
 
     // TODO: reevaluate
-    // TODO: enum object
-    waypointCompasses[DyeColor.WHITE.getId()] = registry.register(new WaypointCompassItem(0xDDDDDD, 0xFFC100, Config.enableWaypointCompass), "waypoint_compass");
-    waypointCompasses[DyeColor.BLACK.getId()] = registry.register(new WaypointCompassItem(0x444444, DyeColor.RED.getColorValue()), "black_waypoint_compass");
-    registerWaypointCompass(registry, DyeColor.LIGHT_GRAY, DyeColor.WHITE.getColorValue());
-    registerWaypointCompass(registry, DyeColor.GRAY, DyeColor.LIGHT_GRAY.getColorValue());
-    registerWaypointCompass(registry, DyeColor.RED, DyeColor.ORANGE.getColorValue());
-    registerWaypointCompass(registry, DyeColor.ORANGE, DyeColor.YELLOW.getColorValue());
-    registerWaypointCompass(registry, DyeColor.YELLOW, 0xDBA213);
-    registerWaypointCompass(registry, DyeColor.LIME, DyeColor.BROWN.getColorValue());
-    registerWaypointCompass(registry, DyeColor.GREEN, DyeColor.LIME.getColorValue());
-    registerWaypointCompass(registry, DyeColor.CYAN, DyeColor.LIGHT_BLUE.getColorValue());
-    registerWaypointCompass(registry, DyeColor.LIGHT_BLUE, 0x77A9FF);
-    registerWaypointCompass(registry, DyeColor.BLUE, 0x7E54FF);
-    registerWaypointCompass(registry, DyeColor.PURPLE, DyeColor.MAGENTA.getColorValue());
-    registerWaypointCompass(registry, DyeColor.MAGENTA, DyeColor.PINK.getColorValue());
-    registerWaypointCompass(registry, DyeColor.PINK, 0xF2BFCE);
-    registerWaypointCompass(registry, DyeColor.BROWN, 0xA59072);
+    waypointCompasses = registry.registerEnum(color -> new WaypointCompassItem(
+        WaypointCompassItem.getBodyColor(color),
+        WaypointCompassItem.getNeedleColor(color),
+        () -> false), DyeColor.values(), "waypoint_compass");
 
     if (Config.shieldEnchantmentTable.get()) {
       registry.register(new EnchantableShieldItem(new Item.Properties().maxDamage(Items.SHIELD.getMaxDamage()).group(ItemGroup.COMBAT)), Items.SHIELD);
     }
-  }
-
-  private void registerWaypointCompass(ItemRegistryAdapter registry, DyeColor body, int needle) {
-    waypointCompasses[body.getId()] = registry.register(new WaypointCompassItem(body.getColorValue(), needle), body.getString() + "_waypoint_compass");
   }
 
   @SubscribeEvent

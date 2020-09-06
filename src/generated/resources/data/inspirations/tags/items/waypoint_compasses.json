@@ -1,7 +1,7 @@
 {
   "replace": false,
   "values": [
-    "inspirations:waypoint_compass",
+    "inspirations:white_waypoint_compass",
     "inspirations:orange_waypoint_compass",
     "inspirations:magenta_waypoint_compass",
     "inspirations:light_blue_waypoint_compass",

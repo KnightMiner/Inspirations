@@ -84,7 +84,7 @@ public class CopyWaypointCompassRecipe extends SpecialRecipe {
       if (result.getItem() instanceof WaypointCompassItem) {
         result = result.copy();
       } else {
-        result = new ItemStack(InspirationsTools.waypointCompasses[DyeColor.WHITE.getId()]);
+        result = new ItemStack(InspirationsTools.waypointCompasses.get(DyeColor.WHITE));
       }
       result.setCount(count);
       WaypointCompassItem.copyNBT(result, waypoint);

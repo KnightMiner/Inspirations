@@ -51,6 +51,12 @@ public class WaypointCompassItem extends HidableItem {
     this.needleColor = needleColor;
   }
 
+  /**
+   * Color property getter, but serverside safe (so not implementing the interface)
+   * @param stack      Stack
+   * @param tintIndex  Color index
+   * @return  Color for stack and index
+   */
   public int getColor(ItemStack stack, int tintIndex) {
     switch (tintIndex) {
       case 0:
@@ -310,40 +316,37 @@ public class WaypointCompassItem extends HidableItem {
    */
   public static int getNeedleColor(DyeColor color) {
     switch (color) {
-      case WHITE:
-        return 0xFFC100;
-      case LIGHT_GRAY:
-        return DyeColor.WHITE.getColorValue();
-      case GRAY:
-        return DyeColor.LIGHT_GRAY.getColorValue();
-      case BLACK:
-        return DyeColor.RED.getColorValue();
-      case RED:
-        return DyeColor.ORANGE.getColorValue();
-      case ORANGE:
-        return DyeColor.YELLOW.getColorValue();
-      case YELLOW:
-        return 0xDBA213;
-      case LIME:
-        return DyeColor.BROWN.getColorValue();
-      case GREEN:
-        return DyeColor.LIME.getColorValue();
-      case CYAN:
-        return DyeColor.LIGHT_BLUE.getColorValue();
-      case LIGHT_BLUE:
-        return 0x77A9FF;
-      case BLUE:
-        return 0x7E54FF;
-      case PURPLE:
-        return DyeColor.MAGENTA.getColorValue();
-      case MAGENTA:
-        return DyeColor.PINK.getColorValue();
-      case PINK:
-        return 0xF2BFCE;
-      case BROWN:
-        return 0xA59072;
+      case WHITE:      return 0xFFC100;
+      case LIGHT_GRAY: return DyeColor.WHITE.getColorValue();
+      case GRAY:       return DyeColor.LIGHT_GRAY.getColorValue();
+      case BLACK:      return DyeColor.RED.getColorValue();
+      case RED:        return DyeColor.ORANGE.getColorValue();
+      case ORANGE:     return DyeColor.YELLOW.getColorValue();
+      case YELLOW:     return 0xDBA213;
+      case LIME:       return DyeColor.BROWN.getColorValue();
+      case GREEN:      return DyeColor.LIME.getColorValue();
+      case CYAN:       return DyeColor.LIGHT_BLUE.getColorValue();
+      case LIGHT_BLUE: return 0x77A9FF;
+      case BLUE:       return 0x7E54FF;
+      case PURPLE:     return DyeColor.MAGENTA.getColorValue();
+      case MAGENTA:    return DyeColor.PINK.getColorValue();
+      case PINK:       return 0xF2BFCE;
+      case BROWN:      return 0xA59072;
     }
     return -1;
+  }
+
+  /**
+   * Gets the color of the body of the compass
+   * @param color Compass color
+   * @return Needle color int
+   */
+  public static int getBodyColor(DyeColor color) {
+    switch (color) {
+      case WHITE: return 0xDDDDDD;
+      case BLACK: return 0x444444;
+    }
+    return color.getColorValue();
   }
 
   /**

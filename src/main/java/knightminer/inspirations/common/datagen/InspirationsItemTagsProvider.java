@@ -10,14 +10,12 @@ import knightminer.inspirations.tools.InspirationsTools;
 import net.minecraft.data.BlockTagsProvider;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.ItemTagsProvider;
-import net.minecraft.data.TagsProvider;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ITag.INamedTag;
 import net.minecraft.tags.ItemTags;
 import net.minecraftforge.common.Tags;
-import slimeknights.mantle.registration.object.EnumObject;
 
 public class InspirationsItemTagsProvider extends ItemTagsProvider {
 
@@ -45,29 +43,29 @@ public class InspirationsItemTagsProvider extends ItemTagsProvider {
     this.copy(InspirationsTags.Blocks.BOOKSHELVES, InspirationsTags.Items.BOOKSHELVES);
     this.copy(InspirationsTags.Blocks.ENLIGHTENED_BUSHES, InspirationsTags.Items.ENLIGHTENED_BUSHES);
 
-    this.getOrCreateBuilder(InspirationsTags.Items.BOOKS)
-        .add(toArray(InspirationsBuilding.coloredBooks))
+    Builder<Item> bookBuilder = this.getOrCreateBuilder(InspirationsTags.Items.BOOKS)
         .add(InspirationsBuilding.redstoneBook)
         .add(Items.BOOK, Items.WRITABLE_BOOK, Items.WRITTEN_BOOK)
         .add(Items.ENCHANTED_BOOK, Items.KNOWLEDGE_BOOK);
+    InspirationsBuilding.coloredBooks.values().forEach(bookBuilder::add);
 
     // item list of all relevant carpets
-    TagsProvider.Builder<Item> carpetBuilder = this.getOrCreateBuilder(InspirationsTags.Items.CARPETS);
+    Builder<Item> carpetBuilder = this.getOrCreateBuilder(InspirationsTags.Items.CARPETS);
     InspirationsShared.VANILLA_CARPETS.forEach(block -> carpetBuilder.add(block.asItem()));
 
     // item list of all relevant shulker boxes
-    TagsProvider.Builder<Item> shulkerBoxBuilder = this.getOrCreateBuilder(InspirationsTags.Items.SHULKER_BOXES);
+    Builder<Item> shulkerBoxBuilder = this.getOrCreateBuilder(InspirationsTags.Items.SHULKER_BOXES);
     shulkerBoxBuilder.add(Items.SHULKER_BOX);
     VanillaEnum.SHULKER_BOX.forEach(block -> shulkerBoxBuilder.add(block.asItem()));
 
     // relevant terracotta
-    TagsProvider.Builder<Item> terracottaBuilder = this.getOrCreateBuilder(InspirationsTags.Items.TERRACOTTA);
+    Builder<Item> terracottaBuilder = this.getOrCreateBuilder(InspirationsTags.Items.TERRACOTTA);
     terracottaBuilder.add(Items.TERRACOTTA);
     VanillaEnum.TERRACOTTA.forEach(block -> terracottaBuilder.add(block.asItem()));
 
     // compasses
-    this.getOrCreateBuilder(InspirationsTags.Items.WAYPOINT_COMPASSES).add(InspirationsTools.waypointCompasses);
-
+    Builder<Item> waypointCompassBuilder = this.getOrCreateBuilder(InspirationsTags.Items.WAYPOINT_COMPASSES);
+    InspirationsTools.waypointCompasses.values().forEach(waypointCompassBuilder::add);
   }
 
   private void registerForgeTags() {
@@ -92,14 +90,5 @@ public class InspirationsItemTagsProvider extends ItemTagsProvider {
     this.getOrCreateBuilder(ItemTags.ARROWS).add(InspirationsTools.redstoneArrow);
     this.copy(BlockTags.LEAVES, ItemTags.LEAVES);
     this.copy(BlockTags.WOODEN_TRAPDOORS, ItemTags.WOODEN_TRAPDOORS);
-  }
-
-  /**
-   * Converts an enum object into an array of values
-   * @param object Enum object
-   * @return Array of enum object values
-   */
-  private static Item[] toArray(EnumObject<?,? extends Item> object) {
-    return object.values().toArray(new Item[0]);
   }
 }

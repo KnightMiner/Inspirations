@@ -234,7 +234,7 @@ public class ToolsEvents {
         if (stack.getItem() instanceof WaypointCompassItem) {
           newStack = stack.copy();
         } else {
-          newStack = new ItemStack(InspirationsTools.waypointCompasses[DyeColor.WHITE.getId()]);
+          newStack = new ItemStack(InspirationsTools.waypointCompasses.get(DyeColor.WHITE));
         }
         WaypointCompassItem.setNBT(newStack, world, pos);
         if (stack.hasDisplayName()) {

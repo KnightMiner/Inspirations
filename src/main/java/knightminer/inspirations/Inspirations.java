@@ -16,13 +16,11 @@ import knightminer.inspirations.shared.SharedClientEvents;
 import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import knightminer.inspirations.utility.InspirationsUtility;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.data.BlockTagsProvider;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
-import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.RegistryEvent.MissingMappings;
@@ -105,24 +103,12 @@ public class Inspirations {
   }
 
   @SubscribeEvent
-  void missingBlockMappings(MissingMappings<Block> event) {
-    for (Mapping<Block> mapping : event.getAllMappings()) {
-      if (modID.equals(mapping.key.getNamespace())) {
-        // vanilla added their own chain, replace ours with it
-        if ("chain".equals(mapping.key.getPath())) {
-          mapping.remap(Blocks.CHAIN);
-        }
-      }
-    }
-  }
-
-  @SubscribeEvent
   void missingItemMappings(MissingMappings<Item> event) {
     for (Mapping<Item> mapping : event.getAllMappings()) {
       if (modID.equals(mapping.key.getNamespace())) {
         // vanilla added their own chain, replace ours with it
-        if ("chain".equals(mapping.key.getPath())) {
-          mapping.remap(Items.CHAIN);
+        if ("waypoint_compass".equals(mapping.key.getPath())) {
+          mapping.remap(InspirationsTools.waypointCompasses.get(DyeColor.WHITE));
         }
       }
     }
