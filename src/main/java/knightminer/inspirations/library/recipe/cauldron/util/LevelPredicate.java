@@ -1,13 +1,9 @@
 package knightminer.inspirations.library.recipe.cauldron.util;
 
 import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
-import io.netty.handler.codec.DecoderException;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.JSONUtils;
 
-import javax.annotation.Nullable;
-import java.util.Locale;
 import java.util.function.IntPredicate;
 
 import static knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe.MAX;
@@ -15,14 +11,20 @@ import static knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronR
 /**
  * Predicate to match a cauldron level
  */
-public abstract class LevelPredicate implements IntPredicate {
+public class LevelPredicate implements IntPredicate {
   private static final String KEY_MIN = "min";
   private static final String KEY_MAX = "max";
   /** Cache of all levels, first key is min, second is max */
   private static final LevelPredicate[][] CACHE = new LevelPredicate[MAX + 1][MAX + 1];
 
+  private final int min;
+  private final int max;
+
   /** No constructor to prevent extension, it will not work with the read methods */
-  private LevelPredicate() {}
+  private LevelPredicate(int min, int max) {
+    this.min = min;
+    this.max = max;
+  }
 
   /**
    * Gets a level predicate for a minimum number
@@ -30,14 +32,7 @@ public abstract class LevelPredicate implements IntPredicate {
    * @return  Level predicate
    */
   public static LevelPredicate min(int min) {
-    if (min < 0 || min > MAX) {
-      throw new IllegalArgumentException("Invalid minimum level " + min + ", must be between 0 and 3");
-    }
-    // all min can be written as a range from min to MAX
-    if (CACHE[min][MAX] == null) {
-      CACHE[min][MAX] = new Min(min);
-    }
-    return CACHE[min][MAX];
+    return range(min, MAX);
   }
 
   /**
@@ -46,14 +41,7 @@ public abstract class LevelPredicate implements IntPredicate {
    * @return  Level predicate
    */
   public static LevelPredicate max(int max) {
-    if (max < 0 || max > MAX) {
-      throw new IllegalArgumentException("Invalid maximum level " + max + ", must be between 0 and 3");
-    }
-    // all max can be written as a range from 0 to max
-    if (CACHE[0][max] == null) {
-      CACHE[0][max] = new Max(max);
-    }
-    return CACHE[0][max];
+    return range(0, max);
   }
 
   /**
@@ -63,6 +51,7 @@ public abstract class LevelPredicate implements IntPredicate {
    * @return  Level predicate
    */
   public static LevelPredicate range(int min, int max) {
+    // validate inputs
     if (min < 0 || min > MAX) {
       throw new IllegalArgumentException("Invalid minimum level " + min + ", must be between 0 and 3");
     }
@@ -70,20 +59,11 @@ public abstract class LevelPredicate implements IntPredicate {
       throw new IllegalArgumentException("Invalid maximum level " + max + ", must be between 0 and 3");
     }
     if (min > max) {
-      throw new IllegalArgumentException("Minumum cannot be larger than maximum");
+      throw new IllegalArgumentException("Minimum cannot be larger than maximum");
     }
-    // cache is shared
+    //cache a new one if missing
     if (CACHE[min][max] == null) {
-      // if max is MAX, we can ignore it
-      if (max == MAX) {
-        return min(min);
-      }
-      // if min is 0, we can ignore it
-      if (min == 0) {
-        return max(max);
-      }
-      // otherwise, new range
-      CACHE[min][max] = new Range(min, max);
+      CACHE[min][max] = new LevelPredicate(min, max);
     }
     // return cached
     return CACHE[min][max];
@@ -95,17 +75,9 @@ public abstract class LevelPredicate implements IntPredicate {
    * @return  Level predicate
    */
   public static LevelPredicate read(JsonObject json) {
-    Integer min = json.has(KEY_MIN) ? JSONUtils.getInt(json, KEY_MIN) : null;
-    Integer max = json.has(KEY_MAX) ? JSONUtils.getInt(json, KEY_MAX) : null;
-    if (min != null) {
-      if (max != null) {
-        return range(min, max);
-      }
-      return min(min);
-    } if (max != null) {
-      return max(max);
-    }
-    throw new JsonSyntaxException("Must specify 'min' or 'max' for input");
+    int min = JSONUtils.getInt(json, KEY_MIN, 0);
+    int max = JSONUtils.getInt(json, KEY_MAX, MAX);
+    return range(min, max);
   }
 
   /**
@@ -114,192 +86,57 @@ public abstract class LevelPredicate implements IntPredicate {
    * @return  Level predicate
    */
   public static LevelPredicate read(PacketBuffer buffer) {
-    Type type = buffer.readEnumValue(Type.class);
-    int i = buffer.readVarInt();
-    switch (type) {
-      case MIN: return max(i);
-      case MAX: return min(i);
-      case RANGE: return range(i, buffer.readVarInt());
-    }
-    throw new DecoderException("Got null type, this should not be possible");
+    int min = buffer.readVarInt();
+    int max = buffer.readVarInt();
+    return range(min, max);
+  }
+
+  @Override
+  public boolean test(int value) {
+    return value >= min && value <= max;
   }
 
   /**
    * Gets the minimum number that matches for display. Use {@link #test(int)} for testing
-   * @return  Minumum match
+   * @return  Minimum match
    */
-  public abstract int getMin();
+  public int getMin() {
+    return min;
+  }
 
   /**
    * Gets the maximum number that matches for display. Use {@link #test(int)} for testing
    * @return  Maximum match
    */
-  public abstract int getMax();
+  public int getMax() {
+    return max;
+  }
 
   /**
    * Writes this to the packet buffer
    * @param buffer  Buffer instance
    */
-  public abstract void write(PacketBuffer buffer);
-
-  /**
-   * Writes this to the packet buffer
-   * @param json  Json object
-   */
-  public abstract void write(JsonObject json);
+  public void write(PacketBuffer buffer) {
+    buffer.writeVarInt(min);
+    buffer.writeVarInt(max);
+  }
 
   /**
    * Writes this to JSON
    */
   public JsonObject toJson() {
     JsonObject object = new JsonObject();
-    write(object);
+    if (min > 0) {
+      object.addProperty(KEY_MIN, min);
+    }
+    if (max < MAX) {
+      object.addProperty(KEY_MAX, max);
+    }
     return object;
   }
 
-  /**
-   * Predicate to match a minimum level or higher
-   */
-  private static class Min extends LevelPredicate {
-    private final int min;
-
-    private Min(int min) {
-      this.min = min;
-    }
-
-    @Override
-    public boolean test(int value) {
-      return value >= min;
-    }
-
-    @Override
-    public int getMin() {
-      return min;
-    }
-
-    @Override
-    public int getMax() {
-      return MAX;
-    }
-
-    @Override
-    public void write(PacketBuffer buffer) {
-      buffer.writeEnumValue(Type.MIN);
-      buffer.writeVarInt(min);
-    }
-
-    @Override
-    public void write(JsonObject json) {
-      json.addProperty(KEY_MIN, min);
-    }
-  }
-
-  /**
-   * Predicate to match a maximum level or lower
-   */
-  private static class Max extends LevelPredicate {
-    private final int max;
-
-    private Max(int max) {
-      this.max = max;
-    }
-
-    @Override
-    public boolean test(int value) {
-      return value <= max;
-    }
-
-    @Override
-    public int getMin() {
-      return 0;
-    }
-
-    @Override
-    public int getMax() {
-      return max;
-    }
-
-    @Override
-    public void write(PacketBuffer buffer) {
-      buffer.writeEnumValue(Type.MAX);
-      buffer.writeVarInt(max);
-    }
-
-    @Override
-    public void write(JsonObject json) {
-      json.addProperty(KEY_MAX, max);
-    }
-  }
-
-  /**
-   * Predicate to match a value between two numbers. Really no idea why you would want this, but included for completion
-   */
-  private static class Range extends LevelPredicate {
-    private final int min, max;
-
-    private Range(int min, int max) {
-      this.min = min;
-      this.max = max;
-    }
-
-    @Override
-    public boolean test(int value) {
-      return value <= max && value >= min;
-    }
-
-    @Override
-    public int getMin() {
-      return min;
-    }
-
-    @Override
-    public int getMax() {
-      return max;
-    }
-
-    @Override
-    public void write(PacketBuffer buffer) {
-      buffer.writeEnumValue(Type.MAX);
-      buffer.writeVarInt(min);
-      buffer.writeVarInt(max);
-    }
-
-    @Override
-    public void write(JsonObject json) {
-      json.addProperty(KEY_MIN, min);
-      json.addProperty(KEY_MAX, max);
-    }
-  }
-
-  /** All valid level predicate types */
-  private enum Type {
-    MIN,
-    MAX,
-    RANGE;
-
-    private final String name = name().toLowerCase(Locale.US);
-
-    /**
-     * Gets the name of this type
-     * @return  Type name
-     */
-    public String getName() {
-      return name;
-    }
-
-    /**
-     * Gets a predicate type for the given name
-     * @param name  Name to check
-     * @return  Value, or null if missing
-     */
-    @Nullable
-    public static Type byName(String name) {
-      for (Type type : values()) {
-        if (type.getName().equals(name)) {
-          return type;
-        }
-      }
-      return null;
-    }
+  @Override
+  public String toString() {
+    return String.format("LevelPredicate[%d,%d]", min, max);
   }
 }
