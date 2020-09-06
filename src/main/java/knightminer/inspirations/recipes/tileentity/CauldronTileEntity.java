@@ -332,10 +332,11 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
   /* behavior */
 
   /**
-   * Handles a cauldron recipe. Will do everything except update the cauldron level
-   * @param stack       Stack to match for recipes
-   * @param itemSetter  Logic to update the stack in the context. If null, have to manually handle item setting (for dispensers)
-   * @param itemAdder   Logic to add a new stack to the context
+   * Handles a cauldron recipe. Will do everything except update the cauldron level and clear the context.
+   * The caller is responsible for handling those (as each caller has different needs)
+   * @param stack         Stack to match for recipes
+   * @param itemSetter    Logic to update the stack in the context. If null, have to manually handle item setting (for dispensers)
+   * @param itemAdder     Logic to add a new stack to the context
    * @return  True if the recipe matched, false otherwise
    */
   private boolean handleRecipe(ItemStack stack, @Nullable Consumer<ItemStack> itemSetter, Consumer<ItemStack> itemAdder) {
@@ -363,9 +364,6 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
         recipe.handleRecipe(craftingInventory);
       }
     }
-
-    // clear any extra context and return
-    craftingInventory.clearContext();
     return success;
   }
 
@@ -383,9 +381,9 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
     boolean success = handleRecipe(player.getHeldItem(hand), stack -> player.setHeldItem(hand, stack), CauldronItemInventory.getPlayerAdder(player));
     if (success) {
       setLevel(craftingInventory.getLevel());
-      return true;
     }
-    return false;
+    craftingInventory.clearContext();
+    return success;
   }
 
   /**
@@ -401,11 +399,13 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
     }
 
     // update level from the recipe and return the updated stack
+    ItemStack result = null;
     if (handleRecipe(stack, null, itemAdder)) {
       setLevel(craftingInventory.getLevel());
-      return craftingInventory.getStack();
+      result = craftingInventory.getStack();
     }
-    return null;
+    craftingInventory.clearContext();
+    return result;
   }
 
   private static final String TAG_CAULDRON_CRAFTED = "cauldron_crafted";
@@ -440,46 +440,44 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
       }
 
       // run recipe
-      boolean success = handleRecipe(entityItem.getItem(), stack -> {
-        if (stack.isEmpty()) {
-          entityItem.remove();
-        } else {
-          entityItem.setItem(stack);
-        }
-      }, stack -> {
+      boolean success = handleRecipe(entityItem.getItem(), entityItem::setItem, stack -> {
         ItemEntity newItem = new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, stack);
         newItem.getPersistentData().putBoolean(CauldronTileEntity.TAG_CAULDRON_CRAFTED, true);
+        newItem.setDefaultPickupDelay();
         world.addEntity(newItem);
       });
 
       // on success, run the recipe a few more times
       if (success) {
         int matches = 0;
-        while (lastRecipe.matches(craftingInventory, world) && matches < 10) {
+        while (lastRecipe.matches(craftingInventory, world) && matches < 64) {
           lastRecipe.handleRecipe(craftingInventory);
           matches++;
         }
 
-        // safety check, recipes should never really match more than 4 times, but 10 just in case
+        // safety check, recipes should never really match more than 4 times, but 64 just in case someone does a item change without updating state (64 is a stack)
         // basically, they should either be lowering/raising the level (max 4 times), or changing the state (not repeatable)
-        if (matches == 10) {
+        if (matches == 64) {
           Inspirations.log.warn("Recipe '{}' matched too many times in a single tick. Either the level or the state should change to make it no longer match.", lastRecipe.getId());
         }
       }
 
-      // if alive, prevent another craft
-      if (entityItem.isAlive()) {
-        if (success) {
-          entityTags.putBoolean(TAG_CAULDRON_CRAFTED, true);
-        } else {
-          // set a cooldown to reduce lag, so we are not searching the registry every tick
-          // we do not just set crafted as that would prevent dropping in items one at a time where multiple are required
-          entityTags.putInt(TAG_CAULDRON_COOLDOWN, 60);
-        }
+      // kill entity if empty
+      if (entityItem.getItem().isEmpty()) {
+        entityItem.remove();
+      } else if (success) {
+        // if the recipe worked, mark as crafted
+        entityTags.putBoolean(TAG_CAULDRON_CRAFTED, true);
+      } else {
+        // set a cooldown to reduce lag, so we are not searching the registry every tick
+        // we do not just set crafted as that would prevent dropping in items one at a time where multiple are required
+        entityTags.putInt(TAG_CAULDRON_COOLDOWN, 60);
       }
 
       // return the final level update
-      return craftingInventory.getLevel();
+      int newLevel = craftingInventory.getLevel();
+      craftingInventory.clearContext();
+      return newLevel;
 
     } else if (level > 0) {
       Optional<Fluid> fluidType = contents.get(CauldronContentTypes.FLUID);
@@ -547,7 +545,6 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
     }
 
     // if the current transform matches, do nothing
-    craftingInventory.refreshLevel();
     if (world == null || (currentTransform != null && currentTransform.matches(craftingInventory, world))) {
       return;
     }

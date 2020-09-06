@@ -49,8 +49,7 @@ public class TileCauldronInventory extends CauldronItemInventory {
     this.stack = stack;
     this.itemSetter = itemSetter == null ? EMPTY_CONSUMER : itemSetter;
     this.itemAdder = itemAdder;
-    // also clear new level so we do not set to the wrong new value
-    this.refreshLevel();
+    this.newLevel = -1;
   }
 
   /**
@@ -60,6 +59,7 @@ public class TileCauldronInventory extends CauldronItemInventory {
     this.stack = ItemStack.EMPTY;
     this.itemSetter = EMPTY_CONSUMER;
     this.itemAdder = EMPTY_CONSUMER;
+    this.newLevel = -1;
   }
 
 
@@ -77,13 +77,6 @@ public class TileCauldronInventory extends CauldronItemInventory {
   public void setLevel(int level) {
     // set variable so we can just run updates at the end
     newLevel = MathHelper.clamp(level, 0, ICauldronRecipe.MAX);
-  }
-
-  /**
-   * Clears the new level variable
-   */
-  public void refreshLevel() {
-    this.newLevel = -1;
   }
 
 
