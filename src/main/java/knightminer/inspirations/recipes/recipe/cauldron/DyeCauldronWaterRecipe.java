@@ -15,6 +15,7 @@ import knightminer.inspirations.library.recipe.cauldron.util.TemperaturePredicat
 import net.minecraft.data.IFinishedRecipe;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.DyeColor;
+import net.minecraft.item.DyeItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.network.PacketBuffer;
@@ -25,6 +26,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -173,6 +175,10 @@ public class DyeCauldronWaterRecipe implements ICauldronRecipe, ICauldronRecipeD
                   .map(ItemStack::new)
                   .filter(stack -> !stack.hasContainerItem())
                   .collect(Collectors.toList());
+      // empty on a server when this is called typically
+      if (inputs.isEmpty()) {
+        inputs = Collections.singletonList(new ItemStack(DyeItem.getItem(dye)));
+      }
     }
     return inputs;
   }

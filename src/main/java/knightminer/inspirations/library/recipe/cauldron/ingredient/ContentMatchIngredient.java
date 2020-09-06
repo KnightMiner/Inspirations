@@ -84,6 +84,7 @@ public abstract class ContentMatchIngredient<T> implements ICauldronIngredient {
 
     @Override
     protected void write(PacketBuffer buffer) {
+      buffer.writeVarInt(1);
       buffer.writeString(serializer.type.getName(value));
     }
 

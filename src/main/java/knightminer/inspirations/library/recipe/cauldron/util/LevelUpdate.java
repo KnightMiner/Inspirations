@@ -42,6 +42,11 @@ public abstract class LevelUpdate implements IntUnaryOperator {
     public JsonObject toJson() {
       return new JsonObject();
     }
+
+    @Override
+    public String toString() {
+      return "LevelUpdate.Identity";
+    }
   };
   static {
     // -3 (offset) + 3 = 0
@@ -157,6 +162,11 @@ public abstract class LevelUpdate implements IntUnaryOperator {
     protected void write(JsonObject json) {
       json.addProperty(KEY_SET, amount);
     }
+
+    @Override
+    public String toString() {
+      return String.format("LevelUpdate.Set(=%d)", amount);
+    }
   }
 
   /**
@@ -182,6 +192,11 @@ public abstract class LevelUpdate implements IntUnaryOperator {
     @Override
     protected void write(JsonObject json) {
       json.addProperty(KEY_ADD, amount);
+    }
+
+    @Override
+    public String toString() {
+      return String.format("LevelUpdate.Add(%+d)", amount);
     }
   }
 
