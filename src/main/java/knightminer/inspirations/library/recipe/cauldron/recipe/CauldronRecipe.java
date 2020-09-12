@@ -5,7 +5,6 @@ import knightminer.inspirations.library.recipe.RecipeSerializer;
 import knightminer.inspirations.library.recipe.RecipeSerializers;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.CauldronIngredients;
-import knightminer.inspirations.library.recipe.cauldron.contents.EmptyCauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.ingredient.ICauldronIngredient;
 import knightminer.inspirations.library.recipe.cauldron.ingredient.SizedIngredient;
@@ -54,12 +53,12 @@ public class CauldronRecipe extends AbstractCauldronRecipe implements ICauldronR
    * @param temperature  Predicate for required cauldron temperature
    * @param output       Output stack, use empty for no output
    * @param copyNBT      If true, copies the input NBT to the output
-   * @param newContents  Output contents, use {@link EmptyCauldronContents#INSTANCE} to keep old contents
+   * @param newContents  Output contents, use {@code null} to keep old contents
    * @param levelUpdate  Level updater
    * @param container    Container output. If null, fetches container from the item. If empty, no container
    */
   public CauldronRecipe(ResourceLocation id, String group, SizedIngredient input, ICauldronIngredient contents, LevelPredicate level, TemperaturePredicate temperature,
-                        ItemStack output, boolean copyNBT, ICauldronContents newContents, LevelUpdate levelUpdate, @Nullable ItemStack container, SoundEvent sound) {
+                        ItemStack output, boolean copyNBT, @Nullable ICauldronContents newContents, LevelUpdate levelUpdate, @Nullable ItemStack container, SoundEvent sound) {
     super(contents, level, temperature, newContents);
     this.id = id;
     this.group = group;
@@ -77,7 +76,7 @@ public class CauldronRecipe extends AbstractCauldronRecipe implements ICauldronR
   @Override
   public boolean matches(ICauldronInventory inv, World worldIn) {
     // if this cauldron only supports simple recipes, block if the result is not simple
-    if (inv.isSimple() && !outputContents.isSimple()) {
+    if (inv.isSimple() && outputContents != null && !outputContents.isSimple()) {
       return false;
     }
     // check common matches logic
@@ -93,7 +92,7 @@ public class CauldronRecipe extends AbstractCauldronRecipe implements ICauldronR
   public void handleRecipe(IModifyableCauldronInventory inventory) {
     // update level
     // only update contents if the level is not empty and we have new contents
-    if (!inventory.updateLevel(levelUpdate) && outputContents != EmptyCauldronContents.INSTANCE) {
+    if (!inventory.updateLevel(levelUpdate) && outputContents != null) {
       inventory.setContents(outputContents);
     }
 
@@ -207,7 +206,7 @@ public class CauldronRecipe extends AbstractCauldronRecipe implements ICauldronR
         output = CraftingHelper.getItemStack(JSONUtils.getJsonObject(outputJson, "item"), true);
         copyNBT = JSONUtils.getBoolean(outputJson, "copy_nbt", false);
       }
-      ICauldronContents newContents = EmptyCauldronContents.INSTANCE;
+      ICauldronContents newContents = null;
       if (outputJson.has("contents")) {
         newContents = CauldronContentTypes.read(JSONUtils.getJsonObject(outputJson, "contents"));
       }
@@ -246,7 +245,12 @@ public class CauldronRecipe extends AbstractCauldronRecipe implements ICauldronR
       buffer.writeEnumValue(recipe.temperature);
       buffer.writeItemStack(recipe.output);
       buffer.writeBoolean(recipe.copyNBT);
-      CauldronContentTypes.write(recipe.outputContents, buffer);
+      if (recipe.outputContents != null) {
+        buffer.writeBoolean(true);
+        CauldronContentTypes.write(recipe.outputContents, buffer);
+      } else {
+        buffer.writeBoolean(false);
+      }
       recipe.levelUpdate.write(buffer);
       if (recipe.container == null) {
         buffer.writeBoolean(false);
@@ -267,7 +271,10 @@ public class CauldronRecipe extends AbstractCauldronRecipe implements ICauldronR
       TemperaturePredicate boiling = buffer.readEnumValue(TemperaturePredicate.class);
       ItemStack output = buffer.readItemStack();
       boolean copyNBT = buffer.readBoolean();
-      ICauldronContents newContents = CauldronContentTypes.read(buffer);
+      ICauldronContents newContents = null;
+      if (buffer.readBoolean()) {
+        newContents = CauldronContentTypes.read(buffer);
+      }
       LevelUpdate levelUpdate = LevelUpdate.read(buffer);
       ItemStack container = null;
       if (buffer.readBoolean()) {

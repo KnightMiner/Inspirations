@@ -2,7 +2,7 @@ package knightminer.inspirations.library.recipe.cauldron.recipe;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
-import knightminer.inspirations.library.recipe.cauldron.contents.EmptyCauldronContents;
+import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.ingredient.ICauldronIngredient;
 import knightminer.inspirations.library.recipe.cauldron.inventory.ICauldronState;
@@ -12,6 +12,7 @@ import knightminer.inspirations.library.recipe.cauldron.util.TemperaturePredicat
 import net.minecraft.util.JSONUtils;
 import net.minecraftforge.fluids.FluidStack;
 
+import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,6 +25,7 @@ public abstract class AbstractCauldronRecipe implements ICauldronRecipeDisplay {
   protected final ICauldronIngredient ingredient;
   protected final LevelPredicate level;
   protected final TemperaturePredicate temperature;
+  @Nullable
   protected final ICauldronContents outputContents;
 
   // values for JEI display
@@ -38,7 +40,7 @@ public abstract class AbstractCauldronRecipe implements ICauldronRecipeDisplay {
    * @param temperature  Predicate for required cauldron temperature
    * @param output       Output stack, use empty for no output
    */
-  public AbstractCauldronRecipe(ICauldronIngredient ingredient, LevelPredicate level, TemperaturePredicate temperature, ICauldronContents output) {
+  public AbstractCauldronRecipe(ICauldronIngredient ingredient, LevelPredicate level, TemperaturePredicate temperature, @Nullable ICauldronContents output) {
     this.ingredient = ingredient;
     this.level = level;
     this.temperature = temperature;
@@ -85,10 +87,11 @@ public abstract class AbstractCauldronRecipe implements ICauldronRecipeDisplay {
 
   @Override
   public ICauldronContents getContentOutput() {
-    if (outputContents == EmptyCauldronContents.INSTANCE) {
+    // if output is null, display first input
+    if (outputContents == null) {
       if (displayContents == null) {
         List<ICauldronContents> inputs = getContentInputs();
-        displayContents = inputs.isEmpty() ? EmptyCauldronContents.INSTANCE : inputs.get(0);
+        displayContents = inputs.isEmpty() ? CauldronContentTypes.DEFAULT.get() : inputs.get(0);
       }
       return displayContents;
     }

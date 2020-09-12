@@ -7,7 +7,6 @@ import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.library.InspirationsTags;
 import knightminer.inspirations.library.recipe.RecipeTypes;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
-import knightminer.inspirations.library.recipe.cauldron.contents.EmptyCauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronTransform;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
@@ -23,7 +22,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.potion.EffectInstance;
@@ -65,7 +63,7 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
 
   // data objects
   private final IModelData data = new ModelDataMap.Builder()
-      .withInitial(TEXTURE, EmptyCauldronContents.INSTANCE.getTextureName())
+      .withInitial(TEXTURE, CauldronContentTypes.DEFAULT.get().getTextureName())
       .withInitial(FROSTED, false).build();
   private final TileCauldronInventory craftingInventory = new TileCauldronInventory(this);
 
@@ -114,7 +112,7 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
    */
   protected CauldronTileEntity(TileEntityType<?> type, EnhancedCauldronBlock block) {
     super(type);
-    this.contents = EmptyCauldronContents.INSTANCE;
+    this.contents = CauldronContentTypes.DEFAULT.get();
     this.data.setData(TEXTURE, contents.getTextureName());
     this.cauldronBlock = block;
   }
@@ -160,9 +158,6 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
    * @return current contents
    */
   public ICauldronContents getContents() {
-    if (getLevel() == 0) {
-      return EmptyCauldronContents.INSTANCE;
-    }
     return contents;
   }
 
@@ -171,15 +166,12 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
    * @param contents  New contents
    */
   public void setContents(ICauldronContents contents) {
-    // noting to do
+    // noting to do if a match
     if (this.contents.equals(contents)) {
       return;
     }
 
-    // normalize empty into water
-    if (contents == EmptyCauldronContents.INSTANCE) {
-      contents = CauldronContentTypes.FLUID.of(Fluids.WATER);
-    }
+    // update contents
     this.contents = contents;
 
     // update display client side, sync to client serverside

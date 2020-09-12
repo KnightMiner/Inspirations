@@ -7,8 +7,6 @@ import com.google.gson.JsonSyntaxException;
 import io.netty.handler.codec.DecoderException;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.recipe.cauldron.contents.CauldronContentType;
-import knightminer.inspirations.library.recipe.cauldron.contents.EmptyCauldronContents;
-import knightminer.inspirations.library.recipe.cauldron.contents.EmptyContentType;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import knightminer.inspirations.recipes.recipe.cauldron.contents.ColorContentType;
 import knightminer.inspirations.recipes.recipe.cauldron.contents.CustomContentType;
@@ -16,6 +14,7 @@ import knightminer.inspirations.recipes.recipe.cauldron.contents.DyeContentType;
 import knightminer.inspirations.recipes.recipe.cauldron.contents.FluidContentType;
 import knightminer.inspirations.recipes.recipe.cauldron.contents.PotionContentType;
 import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.DyeColor;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
@@ -23,6 +22,7 @@ import net.minecraft.potion.Potion;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.Constants.NBT;
+import net.minecraftforge.common.util.Lazy;
 
 import javax.annotation.Nullable;
 
@@ -36,8 +36,8 @@ public class CauldronContentTypes {
 
   /* Public constants */
 
-  /** Generic water type */
-  public static final EmptyContentType EMPTY = register("empty", new EmptyContentType());
+  /** Contains a specific fluid */
+  public static final CauldronContentType<Fluid> FLUID = register("fluid", new FluidContentType());
 
   /** Contains an arbitrary color */
   public static final CauldronContentType<Integer> COLOR = register("color", new ColorContentType());
@@ -49,10 +49,10 @@ public class CauldronContentTypes {
   public static final CauldronContentType<Potion> POTION = register("potion", new PotionContentType());
 
   /** Contains a specific fluid */
-  public static final CauldronContentType<Fluid> FLUID = register("fluid", new FluidContentType());
-
-  /** Contains a specific fluid */
   public static final CauldronContentType<ResourceLocation> CUSTOM = register("custom", new CustomContentType());
+
+  /** Default cauldron content type, return when reading if type invalid */
+  public static final Lazy<ICauldronContents> DEFAULT = Lazy.of(() -> FLUID.of(Fluids.WATER));
 
   /**
    * Registers a new content type
@@ -157,7 +157,7 @@ public class CauldronContentTypes {
         }
       }
     }
-    return EmptyCauldronContents.INSTANCE;
+    return CauldronContentTypes.DEFAULT.get();
   }
 
   /**

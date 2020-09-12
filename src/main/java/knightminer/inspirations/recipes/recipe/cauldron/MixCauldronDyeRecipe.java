@@ -6,7 +6,6 @@ import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.recipe.RecipeSerializer;
 import knightminer.inspirations.library.recipe.RecipeSerializers;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
-import knightminer.inspirations.library.recipe.cauldron.contents.EmptyCauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.inventory.ICauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.inventory.IModifyableCauldronInventory;
@@ -82,7 +81,7 @@ public class MixCauldronDyeRecipe implements ICauldronRecipe, ICauldronRecipeDis
     // if water, set the color directly
     ICauldronContents contents = inv.getContents();
     ItemStack container = inv.getStack().getContainerItem();
-    if (contents == EmptyCauldronContents.INSTANCE || contents.contains(CauldronContentTypes.FLUID, Fluids.WATER)) {
+    if (inv.getLevel() == 0 || contents.contains(CauldronContentTypes.FLUID, Fluids.WATER)) {
       // update dye stack and return container
       inv.shrinkStack(1);
       inv.giveStack(container.copy());

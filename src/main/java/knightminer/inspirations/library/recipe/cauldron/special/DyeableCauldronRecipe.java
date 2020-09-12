@@ -173,7 +173,7 @@ public abstract class DyeableCauldronRecipe implements ICauldronRecipe, IMultiRe
       List<ItemStack> inputs = Arrays.stream(DyeColor.values()).map(color -> Util.setColor(stack.copy(), color.getColorValue())).collect(Collectors.toList());
       return Stream.of(DisplayCauldronRecipe.builder(1, 0)
                                             .setItemInputs(inputs)
-                                            .setContentInputs(DisplayCauldronRecipe.WATER_CONTENTS.getValue())
+                                            .setContentInputs(DisplayCauldronRecipe.WATER_CONTENTS.get())
                                             .setItemOutput(Util.clearColor(stack.copy()))
                                             .build());
     }

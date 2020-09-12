@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import knightminer.inspirations.library.recipe.RecipeSerializers;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.CauldronIngredients;
-import knightminer.inspirations.library.recipe.cauldron.contents.EmptyCauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.ingredient.ICauldronIngredient;
 import knightminer.inspirations.library.recipe.cauldron.ingredient.SizedIngredient;
@@ -38,7 +37,8 @@ public class CauldronRecipeBuilder extends AbstractRecipeBuilder<CauldronRecipeB
   private TemperaturePredicate temperature = TemperaturePredicate.ANY;
   private ItemStack output = ItemStack.EMPTY;
   private boolean copyNBT = false;
-  private ICauldronContents newContents = EmptyCauldronContents.INSTANCE;
+  @Nullable
+  private ICauldronContents newContents = null;
   private LevelUpdate levelUpdate = LevelUpdate.IDENTITY;
   @Nullable
   private ItemStack container = null;
@@ -252,7 +252,7 @@ public class CauldronRecipeBuilder extends AbstractRecipeBuilder<CauldronRecipeB
       build(consumer, Objects.requireNonNull(output.getItem().getRegistryName()));
       return;
     }
-    if (newContents != EmptyCauldronContents.INSTANCE) {
+    if (newContents != null) {
       ResourceLocation name = nameFromContents(newContents);
       if (name != null) {
         build(consumer, name);
@@ -298,6 +298,7 @@ public class CauldronRecipeBuilder extends AbstractRecipeBuilder<CauldronRecipeB
     private final TemperaturePredicate temperature;
     private final ItemStack output;
     private final boolean copyNBT;
+    @Nullable
     private final ICauldronContents newContents;
     private final LevelUpdate levelUpdate;
     @Nullable
@@ -307,7 +308,7 @@ public class CauldronRecipeBuilder extends AbstractRecipeBuilder<CauldronRecipeB
     private final Advancement.Builder advancementBuilder;
     private final ResourceLocation advancementId;
 
-    private Result(ResourceLocation id, String group, SizedIngredient input, ICauldronIngredient contents, LevelPredicate level, TemperaturePredicate temperature, ItemStack output, boolean copyNBT, ICauldronContents newContents, LevelUpdate levelUpdate, @Nullable ItemStack container, @Nullable SoundEvent sound, Builder advancementBuilder, ResourceLocation advancementId) {
+    private Result(ResourceLocation id, String group, SizedIngredient input, ICauldronIngredient contents, LevelPredicate level, TemperaturePredicate temperature, ItemStack output, boolean copyNBT, @Nullable ICauldronContents newContents, LevelUpdate levelUpdate, @Nullable ItemStack container, @Nullable SoundEvent sound, Builder advancementBuilder, ResourceLocation advancementId) {
       this.id = id;
       this.group = group;
       this.input = input;
@@ -373,7 +374,7 @@ public class CauldronRecipeBuilder extends AbstractRecipeBuilder<CauldronRecipeB
           outputJson.add("container", toJson(container));
         }
       }
-      if (newContents != EmptyCauldronContents.INSTANCE) {
+      if (newContents != null) {
         outputJson.add("contents", CauldronContentTypes.toJson(newContents));
       }
       if (levelUpdate != LevelUpdate.IDENTITY) {

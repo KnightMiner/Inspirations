@@ -11,7 +11,7 @@ import slimeknights.mantle.recipe.inventory.IEmptyInventory;
 public interface ICauldronState extends IEmptyInventory {
   /**
    * Gets the contents of the cauldron.
-   * Should return {@link knightminer.inspirations.library.recipe.cauldron.contents.EmptyCauldronContents#INSTANCE} if {@link #getLevel()} returns 0. Should never return empty otherwise.
+   * If {@link #getLevel()} returns 0, value is indeterminate.
    * @return  Cauldron contents
    */
   ICauldronContents getContents();

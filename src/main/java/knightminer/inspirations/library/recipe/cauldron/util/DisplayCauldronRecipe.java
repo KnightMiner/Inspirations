@@ -2,7 +2,6 @@ package knightminer.inspirations.library.recipe.cauldron.util;
 
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
-import knightminer.inspirations.library.recipe.cauldron.contents.EmptyCauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipeDisplay;
@@ -12,10 +11,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.util.IItemProvider;
-import net.minecraft.util.LazyValue;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Lazy;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
 import slimeknights.mantle.recipe.ICustomOutputRecipe;
@@ -33,8 +32,9 @@ import java.util.stream.Stream;
 public class DisplayCauldronRecipe implements ICauldronRecipeDisplay, ICustomOutputRecipe<IInventory> {
   private static final ResourceLocation ID = Inspirations.getResource("dynamic_display");
   /** Lazy getter for water */
-  public static final LazyValue<List<ICauldronContents>> WATER_CONTENTS = new LazyValue<>(() -> Collections.singletonList(CauldronContentTypes.FLUID.of(Fluids.WATER)));
-  public static final LazyValue<List<FluidStack>> WATER_FLUID = new LazyValue<>(() -> Collections.singletonList(new FluidStack(Fluids.WATER, FluidAttributes.BUCKET_VOLUME)));
+  public static final Lazy<List<ICauldronContents>> WATER_CONTENTS = Lazy.of(() -> Collections.singletonList(CauldronContentTypes.DEFAULT.get()));
+  /** Lazy getter for water as a fluid stack */
+  public static final Lazy<List<FluidStack>> WATER_FLUID = Lazy.of(() -> Collections.singletonList(new FluidStack(Fluids.WATER, FluidAttributes.BUCKET_VOLUME)));
   // inputs
   private final List<ItemStack> itemInputs;
   private final List<ICauldronContents> contentInputs;
@@ -185,7 +185,7 @@ public class DisplayCauldronRecipe implements ICauldronRecipeDisplay, ICustomOut
     private List<ItemStack> itemInputs = Collections.emptyList();
     private List<ICauldronContents> contentInputs = Collections.emptyList();
     private ItemStack itemOutput = ItemStack.EMPTY;
-    private ICauldronContents contentOutputs = EmptyCauldronContents.INSTANCE;
+    private ICauldronContents contentOutputs;
     private TemperaturePredicate temperature = TemperaturePredicate.ANY;
     private int time = -1;
     private Builder(int levelInput, int levelOutput) {
@@ -304,20 +304,30 @@ public class DisplayCauldronRecipe implements ICauldronRecipeDisplay, ICustomOut
      * @return  Display recipe
      */
     public DisplayCauldronRecipe build() {
-      if (levelInput != 0 && contentInputs.isEmpty()) {
-        throw new IllegalStateException("Invalid recipe, must have at least one input for level greater than 0");
+      // if we have an input, get fluid inputs and validate
+      List<FluidStack> fluidInputs = Collections.emptyList();
+      if (levelInput != 0) {
+        if (contentInputs.isEmpty()) {
+          throw new IllegalStateException("Invalid recipe, must have at least one input for level greater than 0");
+        }
+        fluidInputs = contentInputs.stream()
+                                   .flatMap(contents -> getFluid(contents).map(Stream::of).orElseGet(Stream::empty))
+                                   .collect(Collectors.toList());
+        // size change means not all were fluids
+        if (fluidInputs.size() != contentInputs.size()) {
+          fluidInputs = Collections.emptyList();
+        }
       }
-      if (levelOutput != 0 && contentOutputs == EmptyCauldronContents.INSTANCE) {
-        throw new IllegalStateException("Invalid recipe, must have at least one output for level greater than 0");
+      // if we have an output, get fluid output and validate
+      FluidStack fluidOutput = FluidStack.EMPTY;
+      if (levelOutput != 0) {
+        if (contentOutputs == null) {
+          throw new IllegalStateException("Invalid recipe, must have at least one output for level greater than 0");
+        }
+        fluidOutput = getFluid(contentOutputs).orElse(FluidStack.EMPTY);
+      } else {
+        contentOutputs = CauldronContentTypes.DEFAULT.get();
       }
-      // gather fluid inputs and outputs
-      List<FluidStack> fluidInputs = contentInputs.stream()
-                                                  .flatMap(contents -> getFluid(contents).map(Stream::of).orElseGet(Stream::empty))
-                                                  .collect(Collectors.toList());
-      if (fluidInputs.size() != contentInputs.size()) {
-        fluidInputs = Collections.emptyList();
-      }
-      FluidStack fluidOutput = getFluid(contentOutputs).orElse(FluidStack.EMPTY);
       // return recipe
       return new DisplayCauldronRecipe(itemInputs, contentInputs, fluidInputs, levelInput, itemOutput, contentOutputs, fluidOutput, levelOutput, temperature, time);
     }

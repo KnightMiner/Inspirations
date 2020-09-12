@@ -3,7 +3,6 @@ package knightminer.inspirations.recipes.recipe.inventory;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.recipe.RecipeTypes;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
-import knightminer.inspirations.library.recipe.cauldron.contents.EmptyCauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.util.CauldronTemperature;
@@ -11,7 +10,6 @@ import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CauldronBlock;
-import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
@@ -23,7 +21,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 public class VanillaCauldronInventory extends CauldronItemInventory {
-  private static final ICauldronContents CONTENTS = CauldronContentTypes.FLUID.of(Fluids.WATER);
   private final World world;
   private final BlockPos pos;
   private final BlockState state;
@@ -89,15 +86,12 @@ public class VanillaCauldronInventory extends CauldronItemInventory {
 
   @Override
   public ICauldronContents getContents() {
-    if (getLevel() == 0) {
-      return EmptyCauldronContents.INSTANCE;
-    }
-    return CONTENTS;
+    return CauldronContentTypes.DEFAULT.get();
   }
 
   @Override
   public void setContents(ICauldronContents contents) {
-    if (contents != EmptyCauldronContents.INSTANCE && !contents.isSimple()) {
+    if (!contents.isSimple()) {
       Inspirations.log.error("Cannot set cauldron contents of vanilla cauldron to non-water " + contents);
     }
   }

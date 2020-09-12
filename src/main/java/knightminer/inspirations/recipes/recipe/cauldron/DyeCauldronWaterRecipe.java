@@ -186,12 +186,12 @@ public class DyeCauldronWaterRecipe implements ICauldronRecipe, ICauldronRecipeD
 
   @Override
   public List<ICauldronContents> getContentInputs() {
-    return DisplayCauldronRecipe.WATER_CONTENTS.getValue();
+    return DisplayCauldronRecipe.WATER_CONTENTS.get();
   }
 
   @Override
   public List<FluidStack> getFluidInputs() {
-    return DisplayCauldronRecipe.WATER_FLUID.getValue();
+    return DisplayCauldronRecipe.WATER_FLUID.get();
   }
 
   @Override
