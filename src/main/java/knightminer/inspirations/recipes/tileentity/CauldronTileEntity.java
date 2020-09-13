@@ -1,6 +1,7 @@
 package knightminer.inspirations.recipes.tileentity;
 
 import knightminer.inspirations.Inspirations;
+import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.network.CauldronContentUpatePacket;
 import knightminer.inspirations.common.network.CauldronTransformUpatePacket;
 import knightminer.inspirations.common.network.InspirationsNetwork;
@@ -415,7 +416,7 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
     }
 
     // if an entity item, try crafting with it
-    if (entity instanceof ItemEntity) {
+    if (entity instanceof ItemEntity && Config.cauldronRecipes.getAsBoolean()) {
       // skip items that we have already processed
       ItemEntity entityItem = (ItemEntity)entity;
       CompoundNBT entityTags = entity.getPersistentData();

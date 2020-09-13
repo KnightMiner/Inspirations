@@ -73,8 +73,11 @@ public class EnhancedCauldronBlock extends CauldronBlock {
 
   @Override
   public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult ray) {
-    // all moved to the cauldron registry
-    return ActionResultType.SUCCESS;
+    if (Config.cauldronRecipes.getAsBoolean()) {
+      // all moved to the cauldron registry
+      return ActionResultType.SUCCESS;
+    }
+    return super.onBlockActivated(state, world, pos, player, hand, ray);
   }
 
   @Override
