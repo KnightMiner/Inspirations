@@ -5,7 +5,7 @@
       "layer1": "inspirations:item/waypoint_compass/16"
   }, 
   "overrides": [
-    { "predicate": { "inspirations:angle": 0.000000 }, "model": "inspirations:item/waypoint_compass" },
+    { "predicate": { "inspirations:angle": 0.000000 }, "model": "inspirations:item/white_waypoint_compass" },
     { "predicate": { "inspirations:angle": 0.015625 }, "model": "inspirations:item/waypoint_compass/17" },
     { "predicate": { "inspirations:angle": 0.046875 }, "model": "inspirations:item/waypoint_compass/18" },
     { "predicate": { "inspirations:angle": 0.078125 }, "model": "inspirations:item/waypoint_compass/19" },
@@ -37,6 +37,6 @@
     { "predicate": { "inspirations:angle": 0.890625 }, "model": "inspirations:item/waypoint_compass/13" },
     { "predicate": { "inspirations:angle": 0.921875 }, "model": "inspirations:item/waypoint_compass/14" },
     { "predicate": { "inspirations:angle": 0.953125 }, "model": "inspirations:item/waypoint_compass/15" },
-    { "predicate": { "inspirations:angle": 0.984375 }, "model": "inspirations:item/waypoint_compass" }
+    { "predicate": { "inspirations:angle": 0.984375 }, "model": "inspirations:item/white_waypoint_compass" }
   ]
 }
