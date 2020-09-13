@@ -11,8 +11,8 @@
     }
   ],
   "bottle": {
-    "item": "minecraft:arrow"
+    "item": "minecraft:arrow",
+    "amount_needed": 16
   },
-  "amount": 16,
   "potion": "minecraft:tipped_arrow"
 }

@@ -2,6 +2,7 @@ package knightminer.inspirations.library.recipe.cauldron.special;
 
 import com.google.gson.JsonObject;
 import knightminer.inspirations.library.Util;
+import knightminer.inspirations.library.recipe.DynamicFinishedRecipe;
 import knightminer.inspirations.library.recipe.RecipeSerializer;
 import knightminer.inspirations.library.recipe.RecipeSerializers;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
@@ -21,6 +22,7 @@ import net.minecraft.world.World;
 import slimeknights.mantle.recipe.RecipeHelper;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 /**
  * Recipe that drains a potion into the cauldron
@@ -113,6 +115,23 @@ public class EmptyPotionCauldronRecipe implements ICauldronRecipe {
     public void write(PacketBuffer buffer, EmptyPotionCauldronRecipe recipe) {
       RecipeHelper.writeItem(buffer, recipe.potionItem);
       RecipeHelper.writeItem(buffer, recipe.bottle);
+    }
+  }
+
+  /** Finished recipe for datagen */
+  public static class FinishedRecipe extends DynamicFinishedRecipe {
+    private final Item potionItem;
+    private final Item bottle;
+    public FinishedRecipe(ResourceLocation id, Item potionItem, Item bottle) {
+      super(id, RecipeSerializers.CAULDRON_EMPTY_POTION);
+      this.potionItem = potionItem;
+      this.bottle = bottle;
+    }
+
+    @Override
+    public void serialize(JsonObject json) {
+      json.addProperty("potion", Objects.requireNonNull(potionItem.getRegistryName()).toString());
+      json.addProperty("bottle", Objects.requireNonNull(bottle.getRegistryName()).toString());
     }
   }
 }

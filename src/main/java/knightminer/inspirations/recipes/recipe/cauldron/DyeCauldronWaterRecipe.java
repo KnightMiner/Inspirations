@@ -2,6 +2,7 @@ package knightminer.inspirations.recipes.recipe.cauldron;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import knightminer.inspirations.library.recipe.DynamicFinishedRecipe;
 import knightminer.inspirations.library.recipe.RecipeSerializer;
 import knightminer.inspirations.library.recipe.RecipeSerializers;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
@@ -12,7 +13,6 @@ import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipeDisplay;
 import knightminer.inspirations.library.recipe.cauldron.util.DisplayCauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.util.TemperaturePredicate;
-import net.minecraft.data.IFinishedRecipe;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.DyeItem;
@@ -247,39 +247,16 @@ public class DyeCauldronWaterRecipe implements ICauldronRecipe, ICauldronRecipeD
   /**
    * Finished recipe class for datagen
    */
-  public static class FinishedRecipe implements IFinishedRecipe {
-    private final ResourceLocation id;
+  public static class FinishedRecipe extends DynamicFinishedRecipe {
     private final DyeColor dye;
     public FinishedRecipe(ResourceLocation id, DyeColor dye) {
-      this.id = id;
+      super(id, RecipeSerializers.CAULDRON_DYE_WATER);
       this.dye = dye;
     }
 
     @Override
     public void serialize(JsonObject json) {
       json.addProperty("dye", dye.getString());
-    }
-
-    @Override
-    public ResourceLocation getID() {
-      return id;
-    }
-
-    @Override
-    public IRecipeSerializer<?> getSerializer() {
-      return RecipeSerializers.CAULDRON_DYE_WATER;
-    }
-
-    @Nullable
-    @Override
-    public JsonObject getAdvancementJson() {
-      return null;
-    }
-
-    @Nullable
-    @Override
-    public ResourceLocation getAdvancementID() {
-      return null;
     }
   }
 }

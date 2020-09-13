@@ -2,6 +2,7 @@ package knightminer.inspirations.library.recipe.cauldron.special;
 
 import com.google.gson.JsonObject;
 import knightminer.inspirations.library.Util;
+import knightminer.inspirations.library.recipe.DynamicFinishedRecipe;
 import knightminer.inspirations.library.recipe.RecipeSerializer;
 import knightminer.inspirations.library.recipe.RecipeSerializers;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
@@ -10,7 +11,6 @@ import knightminer.inspirations.library.recipe.cauldron.inventory.ICauldronInven
 import knightminer.inspirations.library.recipe.cauldron.inventory.IModifyableCauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.util.DisplayCauldronRecipe;
-import net.minecraft.data.IFinishedRecipe;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
@@ -213,14 +213,11 @@ public abstract class DyeableCauldronRecipe implements ICauldronRecipe, IMultiRe
   /**
    * Finished recipe for data gen
    */
-  public static class FinishedRecipe implements IFinishedRecipe {
-    private final ResourceLocation id;
+  public static class FinishedRecipe extends DynamicFinishedRecipe {
     private final Ingredient ingredient;
-    private final Serializer serializer;
     private FinishedRecipe(ResourceLocation id, Ingredient ingredient, Serializer serializer) {
-      this.id = id;
+      super(id, serializer);
       this.ingredient = ingredient;
-      this.serializer = serializer;
     }
 
     /**
@@ -257,28 +254,6 @@ public abstract class DyeableCauldronRecipe implements ICauldronRecipe, IMultiRe
     @Override
     public void serialize(JsonObject json) {
       json.add("ingredient", ingredient.serialize());
-    }
-
-    @Override
-    public ResourceLocation getID() {
-      return id;
-    }
-
-    @Override
-    public IRecipeSerializer<?> getSerializer() {
-      return serializer;
-    }
-
-    @Nullable
-    @Override
-    public JsonObject getAdvancementJson() {
-      return null;
-    }
-
-    @Nullable
-    @Override
-    public ResourceLocation getAdvancementID() {
-      return null;
     }
   }
 }

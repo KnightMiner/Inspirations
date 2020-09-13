@@ -3,6 +3,7 @@ package knightminer.inspirations.recipes.recipe.cauldron;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import knightminer.inspirations.library.Util;
+import knightminer.inspirations.library.recipe.DynamicFinishedRecipe;
 import knightminer.inspirations.library.recipe.RecipeSerializer;
 import knightminer.inspirations.library.recipe.RecipeSerializers;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
@@ -11,7 +12,6 @@ import knightminer.inspirations.library.recipe.cauldron.inventory.ICauldronInven
 import knightminer.inspirations.library.recipe.cauldron.inventory.IModifyableCauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipeDisplay;
-import net.minecraft.data.IFinishedRecipe;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
@@ -231,8 +231,7 @@ public class MixCauldronDyeRecipe implements ICauldronRecipe, ICauldronRecipeDis
   /**
    * Finished recipe class for datagen
    */
-  public static class FinishedRecipe implements IFinishedRecipe {
-    private final ResourceLocation id;
+  public static class FinishedRecipe extends DynamicFinishedRecipe {
     private final Ingredient ingredient;
     @Nullable
     private final Integer color;
@@ -244,7 +243,7 @@ public class MixCauldronDyeRecipe implements ICauldronRecipe, ICauldronRecipeDis
      * @param color       Recipe color
      */
     public FinishedRecipe(ResourceLocation id, Ingredient ingredient, Integer color) {
-      this.id = id;
+      super(id, RecipeSerializers.CAULDRON_MIX_DYE);
       this.ingredient = ingredient;
       this.color = color;
     }
@@ -255,7 +254,7 @@ public class MixCauldronDyeRecipe implements ICauldronRecipe, ICauldronRecipeDis
      * @param ingredient  Recipe ingredient
      */
     public FinishedRecipe(ResourceLocation id, Ingredient ingredient) {
-      this.id = id;
+      super(id, RecipeSerializers.CAULDRON_MIX_DYE);
       this.ingredient = ingredient;
       this.color = null;
     }
@@ -266,28 +265,6 @@ public class MixCauldronDyeRecipe implements ICauldronRecipe, ICauldronRecipeDis
       if (color != null) {
         json.addProperty("color", Integer.toHexString(color));
       }
-    }
-
-    @Override
-    public ResourceLocation getID() {
-      return id;
-    }
-
-    @Override
-    public IRecipeSerializer<?> getSerializer() {
-      return RecipeSerializers.CAULDRON_MIX_DYE;
-    }
-
-    @Nullable
-    @Override
-    public JsonObject getAdvancementJson() {
-      return null;
-    }
-
-    @Nullable
-    @Override
-    public ResourceLocation getAdvancementID() {
-      return null;
     }
   }
 }
