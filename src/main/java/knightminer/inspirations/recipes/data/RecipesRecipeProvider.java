@@ -252,6 +252,7 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
     );
 
     // temporary milk recipes until Forge merges one of my milk bucket fixes
+    Consumer<IFinishedRecipe> milkConsumer = withCondition(ConfigEnabledCondition.CAULDRON_FLUIDS);
     ICauldronIngredient milkIngredient = CauldronIngredients.FLUID.of(InspirationsTags.Fluids.MILK);
     CauldronRecipeBuilder.cauldron(SizedIngredient.fromItems(Items.MILK_BUCKET), milkIngredient)
                          .maxLevels(2)
@@ -261,14 +262,14 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
                          .noContainer()
                          .addCriterion("has_item", hasItem(Items.MILK_BUCKET))
                          .setSound(SoundEvents.ITEM_BUCKET_EMPTY)
-                         .build(cauldronRecipes, resource(folder + "empty_milk_bucket"));
+                         .build(milkConsumer, resource(folder + "empty_milk_bucket"));
     CauldronRecipeBuilder.cauldron(SizedIngredient.fromItems(Items.BUCKET), milkIngredient)
                          .matchFull()
                          .setEmpty()
                          .setOutput(Items.MILK_BUCKET)
                          .addCriterion("has_item", hasItem(Items.MILK_BUCKET))
                          .setSound(SoundEvents.ITEM_BUCKET_FILL)
-                         .build(cauldronRecipes, resource(folder + "fill_milk_bucket"));
+                         .build(milkConsumer, resource(folder + "fill_milk_bucket"));
 
 
     // dyes //

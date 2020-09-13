@@ -6,7 +6,7 @@
       "type": "inspirations:config"
     },
     {
-      "prop": "cauldron_recipes",
+      "prop": "cauldron_fluids",
       "type": "inspirations:config"
     }
   ],
