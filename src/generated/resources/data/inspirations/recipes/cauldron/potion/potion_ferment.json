@@ -1,5 +1,5 @@
 {
-  "type": "inspirations:cauldron_forge_brewing",
+  "type": "inspirations:cauldron_potion_ferment",
   "conditions": [
     {
       "prop": "recipes_module",
@@ -10,5 +10,5 @@
       "type": "inspirations:config"
     }
   ],
-  "instant": false
+  "time": 600
 }

@@ -3,7 +3,6 @@ package knightminer.inspirations.library.recipe.cauldron.recipe;
 import com.google.gson.JsonObject;
 import knightminer.inspirations.library.recipe.RecipeSerializer;
 import knightminer.inspirations.library.recipe.RecipeSerializers;
-import knightminer.inspirations.library.recipe.RecipeTypes;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.CauldronIngredients;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
@@ -13,14 +12,12 @@ import knightminer.inspirations.library.recipe.cauldron.util.LevelPredicate;
 import knightminer.inspirations.library.recipe.cauldron.util.TemperaturePredicate;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.world.World;
-import slimeknights.mantle.recipe.ICustomOutputRecipe;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -30,7 +27,7 @@ import java.util.Objects;
 /**
  * Base cauldron transform implementation
  */
-public class CauldronTransform extends AbstractCauldronRecipe implements ICustomOutputRecipe<ICauldronState> {
+public class CauldronTransform extends AbstractCauldronRecipe implements ICauldronTransform {
   private final ResourceLocation id;
   private final String group;
   private final int time;
@@ -60,12 +57,22 @@ public class CauldronTransform extends AbstractCauldronRecipe implements ICustom
     return inv.getLevel() != 0 && matches(inv);
   }
 
-  /**
-   * Gets the sound to play for this recipe
-   * @return  Recipe sound
-   */
+  @Override
+  public ICauldronContents getContentOutput(ICauldronState inv) {
+    if (outputContents == null) {
+      return inv.getContents();
+    }
+    return outputContents;
+  }
+
+  @Override
   public SoundEvent getSound() {
     return sound;
+  }
+
+  @Override
+  public int getTime() {
+    return time;
   }
 
 
@@ -74,11 +81,6 @@ public class CauldronTransform extends AbstractCauldronRecipe implements ICustom
   @Override
   public List<ItemStack> getItemInputs() {
     return Collections.emptyList();
-  }
-
-  @Override
-  public int getTime() {
-    return time;
   }
 
   @Override
@@ -107,11 +109,6 @@ public class CauldronTransform extends AbstractCauldronRecipe implements ICustom
   @Override
   public String getGroup() {
     return group;
-  }
-
-  @Override
-  public IRecipeType<?> getType() {
-    return RecipeTypes.CAULDRON_TRANSFORM;
   }
 
   @Override

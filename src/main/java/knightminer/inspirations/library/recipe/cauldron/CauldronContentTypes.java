@@ -46,8 +46,10 @@ public class CauldronContentTypes {
   /** Contains a specific color */
   public static final CauldronContentType<DyeColor> DYE = register("dye", new DyeContentType());
 
-  /** Contains a specific color */
-  public static final CauldronContentType<Potion> POTION = register("potion", new PotionContentType());
+  /** Contains a specific potion */
+  public static final CauldronContentType<Potion> POTION = register("potion", new PotionContentType(Inspirations.getResource("potion"), false));
+  /** Potion that is currently in progress brewing */
+  public static final CauldronContentType<Potion> UNFERMENTED_POTION = register("unfermented_potion", new PotionContentType(Inspirations.getResource("unfermented_potion"), true));
 
   /** Contains a specific fluid */
   public static final CauldronContentType<ResourceLocation> CUSTOM = register("custom", new CustomContentType());

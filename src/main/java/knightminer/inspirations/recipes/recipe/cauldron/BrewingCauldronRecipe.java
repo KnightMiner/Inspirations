@@ -1,5 +1,8 @@
 package knightminer.inspirations.recipes.recipe.cauldron;
 
+import com.google.gson.JsonObject;
+import knightminer.inspirations.library.recipe.DynamicFinishedRecipe;
+import knightminer.inspirations.library.recipe.RecipeSerializer;
 import knightminer.inspirations.library.recipe.RecipeSerializers;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.inventory.ICauldronInventory;
@@ -7,16 +10,19 @@ import knightminer.inspirations.library.recipe.cauldron.inventory.IModifyableCau
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.util.CauldronTemperature;
 import knightminer.inspirations.library.recipe.cauldron.util.DisplayCauldronRecipe;
+import knightminer.inspirations.library.recipe.cauldron.util.TemperaturePredicate;
 import knightminer.inspirations.library.util.ReflectionUtil;
 import knightminer.inspirations.tweaks.recipe.NormalBrewingRecipe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionBrewing;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.potion.Potions;
+import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.world.World;
@@ -26,10 +32,12 @@ import net.minecraftforge.common.brewing.IBrewingRecipe;
 import net.minecraftforge.common.brewing.VanillaBrewingRecipe;
 import slimeknights.mantle.recipe.IMultiRecipe;
 
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -39,9 +47,17 @@ import java.util.stream.Stream;
  */
 public abstract class BrewingCauldronRecipe implements ICauldronRecipe, IMultiRecipe<DisplayCauldronRecipe> {
   private final ResourceLocation id;
+  private final boolean instant;
   private List<DisplayCauldronRecipe> displayRecipes;
-  protected BrewingCauldronRecipe(ResourceLocation id) {
+
+  /**
+   * Creates a new recipe instance
+   * @param id       Recipe ID
+   * @param instant  If true, recipe produces potion. If false, recipe produces unfermented potion
+   */
+  protected BrewingCauldronRecipe(ResourceLocation id, boolean instant) {
     this.id = id;
+    this.instant = instant;
   }
 
   @Override
@@ -70,7 +86,7 @@ public abstract class BrewingCauldronRecipe implements ICauldronRecipe, IMultiRe
       Potion output = getResult(potion, stack);
       if (output != Potions.EMPTY) {
         // change the potion
-        inventory.setContents(CauldronContentTypes.POTION.of(output));
+        inventory.setContents((instant ? CauldronContentTypes.POTION : CauldronContentTypes.UNFERMENTED_POTION).of(output));
 
         // shrink the stack in hand and return the container
         ItemStack container = stack.getContainerItem().copy();
@@ -78,7 +94,7 @@ public abstract class BrewingCauldronRecipe implements ICauldronRecipe, IMultiRe
         inventory.setOrGiveStack(container);
 
         // play sound
-        inventory.playSound(SoundEvents.BLOCK_BREWING_STAND_BREW);
+        inventory.playSound(SoundEvents.ENTITY_GENERIC_SPLASH);
       }
     });
   }
@@ -103,12 +119,13 @@ public abstract class BrewingCauldronRecipe implements ICauldronRecipe, IMultiRe
    * @param output   Potion output
    * @return  Recipe instance
    */
-  protected static DisplayCauldronRecipe makeRecipe(Potion input, Ingredient reagent, Potion output) {
+  protected DisplayCauldronRecipe makeRecipe(Potion input, Ingredient reagent, Potion output) {
     return DisplayCauldronRecipe.builder(3)
-                         .setItemInputs(Arrays.asList(reagent.getMatchingStacks()))
-                         .setContentInputs(CauldronContentTypes.POTION.of(input))
-                         .setContentOutput(CauldronContentTypes.POTION.of(output))
-                         .build();
+                                .setTemperature(TemperaturePredicate.BOILING)
+                                .setItemInputs(Arrays.asList(reagent.getMatchingStacks()))
+                                .setContentInputs(CauldronContentTypes.POTION.of(input))
+                                .setContentOutput((instant ? CauldronContentTypes.POTION : CauldronContentTypes.UNFERMENTED_POTION).of(output))
+                                .build();
   }
 
   /**
@@ -132,10 +149,11 @@ public abstract class BrewingCauldronRecipe implements ICauldronRecipe, IMultiRe
 
     /**
      * Creates a new recipe instance
-     * @param id  Recipe ID
+     * @param id       Recipe ID
+     * @param instant  If true, recipe produces potion. If false, recipe produces unfermented potion
      */
-    public Vanilla(ResourceLocation id) {
-      super(id);
+    public Vanilla(ResourceLocation id, boolean instant) {
+      super(id, instant);
     }
 
     /**
@@ -212,10 +230,11 @@ public abstract class BrewingCauldronRecipe implements ICauldronRecipe, IMultiRe
 
     /**
      * Creates a new recipe instance
-     * @param id  Recipe ID
+     * @param id       Recipe ID
+     * @param instant  If true, recipe produces potion. If false, recipe produces unfermented potion
      */
-    public Forge(ResourceLocation id) {
-      super(id);
+    public Forge(ResourceLocation id, boolean instant) {
+      super(id, instant);
     }
 
     /**
@@ -291,6 +310,50 @@ public abstract class BrewingCauldronRecipe implements ICauldronRecipe, IMultiRe
     @Override
     public IRecipeSerializer<?> getSerializer() {
       return RecipeSerializers.CAULDRON_FORGE_BREWING;
+    }
+  }
+
+  /** Recipe serializer */
+  public static class Serializer extends RecipeSerializer<BrewingCauldronRecipe> {
+    private final BiFunction<ResourceLocation, Boolean, BrewingCauldronRecipe> factory;
+
+    /**
+     * Creates a new serializer instance
+     * @param factory  Recipe constructor
+     */
+    public Serializer(BiFunction<ResourceLocation,Boolean,BrewingCauldronRecipe> factory) {
+      this.factory = factory;
+    }
+
+    @Override
+    public BrewingCauldronRecipe read(ResourceLocation id, JsonObject json) {
+      boolean instant = JSONUtils.getBoolean(json, "instant");
+      return factory.apply(id, instant);
+    }
+
+    @Nullable
+    @Override
+    public BrewingCauldronRecipe read(ResourceLocation id, PacketBuffer buffer) {
+      return factory.apply(id, buffer.readBoolean());
+    }
+
+    @Override
+    public void write(PacketBuffer buffer, BrewingCauldronRecipe recipe) {
+      buffer.writeBoolean(recipe.instant);
+    }
+  }
+
+  /** Finished recipe for datagen */
+  public static class FinishedRecipe extends DynamicFinishedRecipe {
+    private final boolean instant;
+    public FinishedRecipe(ResourceLocation id, Serializer serializer, boolean instant) {
+      super(id, serializer);
+      this.instant = instant;
+    }
+
+    @Override
+    public void serialize(JsonObject json) {
+      json.addProperty("instant", instant);
     }
   }
 }

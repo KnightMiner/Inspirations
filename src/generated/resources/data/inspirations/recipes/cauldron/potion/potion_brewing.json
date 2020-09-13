@@ -9,5 +9,6 @@
       "prop": "cauldron_brewing",
       "type": "inspirations:config"
     }
-  ]
+  ],
+  "instant": false
 }

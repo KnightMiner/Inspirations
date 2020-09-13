@@ -6,6 +6,7 @@
   "inspirations:color": "inspirations:block/fluid/colorless",
   "inspirations:dye": "inspirations:block/fluid/colorless",
   "inspirations:potion": "inspirations:block/fluid/potion",
+  "inspirations:unfermented_potion": "inspirations:block/fluid/potion_brewing",
   
   "rats:cheese": "rats:block/cheese"
 }

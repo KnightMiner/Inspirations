@@ -9,8 +9,8 @@ import knightminer.inspirations.library.InspirationsTags;
 import knightminer.inspirations.library.recipe.RecipeTypes;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
-import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronTransform;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
+import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronTransform;
 import knightminer.inspirations.library.recipe.cauldron.util.CauldronTemperature;
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.recipes.block.EnhancedCauldronBlock;
@@ -85,9 +85,9 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
   /** Name of the in progress transform recipe */
   private ResourceLocation currentTransformName;
   /** Transform recipe currently in progress */
-  private CauldronTransform currentTransform;
+  private ICauldronTransform currentTransform;
   /** Last successful transform found */
-  private CauldronTransform lastTransform;
+  private ICauldronTransform lastTransform;
   /** If true, updates the transform recipe during the next tick */
   private boolean updateTransform;
 
@@ -546,12 +546,12 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
     timer = 0;
 
     // try to find a recipe
-    CauldronTransform transform = null;
+    ICauldronTransform transform = null;
     if (getLevel() > 0) {
       if (lastTransform != null && lastTransform.matches(craftingInventory, world)) {
         transform = lastTransform;
       } else {
-        Optional<CauldronTransform> newTransform = world.getRecipeManager().getRecipe(RecipeTypes.CAULDRON_TRANSFORM, craftingInventory, world);
+        Optional<ICauldronTransform> newTransform = world.getRecipeManager().getRecipe(RecipeTypes.CAULDRON_TRANSFORM, craftingInventory, world);
         if (newTransform.isPresent()) {
           transform = lastTransform = newTransform.get();
         }
@@ -595,7 +595,7 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
       world.playSound(null, pos, sound, SoundCategory.BLOCKS, 1.0f, 1.0f);
 
       // set contents will clear the current transform if no longer current
-      setContents(currentTransform.getContentOutput());
+      setContents(currentTransform.getContentOutput(craftingInventory));
     }
   }
 
@@ -603,7 +603,7 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
    * Called on the client to update the current transform recipe
    * @param recipe  New recipe
    */
-  public void setTransformRecipe(@Nullable CauldronTransform recipe) {
+  public void setTransformRecipe(@Nullable ICauldronTransform recipe) {
     this.currentTransform = recipe;
     timer = 0;
   }
@@ -689,7 +689,7 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
    * @param name   Recipe name
    */
   private void loadTransform(World world, ResourceLocation name) {
-    RecipeHelper.getRecipe(world.getRecipeManager(), name, CauldronTransform.class).ifPresent(recipe -> this.currentTransform = recipe);
+    RecipeHelper.getRecipe(world.getRecipeManager(), name, ICauldronTransform.class).ifPresent(recipe -> this.currentTransform = recipe);
   }
 
   @Override

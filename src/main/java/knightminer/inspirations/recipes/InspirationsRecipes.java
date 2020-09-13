@@ -21,6 +21,7 @@ import knightminer.inspirations.recipes.recipe.cauldron.EmptyBucketCauldronRecip
 import knightminer.inspirations.recipes.recipe.cauldron.FillBucketCauldronRecipe;
 import knightminer.inspirations.recipes.recipe.cauldron.FillDyedBottleRecipe;
 import knightminer.inspirations.recipes.recipe.cauldron.MixCauldronDyeRecipe;
+import knightminer.inspirations.recipes.recipe.cauldron.PotionFermentCauldronTransform;
 import knightminer.inspirations.recipes.recipe.cauldron.RemoveBannerPatternCauldronRecipe;
 import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
 import net.minecraft.block.Block;
@@ -200,13 +201,14 @@ public class InspirationsRecipes extends ModuleBase {
     registry.register(new DyeableCauldronRecipe.Serializer(DyeableCauldronRecipe.Dye::new), "cauldron_dye_dyeable");
     registry.register(new DyeableCauldronRecipe.Serializer(DyeableCauldronRecipe.Clear::new), "cauldron_clear_dyeable");
     registry.register(new CauldronTransform.Serializer(), "cauldron_transform");
+    registry.register(new PotionFermentCauldronTransform.Serializer(), "cauldron_potion_ferment");
 
     registry.register(new SpecialRecipeSerializer<>(EmptyBucketCauldronRecipe::new), "cauldron_empty_bucket");
     registry.register(new SpecialRecipeSerializer<>(FillBucketCauldronRecipe::new), "cauldron_fill_bucket");
     registry.register(new SpecialRecipeSerializer<>(FillDyedBottleRecipe::new), "cauldron_fill_dyed_bottle");
     registry.register(new SpecialRecipeSerializer<>(RemoveBannerPatternCauldronRecipe::new), "cauldron_remove_banner_pattern");
-    registry.register(new SpecialRecipeSerializer<>(BrewingCauldronRecipe.Vanilla::new), "cauldron_potion_brewing");
-    registry.register(new SpecialRecipeSerializer<>(BrewingCauldronRecipe.Forge::new), "cauldron_forge_brewing");
+    registry.register(new BrewingCauldronRecipe.Serializer(BrewingCauldronRecipe.Vanilla::new), "cauldron_potion_brewing");
+    registry.register(new BrewingCauldronRecipe.Serializer(BrewingCauldronRecipe.Forge::new), "cauldron_forge_brewing");
 
     // add water as an override to potions
     ICauldronContents water = CauldronContentTypes.FLUID.of(Fluids.WATER);

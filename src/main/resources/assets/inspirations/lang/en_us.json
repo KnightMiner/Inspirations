@@ -160,6 +160,8 @@
     "cauldron_contents.inspirations.empty": "Empty",
     "cauldron_contents.inspirations.color": "Dyed Water",
     "cauldron_contents.inspirations.dye": "%s Dyed Water",
+    "cauldron_contents.inspirations.unfermented_potion": "Unfermented %s",
+    "cauldron_contents.inspirations.unfermented_potion.tooltip": "Boil to produce usable potion",
     
     "cauldron_contents.minecraft.ice": "Ice",
     "cauldron_contents.minecraft.packed_ice": "Packed Ice",

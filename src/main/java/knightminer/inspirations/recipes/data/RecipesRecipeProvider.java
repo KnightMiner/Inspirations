@@ -17,8 +17,10 @@ import knightminer.inspirations.library.recipe.cauldron.special.EmptyPotionCauld
 import knightminer.inspirations.library.recipe.cauldron.special.FillPotionCauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.util.TemperaturePredicate;
 import knightminer.inspirations.recipes.InspirationsRecipes;
+import knightminer.inspirations.recipes.recipe.cauldron.BrewingCauldronRecipe;
 import knightminer.inspirations.recipes.recipe.cauldron.DyeCauldronWaterRecipe;
 import knightminer.inspirations.recipes.recipe.cauldron.MixCauldronDyeRecipe;
+import knightminer.inspirations.recipes.recipe.cauldron.PotionFermentCauldronTransform;
 import knightminer.inspirations.shared.InspirationsShared;
 import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraft.advancements.ICriterionInstance;
@@ -407,10 +409,9 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
 
     // brew the potions
     Consumer<IFinishedRecipe> brewingConsumer = withCondition(ConfigEnabledCondition.CAULDRON_BREWING);
-    CustomRecipeBuilder.customRecipe(RecipeSerializers.CAULDRON_POTION_BREWING)
-                       .build(brewingConsumer, resourceName(potionFolder + "potion_brewing"));
-    CustomRecipeBuilder.customRecipe(RecipeSerializers.CAULDRON_FORGE_BREWING)
-                       .build(brewingConsumer, resourceName(potionFolder + "forge_brewing"));
+    brewingConsumer.accept(new BrewingCauldronRecipe.FinishedRecipe(resource(potionFolder + "potion_brewing"), RecipeSerializers.CAULDRON_POTION_BREWING, false));
+    brewingConsumer.accept(new BrewingCauldronRecipe.FinishedRecipe(resource(potionFolder + "forge_brewing"), RecipeSerializers.CAULDRON_FORGE_BREWING, false));
+    brewingConsumer.accept(new PotionFermentCauldronTransform.FinishedRecipe(resource(potionFolder + "potion_ferment"), 600));
 
     // fluid recipes //
     // beetroot is just water based

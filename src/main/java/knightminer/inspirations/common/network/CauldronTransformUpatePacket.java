@@ -1,6 +1,6 @@
 package knightminer.inspirations.common.network;
 
-import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronTransform;
+import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronTransform;
 import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.PacketBuffer;
@@ -22,7 +22,7 @@ public class CauldronTransformUpatePacket implements IThreadsafePacket {
   @Nullable
   private final ResourceLocation recipe;
 
-  public CauldronTransformUpatePacket(BlockPos pos, @Nullable CauldronTransform recipe) {
+  public CauldronTransformUpatePacket(BlockPos pos, @Nullable ICauldronTransform recipe) {
     this.pos = pos;
     this.recipe = recipe == null ? null : recipe.getId();
   }
@@ -57,7 +57,7 @@ public class CauldronTransformUpatePacket implements IThreadsafePacket {
     private static void handle(CauldronTransformUpatePacket packet) {
       World world = Minecraft.getInstance().world;
       if (world != null) {
-        CauldronTransform recipe = packet.recipe == null ? null : RecipeHelper.getRecipe(world.getRecipeManager(), packet.recipe, CauldronTransform.class).orElse(null);
+        ICauldronTransform recipe = packet.recipe == null ? null : RecipeHelper.getRecipe(world.getRecipeManager(), packet.recipe, ICauldronTransform.class).orElse(null);
         TileEntityHelper.getTile(CauldronTileEntity.class, world, packet.pos, true).ifPresent(te -> {
           te.setTransformRecipe(recipe);
         });

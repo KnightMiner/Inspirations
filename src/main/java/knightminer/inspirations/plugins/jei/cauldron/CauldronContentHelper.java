@@ -2,6 +2,7 @@ package knightminer.inspirations.plugins.jei.cauldron;
 
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
+import knightminer.inspirations.library.recipe.cauldron.contents.CauldronContentType;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import mezz.jei.api.ingredients.IIngredientHelper;
 
@@ -14,11 +15,28 @@ public class CauldronContentHelper implements IIngredientHelper<ICauldronContent
   public static final CauldronContentHelper INSTANCE = new CauldronContentHelper();
   private CauldronContentHelper() {}
 
+  /**
+   * Helper that aliases some types as another in JEI
+   * @param contents  Contents containing type
+   * @return  Aliased type if relevant
+   */
+  private static CauldronContentType<?> getType(ICauldronContents contents) {
+    // TODO: consider making this more generic so addons can add more aliases
+    CauldronContentType<?> type = contents.getType();
+    // if unfermented, treat as potion for recipe lookups
+    if (type == CauldronContentTypes.UNFERMENTED_POTION) {
+      return CauldronContentTypes.POTION;
+    }
+    return type;
+  }
+
   @Nullable
   @Override
   public ICauldronContents getMatch(Iterable<ICauldronContents> options, ICauldronContents match) {
+    CauldronContentType<?> type = getType(match);
+    String name = match.getName();
     for (ICauldronContents content : options) {
-      if (content.equals(match)) {
+      if (type == getType(content) && name.equals(content.getName())) {
         return content;
       }
     }
@@ -37,7 +55,7 @@ public class CauldronContentHelper implements IIngredientHelper<ICauldronContent
 
   @Override
   public String getUniqueId(ICauldronContents contents) {
-    return CauldronContentTypes.getName(contents.getType()).toString() + ":" + contents.getName();
+    return CauldronContentTypes.getName(getType(contents)).toString() + ":" + contents.getName();
   }
 
   @Override

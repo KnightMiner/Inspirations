@@ -13,6 +13,7 @@ import knightminer.inspirations.recipes.recipe.cauldron.EmptyBucketCauldronRecip
 import knightminer.inspirations.recipes.recipe.cauldron.FillBucketCauldronRecipe;
 import knightminer.inspirations.recipes.recipe.cauldron.FillDyedBottleRecipe;
 import knightminer.inspirations.recipes.recipe.cauldron.MixCauldronDyeRecipe;
+import knightminer.inspirations.recipes.recipe.cauldron.PotionFermentCauldronTransform;
 import knightminer.inspirations.recipes.recipe.cauldron.RemoveBannerPatternCauldronRecipe;
 import knightminer.inspirations.tools.recipe.CopyWaypointCompassRecipe;
 import knightminer.inspirations.tools.recipe.DyeWaypointCompassRecipe;
@@ -48,6 +49,7 @@ public class RecipeSerializers {
   public static final SpecialRecipeSerializer<FillBucketCauldronRecipe> CAULDRON_FILL_BUCKET = injected();
   public static final SpecialRecipeSerializer<FillDyedBottleRecipe> CAULDRON_FILL_DYED_BOTTLE = injected();
   public static final SpecialRecipeSerializer<RemoveBannerPatternCauldronRecipe> CAULDRON_REMOVE_BANNER_PATTERN = injected();
-  public static final SpecialRecipeSerializer<BrewingCauldronRecipe.Vanilla> CAULDRON_POTION_BREWING = injected();
-  public static final SpecialRecipeSerializer<BrewingCauldronRecipe.Forge> CAULDRON_FORGE_BREWING = injected();
+  public static final BrewingCauldronRecipe.Serializer CAULDRON_POTION_BREWING = injected();
+  public static final BrewingCauldronRecipe.Serializer CAULDRON_FORGE_BREWING = injected();
+  public static final PotionFermentCauldronTransform.Serializer CAULDRON_POTION_FERMENT = injected();
 }
