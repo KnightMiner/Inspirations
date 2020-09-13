@@ -700,7 +700,7 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
   @Override
   public CompoundNBT write(CompoundNBT tags) {
     tags = super.write(tags);
-    tags.put(TAG_CONTENTS, CauldronContentTypes.toNbt(getContents()));
+    tags.put(TAG_CONTENTS, getContents().toNBT());
     // write transform if present, or transform name if we somehow wrote before world is set
     if (currentTransform != null) {
       tags.putString(TAG_TRANSFORM, currentTransform.getId().toString());

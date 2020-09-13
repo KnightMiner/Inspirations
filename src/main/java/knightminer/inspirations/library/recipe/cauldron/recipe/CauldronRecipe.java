@@ -247,7 +247,7 @@ public class CauldronRecipe extends AbstractCauldronRecipe implements ICauldronR
       buffer.writeBoolean(recipe.copyNBT);
       if (recipe.outputContents != null) {
         buffer.writeBoolean(true);
-        CauldronContentTypes.write(recipe.outputContents, buffer);
+        recipe.outputContents.write(buffer);
       } else {
         buffer.writeBoolean(false);
       }

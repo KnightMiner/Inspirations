@@ -375,7 +375,7 @@ public class CauldronRecipeBuilder extends AbstractRecipeBuilder<CauldronRecipeB
         }
       }
       if (newContents != null) {
-        outputJson.add("contents", CauldronContentTypes.toJson(newContents));
+        outputJson.add("contents", newContents.toJson());
       }
       if (levelUpdate != LevelUpdate.IDENTITY) {
         outputJson.add("level", levelUpdate.toJson());

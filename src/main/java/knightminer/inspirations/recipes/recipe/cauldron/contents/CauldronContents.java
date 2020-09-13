@@ -1,8 +1,12 @@
 package knightminer.inspirations.recipes.recipe.cauldron.contents;
 
+import com.google.gson.JsonObject;
+import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.contents.CauldronContentType;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
@@ -42,6 +46,30 @@ public class CauldronContents<C> implements ICauldronContents {
     return type;
   }
 
+
+  /* Serializing */
+
+  @Override
+  public JsonObject toJson() {
+    JsonObject json = new JsonObject();
+    json.addProperty(CauldronContentTypes.KEY_TYPE, CauldronContentTypes.getName(type).toString());
+    type.write(value, json);
+    return json;
+  }
+
+  @Override
+  public CompoundNBT toNBT() {
+    CompoundNBT nbt = new CompoundNBT();
+    nbt.putString(CauldronContentTypes.KEY_TYPE, CauldronContentTypes.getName(type).toString());
+    type.write(value, nbt);
+    return nbt;
+  }
+
+  @Override
+  public void write(PacketBuffer buffer) {
+    buffer.writeResourceLocation(CauldronContentTypes.getName(type));
+    type.write(value, buffer);
+  }
 
   /* Display */
 

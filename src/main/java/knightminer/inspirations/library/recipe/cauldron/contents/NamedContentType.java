@@ -1,25 +1,19 @@
 package knightminer.inspirations.library.recipe.cauldron.contents;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonSyntaxException;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.JSONUtils;
+import net.minecraftforge.common.util.Constants.NBT;
 
 import javax.annotation.Nullable;
-import java.util.function.Function;
 
 /**
- * Cauldron content type based on an {@link IStringSerializable} object, typically an enum
+ * Cauldron content type based on {@link IStringSerializable}, typically an enum
  * @param <T>  Type class
  */
 public abstract class NamedContentType<T extends IStringSerializable> extends CauldronContentType<T> {
-  private final Function<String, ? extends T> lookup;
-
-  /**
-   * Creates a new type instance
-   * @param lookup       Function to lookup a value from a string
-   */
-  public NamedContentType(Function<String,? extends T> lookup) {
-    this.lookup = lookup;
-  }
-
   /**
    * Gets the name of the given value for writing to JSON and NBT
    * @param value  Value
@@ -31,13 +25,35 @@ public abstract class NamedContentType<T extends IStringSerializable> extends Ca
   }
 
   /**
-   * Gets the entry for a given value
-   * @param name  Name
-   * @return  Entry, or null if missing
+   * Gets an enum value from a string
+   * @param name  String
+   * @return  Value, or null if the name does not match
+   */
+  @Nullable
+  protected abstract T getValue(String name);
+
+  /**
+   * Gets the value from a JSON element
+   * @param element  JSON element
+   * @param key      Key to get
+   * @return  Value
    */
   @Override
+  public T getValue(JsonElement element, String key) {
+    String name = JSONUtils.getString(element, key);
+    T value = getValue(name);
+    if (value == null) {
+      throw new JsonSyntaxException("Invalid value '" + name + "' for enum");
+    }
+    return value;
+  }
+
   @Nullable
-  public T getEntry(String name) {
-    return lookup.apply(name);
+  @Override
+  public T read(CompoundNBT tag) {
+    if (tag.contains(getKey(), NBT.TAG_STRING)) {
+      return getValue(tag.getString(getKey()));
+    }
+    return null;
   }
 }

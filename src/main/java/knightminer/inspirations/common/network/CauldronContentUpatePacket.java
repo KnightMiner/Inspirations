@@ -30,7 +30,7 @@ public class CauldronContentUpatePacket implements IThreadsafePacket {
   @Override
   public void encode(PacketBuffer buffer) {
     buffer.writeBlockPos(pos);
-    CauldronContentTypes.write(contents, buffer);
+    contents.write(buffer);
   }
 
   @Override

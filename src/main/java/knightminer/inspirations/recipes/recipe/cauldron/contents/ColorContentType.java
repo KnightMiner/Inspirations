@@ -1,20 +1,22 @@
 package knightminer.inspirations.recipes.recipe.cauldron.contents;
 
-import io.netty.handler.codec.DecoderException;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonSyntaxException;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.recipe.cauldron.contents.CauldronContentType;
-import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Util;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraftforge.common.util.Constants.NBT;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Content type for colors in the cauldron
@@ -54,11 +56,15 @@ public class ColorContentType extends CauldronContentType<Integer> {
     return getColorString(value);
   }
 
+  /**
+   * Gets an color from a string
+   * @param str  Color string
+   * @return  Color integer
+   */
   @Nullable
-  @Override
-  public Integer getEntry(String name) {
+  private Integer getValue(String str) {
     try {
-      return Integer.parseInt(name, 16);
+      return Integer.parseInt(str, 16);
     }
     catch (NumberFormatException e) {
       return null;
@@ -66,19 +72,34 @@ public class ColorContentType extends CauldronContentType<Integer> {
   }
 
   @Override
-  public ICauldronContents read(PacketBuffer buffer) {
-    return of(buffer.readInt());
+  public Integer getValue(JsonElement element, String key) {
+    String text = JSONUtils.getString(element, key);
+    Integer value = getValue(text);
+    if (value != null) {
+      return value;
+    }
+    throw new JsonSyntaxException("Invalid color value '" + text + "'");
+  }
+
+  @Nullable
+  @Override
+  public Integer read(CompoundNBT tag) {
+    if (tag.contains(getKey(), NBT.TAG_STRING)) {
+      return getValue(tag.getString(getKey()));
+    }
+    return null;
   }
 
   @Override
-  public void write(ICauldronContents contents, PacketBuffer buffer) {
-    Optional<Integer> optional = contents.get(this);
-    if (optional.isPresent()) {
-      buffer.writeInt(optional.get());
-    } else {
-      throw new DecoderException("Invalid class type for cauldron contents");
-    }
+  public Integer read(PacketBuffer buffer) {
+    return buffer.readInt();
   }
+
+  @Override
+  public void write(Integer color, PacketBuffer buffer) {
+    buffer.writeInt(color);
+  }
+
 
   /* Display */
 

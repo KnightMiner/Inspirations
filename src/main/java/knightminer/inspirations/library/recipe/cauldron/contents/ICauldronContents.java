@@ -1,8 +1,11 @@
 package knightminer.inspirations.library.recipe.cauldron.contents;
 
+import com.google.gson.JsonObject;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
@@ -67,10 +70,31 @@ public interface ICauldronContents {
   }
 
   /**
-   * Gets the unique name relative to the ingredient type
+   * Gets the unique name relative to the ingredient type, for differentiating it in JEI
    * @return  Resource searching name
    */
   String getName();
+
+
+  /* Serializing */
+
+  /**
+   * Writes the given contents to JSON
+   * @return  JSON contents
+   */
+  JsonObject toJson();
+
+  /**
+   * Writes the given contents to NBT
+   * @return  NBT contents
+   */
+  CompoundNBT toNBT();
+
+  /**
+   * Writes the given contents to the packet buffer
+   * @param buffer  Buffer instance
+   */
+  void write(PacketBuffer buffer);
 
 
   /* Mapping */

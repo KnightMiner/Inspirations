@@ -5,11 +5,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
-import io.netty.handler.codec.DecoderException;
 import knightminer.inspirations.library.recipe.cauldron.contents.CauldronContentType;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.JSONUtils;
 import slimeknights.mantle.util.JsonHelper;
 
 import java.util.ArrayList;
@@ -79,13 +77,13 @@ public abstract class ContentMatchIngredient<T> implements ICauldronIngredient {
 
     @Override
     protected void write(JsonObject json) {
-      json.addProperty(serializer.type.getKey(), serializer.type.getName(value));
+      json.add(serializer.type.getKey(), serializer.type.toJson(value));
     }
 
     @Override
     protected void write(PacketBuffer buffer) {
       buffer.writeVarInt(1);
-      buffer.writeString(serializer.type.getName(value));
+      serializer.type.write(value, buffer);
     }
 
     @Override
@@ -115,7 +113,7 @@ public abstract class ContentMatchIngredient<T> implements ICauldronIngredient {
     protected void write(JsonObject json) {
       JsonArray array = new JsonArray();
       for (T value : values) {
-        array.add(serializer.type.getName(value));
+        array.add(serializer.type.toJson(value));
       }
       json.add(serializer.type.getKey(), array);
     }
@@ -124,7 +122,7 @@ public abstract class ContentMatchIngredient<T> implements ICauldronIngredient {
     protected void write(PacketBuffer buffer) {
       buffer.writeVarInt(values.size());
       for (T value : values) {
-        buffer.writeString(serializer.type.getName(value));
+        serializer.type.write(value, buffer);
       }
     }
 
@@ -174,33 +172,11 @@ public abstract class ContentMatchIngredient<T> implements ICauldronIngredient {
     }
 
     /**
-     * Helper to get a single value from a string
-     * @param name       Value name
-     * @return  Content match ingredient
-     */
-    private ContentMatchIngredient<T> getSingle(String name) {
-      T value = type.getEntry(name);
-      if (value == null) {
-        throw new JsonSyntaxException("Invalid value '" + name + "' for type " + type);
-      }
-      return of(value);
-    }
-
-    /**
      * Helper to get a list of values from a string
-     * @param names      Value names
-     * @param exception  Exception function
+     * @param values  List of values
      * @return  Content match ingredient
      */
-    private ContentMatchIngredient<T> getList(List<String> names, Function<String,RuntimeException> exception) {
-      List<T> values = new ArrayList<>();
-      for (String name : names) {
-        T value = type.getEntry(name);
-        if (value == null) {
-          throw exception.apply("Invalid value '" + name + "' for type " + type);
-        }
-        values.add(value);
-      }
+    private ContentMatchIngredient<T> getList(List<T> values) {
       // if a single element, save effort
       if (values.size() == 1) {
         return of(values.get(0));
@@ -211,17 +187,18 @@ public abstract class ContentMatchIngredient<T> implements ICauldronIngredient {
     @Override
     public ContentMatchIngredient<T> read(JsonObject json) {
       // actual element can be a string or array
-      JsonElement element = JsonHelper.getElement(json, this.type.getKey());
+      String key = this.type.getKey();
+      JsonElement element = JsonHelper.getElement(json, key);
 
       // single name
       if (element.isJsonPrimitive()) {
-        return getSingle(element.getAsString());
+        return of(type.getValue(element, key));
       }
 
       // array of names
       if (element.isJsonArray()) {
-        List<String> names = JsonHelper.parseList(element.getAsJsonArray(), "names", JSONUtils::getString, Function.identity());
-        return getList(names, JsonSyntaxException::new);
+        List<T> values = JsonHelper.parseList(element.getAsJsonArray(), "names", type::getValue, Function.identity());
+        return getList(values);
       }
 
       // error
@@ -237,13 +214,13 @@ public abstract class ContentMatchIngredient<T> implements ICauldronIngredient {
     public ContentMatchIngredient<T> read(PacketBuffer buffer) {
       // read all values from the buffer
       int size = buffer.readVarInt();
-      List<String> names = new ArrayList<>(size);
+      List<T> values = new ArrayList<>(size);
       for (int i = 0; i < size; i++) {
-        names.add(buffer.readString());
+        values.add(type.read(buffer));
       }
 
       // parse list
-      return getList(names, DecoderException::new);
+      return getList(values);
     }
 
     @Override

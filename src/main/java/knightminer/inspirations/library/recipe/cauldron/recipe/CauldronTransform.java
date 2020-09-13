@@ -167,7 +167,8 @@ public class CauldronTransform extends AbstractCauldronRecipe implements ICustom
       CauldronIngredients.write(recipe.ingredient, buffer);
       buffer.writeEnumValue(recipe.temperature);
       recipe.level.write(buffer);
-      CauldronContentTypes.write(recipe.outputContents == null ? CauldronContentTypes.DEFAULT.get() : recipe.outputContents, buffer);
+      ICauldronContents contents = recipe.outputContents == null ? CauldronContentTypes.DEFAULT.get() : recipe.outputContents;
+      contents.write(buffer);
       buffer.writeVarInt(recipe.time);
       buffer.writeResourceLocation(Objects.requireNonNull(recipe.sound.getRegistryName()));
     }

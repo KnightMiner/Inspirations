@@ -2,7 +2,6 @@ package knightminer.inspirations.library.recipe.cauldron.recipe;
 
 import com.google.gson.JsonObject;
 import knightminer.inspirations.library.recipe.RecipeSerializers;
-import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.CauldronIngredients;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.ingredient.ICauldronIngredient;
@@ -174,7 +173,7 @@ public class CauldronTransformBuilder extends AbstractRecipeBuilder<CauldronTran
       if (temperature != TemperaturePredicate.ANY) {
         json.addProperty("temperature", temperature.getName());
       }
-      json.add("output", CauldronContentTypes.toJson(output));
+      json.add("output", output.toJson());
       json.addProperty("time", time);
       if (sound != null) {
         json.addProperty("sound", Objects.requireNonNull(sound.getRegistryName()).toString());

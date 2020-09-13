@@ -25,13 +25,14 @@ import net.minecraftforge.common.util.Constants.NBT;
 import net.minecraftforge.common.util.Lazy;
 
 import javax.annotation.Nullable;
+import java.util.function.BiFunction;
 
 /**
  * Registry that helps with registering, serializing, and deserializing cauldron properties
  */
 public class CauldronContentTypes {
   private static final ResourceLocation UNREGISTERED = Inspirations.getResource("null");
-  private static final String KEY_TYPE = "type";
+  public static final String KEY_TYPE = "type";
   private static final BiMap<ResourceLocation,CauldronContentType<?>> TYPES = HashBiMap.create();
 
   /* Public constants */
@@ -102,43 +103,32 @@ public class CauldronContentTypes {
   }
 
   /**
-   * Converts the given contents to JSON
-   * @param contents  Contents
-   * @return  JSON
+   * Simple helper function to make the generics work out
+   * @param type    Content type
+   * @param data    Data being read
+   * @param parser  Parses data into contents
    */
-  public static JsonObject toJson(ICauldronContents contents) {
-    JsonObject json = new JsonObject();
-    CauldronContentType<?> type = contents.getType();
-    json.addProperty(KEY_TYPE, getName(type).toString());
-    type.write(contents, json);
-    return json;
+  private static <T, D> ICauldronContents read(CauldronContentType<T> type, D data, BiFunction<CauldronContentType<T>,D,T> parser) {
+    T value = parser.apply(type, data);
+    if (value == null) {
+      return DEFAULT.get();
+    }
+    return type.of(value);
   }
 
   /**
    * Reads the cauldron contents from JSON
    * @param json  JSON to read
    * @return  Cauldron contents
+   * @throws JsonSyntaxException  If the type is missing or the data invalid
    */
   public static ICauldronContents read(JsonObject json) {
     ResourceLocation location = new ResourceLocation(JSONUtils.getString(json, KEY_TYPE));
     CauldronContentType<?> type = get(location);
     if (type != null) {
-      return type.read(json);
+      return read(type, json, CauldronContentType::read);
     }
     throw new JsonSyntaxException("Invalid cauldron content type '" + location + "'");
-  }
-
-  /**
-   * Writes the given contents to NBT
-   * @param contents  Contents to write
-   * @return  Contents written to NBT
-   */
-  public static CompoundNBT toNbt(ICauldronContents contents) {
-    CompoundNBT nbt = new CompoundNBT();
-    CauldronContentType<?> type = contents.getType();
-    nbt.putString(KEY_TYPE, getName(type).toString());
-    type.write(contents, nbt);
-    return nbt;
   }
 
   /**
@@ -151,30 +141,17 @@ public class CauldronContentTypes {
       ResourceLocation location = new ResourceLocation(nbt.getString(KEY_TYPE));
       CauldronContentType<?> type = get(location);
       if (type != null) {
-        ICauldronContents contents = type.read(nbt);
-        if (contents != null) {
-          return contents;
-        }
+        return read(type, nbt, CauldronContentType::read);
       }
     }
     return CauldronContentTypes.DEFAULT.get();
   }
 
   /**
-   * Writes the given contents to NBT
-   * @param contents  Contents to write
-   * @param buffer    Buffer instance
-   */
-  public static void write(ICauldronContents contents, PacketBuffer buffer) {
-    CauldronContentType<?> type = contents.getType();
-    buffer.writeResourceLocation(getName(type));
-    type.write(contents, buffer);
-  }
-
-  /**
    * Reads the given contents from NBT
    * @param buffer Buffer instance
    * @return  Cauldron contents
+   * @throws  DecoderException  if the type is missing or the data invalids
    */
   public static ICauldronContents read(PacketBuffer buffer) {
     ResourceLocation name = buffer.readResourceLocation();
@@ -182,6 +159,6 @@ public class CauldronContentTypes {
     if (type == null) {
       throw new DecoderException("Invalid type name '" + name + "'");
     }
-    return type.read(buffer);
+    return read(type, buffer, CauldronContentType::read);
   }
 }
