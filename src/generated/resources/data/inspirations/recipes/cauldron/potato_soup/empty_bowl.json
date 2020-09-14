@@ -19,7 +19,7 @@
       "name": "inspirations:potato_soup"
     },
     "level": {
-      "max": 2
+      "max": 11
     }
   },
   "output": {
@@ -34,7 +34,7 @@
       "name": "inspirations:potato_soup"
     },
     "level": {
-      "add": 1
+      "add": 4
     }
   },
   "sound": "minecraft:item.bottle.empty"

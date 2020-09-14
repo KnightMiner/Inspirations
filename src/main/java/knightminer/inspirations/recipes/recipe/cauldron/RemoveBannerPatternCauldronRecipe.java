@@ -27,7 +27,7 @@ public class RemoveBannerPatternCauldronRecipe implements ICauldronRecipe {
   public boolean matches(ICauldronInventory inv, World worldIn) {
     ItemStack stack = inv.getStack();
     // must be at least one level of water, be a banner, and have patterns
-    return inv.getLevel() > 0 && inv.getContents().contains(CauldronContentTypes.FLUID, Fluids.WATER)
+    return inv.getLevel() >= THIRD && inv.getContents().contains(CauldronContentTypes.FLUID, Fluids.WATER)
            && ItemTags.BANNERS.contains(stack.getItem())
            && BannerTileEntity.getPatterns(stack) > 0;
   }
@@ -39,7 +39,7 @@ public class RemoveBannerPatternCauldronRecipe implements ICauldronRecipe {
     BannerTileEntity.removeBannerData(stack);
     inv.setOrGiveStack(stack);
     // use one level of water
-    inv.addLevel(-1);
+    inv.addLevel(-THIRD);
 
     // play sound
     inv.playSound(SoundEvents.ENTITY_FISHING_BOBBER_SPLASH);

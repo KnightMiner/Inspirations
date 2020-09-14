@@ -120,7 +120,7 @@ public abstract class BrewingCauldronRecipe implements ICauldronRecipe, IMultiRe
    * @return  Recipe instance
    */
   protected DisplayCauldronRecipe makeRecipe(Potion input, Ingredient reagent, Potion output) {
-    return DisplayCauldronRecipe.builder(3)
+    return DisplayCauldronRecipe.builder(MAX)
                                 .setTemperature(TemperaturePredicate.BOILING)
                                 .setItemInputs(Arrays.asList(reagent.getMatchingStacks()))
                                 .setContentInputs(CauldronContentTypes.POTION.of(input))

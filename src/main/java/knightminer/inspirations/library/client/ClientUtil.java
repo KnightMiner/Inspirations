@@ -1,9 +1,7 @@
 package knightminer.inspirations.library.client;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.InspirationsRegistry;
-import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -187,31 +185,6 @@ public final class ClientUtil {
     BlockItem item = (BlockItem)stack.getItem();
     BlockState state = item.getBlock().getDefaultState();
     return mc.getBlockColors().getColor(state, world, pos, index);
-  }
-
-  /**
-   * Renders a colored sprite to display in JEI as cauldron contents
-   * @param x        Sprite X position
-   * @param y        Sprite Y position
-   * @param location Sprite resource location
-   * @param color    Sprite color
-   * @param level    Cauldron level
-   */
-  @Deprecated
-  public static void renderJEICauldronFluid(int x, int y, ResourceLocation location, float[] color, int level) {
-    GlStateManager.enableBlend();
-    //mc.gameRenderer.enableLightmap();
-    GlStateManager.color4f(color[0], color[1], color[2], 1);
-    // 0 means JEI ingredient list
-    TextureAtlasSprite sprite = ClientUtil.getSprite(location);
-    if (level == 0) {
-      ClientUtil.renderFilledSprite(sprite, x, y, 16, 16);
-    } else {
-      int height = ((10 * level) / ICauldronRecipe.MAX);
-      ClientUtil.renderFilledSprite(sprite, x, y, 10, height);
-    }
-    GlStateManager.color4f(1, 1, 1, 1);
-    GlStateManager.disableBlend();
   }
 
   private static final Map<String,String> NORMALIZED_NAMES = new HashMap<>();

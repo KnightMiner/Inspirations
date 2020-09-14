@@ -15,7 +15,7 @@ public class LevelPredicate implements IntPredicate {
   private static final String KEY_MIN = "min";
   private static final String KEY_MAX = "max";
   /** Cache of all levels, first key is min, second is max */
-  private static final LevelPredicate[][] CACHE = new LevelPredicate[MAX + 1][MAX + 1];
+  private static final LevelPredicate[] CACHE = new LevelPredicate[triangle(MAX + 1)];
 
   private final int min;
   private final int max;
@@ -28,7 +28,7 @@ public class LevelPredicate implements IntPredicate {
 
   /**
    * Gets a level predicate for a minimum number
-   * @param min  Minimum level value, must be between 0 and 3
+   * @param min  Minimum level value, must be between 0 and 12
    * @return  Level predicate
    */
   public static LevelPredicate min(int min) {
@@ -37,7 +37,7 @@ public class LevelPredicate implements IntPredicate {
 
   /**
    * Gets a level predicate for a maximum number
-   * @param max  Maximum level value, must be between 0 and 3
+   * @param max  Maximum level value, must be between 0 and 12
    * @return  Level predicate
    */
   public static LevelPredicate max(int max) {
@@ -53,20 +53,22 @@ public class LevelPredicate implements IntPredicate {
   public static LevelPredicate range(int min, int max) {
     // validate inputs
     if (min < 0 || min > MAX) {
-      throw new IllegalArgumentException("Invalid minimum level " + min + ", must be between 0 and 3");
+      throw new IllegalArgumentException("Invalid minimum level " + min + ", must be between 0 and 12");
     }
     if (max < 0 || max > MAX) {
-      throw new IllegalArgumentException("Invalid maximum level " + max + ", must be between 0 and 3");
+      throw new IllegalArgumentException("Invalid maximum level " + max + ", must be between 0 and 12");
     }
     if (min > max) {
       throw new IllegalArgumentException("Minimum cannot be larger than maximum");
     }
-    //cache a new one if missing
-    if (CACHE[min][max] == null) {
-      CACHE[min][max] = new LevelPredicate(min, max);
+    // convert min and max into a linear index
+    // row (min) is the sum of lengths of all previous rows, column is max
+    int cacheKey = triangle(min) + max;
+    if (CACHE[cacheKey] == null) {
+      CACHE[cacheKey] = new LevelPredicate(min, max);
     }
     // return cached
-    return CACHE[min][max];
+    return CACHE[cacheKey];
   }
 
   /**
@@ -138,5 +140,14 @@ public class LevelPredicate implements IntPredicate {
   @Override
   public String toString() {
     return String.format("LevelPredicate[%d,%d]", min, max);
+  }
+
+  /**
+   * Returns the sum of numbers from 1 to {@code num}, for the sake of triangle indexing
+   * @param num  Final number in sum
+   * @return  Sum of numbers from 1 to {@code num}
+   */
+  private static int triangle(int num) {
+    return (num * (num + 1)) / 2;
   }
 }

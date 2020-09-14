@@ -70,12 +70,12 @@ public class VanillaCauldronInventory extends CauldronItemInventory {
 
   @Override
   public int getLevel() {
-    return state.get(CauldronBlock.LEVEL);
+    return state.get(CauldronBlock.LEVEL) * 4;
   }
 
   @Override
   public void setLevel(int level) {
-    level = MathHelper.clamp(level, 0, ICauldronRecipe.MAX);
+    level = MathHelper.clamp(level, 0, ICauldronRecipe.MAX) / 4;
     if (state.get(CauldronBlock.LEVEL) != level) {
       ((CauldronBlock) Blocks.CAULDRON).setWaterLevel(world, pos, state, level);
     }

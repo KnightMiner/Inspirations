@@ -47,8 +47,7 @@ public class FillPotionCauldronRecipe implements ICauldronRecipe {
   @Override
   public boolean matches(ICauldronInventory inv, World world) {
     // must have at least one level, contain any potion, and be using the correct item
-    ItemStack stack = inv.getStack();
-    return inv.getLevel() > 0 && inv.getContents().contains(CauldronContentTypes.POTION) && bottle.test(stack);
+    return inv.getLevel() >= THIRD && inv.getContents().contains(CauldronContentTypes.POTION) && bottle.test(inv.getStack());
   }
 
   @Override
@@ -60,7 +59,7 @@ public class FillPotionCauldronRecipe implements ICauldronRecipe {
       inv.setOrGiveStack(PotionUtils.addPotionToItemStack(new ItemStack(potionItem, amount), potion));
 
       // update level
-      inv.addLevel(-1);
+      inv.addLevel(-THIRD);
 
       // play sound
       inv.playSound(SoundEvents.ITEM_BOTTLE_FILL);

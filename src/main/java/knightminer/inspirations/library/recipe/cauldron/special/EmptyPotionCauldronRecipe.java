@@ -72,7 +72,7 @@ public class EmptyPotionCauldronRecipe implements ICauldronRecipe {
     Potion potion = PotionUtils.getPotionFromItem(inv.getStack());
     if (potion != Potions.EMPTY) {
       // add levels
-      inv.addLevel(1);
+      inv.addLevel(THIRD);
       // update contents
       inv.setContents(CauldronContentTypes.POTION.of(potion));
 

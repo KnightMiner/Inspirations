@@ -14,6 +14,7 @@ import net.minecraft.item.Items;
 import net.minecraft.loot.LootContext;
 import net.minecraft.loot.LootParameters;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.NonNullList;
@@ -22,8 +23,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.common.util.Constants.BlockFlags;
 import net.minecraftforge.common.util.Constants.NBT;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -252,5 +255,19 @@ public class Util {
       throw new JsonSyntaxException("Invalid " + key + ": Unknown item " + name + "'");
     }
     return item;
+  }
+
+  /**
+   * Notifies render global that TE data changed requiring a block update.
+   * Used since refreshModelData alone does not seem sufficient.
+   * @param te  TE to update
+   */
+  public static void notifyClientUpdate(TileEntity te) {
+    World world = te.getWorld();
+    if (world != null && world.isRemote) {
+      te.requestModelDataUpdate();
+      BlockState state = te.getBlockState();
+      world.notifyBlockUpdate(te.getPos(), state, state, BlockFlags.NO_RERENDER | BlockFlags.NO_NEIGHBOR_DROPS);
+    }
   }
 }

@@ -22,7 +22,7 @@
       "name": "minecraft:water"
     },
     "level": {
-      "max": 2
+      "max": 11
     }
   },
   "output": {
@@ -37,7 +37,7 @@
       "name": "minecraft:water"
     },
     "level": {
-      "add": 1
+      "add": 4
     }
   },
   "sound": "minecraft:item.bottle.empty"

@@ -34,7 +34,7 @@ public class FillDyedBottleRecipe implements ICauldronRecipe, IMultiRecipe<Displ
 
   @Override
   public boolean matches(ICauldronInventory inv, World worldIn) {
-    return inv.getLevel() > 0 && inv.getStack().getItem() == Items.GLASS_BOTTLE && inv.getContents().contains(CauldronContentTypes.COLOR);
+    return inv.getLevel() >= THIRD && inv.getStack().getItem() == Items.GLASS_BOTTLE && inv.getContents().contains(CauldronContentTypes.COLOR);
   }
 
   @Override
@@ -42,7 +42,7 @@ public class FillDyedBottleRecipe implements ICauldronRecipe, IMultiRecipe<Displ
     inventory.getContents().get(CauldronContentTypes.COLOR).ifPresent(color -> {
       inventory.shrinkStack(1);
       inventory.setOrGiveStack(MixedDyedBottleItem.bottleFromDye(color));
-      inventory.addLevel(-1);
+      inventory.addLevel(-THIRD);
 
       // play sound
       inventory.playSound(SoundEvents.ITEM_BOTTLE_FILL);
@@ -65,7 +65,7 @@ public class FillDyedBottleRecipe implements ICauldronRecipe, IMultiRecipe<Displ
       // recipe is glass bottle + dye = dyed bottle
       List<ItemStack> glassBottle = Collections.singletonList(new ItemStack(Items.GLASS_BOTTLE));
       displayRecipes = Arrays.stream(DyeColor.values())
-                             .map(color -> DisplayCauldronRecipe.builder(1, 0)
+                             .map(color -> DisplayCauldronRecipe.builder(THIRD, 0)
                                                                 .setItemInputs(glassBottle)
                                                                 .setContentInputs(CauldronContentTypes.DYE.of(color))
                                                                 .setItemOutput(InspirationsRecipes.simpleDyedWaterBottle.get(color))

@@ -19,7 +19,7 @@
       "name": "minecraft:water"
     },
     "level": {
-      "min": 1
+      "min": 4
     }
   },
   "output": {
@@ -28,7 +28,7 @@
       "nbt": "{Potion:\"minecraft:water\"}"
     },
     "level": {
-      "add": -1
+      "add": -4
     }
   },
   "sound": "minecraft:item.bottle.fill"

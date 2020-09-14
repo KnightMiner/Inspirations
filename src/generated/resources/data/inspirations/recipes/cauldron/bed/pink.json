@@ -19,7 +19,7 @@
       "name": "pink"
     },
     "level": {
-      "min": 1
+      "min": 4
     }
   },
   "output": {
@@ -27,7 +27,7 @@
       "item": "minecraft:pink_bed"
     },
     "level": {
-      "add": -1
+      "add": -4
     }
   }
 }

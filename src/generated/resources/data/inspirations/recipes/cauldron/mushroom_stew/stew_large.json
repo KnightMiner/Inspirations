@@ -20,7 +20,7 @@
       "name": "minecraft:water"
     },
     "level": {
-      "min": 2
+      "min": 5
     },
     "temperature": "boiling"
   },

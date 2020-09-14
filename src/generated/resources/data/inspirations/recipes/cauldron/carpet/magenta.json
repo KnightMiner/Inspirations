@@ -19,7 +19,7 @@
       "name": "magenta"
     },
     "level": {
-      "min": 1
+      "min": 4
     }
   },
   "output": {
@@ -27,7 +27,7 @@
       "item": "minecraft:magenta_carpet"
     },
     "level": {
-      "add": -1
+      "add": -4
     }
   }
 }

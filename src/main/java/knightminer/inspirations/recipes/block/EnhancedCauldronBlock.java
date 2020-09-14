@@ -126,8 +126,7 @@ public class EnhancedCauldronBlock extends CauldronBlock {
   @Override
   @OnlyIn(Dist.CLIENT)
   public void animateTick(BlockState state, World world, BlockPos pos, Random rand) {
-    int level = getLevel(state);
-    if (level == 0) {
+    if (getLevel(state) == 0) {
       return;
     }
 
@@ -135,6 +134,7 @@ public class EnhancedCauldronBlock extends CauldronBlock {
     TileEntity te = world.getTileEntity(pos);
     if (te instanceof CauldronTileEntity) {
       CauldronTileEntity cauldron = (CauldronTileEntity)te;
+      int level = cauldron.getLevel();
 
       // boiling particles if boiling
       if (cauldron.getTemperature() == CauldronTemperature.BOILING) {
@@ -158,7 +158,7 @@ public class EnhancedCauldronBlock extends CauldronBlock {
   private static void addParticles(IParticleData type, World world, BlockPos pos, int count, int level, Random rand) {
     for (int i = 0; i < count; i++) {
       double x = pos.getX() + 0.1875D + (rand.nextFloat() * 0.625D);
-      double y = pos.getY() + 0.375D  + (level * 0.1875D);
+      double y = pos.getY() + 0.1875D + (level * 0.0625);
       double z = pos.getZ() + 0.1875D + (rand.nextFloat() * 0.625D);
       world.addParticle(type, x, y, z, 0, 0, 0);
     }

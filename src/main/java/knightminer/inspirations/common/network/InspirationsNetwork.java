@@ -12,6 +12,8 @@ import net.minecraftforge.fml.network.PacketDistributor;
 import slimeknights.mantle.network.NetworkWrapper;
 import slimeknights.mantle.network.packet.ISimplePacket;
 
+import javax.annotation.Nullable;
+
 public class InspirationsNetwork extends NetworkWrapper {
   public static final InspirationsNetwork INSTANCE = new InspirationsNetwork();
 
@@ -25,7 +27,7 @@ public class InspirationsNetwork extends NetworkWrapper {
   public void setup() {
     registerPacket(InventorySlotSyncPacket.class, InventorySlotSyncPacket::new, NetworkDirection.PLAY_TO_CLIENT);
     registerPacket(MilkablePacket.class, MilkablePacket::new, NetworkDirection.PLAY_TO_CLIENT);
-    registerPacket(CauldronContentUpatePacket.class, CauldronContentUpatePacket::new, NetworkDirection.PLAY_TO_CLIENT);
+    registerPacket(CauldronStateUpdatePacket.class, CauldronStateUpdatePacket::new, NetworkDirection.PLAY_TO_CLIENT);
     registerPacket(CauldronTransformUpatePacket.class, CauldronTransformUpatePacket::new, NetworkDirection.PLAY_TO_CLIENT);
   }
 
@@ -53,7 +55,7 @@ public class InspirationsNetwork extends NetworkWrapper {
    * @param pos    Players too far from this position will not receive the packet
    * @param packet Packet
    */
-  public static void sendToClients(World world, BlockPos pos, ISimplePacket packet) {
+  public static void sendToClients(@Nullable World world, BlockPos pos, ISimplePacket packet) {
     if (world instanceof ServerWorld) {
       sendToClients((ServerWorld)world, pos, packet);
     }

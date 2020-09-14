@@ -11,7 +11,11 @@ import slimeknights.mantle.recipe.ICustomOutputRecipe;
  */
 public interface ICauldronRecipe extends ICustomOutputRecipe<ICauldronInventory> {
   /** Maximum fill level of the cauldron */
-  int MAX = 3;
+  int MAX = 12;
+  /** Levels for 1/3 of a cauldron */
+  int THIRD = MAX / 3;
+  /** Levels for 1/4 of a cauldron */
+  int QUARTER = MAX / 4;
 
   /**
    * Updates the cauldron based on the results of the recipe

@@ -51,8 +51,8 @@ public class RecipesEvents {
       CauldronTileEntity cauldron = TileEntityHelper.getTile(CauldronTileEntity.class, world, pos).orElse(null);
       if (cauldron != null) {
         // TODO: blacklist?
-        // stop further processing if we did a recipe or the cauldron does not contain water
-        if (cauldron.interact(player, hand) || !cauldron.getContents().isSimple()) {
+        // stop further processing if we did a recipe or the cauldron cannot mimic vanilla cauldron
+        if (cauldron.interact(player, hand) || !cauldron.canMimicVanilla()) {
           event.setCanceled(true);
           event.setCancellationResult(ActionResultType.SUCCESS);
         }

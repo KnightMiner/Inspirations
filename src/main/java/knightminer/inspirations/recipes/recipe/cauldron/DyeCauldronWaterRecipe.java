@@ -79,7 +79,7 @@ public class DyeCauldronWaterRecipe implements ICauldronRecipe, ICauldronRecipeD
         inv.shrinkStack(1);
 
         // update contents
-        inv.setContents(CauldronContentTypes.COLOR.of(addColors(dye.getColorValue(), color)));
+        inv.setContents(CauldronContentTypes.COLOR.of(addColors(dye.getColorValue(), 1, color, 1)));
 
         // play sound
         inv.playSound(SoundEvents.ENTITY_GENERIC_SPLASH);
@@ -89,25 +89,26 @@ public class DyeCauldronWaterRecipe implements ICauldronRecipe, ICauldronRecipeD
 
   /**
    * Adds two colors
-   * @param base    First color
-   * @param colors  Additional colors
+   * @param newColor    New color added
+   * @param newLevels   Amount of new color added
+   * @param original    Color in cauldron
+   * @param origLevels  Number of levels in the cauldron
    * @return  Added colors
    */
-  public static int addColors(int base, int... colors) {
-    // sum color components
-    int r = getRed(base);
-    int g = getGreen(base);
-    int b = getBlue(base);
+  public static int addColors(int newColor, int newLevels, int original, int origLevels) {
+    // keep original components as we average towards them
+    int nr = getRed(newColor);
+    int ng = getGreen(newColor);
+    int nb = getBlue(newColor);
+    // sum color components, add in 4 copies as a bottle is 4 levels
+    // add in one copy per level of the original color
+    int r = (nr * newLevels) + (getRed(original)   * origLevels);
+    int g = (ng * newLevels) + (getGreen(original) * origLevels);
+    int b = (nb * newLevels) + (getBlue(original)  * origLevels);
     // base acts as preference
-    int pr = r, pg = g, pb = b;
-    for (int color : colors) {
-      r += getRed(color);
-      g += getGreen(color);
-      b += getBlue(color);
-    }
     // divide per component, tending towards base
-    int c = colors.length + 1;
-    return divide(r, pr, c) << 16 | divide(g, pg, c) << 8 | divide(b, pb, c);
+    int c = origLevels + newLevels;
+    return divide(r, nr, c) << 16 | divide(g, ng, c) << 8 | divide(b, nb, c);
   }
 
   /**
@@ -117,7 +118,7 @@ public class DyeCauldronWaterRecipe implements ICauldronRecipe, ICauldronRecipeD
    * @param divisor  Number to divide by
    * @return Divided sum
    */
-  public static int divide(int sum, int pref, int divisor) {
+  private static int divide(int sum, int pref, int divisor) {
     int color = sum / divisor;
     // if there was a remainder, favor the original color
     if (sum % divisor != 0 && pref > color) {
@@ -201,12 +202,12 @@ public class DyeCauldronWaterRecipe implements ICauldronRecipe, ICauldronRecipeD
 
   @Override
   public int getLevelInput() {
-    return 3;
+    return THIRD;
   }
 
   @Override
   public int getLevelOutput() {
-    return 3;
+    return THIRD;
   }
 
   @Override

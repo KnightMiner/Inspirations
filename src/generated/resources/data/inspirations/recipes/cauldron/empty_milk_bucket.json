@@ -19,7 +19,7 @@
       "tag": "forge:milk"
     },
     "level": {
-      "max": 2
+      "max": 11
     }
   },
   "output": {
@@ -34,7 +34,7 @@
       "name": "inspirations:milk"
     },
     "level": {
-      "set": 3
+      "set": 12
     }
   },
   "sound": "minecraft:item.bucket.empty"

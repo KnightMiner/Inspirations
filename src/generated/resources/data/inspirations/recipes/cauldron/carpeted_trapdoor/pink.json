@@ -23,7 +23,7 @@
       "name": "pink"
     },
     "level": {
-      "min": 1
+      "min": 4
     }
   },
   "output": {
@@ -31,7 +31,7 @@
       "item": "inspirations:pink_carpeted_trapdoor"
     },
     "level": {
-      "add": -1
+      "add": -4
     }
   }
 }

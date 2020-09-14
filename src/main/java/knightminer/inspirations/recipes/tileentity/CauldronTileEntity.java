@@ -2,10 +2,11 @@ package knightminer.inspirations.recipes.tileentity;
 
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.Config;
-import knightminer.inspirations.common.network.CauldronContentUpatePacket;
+import knightminer.inspirations.common.network.CauldronStateUpdatePacket;
 import knightminer.inspirations.common.network.CauldronTransformUpatePacket;
 import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.library.InspirationsTags;
+import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.recipe.RecipeTypes;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
@@ -45,7 +46,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelDataMap;
 import net.minecraftforge.client.model.data.ModelProperty;
-import net.minecraftforge.common.util.Constants.BlockFlags;
 import net.minecraftforge.common.util.Constants.NBT;
 import slimeknights.mantle.recipe.RecipeHelper;
 
@@ -61,17 +61,26 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
   private static final DamageSource DAMAGE_BOIL = new DamageSource(Inspirations.prefix("boiling")).setDamageBypassesArmor();
   public static final ModelProperty<ResourceLocation> TEXTURE = new ModelProperty<>();
   public static final ModelProperty<Boolean> FROSTED = new ModelProperty<>();
+  public static final ModelProperty<Integer> OFFSET = new ModelProperty<>();
 
   // data objects
   private final IModelData data = new ModelDataMap.Builder()
       .withInitial(TEXTURE, CauldronContentTypes.DEFAULT.get().getTextureName())
-      .withInitial(FROSTED, false).build();
+      .withInitial(FROSTED, false)
+      .withInitial(OFFSET, 0).build();
   private final TileCauldronInventory craftingInventory = new TileCauldronInventory(this);
 
-  // mutable properties
+  // cauldron properties
+  /** Current cauldron contents */
   private ICauldronContents contents;
+  /** Offset amount for liquid. Formula is LEVEL * 4 + offset */
+  private int levelOffset;
+
+  // helper properties
   private EnhancedCauldronBlock cauldronBlock;
+  /** Last recipe used in the cauldron */
   private ICauldronRecipe lastRecipe;
+
   // temperature cache
   /** If true, the cauldron is above a block that makes it boil */
   private Boolean isBoiling;
@@ -125,34 +134,8 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
     return data;
   }
 
-  /**
-   * Gets the level of fluid in the cauldron
-   * @return  Cauldron fluid level
-   */
-  public int getLevel() {
-    return craftingInventory.getLevel();
-  }
 
-  /**
-   * Sets the fluid level in the cauldron
-   * @param level  New fluid level
-   */
-  public void setLevel(int level) {
-    if (world != null) {
-      cauldronBlock.setWaterLevel(world, pos, getBlockState(), level);
-    }
-  }
-
-  /**
-   * Gets the block instance responsible for this cauldron
-   * @return  Block instance
-   */
-  public EnhancedCauldronBlock getBlock() {
-    return cauldronBlock;
-  }
-
-
-  /* contents */
+  /* contents and level */
 
   /**
    * Gets the current cauldron contents
@@ -163,29 +146,113 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
   }
 
   /**
-   * Updates the cauldron contents
-   * @param contents  New contents
+   * Gets the level of fluid in the cauldron, between 0 and {@link ICauldronRecipe#MAX}
+   * @return  Cauldron fluid level
    */
-  public void setContents(ICauldronContents contents) {
-    // noting to do if a match
-    if (this.contents.equals(contents)) {
-      return;
-    }
+  public int getLevel() {
+    return cauldronBlock.getLevel(getBlockState()) * 4 + levelOffset;
+  }
 
-    // update contents
-    this.contents = contents;
+  /**
+   * Checks if this cauldron can mimic vanilla, meaning other handlers are allowed to run. There are two problematic cases:
+   * * Contents are not water
+   * * Level is between 1 and 3, as internally is that 1 in the block state (has water), but not a full "bottle", causing other mods to see more water than expected
+   * @return  True if this cauldron can redirect recipes to other handlers
+   */
+  public boolean canMimicVanilla() {
+    return levelOffset >= 0 && contents.isSimple();
+  }
 
-    // update display client side, sync to client serverside
+  /**
+   * Updates the cauldron state, including the block state level
+   * @param contents  New contents, null for no change
+   * @param level     New levels
+   */
+  public void updateStateAndBlock(@Nullable ICauldronContents contents, int level) {
+    int stateLevel = updateStateFromLevels(contents, level);
     if (world != null) {
-      if (world.isRemote) {
-        this.data.setData(TEXTURE, contents.getTextureName());
-        this.requestModelDataUpdate();
-        this.notifyClientUpdate();
-      } else {
-        InspirationsNetwork.sendToClients(world, pos, new CauldronContentUpatePacket(pos, contents));
-        this.updateTransform = true;
-      }
+      cauldronBlock.setWaterLevel(world, pos, getBlockState(), stateLevel);
     }
+  }
+
+  /**
+   * Updates the state of the cauldron based on the given contents and levels and syncs to client.
+   * Used in a few cases where state level update must be delayed
+   * @param contents  New contents, null for no change
+   * @param level     New level between 0 and 12. Set to -1 for no change
+   * @return  New level for the block state
+   */
+  protected int updateStateFromLevels(@Nullable ICauldronContents contents, int level) {
+    // first, determine the new level and contents
+    // empty is empty of course
+    int stateLevel, newOffset;
+    if (level == 0) {
+      newOffset = 0;
+      stateLevel = 0;
+    }
+    else if (level < 4) {
+      // if between 1 and 3, apply a negative offset
+      newOffset = level - 4;
+      stateLevel = 1;
+    } else {
+      // apply positive offsets otherwise
+      newOffset = level % 4;
+      stateLevel = level / 4;
+    }
+
+    // update TE props
+    updateState(contents, newOffset);
+
+    // return new level value
+    return stateLevel;
+  }
+
+  /**
+   * Updates just TE internal properties.
+   * Used for transform recipe updates.
+   * @param contents     New contents, null for no change
+   * @param levelOffset  New level offset, between -3 and 3
+   */
+  protected void updateState(@Nullable ICauldronContents contents, int levelOffset) {
+    // if the contents changed, update
+    if (contents == null || this.contents.equals(contents)) {
+      // set to null to signify no change, saves packet size
+      contents = null;
+    } else {
+      this.contents = contents;
+    }
+
+    // if either changed, send a packet
+    if (levelOffset != this.levelOffset || contents != null) {
+      this.levelOffset = levelOffset;
+      InspirationsNetwork.sendToClients(world, pos, new CauldronStateUpdatePacket(pos, contents, levelOffset));
+      this.updateTransform = true;
+    }
+  }
+
+  /**
+   * Updates contents and level offset in the TE and model data
+   * @param contents     New contents, null for no change
+   * @param levelOffset  New level offset
+   * @return  True if anything changed
+   */
+  public boolean updateStateAndData(@Nullable ICauldronContents contents, int levelOffset) {
+    boolean updated = false;
+
+    // update offset and contents in TE and model data
+    if (levelOffset != this.levelOffset) {
+      this.levelOffset = levelOffset;
+      data.setData(OFFSET, levelOffset);
+      updated = true;
+    }
+    if (contents != null && !this.contents.equals(contents)) {
+      this.contents = contents;
+      data.setData(TEXTURE, contents.getTextureName());
+      updated = true;
+    }
+
+    // return if we changed anything
+    return updated;
   }
 
 
@@ -316,7 +383,7 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
     if (world != null && world.isRemote) {
       temperature = getTemperature();
       if (temperature != oldTemperature) {
-        notifyClientUpdate();
+        Util.notifyClientUpdate(this);
       }
     }
   }
@@ -373,7 +440,7 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
     // handle the recipe using the common function
     boolean success = handleRecipe(player.getHeldItem(hand), stack -> player.setHeldItem(hand, stack), CauldronItemInventory.getPlayerAdder(player));
     if (success) {
-      setLevel(craftingInventory.getLevel());
+      updateStateAndBlock(craftingInventory.getContents(), craftingInventory.getLevel());
     }
     craftingInventory.clearContext();
     return success;
@@ -394,7 +461,7 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
     // update level from the recipe and return the updated stack
     ItemStack result = null;
     if (handleRecipe(stack, null, itemAdder)) {
-      setLevel(craftingInventory.getLevel());
+      updateStateAndBlock(craftingInventory.getContents(), craftingInventory.getLevel());
       result = craftingInventory.getStack();
     }
     craftingInventory.clearContext();
@@ -468,14 +535,13 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
       }
 
       // return the final level update
-      int newLevel = craftingInventory.getLevel();
+      int stateLevel = updateStateFromLevels(craftingInventory.getContents(), craftingInventory.getLevel());
       craftingInventory.clearContext();
-      return newLevel;
-
+      return stateLevel;
     } else if (level > 0) {
       Optional<Fluid> fluidType = contents.get(CauldronContentTypes.FLUID);
       if (fluidType.isPresent()) {
-        // water estinguishs fire
+        // water puts out fire
         Fluid fluid = fluidType.get();
         if (FluidTags.WATER.contains(fluid)) {
           if (entity.isBurning()) {
@@ -595,7 +661,8 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
       world.playSound(null, pos, sound, SoundCategory.BLOCKS, 1.0f, 1.0f);
 
       // set contents will clear the current transform if no longer current
-      setContents(currentTransform.getContentOutput(craftingInventory));
+      // have to pass in level offset as this function is reused a lot, so just use current
+      updateState(currentTransform.getContentOutput(craftingInventory), levelOffset);
     }
   }
 
@@ -658,18 +725,9 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
   }
    */
 
-  /* Utils */
-
-  /** Notifies the world on the client side to redraw this block */
-  private void notifyClientUpdate() {
-    if (world != null && world.isRemote) {
-      BlockState state = getBlockState();
-      world.notifyBlockUpdate(pos, state, state, BlockFlags.NO_RERENDER | BlockFlags.NO_NEIGHBOR_DROPS);
-    }
-  }
-
   /* NBT */
   private static final String TAG_CONTENTS = "contents";
+  private static final String TAG_LEVEL_OFFSET = "level_offset";
   private static final String TAG_TRANSFORM = "transform";
   private static final String TAG_TIMER = "timer";
 
@@ -710,6 +768,7 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
     }
     // update the timer from NBT
     tags.putInt(TAG_TIMER, timer);
+    tags.putInt(TAG_LEVEL_OFFSET, levelOffset);
     return tags;
   }
 
@@ -736,7 +795,7 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
     }
 
     // update contents
-    setContents(CauldronContentTypes.read(tags.getCompound(TAG_CONTENTS)));
+    updateStateAndData(CauldronContentTypes.read(tags.getCompound(TAG_CONTENTS)), tags.getInt(TAG_LEVEL_OFFSET));
 
     // update the timer from NBT
     timer = tags.getInt(TAG_TIMER);

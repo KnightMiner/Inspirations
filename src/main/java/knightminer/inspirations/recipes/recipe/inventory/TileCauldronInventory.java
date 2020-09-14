@@ -19,6 +19,8 @@ import java.util.function.Consumer;
 public class TileCauldronInventory extends CauldronItemInventory {
   private final CauldronTileEntity tile;
 
+  @Nullable
+  private ICauldronContents newContents = null;
   private int newLevel = -1;
   public TileCauldronInventory(CauldronTileEntity tile) {
     this.tile = tile;
@@ -70,7 +72,7 @@ public class TileCauldronInventory extends CauldronItemInventory {
     if (newLevel != -1) {
       return newLevel;
     }
-    return tile.getBlock().getLevel(tile.getBlockState());
+    return tile.getLevel();
   }
 
   @Override
@@ -84,12 +86,15 @@ public class TileCauldronInventory extends CauldronItemInventory {
 
   @Override
   public ICauldronContents getContents() {
+    if (newContents != null) {
+      return newContents;
+    }
     return tile.getContents();
   }
 
   @Override
   public void setContents(ICauldronContents contents) {
-    tile.setContents(contents);
+    this.newContents = contents;
   }
 
   @Override

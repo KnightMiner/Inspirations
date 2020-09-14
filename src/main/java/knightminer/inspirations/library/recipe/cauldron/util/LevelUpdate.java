@@ -49,7 +49,7 @@ public abstract class LevelUpdate implements IntUnaryOperator {
     }
   };
   static {
-    // -3 (offset) + 3 = 0
+    // -MAX (offset) + MAX = 0
     ADD_CACHE[MAX] = IDENTITY;
   }
 
@@ -60,7 +60,7 @@ public abstract class LevelUpdate implements IntUnaryOperator {
    */
   public static LevelUpdate add(int amount) {
     if (amount < -MAX || amount > MAX) {
-      throw new IllegalArgumentException("Invalid amount " + amount + ", must be between -3 and 3");
+      throw new IllegalArgumentException("Invalid amount " + amount + ", must be between -12 and 12");
     }
     // negatives are not array indexes
     int key = amount + MAX;
@@ -77,7 +77,7 @@ public abstract class LevelUpdate implements IntUnaryOperator {
    */
   public static LevelUpdate set(int amount) {
     if (amount < 0 || amount > MAX) {
-      throw new IllegalArgumentException("Invalid amount " + amount + ", must be between 0 and 3");
+      throw new IllegalArgumentException("Invalid amount " + amount + ", must be between 0 and 12");
     }
     if (SET_CACHE[amount] == null) {
       SET_CACHE[amount] = new Set(amount);
@@ -180,7 +180,7 @@ public abstract class LevelUpdate implements IntUnaryOperator {
 
     @Override
     public int applyAsInt(int original) {
-      return MathHelper.clamp(original + amount, 0, 3);
+      return MathHelper.clamp(original + amount, 0, MAX);
     }
 
     @Override

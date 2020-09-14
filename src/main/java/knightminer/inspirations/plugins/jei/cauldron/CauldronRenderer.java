@@ -3,7 +3,6 @@ package knightminer.inspirations.plugins.jei.cauldron;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
-import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
 import knightminer.inspirations.recipes.RecipesClientEvents;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import net.minecraft.client.Minecraft;
@@ -27,16 +26,21 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+import static knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe.MAX;
+import static knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe.QUARTER;
+import static knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe.THIRD;
+
 /** Renderer for the cauldron contents */
 public class CauldronRenderer {
-  private static final int MAX = ICauldronRecipe.MAX;
   // translations
   private static final String LEVEL = CauldronCategory.TRANSLATION_KEY + ".level";
+  private static final String LEVEL_THIRD = LEVEL + ".third";
+  private static final String LEVEL_QUARTER = LEVEL + ".quarter";
   private static final String LEVEL_EMPTY = LEVEL + ".empty";
-  private static final String LEVEL_SINGLE = LEVEL + ".single";
+  private static final String LEVEL_FULL = LEVEL + ".full";
   private static final ITextComponent[] AMOUNT_TEXTS = new ITextComponent[MAX + 1];
   /** Size of the cauldron in pixels */
-  public static final int CAULDRON_SIZE = 10;
+  public static final int CAULDRON_SIZE = 12;
 
   private CauldronRenderer() {}
 
@@ -80,16 +84,21 @@ public class CauldronRenderer {
   }
 
   public static ITextComponent getAmountText(int amount) {
-    if (amount < 0 || amount > MAX) {
-      amount = 0;
-    }
+    if (amount < 0) amount = 0;
+    if (amount > MAX) amount = MAX;
     if (AMOUNT_TEXTS[amount] == null) {
       IFormattableTextComponent amountText;
+      // 0 is empty, display quarter and third as cleaner fractions
       if (amount == 0) {
         amountText = new TranslationTextComponent(LEVEL_EMPTY);
-      } else if (amount == 1) {
-        amountText = new TranslationTextComponent(LEVEL_SINGLE);
+      } else if (amount == MAX) {
+        amountText = new TranslationTextComponent(LEVEL_FULL);
+      } else if (amount % THIRD == 0) {
+        amountText = new TranslationTextComponent(LEVEL_THIRD, amount / THIRD);
+      } else if (amount % QUARTER == 0) {
+        amountText = new TranslationTextComponent(LEVEL_QUARTER, amount / QUARTER);
       } else {
+        // default to x/12 for odd cases
         amountText = new TranslationTextComponent(LEVEL, amount);
       }
       AMOUNT_TEXTS[amount] = amountText.mergeStyle(TextFormatting.GRAY);

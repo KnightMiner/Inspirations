@@ -49,8 +49,6 @@ public class CauldronCategory implements IRecipeCategory<ICauldronRecipeDisplay>
   private static final String KEY_COOL = TRANSLATION_KEY + ".cool";
   private static final String KEY_NORMAL = TRANSLATION_KEY + ".normal";
 
-  private static final int SIZE = 16;
-
   private final String title = ForgeI18n.getPattern(TRANSLATION_KEY);
   private final IDrawable background;
   private final IDrawable icon;
@@ -144,9 +142,9 @@ public class CauldronCategory implements IRecipeCategory<ICauldronRecipeDisplay>
     int input = recipe.getLevelInput();
     if (input > 0) {
       if (recipe.getFluidInputs().isEmpty()) {
-        contents.init(0, true, CauldronRenderer.contentLevel(input), 10, 18, SIZE, 14, 3, 2);
+        contents.init(0, true, CauldronRenderer.contentLevel(input), 10, 18, 16, 14, 2, 1);
       } else {
-        fluids.init(0, true, CauldronRenderer.fluidLevel(input), 10, 18, SIZE, 14, 3, 2);
+        fluids.init(0, true, CauldronRenderer.fluidLevel(input), 10, 18, 16, 14, 2, 1);
       }
     }
 
@@ -154,9 +152,9 @@ public class CauldronCategory implements IRecipeCategory<ICauldronRecipeDisplay>
     int output = recipe.getLevelOutput();
     if (output > 0) {
       if (recipe.getFluidOutput().isEmpty()) {
-        contents.init(1, false, CauldronRenderer.contentLevel(output), 68, 18, SIZE, 14, 3, 2);
+        contents.init(1, false, CauldronRenderer.contentLevel(output), 68, 18, 16, 14, 2, 1);
       } else {
-        fluids.init(1, false, CauldronRenderer.fluidLevel(output), 68, 18, SIZE, 14, 3, 2);
+        fluids.init(1, false, CauldronRenderer.fluidLevel(output), 68, 18, 16, 14, 2, 1);
       }
     }
 

@@ -86,13 +86,11 @@ public class MixCauldronDyeRecipe implements ICauldronRecipe, ICauldronRecipeDis
       inv.shrinkStack(1);
       inv.giveStack(container.copy());
 
-      // mix in a neutral grey for the water, its not a free dye dupe
-      int[] existing = new int[inv.getLevel()];
-      Arrays.fill(existing, 0x808080);
-
       // update contents
-      inv.addLevel(1);
-      inv.setContents(CauldronContentTypes.COLOR.of(DyeCauldronWaterRecipe.addColors(newColor, existing)));
+      inv.addLevel(THIRD);
+
+      // mix in a neutral grey for the water, its not a free dye dupe
+      inv.setContents(CauldronContentTypes.COLOR.of(DyeCauldronWaterRecipe.addColors(newColor, THIRD, 0x808080, inv.getLevel())));
 
       // play sound
       inv.playSound(SoundEvents.ITEM_BOTTLE_EMPTY);
@@ -102,13 +100,11 @@ public class MixCauldronDyeRecipe implements ICauldronRecipe, ICauldronRecipeDis
         inv.shrinkStack(1);
         inv.giveStack(container.copy());
 
-        // add one copy of the existing color for each level
-        int[] existing = new int[inv.getLevel()];
-        Arrays.fill(existing, color);
-
         // set contents
-        inv.addLevel(1);
-        inv.setContents(CauldronContentTypes.COLOR.of(DyeCauldronWaterRecipe.addColors(newColor, existing)));
+        inv.addLevel(THIRD);
+
+        // mix color with amount existing
+        inv.setContents(CauldronContentTypes.COLOR.of(DyeCauldronWaterRecipe.addColors(newColor, THIRD, color, inv.getLevel())));
 
         // play sound
         inv.playSound(SoundEvents.ITEM_BOTTLE_EMPTY);
@@ -148,7 +144,7 @@ public class MixCauldronDyeRecipe implements ICauldronRecipe, ICauldronRecipeDis
 
   @Override
   public int getLevelOutput() {
-    return 1;
+    return THIRD;
   }
 
   @Override

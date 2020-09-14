@@ -19,7 +19,7 @@
       "name": "orange"
     },
     "level": {
-      "min": 1
+      "min": 4
     }
   },
   "output": {
@@ -28,7 +28,7 @@
     },
     "copy_nbt": true,
     "level": {
-      "add": -1
+      "add": -4
     }
   }
 }

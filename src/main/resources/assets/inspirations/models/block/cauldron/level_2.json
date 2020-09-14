@@ -2,6 +2,7 @@
   "loader": "inspirations:cauldron",
   "parent": "block/cauldron_level2",
   "retextured": ["water"],
+  "liquid_offset": -1,
   "textures": {
     "frost": "inspirations:block/cauldron_frost"
   }

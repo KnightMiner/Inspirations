@@ -4,6 +4,7 @@ import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
 import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
 import net.minecraft.fluid.Fluid;
+import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -73,8 +74,7 @@ public class CauldronTank implements IFluidHandler {
 
     // update on execute
     if (action == FluidAction.EXECUTE) {
-      cauldron.setContents(CauldronContentTypes.FLUID.of(fluid));
-      cauldron.setLevel(toInsert + level);
+      cauldron.updateStateAndBlock(CauldronContentTypes.FLUID.of(fluid), toInsert + level);
     }
 
     return getAmount(toInsert);
@@ -102,7 +102,7 @@ public class CauldronTank implements IFluidHandler {
 
     // update on execute
     if (action == FluidAction.EXECUTE) {
-      cauldron.setLevel(level - toDrain);
+      cauldron.updateStateAndBlock(null, level - toDrain);
     }
 
     // return fluid
@@ -142,8 +142,7 @@ public class CauldronTank implements IFluidHandler {
    * @return  Cauldron levels amount
    */
   private static int getLevels(int amount) {
-    // regular is just 3 or 0
-    return amount >= FluidAttributes.BUCKET_VOLUME ? ICauldronRecipe.MAX : 0;
+    return MathHelper.clamp(amount * 4 / FluidAttributes.BUCKET_VOLUME, 0, 4) * ICauldronRecipe.QUARTER;
   }
 
   /**
@@ -152,6 +151,6 @@ public class CauldronTank implements IFluidHandler {
    * @return  Fluid amount
    */
   private static int getAmount(int levels) {
-    return levels == ICauldronRecipe.MAX ? FluidAttributes.BUCKET_VOLUME : 0;
+    return MathHelper.clamp((levels / ICauldronRecipe.QUARTER) * FluidAttributes.BUCKET_VOLUME / 4, 0, FluidAttributes.BUCKET_VOLUME);
   }
 }
