@@ -499,8 +499,9 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
         return level;
       }
 
-      // run recipe
-      boolean success = handleRecipe(entityItem.getItem(), entityItem::setItem, stack -> {
+      // run recipe.
+      // We need to copy when setting the item, to force it to update.
+      boolean success = handleRecipe(entityItem.getItem(), stack -> entityItem.setItem(stack.copy()), stack -> {
         ItemEntity newItem = new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, stack);
         newItem.getPersistentData().putBoolean(CauldronTileEntity.TAG_CAULDRON_CRAFTED, true);
         newItem.setDefaultPickupDelay();
