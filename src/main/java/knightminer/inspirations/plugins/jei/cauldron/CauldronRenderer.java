@@ -26,16 +26,20 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+import static knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe.HALF;
 import static knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe.MAX;
 import static knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe.QUARTER;
+import static knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe.SIXTH;
 import static knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe.THIRD;
 
 /** Renderer for the cauldron contents */
 public class CauldronRenderer {
   // translations
   private static final String LEVEL = CauldronCategory.TRANSLATION_KEY + ".level";
+  private static final String LEVEL_HALF = LEVEL + ".half";
   private static final String LEVEL_THIRD = LEVEL + ".third";
   private static final String LEVEL_QUARTER = LEVEL + ".quarter";
+  private static final String LEVEL_SIXTH = LEVEL + ".sixth";
   private static final String LEVEL_EMPTY = LEVEL + ".empty";
   private static final String LEVEL_FULL = LEVEL + ".full";
   private static final ITextComponent[] AMOUNT_TEXTS = new ITextComponent[MAX + 1];
@@ -93,10 +97,14 @@ public class CauldronRenderer {
         amountText = new TranslationTextComponent(LEVEL_EMPTY);
       } else if (amount == MAX) {
         amountText = new TranslationTextComponent(LEVEL_FULL);
+      } else if (amount % HALF == 0) {
+        amountText = new TranslationTextComponent(LEVEL_HALF);
       } else if (amount % THIRD == 0) {
         amountText = new TranslationTextComponent(LEVEL_THIRD, amount / THIRD);
       } else if (amount % QUARTER == 0) {
         amountText = new TranslationTextComponent(LEVEL_QUARTER, amount / QUARTER);
+      } else if (amount % SIXTH == 0) {
+        amountText = new TranslationTextComponent(LEVEL_SIXTH, amount / SIXTH);
       } else {
         // default to x/12 for odd cases
         amountText = new TranslationTextComponent(LEVEL, amount);
