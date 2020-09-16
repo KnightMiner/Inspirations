@@ -70,6 +70,14 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
       .withInitial(OFFSET, 0).build();
   private final TileCauldronInventory craftingInventory = new TileCauldronInventory(this);
 
+  // capabilities
+  /* TODO: have to determine what sort of automation I want, waiting on dispenser stuff
+  private final CauldronItemHandler itemHandler = new CauldronItemHandler(this, craftingInventory);
+  private final LazyOptional<IItemHandler> itemHandlerCap = LazyOptional.of(() -> itemHandler);
+  private final CauldronFluidHandler fluidHandler = new CauldronFluidHandler(this);
+  private final LazyOptional<IFluidHandler> fluidHandlerCap = LazyOptional.of(() -> fluidHandler);
+   */
+
   // cauldron properties
   /** Current cauldron contents */
   private ICauldronContents contents;
@@ -164,6 +172,15 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
   }
 
   /**
+   * Called when the state, contents, level offset, or temperature changes to handle recipe updates
+   */
+  private void contentsChanged() {
+    this.updateTransform = true;
+    //this.itemHandler.clearCache();
+    //this.tank.clearCache();
+  }
+
+  /**
    * Updates the cauldron state, including the block state level
    * @param contents  New contents, null for no change
    * @param level     New levels
@@ -226,7 +243,7 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
     if (levelOffset != this.levelOffset || contents != null) {
       this.levelOffset = levelOffset;
       InspirationsNetwork.sendToClients(world, pos, new CauldronStateUpdatePacket(pos, contents, levelOffset));
-      this.updateTransform = true;
+      this.contentsChanged();
     }
   }
 
@@ -373,11 +390,11 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
     if (direction == Direction.DOWN) {
       isBoiling = null;
       temperature = null;
-      updateTransform = true;
+      this.contentsChanged();
     } else if (direction.getAxis() != Axis.Y) {
       isFreezing = null;
       temperature = null;
-      updateTransform = true;
+      this.contentsChanged();
     }
     // on the client, immediately update temperature
     if (world != null && world.isRemote) {
@@ -390,6 +407,25 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
 
 
   /* behavior */
+
+  @Nullable
+  public ICauldronRecipe findRecipe() {
+    if (world == null) {
+      return null;
+    }
+    // try last recipe first
+    if (lastRecipe != null && lastRecipe.matches(craftingInventory, world)) {
+      return lastRecipe;
+    }
+    // fall back to finding a new recipe
+    ICauldronRecipe recipe = world.getRecipeManager().getRecipe(RecipeTypes.CAULDRON, craftingInventory, world).orElse(null);
+    if (recipe != null) {
+      lastRecipe = recipe;
+      return recipe;
+    }
+    // no recipe found
+    return null;
+  }
 
   /**
    * Handles a cauldron recipe. Will do everything except update the cauldron level and clear the context.
@@ -408,17 +444,9 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
     craftingInventory.setItemContext(stack, itemSetter, itemAdder);
 
     // grab recipe
-    ICauldronRecipe recipe;
-    if (lastRecipe != null && lastRecipe.matches(craftingInventory, world)) {
-      recipe = lastRecipe;
-    } else {
-      recipe = world.getRecipeManager().getRecipe(RecipeTypes.CAULDRON, craftingInventory, world).orElse(null);
-    }
-
-    // if we found a match
+    ICauldronRecipe recipe = findRecipe();
     boolean success = false;
     if (recipe != null) {
-      lastRecipe = recipe;
       success = true;
       if (!world.isRemote) {
         recipe.handleRecipe(craftingInventory);
@@ -592,7 +620,7 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
   @Override
   public void updateContainingBlockInfo() {
     super.updateContainingBlockInfo();
-    this.updateTransform = true;
+    this.contentsChanged();
   }
 
   /**
@@ -725,6 +753,28 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
     }
   }
    */
+
+  /* Automation */
+
+  /* TODO: see above
+  @Override
+  public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
+    if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+      return itemHandlerCap.cast();
+    }
+    if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
+      return fluidHandlerCap.cast();
+    }
+    return super.getCapability(cap, side);
+  }
+
+  @Override
+  protected void invalidateCaps() {
+    super.invalidateCaps();
+    itemHandlerCap.invalidate();
+    fluidHandlerCap.invalidate();
+  }
+  */
 
   /* NBT */
   private static final String TAG_CONTENTS = "contents";

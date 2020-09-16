@@ -22,6 +22,7 @@ public class TileCauldronInventory extends CauldronItemInventory {
   @Nullable
   private ICauldronContents newContents = null;
   private int newLevel = -1;
+  private boolean silent = false;
   public TileCauldronInventory(CauldronTileEntity tile) {
     this.tile = tile;
   }
@@ -33,13 +34,22 @@ public class TileCauldronInventory extends CauldronItemInventory {
 
   @Override
   public void playSound(SoundEvent sound) {
-    World world = tile.getWorld();
-    if (world != null) {
-      world.playSound(null, tile.getPos(), sound, SoundCategory.BLOCKS, 1.0f, 1.0f);
+    if (!silent) {
+      World world = tile.getWorld();
+      if (world != null) {
+        world.playSound(null, tile.getPos(), sound, SoundCategory.BLOCKS, 1.0f, 1.0f);
+      }
     }
   }
 
   /* Item handling */
+
+  /** Clears any cached data. Basically common logic between set context and clear context */
+  private void clearCache() {
+    this.newLevel = -1;
+    this.newContents = null;
+    this.silent = false;
+  }
 
   /**
    * Sets the context for item stack handling
@@ -51,8 +61,17 @@ public class TileCauldronInventory extends CauldronItemInventory {
     this.stack = stack;
     this.itemSetter = itemSetter == null ? EMPTY_CONSUMER : itemSetter;
     this.itemAdder = itemAdder;
-    this.newLevel = -1;
-    this.newContents = null;
+    this.clearCache();
+  }
+
+  /**
+   * Sets the context for {@link knightminer.inspirations.recipes.tileentity.capability.CauldronItemHandler}. Separate since most uses don't need silent
+   * @param itemAdder  Item adder logic
+   * @param silent     If true, no sounds will be playedd
+   */
+  public void setItemHandlerContext(Consumer<ItemStack> itemAdder, boolean silent) {
+    setItemContext(ItemStack.EMPTY, null, itemAdder);
+    this.silent = silent;
   }
 
   /**
@@ -62,8 +81,7 @@ public class TileCauldronInventory extends CauldronItemInventory {
     this.stack = ItemStack.EMPTY;
     this.itemSetter = EMPTY_CONSUMER;
     this.itemAdder = EMPTY_CONSUMER;
-    this.newLevel = -1;
-    this.newContents = null;
+    this.clearCache();
   }
 
 

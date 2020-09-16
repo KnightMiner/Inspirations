@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-package knightminer.inspirations.recipes.tank;
+package knightminer.inspirations.recipes.tileentity.capability;
 
 import mcp.MethodsReturnNonnullByDefault;
 
