@@ -52,6 +52,7 @@ public class TileCauldronInventory extends CauldronItemInventory {
     this.itemSetter = itemSetter == null ? EMPTY_CONSUMER : itemSetter;
     this.itemAdder = itemAdder;
     this.newLevel = -1;
+    this.newContents = null;
   }
 
   /**
@@ -62,6 +63,7 @@ public class TileCauldronInventory extends CauldronItemInventory {
     this.itemSetter = EMPTY_CONSUMER;
     this.itemAdder = EMPTY_CONSUMER;
     this.newLevel = -1;
+    this.newContents = null;
   }
 
 
