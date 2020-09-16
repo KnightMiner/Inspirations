@@ -102,16 +102,16 @@ public class InspirationsRecipes extends ModuleBase {
   void registerFluids(Register<Fluid> event) {
     FluidRegistryAdapter adapter = new FluidRegistryAdapter(event.getRegistry());
 
-    mushroomStew = adapter.register(new FluidBuilder(coloredFluid().color(0xFFCD8C6F).temperature(373))
+    mushroomStew = adapter.register(new FluidBuilder(coloredFluid().color(0xFFCD8C6F).temperature(373).viscosity(1200))
                                         .block(() -> mushroomStewBlock)
                                         .bucket(() -> mushroomStewBucket), "mushroom_stew");
-    beetrootSoup = adapter.register(new FluidBuilder(coloredFluid().color(0xFF84160D).temperature(373))
+    beetrootSoup = adapter.register(new FluidBuilder(coloredFluid().color(0xFF84160D).temperature(373).viscosity(1100))
                                         .block(() -> beetrootSoupBlock)
                                         .bucket(() -> beetrootSoupBucket), "beetroot_soup");
-    rabbitStew = adapter.register(new FluidBuilder(coloredFluid().color(0xFF984A2C).temperature(373))
+    rabbitStew = adapter.register(new FluidBuilder(coloredFluid().color(0xFF984A2C).temperature(373).viscosity(1400))
                                       .block(() -> rabbitStewBlock)
                                       .bucket(() -> rabbitStewBucket), "rabbit_stew");
-    potatoSoup = adapter.register(new FluidBuilder(coloredFluid().color(0xFFF2DA9F).temperature(373))
+    potatoSoup = adapter.register(new FluidBuilder(coloredFluid().color(0xFFF2DA9F).temperature(373).viscosity(1300))
                                       .block(() -> potatoSoupBlock)
                                       .bucket(() -> potatoSoupBucket), "potato_soup");
     milk = adapter.register(new FluidBuilder(FluidAttributes.builder(STILL_MILK, FLOWING_MILK).density(1024).viscosity(1024))
