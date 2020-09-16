@@ -55,6 +55,8 @@ public class RecipesClientEvents extends ClientEvents {
 
   @SubscribeEvent
   static void clientSetup(FMLClientSetupEvent event) {
+    RenderTypeLookup.setRenderLayer(InspirationsRecipes.honey, RenderType.getTranslucent());
+    RenderTypeLookup.setRenderLayer(InspirationsRecipes.honey.getFlowingFluid(), RenderType.getTranslucent());
     if (Config.extendedCauldron.getAsBoolean()) {
       RenderTypeLookup.setRenderLayer(Blocks.CAULDRON, RenderType.getCutout());
     }

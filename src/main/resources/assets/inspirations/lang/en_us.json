@@ -151,6 +151,11 @@
     "fluid.inspirations.flowing_rabbit_stew": "Flowing Rabbit Stew",
     "item.inspirations.rabbit_stew_bucket": "Rabbit Stew Bucket",
     
+    "block.inspirations.honey_fluid": "Honey",
+    "fluid.inspirations.honey": "Honey",
+    "fluid.inspirations.flowing_honey": "Flowing Honey",
+    "item.inspirations.honey_bucket": "Honey Bucket",
+    
     "fluid.inspirations.milk": "Milk",
     "fluid.inspirations.flowing_milk": "Flowing Milk",
 
@@ -165,6 +170,7 @@
     
     "cauldron_contents.minecraft.ice": "Ice",
     "cauldron_contents.minecraft.packed_ice": "Packed Ice",
+    "cauldron_contents.minecraft.honey_block": "Honey Block",
     "cauldron_contents.inspirations.wet_ice": "Wet Ice",
     "cauldron_contents.rats.cheese": "Cheese",
 

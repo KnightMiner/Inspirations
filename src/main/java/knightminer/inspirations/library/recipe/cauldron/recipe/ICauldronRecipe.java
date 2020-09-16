@@ -20,6 +20,8 @@ public interface ICauldronRecipe extends ICustomOutputRecipe<ICauldronInventory>
   int QUARTER = MAX / 4;
   /** Levels for 1/6 of a cauldron */
   int SIXTH = MAX / 6;
+  /** Levels for 1/12 of a cauldron. Technically, this is 1, but using this constant over 1 will allow changing the cauldron to hold more in the future */
+  int TWELFTH = MAX / 12;
 
   /**
    * Updates the cauldron based on the results of the recipe

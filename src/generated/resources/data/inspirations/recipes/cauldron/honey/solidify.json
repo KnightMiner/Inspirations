@@ -1,0 +1,24 @@
+{
+  "type": "inspirations:cauldron_transform",
+  "conditions": [
+    {
+      "prop": "recipes_module",
+      "type": "inspirations:config"
+    },
+    {
+      "prop": "cauldron_fluids",
+      "type": "inspirations:config"
+    }
+  ],
+  "input": {
+    "type": "inspirations:fluid",
+    "name": "inspirations:honey"
+  },
+  "temperature": "cool",
+  "output": {
+    "type": "inspirations:custom",
+    "name": "minecraft:honey_block"
+  },
+  "time": 300,
+  "sound": "minecraft:block.honey_block.place"
+}

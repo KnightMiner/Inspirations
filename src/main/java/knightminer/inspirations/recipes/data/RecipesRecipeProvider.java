@@ -61,7 +61,9 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import static knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe.MAX;
+import static knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe.QUARTER;
 import static knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe.THIRD;
+import static knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe.TWELFTH;
 
 public class RecipesRecipeProvider extends RecipeProvider implements IConditionBuilder, IInspirationsRecipeBuilder {
   private Consumer<IFinishedRecipe> consumer;
@@ -257,7 +259,7 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
     );
 
     // temporary milk recipes until Forge merges one of my milk bucket fixes
-    Consumer<IFinishedRecipe> milkConsumer = withCondition(ConfigEnabledCondition.CAULDRON_FLUIDS);
+    Consumer<IFinishedRecipe> fluidConsumer = withCondition(ConfigEnabledCondition.CAULDRON_FLUIDS);
     ICauldronIngredient milkIngredient = CauldronIngredients.FLUID.of(InspirationsTags.Fluids.MILK);
     CauldronRecipeBuilder.cauldron(SizedIngredient.fromItems(Items.MILK_BUCKET), milkIngredient)
                          .maxLevels(MAX - 1)
@@ -267,15 +269,70 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
                          .noContainer()
                          .addCriterion("has_item", hasItem(Items.MILK_BUCKET))
                          .setSound(SoundEvents.ITEM_BUCKET_EMPTY)
-                         .build(milkConsumer, resource(folder + "empty_milk_bucket"));
+                         .build(fluidConsumer, resource(folder + "empty_milk_bucket"));
     CauldronRecipeBuilder.cauldron(SizedIngredient.fromItems(Items.BUCKET), milkIngredient)
                          .matchFull()
                          .setEmpty()
                          .setOutput(Items.MILK_BUCKET)
                          .addCriterion("has_item", hasItem(Items.MILK_BUCKET))
                          .setSound(SoundEvents.ITEM_BUCKET_FILL)
-                         .build(milkConsumer, resource(folder + "fill_milk_bucket"));
+                         .build(fluidConsumer, resource(folder + "fill_milk_bucket"));
 
+    // honey //
+    // fill and empty bottle, note unlike water this is in quarters
+    String honeyFolder = folder + "honey/";
+    CauldronRecipeBuilder.cauldron(SizedIngredient.fromItems(Items.HONEY_BOTTLE), CauldronIngredients.FLUID.of(InspirationsRecipes.honey))
+                         .maxLevels(MAX - 1)
+                         .addLevels(QUARTER)
+                         .setOutput(Items.GLASS_BOTTLE)
+                         .noContainer()
+                         .setOutput(CauldronContentTypes.FLUID.of(InspirationsRecipes.honey))
+                         .setSound(SoundEvents.ITEM_BOTTLE_EMPTY)
+                         .addCriterion("has_item", hasItem(Items.HONEY_BOTTLE))
+                         .build(fluidConsumer, resource(honeyFolder + "empty_bottle"));
+    CauldronRecipeBuilder.cauldron(SizedIngredient.fromItems(Items.GLASS_BOTTLE), CauldronIngredients.FLUID.of(InspirationsRecipes.honey))
+                         .minLevels(QUARTER)
+                         .addLevels(-QUARTER)
+                         .setOutput(Items.HONEY_BOTTLE)
+                         .setSound(SoundEvents.ITEM_BUCKET_FILL)
+                         .addCriterion("has_item", hasItem(Items.HONEY_BOTTLE))
+                         .build(fluidConsumer, resource(honeyFolder + "fill_bottle"));
+    // add and remove honey block
+    ResourceLocation honeyBlock = new ResourceLocation("honey_block");
+    CauldronRecipeBuilder.cauldron(SizedIngredient.fromItems(Blocks.HONEY_BLOCK), CauldronIngredients.CUSTOM.of(honeyBlock))
+                         .matchEmpty()
+                         .setFull()
+                         .setOutput(CauldronContentTypes.CUSTOM.of(honeyBlock))
+                         .setSound(SoundType.HONEY.getPlaceSound())
+                         .addCriterion("has_item", hasItem(Blocks.HONEY_BLOCK))
+                         .build(fluidConsumer, resource(honeyFolder + "place_block"));
+    CauldronRecipeBuilder.cauldron(CauldronIngredients.CUSTOM.of(honeyBlock))
+                         .matchFull()
+                         .setEmpty()
+                         .setOutput(Blocks.HONEY_BLOCK)
+                         .setSound(SoundType.HONEY.getBreakSound())
+                         .addCriterion("has_item", hasItem(Blocks.HONEY_BLOCK))
+                         .build(fluidConsumer, resource(honeyFolder + "pickup_block"));
+    // can grab 1 layer of honey for 1 sugar. Same rate as crafting table, but uses solid honey
+    // if full block, gives block instead
+    CauldronRecipeBuilder.cauldron(CauldronIngredients.CUSTOM.of(honeyBlock))
+                         .levelRange(TWELFTH, MAX - 1)
+                         .addLevels(-TWELFTH)
+                         .setOutput(Items.SUGAR)
+                         .setSound(SoundType.SAND.getBreakSound())
+                         .addCriterion("has_item", hasItem(Items.HONEY_BOTTLE))
+                         .build(fluidConsumer, resource(honeyFolder + "pickup_sugar"));
+    // solidifies at room temp, melts under heat
+    CauldronTransformBuilder.transform(CauldronIngredients.FLUID.of(InspirationsRecipes.honey), CauldronContentTypes.CUSTOM.of(honeyBlock), 300)
+                            .setTemperature(TemperaturePredicate.COOL)
+                            .setSound(SoundType.HONEY.getPlaceSound())
+                            .addCriterion("has_item", hasItem(Blocks.HONEY_BLOCK))
+                            .build(fluidConsumer, resource(honeyFolder + "solidify"));
+    CauldronTransformBuilder.transform(CauldronIngredients.CUSTOM.of(honeyBlock), CauldronContentTypes.FLUID.of(InspirationsRecipes.honey), 300)
+                            .setTemperature(TemperaturePredicate.BOILING)
+                            .setSound(SoundType.HONEY.getBreakSound())
+                            .addCriterion("has_item", hasItem(Blocks.HONEY_BLOCK))
+                            .build(fluidConsumer, resource(honeyFolder + "melt"));
 
     // dyes //
 

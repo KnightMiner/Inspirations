@@ -63,6 +63,8 @@ import slimeknights.mantle.registration.object.EnumObject;
 public class InspirationsRecipes extends ModuleBase {
   public static final ResourceLocation STILL_FLUID = Inspirations.getResource("block/fluid/colorless");
   public static final ResourceLocation FLOWING_FLUID = Inspirations.getResource("block/fluid/colorless_flow");
+  public static final ResourceLocation STILL_TRANSPARENT = Inspirations.getResource("block/fluid/transparent");
+  public static final ResourceLocation FLOWING_TRANSPARENT = Inspirations.getResource("block/fluid/transparent_flow");
   public static final ResourceLocation STILL_MILK = Inspirations.getResource("block/fluid/milk");
   public static final ResourceLocation FLOWING_MILK = Inspirations.getResource("block/fluid/milk_flow");
 
@@ -82,19 +84,27 @@ public class InspirationsRecipes extends ModuleBase {
   public static SoupItem potatoSoupItem;
 
   // fluids
+  public static ForgeFlowingFluid milk;
+  // mushroom
   public static ForgeFlowingFluid mushroomStew;
   public static BucketItem mushroomStewBucket;
   public static FlowingFluidBlock mushroomStewBlock;
+  // beetroot
   public static ForgeFlowingFluid beetrootSoup;
   public static BucketItem beetrootSoupBucket;
   public static FlowingFluidBlock beetrootSoupBlock;
+  // rabbit
   public static ForgeFlowingFluid rabbitStew;
   public static BucketItem rabbitStewBucket;
   public static FlowingFluidBlock rabbitStewBlock;
+  // potato
   public static ForgeFlowingFluid potatoSoup;
   public static BucketItem potatoSoupBucket;
   public static FlowingFluidBlock potatoSoupBlock;
-  public static ForgeFlowingFluid milk;
+  // honey
+  public static ForgeFlowingFluid honey;
+  public static BucketItem honeyBucket;
+  public static FlowingFluidBlock honeyFluidBlock;
 
   public static BasicParticleType boilingParticle;
 
@@ -114,6 +124,9 @@ public class InspirationsRecipes extends ModuleBase {
     potatoSoup = adapter.register(new FluidBuilder(coloredFluid().color(0xFFF2DA9F).temperature(373).viscosity(1300))
                                       .block(() -> potatoSoupBlock)
                                       .bucket(() -> potatoSoupBucket), "potato_soup");
+    honey = adapter.register(new FluidBuilder(FluidAttributes.builder(STILL_TRANSPARENT, FLOWING_TRANSPARENT).color(0xFFFF9116).viscosity(4000).temperature(373))
+                                      .block(() -> honeyFluidBlock)
+                                      .bucket(() -> honeyBucket), "honey");
     milk = adapter.register(new FluidBuilder(FluidAttributes.builder(STILL_MILK, FLOWING_MILK).density(1024).viscosity(1024))
                                       .bucket(Items.MILK_BUCKET.delegate), "milk");
   }
@@ -126,6 +139,7 @@ public class InspirationsRecipes extends ModuleBase {
     beetrootSoupBlock = registry.registerFluidBlock(() -> beetrootSoup, Material.WATER, 0, "beetroot_soup");
     rabbitStewBlock = registry.registerFluidBlock(() -> rabbitStew, Material.WATER, 0, "rabbit_stew");
     potatoSoupBlock = registry.registerFluidBlock(() -> potatoSoup, Material.WATER, 0, "potato_soup");
+    honeyFluidBlock = registry.registerFluidBlock(() -> honey, Material.WATER, 0, "honey");
 
     /*
     if (Config.enableAnvilSmashing.get()) {
@@ -148,6 +162,7 @@ public class InspirationsRecipes extends ModuleBase {
     beetrootSoupBucket = registry.registerBucket(() -> beetrootSoup, "beetroot_soup");
     rabbitStewBucket = registry.registerBucket(() -> rabbitStew, "rabbit_stew");
     potatoSoupBucket = registry.registerBucket(() -> potatoSoup, "potato_soup");
+    honeyBucket = registry.registerBucket(() -> honey, "honey");
 
     // potato soup
     potatoSoupItem = registry.register(

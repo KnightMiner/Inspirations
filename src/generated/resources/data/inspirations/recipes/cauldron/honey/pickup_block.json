@@ -1,0 +1,31 @@
+{
+  "type": "inspirations:cauldron",
+  "conditions": [
+    {
+      "prop": "recipes_module",
+      "type": "inspirations:config"
+    },
+    {
+      "prop": "cauldron_fluids",
+      "type": "inspirations:config"
+    }
+  ],
+  "input": {
+    "contents": {
+      "type": "inspirations:custom",
+      "name": "minecraft:honey_block"
+    },
+    "level": {
+      "min": 12
+    }
+  },
+  "output": {
+    "item": {
+      "item": "minecraft:honey_block"
+    },
+    "level": {
+      "set": 0
+    }
+  },
+  "sound": "minecraft:block.honey_block.break"
+}
