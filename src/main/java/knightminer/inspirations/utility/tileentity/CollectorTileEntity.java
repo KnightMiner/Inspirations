@@ -1,6 +1,5 @@
 package knightminer.inspirations.utility.tileentity;
 
-import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.utility.InspirationsUtility;
 import knightminer.inspirations.utility.inventory.CollectorContainer;
 import net.minecraft.entity.item.ItemEntity;
@@ -147,7 +146,13 @@ public class CollectorTileEntity extends InventoryTileEntity {
    */
   public void clearCachedInventories() {
     this.facingHandler = null;
-    Inspirations.log.info("Clearing cached inventory");
+  }
+
+  @Override
+  public void updateContainingBlockInfo() {
+    super.updateContainingBlockInfo();
+    // if the block changed and this TE is intact, remove cache. likely we were rotated
+    this.clearCachedInventories();
   }
 
   @Override

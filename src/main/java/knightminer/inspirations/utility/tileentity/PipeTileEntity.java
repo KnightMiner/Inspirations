@@ -154,6 +154,13 @@ public class PipeTileEntity extends InventoryTileEntity implements ITickableTile
   }
 
   @Override
+  public void updateContainingBlockInfo() {
+    super.updateContainingBlockInfo();
+    // if the block changed and this TE is intact, remove cache. likely we were rotated
+    this.clearCachedInventories();
+  }
+
+  @Override
   public void setInventorySlotContents(int slot, ItemStack itemstack) {
     super.setInventorySlotContents(slot, itemstack);
     cooldown = 7; // set the cooldown to prevent instant retransfer
