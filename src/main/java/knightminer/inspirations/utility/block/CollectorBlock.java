@@ -156,7 +156,16 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public void neighborChanged(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
+  public void neighborChanged(BlockState state, World world, BlockPos pos, Block block, BlockPos neighbor, boolean isMoving) {
+    // clear inventory cache
+    if (pos.offset(state.get(FACING)).equals(neighbor)) {
+      TileEntity te = world.getTileEntity(pos);
+      if (te instanceof CollectorTileEntity) {
+        ((CollectorTileEntity) te).clearCachedInventories();
+      }
+    }
+
+    // update powered state
     boolean powered = world.isBlockPowered(pos) || world.isBlockPowered(pos.up());
     boolean triggered = state.get(TRIGGERED);
     if (powered && !triggered) {
@@ -176,7 +185,7 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
     }
     TileEntity te = world.getTileEntity(pos);
     if (te instanceof CollectorTileEntity) {
-      ((CollectorTileEntity)te).collect(state.get(FACING));
+      ((CollectorTileEntity)te).collect();
     }
   }
 }

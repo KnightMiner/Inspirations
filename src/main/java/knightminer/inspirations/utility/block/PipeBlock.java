@@ -234,6 +234,17 @@ public class PipeBlock extends InventoryBlock implements IHidable, IWaterLoggabl
     return false;
   }
 
+  @Override
+  public void neighborChanged(BlockState state, World world, BlockPos pos, Block blockIn, BlockPos neighbor, boolean isMoving) {
+    if (pos.offset(state.get(FACING)).equals(neighbor)) {
+      TileEntity te = world.getTileEntity(pos);
+      if (te instanceof PipeTileEntity) {
+        ((PipeTileEntity) te).clearCachedInventories();
+      }
+    }
+    super.neighborChanged(state, world, pos, blockIn, neighbor, isMoving);
+  }
+
   /* Bounds */
 
   // base bounds
