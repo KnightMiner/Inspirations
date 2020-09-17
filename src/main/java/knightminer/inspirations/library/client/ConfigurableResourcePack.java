@@ -122,7 +122,7 @@ public class ConfigurableResourcePack extends ResourcePack implements IPackFinde
   public void close() {}
 
   @Override
-  public <T extends ResourcePackInfo> void func_230230_a_(Consumer<T> consumer, IFactory<T> factory) {
+  public void findPacks(Consumer<ResourcePackInfo> consumer, IFactory factory) {
     // add a new always enabled pack. Config is how you disable the replacements
     consumer.accept(ResourcePackInfo.createResourcePack(
         packId, true, () -> this, factory, ResourcePackInfo.Priority.TOP,

@@ -6,7 +6,6 @@ import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.CauldronIngredients;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.ingredient.ICauldronIngredient;
-import knightminer.inspirations.library.recipe.cauldron.ingredient.SizedIngredient;
 import knightminer.inspirations.library.recipe.cauldron.util.LevelPredicate;
 import knightminer.inspirations.library.recipe.cauldron.util.LevelUpdate;
 import knightminer.inspirations.library.recipe.cauldron.util.TemperaturePredicate;
@@ -20,6 +19,7 @@ import net.minecraft.potion.Potion;
 import net.minecraft.util.IItemProvider;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
+import slimeknights.mantle.recipe.SizedIngredient;
 import slimeknights.mantle.recipe.data.AbstractRecipeBuilder;
 
 import javax.annotation.Nullable;
@@ -285,7 +285,7 @@ public class CauldronRecipeBuilder extends AbstractRecipeBuilder<CauldronRecipeB
     }
 
     ResourceLocation advancementId = this.buildAdvancement(id, "cauldron");
-    consumer.accept(new Result(id, getGroup(), input, contents, levels, temperature, output, copyNBT,
+    consumer.accept(new Result(id, group, input, contents, levels, temperature, output, copyNBT,
                                newContents, levelUpdate, container, sound, advancementBuilder, advancementId));
   }
 

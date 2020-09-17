@@ -9,7 +9,6 @@ import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.CauldronIngredients;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.ingredient.ICauldronIngredient;
-import knightminer.inspirations.library.recipe.cauldron.ingredient.SizedIngredient;
 import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronRecipeBuilder;
 import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronTransformBuilder;
 import knightminer.inspirations.library.recipe.cauldron.special.DyeableCauldronRecipe;
@@ -51,6 +50,7 @@ import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
 import net.minecraftforge.registries.IForgeRegistryEntry;
+import slimeknights.mantle.recipe.SizedIngredient;
 import slimeknights.mantle.recipe.data.ConsumerWrapperBuilder;
 import slimeknights.mantle.registration.object.EnumObject;
 

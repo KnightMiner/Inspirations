@@ -7,7 +7,6 @@ import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.tools.item.WaypointCompassItem;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.VineBlock;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -19,7 +18,6 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.item.ShearsItem;
 import net.minecraft.loot.LootContext;
 import net.minecraft.loot.LootParameters;
@@ -31,6 +29,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.LockCode;
@@ -39,13 +38,9 @@ import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
-import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.items.ItemHandlerHelper;
-
-import java.util.Iterator;
-import java.util.List;
 
 @SuppressWarnings("unused")
 public class ToolsEvents {
@@ -157,7 +152,7 @@ public class ToolsEvents {
       count++;
       for (ItemStack stack : state.getDrops(new LootContext.Builder(world)
                                                 .withParameter(LootParameters.TOOL, shears)
-                                                .withParameter(LootParameters.POSITION, pos)
+                                                .withParameter(LootParameters.field_237457_g_, Vector3d.copyCentered(pos))
                                                 .withParameter(LootParameters.THIS_ENTITY, player)
                                            )) {
         Block.spawnAsEntity(world, pos, stack);
@@ -184,6 +179,7 @@ public class ToolsEvents {
     return false;
   }
 
+  /* TODO: move to global loot tables
   @SubscribeEvent
   public static void dropMelon(HarvestDropsEvent event) {
     if (!Config.shearsReclaimMelons.get() || event.getState().getBlock() != Blocks.MELON) {
@@ -217,6 +213,7 @@ public class ToolsEvents {
       }
     }
   }
+   */
 
   @SubscribeEvent
   public static void setWaypoint(RightClickBlock event) {

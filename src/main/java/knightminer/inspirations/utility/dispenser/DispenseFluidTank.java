@@ -12,14 +12,15 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidActionResult;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 
+import java.util.Optional;
+
 public class DispenseFluidTank extends DefaultDispenseItemBehavior {
   private static final DefaultDispenseItemBehavior DEFAULT = new DefaultDispenseItemBehavior();
-  private IDispenseItemBehavior fallback;
+  private final IDispenseItemBehavior fallback;
 
   public DispenseFluidTank(IDispenseItemBehavior fallback) {
     this.fallback = fallback;
@@ -36,7 +37,7 @@ public class DispenseFluidTank extends DefaultDispenseItemBehavior {
     World world = source.getWorld();
     return FluidUtil.getFluidHandler(world, pos, side.getOpposite()).map((handler) -> {
       FluidActionResult result;
-      LazyOptional<FluidStack> optFluid = FluidUtil.getFluidContained(stack);
+      Optional<FluidStack> optFluid = FluidUtil.getFluidContained(stack);
       if (optFluid.isPresent()) {
         result = FluidUtil.tryEmptyContainer(stack, handler, Integer.MAX_VALUE, null, true);
       } else {

@@ -23,6 +23,7 @@ import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.event.RegistryEvent.MissingMappings;
 import net.minecraftforge.event.RegistryEvent.MissingMappings.Mapping;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -94,10 +95,11 @@ public class Inspirations {
   void gatherData(GatherDataEvent event) {
     DataGenerator gen = event.getGenerator();
     if (event.includeServer()) {
-      BlockTagsProvider blockTags = new InspirationsBlockTagsProvider(gen);
+      ExistingFileHelper existing = event.getExistingFileHelper();
+      BlockTagsProvider blockTags = new InspirationsBlockTagsProvider(gen, existing);
       gen.addProvider(blockTags);
-      gen.addProvider(new InspirationsItemTagsProvider(gen, blockTags));
-      gen.addProvider(new InspirationsFluidTagsProvider(gen));
+      gen.addProvider(new InspirationsItemTagsProvider(gen, existing, blockTags));
+      gen.addProvider(new InspirationsFluidTagsProvider(gen, existing));
       gen.addProvider(new InspirationsLootTableProvider(gen));
     }
   }

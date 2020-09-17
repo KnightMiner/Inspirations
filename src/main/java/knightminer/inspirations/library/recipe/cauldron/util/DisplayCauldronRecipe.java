@@ -1,23 +1,16 @@
 package knightminer.inspirations.library.recipe.cauldron.util;
 
-import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipeDisplay;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.util.IItemProvider;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
 import net.minecraftforge.common.util.Lazy;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
-import slimeknights.mantle.recipe.ICustomOutputRecipe;
 
 import java.util.Collections;
 import java.util.List;
@@ -27,10 +20,8 @@ import java.util.stream.Stream;
 
 /**
  * Helper class to build a JEI display recipe for use in {@link slimeknights.mantle.recipe.IMultiRecipe}
- * TODO: make mantle IMultiRecipe not require IRecipe
  */
-public class DisplayCauldronRecipe implements ICauldronRecipeDisplay, ICustomOutputRecipe<IInventory> {
-  private static final ResourceLocation ID = Inspirations.getResource("dynamic_display");
+public class DisplayCauldronRecipe implements ICauldronRecipeDisplay {
   /** Lazy getter for water */
   public static final Lazy<List<ICauldronContents>> WATER_CONTENTS = Lazy.of(() -> Collections.singletonList(CauldronContentTypes.DEFAULT.get()));
   /** Lazy getter for water as a fluid stack */
@@ -148,35 +139,6 @@ public class DisplayCauldronRecipe implements ICauldronRecipeDisplay, ICustomOut
     return time;
   }
 
-  /* IRecipe methods */
-
-  /** @deprecated unsupported method */
-  @Deprecated
-  @Override
-  public boolean matches(IInventory inv, World worldIn) {
-    return false;
-  }
-
-  /** @deprecated unsupported method */
-  @Deprecated
-  @Override
-  public ResourceLocation getId() {
-    return ID;
-  }
-
-  /** @deprecated unsupported method */
-  @Deprecated
-  @Override
-  public IRecipeSerializer<?> getSerializer() {
-    throw new UnsupportedOperationException();
-  }
-
-  /** @deprecated unsupported method */
-  @Deprecated
-  @Override
-  public IRecipeType<?> getType() {
-    throw new UnsupportedOperationException();
-  }
 
   /** Builder class */
   public static class Builder {

@@ -84,7 +84,7 @@ public class InspirationsBlockLootTable extends BlockLootTables {
 
   private void addTools() {
     // func_218482 = droppingNothing()
-    this.registerLootTable(InspirationsTools.redstoneCharge, func_218482_a());
+    this.registerLootTable(InspirationsTools.redstoneCharge, blockNoDrop());
   }
 
   private void addTweaks() {

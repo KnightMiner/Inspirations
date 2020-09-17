@@ -13,15 +13,14 @@ import net.minecraft.data.ItemTagsProvider;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.ITag.INamedTag;
 import net.minecraft.tags.ItemTags;
 import net.minecraftforge.common.Tags;
+import net.minecraftforge.common.data.ExistingFileHelper;
 
 public class InspirationsItemTagsProvider extends ItemTagsProvider {
 
-  public InspirationsItemTagsProvider(DataGenerator gen, BlockTagsProvider blocks) {
-    super(gen, blocks);
-    this.modId = Inspirations.modID;
+  public InspirationsItemTagsProvider(DataGenerator gen, ExistingFileHelper existing, BlockTagsProvider blocks) {
+    super(gen, blocks, Inspirations.modID, existing);
   }
 
   @Override
@@ -75,15 +74,7 @@ public class InspirationsItemTagsProvider extends ItemTagsProvider {
     this.getOrCreateBuilder(InspirationsTags.Items.LINGERING_BOTTLES).add(InspirationsRecipes.lingeringBottle);
 
     // add dyed bottles to dye tag, forge tag are always INamedTag
-    InspirationsRecipes.simpleDyedWaterBottle.forEach((color, bottle) -> this.getOrCreateBuilder((INamedTag<Item>)color.getTag()).add(bottle));
-
-		/*
-		for(DyeColor color : DyeColor.values()) {
-			INamedTag<Item> tag = ItemTags.makeWrapperTag("forge:dyes/" + color.getString());
-			this.func_240522_a_(tag).func_240534_a_(InspirationsRecipes.simpleDyedWaterBottle.get(color));
-		}
-		this.func_240522_a_(Tags.Items.DYES).func_240534_a_(InspirationsRecipes.simpleDyedWaterBottle.values().toArray(new Item[0]));
-		 */
+    InspirationsRecipes.simpleDyedWaterBottle.forEach((color, bottle) -> this.getOrCreateBuilder(color.getTag()).add(bottle));
   }
 
   private void registerVanillaTags() {

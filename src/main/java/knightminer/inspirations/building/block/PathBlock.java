@@ -98,7 +98,7 @@ public class PathBlock extends HidableBlock implements IWaterLoggable {
   private boolean canBlockStay(IWorldReader world, BlockPos pos) {
     BlockPos down = pos.down();
     BlockState state = world.getBlockState(down);
-    return Block.hasSolidSide(state, world, pos, Direction.UP) || state.getBlock() instanceof MulchBlock;
+    return Block.hasSolidSideOnTop(world, pos) || state.getBlock() instanceof MulchBlock;
   }
 
   @SuppressWarnings("deprecation")

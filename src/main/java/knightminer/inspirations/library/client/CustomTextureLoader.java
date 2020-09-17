@@ -4,7 +4,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import knightminer.inspirations.Inspirations;
-import knightminer.inspirations.library.util.IEarlySelectiveReloadListener;
 import net.minecraft.inventory.container.PlayerContainer;
 import net.minecraft.resources.IResource;
 import net.minecraft.resources.IResourceManager;
@@ -15,6 +14,7 @@ import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.resource.IResourceType;
 import net.minecraftforge.resource.VanillaResourceType;
+import slimeknights.mantle.client.IEarlySelectiveReloadListener;
 
 import javax.annotation.Nullable;
 import java.io.BufferedReader;

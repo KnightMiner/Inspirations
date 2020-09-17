@@ -7,7 +7,6 @@ import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.CauldronIngredients;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.ingredient.ICauldronIngredient;
-import knightminer.inspirations.library.recipe.cauldron.ingredient.SizedIngredient;
 import knightminer.inspirations.library.recipe.cauldron.inventory.ICauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.inventory.IModifyableCauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.util.LevelPredicate;
@@ -24,6 +23,7 @@ import net.minecraft.util.SoundEvents;
 import net.minecraft.world.World;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.registries.ForgeRegistries;
+import slimeknights.mantle.recipe.SizedIngredient;
 
 import javax.annotation.Nullable;
 import java.util.List;

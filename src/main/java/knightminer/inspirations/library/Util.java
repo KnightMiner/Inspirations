@@ -19,7 +19,6 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.math.vector.Vector3d;
@@ -81,7 +80,7 @@ public class Util {
     // THIS_ENTITY, BLOCK_ENTITY and EXPLOSION_RADIUS are optional.
     // BLOCK_STATE is provided by getDrops().
     List<ItemStack> drops = state.getDrops(new LootContext.Builder(world)
-                                               .withParameter(LootParameters.POSITION, new BlockPos(0, 0, 64))
+                                               .withParameter(LootParameters.field_237457_g_, new Vector3d(0.5, 64, 0.5))
                                                .withParameter(LootParameters.TOOL, silkTouchItem)
                                           );
     if (drops.size() > 0) {

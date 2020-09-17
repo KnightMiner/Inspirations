@@ -106,8 +106,8 @@ public class InspirationsUtility extends ModuleBase {
     //registerBlockItem(r, netherBricksButton, ItemGroup.REDSTONE);
     // TODO: never made a bifunction variant
     registry.registerBlockItem(carpetedTrapdoors, (block) -> new HidableBlockItem(block, props));
-    registry.registerBlockItem(collector);
-    registry.registerBlockItem(pipe);
+    registry.registerDefaultBlockItem(collector);
+    registry.registerDefaultBlockItem(pipe);
   }
 
   @SubscribeEvent
@@ -132,7 +132,7 @@ public class InspirationsUtility extends ModuleBase {
     }
   }
 
-  private DispenserRegAccess dispenserReg = new DispenserRegAccess();
+  private final DispenserRegAccess dispenserReg = new DispenserRegAccess();
 
   private void registerDispenserBehavior() {
     //		if(Config.enableDispenserFluidTanks.get()) {

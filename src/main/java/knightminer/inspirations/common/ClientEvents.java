@@ -61,7 +61,7 @@ public abstract class ClientEvents {
    */
   protected static void registerModelProperty(@Nullable IItemProvider item, String name, IItemPropertyGetter prop) {
     if (item != null) {
-      ItemModelsProperties.func_239418_a_(item.asItem(), Inspirations.getResource(name), prop);
+      ItemModelsProperties.registerProperty(item.asItem(), Inspirations.getResource(name), prop);
     }
   }
 

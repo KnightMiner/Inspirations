@@ -8,6 +8,7 @@ import knightminer.inspirations.library.recipe.cauldron.ingredient.ICauldronIngr
 import knightminer.inspirations.library.recipe.cauldron.util.LevelPredicate;
 import knightminer.inspirations.library.recipe.cauldron.util.TemperaturePredicate;
 import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.Advancement.Builder;
 import net.minecraft.data.IFinishedRecipe;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.util.ResourceLocation;
@@ -133,7 +134,7 @@ public class CauldronTransformBuilder extends AbstractRecipeBuilder<CauldronTran
   @Override
   public void build(Consumer<IFinishedRecipe> consumer, ResourceLocation id) {
     ResourceLocation advancementId = this.buildAdvancement(id, "cauldron");
-    consumer.accept(new Result(id, ingredient, level, temperature, output, time, sound, advancementBuilder, advancementId));
+    consumer.accept(new Result(id, group, ingredient, level, temperature, output, time, sound, advancementBuilder, advancementId));
   }
 
   /**
@@ -141,6 +142,7 @@ public class CauldronTransformBuilder extends AbstractRecipeBuilder<CauldronTran
    */
   private static class Result implements IFinishedRecipe {
     private final ResourceLocation id;
+    private final String group;
     private final ICauldronIngredient ingredient;
     @Nullable
     private final LevelPredicate level;
@@ -152,8 +154,9 @@ public class CauldronTransformBuilder extends AbstractRecipeBuilder<CauldronTran
     private final Advancement.Builder advancementBuilder;
     private final ResourceLocation advancementId;
 
-    private Result(ResourceLocation id, ICauldronIngredient ingredient, @Nullable LevelPredicate level, TemperaturePredicate temperature, ICauldronContents output, int time, @Nullable SoundEvent sound, Advancement.Builder advancementBuilder, ResourceLocation advancementId) {
+    private Result(ResourceLocation id, String group, ICauldronIngredient ingredient, @Nullable LevelPredicate level, TemperaturePredicate temperature, ICauldronContents output, int time, @Nullable SoundEvent sound, Builder advancementBuilder, ResourceLocation advancementId) {
       this.id = id;
+      this.group = group;
       this.ingredient = ingredient;
       this.level = level;
       this.temperature = temperature;
@@ -166,6 +169,9 @@ public class CauldronTransformBuilder extends AbstractRecipeBuilder<CauldronTran
 
     @Override
     public void serialize(JsonObject json) {
+      if (!group.isEmpty()) {
+        json.addProperty("group", group);
+      }
       json.add("input", CauldronIngredients.toJson(ingredient));
       if (level != null) {
         json.add("level", level.toJson());

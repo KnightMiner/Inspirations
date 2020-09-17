@@ -10,7 +10,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.BushBlock;
-import net.minecraft.block.CropsBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.CowEntity;
@@ -30,15 +29,12 @@ import net.minecraft.world.World;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract;
-import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.items.ItemHandlerHelper;
-
-import java.util.List;
 
 @SuppressWarnings({"unused"})
 @EventBusSubscriber(modid = Inspirations.modID, bus = Bus.FORGE)
@@ -197,6 +193,7 @@ public class TweaksEvents {
     return true;
   }
 
+  /* TODO: move to loot table
   @SubscribeEvent
   static void dropHeartbeet(HarvestDropsEvent event) {
     // TODO: loot tables for this?
@@ -239,6 +236,7 @@ public class TweaksEvents {
       }
     }
   }
+   */
 
 	/* TODO: reconsider feature
 	@SubscribeEvent

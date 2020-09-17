@@ -39,14 +39,14 @@ public class BackgroundContainerScreen<T extends Container> extends ContainerScr
   @Override
   protected void init() {
     super.init();
-    this.titleX = (this.xSize - this.font.func_238414_a_(this.title)) / 2;
+    this.titleX = (this.xSize - this.font.getStringPropertyWidth(this.title)) / 2;
   }
 
   @Override
   public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
     this.renderBackground(matrixStack);
     super.render(matrixStack, mouseX, mouseY, partialTicks);
-    this.func_230459_a_(matrixStack, mouseX, mouseY);
+    this.renderHoveredTooltip(matrixStack, mouseX, mouseY);
   }
 
   @Override

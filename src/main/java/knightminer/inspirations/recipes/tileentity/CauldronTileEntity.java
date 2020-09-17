@@ -324,7 +324,7 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
     if (freezing) return CauldronTemperature.FREEZING;
 
     // boil if water evaporates
-    if (world.func_230315_m_().func_236040_e_()) {
+    if (world.getDimensionType().isUltrawarm()) {
       return CauldronTemperature.BOILING;
     }
     // freeze if biome is cold enough for snow/ice. direct methods do a bunch of ice/snow checks

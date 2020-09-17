@@ -6,7 +6,6 @@ import knightminer.inspirations.library.recipe.DynamicFinishedRecipe;
 import knightminer.inspirations.library.recipe.RecipeSerializer;
 import knightminer.inspirations.library.recipe.RecipeSerializers;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
-import knightminer.inspirations.library.recipe.cauldron.ingredient.SizedIngredient;
 import knightminer.inspirations.library.recipe.cauldron.inventory.ICauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.inventory.IModifyableCauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
@@ -20,6 +19,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.world.World;
 import slimeknights.mantle.recipe.RecipeHelper;
+import slimeknights.mantle.recipe.SizedIngredient;
 
 import javax.annotation.Nullable;
 import java.util.Objects;

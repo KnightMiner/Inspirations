@@ -34,7 +34,7 @@ public class FluidCauldronIngredient extends ContentMatchIngredient<Fluid> {
 
   @Override
   protected void write(JsonObject json) {
-    json.addProperty("tag", TagCollectionManager.func_232928_e_().func_232926_c_().func_232975_b_(this.tag).toString());
+    json.addProperty("tag", TagCollectionManager.getManager().getFluidTags().getValidatedIdFromTag(this.tag).toString());
   }
 
   @Override
@@ -82,7 +82,7 @@ public class FluidCauldronIngredient extends ContentMatchIngredient<Fluid> {
       // tag
       if (json.has("tag")) {
         ResourceLocation tagName = new ResourceLocation(JSONUtils.getString(json, "tag"));
-        ITag<Fluid> tag = TagCollectionManager.func_232928_e_().func_232926_c_().get(tagName);
+        ITag<Fluid> tag = TagCollectionManager.getManager().getFluidTags().get(tagName);
         if (tag == null) {
           throw new JsonSyntaxException("Unknown fluid tag '" + tagName + "'");
         }

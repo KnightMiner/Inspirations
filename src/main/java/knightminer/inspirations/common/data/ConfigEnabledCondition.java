@@ -77,12 +77,12 @@ public class ConfigEnabledCondition implements ICondition, ILootCondition {
     }
 
     @Override
-    public void func_230424_a_(JsonObject json, ConfigEnabledCondition condition, JsonSerializationContext context) {
+    public void serialize(JsonObject json, ConfigEnabledCondition condition, JsonSerializationContext context) {
       write(json, condition);
     }
 
     @Override
-    public ConfigEnabledCondition func_230423_a_(JsonObject json, JsonDeserializationContext context) {
+    public ConfigEnabledCondition deserialize(JsonObject json, JsonDeserializationContext context) {
       return read(json);
     }
   }
