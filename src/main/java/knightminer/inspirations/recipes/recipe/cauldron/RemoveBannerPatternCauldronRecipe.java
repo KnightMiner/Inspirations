@@ -35,7 +35,7 @@ public class RemoveBannerPatternCauldronRecipe implements ICauldronRecipe {
   @Override
   public void handleRecipe(IModifyableCauldronInventory inv) {
     // remove patterns
-    ItemStack stack = inv.getStack().split(1);
+    ItemStack stack = inv.splitStack(1);
     BannerTileEntity.removeBannerData(stack);
     inv.setOrGiveStack(stack);
     // use one level of water

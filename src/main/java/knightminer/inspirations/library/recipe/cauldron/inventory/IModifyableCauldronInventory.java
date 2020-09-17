@@ -59,6 +59,19 @@ public interface IModifyableCauldronInventory extends ICauldronInventory {
   }
 
   /**
+   * Splits off a stack with the given amount
+   * @param amount  Amount to split into
+   * @return Split stack instance
+   */
+  default ItemStack splitStack(int amount) {
+    ItemStack stack = getStack();
+    if (stack.isEmpty()) {
+      return ItemStack.EMPTY;
+    }
+    return stack.split(amount);
+  }
+
+  /**
    * Sets the given stack if the stack is empty, gives otherwise
    * @param stack  New stack to give
    */

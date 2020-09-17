@@ -65,16 +65,8 @@ public abstract class DyeableCauldronRecipe implements ICauldronRecipe, IMultiRe
 
   @Override
   public void handleRecipe(IModifyableCauldronInventory inventory) {
-    // if the stack contains multiple items, update just one
-    ICauldronContents contents = inventory.getContents();
-    ItemStack stack = inventory.getStack();
-    if (stack.getCount() > 1) {
-      stack = stack.split(1);
-      inventory.giveStack(updateColor(contents, stack));
-    } else {
-      // if one, update the one
-      inventory.setStack(updateColor(contents, stack));
-    }
+    // update a single item from the stack
+    inventory.setOrGiveStack(updateColor(inventory.getContents(), inventory.splitStack(1)));
 
     // remove a level of dye
     inventory.addLevel(-THIRD);
