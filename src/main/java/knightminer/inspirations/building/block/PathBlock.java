@@ -2,6 +2,7 @@ package knightminer.inspirations.building.block;
 
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.block.HidableBlock;
+import knightminer.inspirations.library.InspirationsTags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.IWaterLoggable;
@@ -97,8 +98,7 @@ public class PathBlock extends HidableBlock implements IWaterLoggable {
 
   private boolean canBlockStay(IWorldReader world, BlockPos pos) {
     BlockPos down = pos.down();
-    BlockState state = world.getBlockState(down);
-    return Block.hasSolidSideOnTop(world, pos) || state.getBlock() instanceof MulchBlock;
+    return Block.hasSolidSideOnTop(world, down) || world.getBlockState(down).isIn(InspirationsTags.Blocks.MULCH);
   }
 
   @SuppressWarnings("deprecation")
