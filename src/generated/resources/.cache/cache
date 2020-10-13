@@ -320,6 +320,7 @@ ea5a5166e69a8b694ea04b20c0006a55ef6294c8 data/inspirations/advancements/recipes/
 e62ed9dcce8debbb50e7f38baa95a7efa3b01f13 data/inspirations/advancements/recipes/misc/building/flower/magenta_dye.json
 0a22f446b2aa5701aa97a714b9d2ed72b8e8f330 data/inspirations/advancements/recipes/misc/building/flower/pink_dye.json
 791bd7ffff7c30014bc0e474f6841a567f37b4f4 data/inspirations/advancements/recipes/misc/building/flower/red_dye.json
+a9e3461070868e16a74cb956612ff4284c2a05f2 data/inspirations/advancements/recipes/misc/cauldron/bottle/writable_book.json
 4311c23de8a44ac3c0d9f48fccc1331d5988fdaa data/inspirations/advancements/recipes/misc/cauldron/dye/bottle/mix/cyan_from_blue_green.json
 a847a7e411496ecde2cf69e72e36b9f1bc34d32f data/inspirations/advancements/recipes/misc/cauldron/dye/bottle/mix/gray_from_black_white.json
 e10fda48a59bfef2c6d8a9b08c00f8edc2e51085 data/inspirations/advancements/recipes/misc/cauldron/dye/bottle/mix/light_blue_from_blue_white.json
@@ -645,6 +646,7 @@ f699cffbf7651da85ac27690a5bcebe8da035c2d data/inspirations/recipes/cauldron/bott
 5b039ba640f1a0107ba67a6148c7a9f00dae1260 data/inspirations/recipes/cauldron/bottle/wool/red.json
 2fc23e48067be1afa03eb203f1956f75f4e08383 data/inspirations/recipes/cauldron/bottle/wool/white.json
 739a16c75fa5401dc59f730720e645c79fa4f6e6 data/inspirations/recipes/cauldron/bottle/wool/yellow.json
+9ae638aa454666baae7058539288d1ef796b02dd data/inspirations/recipes/cauldron/bottle/writable_book.json
 9218c21a6ec4c6d796b5fc1debc96e26a19fd847 data/inspirations/recipes/cauldron/carpet/black.json
 b5f49ec93fc7aa0bfb440c3b7c3946c8acc5823e data/inspirations/recipes/cauldron/carpet/blue.json
 0a078f5dc060b0aef0279aae4ab29d43d90579dd data/inspirations/recipes/cauldron/carpet/brown.json

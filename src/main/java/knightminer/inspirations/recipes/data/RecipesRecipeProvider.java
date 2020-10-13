@@ -415,6 +415,16 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
                             .build(bottleConsumer, resource(bottleFolder + "concrete_powder/" + name));
     });
 
+    // use ink bottle for book and quill
+    IItemProvider blackBottle = InspirationsRecipes.simpleDyedWaterBottle.get(DyeColor.BLACK);
+    ShapelessRecipeBuilder.shapelessRecipe(Items.WRITABLE_BOOK)
+                          .setGroup(Objects.requireNonNull(Items.WRITABLE_BOOK.getRegistryName()).getPath())
+                          .addIngredient(blackBottle)
+                          .addIngredient(Tags.Items.FEATHERS)
+                          .addIngredient(Items.BOOK)
+                          .addCriterion("has_item", hasItem(blackBottle))
+                          .build(bottleConsumer, resource(bottleFolder + "writable_book"));
+
     // leather dyeing and clearing
     addDyeableRecipes(Items.LEATHER_HELMET, folder);
     addDyeableRecipes(Items.LEATHER_CHESTPLATE, folder);
