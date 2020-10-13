@@ -26,7 +26,7 @@ public class SugarCaneCropBlock extends BlockCropBlock {
 
   @Override
   protected IItemProvider getSeedsItem() {
-    return InspirationsTweaks.cactusSeeds;
+    return InspirationsTweaks.sugarCaneSeeds;
   }
 
   @Override
