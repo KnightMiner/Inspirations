@@ -41,6 +41,8 @@ public class InspirationsItemTagsProvider extends ItemTagsProvider {
     this.copy(InspirationsTags.Blocks.CARPETED_TRAPDOORS, InspirationsTags.Items.CARPETED_TRAPDOORS);
     this.copy(InspirationsTags.Blocks.BOOKSHELVES, InspirationsTags.Items.BOOKSHELVES);
     this.copy(InspirationsTags.Blocks.ENLIGHTENED_BUSHES, InspirationsTags.Items.ENLIGHTENED_BUSHES);
+    this.getOrCreateBuilder(ItemTags.DOORS).add(InspirationsBuilding.glassDoorItem);
+    this.copy(BlockTags.TRAPDOORS, ItemTags.TRAPDOORS);
 
     Builder<Item> bookBuilder = this.getOrCreateBuilder(InspirationsTags.Items.BOOKS)
         .add(InspirationsBuilding.redstoneBook)
