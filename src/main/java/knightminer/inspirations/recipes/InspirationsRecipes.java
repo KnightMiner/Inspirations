@@ -46,10 +46,12 @@ import net.minecraft.particles.ParticleType;
 import net.minecraft.potion.Potions;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.village.PointOfInterestType;
 import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import slimeknights.mantle.registration.FluidBuilder;
 import slimeknights.mantle.registration.adapter.BlockRegistryAdapter;
@@ -240,6 +242,17 @@ public class InspirationsRecipes extends ModuleBase {
     DataGenerator gen = event.getGenerator();
     if (event.includeServer()) {
       gen.addProvider(new RecipesRecipeProvider(gen));
+    }
+  }
+
+  @SubscribeEvent
+  void commonSetup(FMLCommonSetupEvent event) {
+    if (Config.extendedCauldron.getAsBoolean()) {
+      // inject new cauldron blocks into the leatherworker point of interest
+      // fortunately, its as simple as injecting it into the map
+      synchronized (PointOfInterestType.POIT_BY_BLOCKSTATE) {
+        cauldron.getStateContainer().getValidStates().forEach(state -> PointOfInterestType.POIT_BY_BLOCKSTATE.put(state, PointOfInterestType.LEATHERWORKER));
+      }
     }
   }
 
