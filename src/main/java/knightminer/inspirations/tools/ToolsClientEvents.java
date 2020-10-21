@@ -31,6 +31,9 @@ public class ToolsClientEvents extends ClientEvents {
     registerModelProperty(InspirationsTools.photometer, "light", new PhotometerPropertyGetter());
     IItemPropertyGetter waypointCompass = new WaypointCompassPropertyGetter();
     InspirationsTools.waypointCompasses.forEach(compass -> registerModelProperty(compass, "angle", waypointCompass));
+    // re-register shield blocking with registry sub shield, not strictly needed unless certain mods decide to register their properties before regsitry events
+    registerModelProperty(InspirationsTools.shield, "blocking",
+                          (stack, world, entity) -> entity != null && entity.isHandActive() && entity.getActiveItemStack() == stack ? 1.0F : 0.0F);
   }
 
   @SubscribeEvent

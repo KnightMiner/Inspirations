@@ -69,6 +69,8 @@ public class InspirationsTools extends ModuleBase {
   public static Item barometer;
   public static Item photometer;
   public static ArrowItem redstoneArrow;
+  // only used in client proxy, should use Items.SHIELD normally
+  static Item shield;
 
   // The "undyed" compass is White.
   public static EnumObject<DyeColor, WaypointCompassItem> waypointCompasses = EnumObject.empty();
@@ -115,7 +117,7 @@ public class InspirationsTools extends ModuleBase {
         () -> false), DyeColor.values(), "waypoint_compass");
 
     if (Config.shieldEnchantmentTable.get()) {
-      registry.register(new EnchantableShieldItem(new Item.Properties().maxDamage(Items.SHIELD.getMaxDamage()).group(ItemGroup.COMBAT)), Items.SHIELD);
+      shield = registry.register(new EnchantableShieldItem(new Item.Properties().maxDamage(Items.SHIELD.getMaxDamage()).group(ItemGroup.COMBAT)), Items.SHIELD);
     }
   }
 
