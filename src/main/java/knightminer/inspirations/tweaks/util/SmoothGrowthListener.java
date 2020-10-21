@@ -17,18 +17,15 @@ import java.util.function.Supplier;
 public class SmoothGrowthListener implements Consumer<Pre> {
 
   private final Supplier<Block> crop, seed;
-  private final boolean source;
 
   /**
    * Creates a new event listener for smooth growth
    * @param crop   Original crop to listen for
    * @param seed   Seed to replace for crop growth
-   * @param source If true, the event is fired at the source, if false it is fired at the destination
    */
-  public SmoothGrowthListener(Block crop, Block seed, boolean source) {
+  public SmoothGrowthListener(Block crop, Block seed) {
     this.crop = crop.delegate;
     this.seed = seed.delegate;
-    this.source = source;
   }
 
   @Override
@@ -37,9 +34,9 @@ public class SmoothGrowthListener implements Consumer<Pre> {
       return;
     }
 
-    BlockState current = event.getState();
     // at half growth place the seed, gives us 8 ticks on the block, 8 on the seed instead of 16 on the block
-    if (event.getState().getBlock() != crop.get()) {
+    Block crop = this.crop.get();
+    if (event.getState().getBlock() != crop) {
       return;
     }
 
@@ -48,19 +45,22 @@ public class SmoothGrowthListener implements Consumer<Pre> {
     BlockPos dest, source;
 
     // sugar cane fires the event at the source, cactus at the destination
-    if (this.source) {
-      source = event.getPos();
-      dest = source.up();
+    // however, configurable cane does not fire consistently with Forge, so we just use if the block is at the position as our flag
+    BlockPos pos = event.getPos();
+    if (world.getBlockState(pos).getBlock() == crop) {
+      source = pos;
+      dest = pos.up();
     } else {
-      dest = event.getPos();
-      source = dest.down();
+      // we probably have air at the position, so the crop is one block down
+      source = pos.down();
+      dest = pos;
     }
     BlockState state = seed.get().getDefaultState();
     world.setBlockState(dest, state, 3);
 
     // clear age on the block below
-    if (world.getBlockState(source).getBlock() == crop.get()) {
-      world.setBlockState(source, crop.get().getDefaultState(), 4);
+    if (world.getBlockState(source).getBlock() == crop) {
+      world.setBlockState(source, crop.getDefaultState(), 4);
     }
 
     // prevent normal growth logic
