@@ -9,6 +9,8 @@ import knightminer.inspirations.tools.client.RedstoneArrowRenderer;
 import knightminer.inspirations.tools.client.WaypointCompassPropertyGetter;
 import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.item.IItemPropertyGetter;
+import net.minecraft.item.ItemModelsProperties;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -32,8 +34,10 @@ public class ToolsClientEvents extends ClientEvents {
     IItemPropertyGetter waypointCompass = new WaypointCompassPropertyGetter();
     InspirationsTools.waypointCompasses.forEach(compass -> registerModelProperty(compass, "angle", waypointCompass));
     // re-register shield blocking with registry sub shield, not strictly needed unless certain mods decide to register their properties before regsitry events
-    registerModelProperty(InspirationsTools.shield, "blocking",
-                          (stack, world, entity) -> entity != null && entity.isHandActive() && entity.getActiveItemStack() == stack ? 1.0F : 0.0F);
+    if (InspirationsTools.shield != null) {
+      ItemModelsProperties.registerProperty(InspirationsTools.shield, new ResourceLocation("blocking"),
+                           (stack, world, entity) -> entity != null && entity.isHandActive() && entity.getActiveItemStack() == stack ? 1.0F : 0.0F);
+    }
   }
 
   @SubscribeEvent
