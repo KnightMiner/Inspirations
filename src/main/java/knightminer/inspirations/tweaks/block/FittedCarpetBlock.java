@@ -17,8 +17,7 @@ public class FittedCarpetBlock extends FlatCarpetBlock {
                              .with(NORTHWEST, false)
                              .with(NORTHEAST, false)
                              .with(SOUTHWEST, false)
-                             .with(SOUTHEAST, false)
-                        );
+                             .with(SOUTHEAST, false));
   }
 
   @Override
@@ -27,9 +26,9 @@ public class FittedCarpetBlock extends FlatCarpetBlock {
   }
 
 
-  private static final VoxelShape[] BOUNDS = new VoxelShape[16];
-  private static final VoxelShape[] COLLISION = new VoxelShape[16];
+  /* Bounds */
 
+  private static final VoxelShape[] BOUNDS = new VoxelShape[16];
   static {
     // Compute all the different possible shapes.
     int HIGH = 0;
@@ -41,15 +40,13 @@ public class FittedCarpetBlock extends FlatCarpetBlock {
       boolean SE = (i & 0b0001) == 0; // +X +Z
 
       if (!NW && !NE && !SW && !SE) {
-        // Fully lowered, bit of a special case.
+        // Fully lowered, bit of a special case, but should never happen in world.
         BOUNDS[i] = VoxelShapes.or(
-            makeCuboidShape(0, -7, 0, 17, -8, 17),
-            makeCuboidShape(-1, -16, -1, 0, -7, 17),
-            makeCuboidShape(-1, -16, -1, 16, -7, 0),
+            makeCuboidShape( 0,  -7,  0, 17, -8, 17),
+            makeCuboidShape(-1, -16, -1,  0, -7, 17),
+            makeCuboidShape(-1, -16, -1, 16, -7,  0),
             makeCuboidShape(16, -16, -1, 17, -7, 17),
-            makeCuboidShape(-1, -16, 16, 16, -7, 17)
-                                  );
-        COLLISION[i] = makeCuboidShape(0, -7, 0, 17, -8, 17);
+            makeCuboidShape(-1, -16, 16, 16, -7, 17));
         continue;
       }
 
@@ -58,98 +55,49 @@ public class FittedCarpetBlock extends FlatCarpetBlock {
           makeCuboidShape(0, NW ? HIGH : LOW, 0, 8, (NW ? HIGH : LOW) + 1, 8),
           makeCuboidShape(8, NE ? HIGH : LOW, 0, 16, (NE ? HIGH : LOW) + 1, 8),
           makeCuboidShape(0, SW ? HIGH : LOW, 8, 8, (SW ? HIGH : LOW) + 1, 16),
-          makeCuboidShape(8, SE ? HIGH : LOW, 8, 16, (SE ? HIGH : LOW) + 1, 16)
-                                       );
-
-      // Only provide collision within our own block, any further down messes up the player's movement.
-      COLLISION[i] = shape;
+          makeCuboidShape(8, SE ? HIGH : LOW, 8, 16, (SE ? HIGH : LOW) + 1, 16));
 
       // Add the lowermost shapes around the base.
-      if (!NE & !NW) {
-        shape = VoxelShapes.or(shape, makeCuboidShape(0, -16, -1, 16, -7, 0));
-      }
-      if (!SE && !SW) {
-        shape = VoxelShapes.or(shape, makeCuboidShape(0, -16, 16, 16, -7, 17));
-      }
-      if (!NW && !SW) {
-        shape = VoxelShapes.or(shape, makeCuboidShape(-1, -16, 0, 0, -7, 16));
-      }
-      if (!NE && !SE) {
-        shape = VoxelShapes.or(shape, makeCuboidShape(16, -16, 0, 17, -7, 16));
-      }
+      if (!NE && !NW) shape = VoxelShapes.or(shape, makeCuboidShape(0, -16, -1, 16, -7, 0));
+      if (!SE && !SW) shape = VoxelShapes.or(shape, makeCuboidShape(0, -16, 16, 16, -7, 17));
+      if (!NW && !SW) shape = VoxelShapes.or(shape, makeCuboidShape(-1, -16, 0, 0, -7, 16));
+      if (!NE && !SE) shape = VoxelShapes.or(shape, makeCuboidShape(16, -16, 0, 17, -7, 16));
 
       // Then, for each of the spaces between generate verticals if they're different.
-      if (NW && !NE) {
-        shape = VoxelShapes.or(shape, makeCuboidShape(8, LOW, 0, 9, 1, 8));
-      }
-      if (!NW && NE) {
-        shape = VoxelShapes.or(shape, makeCuboidShape(7, LOW, 0, 8, 1, 8));
-      }
+      if (NW && !NE) shape = VoxelShapes.or(shape, makeCuboidShape(8, LOW, 0, 9, 1, 8));
+      if (!NW && NE) shape = VoxelShapes.or(shape, makeCuboidShape(7, LOW, 0, 8, 1, 8));
 
-      if (SW && !SE) {
-        shape = VoxelShapes.or(shape, makeCuboidShape(8, LOW, 8, 9, 1, 16));
-      }
-      if (!SW && SE) {
-        shape = VoxelShapes.or(shape, makeCuboidShape(7, LOW, 8, 8, 1, 16));
-      }
+      if (SW && !SE) shape = VoxelShapes.or(shape, makeCuboidShape(8, LOW, 8, 9, 1, 16));
+      if (!SW && SE) shape = VoxelShapes.or(shape, makeCuboidShape(7, LOW, 8, 8, 1, 16));
 
-      if (NW && !SW) {
-        shape = VoxelShapes.or(shape, makeCuboidShape(0, LOW, 8, 8, 1, 9));
-      }
-      if (!NW && SW) {
-        shape = VoxelShapes.or(shape, makeCuboidShape(0, LOW, 7, 8, 1, 8));
-      }
+      if (NW && !SW) shape = VoxelShapes.or(shape, makeCuboidShape(0, LOW, 8, 8, 1, 9));
+      if (!NW && SW) shape = VoxelShapes.or(shape, makeCuboidShape(0, LOW, 7, 8, 1, 8));
 
-      if (NE && !SE) {
-        shape = VoxelShapes.or(shape, makeCuboidShape(8, LOW, 8, 16, 1, 9));
-      }
-      if (!NE && SE) {
-        shape = VoxelShapes.or(shape, makeCuboidShape(8, LOW, 7, 16, 1, 8));
-      }
+      if (NE && !SE) shape = VoxelShapes.or(shape, makeCuboidShape(8, LOW, 8, 16, 1, 9));
+      if (!NE && SE) shape = VoxelShapes.or(shape, makeCuboidShape(8, LOW, 7, 16, 1, 8));
 
       // Last, a the missing 1x1 post for both heights in outer corners.
-      if (!NW & !SE && !SW) { // NE
-        shape = VoxelShapes.or(shape,
-                               makeCuboidShape(7, -8, 8, 8, 1, 9),
-                               makeCuboidShape(-1, -16, 16, 0, -7, 17)
-                              );
-      }
-      if (!NE & !SE && !SW) { // NW
-        shape = VoxelShapes.or(shape,
-                               makeCuboidShape(8, -8, 8, 9, 1, 9),
-                               makeCuboidShape(16, -16, 16, 17, -7, 17)
-                              );
-      }
-      if (!NE && !NW && !SW) { // SE
-        shape = VoxelShapes.or(shape,
-                               makeCuboidShape(7, -8, 7, 8, 1, 8),
-                               makeCuboidShape(-1, -16, -1, 0, -7, 0)
-                              );
-      }
-      if (!NE && !NW & !SE) { // SW
-        shape = VoxelShapes.or(shape,
-                               makeCuboidShape(8, -8, 7, 9, 1, 8),
-                               makeCuboidShape(16, -16, -1, 17, -7, 0)
-                              );
-      }
+      if (!NW && !SE && !SW) shape = VoxelShapes.or(shape, makeCuboidShape(7, -8, 8, 8, 1, 9), makeCuboidShape(-1, -16, 16,  0, -7, 17)); // NE
+      if (!NE && !SE && !SW) shape = VoxelShapes.or(shape, makeCuboidShape(8, -8, 8, 9, 1, 9), makeCuboidShape(16, -16, 16, 17, -7, 17)); // NW
+      if (!NE && !NW && !SW) shape = VoxelShapes.or(shape, makeCuboidShape(7, -8, 7, 8, 1, 8), makeCuboidShape(-1, -16, -1,  0, -7,  0)); // SE
+      if (!NE && !NW && !SE) shape = VoxelShapes.or(shape, makeCuboidShape(8, -8, 7, 9, 1, 8), makeCuboidShape(16, -16, -1, 17, -7,  0)); // SW
+
       BOUNDS[i] = shape;
     }
   }
 
-  @Override
-  public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
-    return BOUNDS[
-        (state.get(NORTHWEST) ? 8 : 0) |
-        (state.get(NORTHEAST) ? 4 : 0) |
-        (state.get(SOUTHWEST) ? 2 : 0) |
-        (state.get(SOUTHEAST) ? 1 : 0)
-        ];
+  /**
+   * Gets the int key for bounds from the given block state
+   * @param state  State
+   * @return  Bounds key
+   */
+  private static int getBoundsKey(BlockState state) {
+    return (state.get(NORTHWEST) ? 8 : 0) | (state.get(NORTHEAST) ? 4 : 0) |
+           (state.get(SOUTHWEST) ? 2 : 0) | (state.get(SOUTHEAST) ? 1 : 0);
   }
 
-  @SuppressWarnings("deprecation")
-  @Deprecated
   @Override
-  public VoxelShape getCollisionShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
-    return getShape(state, world, pos, context);
+  public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
+    return BOUNDS[getBoundsKey(state)];
   }
 }

@@ -87,7 +87,8 @@ public class InspirationsTweaks extends ModuleBase {
         Block original = InspirationsShared.VANILLA_CARPETS.get(color);
         Block.Properties props = Block.Properties.from(original);
         flatBuilder.putDelegate(color, registry.register(new FlatCarpetBlock(color, props), original).delegate);
-        fittedBuilder.putDelegate(color, registry.register(new FittedCarpetBlock(color, props), color.getString() + "_fitted_carpet").delegate);
+        // bounding box messes with sprinting on stairs, so disable
+        fittedBuilder.putDelegate(color, registry.register(new FittedCarpetBlock(color, props.doesNotBlockMovement()), color.getString() + "_fitted_carpet").delegate);
       }
       flatCarpets = flatBuilder.build();
       fitCarpets = fittedBuilder.build();
