@@ -104,10 +104,19 @@ public abstract class BlockCropBlock extends CropsBlock implements IHidable, IPl
     return block.get().isValidPosition(block.get().getDefaultState(), world, pos);
   }
 
+
+  /* Bonemeal */
+
+  @Override
+  public boolean canGrow(IBlockReader worldIn, BlockPos pos, BlockState state, boolean isClient) {
+    return Config.bonemealBlockCrop.get();
+  }
+
   @Override
   public boolean canUseBonemeal(World worldIn, Random rand, BlockPos pos, BlockState state) {
     return Config.bonemealBlockCrop.get();
   }
+
 
   /**
    * Gets an IPlantable for this plant
