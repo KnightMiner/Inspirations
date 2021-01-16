@@ -19,7 +19,9 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.biome.BiomeColors;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ColorHandlerEvent;
@@ -33,6 +35,8 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.registries.ForgeRegistries;
+
+import java.util.List;
 
 @SuppressWarnings({"unused", "WeakerAccess"})
 @EventBusSubscriber(modid = Inspirations.modID, value = Dist.CLIENT, bus = Bus.MOD)
@@ -166,17 +170,23 @@ public class TweaksClientEvents extends ClientEvents {
 
   // registered with Forge bus
   private static void fixShieldTooltip(ItemTooltipEvent event) {
-    if (!Config.fixShieldTooltip.get()) {
-      return;
-    }
+    if (!Config.fixShieldTooltip.get()) return;
     ItemStack stack = event.getItemStack();
-    if (stack.getItem() != Items.SHIELD) {
-      return;
-    }
+    if (stack.getItem() != Items.SHIELD) return;
+
+    // only need to run if it has patterns and is enchanted
     CompoundNBT tags = stack.getChildTag("BlockEntityTag");
     if (tags != null && tags.contains("Patterns") && stack.isEnchanted()) {
-      ListNBT patterns = tags.getList("Patterns", 10);
-      event.getToolTip().add(patterns.size() + 1, new StringTextComponent(""));
+      // find the last banner pattern line in the tooltip
+      List<ITextComponent> text = event.getToolTip();
+      int i = text.size() - 1;
+      for (; i >= 0; i--) {
+        ITextComponent component = text.get(i);
+        if (component instanceof TranslationTextComponent && ((TranslationTextComponent)component).getKey().contains("banner")) {
+          text.add(i + 1, StringTextComponent.EMPTY);
+          break;
+        }
+      }
     }
   }
 }
