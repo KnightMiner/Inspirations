@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[${javafml},)"
+loaderVersion="${loader_range}"
 issueTrackerURL="https://github.com/KnightMiner/Inspirations/issues/"
 license="MIT"
 [[mods]]
@@ -16,18 +16,18 @@ Adds many small features with a vareity of inspirations.
 [[dependencies.inspirations]]
     modId="forge"
     mandatory=true
-    versionRange="[${forge_version},)"
+    versionRange="${forge_range}"
     ordering="AFTER"
     side="BOTH"
 [[dependencies.inspirations]]
     modId="minecraft"
     mandatory=true
-    versionRange="[${minecraft_version},]"
+    versionRange="${minecraft_range}"
     ordering="NONE"
     side="BOTH"
 [[dependencies.inspirations]]
     modId="mantle"
     mandatory=true
-    versionRange="[${mantle_version},]"
+    versionRange="${mantle_range}"
     ordering="AFTER"
     side="BOTH"
