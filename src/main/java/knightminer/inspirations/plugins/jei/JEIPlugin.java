@@ -172,7 +172,7 @@ public class JEIPlugin implements IModPlugin {
         HIDABLE_ITEMS.add(new HideState(item));
       }
     }
-    Inspirations.updateJEI = JEIPlugin::updateHiddenItems;
+    Config.setJEIUpdateRunnable(JEIPlugin::updateHiddenItems);
   }
 
   // Go through and hide/unhide Inspirations items whenever the config reloads.

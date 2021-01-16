@@ -1,11 +1,19 @@
 package knightminer.inspirations.common;
 
-import knightminer.inspirations.common.config.CachedBoolean;
-import knightminer.inspirations.common.config.CachedValue;
+import knightminer.inspirations.Inspirations;
+import knightminer.inspirations.library.InspirationsRegistry;
+import net.minecraft.client.Minecraft;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.config.ModConfig;
+import slimeknights.mantle.config.CachedBoolean;
+import slimeknights.mantle.config.CachedValue;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 import static net.minecraftforge.common.ForgeConfigSpec.Builder;
@@ -692,6 +700,60 @@ public class Config {
   }
 
 
+  /* Utility functions */
+
+  /** Boolean to keep track of whether the config has loaded yet */
+  private static boolean loaded = false;
+
+  /**
+   * To avoid classloading, the function to call to update JEI for config changes.
+   * If non-null, this will be {@link knightminer.inspirations.plugins.jei.JEIPlugin updateHiddenItems()}.
+   */
+  private static Runnable updateJEI = null;
+
+  /**
+   * Sets the runnable used to update JEI
+   * @param runnable  JEI update runnable
+   */
+  public static void setJEIUpdateRunnable(Runnable runnable) {
+    updateJEI = runnable;
+  }
+
+  /**
+   * Checks if the server config is loaded
+   * @return  True if the config loaded
+   */
+  public static boolean isLoaded() {
+    return loaded;
+  }
+
+  /**
+   * Function called when the config changes to update internal properties
+   * @param configEvent  Event
+   */
+  public static void configChanged(final ModConfig.ModConfigEvent configEvent) {
+    ModConfig config = configEvent.getConfig();
+    if (config.getModId().equals(Inspirations.modID)) {
+      ForgeConfigSpec spec = config.getSpec();
+      if (spec == Config.SERVER_SPEC) {
+        SERVER_VALUES.forEach(CachedValue::invalidate);
+        loaded = true;
+        InspirationsRegistry.setBookKeywords(
+            Arrays.stream(Config.bookKeywords.get().split(","))
+                  .map(String::trim)
+                  .collect(Collectors.toList()));
+
+        // If we have JEI, this will be set. It needs to run on the main thread...
+        if (updateJEI != null) {
+          DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> Minecraft.getInstance().deferTask(updateJEI));
+        }
+      } else if (spec == CLIENT_SPEC) {
+        CLIENT_VALUES.forEach(CachedValue::invalidate);
+      }
+    }
+  }
+
+
   /* Helpers */
 
   /**
@@ -746,6 +808,7 @@ public class Config {
    * @param second  Property config value
    * @return  Cached config value
    */
+  @SuppressWarnings("SameParameterValue")
   private static CachedBoolean and(CachedBoolean first, CachedBoolean second) {
     CachedBoolean cached = new CachedBoolean(() -> first.get() && second.get());
     SERVER_VALUES.add(cached);
@@ -765,6 +828,7 @@ public class Config {
     return cached;
   }
 
+
   /* Override methods */
 
   /**
@@ -782,19 +846,8 @@ public class Config {
    * @param second  Property config value
    * @return  Cached config value
    */
+  @SuppressWarnings("SameParameterValue")
   private static CachedBoolean andOverride(CachedBoolean first, BooleanValue second) {
     return new CachedBoolean(() -> first.get() && second.get());
-  }
-
-  /**
-   * Clears the cache of all regular config values. Called during the config loaded event
-   * @param spec
-   */
-  public static void clearCache(ForgeConfigSpec spec) {
-    if (spec == SERVER_SPEC) {
-      SERVER_VALUES.forEach(CachedValue::invalidate);
-    } else if (spec == CLIENT_SPEC) {
-      CLIENT_VALUES.forEach(CachedValue::invalidate);
-    }
   }
 }

@@ -1,6 +1,5 @@
 package knightminer.inspirations.common;
 
-import knightminer.inspirations.Inspirations;
 import net.minecraft.item.ItemGroup;
 
 /**
@@ -22,7 +21,7 @@ public interface IHidable {
     // We can't check isEnabled() safely before configs are loaded.
     // MC tries to fill item groups early for the search dictionary, so just
     // return true in that situation.
-    if (Inspirations.configLoaded) {
+    if (Config.isLoaded()) {
       return isEnabled();
     } else {
       return group == ItemGroup.SEARCH;

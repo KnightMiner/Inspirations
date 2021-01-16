@@ -1,6 +1,5 @@
 package knightminer.inspirations.tools.item;
 
-import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.item.HidableItem;
 import knightminer.inspirations.library.client.ClientUtil;
@@ -135,7 +134,7 @@ public class WaypointCompassItem extends HidableItem {
 
   @Override
   public void addInformation(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag flag) {
-    if (!Inspirations.configLoaded) {
+    if (!Config.isLoaded()) {
       // MC reads all the tooltips very early for the Creative search,
       // which causes a crash here from reading uninitalised configs.
       // So just skip.

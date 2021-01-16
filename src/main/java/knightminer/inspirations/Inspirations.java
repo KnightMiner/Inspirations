@@ -9,14 +9,12 @@ import knightminer.inspirations.common.datagen.InspirationsFluidTagsProvider;
 import knightminer.inspirations.common.datagen.InspirationsItemTagsProvider;
 import knightminer.inspirations.common.datagen.InspirationsLootTableProvider;
 import knightminer.inspirations.common.network.InspirationsNetwork;
-import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.shared.InspirationsShared;
 import knightminer.inspirations.shared.SharedClientEvents;
 import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import knightminer.inspirations.utility.InspirationsUtility;
-import net.minecraft.client.Minecraft;
 import net.minecraft.data.BlockTagsProvider;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.item.DyeColor;
@@ -31,7 +29,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.config.ModConfig.Type;
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -39,9 +36,7 @@ import net.minecraftforge.fml.loading.FMLPaths;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Arrays;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
 //import knightminer.inspirations.recipes.InspirationsRecipes;
 
@@ -50,15 +45,6 @@ import java.util.stream.Collectors;
 public class Inspirations {
   public static final String modID = "inspirations";
   public static final Logger log = LogManager.getLogger(modID);
-
-  // We can't read the config very early on.
-  public static boolean configLoaded = false;
-
-  /**
-   * To avoid classloading, the function to call to update JEI for config changes.
-   * If non-null, this will be {@link knightminer.inspirations.plugins.jei.JEIPlugin updateHiddenItems()}.
-   */
-  public static Runnable updateJEI = null;
 
   public Inspirations() {
     ModLoadingContext.get().registerConfig(Type.SERVER, Config.SERVER_SPEC);
@@ -85,6 +71,7 @@ public class Inspirations {
     modBus.register(new InspirationsTools());
     modBus.register(new InspirationsTweaks());
     modBus.register(new InspirationsRecipes());
+    modBus.addListener(Config::configChanged);
 
     InspirationsNetwork.INSTANCE.setup();
 
@@ -114,27 +101,6 @@ public class Inspirations {
         }
       }
     }
-  }
-
-  @SubscribeEvent
-  void configChanged(final ModConfig.ModConfigEvent configEvent) {
-    ModConfig config = configEvent.getConfig();
-    if (config.getModId().equals(modID)) {
-      Config.clearCache(config.getSpec());
-      if (config.getSpec() == Config.SERVER_SPEC) {
-        configLoaded = true;
-        InspirationsRegistry.setBookKeywords(Arrays.stream(Config.bookKeywords.get().split(","))
-                                                   .map(String::trim)
-                                                   .collect(Collectors.toList())
-                                            );
-
-        // If we have JEI, this will be set. It needs to run on the main thread...
-        if (updateJEI != null) {
-          DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> Minecraft.getInstance().deferTask(updateJEI));
-        }
-      }
-    }
-
   }
 
   /* Utilities */
