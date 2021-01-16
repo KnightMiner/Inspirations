@@ -25,6 +25,7 @@ import knightminer.inspirations.recipes.recipe.cauldron.PotionFermentCauldronTra
 import knightminer.inspirations.recipes.recipe.cauldron.RemoveBannerPatternCauldronRecipe;
 import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.block.material.Material;
@@ -53,6 +54,7 @@ import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
+import net.minecraftforge.registries.GameData;
 import slimeknights.mantle.registration.FluidBuilder;
 import slimeknights.mantle.registration.adapter.BlockRegistryAdapter;
 import slimeknights.mantle.registration.adapter.FluidRegistryAdapter;
@@ -60,6 +62,8 @@ import slimeknights.mantle.registration.adapter.ItemRegistryAdapter;
 import slimeknights.mantle.registration.adapter.RegistryAdapter;
 import slimeknights.mantle.registration.adapter.TileEntityTypeRegistryAdapter;
 import slimeknights.mantle.registration.object.EnumObject;
+
+import java.util.Map;
 
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class InspirationsRecipes extends ModuleBase {
@@ -250,8 +254,9 @@ public class InspirationsRecipes extends ModuleBase {
     if (Config.extendedCauldron.getAsBoolean()) {
       // inject new cauldron blocks into the leatherworker point of interest
       // fortunately, its as simple as injecting it into the map
-      synchronized (PointOfInterestType.POIT_BY_BLOCKSTATE) {
-        cauldron.getStateContainer().getValidStates().forEach(state -> PointOfInterestType.POIT_BY_BLOCKSTATE.put(state, PointOfInterestType.LEATHERWORKER));
+      Map<BlockState, PointOfInterestType> map = GameData.getBlockStatePointOfInterestTypeMap();
+      synchronized (map) {
+        cauldron.getStateContainer().getValidStates().forEach(state -> map.put(state, PointOfInterestType.LEATHERWORKER));
       }
     }
   }
