@@ -90,8 +90,8 @@ public class InspirationsUtility extends ModuleBase {
     torchLeverFloor = registry.register(new TorchLeverBlock(torchLeverProps, ParticleTypes.FLAME), "torch_lever");
     torchLeverWall = registry.register(new TorchLeverWallBlock(torchLeverProps, ParticleTypes.FLAME), "wall_torch_lever");
 
-    soulLeverFloor = registry.register(new TorchLeverBlock(soulLeverProps, ParticleTypes.SOUL_FIRE_FLAME), "soul_fire_torch_lever");
-    soulLeverWall = registry.register(new TorchLeverWallBlock(soulLeverProps, ParticleTypes.SOUL_FIRE_FLAME), "wall_soul_fire_torch_lever");
+    soulLeverFloor = registry.register(new TorchLeverBlock(soulLeverProps, ParticleTypes.SOUL_FIRE_FLAME), "soul_torch_lever");
+    soulLeverWall = registry.register(new TorchLeverWallBlock(soulLeverProps, ParticleTypes.SOUL_FIRE_FLAME), "wall_soul_torch_lever");
 
     //bricksButton = registerBlock(r, new BricksButtonBlock(BricksButtonBlock.BRICK_BUTTON), "bricks_button");
     //netherBricksButton = registerBlock(r, new BricksButtonBlock(BricksButtonBlock.NETHER_BUTTON), "nether_bricks_button");
@@ -127,7 +127,7 @@ public class InspirationsUtility extends ModuleBase {
 
     // itemblocks
     torchLeverItem = registry.register(new TorchLeverItem(InspirationsUtility.torchLeverFloor, InspirationsUtility.torchLeverWall, props), "torch_lever");
-    soulLeverItem = registry.register(new TorchLeverItem(InspirationsUtility.soulLeverFloor, InspirationsUtility.soulLeverWall, props), "soul_fire_torch_lever");
+    soulLeverItem = registry.register(new TorchLeverItem(InspirationsUtility.soulLeverFloor, InspirationsUtility.soulLeverWall, props), "soul_torch_lever");
     //registerBlockItem(r, bricksButton, ItemGroup.REDSTONE);
     //registerBlockItem(r, netherBricksButton, ItemGroup.REDSTONE);
     // TODO: never made a bifunction variant
