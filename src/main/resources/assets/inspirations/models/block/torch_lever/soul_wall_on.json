@@ -1,0 +1,7 @@
+{
+  "parent": "inspirations:block/torch_lever/wall_on",
+  "textures": {
+    "torch": "inspirations:block/soul_torch_lever",
+    "particle": "inspirations:block/soul_torch_lever"
+  }
+}

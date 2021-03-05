@@ -1,0 +1,9 @@
+{
+  "variants": {
+    "swing=up":    { "model": "inspirations:block/torch_lever/soul_vertical_off" },
+    "swing=east":  { "model": "inspirations:block/torch_lever/soul_vertical_on" },
+    "swing=south": { "model": "inspirations:block/torch_lever/soul_vertical_on", "y":  90 },
+    "swing=west":  { "model": "inspirations:block/torch_lever/soul_vertical_on", "y": 180 },
+    "swing=north": { "model": "inspirations:block/torch_lever/soul_vertical_on", "y": 270 }
+  }
+}
