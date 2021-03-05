@@ -1,0 +1,43 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "inspirations:utility/soul_torch_lever"
+    ]
+  },
+  "criteria": {
+    "has_soul_torch": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "minecraft:soul_torch"
+          }
+        ]
+      }
+    },
+    "has_lever": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "minecraft:lever"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "inspirations:utility/soul_torch_lever"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_soul_torch",
+      "has_lever",
+      "has_the_recipe"
+    ]
+  ]
+}
