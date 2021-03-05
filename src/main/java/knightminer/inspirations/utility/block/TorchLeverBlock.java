@@ -21,10 +21,10 @@ import net.minecraft.world.World;
 
 import java.util.Random;
 
-public class TorchLevelBlock extends TorchBlock {
+public class TorchLeverBlock extends TorchBlock {
   private static final DirectionProperty SWING = DirectionProperty.create("swing", (dir) -> dir != Direction.DOWN);
 
-  public TorchLevelBlock() {
+  public TorchLeverBlock() {
     super(Block.Properties
               .create(Material.MISCELLANEOUS)
               .doesNotBlockMovement()

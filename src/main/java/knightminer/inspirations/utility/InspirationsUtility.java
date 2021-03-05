@@ -7,7 +7,7 @@ import knightminer.inspirations.utility.block.CarpetedPressurePlateBlock;
 import knightminer.inspirations.utility.block.CarpetedTrapdoorBlock;
 import knightminer.inspirations.utility.block.CollectorBlock;
 import knightminer.inspirations.utility.block.PipeBlock;
-import knightminer.inspirations.utility.block.TorchLevelBlock;
+import knightminer.inspirations.utility.block.TorchLeverBlock;
 import knightminer.inspirations.utility.block.TorchLeverWallBlock;
 import knightminer.inspirations.utility.datagen.UtilityRecipeProvider;
 import knightminer.inspirations.utility.inventory.CollectorContainer;
@@ -65,7 +65,7 @@ public class InspirationsUtility extends ModuleBase {
     BlockRegistryAdapter registry = new BlockRegistryAdapter(event.getRegistry());
     IForgeRegistry<Block> r = event.getRegistry();
 
-    torchLeverFloor = registry.register(new TorchLevelBlock(), "torch_lever");
+    torchLeverFloor = registry.register(new TorchLeverBlock(), "torch_lever");
     torchLeverWall = registry.register(new TorchLeverWallBlock(), "wall_torch_lever");
 
     //bricksButton = registerBlock(r, new BricksButtonBlock(BricksButtonBlock.BRICK_BUTTON), "bricks_button");
