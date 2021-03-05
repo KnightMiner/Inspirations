@@ -58,6 +58,10 @@ public class InspirationsBlockTagsProvider extends BlockTagsProvider {
     this.getOrCreateBuilder(BlockTags.FLOWER_POTS).addTag(InspirationsTags.Blocks.FLOWER_POTS);
     this.getOrCreateBuilder(BlockTags.CARPETS).add(toArray(InspirationsTweaks.fitCarpets));
     this.getOrCreateBuilder(BlockTags.PIGLIN_REPELLENTS).add(InspirationsUtility.soulLeverWall, InspirationsUtility.soulLeverFloor);
+    this.getOrCreateBuilder(BlockTags.WALL_POST_OVERRIDE).add(
+            InspirationsUtility.torchLeverFloor, InspirationsUtility.torchLeverWall,
+            InspirationsUtility.soulLeverFloor, InspirationsUtility.soulLeverWall
+    );
   }
 
   /**

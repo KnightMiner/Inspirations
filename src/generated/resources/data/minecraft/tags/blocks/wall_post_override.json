@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "inspirations:torch_lever",
+    "inspirations:wall_torch_lever",
+    "inspirations:soul_torch_lever",
+    "inspirations:wall_soul_torch_lever"
+  ]
+}
