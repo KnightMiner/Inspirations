@@ -45,7 +45,7 @@ public class TorchLeverBlock extends TorchBlock {
     double y = pos.getY() + 0.7D;
     double z = pos.getZ() + 0.5D;
 
-    // particleData is the appropriate flame particle.
+    // particleData is the appropriate flame particle passed to the constructor.
     if (isPowered(state)) {
       int offsetX = swing.getXOffset();
       int offsetZ = swing.getZOffset();

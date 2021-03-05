@@ -50,12 +50,13 @@ public class TorchLeverWallBlock extends WallTorchBlock {
     Direction opposite = facing.getOpposite();
     int offsetX = opposite.getXOffset();
     int offsetZ = opposite.getZOffset();
+    // particleData is the appropriate flame particle passed to the constructor.
     if (state.get(POWERED)) {
       world.addParticle(ParticleTypes.SMOKE, x + 0.10D * offsetX, y + 0.08D, z + 0.10D * offsetZ, 0.0D, 0.0D, 0.0D);
-      world.addParticle(ParticleTypes.FLAME, x + 0.10D * offsetX, y + 0.08D, z + 0.10D * offsetZ, 0.0D, 0.0D, 0.0D);
+      world.addParticle(particleData, x + 0.10D * offsetX, y + 0.08D, z + 0.10D * offsetZ, 0.0D, 0.0D, 0.0D);
     } else {
       world.addParticle(ParticleTypes.SMOKE, x + 0.27D * offsetX, y + 0.22D, z + 0.27D * offsetZ, 0.0D, 0.0D, 0.0D);
-      world.addParticle(ParticleTypes.FLAME, x + 0.27D * offsetX, y + 0.22D, z + 0.27D * offsetZ, 0.0D, 0.0D, 0.0D);
+      world.addParticle(particleData, x + 0.27D * offsetX, y + 0.22D, z + 0.27D * offsetZ, 0.0D, 0.0D, 0.0D);
     }
   }
 
