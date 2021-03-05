@@ -21,6 +21,8 @@ public class UtilityClientEvents extends ClientEvents {
     RenderType cutout = RenderType.getCutout();
     setRenderLayer(InspirationsUtility.torchLeverFloor, cutout);
     setRenderLayer(InspirationsUtility.torchLeverWall, cutout);
+    setRenderLayer(InspirationsUtility.soulLeverFloor, cutout);
+    setRenderLayer(InspirationsUtility.soulLeverWall, cutout);
   }
 
   @SubscribeEvent

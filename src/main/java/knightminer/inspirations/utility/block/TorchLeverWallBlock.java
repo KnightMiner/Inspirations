@@ -1,11 +1,13 @@
 package knightminer.inspirations.utility.block;
 
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.WallTorchBlock;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.particles.IParticleData;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.DirectionProperty;
@@ -27,15 +29,8 @@ public class TorchLeverWallBlock extends WallTorchBlock {
   private static final BooleanProperty POWERED = BlockStateProperties.POWERED;
   public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
 
-  public TorchLeverWallBlock() {
-    super(Block.Properties
-              .create(Material.MISCELLANEOUS)
-              .doesNotBlockMovement()
-              .hardnessAndResistance(0)
-              .setLightLevel(state -> 14)
-              .tickRandomly()
-              .sound(SoundType.WOOD), ParticleTypes.FLAME
-         );
+  public TorchLeverWallBlock(AbstractBlock.Properties props, IParticleData particles) {
+    super(props, particles);
     setDefaultState(getDefaultState().with(POWERED, false));
   }
 

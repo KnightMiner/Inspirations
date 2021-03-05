@@ -1,11 +1,11 @@
 package knightminer.inspirations.utility.block;
 
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.SoundType;
 import net.minecraft.block.TorchBlock;
-import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.particles.IParticleData;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.state.DirectionProperty;
 import net.minecraft.state.StateContainer;
@@ -24,15 +24,8 @@ import java.util.Random;
 public class TorchLeverBlock extends TorchBlock {
   private static final DirectionProperty SWING = DirectionProperty.create("swing", (dir) -> dir != Direction.DOWN);
 
-  public TorchLeverBlock() {
-    super(Block.Properties
-              .create(Material.MISCELLANEOUS)
-              .doesNotBlockMovement()
-              .hardnessAndResistance(0)
-              .setLightLevel(state -> 14)
-              .tickRandomly()
-              .sound(SoundType.WOOD), ParticleTypes.FLAME
-         );
+  public TorchLeverBlock(AbstractBlock.Properties props, IParticleData particles) {
+    super(props, particles);
     setDefaultState(getDefaultState().with(SWING, Direction.UP));
   }
 
@@ -52,14 +45,15 @@ public class TorchLeverBlock extends TorchBlock {
     double y = pos.getY() + 0.7D;
     double z = pos.getZ() + 0.5D;
 
+    // particleData is the appropriate flame particle.
     if (isPowered(state)) {
       int offsetX = swing.getXOffset();
       int offsetZ = swing.getZOffset();
       world.addParticle(ParticleTypes.SMOKE, x + 0.23D * offsetX, y - 0.05D, z + 0.23D * offsetZ, 0.0D, 0.0D, 0.0D);
-      world.addParticle(ParticleTypes.FLAME, x + 0.23D * offsetX, y - 0.05D, z + 0.23D * offsetZ, 0.0D, 0.0D, 0.0D);
+      world.addParticle(particleData, x + 0.23D * offsetX, y - 0.05D, z + 0.23D * offsetZ, 0.0D, 0.0D, 0.0D);
     } else {
       world.addParticle(ParticleTypes.SMOKE, x, y, z, 0.0D, 0.0D, 0.0D);
-      world.addParticle(ParticleTypes.FLAME, x, y, z, 0.0D, 0.0D, 0.0D);
+      world.addParticle(particleData, x, y, z, 0.0D, 0.0D, 0.0D);
     }
   }
 
