@@ -84,6 +84,8 @@ public class InspirationsItemTagsProvider extends ItemTagsProvider {
     this.getOrCreateBuilder(ItemTags.ARROWS).add(InspirationsTools.redstoneArrow);
     this.copy(BlockTags.LEAVES, ItemTags.LEAVES);
     this.copy(BlockTags.WOODEN_TRAPDOORS, ItemTags.WOODEN_TRAPDOORS);
+    // Not copy(), we don't want to include the wall torch.
     this.getOrCreateBuilder(ItemTags.PIGLIN_REPELLENTS).add(InspirationsUtility.soulLeverItem);
+    this.getOrCreateBuilder(ItemTags.PIGLIN_LOVED).add(InspirationsTools.redstoneCharger);
   }
 }
