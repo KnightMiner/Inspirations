@@ -7,6 +7,7 @@ import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.recipes.data.VanillaEnum;
 import knightminer.inspirations.shared.InspirationsShared;
 import knightminer.inspirations.tools.InspirationsTools;
+import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraft.data.BlockTagsProvider;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.ItemTagsProvider;
@@ -83,5 +84,6 @@ public class InspirationsItemTagsProvider extends ItemTagsProvider {
     this.getOrCreateBuilder(ItemTags.ARROWS).add(InspirationsTools.redstoneArrow);
     this.copy(BlockTags.LEAVES, ItemTags.LEAVES);
     this.copy(BlockTags.WOODEN_TRAPDOORS, ItemTags.WOODEN_TRAPDOORS);
+    this.getOrCreateBuilder(ItemTags.PIGLIN_REPELLENTS).add(InspirationsUtility.soulLeverItem);
   }
 }
