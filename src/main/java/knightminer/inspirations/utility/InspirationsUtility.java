@@ -72,26 +72,23 @@ public class InspirationsUtility extends ModuleBase {
     BlockRegistryAdapter registry = new BlockRegistryAdapter(event.getRegistry());
     IForgeRegistry<Block> r = event.getRegistry();
 
-    AbstractBlock.Properties torchLeverProps = Block.Properties
-            .create(Material.MISCELLANEOUS)
-            .doesNotBlockMovement()
-            .zeroHardnessAndResistance()
-            .setLightLevel(state -> 14)
-            .tickRandomly()
-            .sound(SoundType.WOOD);
+    torchLeverFloor = registry.register(new TorchLeverBlock(
+            AbstractBlock.Properties.from(Blocks.TORCH).sound(SoundType.WOOD),
+            ParticleTypes.FLAME
+    ), "torch_lever");
+    torchLeverWall = registry.register(new TorchLeverWallBlock(
+            AbstractBlock.Properties.from(Blocks.WALL_TORCH).lootFrom(() -> torchLeverFloor),
+            ParticleTypes.FLAME
+    ), "wall_torch_lever");
 
-    AbstractBlock.Properties soulLeverProps = Block.Properties
-            .create(Material.MISCELLANEOUS)
-            .doesNotBlockMovement()
-            .zeroHardnessAndResistance()
-            .setLightLevel(state -> 10)
-            .sound(SoundType.WOOD);
-
-    torchLeverFloor = registry.register(new TorchLeverBlock(torchLeverProps, ParticleTypes.FLAME), "torch_lever");
-    torchLeverWall = registry.register(new TorchLeverWallBlock(torchLeverProps, ParticleTypes.FLAME), "wall_torch_lever");
-
-    soulLeverFloor = registry.register(new TorchLeverBlock(soulLeverProps, ParticleTypes.SOUL_FIRE_FLAME), "soul_torch_lever");
-    soulLeverWall = registry.register(new TorchLeverWallBlock(soulLeverProps, ParticleTypes.SOUL_FIRE_FLAME), "wall_soul_torch_lever");
+    soulLeverFloor = registry.register(new TorchLeverBlock(
+            AbstractBlock.Properties.from(Blocks.SOUL_TORCH),
+            ParticleTypes.SOUL_FIRE_FLAME
+    ), "soul_torch_lever");
+    soulLeverWall = registry.register(new TorchLeverWallBlock(
+            AbstractBlock.Properties.from(Blocks.SOUL_WALL_TORCH).lootFrom(() -> soulLeverFloor),
+            ParticleTypes.SOUL_FIRE_FLAME
+    ), "wall_soul_torch_lever");
 
     //bricksButton = registerBlock(r, new BricksButtonBlock(BricksButtonBlock.BRICK_BUTTON), "bricks_button");
     //netherBricksButton = registerBlock(r, new BricksButtonBlock(BricksButtonBlock.NETHER_BUTTON), "nether_bricks_button");

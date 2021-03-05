@@ -83,7 +83,6 @@ public class InspirationsBlockLootTable extends BlockLootTables {
   }
 
   private void addTools() {
-    // func_218482 = droppingNothing()
     this.registerLootTable(InspirationsTools.redstoneCharge, blockNoDrop());
   }
 
@@ -112,8 +111,9 @@ public class InspirationsBlockLootTable extends BlockLootTables {
                                                       );
     this.registerDropSelfLootTable(InspirationsUtility.pipe);
     this.registerDropSelfLootTable(InspirationsUtility.collector);
+    // Wall blocks redirect to the floor table.
     this.registerDropping(InspirationsUtility.torchLeverFloor, InspirationsUtility.torchLeverItem);
-    this.registerDropping(InspirationsUtility.torchLeverWall, InspirationsUtility.torchLeverItem);
+    this.registerDropping(InspirationsUtility.soulLeverFloor, InspirationsUtility.soulLeverItem);
   }
 
   private LootTable.Builder rope(Block block) {

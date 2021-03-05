@@ -6,7 +6,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "inspirations:torch_lever"
+          "name": "inspirations:soul_torch_lever"
         }
       ],
       "conditions": [
