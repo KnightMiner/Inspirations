@@ -13,67 +13,67 @@ import java.util.List;
  * Dummy inventory, used to pass along the relevant state when an interaction occurs.
  */
 public class AnvilInventory implements IInventory {
-	private final List<ItemStack> items;
-	private final BlockState state;
+  private final List<ItemStack> items;
+  private final BlockState state;
 
-	public AnvilInventory(List<ItemStack> items, BlockState state) {
-		this.items = items;
-		this.state = state;
-	}
+  public AnvilInventory(List<ItemStack> items, BlockState state) {
+    this.items = items;
+    this.state = state;
+  }
 
-	public BlockState getState() {
-		return state;
-	}
+  public BlockState getState() {
+    return state;
+  }
 
-	public List<ItemStack> getItems() {
-		return items;
-	}
+  public List<ItemStack> getItems() {
+    return items;
+  }
 
-	@Nonnull
-	@Override
-	public ItemStack getStackInSlot(int index) {
-		return items.get(index);
-	}
+  @Nonnull
+  @Override
+  public ItemStack getStackInSlot(int index) {
+    return items.get(index);
+  }
 
-	@Override
-	public int getSizeInventory() {
-		return items.size();
-	}
+  @Override
+  public int getSizeInventory() {
+    return items.size();
+  }
 
-	@Override
-	public boolean isEmpty() {
-		return false;
-	}
+  @Override
+  public boolean isEmpty() {
+    return false;
+  }
 
-	@Nonnull
-	@Override
-	public ItemStack decrStackSize(int index, int count) {
-		return ItemStack.EMPTY;
-	}
+  @Nonnull
+  @Override
+  public ItemStack decrStackSize(int index, int count) {
+    return ItemStack.EMPTY;
+  }
 
-	@Nonnull
-	@Override
-	public ItemStack removeStackFromSlot(int index) {
-		return ItemStackHelper.getAndRemove(items, index);
-	}
+  @Nonnull
+  @Override
+  public ItemStack removeStackFromSlot(int index) {
+    return ItemStackHelper.getAndRemove(items, index);
+  }
 
-	@Override
-	public void setInventorySlotContents(int index, @Nonnull ItemStack stack) {
-		items.set(index, stack);
-	}
+  @Override
+  public void setInventorySlotContents(int index, @Nonnull ItemStack stack) {
+    items.set(index, stack);
+  }
 
-	@Override
-	public void markDirty() {
+  @Override
+  public void markDirty() {
 
-	}
+  }
 
-	@Override
-	public boolean isUsableByPlayer(@Nonnull PlayerEntity player) {
-		return false;
-	}
+  @Override
+  public boolean isUsableByPlayer(@Nonnull PlayerEntity player) {
+    return false;
+  }
 
-	@Override
-	public void clear() {
+  @Override
+  public void clear() {
 
-	}
+  }
 }
