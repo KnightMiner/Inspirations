@@ -17,6 +17,7 @@ import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ITag;
+import net.minecraft.tags.TagCollectionManager;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.crafting.IIngredientSerializer;
@@ -138,7 +139,7 @@ public abstract class BlockIngredient extends Ingredient {
 				return new BlockIngredientList(blocks, predicate);
 			} else if (json.has("tag")) {
 				ResourceLocation tagName = new ResourceLocation(JSONUtils.getString(json, "tag"));
-				ITag<Block> tag = BlockTags.getCollection().get(tagName);
+				ITag<Block> tag = TagCollectionManager.getManager().getBlockTags().get(tagName);
 				if (tag == null) {
 					throw new JsonSyntaxException("Unknown block tag '" + tagName + "'");
 				} else {
