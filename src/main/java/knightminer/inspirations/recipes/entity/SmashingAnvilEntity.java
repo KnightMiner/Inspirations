@@ -2,7 +2,6 @@ package knightminer.inspirations.recipes.entity;
 
 import knightminer.inspirations.library.recipe.RecipeTypes;
 import knightminer.inspirations.library.recipe.anvil.AnvilInventory;
-import knightminer.inspirations.library.recipe.anvil.AnvilRecipe;
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -87,7 +86,7 @@ public class SmashingAnvilEntity extends FallingBlockEntity implements IEntityAd
 			setMotion(this.getMotion().add(0.0D, -0.04D, 0.0D));
 		}
 
-		Vec3d motion = this.getMotion();
+		Vector3d motion = this.getMotion();
 		move(MoverType.SELF, motion);
 		if(!world.isRemote) {
 			BlockPos blockpos = this.getPosition();
