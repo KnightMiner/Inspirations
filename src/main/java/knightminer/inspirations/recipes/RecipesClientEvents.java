@@ -17,6 +17,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.ItemColors;
+import net.minecraft.client.renderer.entity.FallingBlockRenderer;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.inventory.container.PlayerContainer;
 import net.minecraft.resources.IReloadableResourceManager;
@@ -30,6 +31,7 @@ import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -55,6 +57,9 @@ public class RecipesClientEvents extends ClientEvents {
 
   @SubscribeEvent
   static void clientSetup(FMLClientSetupEvent event) {
+    // We can just use the original renderer.
+    RenderingRegistry.registerEntityRenderingHandler(InspirationsRecipes.smashingAnvil, FallingBlockRenderer::new);
+
     RenderTypeLookup.setRenderLayer(InspirationsRecipes.honey, RenderType.getTranslucent());
     RenderTypeLookup.setRenderLayer(InspirationsRecipes.honey.getFlowingFluid(), RenderType.getTranslucent());
     if (Config.extendedCauldron.getAsBoolean()) {
