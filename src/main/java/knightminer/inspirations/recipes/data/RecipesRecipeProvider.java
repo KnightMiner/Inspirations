@@ -40,6 +40,10 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.loot.ItemLootEntry;
+import net.minecraft.loot.LootPool;
+import net.minecraft.loot.RandomValueRange;
+import net.minecraft.loot.functions.SetCount;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.potion.Potions;
 import net.minecraft.tags.BlockTags;
@@ -518,6 +522,15 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
     AnvilRecipeBuilder.places(Blocks.ANDESITE).addIngredient(Blocks.POLISHED_ANDESITE).build(consumer);
     AnvilRecipeBuilder.places(Blocks.GRANITE).addIngredient(Blocks.POLISHED_GRANITE).build(consumer);
     AnvilRecipeBuilder.places(Blocks.DIORITE).addIngredient(Blocks.POLISHED_DIORITE).build(consumer);
+    AnvilRecipeBuilder.places(Blocks.BLACKSTONE).addIngredient(Blocks.POLISHED_BLACKSTONE).build(consumer, "blackstone_from_polished_anvil_smashing");
+    AnvilRecipeBuilder.places(Blocks.BLACKSTONE).addIngredient(Blocks.POLISHED_BLACKSTONE_BRICKS).build(consumer, "blackstone_from_bricks_anvil_smashing");
+
+    AnvilRecipeBuilder.smashes()
+            .addIngredient(Blocks.GILDED_BLACKSTONE)
+            .addLoot(ItemLootEntry.builder(Items.GOLD_NUGGET)
+                    .acceptFunction(SetCount.builder(RandomValueRange.of(2, 5)))
+            )
+            .build(consumer, "gold_from_gilded_blackstone");
 
     AnvilRecipeBuilder.places(Blocks.SAND).addIngredient(Blocks.SANDSTONE).build(consumer);
     AnvilRecipeBuilder.places(Blocks.RED_SAND).addIngredient(Blocks.RED_SANDSTONE).build(consumer);
