@@ -1,16 +1,22 @@
 package knightminer.inspirations.library.recipe.anvil;
 
+import com.google.common.collect.Lists;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.JsonOps;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.recipe.BlockIngredient;
 import knightminer.inspirations.library.recipe.RecipeSerializers;
 import knightminer.inspirations.library.recipe.RecipeTypes;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -19,10 +25,18 @@ import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.loot.LootContext;
+import net.minecraft.loot.LootEntry;
 import net.minecraft.loot.LootParameterSets;
 import net.minecraft.loot.LootParameters;
-import net.minecraft.loot.LootTable;
-import net.minecraft.loot.LootTables;
+import net.minecraft.loot.LootPool;
+import net.minecraft.loot.LootSerializers;
+import net.minecraft.loot.RandomRanges;
+import net.minecraft.loot.RandomValueRange;
+import net.minecraft.loot.conditions.ILootCondition;
+import net.minecraft.loot.functions.ILootFunction;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.INBT;
+import net.minecraft.nbt.NBTDynamicOps;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.state.Property;
 import net.minecraft.resources.IReloadableResourceManager;
@@ -40,8 +54,10 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -51,8 +67,24 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class AnvilRecipe implements IRecipe<AnvilInventory> {
+  // These are uppercase, which isn't allowed for namespaces so they won't conflict.
   /** Used for property values or block to indicate it should be copied from the existing state. */
-  public static final String FROM_INPUT = "<input>";
+  public static final String FROM_INPUT = "INPUT";
+
+  /** The kind of block transform to apply. */
+  public enum ConvertType {
+    /** Mine the block and drop contents. */
+    SMASH,
+    /** Convert to the specified blockstate. */
+    TRANSFORM,
+    /** Don't change the block, only change state. */
+    KEEP,
+  }
+
+  // GSON instance setup to handle loot tables.
+  public static final Gson GSON_LOOT = LootSerializers.func_237387_b_()
+          .registerTypeAdapter(LootPool.class, new LootPoolSerializer())
+          .create();
 
   /**
    * A list of all recipes, sorted by ingredient count.
@@ -65,17 +97,14 @@ public class AnvilRecipe implements IRecipe<AnvilInventory> {
   private final NonNullList<Ingredient> ingredients;
   private final String group;
 
+  /** The block to produce. */
+  private final ConvertType blockConvert;
+  /** The state to produce, if blockConvert==TRANSFORM. */
+  private final Block transformResult;
   /**
-   * The block to produce.
-   * If null, keep the existing block.
-   * If Blocks.AIR, just break the block.
-   * */
-  @Nullable
-  private final Block blockResult;
-  /**
-   * ID of the loot table used to generate items.
+   * Loot table pools used for item generation.
    */
-  private final ResourceLocation lootTable;
+  private final List<LootPool> lootPools;
   /**
    * Properties to assign to the result, unparsed.
    * If value == FROM_INPUT, copy over.
@@ -90,15 +119,17 @@ public class AnvilRecipe implements IRecipe<AnvilInventory> {
           ResourceLocation id,
           String group,
           NonNullList<Ingredient> ingredients,
-          @Nullable Block blockResult,
-          ResourceLocation lootTable,
+          ConvertType conversion,
+          Block transformResult,
+          List<LootPool> lootPools,
           List<Pair<String, String>> properties
   ) {
     this.id = id;
     this.group = group;
     this.ingredients = ingredients;
-    this.lootTable = lootTable;
-    this.blockResult = blockResult;
+    this.lootPools = lootPools;
+    this.blockConvert = conversion;
+    this.transformResult = transformResult;
     this.properties = properties;
   }
 
@@ -195,6 +226,19 @@ public class AnvilRecipe implements IRecipe<AnvilInventory> {
     }
   }
 
+  /** If a loot table is defined, suppress the drops from the block.
+   * The user can do those themselves if they want them.
+   */
+  public boolean allowRegularDrops() {
+    return lootPools.size() == 0;
+  }
+
+  /** Return the type of conversion this does. */
+  @Nonnull
+  public ConvertType getConversion() {
+    return blockConvert;
+  }
+
   /**
    *  Equivalent to getCraftingResult, but for blocks.
    * @param inv The inventory that was matched.
@@ -202,7 +246,19 @@ public class AnvilRecipe implements IRecipe<AnvilInventory> {
    */
   @Nonnull
   public BlockState getBlockResult(@Nonnull AnvilInventory inv) {
-    BlockState state = blockResult == null ? inv.getState() : blockResult.getDefaultState();
+    BlockState state;
+    switch(blockConvert) {
+      case TRANSFORM:
+        state = transformResult.getDefaultState();
+        break;
+      case KEEP:
+        state = inv.getState();
+        break;
+      case SMASH:
+        return Blocks.AIR.getDefaultState();
+      default:
+        throw new IllegalStateException(String.format("Unexpected blockConvert value %s for recipe %s", blockConvert, id));
+    }
 
     StateContainer<Block, BlockState> cont = state.getBlock().getStateContainer();
     StateContainer<Block, BlockState> inpContainer = inv.getState().getBlock().getStateContainer();
@@ -281,9 +337,9 @@ public class AnvilRecipe implements IRecipe<AnvilInventory> {
             .withParameter(LootParameters.TOOL, new ItemStack(Items.ANVIL))
             .withNullableParameter(LootParameters.BLOCK_ENTITY, world.getTileEntity(pos))
             .build(LootParameterSets.BLOCK);
-    // If invalid, it defaults to the empty table.
-    LootTable table = world.getServer().getLootTableManager().getLootTableFromLocation(lootTable);
-    table.generate(context, itemConsumer);
+    for (LootPool pool: lootPools) {
+      pool.generate(itemConsumer, context);
+    }
   }
 
   /**
@@ -342,9 +398,12 @@ public class AnvilRecipe implements IRecipe<AnvilInventory> {
     return ingredients;
   }
 
+  /**
+   * The recipe book cannot accept this.
+   */
   @Override
   public boolean isDynamic() {
-    return false;
+    return true;
   }
 
   @Nonnull
@@ -377,6 +436,27 @@ public class AnvilRecipe implements IRecipe<AnvilInventory> {
     return RecipeTypes.ANVIL;
   }
 
+  /**
+   * Forge hooks into the LootPool constructor to add a name, whcih breaks if you try deserializing by itself.
+   * So use the builder instead.
+   */
+  private static class LootPoolSerializer extends LootPool.Serializer {
+    @Nonnull
+    public LootPool deserialize(@Nonnull JsonElement jsonElement, @Nonnull Type type, @Nonnull JsonDeserializationContext ctx) throws JsonParseException {
+      LootPool.Builder builder = LootPool.builder();
+      JsonObject json = JSONUtils.getJsonObject(jsonElement, "loot pool");
+      builder.entries = Lists.newArrayList(JSONUtils.deserializeClass(json, "entries", ctx, LootEntry[].class));
+      builder.conditions = Lists.newArrayList(JSONUtils.deserializeClass(json, "conditions", new ILootCondition[0], ctx, ILootCondition[].class));
+      builder.functions = Lists.newArrayList(JSONUtils.deserializeClass(json, "functions", new ILootFunction[0], ctx, ILootFunction[].class));
+      builder.rolls(RandomRanges.deserialize(json.get("rolls"), ctx));
+      if (json.has("bonus_rolls")) {
+        RandomValueRange bonus_rolls = JSONUtils.deserializeClass(json, "bonus_rolls", new RandomValueRange(0.0F, 0.0F), ctx, RandomValueRange.class);
+        builder.bonusRolls(bonus_rolls.getMin(), bonus_rolls.getMax());
+      }
+      return builder.build();
+    }
+  }
+
   public static class Serializer
           extends net.minecraftforge.registries.ForgeRegistryEntry<IRecipeSerializer<?>>
           implements IRecipeSerializer<AnvilRecipe>
@@ -396,18 +476,23 @@ public class AnvilRecipe implements IRecipe<AnvilInventory> {
 
       // Generate the output blockstate.
       JsonObject result = JSONUtils.getJsonObject(json, "result");
-      String blockName = JSONUtils.getString(result, "block", FROM_INPUT);
 
-      Block block;
-
-      if (blockName.equals(FROM_INPUT)) {
-        // We keep the block, maybe tranferring properties.
-        block = null;
-      } else {
+      Block block = Blocks.AIR;
+      ConvertType convertType;
+      if (result.has("block")) {
+        convertType = ConvertType.TRANSFORM;
+        String blockName = JSONUtils.getString(result, "block");
         block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(blockName));
-        if (block == null) {
+        if(block == null) {
           throw new JsonParseException("Unknown block \"" + blockName + "\"");
         }
+        // Only treat vanilla air specially, users might want to spawn modded "air" blocks
+        // specifically for other reasons.
+        if(block == Blocks.AIR || block == Blocks.CAVE_AIR || block == Blocks.VOID_AIR) {
+          convertType = ConvertType.SMASH;
+        }
+      } else {
+        convertType = ConvertType.KEEP;
       }
 
       JsonObject props = JSONUtils.getJsonObject(result, "properties", new JsonObject());
@@ -419,59 +504,84 @@ public class AnvilRecipe implements IRecipe<AnvilInventory> {
         propsMap.add(Pair.of(entry.getKey(), entry.getValue().getAsString()));
       }
 
-      ResourceLocation lootTable = LootTables.EMPTY;
-      if (result.has("loot")) {
-        lootTable = new ResourceLocation(JSONUtils.getString(result, "loot"));
+      if (convertType == ConvertType.KEEP && props.size() == 0) {
+        throw new JsonParseException("Block result must either change block type or alter properties!");
       }
 
-      return new AnvilRecipe(recipeId, group, inputs, block, lootTable, propsMap);
+      List<LootPool> lootPools = Collections.emptyList();
+      if (result.has("pools")) {
+        lootPools = new ArrayList<>();
+        JsonArray pools = JSONUtils.getJsonArray(result, "pools");
+        for (JsonElement pool: pools) {
+          lootPools.add(GSON_LOOT.fromJson(pool, LootPool.class));
+        }
+      }
+
+      return new AnvilRecipe(recipeId, group, inputs, convertType, block, lootPools, propsMap);
     }
 
     @Nullable
     @Override
     public AnvilRecipe read(@Nonnull ResourceLocation recipeId, @Nonnull PacketBuffer buffer) {
-      String group = buffer.readString();
-      ResourceLocation itemResult = buffer.readResourceLocation();
-      String blockResultName = buffer.readString();
-      Block blockResult;
-      if(blockResultName.isEmpty()) {
-        blockResult = null;
-      } else {
-        // Should never be missing, since we've already validated it.
-        blockResult = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(blockResultName));
-      }
-
+      ConvertType convertType = buffer.readEnumValue(ConvertType.class);
       int ingredientCount = buffer.readVarInt();
       int propsCount = buffer.readVarInt();
+      int poolsCount = buffer.readVarInt();
+      String group = buffer.readString();
+
+      Block blockResult = Blocks.AIR;
+      if (convertType == ConvertType.TRANSFORM) {
+        // Should never be missing, since we've already validated it.
+        blockResult = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(buffer.readString()));
+      }
 
       NonNullList<Ingredient> inputs = NonNullList.withSize(ingredientCount, Ingredient.EMPTY);
       for(int i = 0; i < ingredientCount; i++) {
         inputs.set(i, Ingredient.read(buffer));
       }
-      List<Pair<String, String>> props = new ArrayList<>(propsCount);
-      for(int i = 0; i < propsCount; i++) {
-        props.add(Pair.of(buffer.readString(), buffer.readString()));
+      List<Pair<String, String>> props = Collections.emptyList();
+      if (propsCount > 0) {
+        props = new ArrayList<>(propsCount);
+        for(int i = 0; i < propsCount; i++) {
+          props.add(Pair.of(buffer.readString(), buffer.readString()));
+        }
       }
-      return new AnvilRecipe(recipeId, group, inputs, blockResult, itemResult, props);
+      List<LootPool> lootPools = Collections.emptyList();
+      if (poolsCount > 0) {
+        lootPools = new ArrayList<>(poolsCount);
+        for(int i = 0; i < poolsCount; i++) {
+          CompoundNBT nbt = buffer.readCompoundTag();
+          JsonElement json = Dynamic.convert(NBTDynamicOps.INSTANCE, JsonOps.INSTANCE, nbt);
+          lootPools.add(GSON_LOOT.fromJson(json, LootPool.class));
+        }
+      }
+      return new AnvilRecipe(recipeId, group, inputs, convertType, blockResult, lootPools, props);
     }
 
     @Override
     public void write(PacketBuffer buffer, AnvilRecipe recipe) {
-      buffer.writeString(recipe.group);
-      buffer.writeResourceLocation(recipe.lootTable);
-      if (recipe.blockResult == null) { // Copy result
-        buffer.writeString("");
-      } else {
-        buffer.writeString(recipe.blockResult.getRegistryName().toString());
-      }
+      buffer.writeEnumValue(recipe.blockConvert);
       buffer.writeVarInt(recipe.ingredients.size());
       buffer.writeVarInt(recipe.properties.size());
+      buffer.writeVarInt(recipe.lootPools.size());
+      buffer.writeString(recipe.group);
+
+      // We only need block type when transforming, so don't bother writing otherwise.
+      if (recipe.blockConvert == ConvertType.TRANSFORM) {
+        buffer.writeString(recipe.transformResult.getRegistryName().toString());
+      }
       for(Ingredient ingredient: recipe.ingredients) {
         ingredient.write(buffer);
       }
       for(Pair<String, String> prop: recipe.properties) {
         buffer.writeString(prop.getFirst());
         buffer.writeString(prop.getSecond());
+      }
+      // This is a bit expensive, but loot pools should be fairly rare.
+      for (LootPool pool: recipe.lootPools) {
+        JsonElement json = GSON_LOOT.toJsonTree(pool);
+        INBT nbt = Dynamic.convert(JsonOps.INSTANCE, NBTDynamicOps.INSTANCE, json);
+        buffer.writeCompoundTag((CompoundNBT) nbt);
       }
     }
   }

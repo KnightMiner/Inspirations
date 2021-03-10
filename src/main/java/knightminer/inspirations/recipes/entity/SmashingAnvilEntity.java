@@ -190,9 +190,8 @@ public class SmashingAnvilEntity extends FallingBlockEntity implements IEntityAd
 					item
 			));
 
-			// if the result is air, break the block
-			if(transformation.getBlock() == Blocks.AIR) {
-				world.destroyBlock(pos, true);
+			if(recipe.getConversion() == AnvilRecipe.ConvertType.SMASH) {
+				world.destroyBlock(pos, recipe.allowRegularDrops());
 				return SmashResult.PASSTHROUGH;
 			} else {
 				// breaking particles

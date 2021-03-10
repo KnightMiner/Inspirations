@@ -14,6 +14,11 @@ import net.minecraft.data.IFinishedRecipe;
 import net.minecraft.item.Item;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.loot.ConstantRange;
+import net.minecraft.loot.ItemLootEntry;
+import net.minecraft.loot.LootEntry;
+import net.minecraft.loot.LootPool;
+import net.minecraft.loot.functions.SetCount;
 import net.minecraft.state.Property;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tags.ITag;
@@ -21,7 +26,6 @@ import net.minecraft.util.IItemProvider;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -32,25 +36,32 @@ public class AnvilRecipeBuilder {
 	private final List<Ingredient> ingredients;
 	private final List<Pair<String, String>> properties;
 	private String group = "";
-	@Nullable
+	private final AnvilRecipe.ConvertType convertType;
 	private final Block result;
+	private final List<LootPool> pools;
 
-	private AnvilRecipeBuilder(@Nullable Block res) {
+	private AnvilRecipeBuilder(AnvilRecipe.ConvertType convType, Block res) {
+		convertType = convType;
 		result = res;
 		ingredients = new ArrayList<>();
 		properties = new ArrayList<>();
+		pools = new ArrayList<>();
 	}
 
 	public static AnvilRecipeBuilder copiesInput() {
-		return new AnvilRecipeBuilder(null);
+		return new AnvilRecipeBuilder(AnvilRecipe.ConvertType.KEEP, Blocks.AIR);
 	}
 
 	public static AnvilRecipeBuilder places(@Nonnull Block block) {
-		return new AnvilRecipeBuilder(block);
+		if (block == Blocks.AIR || block == Blocks.CAVE_AIR || block == Blocks.VOID_AIR) {
+			throw new IllegalArgumentException("Use smashes() instead, to be more clear.");
+		}
+		return new AnvilRecipeBuilder(AnvilRecipe.ConvertType.TRANSFORM, block);
 	}
 
+	/** Mines block */
 	public static AnvilRecipeBuilder smashes() {
-		return new AnvilRecipeBuilder(Blocks.AIR);
+		return new AnvilRecipeBuilder(AnvilRecipe.ConvertType.SMASH, Blocks.AIR);
 	}
 
 	public AnvilRecipeBuilder group(String name) {
@@ -86,6 +97,31 @@ public class AnvilRecipeBuilder {
 	public AnvilRecipeBuilder addIngredient(IItemProvider item) {
 		ingredients.add(Ingredient.fromItems(item));
 		return this;
+	}
+
+	public AnvilRecipeBuilder addLoot(LootPool pool) {
+		pools.add(pool);
+		return this;
+	}
+
+	public AnvilRecipeBuilder addLoot(LootPool.Builder pool) {
+		pools.add(pool.build());
+		return this;
+	}
+
+	public AnvilRecipeBuilder addLoot(LootEntry.Builder<?> entry) {
+		pools.add(LootPool.builder().addEntry(entry).build());
+		return this;
+	}
+
+	public AnvilRecipeBuilder addLoot(IItemProvider item, int quantity) {
+		return addLoot(ItemLootEntry.builder(item)
+						.acceptFunction(SetCount.builder(ConstantRange.of(quantity)))
+		);
+	}
+
+	public AnvilRecipeBuilder addLoot(IItemProvider item) {
+		return addLoot(ItemLootEntry.builder(item));
 	}
 
 	public AnvilRecipeBuilder addTaggedItem(ITag<Item> itemTag) {
@@ -146,7 +182,10 @@ public class AnvilRecipeBuilder {
 		if (ingredients.size() == 0) {
 			throw new IllegalStateException("Recipe must have at least one ingredient!");
 		}
-		if (result == Blocks.AIR) {
+		if (convertType == AnvilRecipe.ConvertType.KEEP && properties.size() == 0) {
+			throw new IllegalStateException("If recipe keeps input block, properties should be set to change it!");
+		}
+		if (convertType == AnvilRecipe.ConvertType.SMASH) {
 			id = new ResourceLocation(id.getNamespace(), "anvil_smash_" + id.getPath());
 		} else if (!id.getPath().contains("anvil")) {
 			id = new ResourceLocation(id.getNamespace(), id.getPath() + "_from_anvil_smashing");
@@ -154,7 +193,9 @@ public class AnvilRecipeBuilder {
 		consumer.accept(new Finished(
 				id,
 				ingredients,
+				convertType,
 				result,
+				pools,
 				properties,
 				group
 		));
@@ -167,9 +208,11 @@ public class AnvilRecipeBuilder {
 	// Same name as the item.
 	public void build(Consumer<IFinishedRecipe> consumer) {
 		ResourceLocation id;
-		if (result == null) {
+		if (convertType == AnvilRecipe.ConvertType.KEEP) {
 			throw new IllegalStateException("Save location required for recipe which copies input block!");
-		} else if (result == Blocks.AIR) {
+		} else if (convertType == AnvilRecipe.ConvertType.TRANSFORM) {
+			id = result.getRegistryName();
+		} else {
 			// Copy the first block input's ID.
 			id = null;
 			for(Ingredient ing: ingredients) {
@@ -187,8 +230,6 @@ public class AnvilRecipeBuilder {
 					}
 				}
 			}
-		} else {
-			id = result.getRegistryName();
 		}
 		if (id == null) {
 			throw new IllegalStateException("Could not infer save location for smashing recipe!");
@@ -201,23 +242,27 @@ public class AnvilRecipeBuilder {
 		private final ResourceLocation id;
 		private final List<Ingredient> ingredients;
 		private final String group;
-		// If null, keep the existing block.
-		@Nullable
+		private final AnvilRecipe.ConvertType convertType;
 		private final Block result;
+		private final List<LootPool> pools;
 		// Properties to assign to the result
 		private final List<Pair<String, String>> properties;
 
 		private Finished(
 				ResourceLocation id,
 				List<Ingredient> ingredients,
-				@Nullable Block result,
+				AnvilRecipe.ConvertType convertType,
+				Block result,
+				List<LootPool> pools,
 				List<Pair<String, String>> properties,
 				String group
 		) {
 			this.id = id;
 			this.ingredients = ingredients;
 			this.group = group;
+			this.convertType = convertType;
 			this.result = result;
+			this.pools = pools;
 			this.properties = properties;
 		}
 
@@ -228,15 +273,25 @@ public class AnvilRecipeBuilder {
 			}
 			JsonObject result = new JsonObject();
 			json.add("result", result);
-			if (this.result == null) {
-				result.addProperty("block", AnvilRecipe.FROM_INPUT);
-			} else {
-				result.addProperty("block", this.result.getRegistryName().toString());
+			switch(convertType) {
+				case SMASH:
+					result.addProperty("block", Blocks.AIR.getRegistryName().toString());
+					break;
+				case TRANSFORM:
+					result.addProperty("block", this.result.getRegistryName().toString());
+					break;
 			}
 			if (properties.size() > 0) {
 				JsonObject props = new JsonObject();
 				properties.forEach(prop -> props.addProperty(prop.getFirst(), prop.getSecond()));
 				result.add("properties", props);
+			}
+			if (pools.size() > 0) {
+				JsonArray poolArray = new JsonArray();
+				for(LootPool pool: pools) {
+					poolArray.add(AnvilRecipe.GSON_LOOT.toJsonTree(pool));
+				}
+				result.add("pools", poolArray);
 			}
 
 			json.add("ingredients", ingredients.stream()
