@@ -512,9 +512,9 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
   }
 
   private void addAnvilRecipes() {
-    AnvilRecipeBuilder.places(Blocks.COBBLESTONE).addIngredient(Blocks.STONE).build(consumer, "cobble_from_stone_anvil_smashing");
-    AnvilRecipeBuilder.places(Blocks.COBBLESTONE).addIngredient(Blocks.STONE_BRICKS).build(consumer, "cobble_from_bricks_anvil_smashing");
-    AnvilRecipeBuilder.places(Blocks.COBBLESTONE).addIngredient(Blocks.SMOOTH_STONE).build(consumer, "cobble_from_smooth_stone_anvil_smashing");
+    AnvilRecipeBuilder.places(Blocks.COBBLESTONE).addIngredient(Blocks.STONE).build(consumer, "cobble_from_stone");
+    AnvilRecipeBuilder.places(Blocks.COBBLESTONE).addIngredient(Blocks.STONE_BRICKS).build(consumer, "cobble_from_bricks");
+    AnvilRecipeBuilder.places(Blocks.COBBLESTONE).addIngredient(Blocks.SMOOTH_STONE).build(consumer, "cobble_from_smooth_stone");
     AnvilRecipeBuilder.places(Blocks.MOSSY_COBBLESTONE).addIngredient(Blocks.MOSSY_STONE_BRICKS).build(consumer);
     AnvilRecipeBuilder.places(Blocks.PRISMARINE).addIngredient(Blocks.PRISMARINE_BRICKS).build(consumer);
     AnvilRecipeBuilder.places(Blocks.END_STONE).addIngredient(Blocks.END_STONE_BRICKS).build(consumer);
@@ -522,8 +522,8 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
     AnvilRecipeBuilder.places(Blocks.ANDESITE).addIngredient(Blocks.POLISHED_ANDESITE).build(consumer);
     AnvilRecipeBuilder.places(Blocks.GRANITE).addIngredient(Blocks.POLISHED_GRANITE).build(consumer);
     AnvilRecipeBuilder.places(Blocks.DIORITE).addIngredient(Blocks.POLISHED_DIORITE).build(consumer);
-    AnvilRecipeBuilder.places(Blocks.BLACKSTONE).addIngredient(Blocks.POLISHED_BLACKSTONE).build(consumer, "blackstone_from_polished_anvil_smashing");
-    AnvilRecipeBuilder.places(Blocks.BLACKSTONE).addIngredient(Blocks.POLISHED_BLACKSTONE_BRICKS).build(consumer, "blackstone_from_bricks_anvil_smashing");
+    AnvilRecipeBuilder.places(Blocks.BLACKSTONE).addIngredient(Blocks.POLISHED_BLACKSTONE).build(consumer, "blackstone_from_polished");
+    AnvilRecipeBuilder.places(Blocks.BLACKSTONE).addIngredient(Blocks.POLISHED_BLACKSTONE_BRICKS).build(consumer, "blackstone_from_bricks");
 
     AnvilRecipeBuilder.smashes()
             .addIngredient(Blocks.GILDED_BLACKSTONE)

@@ -186,9 +186,9 @@ public class AnvilRecipeBuilder {
       throw new IllegalStateException("If recipe keeps input block, properties should be set to change it!");
     }
     if (convertType == AnvilRecipe.ConvertType.SMASH) {
-      id = new ResourceLocation(id.getNamespace(), "anvil_smash_" + id.getPath());
-    } else if (!id.getPath().contains("anvil")) {
-      id = new ResourceLocation(id.getNamespace(), id.getPath() + "_from_anvil_smashing");
+      id = new ResourceLocation(id.getNamespace(), "anvil/smash_" + id.getPath());
+    } else {
+      id = new ResourceLocation(id.getNamespace(), "anvil/" + id.getPath());
     }
     consumer.accept(new Finished(
         id,
