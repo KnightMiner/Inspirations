@@ -75,22 +75,22 @@ public class AnvilRecipeBuilder {
   }
 
   public AnvilRecipeBuilder addIngredient(Block block) {
-    ingredients.add(new BlockIngredient.BlockIngredientList(Collections.singletonList(block), StatePropertiesPredicate.EMPTY));
+    ingredients.add(new BlockIngredient.BlockIngredientList(Collections.singletonList(block), Collections.emptyList()));
     return this;
   }
 
-  public AnvilRecipeBuilder addIngredient(Block block, StatePropertiesPredicate pred) {
-    ingredients.add(new BlockIngredient.BlockIngredientList(Collections.singletonList(block), pred));
+  public AnvilRecipeBuilder addIngredient(Block block, StatePropertiesPredicate... preds) {
+    ingredients.add(new BlockIngredient.BlockIngredientList(Collections.singletonList(block), preds));
     return this;
   }
 
   public AnvilRecipeBuilder addIngredient(ITag.INamedTag<Block> blockTag) {
-    ingredients.add(new BlockIngredient.TaggedBlockIngredient(blockTag, StatePropertiesPredicate.EMPTY));
+    ingredients.add(new BlockIngredient.TaggedBlockIngredient(blockTag, Collections.emptyList()));
     return this;
   }
 
-  public AnvilRecipeBuilder addIngredient(ITag.INamedTag<Block> blockTag, StatePropertiesPredicate pred) {
-    ingredients.add(new BlockIngredient.TaggedBlockIngredient(blockTag, pred));
+  public AnvilRecipeBuilder addIngredient(ITag.INamedTag<Block> blockTag, StatePropertiesPredicate... preds) {
+    ingredients.add(new BlockIngredient.TaggedBlockIngredient(blockTag, preds));
     return this;
   }
 

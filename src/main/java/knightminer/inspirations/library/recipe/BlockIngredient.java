@@ -26,24 +26,26 @@ import net.minecraftforge.registries.ForgeRegistries;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collector;
 import java.util.stream.Stream;
 
 public abstract class BlockIngredient extends Ingredient {
 	public static final ResourceLocation INGREDIENT_ID = Inspirations.getResource("blockstate");
-	public final StatePropertiesPredicate predicate;
+	public final List<StatePropertiesPredicate> predicates;
 
-	protected BlockIngredient(StatePropertiesPredicate blockstateMatcher) {
+	protected BlockIngredient(List<StatePropertiesPredicate> blockstateMatchers) {
 		super(Stream.empty());
-		this.predicate = blockstateMatcher;
+		this.predicates = blockstateMatchers;
 	}
 
 	protected abstract boolean matchesBlock(Block block);
 	protected abstract Pair<String, JsonElement> getJSON();
 
 	@Nonnull
-	protected abstract List<Block> getMatchingBlocks();
+	public abstract List<Block> getMatchingBlocks();
 
 	@Override
 	public boolean isSimple() {
@@ -86,7 +88,9 @@ public abstract class BlockIngredient extends Ingredient {
 		if (!matchesBlock(state.getBlock())) {
 			return false;
 		}
-		return predicate.matches(state);
+		// No predicates = pass, or if we have multiple this ORs them together.
+		// Each predicate internally ANDs individual properties.
+		return predicates.size() == 0 || predicates.stream().anyMatch(pred -> pred.matches(state));
 	}
 
 	@Nonnull
@@ -98,7 +102,14 @@ public abstract class BlockIngredient extends Ingredient {
 		Pair<String, JsonElement> blockData = getJSON();
 		result.add(blockData.getFirst(), blockData.getSecond());
 
-		result.add("properties", predicate.toJsonElement());
+		if (predicates.size() == 1) {
+			result.add("properties", predicates.get(0).toJsonElement());
+		} else if (predicates.size() > 1) {
+			result.add("properties", predicates.stream()
+							.map(StatePropertiesPredicate::toJsonElement)
+							.collect(Collector.of(JsonArray::new, JsonArray::add, (a, b) -> {a.addAll(b); return  a;}))
+			);
+		}
 		return result;
 	}
 
@@ -115,11 +126,23 @@ public abstract class BlockIngredient extends Ingredient {
 		@Nonnull
 		@Override
 		public BlockIngredient parse(@Nonnull JsonObject json) {
-			JsonObject props = JSONUtils.getJsonObject(json, "properties", new JsonObject());
-			StatePropertiesPredicate predicate = StatePropertiesPredicate.deserializeProperties(props);
+			JsonElement props = json.get("properties");
+			List<StatePropertiesPredicate> predicates;
+			if (props == null) {
+				predicates = Collections.emptyList();
+			} else if (props.isJsonArray()) {
+				predicates = new ArrayList<>(props.getAsJsonArray().size());
+				for(JsonElement pred : props.getAsJsonArray()) {
+					predicates.add(StatePropertiesPredicate.deserializeProperties(pred));
+				}
+			} else if (props.isJsonObject()) {
+				predicates = Collections.singletonList(StatePropertiesPredicate.deserializeProperties(props));
+			} else {
+				throw new JsonParseException("Blockstate properties must be an object or a list of property objects!");
+			}
 
 			if (json.has("block") && json.has("tag")) {
-				throw new JsonParseException("A Block Ingredient entry is either a tag or a block, not both");
+				throw new JsonParseException("A Block Ingredient entry is either a tag or a block, not both.");
 			} else if (json.has("block")) {
 				Iterable<JsonElement> blockElems;
 				JsonElement array = json.get("block");
@@ -136,14 +159,14 @@ public abstract class BlockIngredient extends Ingredient {
 					}
 					blocks.add(ForgeRegistries.BLOCKS.getValue(blockName));
 				}
-				return new BlockIngredientList(blocks, predicate);
+				return new BlockIngredientList(blocks, predicates);
 			} else if (json.has("tag")) {
 				ResourceLocation tagName = new ResourceLocation(JSONUtils.getString(json, "tag"));
 				ITag<Block> tag = TagCollectionManager.getManager().getBlockTags().get(tagName);
 				if (tag == null) {
 					throw new JsonSyntaxException("Unknown block tag '" + tagName + "'");
 				} else {
-					return new TaggedBlockIngredient(tag, predicate);
+					return new TaggedBlockIngredient(tag, predicates);
 				}
 			} else {
 				throw new JsonParseException("An Block Ingredient entry needs either a tag or a block");
@@ -153,26 +176,36 @@ public abstract class BlockIngredient extends Ingredient {
 		@Nonnull
 		@Override
 		public BlockIngredient parse(@Nonnull PacketBuffer buffer) {
-			JsonObject predicateData = JSONUtils.fromJson(buffer.readString(32768));
-			StatePropertiesPredicate predicate = StatePropertiesPredicate.deserializeProperties(predicateData.getAsJsonObject(""));
-			int size = buffer.readVarInt();
-			List<Block> blocks = new ArrayList<>(size);
-			for(int i = 0; i < size; i++) {
+			int blockSize = buffer.readVarInt();
+			int predSize = buffer.readVarInt();
+
+			List<Block> blocks = new ArrayList<>(blockSize);
+			List<StatePropertiesPredicate> predicates = new ArrayList<>(predSize);
+
+			for(int i = 0; i < blockSize; i++) {
 				blocks.add(buffer.readRegistryIdUnsafe(ForgeRegistries.BLOCKS));
 			}
-			return new BlockIngredientList(blocks, predicate);
+			for(int i = 0; i < predSize; i++) {
+				JsonObject predicateData = JSONUtils.fromJson(buffer.readString(32768));
+				predicates.add(StatePropertiesPredicate.deserializeProperties(predicateData.getAsJsonObject("")));
+			}
+			return new BlockIngredientList(blocks, predicates);
 		}
 
 		@Override
 		public void write(@Nonnull PacketBuffer buffer, @Nonnull BlockIngredient ingredient) {
-			// This is ugly, but we'd otherwise need to mess with the internals to get out the data.
-			JsonObject predicateData = new JsonObject();
-			predicateData.add("", ingredient.predicate.toJsonElement());
-			buffer.writeString(predicateData.toString());
 			List<Block> blocks = ingredient.getMatchingBlocks();
+
+			buffer.writeVarInt(ingredient.predicates.size());
 			buffer.writeVarInt(blocks.size());
 			for(Block block: blocks) {
 				buffer.writeRegistryIdUnsafe(ForgeRegistries.BLOCKS, block);
+			}
+			for(StatePropertiesPredicate pred: ingredient.predicates) {
+				// This is ugly, but we'd otherwise need to mess with the internals to get out the data.
+				JsonObject predicateData = new JsonObject();
+				predicateData.add("", pred.toJsonElement());
+				buffer.writeString(predicateData.toString());
 			}
 		}
 	}
@@ -180,17 +213,17 @@ public abstract class BlockIngredient extends Ingredient {
 	public static class BlockIngredientList extends BlockIngredient {
 		public final List<Block> blocks;
 
-		public BlockIngredientList(List<Block> blocks, StatePropertiesPredicate predicate) {
-			super(predicate);
+		public BlockIngredientList(List<Block> blocks, List<StatePropertiesPredicate> predicates) {
+			super(predicates);
 			this.blocks = blocks;
 		}
-		public BlockIngredientList(Block block, StatePropertiesPredicate predicate) {
-			super(predicate);
-			this.blocks = Collections.singletonList(block);
+		public BlockIngredientList(List<Block> blocks, StatePropertiesPredicate... predicates) {
+			super(Arrays.asList(predicates));
+			this.blocks = blocks;
 		}
 
-		public BlockIngredientList(ResourceLocation blockName, StatePropertiesPredicate predicate) {
-			super(predicate);
+		public BlockIngredientList(ResourceLocation blockName, StatePropertiesPredicate... predicates) {
+			super(Arrays.asList(predicates));
 			Block block = ForgeRegistries.BLOCKS.getValue(blockName);
 			if (block == null) {
 				throw new JsonSyntaxException("Unknown block '" + blockName + "'");
@@ -200,8 +233,8 @@ public abstract class BlockIngredient extends Ingredient {
 
 		@Nonnull
 		@Override
-		protected List<Block> getMatchingBlocks() {
-			return blocks;
+		public List<Block> getMatchingBlocks() {
+			return Collections.unmodifiableList(blocks);
 		}
 
 		@Override
@@ -226,19 +259,23 @@ public abstract class BlockIngredient extends Ingredient {
 	public static class TaggedBlockIngredient extends BlockIngredient {
 		public final ITag<Block> tag;
 
-		public TaggedBlockIngredient(ITag<Block> tag, StatePropertiesPredicate predicate) {
+		public TaggedBlockIngredient(ITag<Block> tag, List<StatePropertiesPredicate> predicate) {
 			super(predicate);
+			this.tag = tag;
+		}
+		public TaggedBlockIngredient(ITag<Block> tag, StatePropertiesPredicate... predicate) {
+			super(Arrays.asList(predicate));
 			this.tag = tag;
 		}
 
 		@Nonnull
 		@Override
-		protected List<Block> getMatchingBlocks() {
+		public List<Block> getMatchingBlocks() {
 			return tag.getAllElements();
 		}
 
-		public TaggedBlockIngredient(ResourceLocation tagName, StatePropertiesPredicate predicate) {
-			super(predicate);
+		public TaggedBlockIngredient(ResourceLocation tagName, StatePropertiesPredicate... predicates) {
+			super(Arrays.asList(predicates));
 			this.tag = BlockTags.getCollection().get(tagName);
 			if (this.tag == null) {
 				throw new JsonSyntaxException("Unknown block tag '" + tagName + "'");
