@@ -1,0 +1,19 @@
+{
+  "type": "inspirations:anvil_smashing",
+  "result": {
+    "block": "minecraft:diorite_slab",
+    "properties": {
+      "waterlogged": "INPUT",
+      "half": "bottom"
+    }
+  },
+  "ingredients": [
+    {
+      "type": "inspirations:blockstate",
+      "block": "minecraft:diorite_slab",
+      "properties": {
+        "type": "top"
+      }
+    }
+  ]
+}

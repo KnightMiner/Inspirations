@@ -1,0 +1,19 @@
+{
+  "type": "inspirations:anvil_smashing",
+  "result": {
+    "block": "minecraft:andesite_slab",
+    "properties": {
+      "waterlogged": "INPUT",
+      "half": "bottom"
+    }
+  },
+  "ingredients": [
+    {
+      "type": "inspirations:blockstate",
+      "block": "minecraft:andesite_slab",
+      "properties": {
+        "type": "top"
+      }
+    }
+  ]
+}

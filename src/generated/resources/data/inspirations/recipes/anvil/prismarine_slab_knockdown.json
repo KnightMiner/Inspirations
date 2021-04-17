@@ -1,0 +1,19 @@
+{
+  "type": "inspirations:anvil_smashing",
+  "result": {
+    "block": "minecraft:prismarine_slab",
+    "properties": {
+      "waterlogged": "INPUT",
+      "half": "bottom"
+    }
+  },
+  "ingredients": [
+    {
+      "type": "inspirations:blockstate",
+      "block": "minecraft:prismarine_slab",
+      "properties": {
+        "type": "top"
+      }
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "type": "inspirations:anvil_smashing",
+  "result": {
+    "block": "minecraft:granite_slab",
+    "properties": {
+      "waterlogged": "INPUT",
+      "type": "double"
+    }
+  },
+  "ingredients": [
+    {
+      "type": "inspirations:blockstate",
+      "block": "minecraft:polished_granite_slab",
+      "properties": {
+        "type": "double"
+      }
+    }
+  ]
+}

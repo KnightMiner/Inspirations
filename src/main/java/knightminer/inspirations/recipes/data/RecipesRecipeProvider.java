@@ -5,6 +5,7 @@ import knightminer.inspirations.common.datagen.AnvilRecipeBuilder;
 import knightminer.inspirations.common.datagen.IInspirationsRecipeBuilder;
 import knightminer.inspirations.common.datagen.NBTIngredient;
 import knightminer.inspirations.library.InspirationsTags;
+import knightminer.inspirations.library.recipe.BlockIngredient;
 import knightminer.inspirations.library.recipe.RecipeSerializers;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.CauldronIngredients;
@@ -25,7 +26,10 @@ import knightminer.inspirations.shared.InspirationsShared;
 import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraft.advancements.ICriterionInstance;
 import net.minecraft.advancements.criterion.ItemPredicate;
+import net.minecraft.advancements.criterion.StatePropertiesPredicate;
+import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.SlabBlock;
 import net.minecraft.block.SoundType;
 import net.minecraft.data.CustomRecipeBuilder;
 import net.minecraft.data.DataGenerator;
@@ -41,11 +45,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.loot.ItemLootEntry;
-import net.minecraft.loot.LootPool;
 import net.minecraft.loot.RandomValueRange;
 import net.minecraft.loot.functions.SetCount;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.potion.Potions;
+import net.minecraft.state.properties.BlockStateProperties;
+import net.minecraft.state.properties.Half;
+import net.minecraft.state.properties.SlabType;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ITag;
 import net.minecraft.tags.ItemTags;
@@ -53,6 +59,7 @@ import net.minecraft.util.IItemProvider;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvents;
 import net.minecraftforge.common.Tags;
+import net.minecraftforge.common.crafting.CompoundIngredient;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -62,7 +69,9 @@ import slimeknights.mantle.recipe.data.ConsumerWrapperBuilder;
 import slimeknights.mantle.registration.object.EnumObject;
 
 import javax.annotation.Nullable;
+import java.util.EnumMap;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -74,6 +83,7 @@ import static knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronR
 
 public class RecipesRecipeProvider extends RecipeProvider implements IConditionBuilder, IInspirationsRecipeBuilder {
   private Consumer<IFinishedRecipe> consumer;
+  private Set<Block> slabs;
 
   public RecipesRecipeProvider(DataGenerator generatorIn) {
     super(generatorIn);
@@ -98,6 +108,7 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
   @Override
   protected void registerRecipes(Consumer<IFinishedRecipe> consumer) {
     this.consumer = consumer;
+    this.slabs = new HashSet<>();
     this.addCauldronRecipes();
     this.addAnvilRecipes();
   }
@@ -556,6 +567,20 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
     AnvilRecipeBuilder.smashes().addIngredient(Blocks.INFESTED_STONE).build(consumer);
     AnvilRecipeBuilder.smashes().addIngredient(Blocks.INFESTED_STONE_BRICKS).build(consumer);
 
+    // Knock down slabs.
+    addAnvilSlab(Blocks.COBBLESTONE_SLAB, Blocks.STONE_SLAB, "cobble_from_stone_slab");
+    addAnvilSlab(Blocks.COBBLESTONE_SLAB, Blocks.STONE_BRICK_SLAB, "cobble_from_bricks_slab");
+    addAnvilSlab(Blocks.COBBLESTONE_SLAB, Blocks.SMOOTH_STONE_SLAB, "cobble_from_smooth_stone_slab");
+    addAnvilSlab(Blocks.MOSSY_COBBLESTONE_SLAB, Blocks.MOSSY_STONE_BRICK_SLAB);
+    addAnvilSlab(Blocks.PRISMARINE_SLAB, Blocks.PRISMARINE_BRICK_SLAB);
+    addAnvilSlab(Blocks.END_STONE_BRICK_SLAB, Blocks.END_STONE_BRICK_SLAB);
+    addAnvilSlab(Blocks.ANDESITE_SLAB, Blocks.POLISHED_ANDESITE_SLAB);
+    addAnvilSlab(Blocks.GRANITE_SLAB, Blocks.POLISHED_GRANITE_SLAB);
+    addAnvilSlab(Blocks.DIORITE_SLAB, Blocks.POLISHED_DIORITE_SLAB);
+    addAnvilSlab(Blocks.BLACKSTONE_SLAB, Blocks.POLISHED_BLACKSTONE_SLAB, "blackstone_from_polished_slab");
+    addAnvilSlab(Blocks.BLACKSTONE_SLAB, Blocks.POLISHED_BLACKSTONE_BRICK_SLAB, "blackstone_from_bricks_slab");
+
+
     // Smash concrete into concrete powder.
     for(DyeColor dye: DyeColor.values()) {
       AnvilRecipeBuilder
@@ -636,6 +661,57 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
         .accept(DyeableCauldronRecipe.FinishedRecipe.clear(prefix(dyeable, folder + "dyeable/clear_"), ingredient));
     withCondition(ConfigEnabledCondition.CAULDRON_DYEING)
         .accept(DyeableCauldronRecipe.FinishedRecipe.dye(prefix(dyeable, folder + "dyeable/dye_"), ingredient));
+  }
+
+  /**
+   * Add recipes to convert one type of slab to another.
+   * Upper slabs are flattened to the bottom.
+   * @param from Starting slab block
+   * @param to Resultant slab block.
+   * @param path Name of the recipe.
+   */
+  private void addAnvilSlab(Block to, Block from, String path) {
+    // If on the bottom, the anvil can't actually hit it. So that doesn't
+    // need to be accounted for.
+    assert from instanceof SlabBlock;
+    assert to instanceof SlabBlock;
+    StatePropertiesPredicate isTop = StatePropertiesPredicate.Builder
+            .newBuilder()
+            .withProp(BlockStateProperties.SLAB_TYPE, SlabType.TOP)
+            .build();
+    StatePropertiesPredicate isBtm = StatePropertiesPredicate.Builder
+            .newBuilder()
+            .withProp(BlockStateProperties.SLAB_TYPE, SlabType.BOTTOM)
+            .build();
+
+    // single -> bottom
+    AnvilRecipeBuilder.places(to)
+            .addIngredient(from, isTop, isBtm)
+            .copiesProperty(BlockStateProperties.WATERLOGGED)
+            .setsProp(BlockStateProperties.SLAB_TYPE, SlabType.BOTTOM)
+            .build(consumer, path + "_single");
+
+    // Double -> double
+    AnvilRecipeBuilder.places(to)
+            .addIngredient(from, StatePropertiesPredicate.Builder
+                    .newBuilder()
+                    .withProp(BlockStateProperties.SLAB_TYPE, SlabType.DOUBLE)
+                    .build())
+            .copiesProperty(BlockStateProperties.WATERLOGGED)
+            .setsProp(BlockStateProperties.SLAB_TYPE, SlabType.DOUBLE)
+            .build(consumer, path + "_double");
+
+    if (slabs.add(to) && to != from) {
+      // Add recipe to knock this down to the bottom, but unchanged.
+      AnvilRecipeBuilder.places(to)
+              .addIngredient(to, isTop)
+              .copiesProperty(BlockStateProperties.WATERLOGGED)
+              .setsProp(BlockStateProperties.HALF, Half.BOTTOM)
+              .build(consumer, to.getRegistryName().getPath() + "_knockdown");
+    }
+  }
+  private void addAnvilSlab(Block to, Block from) {
+    addAnvilSlab(to, from, to.getRegistryName().getPath());
   }
 
   /**
