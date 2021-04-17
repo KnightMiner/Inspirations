@@ -133,11 +133,7 @@ public class AnvilRecipe implements IRecipe<AnvilInventory> {
     this.properties = properties;
   }
 
-  /**
-   * Return the appropriate recipe for this input.
-   * This is equivalent to the RecipeManager call, but prefers recipes with more ingredients.
-   */
-  public static Optional<AnvilRecipe> matchRecipe(@Nonnull AnvilInventory inv, @Nonnull World world) {
+  public static List<AnvilRecipe> getSortedRecipes(@Nonnull World world) {
     if (sortedRecipes == null) {
       // On first call, or after datapack reload sort all the recipes.
       sortedRecipes = world.getRecipeManager()
@@ -150,8 +146,15 @@ public class AnvilRecipe implements IRecipe<AnvilInventory> {
               ).reversed())
               .collect(Collectors.toList());
     }
+    return Collections.unmodifiableList(sortedRecipes);
+  }
 
-    for(AnvilRecipe recipe: sortedRecipes) {
+  /**
+   * Return the appropriate recipe for this input.
+   * This is equivalent to the RecipeManager call, but prefers recipes with more ingredients.
+   */
+  public static Optional<AnvilRecipe> matchRecipe(@Nonnull AnvilInventory inv, @Nonnull World world) {
+    for(AnvilRecipe recipe: getSortedRecipes(world)) {
       if (recipe.matches(inv, world)) {
         return Optional.of(recipe);
       }
@@ -237,6 +240,12 @@ public class AnvilRecipe implements IRecipe<AnvilInventory> {
   @Nonnull
   public ConvertType getConversion() {
     return blockConvert;
+  }
+
+  /** Return the block produced, if a TRANSFORM recipe. */
+  @Nonnull
+  public Block getTransformResult() {
+    return blockConvert == ConvertType.TRANSFORM ? transformResult : Blocks.AIR;
   }
 
   /**
