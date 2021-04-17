@@ -277,7 +277,7 @@ public class AnvilRecipe implements IRecipe<AnvilInventory> {
         }
         // Convert to a string, so differing types and identical but distinct IProperty objects
         // still work.
-        value = getProperty(state, inpProp);
+        value = getProperty(inv.getState(), inpProp);
       }
       Property<?> targProp = cont.getProperty(key);
       if(targProp == null) {
