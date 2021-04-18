@@ -32,7 +32,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.RecipeManager;
 import net.minecraft.util.IItemProvider;
-import net.minecraft.util.IWorldPosCallable;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
 import slimeknights.mantle.item.RetexturedBlockItem;
@@ -40,7 +39,6 @@ import slimeknights.mantle.recipe.IMultiRecipe;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
@@ -163,6 +161,9 @@ public class JEIPlugin implements IModPlugin {
     if (Config.cauldronRecipes.getAsBoolean()) {
       registration.addRecipeCatalyst(new ItemStack(Blocks.CAULDRON), CauldronCategory.ID);
     }
+    if (Config.enableAnvilSmashing.getAsBoolean()) {
+      registration.addRecipeCatalyst(new ItemStack(Blocks.ANVIL), AnvilCategory.ID);
+    }
   }
 
   @Override
@@ -210,7 +211,6 @@ public class JEIPlugin implements IModPlugin {
       ingedientManager.addIngredientsAtRuntime(VanillaTypes.ITEM, visible);
     }
   }
-
 
   /** Data object for state of a hidable object */
   private static class HideState {

@@ -107,6 +107,10 @@ public class AnvilRecipe implements IRecipe<AnvilInventory> {
    * Loot table pools used for item generation.
    */
   private final List<LootPool> lootPools;
+  // For JEI as well, cached list of items the pools generate.
+  @Nullable
+  private List<LootResult>lootResult;
+
   /**
    * Properties to assign to the result, unparsed.
    * If value == FROM_INPUT, copy over.
@@ -134,6 +138,7 @@ public class AnvilRecipe implements IRecipe<AnvilInventory> {
     this.transformResult = transformResult;
     this.properties = properties;
     this.itemIngredientCount = (int)ingredients.stream().filter(obj -> !(obj instanceof BlockIngredient)).count();
+    this.lootResult = null;
   }
 
   public static List<AnvilRecipe> getSortedRecipes(@Nonnull World world) {
@@ -412,6 +417,16 @@ public class AnvilRecipe implements IRecipe<AnvilInventory> {
 
   public int getItemIngredientCount() {
     return itemIngredientCount;
+  }
+
+  /**
+   * Navigate through the loot pools, collecting potential output items.
+   */
+  public List<LootResult> getRepresentativeLoot() {
+    if (lootResult == null) {
+      lootResult = LootResult.computePoolItems(lootPools);
+    }
+    return lootResult;
   }
 
   /**

@@ -4,10 +4,10 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.recipe.BlockIngredient;
 import knightminer.inspirations.library.recipe.anvil.AnvilRecipe;
+import knightminer.inspirations.library.recipe.anvil.LootResult;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
@@ -28,8 +28,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class AnvilCategory implements IRecipeCategory<AnvilRecipe> {
   /** Unique ID for this category */
@@ -116,8 +114,14 @@ public class AnvilCategory implements IRecipeCategory<AnvilRecipe> {
     } else {
       outputBlocks = Collections.emptyList();
     }
+
     inputItems.add(0, inputBlocks);
     outputItems.add(0, outputBlocks);
+
+    for(LootResult lootResult : recipe.getRepresentativeLoot()) {
+      outputItems.add(Collections.singletonList(lootResult.getStack()));
+    }
+
     ingredients.setInputLists(VanillaTypes.ITEM, inputItems);
     ingredients.setOutputLists(VanillaTypes.ITEM, outputItems);
   }
@@ -127,6 +131,7 @@ public class AnvilCategory implements IRecipeCategory<AnvilRecipe> {
     IGuiItemStackGroup items = layout.getItemStacks();
     List<List<ItemStack>> inputs = ingredients.getInputs(VanillaTypes.ITEM);
     List<List<ItemStack>> outputs = ingredients.getOutputs(VanillaTypes.ITEM);
+    List<LootResult> loot = recipe.getRepresentativeLoot();
 
     if (inputs.size() == 0 || outputs.size() == 0) {
       throw new IllegalArgumentException("Must have input or output block list.");
@@ -142,6 +147,18 @@ public class AnvilCategory implements IRecipeCategory<AnvilRecipe> {
       items.set(slot, inputs.get(i + 1));
       slot++;
     }
+    int outputStart = slot;
+    for(int i = 0; i < loot.size(); i++) {
+      items.init(slot, false, 127 + 18 * (i % 3), 19 - 18 * (i / 3));
+      items.set(slot, loot.get(i).getStack());
+      slot++;
+    }
+    items.addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {
+      slotIndex -= outputStart;
+      if (0 <= slotIndex && slotIndex < loot.size()) {
+        tooltip.addAll(loot.get(slotIndex).getTooltips());
+      }
+    });
   }
 
   @Override
@@ -150,10 +167,16 @@ public class AnvilCategory implements IRecipeCategory<AnvilRecipe> {
       destroyIcon.draw(matrices, BLOCK_OUT_X + 1, BLOCK_Y + 1);
     }
     int inputCount = recipe.getItemIngredientCount();
+    int outputCount = recipe.getRepresentativeLoot().size();
     if (inputCount > 3) {
       slots_inp_2.draw(matrices, 0, 0);
     } else if (inputCount > 0) {
       slots_inp_1.draw(matrices, 0, 18);
+    }
+    if (outputCount > 3) {
+      slots_out_2.draw(matrices, 126, 0);
+    } else if (outputCount > 0) {
+      slots_out_1.draw(matrices, 126, 18);
     }
   }
 
@@ -171,5 +194,4 @@ public class AnvilCategory implements IRecipeCategory<AnvilRecipe> {
   public Class<? extends AnvilRecipe> getRecipeClass() {
     return AnvilRecipe.class;
   }
-
 }

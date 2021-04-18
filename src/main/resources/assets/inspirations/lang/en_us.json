@@ -183,6 +183,10 @@
     "jei.inspirations.anvil_smashing": "Anvil Smashing",
     "jei.inspirations.anvil_smashing.destroys": "Block is destroyed",
 
+    "inspirations.lootpool.count.uniform": "Random Count: %s-%s",
+    "inspirations.lootpool.count.binomial": "Random Count: %s%%, tried %s times",
+    "inspirations.lootpool.damage": "Damage: %s-%s / %s",
+
     "jei.inspirations.cauldron": "Cauldron",
     "jei.inspirations.cauldron.time": "%s s",
     "jei.inspirations.cauldron.level": "%s/12 full",
