@@ -180,6 +180,9 @@
     "gui.inspirations.cauldron.color": "Color: %s",
 
     "_comment": "JEI",
+    "jei.inspirations.anvil_smashing": "Anvil Smashing",
+    "jei.inspirations.anvil_smashing.destroys": "Block is destroyed",
+
     "jei.inspirations.cauldron": "Cauldron",
     "jei.inspirations.cauldron.time": "%s s",
     "jei.inspirations.cauldron.level": "%s/12 full",

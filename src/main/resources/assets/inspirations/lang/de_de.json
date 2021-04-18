@@ -152,8 +152,8 @@
     "gui.inspirations.cauldron.color": "Farbe: %s",
 
     "_comment": "JEI",
-    "gui.jei.anvil_smashing.title": "Ambossfall",
-    "gui.jei.cauldron.title": "Kessel",
+    "gui.jei.anvil_smashing": "Ambossfall",
+    "gui.jei.cauldron": "Kessel",
     "gui.jei.cauldron.level": "%s Flaschen",
     "gui.jei.cauldron.level.singular": "1 Flasche",
     "gui.jei.cauldron.level.empty": "Leer",

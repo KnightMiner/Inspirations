@@ -5,9 +5,11 @@ import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.IHidable;
 import knightminer.inspirations.library.recipe.RecipeTypes;
+import knightminer.inspirations.library.recipe.anvil.AnvilRecipe;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipeDisplay;
+import knightminer.inspirations.plugins.jei.anvil.AnvilCategory;
 import knightminer.inspirations.plugins.jei.cauldron.CauldronCategory;
 import knightminer.inspirations.plugins.jei.cauldron.CauldronContentHelper;
 import knightminer.inspirations.plugins.jei.cauldron.CauldronRenderer;
@@ -30,6 +32,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.RecipeManager;
 import net.minecraft.util.IItemProvider;
+import net.minecraft.util.IWorldPosCallable;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
 import slimeknights.mantle.item.RetexturedBlockItem;
@@ -37,6 +40,7 @@ import slimeknights.mantle.recipe.IMultiRecipe;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
@@ -55,7 +59,7 @@ public class JEIPlugin implements IModPlugin {
   private static final List<HideState> HIDABLE_ITEMS = new ArrayList<>();
 
   // list of recipes, stored between register ingredients and register recipes
-  private static List<ICauldronRecipeDisplay> recipes;
+  private static List<ICauldronRecipeDisplay> cauldronRecipes;
 
   @Override
   public ResourceLocation getPluginUid() {
@@ -112,8 +116,8 @@ public class JEIPlugin implements IModPlugin {
                               .map(CauldronContentTypes.DYE::of)
                               .collect(Collectors.toList()));
         // finally custom, do this by scanning all recipe outputs
-        recipes = getCauldronRecipes();
-        contents.addAll(recipes.stream()
+        cauldronRecipes = getCauldronRecipes();
+        contents.addAll(cauldronRecipes.stream()
                                .map(ICauldronRecipeDisplay::getContentOutput)
                                .filter(c -> c.contains(CauldronContentTypes.CUSTOM))
                                .distinct()
@@ -133,16 +137,24 @@ public class JEIPlugin implements IModPlugin {
     if (Config.cauldronRecipes.getAsBoolean()) {
       registration.addRecipeCategories(new CauldronCategory(registration.getJeiHelpers().getGuiHelper()));
     }
+    if (Config.enableAnvilSmashing.getAsBoolean()) {
+      registration.addRecipeCategories(new AnvilCategory(registration.getJeiHelpers().getGuiHelper()));
+    }
   }
 
   @Override
   public void registerRecipes(IRecipeRegistration registration) {
     if (Config.cauldronRecipes.getAsBoolean()) {
-      if (recipes == null) {
-        recipes = getCauldronRecipes();
+      if (cauldronRecipes == null) {
+        cauldronRecipes = getCauldronRecipes();
       }
-      registration.addRecipes(recipes, CauldronCategory.ID);
-      recipes = null;
+      registration.addRecipes(cauldronRecipes, CauldronCategory.ID);
+      cauldronRecipes = null;
+    }
+    if (Config.enableAnvilSmashing.getAsBoolean()) {
+      assert Minecraft.getInstance().world != null;
+      List<AnvilRecipe> recipes = AnvilRecipe.getSortedRecipes(Minecraft.getInstance().world);
+      registration.addRecipes(recipes, AnvilCategory.ID);
     }
   }
 

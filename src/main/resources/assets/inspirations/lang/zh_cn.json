@@ -152,8 +152,8 @@
     "gui.inspirations.cauldron.color": "颜色：%s",
 
     "_comment": "JEI",
-    "gui.jei.anvil_smashing.title": "铁砧粉碎",
-    "gui.jei.cauldron.title": "炼药锅",
+    "gui.jei.anvil_smashing": "铁砧粉碎",
+    "gui.jei.cauldron": "炼药锅",
     "gui.jei.cauldron.level": "%s 瓶",
     "gui.jei.cauldron.level.singular": "1 瓶",
     "gui.jei.cauldron.level.empty": "空",
