@@ -45,16 +45,28 @@ public class AnvilCategory implements IRecipeCategory<AnvilRecipe> {
   private final IDrawable icon;
   private final IDrawable destroyIcon;
 
+  // If we have 1-3 inputs, show 1 row, if 3+ show two.
+  // The in/out and 1/2 rows are seperate so that respack authors
+  // are able to make them different if required.
+  private final IDrawable slots_inp_1;
+  private final IDrawable slots_inp_2;
+  private final IDrawable slots_out_1;
+  private final IDrawable slots_out_2;
   public AnvilCategory(IGuiHelper helper) {
     background = helper.drawableBuilder(BACKGROUND_LOC, 0, 0, 182, 38).addPadding(0, 4, 0, 0).build();
     // Chipped to imply it having dropped.
     icon = helper.createDrawableIngredient(new ItemStack(Blocks.CHIPPED_ANVIL));
     destroyIcon = helper.createDrawableIngredient(new ItemStack(Blocks.BARRIER));
+
+    slots_inp_1 = helper.drawableBuilder(BACKGROUND_LOC, 0, 38, 56, 20).build();
+    slots_inp_2 = helper.drawableBuilder(BACKGROUND_LOC, 0, 58, 56, 38).build();
+    slots_out_1 = helper.drawableBuilder(BACKGROUND_LOC, 126, 38, 56, 20).build();
+    slots_out_2 = helper.drawableBuilder(BACKGROUND_LOC, 126, 58, 56, 38).build();
   }
 
-  private static final int BLOCK_INP_X = 56;
-  private static final int BLOCK_OUT_X = 110;
-  private static final int BLOCK_Y = 20; // Both in/out the same.
+  private static final int BLOCK_INP_X = 55;
+  private static final int BLOCK_OUT_X = 109;
+  private static final int BLOCK_Y = 19; // Both in/out the same.
 
   /* Basic */
 
@@ -123,12 +135,25 @@ public class AnvilCategory implements IRecipeCategory<AnvilRecipe> {
     items.init(1, false, BLOCK_OUT_X, BLOCK_Y);
     items.set(0, inputs.get(0));
     items.set(1, outputs.get(0));
+
+    int slot = 2;
+    for(int i = 0; i < inputs.size() - 1; i++) {
+      items.init(slot, true, 37 - 18 * (i % 3), 19 - 18 * (i / 3));
+      items.set(slot, inputs.get(i + 1));
+      slot++;
+    }
   }
 
   @Override
   public void draw(AnvilRecipe recipe, MatrixStack matrices, double mouseX, double mouseY) {
     if (recipe.getConversion() == AnvilRecipe.ConvertType.SMASH) {
       destroyIcon.draw(matrices, BLOCK_OUT_X + 1, BLOCK_Y + 1);
+    }
+    int inputCount = recipe.getItemIngredientCount();
+    if (inputCount > 3) {
+      slots_inp_2.draw(matrices, 0, 0);
+    } else if (inputCount > 0) {
+      slots_inp_1.draw(matrices, 0, 18);
     }
   }
 

@@ -96,6 +96,8 @@ public class AnvilRecipe implements IRecipe<AnvilInventory> {
   private final ResourceLocation id;
   private final NonNullList<Ingredient> ingredients;
   private final String group;
+  // Count of the number of non-block ingredients, for JEI.
+  private final int itemIngredientCount;
 
   /** The block to produce. */
   private final ConvertType blockConvert;
@@ -131,6 +133,7 @@ public class AnvilRecipe implements IRecipe<AnvilInventory> {
     this.blockConvert = conversion;
     this.transformResult = transformResult;
     this.properties = properties;
+    this.itemIngredientCount = (int)ingredients.stream().filter(obj -> !(obj instanceof BlockIngredient)).count();
   }
 
   public static List<AnvilRecipe> getSortedRecipes(@Nonnull World world) {
@@ -405,6 +408,10 @@ public class AnvilRecipe implements IRecipe<AnvilInventory> {
   @Override
   public NonNullList<Ingredient> getIngredients() {
     return ingredients;
+  }
+
+  public int getItemIngredientCount() {
+    return itemIngredientCount;
   }
 
   /**
