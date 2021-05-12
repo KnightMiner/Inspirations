@@ -146,7 +146,7 @@ public class BuildingClientEvents extends ClientEvents {
 
     // coloring of books for normal bookshelf
     registerItemColors(itemColors, (stack, tintIndex) -> {
-      if (tintIndex > 0 && tintIndex <= 14) {
+      if (tintIndex > 0 && tintIndex <= 16) {
         return 0x654B17;
       }
       return -1;
