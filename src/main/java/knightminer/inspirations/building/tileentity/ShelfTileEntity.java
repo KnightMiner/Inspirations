@@ -62,7 +62,7 @@ public class ShelfTileEntity extends NamableTileEntity implements IRetexturedTil
   private int getIndexFromHit(ItemStack held, Vector3d click) {
     Direction dir = getBlockState().get(ShelfBlock.FACING).rotateYCCW();
     // location clicked on the block, 0 to 1
-    double clicked = (dir.getXOffset() * click.x) + (dir.getZOffset() * click.z);
+    double clicked = (dir.getXOffset() * (click.x - 0.5)) + (dir.getZOffset() * (click.z - 0.5)) + 0.5;
     // pixel clicked, 0 to 15
     int pixel = MathHelper.clamp((int)(clicked * 16), 0, 15);
     // shelf index clicked, 0 to 7
