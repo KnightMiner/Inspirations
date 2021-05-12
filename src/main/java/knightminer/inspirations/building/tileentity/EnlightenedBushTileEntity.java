@@ -8,6 +8,6 @@ import slimeknights.mantle.tileentity.RetexturedTileEntity;
  */
 public class EnlightenedBushTileEntity extends RetexturedTileEntity {
   public EnlightenedBushTileEntity() {
-    super(InspirationsBuilding.tileEnlightenedBush);
+    super(InspirationsBuilding.enlightenedBushTileEntity);
   }
 }

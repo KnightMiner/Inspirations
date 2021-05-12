@@ -10,8 +10,8 @@ import net.minecraft.tags.ItemTags;
 /**
  * Extension of a texture block item to make it burnable
  */
-public class BookshelfItem extends HidableRetexturedBlockItem {
-  public BookshelfItem(Block block) {
+public class ShelfItem extends HidableRetexturedBlockItem {
+  public ShelfItem(Block block) {
     super(block, ItemTags.WOODEN_SLABS, new Item.Properties().group(ItemGroup.DECORATIONS));
   }
 

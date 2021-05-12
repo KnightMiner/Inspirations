@@ -15,7 +15,7 @@
               "function": "mantle:fill_retextured_block"
             }
           ],
-          "name": "inspirations:ancient_bookshelf"
+          "name": "inspirations:shelf"
         }
       ],
       "conditions": [

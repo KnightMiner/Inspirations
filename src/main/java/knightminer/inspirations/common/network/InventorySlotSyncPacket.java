@@ -7,8 +7,9 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.client.model.ModelDataManager;
 import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 import slimeknights.mantle.network.packet.IThreadsafePacket;
-import slimeknights.mantle.tileentity.InventoryTileEntity;
 
 @SuppressWarnings("WeakerAccess")
 public class InventorySlotSyncPacket implements IThreadsafePacket {
@@ -50,14 +51,15 @@ public class InventorySlotSyncPacket implements IThreadsafePacket {
       // This should never be called on servers, but protect access to the clientside MC.
       assert Minecraft.getInstance().world != null;
       TileEntity tileEntity = Minecraft.getInstance().world.getTileEntity(packet.pos);
-      if (!(tileEntity instanceof InventoryTileEntity)) {
-        return;
+      if (tileEntity != null) {
+        tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+                  .filter(handler -> handler instanceof IItemHandlerModifiable)
+                  .ifPresent(handler -> {
+                    ((IItemHandlerModifiable) handler).setStackInSlot(packet.slot, packet.itemStack);
+                    Minecraft.getInstance().worldRenderer.notifyBlockUpdate(null, packet.pos, null, null, 3);
+                    ModelDataManager.requestModelDataRefresh(tileEntity);
+                  });
       }
-
-      InventoryTileEntity tile = (InventoryTileEntity)tileEntity;
-      tile.setInventorySlotContents(packet.slot, packet.itemStack);
-      Minecraft.getInstance().worldRenderer.notifyBlockUpdate(null, packet.pos, null, null, 3);
-      ModelDataManager.requestModelDataRefresh(tile);
     }
   }
 }

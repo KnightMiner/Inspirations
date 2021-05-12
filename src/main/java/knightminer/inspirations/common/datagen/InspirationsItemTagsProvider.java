@@ -40,7 +40,7 @@ public class InspirationsItemTagsProvider extends ItemTagsProvider {
     this.copy(InspirationsTags.Blocks.MULCH, InspirationsTags.Items.MULCH);
     this.copy(InspirationsTags.Blocks.SMALL_FLOWERS, InspirationsTags.Items.SMALL_FLOWERS);
     this.copy(InspirationsTags.Blocks.CARPETED_TRAPDOORS, InspirationsTags.Items.CARPETED_TRAPDOORS);
-    this.copy(InspirationsTags.Blocks.BOOKSHELVES, InspirationsTags.Items.BOOKSHELVES);
+    this.copy(InspirationsTags.Blocks.SHELVES, InspirationsTags.Items.BOOKSHELVES);
     this.copy(InspirationsTags.Blocks.ENLIGHTENED_BUSHES, InspirationsTags.Items.ENLIGHTENED_BUSHES);
     this.getOrCreateBuilder(ItemTags.DOORS).add(InspirationsBuilding.glassDoorItem);
     this.copy(BlockTags.TRAPDOORS, ItemTags.TRAPDOORS);

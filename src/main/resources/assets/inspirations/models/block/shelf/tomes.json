@@ -1,10 +1,32 @@
 {
-  "loader": "inspirations:bookshelf",
+  "loader": "inspirations:shelf",
   "parent": "inspirations:block/shelf/shelf",
   "textures": {
     "books": "inspirations:block/books/tomes"
   },
   "retextured": ["side", "particle"],
+  "items": [
+    { "center": [  2, 11, 3 ], "size": 3.75 },
+    { "center": [  4, 11, 3 ], "size": 3.75 },
+    { "center": [  6, 11, 3 ], "size": 3.75 },
+    { "center": [  8, 11, 3 ], "size": 3.75 },
+    
+    { "center": [ 10, 11, 3 ], "size": 3.75 },
+    { "center": [ 12, 11, 3 ], "size": 3.75 },
+    { "center": [ 14, 11, 3 ], "size": 3.75 },
+    { "center": [ 16, 11, 3 ], "size": 3.75 },
+    
+    
+    { "center": [  2,  3, 3 ], "size": 3.75 },
+    { "center": [  4,  3, 3 ], "size": 3.75 },
+    { "center": [  6,  3, 3 ], "size": 3.75 },
+    { "center": [  8,  3, 3 ], "size": 3.75 },
+    
+    { "center": [ 10,  3, 3 ], "size": 3.75 },
+    { "center": [ 12,  3, 3 ], "size": 3.75 },
+    { "center": [ 14,  3, 3 ], "size": 3.75 },
+    { "center": [ 16,  3, 3 ], "size": 3.75 }
+  ],
   "books": [
     {
       "name": "Book0",

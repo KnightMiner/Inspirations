@@ -216,21 +216,21 @@ public class Config {
     {
       // bookshelves
       enableBookshelf = and(buildingModule, server
-          .comment("Enables the bookshelf: a decorative block to display books")
+          .comment("Enables the shelf: a decorative block to display books and other items")
           .worldRestart()
           .define("bookshelf.enable", true));
       enableColoredBooks = and(enableBookshelf, server
-          .comment("Enables colored books: basically colored versions of the vanilla book to decorate bookshelves")
+          .comment("Enables colored books: basically colored versions of the vanilla book to decorate shelves")
           .worldRestart()
           .define("bookshelf.coloredBooks", true));
       bookshelvesBoostEnchanting = and(buildingModule, server
-          .comment("If true, bookshelves will increase enchanting table power.")
+          .comment("If true, shelves will increase enchanting table power.")
           .define("bookshelf.boostEnchanting", true));
       defaultEnchantingPower = server(server
           .comment("Default power for a book for enchanting, can be overridden in the book overrides.")
           .defineInRange("bookshelf.defaultEnchanting", 1.5f, 0.0f, 15.0f));
       bookKeywords = server(server
-          .comment("List of keywords for valid books, used to determine valid books in the bookshelf. Separate each by commas.")
+          .comment("List of keywords for valid books, used to determine books in the shelf (non-books take more space). Separate each by commas.")
           .define("bookshelf.bookKeywords", BOOK_KEYWORD_DEFAULTS));
 
 

@@ -10,7 +10,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.datafixers.util.Pair;
 import knightminer.inspirations.Inspirations;
-import knightminer.inspirations.building.tileentity.BookshelfTileEntity;
+import knightminer.inspirations.building.tileentity.ShelfTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -37,6 +37,7 @@ import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.geometry.IModelGeometry;
 import slimeknights.mantle.client.model.RetexturedModel;
 import slimeknights.mantle.client.model.RetexturedModel.RetexturedConfiguration;
+import slimeknights.mantle.client.model.inventory.ModelItem;
 import slimeknights.mantle.client.model.util.DynamicBakedWrapper;
 import slimeknights.mantle.client.model.util.ModelHelper;
 import slimeknights.mantle.client.model.util.SimpleBlockModel;
@@ -58,17 +59,19 @@ import java.util.function.Function;
  * Model that retextures a shelf while also adding in a list of books based on slot contents
  */
 @SuppressWarnings("WeakerAccess")
-public class BookshelfModel implements IModelGeometry<BookshelfModel> {
+public class ShelfModel implements IModelGeometry<ShelfModel> {
   /** Loader instance to register */
   public static final Loader LOADER = new Loader();
   private final SimpleBlockModel model;
   private final Set<String> retextured;
   private final List<List<BlockPart>> books;
+  private final List<ModelItem> items;
 
-  protected BookshelfModel(SimpleBlockModel model, Set<String> retextured, List<List<BlockPart>> books) {
+  protected ShelfModel(SimpleBlockModel model, Set<String> retextured, List<List<BlockPart>> books, List<ModelItem> items) {
     this.model = model;
     this.retextured = retextured;
     this.books = books;
+    this.items = items;
   }
 
   @Override
@@ -81,19 +84,19 @@ public class BookshelfModel implements IModelGeometry<BookshelfModel> {
 
   @Override
   public IBakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<RenderMaterial,TextureAtlasSprite> spriteGetter, IModelTransform transforms, ItemOverrideList overrides, ResourceLocation location) {
-    ShelfModel model = new ShelfModel(owner, this.model, transforms, this.books);
+    Shelf model = new Shelf(owner, this.model, transforms, this.books);
     IBakedModel baked = model.bake(spriteGetter, location);
-    return new BakedModel(baked, model, RetexturedModel.getAllRetextured(owner, this.model, retextured));
+    return new BakedModel(baked, model, RetexturedModel.getAllRetextured(owner, this.model, retextured), items);
   }
 
   /** Model loader logic */
-  private static class Loader implements IModelLoader<BookshelfModel> {
+  private static class Loader implements IModelLoader<knightminer.inspirations.library.client.model.ShelfModel> {
 
     @Override
     public void onResourceManagerReload(IResourceManager resourceManager) {}
 
     @Override
-    public BookshelfModel read(JsonDeserializationContext context, JsonObject json) {
+    public knightminer.inspirations.library.client.model.ShelfModel read(JsonDeserializationContext context, JsonObject json) {
       // basic model
       SimpleBlockModel model = SimpleBlockModel.deserialize(context, json);
       Set<String> retextured = RetexturedModel.Loader.getRetextured(json);
@@ -107,15 +110,16 @@ public class BookshelfModel implements IModelGeometry<BookshelfModel> {
       for (int i = 0; i < bookArray.size(); i++) {
         builder.add(SimpleBlockModel.getModelElements(context, bookArray.get(i), "books[" + i + "]"));
       }
+      List<ModelItem> items = ModelItem.listFromJson(json, "items");
       // final model
-      return new BookshelfModel(model, retextured, builder.build());
+      return new ShelfModel(model, retextured, builder.build(), items);
     }
   }
 
   /**
    * Base shelf wrapper, contains logic to get books, but no books
    */
-  private static class ShelfModel {
+  private static class Shelf {
     /* Properties for baking */
     private final IModelConfiguration owner;
     private final SimpleBlockModel model;
@@ -125,7 +129,7 @@ public class BookshelfModel implements IModelGeometry<BookshelfModel> {
     /* Cached baked model */
     private IBakedModel baked;
 
-    private ShelfModel(IModelConfiguration owner, SimpleBlockModel model, IModelTransform transform, List<List<BlockPart>> books) {
+    private Shelf(IModelConfiguration owner, SimpleBlockModel model, IModelTransform transform, List<List<BlockPart>> books) {
       this.owner = owner;
       this.model = model;
       this.transform = transform;
@@ -164,9 +168,8 @@ public class BookshelfModel implements IModelGeometry<BookshelfModel> {
      * @param texture     Texture name
      * @return  Bookshelf textured with the given texture
      */
-    public ShelfModel withTexture(Set<String> retextured, ResourceLocation texture) {
-
-      return new ShelfModel(new RetexturedConfiguration(owner, retextured, texture), model, transform, books);
+    public Shelf withTexture(Set<String> retextured, ResourceLocation texture) {
+      return new Shelf(new RetexturedConfiguration(owner, retextured, texture), model, transform, books);
     }
 
     /**
@@ -191,25 +194,29 @@ public class BookshelfModel implements IModelGeometry<BookshelfModel> {
    */
   public static class BakedModel extends DynamicBakedWrapper<IBakedModel> {
     /** Cache of texture to shelf model, used for items and to make crafting the shelf with books faster */
-    private final Map<ResourceLocation,ShelfModel> texturedCache = new HashMap<>();
+    private final Map<ResourceLocation,Shelf> texturedCache = new HashMap<>();
     /** Cache of shelf with books and texture, limited size */
     private final Cache<BookshelfCacheKey,IBakedModel> bookshelfCache = CacheBuilder.newBuilder().maximumSize(30).build();
 
     /** Unbaked model */
-    private final ShelfModel model;
+    private final Shelf model;
     /** List to retexture */
     private final Set<String> retextured;
+    /** List of items to render in the TESR */
+    private final List<ModelItem> items;
 
     /**
      * Gets a baked model with the given properties
      * @param baked       Default model
      * @param model       Shelf model for baking new shelves
      * @param retextured  List of textures for retexturing
+     * @param items       List of model items for the TESR
      */
-    protected BakedModel(IBakedModel baked, ShelfModel model, Set<String> retextured) {
+    protected BakedModel(IBakedModel baked, Shelf model, Set<String> retextured, List<ModelItem> items) {
       super(baked);
       this.model = model;
       this.retextured = retextured;
+      this.items = items;
     }
 
     /**
@@ -217,7 +224,7 @@ public class BookshelfModel implements IModelGeometry<BookshelfModel> {
      * @param texture  Texture for shelf
      * @return  Textured shelf
      */
-    private ShelfModel getTexturedShelf(@Nullable ResourceLocation texture) {
+    private Shelf getTexturedShelf(@Nullable ResourceLocation texture) {
       if (texture == null) {
         return model;
       }
@@ -229,7 +236,7 @@ public class BookshelfModel implements IModelGeometry<BookshelfModel> {
      * @param texture  Texture for shelf
      * @return  Textured shelf
      */
-    private ShelfModel getTexturedShelf(Block texture) {
+    private Shelf getTexturedShelf(Block texture) {
       return getTexturedShelf(ModelHelper.getParticleTexture(texture));
     }
 
@@ -259,7 +266,7 @@ public class BookshelfModel implements IModelGeometry<BookshelfModel> {
       }
 
       // if books unset, default to 0 (no books)
-      Integer books = data.getData(BookshelfTileEntity.BOOKS);
+      Integer books = data.getData(ShelfTileEntity.BOOKS);
       if (books == null) {
         books = 0;
       }
@@ -279,6 +286,11 @@ public class BookshelfModel implements IModelGeometry<BookshelfModel> {
     @Override
     public ItemOverrideList getOverrides() {
       return RetexturedOverride.INSTANCE;
+    }
+
+    /** Gets the items to render in the TESR */
+    public List<ModelItem> getItems() {
+      return items;
     }
   }
 

@@ -54,7 +54,7 @@ public class InspirationsBlockLootTable extends BlockLootTables {
 
   private void addBuilding() {
     // enum
-    InspirationsBuilding.bookshelf.values().forEach(block -> this.registerLootTable(block, this::droppingWithNameAndTexture));
+    InspirationsBuilding.shelf.values().forEach(block -> this.registerLootTable(block, this::droppingWithNameAndTexture));
     InspirationsBuilding.enlightenedBush.values().forEach(block -> this.registerLootTable(block, this::enlightenedBush));
     InspirationsBuilding.mulch.values().forEach(this::registerDropSelfLootTable);
     InspirationsBuilding.path.values().forEach(this::registerDropSelfLootTable);

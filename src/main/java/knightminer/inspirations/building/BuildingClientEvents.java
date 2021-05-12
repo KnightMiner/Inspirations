@@ -3,12 +3,13 @@ package knightminer.inspirations.building;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.block.type.BushType;
 import knightminer.inspirations.building.block.type.ShelfType;
-import knightminer.inspirations.building.tileentity.BookshelfTileEntity;
+import knightminer.inspirations.building.client.ShelfScreen;
+import knightminer.inspirations.building.client.ShelfTileEntityRenderer;
+import knightminer.inspirations.building.tileentity.ShelfTileEntity;
 import knightminer.inspirations.common.ClientEvents;
 import knightminer.inspirations.library.Util;
 import knightminer.inspirations.library.client.ClientUtil;
-import knightminer.inspirations.library.client.model.BookshelfModel;
-import knightminer.inspirations.shared.client.BackgroundContainerScreen;
+import knightminer.inspirations.library.client.model.ShelfModel;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
@@ -25,6 +26,7 @@ import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -50,8 +52,9 @@ public class BuildingClientEvents extends ClientEvents {
     Consumer<Block> setCutoutMipped = (block) -> RenderTypeLookup.setRenderLayer(block, cutoutMipped);
 
     // general
-    InspirationsBuilding.bookshelf.forEach(setCutout);
+    InspirationsBuilding.shelf.forEach(setCutout);
     InspirationsBuilding.enlightenedBush.forEach(setCutoutMipped);
+    ClientRegistry.bindTileEntityRenderer(InspirationsBuilding.shelfTileEntity, ShelfTileEntityRenderer::new);
 
     // ropes
     setRenderLayer(InspirationsBuilding.rope, cutout);
@@ -69,13 +72,13 @@ public class BuildingClientEvents extends ClientEvents {
 
   @SubscribeEvent
   static void registerModelLoaders(ModelRegistryEvent event) {
-    ModelLoaderRegistry.registerLoader(Inspirations.getResource("bookshelf"), BookshelfModel.LOADER);
+    ModelLoaderRegistry.registerLoader(Inspirations.getResource("shelf"), ShelfModel.LOADER);
   }
 
   @SubscribeEvent
   static void commonSetup(FMLCommonSetupEvent event) {
     // Register GUIs.
-    registerScreenFactory(InspirationsBuilding.contBookshelf, new BackgroundContainerScreen.Factory<>(156, "bookshelf"));
+    registerScreenFactory(InspirationsBuilding.shelfContainer, ShelfScreen::new);
   }
 
   @SubscribeEvent
@@ -86,8 +89,8 @@ public class BuildingClientEvents extends ClientEvents {
     registerBlockColors(blockColors, (state, world, pos, tintIndex) -> {
       if (tintIndex > 0 && tintIndex <= 16 && world != null && pos != null) {
         TileEntity te = world.getTileEntity(pos);
-        if (te instanceof BookshelfTileEntity) {
-          ItemStack stack = ((BookshelfTileEntity)te).getStackInSlot(tintIndex - 1);
+        if (te instanceof ShelfTileEntity) {
+          ItemStack stack = ((ShelfTileEntity)te).getInventory().getStackInSlot(tintIndex - 1);
           if (!stack.isEmpty()) {
             int color = ClientUtil.getItemColor(stack.getItem());
             int itemColors = mc.getItemColors().getColor(stack, 0);
@@ -101,7 +104,7 @@ public class BuildingClientEvents extends ClientEvents {
       }
 
       return -1;
-    }, InspirationsBuilding.bookshelf.getOrNull(ShelfType.NORMAL));
+    }, InspirationsBuilding.shelf.getOrNull(ShelfType.NORMAL));
 
     // rope vine coloring
     registerBlockColors(blockColors, (state, world, pos, tintIndex) -> {
@@ -147,7 +150,7 @@ public class BuildingClientEvents extends ClientEvents {
         return 0x654B17;
       }
       return -1;
-    }, InspirationsBuilding.bookshelf.getOrNull(ShelfType.NORMAL));
+    }, InspirationsBuilding.shelf.getOrNull(ShelfType.NORMAL));
 
     // book covers, too lazy to make 16 cover textures
     InspirationsBuilding.coloredBooks.forEach((color, book) -> {

@@ -1,18 +1,13 @@
 package knightminer.inspirations.building.block;
 
 import com.google.common.collect.ImmutableMap;
-import knightminer.inspirations.building.tileentity.BookshelfTileEntity;
+import knightminer.inspirations.building.tileentity.ShelfTileEntity;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.IHidable;
-import knightminer.inspirations.library.InspirationsRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -43,15 +38,12 @@ import slimeknights.mantle.block.RetexturedBlock;
 
 import javax.annotation.Nullable;
 
-public class BookshelfBlock extends InventoryBlock implements IHidable {
+public class ShelfBlock extends InventoryBlock implements IHidable {
 
   public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
 
-  public BookshelfBlock() {
-    super(Block.Properties.create(Material.WOOD)
-                          .hardnessAndResistance(2.0F, 5.0F)
-                          .sound(SoundType.WOOD)
-         );
+  public ShelfBlock(Properties properties) {
+    super(properties);
     this.setDefaultState(this.getStateContainer().getBaseState().with(FACING, Direction.NORTH));
   }
 
@@ -67,7 +59,7 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
 
   @Override
   public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-    return new BookshelfTileEntity();
+    return new ShelfTileEntity();
   }
 
   @Nullable
@@ -117,49 +109,40 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
     }
 
     // if we did not click a book, just do the GUI as well
-    int book = bookClicked(facing, pos, trace.getHitVec());
-    if (book == -1) {
+    Vector3d hitWorld = trace.getHitVec();
+    Vector3d click = new Vector3d(hitWorld.x - pos.getX(), hitWorld.y - pos.getY(), hitWorld.z - pos.getZ());
+    if (!isBookClicked(facing, click)) {
       return (world.isRemote || openGui(player, world, pos)) ? ActionResultType.SUCCESS : ActionResultType.PASS;
     }
-
     TileEntity te = world.getTileEntity(pos);
-    if (te instanceof BookshelfTileEntity) {
+    if (te instanceof ShelfTileEntity) {
       // try interacting
-      if (((BookshelfTileEntity)te).interact(player, hand, book)) {
+      if (((ShelfTileEntity)te).interact(player, hand, click)) {
         return ActionResultType.SUCCESS;
       }
-
-      // if the offhand can interact, return false so we can process it later
-      if (InspirationsRegistry.isBook(player.getHeldItemOffhand())) {
-        return ActionResultType.PASS;
+      // if we failed to place an item on the shelf, pass if the offhand might try
+      if (hand != Hand.OFF_HAND && !player.getHeldItemOffhand().isEmpty()) {
+        return ActionResultType.CONSUME;
       }
     }
-
-    return ActionResultType.SUCCESS;
+    return ActionResultType.CONSUME;
   }
 
   /**
-   * Gets the book that was clicked
-   * @param facing     Direction of the bookshelf
-   * @param pos        Block position
-   * @param clickWorld World relative click position
-   * @return Index of clicked book, or -1 if no book clicked
+   * Checks if a book was clicked
+   * @param facing  Shelf facing
+   * @param click   Block relative click position
+   * @return  True if a book was clicked, false if the UI should open instead
    */
-  private static int bookClicked(Direction facing, BlockPos pos, Vector3d clickWorld) {
-    Vector3d click = new Vector3d(clickWorld.x - pos.getX(), clickWorld.y - pos.getY(), clickWorld.z - pos.getZ());
-    // if we did not click between the shelves, ignore
+  private static boolean isBookClicked(Direction facing, Vector3d click) {
+   // if we did not click between the shelves, ignore
     if (click.y < 0.0625 || click.y > 0.9375) {
-      return -1;
+      return false;
     }
-    int shelf = 0;
-    // if we clicked below the middle shelf, add 7 to the book
-    if (click.y <= 0.4375) {
-      shelf = 8;
-      // if we clicked below the top shelf but not quite in the middle shelf, no book
-    } else if (click.y < 0.5625) {
-      return -1;
+    // if we clicked below the top shelf but not quite in the bottom shelf, no book
+    if (click.y > 0.4375 && click.y < 0.5625) {
+      return false;
     }
-
     int offX = facing.getXOffset();
     int offZ = facing.getZOffset();
     double x1 = offX == -1 ? 0.625 : 0;
@@ -167,20 +150,7 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
     double x2 = offX == +1 ? 0.375 : 1;
     double z2 = offZ == +1 ? 0.375 : 1;
     // ensure we clicked within a shelf, not outside one
-    if (click.x < x1 || click.x > x2 || click.z < z1 || click.z > z2) {
-      return -1;
-    }
-
-    // okay, so now we know we clicked in the book area, so just take the position clicked to determine where
-    Direction dir = facing.rotateYCCW();
-    // subtract one pixel and multiply by our direction
-    double clicked = (dir.getXOffset() * click.x) + (dir.getZOffset() * click.z);
-    // if negative, just add one to wrap back around
-    if (clicked < 0) {
-      clicked = 1 + clicked;
-    }
-
-    return shelf + Math.min((int)(clicked * 8), 7);
+    return !(click.x < x1) && !(click.x > x2) && !(click.z < z1) && !(click.z > z2);
   }
 
   /*
@@ -228,17 +198,6 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
    * Comparators
    */
 
-  @Override
-  public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
-    if (state.getBlock() != newState.getBlock()) {
-      TileEntity tileentity = world.getTileEntity(pos);
-      if (tileentity instanceof IInventory) {
-        InventoryHelper.dropInventoryItems(world, pos, (IInventory)tileentity);
-      }
-    }
-    super.onReplaced(state, world, pos, newState, isMoving);
-  }
-
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
@@ -251,8 +210,8 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
   @Override
   public int getComparatorInputOverride(BlockState state, World world, BlockPos pos) {
     TileEntity te = world.getTileEntity(pos);
-    if (te instanceof BookshelfTileEntity) {
-      return ((BookshelfTileEntity)te).getComparatorPower();
+    if (te instanceof ShelfTileEntity) {
+      return ((ShelfTileEntity)te).getComparatorPower();
     }
     return 0;
   }
@@ -286,8 +245,8 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
       return 0;
     }
     TileEntity te = world.getTileEntity(pos);
-    if (te instanceof BookshelfTileEntity) {
-      return ((BookshelfTileEntity)te).getEnchantPower();
+    if (te instanceof ShelfTileEntity) {
+      return ((ShelfTileEntity)te).getEnchantPower();
     }
     return 0;
   }

@@ -152,7 +152,7 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
     // bookshelves
     Consumer<IFinishedRecipe> bookshelfConditions = withCondition(ConfigEnabledCondition.BOOKSHELF);
     String shelfGroup = resourceName("bookshelf");
-    InspirationsBuilding.bookshelf.forEach((type, shelf) -> {
+    InspirationsBuilding.shelf.forEach((type, shelf) -> {
       String[] variants = getShelfVariants(type);
       for (String variant : variants) {
         ShapedRecipeBuilder builder =

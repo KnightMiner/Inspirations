@@ -1,32 +1,33 @@
 package knightminer.inspirations.building.inventory;
 
 import knightminer.inspirations.building.InspirationsBuilding;
-import knightminer.inspirations.building.tileentity.BookshelfTileEntity;
-import knightminer.inspirations.library.InspirationsRegistry;
+import knightminer.inspirations.building.tileentity.ShelfInventory;
+import knightminer.inspirations.building.tileentity.ShelfTileEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import slimeknights.mantle.inventory.BaseContainer;
+import slimeknights.mantle.inventory.ItemHandlerSlot;
 
 import javax.annotation.Nullable;
 
-public class BookshelfContainer extends BaseContainer<BookshelfTileEntity> {
+public class ShelfContainer extends BaseContainer<ShelfTileEntity> {
   /**
    * Standard constructor
    * @param id    Window ID
    * @param inv   Player inventory instance
    * @param shelf Bookshelf tile entity
    */
-  public BookshelfContainer(int id, PlayerInventory inv, @Nullable BookshelfTileEntity shelf) {
-    super(InspirationsBuilding.contBookshelf, id, inv, shelf);
+  public ShelfContainer(int id, PlayerInventory inv, @Nullable ShelfTileEntity shelf) {
+    super(InspirationsBuilding.shelfContainer, id, inv, shelf);
     if (tile != null) {
       // two rows of slots
+      ShelfInventory inventory = tile.getInventory();
       for (int i = 0; i < 8; i++) {
-        this.addSlot(new SlotBookshelf(tile, i,     17 + (i * 18), 18));
+        this.addSlot(new ShelfSlot(inventory, i,     17 + (i * 18), 18));
       }
       for (int i = 0; i < 8; i++) {
-        this.addSlot(new SlotBookshelf(tile, i + 8, 17 + (i * 18), 44));
+        this.addSlot(new ShelfSlot(inventory, i + 8, 17 + (i * 18), 44));
       }
     }
     addInventorySlots();
@@ -38,8 +39,8 @@ public class BookshelfContainer extends BaseContainer<BookshelfTileEntity> {
    * @param inv Player inventory
    * @param buf Packet buffer instance
    */
-  public BookshelfContainer(int id, PlayerInventory inv, PacketBuffer buf) {
-    this(id, inv, getTileEntityFromBuf(buf, BookshelfTileEntity.class));
+  public ShelfContainer(int id, PlayerInventory inv, PacketBuffer buf) {
+    this(id, inv, getTileEntityFromBuf(buf, ShelfTileEntity.class));
   }
 
   @Override
@@ -55,14 +56,16 @@ public class BookshelfContainer extends BaseContainer<BookshelfTileEntity> {
   /**
    * Slot that limits to just books
    */
-  private static class SlotBookshelf extends Slot {
-    private SlotBookshelf(BookshelfTileEntity bookshelf, int index, int x, int y) {
-      super(bookshelf, index, x, y);
+  private static class ShelfSlot extends ItemHandlerSlot {
+    private final ShelfInventory shelf;
+    private ShelfSlot(ShelfInventory inventory, int index, int x, int y) {
+      super(inventory, index, x, y);
+      this.shelf = inventory;
     }
 
     @Override
     public boolean isItemValid(ItemStack stack) {
-      return InspirationsRegistry.isBook(stack);
+      return shelf.canHoldItem(getSlotIndex(), stack);
     }
   }
 }

@@ -36,7 +36,7 @@ public class InspirationsBlockTagsProvider extends BlockTagsProvider {
     this.getOrCreateBuilder(InspirationsTags.Blocks.SMALL_FLOWERS).add(toArray(InspirationsBuilding.flower));
     this.getOrCreateBuilder(InspirationsTags.Blocks.FLOWER_POTS).add(toArray(InspirationsBuilding.flowerPot));
     this.getOrCreateBuilder(InspirationsTags.Blocks.ENLIGHTENED_BUSHES).add(toArray(InspirationsBuilding.enlightenedBush));
-    this.getOrCreateBuilder(InspirationsTags.Blocks.BOOKSHELVES).add(toArray(InspirationsBuilding.bookshelf));
+    this.getOrCreateBuilder(InspirationsTags.Blocks.SHELVES).add(toArray(InspirationsBuilding.shelf));
     this.getOrCreateBuilder(BlockTags.CLIMBABLE).add(InspirationsBuilding.rope, InspirationsBuilding.vine);
     this.getOrCreateBuilder(BlockTags.DOORS).add(InspirationsBuilding.glassDoor);
     this.getOrCreateBuilder(BlockTags.TRAPDOORS).add(InspirationsBuilding.glassTrapdoor);
