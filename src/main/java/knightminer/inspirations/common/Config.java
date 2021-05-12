@@ -61,6 +61,7 @@ public class Config {
   public static final CachedBoolean bookshelvesBoostEnchanting;
   public static final CachedValue<Double> defaultEnchantingPower;
 
+  @Deprecated
   public static final CachedValue<String> bookKeywords;
   private static final String BOOK_KEYWORD_DEFAULTS = "almanac, atlas, book, catalogue, concordance, dictionary, directory, encyclopedia, guide, journal, lexicon, manual, thesaurus, tome";
 

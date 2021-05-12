@@ -1,6 +1,10 @@
 {
   "replace": false,
   "values": [
+    {
+      "id": "#forge:books",
+      "required": false
+    },
     "inspirations:redstone_book",
     "minecraft:book",
     "minecraft:writable_book",
