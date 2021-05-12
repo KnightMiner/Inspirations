@@ -1,0 +1,183 @@
+{
+  "loader": "inspirations:bookshelf",
+  "parent": "inspirations:block/shelf/shelf",
+  "textures": {
+    "books": "inspirations:block/books/ancient"
+  },
+  "retextured": ["side", "particle"],
+  "books": [    
+    {
+      "name": "Book0",
+      "from": [ 0, 9, 1 ], 
+      "to": [ 2, 15, 6 ], 
+      "faces": {
+        "east":  { "texture": "#books", "uv": [ 1, 1, 2, 7 ] },
+        "south": { "texture": "#books" },
+        "west":  { "texture": "#books", "uv": [ 0, 1, 1, 7 ] }
+      }
+    },
+    {
+      "name": "Book1",
+      "from": [ 2, 9, 1 ], 
+      "to": [ 4, 14, 6 ], 
+      "faces": {
+        "east":  { "texture": "#books", "uv": [ 3, 2, 4, 7 ] },
+        "south": { "texture": "#books" },
+        "west":  { "texture": "#books", "uv": [ 2, 2, 3, 7 ] },
+        "up":    { "texture": "#books", "uv": [ 2, 2, 4, 3 ] }
+      }
+    },
+    {
+      "name": "Book2",
+      "from": [ 4, 9, 1 ], 
+      "to": [ 6, 15, 6 ], 
+      "faces": {
+        "east":  { "texture": "#books", "uv": [ 5, 1, 6, 7 ] },
+        "south": { "texture": "#books" },
+        "west":  { "texture": "#books", "uv": [ 4, 1, 5, 7 ] }
+      }
+    },
+    {
+      "name": "Book3",
+      "from": [ 6, 9, 1 ], 
+      "to": [ 8, 13, 6 ], 
+      "faces": {
+        "east":  { "texture": "#books", "uv": [ 7, 3, 8, 7 ] },
+        "south": { "texture": "#books" },
+        "west":  { "texture": "#books", "uv": [ 6, 3, 7, 7 ] },
+        "up":    { "texture": "#books", "uv": [ 6, 3, 8, 4 ] }
+      }
+    },
+    
+    {
+      "name": "Book4",
+      "from": [ 8, 9, 1 ], 
+      "to": [ 10, 15, 6 ], 
+      "faces": {
+        "east":  { "texture": "#books", "uv": [ 9, 1, 10, 7 ] },
+        "south": { "texture": "#books" },
+        "west":  { "texture": "#books", "uv": [ 8, 1,  9, 7 ] }
+      }
+    },
+    {
+      "name": "Book5",
+      "from": [ 10, 9, 1 ], 
+      "to": [ 12, 14, 6 ], 
+      "faces": {
+        "east":  { "texture": "#books", "uv": [ 11, 2, 12, 7 ] },
+        "south": { "texture": "#books" },
+        "west":  { "texture": "#books", "uv": [ 10, 2, 11, 7 ] },
+        "up":    { "texture": "#books", "uv": [ 10, 2, 12, 3 ] }
+      }
+    },
+    {
+      "name": "Book6",
+      "from": [ 12, 9, 1 ], 
+      "to": [ 14, 15, 6 ], 
+      "faces": {
+        "east":  { "texture": "#books", "uv": [ 13, 1, 14, 7 ] },
+        "south": { "texture": "#books" },
+        "west":  { "texture": "#books", "uv": [ 12, 1, 13, 7 ] }
+      }
+    },
+    {
+      "name": "Book7",
+      "from": [ 14, 9, 1 ], 
+      "to": [ 16, 13, 6 ], 
+      "faces": {
+        "east":  { "texture": "#books", "uv": [ 15, 3, 16, 7 ] },
+        "south": { "texture": "#books" },
+        "west":  { "texture": "#books", "uv": [ 14, 3, 15, 7 ] },
+        "up":    { "texture": "#books", "uv": [ 14, 3, 16, 4 ] }
+      }
+    },
+    
+    
+    {
+      "name": "Book8",
+      "from": [ 0, 1, 1 ], 
+      "to": [ 2, 7, 6 ], 
+      "faces": {
+        "east":  { "texture": "#books", "uv": [ 1,  9, 2, 15 ] },
+        "south": { "texture": "#books" },
+        "west":  { "texture": "#books", "uv": [ 0,  9, 1, 15 ] },
+        "up":    { "texture": "#books", "uv": [ 0, 10, 2, 11 ] }
+      }
+    },
+    {
+      "name": "Book9",
+      "from": [ 2, 1, 1 ], 
+      "to": [ 4, 6, 6 ], 
+      "faces": {
+        "east":  { "texture": "#books", "uv": [ 3, 10, 4, 15 ] },
+        "south": { "texture": "#books" },
+        "west":  { "texture": "#books", "uv": [ 2, 10, 3, 15 ] },
+        "up":    { "texture": "#books", "uv": [ 2, 10, 4, 11 ] }
+      }
+    },
+    {
+      "name": "Book10",
+      "from": [ 4, 1, 1 ], 
+      "to": [ 6, 5, 6 ], 
+      "faces": {
+        "east":  { "texture": "#books", "uv": [ 5, 11, 6, 15 ] },
+        "south": { "texture": "#books" },
+        "west":  { "texture": "#books", "uv": [ 4, 11, 5, 15 ] },
+        "up":    { "texture": "#books", "uv": [ 4, 11, 6, 12 ] }
+      }
+    },
+    {
+      "name": "Book11",
+      "from": [ 6, 1, 1 ], 
+      "to": [ 8, 7, 6 ], 
+      "faces": {
+        "east":  { "texture": "#books", "uv": [ 7,  9, 8, 15 ] },
+        "west":  { "texture": "#books", "uv": [ 6, 10, 7, 15 ] },
+        "south": { "texture": "#books" }
+      }
+    },
+    
+    {
+      "name": "Book12",
+      "from": [ 8, 1, 1 ], 
+      "to": [ 10, 6, 6 ], 
+      "faces": {
+        "east":  { "texture": "#books", "uv": [ 9, 10, 10, 15 ] },
+        "south": { "texture": "#books" },
+        "west":  { "texture": "#books", "uv": [ 8, 10,  9, 15 ] },
+        "up":    { "texture": "#books", "uv": [ 8, 10, 10, 11 ] }
+      }
+    },
+    {
+      "name": "Book13",
+      "from": [ 10, 1, 1 ], 
+      "to": [ 12, 7, 6 ], 
+      "faces": {
+        "east":  { "texture": "#books", "uv": [ 11, 9, 12, 15 ] },
+        "west":  { "texture": "#books", "uv": [ 10, 9, 11, 15 ] },
+        "south": { "texture": "#books" }
+      }
+    },
+    {
+      "name": "Book14",
+      "from": [ 12, 1, 1 ], 
+      "to": [ 14, 5, 6 ], 
+      "faces": {
+        "east":  { "texture": "#books", "uv": [ 13, 11, 14, 15 ] },
+        "south": { "texture": "#books" },
+        "west":  { "texture": "#books", "uv": [ 12, 11, 13, 15 ] },
+        "up":    { "texture": "#books", "uv": [ 12, 11, 14, 12 ] }
+      }
+    },
+    {
+      "name": "Book15",
+      "from": [ 14, 1, 1 ], 
+      "to": [ 16, 7, 6 ], 
+      "faces": {
+        "east":  { "texture": "#books", "uv": [ 15, 9, 16, 15 ] },
+        "west":  { "texture": "#books", "uv": [ 14, 9, 15, 15 ] },
+        "south": { "texture": "#books" }
+      }
+    }
+  ]
+}

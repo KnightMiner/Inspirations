@@ -154,7 +154,7 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
     int shelf = 0;
     // if we clicked below the middle shelf, add 7 to the book
     if (click.y <= 0.4375) {
-      shelf = 7;
+      shelf = 8;
       // if we clicked below the top shelf but not quite in the middle shelf, no book
     } else if (click.y < 0.5625) {
       return -1;
@@ -162,10 +162,10 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
 
     int offX = facing.getXOffset();
     int offZ = facing.getZOffset();
-    double x1 = offX == -1 ? 0.625 : 0.0625;
-    double z1 = offZ == -1 ? 0.625 : 0.0625;
-    double x2 = offX == +1 ? 0.375 : 0.9375;
-    double z2 = offZ == +1 ? 0.375 : 0.9375;
+    double x1 = offX == -1 ? 0.625 : 0;
+    double z1 = offZ == -1 ? 0.625 : 0;
+    double x2 = offX == +1 ? 0.375 : 1;
+    double z2 = offZ == +1 ? 0.375 : 1;
     // ensure we clicked within a shelf, not outside one
     if (click.x < x1 || click.x > x2 || click.z < z1 || click.z > z2) {
       return -1;
@@ -174,14 +174,13 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
     // okay, so now we know we clicked in the book area, so just take the position clicked to determine where
     Direction dir = facing.rotateYCCW();
     // subtract one pixel and multiply by our direction
-    double clicked = (dir.getXOffset() * click.x) + (dir.getZOffset() * click.z) - 0.0625;
+    double clicked = (dir.getXOffset() * click.x) + (dir.getZOffset() * click.z);
     // if negative, just add one to wrap back around
     if (clicked < 0) {
       clicked = 1 + clicked;
     }
 
-    // multiply by 8 to account for extra 2 pixels
-    return shelf + Math.min((int)(clicked * 8), 6);
+    return shelf + Math.min((int)(clicked * 8), 7);
   }
 
   /*
@@ -204,8 +203,8 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
       double z2 = offZ == 1 ? 0.5 : 1;
 
       // Rotate the 2 X-Z points correctly for the inset shelves.
-      Vector3d min = new Vector3d(-7 / 16.0, 0, -7 / 16.0).rotateYaw(-(float)Math.PI / 2F * side.getHorizontalIndex());
-      Vector3d max = new Vector3d(7 / 16.0, 1, 0).rotateYaw(-(float)Math.PI / 2F * side.getHorizontalIndex());
+      Vector3d min = new Vector3d(-0.5, 0, -7 / 16.0).rotateYaw(-(float)Math.PI / 2F * side.getHorizontalIndex());
+      Vector3d max = new Vector3d( 0.5, 1, 0).rotateYaw(-(float)Math.PI / 2F * side.getHorizontalIndex());
 
       // Then assemble.
       builder.put(side, VoxelShapes.combineAndSimplify(
@@ -213,9 +212,7 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
           VoxelShapes.or( // Then the two shelves.
                           VoxelShapes.create(0.5 + min.x, 1 / 16.0, 0.5 + min.z, 0.5 + max.x, 7 / 16.0, 0.5 + max.z),
                           VoxelShapes.create(0.5 + min.x, 9 / 16.0, 0.5 + min.z, 0.5 + max.x, 15 / 16.0, 0.5 + max.z)
-                        ),
-          IBooleanFunction.ONLY_FIRST
-                                                      ));
+                        ), IBooleanFunction.ONLY_FIRST));
     }
     BOUNDS = builder.build();
   }
@@ -245,7 +242,7 @@ public class BookshelfBlock extends InventoryBlock implements IHidable {
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public boolean hasComparatorInputOverride(BlockState p_149740_1_) {
+  public boolean hasComparatorInputOverride(BlockState state) {
     return true;
   }
 

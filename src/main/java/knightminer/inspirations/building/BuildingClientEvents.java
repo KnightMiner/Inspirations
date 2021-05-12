@@ -84,7 +84,7 @@ public class BuildingClientEvents extends ClientEvents {
 
     // coloring of books for normal bookshelf
     registerBlockColors(blockColors, (state, world, pos, tintIndex) -> {
-      if (tintIndex > 0 && tintIndex <= 14 && world != null && pos != null) {
+      if (tintIndex > 0 && tintIndex <= 16 && world != null && pos != null) {
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof BookshelfTileEntity) {
           ItemStack stack = ((BookshelfTileEntity)te).getStackInSlot(tintIndex - 1);

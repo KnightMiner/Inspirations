@@ -6,6 +6,7 @@ import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.common.network.InventorySlotSyncPacket;
 import knightminer.inspirations.library.InspirationsRegistry;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -28,6 +29,7 @@ import slimeknights.mantle.util.RetexturedHelper;
 import javax.annotation.Nullable;
 
 public class BookshelfTileEntity extends InventoryTileEntity implements IRetexturedTileEntity {
+  private static final int MAX_BOOKS = 16;
   public static final ModelProperty<Integer> BOOKS = new ModelProperty<>();
   private static final ITextComponent TITLE = new TranslationTextComponent("gui.inspirations.bookshelf.name");
 
@@ -38,7 +40,7 @@ public class BookshelfTileEntity extends InventoryTileEntity implements IRetextu
 
   private final IModelData data = new ModelDataMap.Builder().withProperty(BOOKS).withProperty(RetexturedHelper.BLOCK_PROPERTY).build();
   public BookshelfTileEntity() {
-    super(InspirationsBuilding.tileBookshelf, TITLE, 14, 1);
+    super(InspirationsBuilding.tileBookshelf, TITLE, MAX_BOOKS, 1);
   }
 
   @Override
@@ -109,10 +111,10 @@ public class BookshelfTileEntity extends InventoryTileEntity implements IRetextu
    */
 
   public int getComparatorPower() {
-    for (int i = 0; i < 14; i++) {
+    for (int i = 0; i < MAX_BOOKS; i++) {
       if (getStackInSlot(i).getItem() == InspirationsBuilding.redstoneBook) {
-        // we do plus two so a book in slot 13 (last one) gives 15
-        return i + 2;
+        // last gives 15, first gives 0
+        return i;
       }
     }
     return 0;
@@ -125,7 +127,7 @@ public class BookshelfTileEntity extends InventoryTileEntity implements IRetextu
     }
     // simple sum of all books with the power of a full shelf
     float books = 0;
-    for (int i = 0; i < this.getSizeInventory(); i++) {
+    for (int i = 0; i < MAX_BOOKS; i++) {
       if (isStackInSlot(i)) {
         float power = InspirationsRegistry.getBookEnchantingPower(getStackInSlot(i));
         if (power >= 0) {
@@ -135,7 +137,7 @@ public class BookshelfTileEntity extends InventoryTileEntity implements IRetextu
     }
 
     // divide by 14 since that is the number of books in a shelf
-    enchantBonus = books / 14;
+    enchantBonus = books / MAX_BOOKS;
     return enchantBonus;
   }
 
@@ -146,7 +148,7 @@ public class BookshelfTileEntity extends InventoryTileEntity implements IRetextu
   public IModelData getModelData() {
     // pack books into integer
     int books = 0;
-    for (int i = 0; i < 14; i++) {
+    for (int i = 0; i < MAX_BOOKS; i++) {
       if (isStackInSlot(i)) {
         books |= 1 << i;
       }
@@ -166,8 +168,24 @@ public class BookshelfTileEntity extends InventoryTileEntity implements IRetextu
    */
 
   @Override
+  protected boolean shouldSyncOnUpdate() {
+    return true;
+  }
+
+  @Override
+  public void read(BlockState blockState, CompoundNBT tags) {
+    // temporary workaround to resize the inventory
+    if (tags.contains("InventorySize")) {
+      tags.putInt("InventorySize", MAX_BOOKS);
+    }
+    super.read(blockState, tags);
+  }
+
+  @Override
   public CompoundNBT getUpdateTag() {
-    // new tag instead of super since default implementation calls the super of writeToNBT
-    return write(new CompoundNBT());
+    // book already in regular write, add to synced
+    CompoundNBT nbt = super.getUpdateTag();
+    writeInventoryToNBT(nbt);
+    return nbt;
   }
 }

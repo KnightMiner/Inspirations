@@ -22,11 +22,11 @@ public class BookshelfContainer extends BaseContainer<BookshelfTileEntity> {
     super(InspirationsBuilding.contBookshelf, id, inv, shelf);
     if (tile != null) {
       // two rows of slots
-      for (int i = 0; i < 7; i++) {
-        this.addSlot(new SlotBookshelf(tile, i, 26 + (i * 18), 18));
+      for (int i = 0; i < 8; i++) {
+        this.addSlot(new SlotBookshelf(tile, i,     17 + (i * 18), 18));
       }
-      for (int i = 0; i < 7; i++) {
-        this.addSlot(new SlotBookshelf(tile, i + 7, 26 + (i * 18), 44));
+      for (int i = 0; i < 8; i++) {
+        this.addSlot(new SlotBookshelf(tile, i + 8, 17 + (i * 18), 44));
       }
     }
     addInventorySlots();

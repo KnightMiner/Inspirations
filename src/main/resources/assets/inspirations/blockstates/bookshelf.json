@@ -1,8 +1,8 @@
 {
   "variants": {
-    "facing=south": { "model": "inspirations:block/bookshelf/normal" },
-    "facing=west":  { "model": "inspirations:block/bookshelf/normal", "y":  90 },
-    "facing=north": { "model": "inspirations:block/bookshelf/normal", "y": 180 },
-    "facing=east":  { "model": "inspirations:block/bookshelf/normal", "y": 270 }
+    "facing=south": { "model": "inspirations:block/shelf/normal" },
+    "facing=west":  { "model": "inspirations:block/shelf/normal", "y":  90 },
+    "facing=north": { "model": "inspirations:block/shelf/normal", "y": 180 },
+    "facing=east":  { "model": "inspirations:block/shelf/normal", "y": 270 }
   }
 }
