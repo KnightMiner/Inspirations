@@ -15,7 +15,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
@@ -46,12 +45,12 @@ public class InspirationsItemTagsProvider extends ItemTagsProvider {
     this.getOrCreateBuilder(ItemTags.DOORS).add(InspirationsBuilding.glassDoorItem);
     this.copy(BlockTags.TRAPDOORS, ItemTags.TRAPDOORS);
 
-    Builder<Item> bookBuilder = this.getOrCreateBuilder(InspirationsTags.Items.BOOKS)
-        .addOptionalTag(new ResourceLocation("forge", "books")) // TODO: once this is more standarized, move later books to this
+    Builder<Item> bookBuilder = this.getOrCreateBuilder(InspirationsTags.Items.FORGE_BOOKS)
         .add(InspirationsBuilding.redstoneBook)
         .add(Items.BOOK, Items.WRITABLE_BOOK, Items.WRITTEN_BOOK)
         .add(Items.ENCHANTED_BOOK, Items.KNOWLEDGE_BOOK);
     InspirationsBuilding.coloredBooks.values().forEach(bookBuilder::add);
+    this.getOrCreateBuilder(InspirationsTags.Items.BOOKS).addTag(InspirationsTags.Items.FORGE_BOOKS);
 
     // item list of all relevant carpets
     Builder<Item> carpetBuilder = this.getOrCreateBuilder(InspirationsTags.Items.CARPETS);

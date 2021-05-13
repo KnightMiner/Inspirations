@@ -1,3 +1,4 @@
+505007799cf85694a9dc84bdfdd94ce5a51489cc data/forge/tags/items/books.json
 eaf9ea781f5220889d762b91e1267309994f1634 data/forge/tags/items/bookshelves.json
 310fd9b17f2286a204c0552bd9b8c1c5769c5a70 data/forge/tags/items/dyes/black.json
 d62d9549d00dfb79731abd7d3622a4a8efbac828 data/forge/tags/items/dyes/blue.json
@@ -893,7 +894,7 @@ a87ebc00fb1955def1e140e4d760ebb867368ced data/inspirations/tags/blocks/cauldron_
 150684de449bf92f1ee6c2b1edfcfbc9b73e31fe data/inspirations/tags/blocks/mulch.json
 a0b3fd5ce7eaf9e816a1a2752a10f2179cc22170 data/inspirations/tags/blocks/shelves.json
 ed609d879b511fc63075a70306670eca432041c0 data/inspirations/tags/blocks/small_flowers.json
-f9cca99a22b0100163020f98af91d1810bd69ca6 data/inspirations/tags/items/books.json
+f8b9c7e4d99fb2a04fca0cfc55b05396c3bb95ea data/inspirations/tags/items/books.json
 a0b3fd5ce7eaf9e816a1a2752a10f2179cc22170 data/inspirations/tags/items/bookshelves.json
 85c18a3259a3290405d1f9b53f263fa73d5016f3 data/inspirations/tags/items/carpeted_trapdoors.json
 13952d80b58aeec6e0eedccd3ddf31a863df7945 data/inspirations/tags/items/carpets.json

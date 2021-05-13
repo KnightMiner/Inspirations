@@ -54,6 +54,11 @@ public class InspirationsTags {
     public static final IOptionalNamedTag<Item> MILK_CONTAINERS = tag("milk_containers");
 
     /**
+     * Forge tags for anything that is a book
+     */
+    public static final IOptionalNamedTag<Item> FORGE_BOOKS = forgeTag("books");
+
+    /**
      * Items which are valid to be placed on bookshelves.
      */
     public static final IOptionalNamedTag<Item> BOOKS = tag("books");
