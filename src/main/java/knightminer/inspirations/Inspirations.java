@@ -19,9 +19,11 @@ import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraft.block.Block;
 import net.minecraft.data.BlockTagsProvider;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.event.RegistryEvent.MissingMappings;
@@ -116,6 +118,19 @@ public class Inspirations {
     RegistrationHelper.handleMissingMappings(event, modID, name -> {
       Block block = missingBlock(name);
       return block != null ? block.asItem() : null;
+    });
+  }
+
+  @SubscribeEvent
+  static void missingFluidMappings(MissingMappings<Fluid> event) {
+    RegistrationHelper.handleMissingMappings(event, modID, name -> {
+      switch (name) {
+        case "milk":
+          return ForgeMod.MILK.get();
+        case "flowing_milk":
+          return ForgeMod.FLOWING_MILK.get();
+      }
+      return null;
     });
   }
 

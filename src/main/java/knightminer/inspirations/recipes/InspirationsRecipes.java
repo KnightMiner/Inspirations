@@ -48,6 +48,7 @@ import net.minecraft.potion.Potions;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.village.PointOfInterestType;
+import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fluids.FluidAttributes;
@@ -71,8 +72,6 @@ public class InspirationsRecipes extends ModuleBase {
   public static final ResourceLocation FLOWING_FLUID = Inspirations.getResource("block/fluid/colorless_flow");
   public static final ResourceLocation STILL_TRANSPARENT = Inspirations.getResource("block/fluid/transparent");
   public static final ResourceLocation FLOWING_TRANSPARENT = Inspirations.getResource("block/fluid/transparent_flow");
-  public static final ResourceLocation STILL_MILK = Inspirations.getResource("block/fluid/milk");
-  public static final ResourceLocation FLOWING_MILK = Inspirations.getResource("block/fluid/milk_flow");
 
   // blocks
   public static Block fullAnvil;
@@ -114,6 +113,10 @@ public class InspirationsRecipes extends ModuleBase {
 
   public static BasicParticleType boilingParticle;
 
+  public InspirationsRecipes() {
+    ForgeMod.enableMilkFluid();
+  }
+
   @SubscribeEvent
   void registerFluids(Register<Fluid> event) {
     FluidRegistryAdapter adapter = new FluidRegistryAdapter(event.getRegistry());
@@ -133,8 +136,6 @@ public class InspirationsRecipes extends ModuleBase {
     honey = adapter.register(new FluidBuilder(FluidAttributes.builder(STILL_TRANSPARENT, FLOWING_TRANSPARENT).color(0xFFFF9116).viscosity(4000).temperature(373))
                                       .block(() -> honeyFluidBlock)
                                       .bucket(() -> honeyBucket), "honey");
-    milk = adapter.register(new FluidBuilder(FluidAttributes.builder(STILL_MILK, FLOWING_MILK).density(1024).viscosity(1024))
-                                      .bucket(Items.MILK_BUCKET.delegate), "milk");
   }
 
   @SubscribeEvent
