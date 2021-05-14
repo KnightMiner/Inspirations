@@ -144,8 +144,6 @@ public class Config {
   public static final CachedBoolean enableHeartbeet;
   public static final CachedBoolean brewHeartbeet;
 
-  public static final CachedValue<Integer> heartbeetChance;
-
   // seeds
   public static final CachedBoolean enableBlockCrops;
   public static final CachedBoolean smoothBlockCropGrowth;
@@ -574,11 +572,6 @@ public class Config {
           .comment("Allows heartbeets to be used as an alternative to ghast tears in making potions of regeneration")
           .worldRestart()
           .define("heartbeet.brewRegeneration", true));
-
-      // TODO: move to loot tables
-      heartbeetChance = server(server
-          .comment("Chance of a heartbeet to drop instead of a normal drop. Formula is two 1 in [chance] chances for it to drop each harvest")
-          .defineInRange("heartbeet.chance", 75, 10, 1000));
 
       // dispensers place anvils
       dispensersPlaceAnvils = and(tweaksModule, server
