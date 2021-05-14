@@ -296,6 +296,10 @@ public class ShelfTileEntity extends NamableTileEntity implements IRetexturedTil
     super.read(blockState, tags);
     if (tags.contains(TAG_ITEMS, NBT.TAG_LIST)) {
       inventory.deserializeNBT(tags.getList(TAG_ITEMS, NBT.TAG_COMPOUND));
+      if (world != null && world.isRemote) {
+        requestModelDataUpdate();
+        world.notifyBlockUpdate(pos, blockState, blockState, 0);
+      }
     }
   }
 }

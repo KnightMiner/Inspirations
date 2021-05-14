@@ -31,7 +31,6 @@ import net.minecraft.potion.Potion;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Direction;
@@ -48,6 +47,7 @@ import net.minecraftforge.client.model.data.ModelDataMap;
 import net.minecraftforge.client.model.data.ModelProperty;
 import net.minecraftforge.common.util.Constants.NBT;
 import slimeknights.mantle.recipe.RecipeHelper;
+import slimeknights.mantle.tileentity.MantleTileEntity;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -57,7 +57,7 @@ import java.util.function.Consumer;
 /**
  * Tile entity logic for the cauldron, handles more complex content types
  */
-public class CauldronTileEntity extends TileEntity implements ITickableTileEntity {
+public class CauldronTileEntity extends MantleTileEntity implements ITickableTileEntity {
   private static final DamageSource DAMAGE_BOIL = new DamageSource(Inspirations.prefix("boiling")).setDamageBypassesArmor();
   public static final ModelProperty<ResourceLocation> TEXTURE = new ModelProperty<>();
   public static final ModelProperty<Boolean> FROSTED = new ModelProperty<>();
@@ -802,14 +802,13 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
   }
 
   @Override
-  public CompoundNBT getUpdateTag() {
-    // new tag instead of super since default implementation calls the super of writeToNBT
-    return write(new CompoundNBT());
+  protected boolean shouldSyncOnUpdate() {
+    return true;
   }
 
   @Override
-  public CompoundNBT write(CompoundNBT tags) {
-    tags = super.write(tags);
+  protected void writeSynced(CompoundNBT tags) {
+    super.writeSynced(tags);
     tags.put(TAG_CONTENTS, getContents().toNBT());
     // write transform if present, or transform name if we somehow wrote before world is set
     if (currentTransform != null) {
@@ -820,7 +819,6 @@ public class CauldronTileEntity extends TileEntity implements ITickableTileEntit
     // update the timer from NBT
     tags.putInt(TAG_TIMER, timer);
     tags.putInt(TAG_LEVEL_OFFSET, levelOffset);
-    return tags;
   }
 
   @Override
