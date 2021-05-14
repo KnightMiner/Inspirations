@@ -131,8 +131,9 @@ public class InspirationsBuilding extends ModuleBase {
       ironBars = registry.register(new ClimbablePaneBlock(Block.Properties.create(Material.IRON, MaterialColor.AIR).hardnessAndResistance(5.0F, 6.0F).sound(SoundType.METAL)), new ResourceLocation("iron_bars"));
     }
 
-    glassDoor = registry.register(new GlassDoorBlock(), "glass_door");
-    glassTrapdoor = registry.register(new GlassTrapdoorBlock(), "glass_trapdoor");
+    AbstractBlock.Properties glassDoorProps = Block.Properties.create(Material.GLASS).hardnessAndResistance(0.3F).sound(SoundType.GLASS).notSolid();
+    glassDoor = registry.register(new GlassDoorBlock(glassDoorProps), "glass_door");
+    glassTrapdoor = registry.register(new GlassTrapdoorBlock(glassDoorProps), "glass_trapdoor");
 
     mulch = registry.registerEnum(type -> new MulchBlock(type.getColor()), MulchType.values(), "mulch");
     path = registry.registerEnum(type -> new PathBlock(type.getShape(), type.getColor()), PathType.values(), "path");

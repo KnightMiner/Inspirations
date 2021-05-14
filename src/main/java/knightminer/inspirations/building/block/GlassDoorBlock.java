@@ -3,11 +3,8 @@ package knightminer.inspirations.building.block;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.IHidable;
 import knightminer.inspirations.library.Util;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.DoorBlock;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.properties.DoorHingeSide;
@@ -22,11 +19,8 @@ import net.minecraft.world.IBlockReader;
 
 public class GlassDoorBlock extends DoorBlock implements IHidable {
 
-  public GlassDoorBlock() {
-    super(Block.Properties.create(Material.GLASS)
-                          .hardnessAndResistance(0.3F)
-                          .sound(SoundType.GLASS)
-         );
+  public GlassDoorBlock(Properties props) {
+    super(props);
   }
 
   @Override
