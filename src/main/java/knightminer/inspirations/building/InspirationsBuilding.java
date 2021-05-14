@@ -198,7 +198,7 @@ public class InspirationsBuilding extends ModuleBase {
 
   @SubscribeEvent
   void init(FMLCommonSetupEvent event) {
-    registerCompostables();
+    event.enqueueWork(InspirationsBuilding::registerCompostables);
 
 		/*if(Config.enableFlowers.get() && Config.enableCauldronDyeing()) {
 			InspirationsRegistry.addCauldronRecipe(new DyeCauldronRecipe(
