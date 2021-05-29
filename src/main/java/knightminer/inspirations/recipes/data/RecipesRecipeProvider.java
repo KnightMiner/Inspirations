@@ -258,25 +258,7 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
                            .build(concrete, resource(concreteFolder + color.getString()))
     );
 
-    // temporary milk recipes until Forge merges one of my milk bucket fixes
     Consumer<IFinishedRecipe> fluidConsumer = withCondition(ConfigEnabledCondition.CAULDRON_FLUIDS);
-    ICauldronIngredient milkIngredient = CauldronIngredients.FLUID.of(InspirationsTags.Fluids.MILK);
-    CauldronRecipeBuilder.cauldron(SizedIngredient.fromItems(Items.MILK_BUCKET), milkIngredient)
-                         .maxLevels(MAX - 1)
-                         .setFull()
-                         .setOutput(Items.BUCKET)
-                         .setOutput(CauldronContentTypes.FLUID.of(InspirationsRecipes.milk))
-                         .noContainer()
-                         .addCriterion("has_item", hasItem(Items.MILK_BUCKET))
-                         .setSound(SoundEvents.ITEM_BUCKET_EMPTY)
-                         .build(fluidConsumer, resource(folder + "empty_milk_bucket"));
-    CauldronRecipeBuilder.cauldron(SizedIngredient.fromItems(Items.BUCKET), milkIngredient)
-                         .matchFull()
-                         .setEmpty()
-                         .setOutput(Items.MILK_BUCKET)
-                         .addCriterion("has_item", hasItem(Items.MILK_BUCKET))
-                         .setSound(SoundEvents.ITEM_BUCKET_FILL)
-                         .build(fluidConsumer, resource(folder + "fill_milk_bucket"));
 
     // honey //
     // fill and empty bottle, note unlike water this is in quarters

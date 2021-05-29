@@ -80,19 +80,22 @@ public class InspirationsTweaks extends ModuleBase {
     BlockRegistryAdapter registry = new BlockRegistryAdapter(event.getRegistry());
     IForgeRegistry<Block> r = event.getRegistry();
 
-    if (Config.enableFittedCarpets.get()) {
-      EnumObject.Builder<DyeColor,FlatCarpetBlock> flatBuilder = new EnumObject.Builder<>(DyeColor.class);
-      EnumObject.Builder<DyeColor,FittedCarpetBlock> fittedBuilder = new EnumObject.Builder<>(DyeColor.class);
-      for (DyeColor color : DyeColor.values()) {
-        Block original = InspirationsShared.VANILLA_CARPETS.get(color);
-        Block.Properties props = Block.Properties.from(original);
+    boolean replaceVanilla = Config.enableFittedCarpets.getAsBoolean();
+    EnumObject.Builder<DyeColor,FlatCarpetBlock> flatBuilder = new EnumObject.Builder<>(DyeColor.class);
+    EnumObject.Builder<DyeColor,FittedCarpetBlock> fittedBuilder = new EnumObject.Builder<>(DyeColor.class);
+    for (DyeColor color : DyeColor.values()) {
+      Block original = InspirationsShared.VANILLA_CARPETS.get(color);
+      Block.Properties props = Block.Properties.from(original);
+      if (replaceVanilla) {
         flatBuilder.putDelegate(color, registry.register(new FlatCarpetBlock(color, props), original).delegate);
-        // bounding box messes with sprinting on stairs, so disable
-        fittedBuilder.putDelegate(color, registry.register(new FittedCarpetBlock(color, props.doesNotBlockMovement()), color.getString() + "_fitted_carpet").delegate);
+      } else {
+        flatBuilder.putDelegate(color, original.delegate);
       }
-      flatCarpets = flatBuilder.build();
-      fitCarpets = fittedBuilder.build();
+      // bounding box messes with sprinting on stairs, so disable
+      fittedBuilder.putDelegate(color, registry.register(new FittedCarpetBlock(color, props.doesNotBlockMovement()), color.getString() + "_fitted_carpet").delegate);
     }
+    flatCarpets = flatBuilder.build();
+    fitCarpets = fittedBuilder.build();
 
     if (Config.waterlogHopper.get()) {
       dryHopper = registry.registerOverride(DryHopperBlock::new, Blocks.HOPPER);

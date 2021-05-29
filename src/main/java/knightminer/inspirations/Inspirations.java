@@ -3,6 +3,7 @@ package knightminer.inspirations;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.electronwill.nightconfig.core.io.WritingMode;
 import knightminer.inspirations.building.InspirationsBuilding;
+import knightminer.inspirations.building.block.type.ShelfType;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.datagen.InspirationsBlockTagsProvider;
 import knightminer.inspirations.common.datagen.InspirationsFluidTagsProvider;
@@ -15,15 +16,17 @@ import knightminer.inspirations.shared.SharedClientEvents;
 import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import knightminer.inspirations.utility.InspirationsUtility;
+import net.minecraft.block.Block;
 import net.minecraft.data.BlockTagsProvider;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.item.DyeColor;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.common.ForgeMod;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.event.RegistryEvent.MissingMappings;
-import net.minecraftforge.event.RegistryEvent.MissingMappings.Mapping;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
@@ -35,7 +38,9 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import slimeknights.mantle.registration.RegistrationHelper;
 
+import javax.annotation.Nullable;
 import java.util.Locale;
 
 //import knightminer.inspirations.recipes.InspirationsRecipes;
@@ -62,7 +67,6 @@ public class Inspirations {
     Config.OVERRIDE_SPEC.setConfig(replacementConfig);
     log.info("Config loaded.");
 
-    FMLJavaModLoadingContext.get().getModEventBus().register(this);
     IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
     modBus.register(this);
     modBus.register(new InspirationsShared());
@@ -72,6 +76,7 @@ public class Inspirations {
     modBus.register(new InspirationsTweaks());
     modBus.register(new InspirationsRecipes());
     modBus.addListener(Config::configChanged);
+    MinecraftForge.EVENT_BUS.register(Inspirations.class);
 
     InspirationsNetwork.INSTANCE.setup();
 
@@ -91,17 +96,44 @@ public class Inspirations {
     }
   }
 
-  @SubscribeEvent
-  void missingItemMappings(MissingMappings<Item> event) {
-    for (Mapping<Item> mapping : event.getAllMappings()) {
-      if (modID.equals(mapping.key.getNamespace())) {
-        // vanilla added their own chain, replace ours with it
-        if ("waypoint_compass".equals(mapping.key.getPath())) {
-          mapping.remap(InspirationsTools.waypointCompasses.get(DyeColor.WHITE));
-        }
-      }
+  /** Shared missing mapping handler for blocks and items */
+  @Nullable
+  private static Block missingBlock(String name) {
+    switch (name) {
+      case "bookshelf": return InspirationsBuilding.shelf.get(ShelfType.NORMAL);
+      case "ancient_bookshelf":  return InspirationsBuilding.shelf.get(ShelfType.ANCIENT);
+      case "rainbow_bookshelf":  return InspirationsBuilding.shelf.get(ShelfType.RAINBOW);
+      case "tomes_bookshelf":  return InspirationsBuilding.shelf.get(ShelfType.TOMES);
     }
+    return null;
   }
+
+  @SubscribeEvent
+  static void missingBlockMappings(MissingMappings<Block> event) {
+    RegistrationHelper.handleMissingMappings(event, modID, Inspirations::missingBlock);
+  }
+
+  @SubscribeEvent
+  static void missingItemMappings(MissingMappings<Item> event) {
+    RegistrationHelper.handleMissingMappings(event, modID, name -> {
+      Block block = missingBlock(name);
+      return block != null ? block.asItem() : null;
+    });
+  }
+
+  @SubscribeEvent
+  static void missingFluidMappings(MissingMappings<Fluid> event) {
+    RegistrationHelper.handleMissingMappings(event, modID, name -> {
+      switch (name) {
+        case "milk":
+          return ForgeMod.MILK.get();
+        case "flowing_milk":
+          return ForgeMod.FLOWING_MILK.get();
+      }
+      return null;
+    });
+  }
+
 
   /* Utilities */
 

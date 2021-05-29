@@ -159,7 +159,7 @@ public class JEIPlugin implements IModPlugin {
     Consumer<IItemProvider> setTextureSubtype = item -> registry.registerSubtypeInterpreter(item.asItem(), texture);
 
     // building
-    InspirationsBuilding.bookshelf.values().forEach(setTextureSubtype);
+    InspirationsBuilding.shelf.values().forEach(setTextureSubtype);
     InspirationsBuilding.enlightenedBush.values().forEach(setTextureSubtype);
   }
 

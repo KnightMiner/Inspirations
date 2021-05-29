@@ -1,0 +1,32 @@
+{
+  "type": "mantle:replace_item",
+  "conditions": [
+    {
+      "condition": "forge:loot_table_id",
+      "loot_table_id": "minecraft:blocks/beetroots"
+    },
+    {
+      "condition": "inspirations:config",
+      "prop": "heartbeets"
+    },
+    {
+      "condition": "minecraft:block_state_property",
+      "block": "minecraft:beetroots",
+      "properties": {
+        "age": "3"
+      }
+    },
+    {
+      "condition": "minecraft:table_bonus",
+      "enchantment": "minecraft:fortune",
+      "chances": [
+        0.05,
+        0.0625,
+        0.083333336,
+        0.1
+      ]
+    }
+  ],
+  "original": "minecraft:beetroot",
+  "replacement": "inspirations:heartbeet"
+}

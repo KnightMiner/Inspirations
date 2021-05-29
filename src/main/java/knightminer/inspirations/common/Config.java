@@ -61,6 +61,7 @@ public class Config {
   public static final CachedBoolean bookshelvesBoostEnchanting;
   public static final CachedValue<Double> defaultEnchantingPower;
 
+  @Deprecated
   public static final CachedValue<String> bookKeywords;
   private static final String BOOK_KEYWORD_DEFAULTS = "almanac, atlas, book, catalogue, concordance, dictionary, directory, encyclopedia, guide, journal, lexicon, manual, thesaurus, tome";
 
@@ -143,8 +144,6 @@ public class Config {
   public static final CachedBoolean enableHeartbeet;
   public static final CachedBoolean brewHeartbeet;
 
-  public static final CachedValue<Integer> heartbeetChance;
-
   // seeds
   public static final CachedBoolean enableBlockCrops;
   public static final CachedBoolean smoothBlockCropGrowth;
@@ -216,21 +215,21 @@ public class Config {
     {
       // bookshelves
       enableBookshelf = and(buildingModule, server
-          .comment("Enables the bookshelf: a decorative block to display books")
+          .comment("Enables the shelf: a decorative block to display books and other items")
           .worldRestart()
           .define("bookshelf.enable", true));
       enableColoredBooks = and(enableBookshelf, server
-          .comment("Enables colored books: basically colored versions of the vanilla book to decorate bookshelves")
+          .comment("Enables colored books: basically colored versions of the vanilla book to decorate shelves")
           .worldRestart()
           .define("bookshelf.coloredBooks", true));
       bookshelvesBoostEnchanting = and(buildingModule, server
-          .comment("If true, bookshelves will increase enchanting table power.")
+          .comment("If true, shelves will increase enchanting table power.")
           .define("bookshelf.boostEnchanting", true));
       defaultEnchantingPower = server(server
           .comment("Default power for a book for enchanting, can be overridden in the book overrides.")
           .defineInRange("bookshelf.defaultEnchanting", 1.5f, 0.0f, 15.0f));
       bookKeywords = server(server
-          .comment("List of keywords for valid books, used to determine valid books in the bookshelf. Separate each by commas.")
+          .comment("List of keywords for valid books, used to determine books in the shelf (non-books take more space). Separate each by commas.")
           .define("bookshelf.bookKeywords", BOOK_KEYWORD_DEFAULTS));
 
 
@@ -573,11 +572,6 @@ public class Config {
           .comment("Allows heartbeets to be used as an alternative to ghast tears in making potions of regeneration")
           .worldRestart()
           .define("heartbeet.brewRegeneration", true));
-
-      // TODO: move to loot tables
-      heartbeetChance = server(server
-          .comment("Chance of a heartbeet to drop instead of a normal drop. Formula is two 1 in [chance] chances for it to drop each harvest")
-          .defineInRange("heartbeet.chance", 75, 10, 1000));
 
       // dispensers place anvils
       dispensersPlaceAnvils = and(tweaksModule, server

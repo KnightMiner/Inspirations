@@ -142,6 +142,7 @@ public class ConfigEnabledCondition implements ICondition, ILootCondition {
   public static final ConfigEnabledCondition UNSTACKABLE_ALTS = add("unstackable_alts", Config.unstackableRecipeAlts);
   public static final ConfigEnabledCondition SKELETON_SKULL = add("skeleton_skull", Config.skeletonSkull);
   public static final ConfigEnabledCondition CAVE_SPIDER_WEB = add("cave_spider_web", Config.caveSpiderDrops);
+  public static final ConfigEnabledCondition HEARTBEETS = add("heartbeets", Config.enableHeartbeet);
 
   // recipes
   public static final ConfigEnabledCondition CAULDRON_RECIPES = add("cauldron_recipes", Config.cauldronRecipes);

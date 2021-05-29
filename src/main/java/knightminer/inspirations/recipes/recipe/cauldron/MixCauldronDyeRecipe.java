@@ -87,10 +87,11 @@ public class MixCauldronDyeRecipe implements ICauldronRecipe, ICauldronRecipeDis
       inv.giveStack(container.copy());
 
       // update contents
+      int originalLevel = inv.getLevel();
       inv.addLevel(THIRD);
 
       // mix in a neutral grey for the water, its not a free dye dupe
-      inv.setContents(CauldronContentTypes.COLOR.of(DyeCauldronWaterRecipe.addColors(newColor, THIRD, 0x808080, inv.getLevel())));
+      inv.setContents(CauldronContentTypes.COLOR.of(DyeCauldronWaterRecipe.addColors(newColor, THIRD, 0x808080, originalLevel)));
 
       // play sound
       inv.playSound(SoundEvents.ITEM_BOTTLE_EMPTY);

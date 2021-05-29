@@ -77,13 +77,23 @@ public class UtilityRecipeProvider extends RecipeProvider implements IConditionB
 
     // torch lever
     ShapedRecipeBuilder.shapedRecipe(InspirationsUtility.torchLeverItem)
-                       .addCriterion("has_torch", hasItem(Items.TORCH))
-                       .addCriterion("has_lever", hasItem(Items.LEVER))
-                       .key('S', Tags.Items.COBBLESTONE)
-                       .key('T', Items.TORCH)
-                       .patternLine("T")
-                       .patternLine("S")
-                       .build(withCondition(ConfigEnabledCondition.TORCH_LEVER), prefix(InspirationsUtility.torchLeverItem, "utility/"));
+            .addCriterion("has_torch", hasItem(Items.TORCH))
+            .addCriterion("has_lever", hasItem(Items.LEVER))
+            .key('S', Tags.Items.COBBLESTONE)
+            .key('T', Items.TORCH)
+            .patternLine("T")
+            .patternLine("S")
+            .build(withCondition(ConfigEnabledCondition.TORCH_LEVER), prefix(InspirationsUtility.torchLeverItem, "utility/"));
+
+    // soul torch lever
+    ShapedRecipeBuilder.shapedRecipe(InspirationsUtility.soulLeverItem)
+            .addCriterion("has_soul_torch", hasItem(Items.SOUL_TORCH))
+            .addCriterion("has_lever", hasItem(Items.LEVER))
+            .key('S', Tags.Items.COBBLESTONE)
+            .key('T', Items.SOUL_TORCH)
+            .patternLine("T")
+            .patternLine("S")
+            .build(withCondition(ConfigEnabledCondition.TORCH_LEVER), prefix(InspirationsUtility.soulLeverItem, "utility/"));
 
     // carpeted trapdoor.
     Consumer<IFinishedRecipe> trapdoorConfig = withCondition(ConfigEnabledCondition.CARPETED_TRAPDOOR);

@@ -17,7 +17,7 @@ public class InspirationsTags {
     public static final IOptionalNamedTag<Block> FLOWER_POTS = tag("flower_pots");
     public static final IOptionalNamedTag<Block> CARPETED_TRAPDOORS = tag("carpeted_trapdoors");
     public static final IOptionalNamedTag<Block> CARPETED_PRESSURE_PLATES = tag("carpeted_pressure_plates");
-    public static final IOptionalNamedTag<Block> BOOKSHELVES = tag("bookshelves");
+    public static final IOptionalNamedTag<Block> SHELVES = tag("shelves");
     public static final IOptionalNamedTag<Block> ENLIGHTENED_BUSHES = tag("enlightened_bushes");
 
     /** Blocks with this tag act as fire for the cauldron */
@@ -52,6 +52,11 @@ public class InspirationsTags {
     public static final IOptionalNamedTag<Item> DISP_FLUID_TANKS = tag("fluid_containers");
 
     public static final IOptionalNamedTag<Item> MILK_CONTAINERS = tag("milk_containers");
+
+    /**
+     * Forge tags for anything that is a book
+     */
+    public static final IOptionalNamedTag<Item> FORGE_BOOKS = forgeTag("books");
 
     /**
      * Items which are valid to be placed on bookshelves.

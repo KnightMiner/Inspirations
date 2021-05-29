@@ -65,6 +65,7 @@ public class InspirationsRegistry {
     }
 
     // look through every keyword from the config
+    // TODO: remove 1.17, switch to only tags
     for (String keyword : bookKeywords) {
       // if the unlocalized name or the registry name has the keyword, its a book
       if (Objects.requireNonNull(item.getRegistryName()).getPath().contains(keyword)

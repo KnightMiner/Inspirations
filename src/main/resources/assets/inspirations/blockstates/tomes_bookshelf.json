@@ -1,8 +1,0 @@
-{
-  "variants": {
-    "facing=south": { "model": "inspirations:block/bookshelf/tomes" },
-    "facing=west":  { "model": "inspirations:block/bookshelf/tomes", "y":  90 },
-    "facing=north": { "model": "inspirations:block/bookshelf/tomes", "y": 180 },
-    "facing=east":  { "model": "inspirations:block/bookshelf/tomes", "y": 270 }
-  }
-}

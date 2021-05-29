@@ -7,7 +7,7 @@ import knightminer.inspirations.utility.block.CarpetedPressurePlateBlock;
 import knightminer.inspirations.utility.block.CarpetedTrapdoorBlock;
 import knightminer.inspirations.utility.block.CollectorBlock;
 import knightminer.inspirations.utility.block.PipeBlock;
-import knightminer.inspirations.utility.block.TorchLevelBlock;
+import knightminer.inspirations.utility.block.TorchLeverBlock;
 import knightminer.inspirations.utility.block.TorchLeverWallBlock;
 import knightminer.inspirations.utility.datagen.UtilityRecipeProvider;
 import knightminer.inspirations.utility.inventory.CollectorContainer;
@@ -15,8 +15,11 @@ import knightminer.inspirations.utility.inventory.PipeContainer;
 import knightminer.inspirations.utility.item.TorchLeverItem;
 import knightminer.inspirations.utility.tileentity.CollectorTileEntity;
 import knightminer.inspirations.utility.tileentity.PipeTileEntity;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.DispenserBlock;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.dispenser.IDispenseItemBehavior;
@@ -25,6 +28,7 @@ import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.particles.ParticleTypes;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -42,6 +46,8 @@ public class InspirationsUtility extends ModuleBase {
   // blocks
   public static Block torchLeverWall;
   public static Block torchLeverFloor;
+  public static Block soulLeverWall;
+  public static Block soulLeverFloor;
   //public static Block bricksButton;
   //public static Block netherBricksButton;
   public static EnumObject<DyeColor,CarpetedTrapdoorBlock> carpetedTrapdoors = EnumObject.empty();
@@ -51,6 +57,7 @@ public class InspirationsUtility extends ModuleBase {
 
   // Items
   public static Item torchLeverItem;
+  public static Item soulLeverItem;
 
   // Tile entities
   public static TileEntityType<CollectorTileEntity> tileCollector;
@@ -65,8 +72,23 @@ public class InspirationsUtility extends ModuleBase {
     BlockRegistryAdapter registry = new BlockRegistryAdapter(event.getRegistry());
     IForgeRegistry<Block> r = event.getRegistry();
 
-    torchLeverFloor = registry.register(new TorchLevelBlock(), "torch_lever");
-    torchLeverWall = registry.register(new TorchLeverWallBlock(), "wall_torch_lever");
+    torchLeverFloor = registry.register(new TorchLeverBlock(
+            AbstractBlock.Properties.from(Blocks.TORCH).sound(SoundType.WOOD),
+            ParticleTypes.FLAME
+    ), "torch_lever");
+    torchLeverWall = registry.register(new TorchLeverWallBlock(
+            AbstractBlock.Properties.from(Blocks.WALL_TORCH).lootFrom(() -> torchLeverFloor),
+            ParticleTypes.FLAME
+    ), "wall_torch_lever");
+
+    soulLeverFloor = registry.register(new TorchLeverBlock(
+            AbstractBlock.Properties.from(Blocks.SOUL_TORCH),
+            ParticleTypes.SOUL_FIRE_FLAME
+    ), "soul_torch_lever");
+    soulLeverWall = registry.register(new TorchLeverWallBlock(
+            AbstractBlock.Properties.from(Blocks.SOUL_WALL_TORCH).lootFrom(() -> soulLeverFloor),
+            ParticleTypes.SOUL_FIRE_FLAME
+    ), "wall_soul_torch_lever");
 
     //bricksButton = registerBlock(r, new BricksButtonBlock(BricksButtonBlock.BRICK_BUTTON), "bricks_button");
     //netherBricksButton = registerBlock(r, new BricksButtonBlock(BricksButtonBlock.NETHER_BUTTON), "nether_bricks_button");
@@ -101,7 +123,8 @@ public class InspirationsUtility extends ModuleBase {
     ItemRegistryAdapter registry = new ItemRegistryAdapter(event.getRegistry(), props);
 
     // itemblocks
-    torchLeverItem = registry.register(new TorchLeverItem(), "torch_lever");
+    torchLeverItem = registry.register(new TorchLeverItem(InspirationsUtility.torchLeverFloor, InspirationsUtility.torchLeverWall, props), "torch_lever");
+    soulLeverItem = registry.register(new TorchLeverItem(InspirationsUtility.soulLeverFloor, InspirationsUtility.soulLeverWall, props), "soul_torch_lever");
     //registerBlockItem(r, bricksButton, ItemGroup.REDSTONE);
     //registerBlockItem(r, netherBricksButton, ItemGroup.REDSTONE);
     // TODO: never made a bifunction variant

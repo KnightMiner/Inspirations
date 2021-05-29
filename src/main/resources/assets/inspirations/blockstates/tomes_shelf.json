@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=south": { "model": "inspirations:block/shelf/tomes" },
+    "facing=west":  { "model": "inspirations:block/shelf/tomes", "y":  90 },
+    "facing=north": { "model": "inspirations:block/shelf/tomes", "y": 180 },
+    "facing=east":  { "model": "inspirations:block/shelf/tomes", "y": 270 }
+  }
+}

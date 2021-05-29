@@ -7,6 +7,7 @@ import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.recipes.data.VanillaEnum;
 import knightminer.inspirations.shared.InspirationsShared;
 import knightminer.inspirations.tools.InspirationsTools;
+import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraft.data.BlockTagsProvider;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.ItemTagsProvider;
@@ -39,16 +40,17 @@ public class InspirationsItemTagsProvider extends ItemTagsProvider {
     this.copy(InspirationsTags.Blocks.MULCH, InspirationsTags.Items.MULCH);
     this.copy(InspirationsTags.Blocks.SMALL_FLOWERS, InspirationsTags.Items.SMALL_FLOWERS);
     this.copy(InspirationsTags.Blocks.CARPETED_TRAPDOORS, InspirationsTags.Items.CARPETED_TRAPDOORS);
-    this.copy(InspirationsTags.Blocks.BOOKSHELVES, InspirationsTags.Items.BOOKSHELVES);
+    this.copy(InspirationsTags.Blocks.SHELVES, InspirationsTags.Items.BOOKSHELVES);
     this.copy(InspirationsTags.Blocks.ENLIGHTENED_BUSHES, InspirationsTags.Items.ENLIGHTENED_BUSHES);
     this.getOrCreateBuilder(ItemTags.DOORS).add(InspirationsBuilding.glassDoorItem);
     this.copy(BlockTags.TRAPDOORS, ItemTags.TRAPDOORS);
 
-    Builder<Item> bookBuilder = this.getOrCreateBuilder(InspirationsTags.Items.BOOKS)
+    Builder<Item> bookBuilder = this.getOrCreateBuilder(InspirationsTags.Items.FORGE_BOOKS)
         .add(InspirationsBuilding.redstoneBook)
         .add(Items.BOOK, Items.WRITABLE_BOOK, Items.WRITTEN_BOOK)
         .add(Items.ENCHANTED_BOOK, Items.KNOWLEDGE_BOOK);
     InspirationsBuilding.coloredBooks.values().forEach(bookBuilder::add);
+    this.getOrCreateBuilder(InspirationsTags.Items.BOOKS).addTag(InspirationsTags.Items.FORGE_BOOKS);
 
     // item list of all relevant carpets
     Builder<Item> carpetBuilder = this.getOrCreateBuilder(InspirationsTags.Items.CARPETS);
@@ -83,5 +85,8 @@ public class InspirationsItemTagsProvider extends ItemTagsProvider {
     this.getOrCreateBuilder(ItemTags.ARROWS).add(InspirationsTools.redstoneArrow);
     this.copy(BlockTags.LEAVES, ItemTags.LEAVES);
     this.copy(BlockTags.WOODEN_TRAPDOORS, ItemTags.WOODEN_TRAPDOORS);
+    // Not copy(), we don't want to include the wall torch.
+    this.getOrCreateBuilder(ItemTags.PIGLIN_REPELLENTS).add(InspirationsUtility.soulLeverItem);
+    this.getOrCreateBuilder(ItemTags.PIGLIN_LOVED).add(InspirationsTools.redstoneCharger);
   }
 }
