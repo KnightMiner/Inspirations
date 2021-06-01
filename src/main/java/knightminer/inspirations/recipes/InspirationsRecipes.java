@@ -1,5 +1,7 @@
 package knightminer.inspirations.recipes;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.ModuleBase;
@@ -254,10 +256,17 @@ public class InspirationsRecipes extends ModuleBase {
   void commonSetup(FMLCommonSetupEvent event) {
     if (Config.extendedCauldron.getAsBoolean()) {
       // inject new cauldron blocks into the leatherworker point of interest
-      // fortunately, its as simple as injecting it into the map
+      // it should be as simple as injecting it into the map, but people keep reporting issues with this so just over do it
       Map<BlockState, PointOfInterestType> map = GameData.getBlockStatePointOfInterestTypeMap();
       synchronized (map) {
-        cauldron.getStateContainer().getValidStates().forEach(state -> map.put(state, PointOfInterestType.LEATHERWORKER));
+        ImmutableList<BlockState> newStates = cauldron.getStateContainer().getValidStates();
+        synchronized (PointOfInterestType.LEATHERWORKER) {
+          ImmutableSet.Builder<BlockState> builder = ImmutableSet.builder();
+          builder.addAll(PointOfInterestType.LEATHERWORKER.blockStates);
+          builder.addAll(newStates);
+          PointOfInterestType.LEATHERWORKER.blockStates = builder.build();
+        }
+        newStates.forEach(state -> map.put(state, PointOfInterestType.LEATHERWORKER));
       }
     }
   }
