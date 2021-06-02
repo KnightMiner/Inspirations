@@ -3,21 +3,16 @@ package knightminer.inspirations.tools.datagen;
 import knightminer.inspirations.common.data.ConfigEnabledCondition;
 import knightminer.inspirations.common.datagen.IInspirationsRecipeBuilder;
 import knightminer.inspirations.common.datagen.NBTIngredient;
-import knightminer.inspirations.library.InspirationsTags;
-import knightminer.inspirations.library.recipe.RecipeSerializers;
 import knightminer.inspirations.tools.InspirationsTools;
 import net.minecraft.advancements.criterion.EnchantmentPredicate;
 import net.minecraft.advancements.criterion.ItemPredicate;
 import net.minecraft.advancements.criterion.MinMaxBounds;
 import net.minecraft.advancements.criterion.NBTPredicate;
-import net.minecraft.data.CustomRecipeBuilder;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.IFinishedRecipe;
 import net.minecraft.data.RecipeProvider;
 import net.minecraft.data.ShapedRecipeBuilder;
 import net.minecraft.data.ShapelessRecipeBuilder;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.potion.PotionUtils;
@@ -25,7 +20,6 @@ import net.minecraft.potion.Potions;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
-import slimeknights.mantle.recipe.data.ConsumerWrapperBuilder;
 
 import java.util.function.Consumer;
 
@@ -117,33 +111,14 @@ public class ToolsRecipeProvider extends RecipeProvider implements IConditionBui
 
     // waypoint compasses
     // white
-    Item undyedCompass = InspirationsTools.waypointCompasses.get(DyeColor.WHITE);
-    ShapedRecipeBuilder.shapedRecipe(undyedCompass)
-                       .addCriterion("has_blaze", hasItem(Tags.Items.RODS_BLAZE))
-                       .key('I', Tags.Items.INGOTS_IRON)
-                       .key('B', Tags.Items.RODS_BLAZE)
-                       .patternLine(" I ")
-                       .patternLine("IBI")
-                       .patternLine(" I ")
-                       .build(withCondition(ConfigEnabledCondition.CRAFT_WAYPOINT), resource("tools/waypoint_compass/base"));
-    // coloring
-    CustomRecipeBuilder.customRecipe(RecipeSerializers.COPY_WAYPOINT_COMPASS)
-                       .build(withCondition(ConfigEnabledCondition.COPY_WAYPOINT), resourceName("tools/waypoint_compass/copy"));
-
-    Consumer<IFinishedRecipe> dyeWaypoint =
-        ConsumerWrapperBuilder.wrap(RecipeSerializers.DYE_WAYPOINT_COMPASS)
-                              .addCondition(ConfigEnabledCondition.MODULE_TOOLS)
-                              .addCondition(ConfigEnabledCondition.DYE_WAYPOINT)
-                              .build(consumer);
-    String dyeGroup = resourceName("dye_waypoint_compass");
-    InspirationsTools.waypointCompasses.forEach((color, compass) ->
-      ShapelessRecipeBuilder.shapelessRecipe(compass)
-                            .addCriterion("has_compass", hasItem(InspirationsTags.Items.WAYPOINT_COMPASSES))
-                            .setGroup(dyeGroup)
-                            .addIngredient(InspirationsTags.Items.WAYPOINT_COMPASSES)
-                            .addIngredient(color.getTag())
-                            .build(dyeWaypoint, resource("tools/waypoint_compass/" + color.getString()))
-    );
+    ShapedRecipeBuilder.shapedRecipe(InspirationsTools.dimensionCompass)
+                       .addCriterion("has_ender", hasItem(Tags.Items.ENDER_PEARLS))
+                       .key('G', Tags.Items.INGOTS_GOLD)
+                       .key('E', Tags.Items.ENDER_PEARLS)
+                       .patternLine(" G ")
+                       .patternLine("GEG")
+                       .patternLine(" G ")
+                       .build(withCondition(ConfigEnabledCondition.DIMENSION_COMPASS), resource("tools/dimension_compass"));
 
     // redstone arrow
     ShapedRecipeBuilder.shapedRecipe(InspirationsTools.redstoneArrow, 8)

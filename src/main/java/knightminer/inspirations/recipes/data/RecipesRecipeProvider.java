@@ -21,6 +21,7 @@ import knightminer.inspirations.recipes.recipe.cauldron.DyeCauldronWaterRecipe;
 import knightminer.inspirations.recipes.recipe.cauldron.MixCauldronDyeRecipe;
 import knightminer.inspirations.recipes.recipe.cauldron.PotionFermentCauldronTransform;
 import knightminer.inspirations.shared.InspirationsShared;
+import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraft.advancements.ICriterionInstance;
 import net.minecraft.advancements.criterion.ItemPredicate;
@@ -408,11 +409,12 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
                           .build(bottleConsumer, resource(bottleFolder + "writable_book"));
 
     // leather dyeing and clearing
-    addDyeableRecipes(Items.LEATHER_HELMET, folder);
-    addDyeableRecipes(Items.LEATHER_CHESTPLATE, folder);
-    addDyeableRecipes(Items.LEATHER_LEGGINGS, folder);
-    addDyeableRecipes(Items.LEATHER_BOOTS, folder);
-    addDyeableRecipes(Items.LEATHER_HORSE_ARMOR, folder);
+    addDyeableRecipes(Items.LEATHER_HELMET, folder, null);
+    addDyeableRecipes(Items.LEATHER_CHESTPLATE, folder, null);
+    addDyeableRecipes(Items.LEATHER_LEGGINGS, folder, null);
+    addDyeableRecipes(Items.LEATHER_BOOTS, folder, null);
+    addDyeableRecipes(Items.LEATHER_HORSE_ARMOR, folder, null);
+    addDyeableRecipes(InspirationsTools.dimensionCompass, folder, ConfigEnabledCondition.DIMENSION_COMPASS);
 
     // banner pattern removing
     CustomRecipeBuilder.customRecipe(RecipeSerializers.CAULDRON_REMOVE_BANNER_PATTERN).build(cauldronRecipes, resourceName(folder + "remove_banner_pattern"));
@@ -550,11 +552,11 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
    * @param dyeable  Dyeable item
    * @param folder   Folder for recipes
    */
-  private void addDyeableRecipes(IItemProvider dyeable, String folder) {
+  private void addDyeableRecipes(IItemProvider dyeable, String folder, @Nullable ICondition extraCondition) {
     Ingredient ingredient = Ingredient.fromItems(dyeable);
-    withCondition(ConfigEnabledCondition.CAULDRON_RECIPES)
+    (extraCondition == null ? withCondition(ConfigEnabledCondition.CAULDRON_RECIPES) : withCondition(ConfigEnabledCondition.CAULDRON_RECIPES, extraCondition))
         .accept(DyeableCauldronRecipe.FinishedRecipe.clear(prefix(dyeable, folder + "dyeable/clear_"), ingredient));
-    withCondition(ConfigEnabledCondition.CAULDRON_DYEING)
+    (extraCondition == null ? withCondition(ConfigEnabledCondition.CAULDRON_DYEING) : withCondition(ConfigEnabledCondition.CAULDRON_DYEING, extraCondition))
         .accept(DyeableCauldronRecipe.FinishedRecipe.dye(prefix(dyeable, folder + "dyeable/dye_"), ingredient));
   }
 

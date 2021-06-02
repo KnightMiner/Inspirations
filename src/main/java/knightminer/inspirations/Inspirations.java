@@ -116,6 +116,25 @@ public class Inspirations {
   @SubscribeEvent
   static void missingItemMappings(MissingMappings<Item> event) {
     RegistrationHelper.handleMissingMappings(event, modID, name -> {
+      switch (name) {
+        case "white_waypoint_compass":
+        case "orange_waypoint_compass":
+        case "magenta_waypoint_compass":
+        case "light_blue_waypoint_compass":
+        case "yellow_waypoint_compass":
+        case "lime_waypoint_compass":
+        case "pink_waypoint_compass":
+        case "gray_waypoint_compass":
+        case "light_gray_waypoint_compass":
+        case "cyan_waypoint_compass":
+        case "purple_waypoint_compass":
+        case "blue_waypoint_compass":
+        case "brown_waypoint_compass":
+        case "green_waypoint_compass":
+        case "red_waypoint_compass":
+        case "black_waypoint_compass":
+          return InspirationsTools.dimensionCompass;
+      }
       Block block = missingBlock(name);
       return block != null ? block.asItem() : null;
     });

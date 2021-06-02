@@ -9,18 +9,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 
 public class NorthCompassPropertyGetter implements IItemPropertyGetter {
-  double rotation;
-  double rota;
-  long lastUpdateTick;
+  private final Angle angle = new Angle();
 
   @Override
-  @OnlyIn(Dist.CLIENT)
   public float call(ItemStack stack, @Nullable ClientWorld clientWorld, @Nullable LivingEntity entity) {
     ItemFrameEntity frame = stack.getItemFrame();
     if (frame != null) {
@@ -46,20 +41,13 @@ public class NorthCompassPropertyGetter implements IItemPropertyGetter {
     }
 
     double angle = MathHelper.positiveModulo(entity.rotationYaw / 360, 1);
-    return (float)(entity == Minecraft.getInstance().player ? wobble(world, angle) : angle);
-  }
-
-  @OnlyIn(Dist.CLIENT)
-  private double wobble(World world, double angle) {
-    if (world.getGameTime() != lastUpdateTick) {
-      lastUpdateTick = world.getGameTime();
-      double d0 = angle - rotation;
-      d0 = MathHelper.positiveModulo(d0 + 0.5D, 1.0D) - 0.5D;
-      rota += d0 * 0.1D;
-      rota *= 0.9D;
-      rotation = MathHelper.positiveModulo(rotation + rota, 1.0D);
+    if (entity == Minecraft.getInstance().player) {
+      long gameTime = world.getGameTime();
+      if (this.angle.shouldUpdate(gameTime)) {
+        this.angle.wobble(gameTime, angle);
+      }
+      return (float)this.angle.getRotation();
     }
-
-    return rotation;
+    return (float)angle;
   }
 }

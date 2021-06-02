@@ -70,7 +70,6 @@ public class InspirationsTags {
     public static final IOptionalNamedTag<Item> SHULKER_BOXES = tag("shulker_boxes");
     public static final IOptionalNamedTag<Item> TERRACOTTA = tag("terracotta");
 
-    public static final IOptionalNamedTag<Item> WAYPOINT_COMPASSES = tag("waypoint_compasses");
     public static final IOptionalNamedTag<Item> DYE_BOTTLES = tag("dyed_water_bottles");
 
     /* Inputs for potion cauldron recipes */

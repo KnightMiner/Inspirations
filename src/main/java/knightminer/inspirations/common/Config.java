@@ -109,12 +109,7 @@ public class Config {
   public static final CachedBoolean enablePhotometer;
 
   // waypoint compass
-  public static final CachedBoolean enableWaypointCompass;
-  public static final CachedBoolean dyeWaypointCompass;
-  public static final CachedBoolean craftWaypointCompass;
-  public static final CachedBoolean copyWaypointCompass;
-  public static final CachedBoolean waypointCompassAdvTooltip;
-  public static final CachedBoolean waypointCompassCrossDimension;
+  public static final CachedBoolean enableDimensionCompass;
 
   // enchantments
   public static final CachedBoolean moreShieldEnchantments;
@@ -476,28 +471,10 @@ public class Config {
           .define("photometer", true));
 
       // waypoint compass
-      enableWaypointCompass = and(toolsModule, server
-          .comment("Enables the waypoint compass: a compass which points towards a full beacon.")
+      enableDimensionCompass = and(toolsModule, server
+          .comment("Enables the dimension compass: a compass which points towards the place you entered a dimension.", "When used on a lodestone, works across dimensions taking nether coordinates into account")
           .worldRestart()
-          .define("waypointCompass.enable", true));
-      dyeWaypointCompass = and(enableWaypointCompass, server
-          .comment("If true, waypoint compasses can be dyed all vanilla colors")
-          .worldRestart()
-          .define("waypointCompass.dye", true));
-      craftWaypointCompass = and(enableWaypointCompass, server
-          .comment("If true, waypoint compasses can be crafted using iron and a blaze rod. If false, they are obtained by using a vanilla compass on a beacon.")
-          .worldRestart()
-          .define("waypointCompass.craft", true));
-      waypointCompassAdvTooltip = server(server
-          .comment("If true, waypoint compasses show the position target in the advanced item tooltip. Disable for packs that disable coordinates.")
-          .define("waypointCompass.advTooltip", true));
-      waypointCompassCrossDimension = server(server
-          .comment("If true, waypoint compasses work across dimensions. The coordinates between the overworld and nether will be adjusted, allowing for portal syncing.")
-          .define("waypointCompass.crossDimension", true));
-      copyWaypointCompass = and(enableWaypointCompass, server
-          .comment("If true, you can copy the position of one waypoint compass to another in a crafting table, similarly to maps or compasses")
-          .worldRestart()
-          .define("waypointCompass.copy", true));
+          .define("dimensionCompass.enable", true));
 
       // TODO: consider a way to allow the registry sub, but still have these props set by the server
       // enchantments

@@ -15,8 +15,6 @@ import knightminer.inspirations.recipes.recipe.cauldron.FillDyedBottleRecipe;
 import knightminer.inspirations.recipes.recipe.cauldron.MixCauldronDyeRecipe;
 import knightminer.inspirations.recipes.recipe.cauldron.PotionFermentCauldronTransform;
 import knightminer.inspirations.recipes.recipe.cauldron.RemoveBannerPatternCauldronRecipe;
-import knightminer.inspirations.tools.recipe.CopyWaypointCompassRecipe;
-import knightminer.inspirations.tools.recipe.DyeWaypointCompassRecipe;
 import net.minecraft.item.crafting.SpecialRecipeSerializer;
 import net.minecraftforge.registries.ObjectHolder;
 
@@ -28,8 +26,6 @@ public class RecipeSerializers {
   /*
    * Crafting Table
    */
-  public static final SpecialRecipeSerializer<CopyWaypointCompassRecipe> COPY_WAYPOINT_COMPASS = injected();
-  public static final DyeWaypointCompassRecipe.Serializer DYE_WAYPOINT_COMPASS = injected();
   public static final ShapelessNoContainerRecipe.Serializer SHAPELESS_NO_CONTAINER = injected();
 
   /*

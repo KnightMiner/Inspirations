@@ -1,0 +1,20 @@
+{
+  "type": "inspirations:cauldron_dye_dyeable",
+  "conditions": [
+    {
+      "prop": "recipes_module",
+      "type": "inspirations:config"
+    },
+    {
+      "prop": "cauldron_dyeing",
+      "type": "inspirations:config"
+    },
+    {
+      "prop": "dimension_compass",
+      "type": "inspirations:config"
+    }
+  ],
+  "ingredient": {
+    "item": "inspirations:dimension_compass"
+  }
+}

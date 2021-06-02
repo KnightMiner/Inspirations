@@ -129,9 +129,7 @@ public class ConfigEnabledCondition implements ICondition, ILootCondition {
   // tools
   public static final ConfigEnabledCondition BAROMETER = add("barometer", Config.enableBarometer);
   public static final ConfigEnabledCondition CHARGED_ARROW = add("charged_arrow", Config.enableChargedArrow);
-  public static final ConfigEnabledCondition CRAFT_WAYPOINT = add("craft_waypoint_compass", Config.craftWaypointCompass);
-  public static final ConfigEnabledCondition COPY_WAYPOINT = add("copy_waypoint_compass", Config.copyWaypointCompass);
-  public static final ConfigEnabledCondition DYE_WAYPOINT = add("dye_waypoint_compass", Config.dyeWaypointCompass);
+  public static final ConfigEnabledCondition DIMENSION_COMPASS = add("dimension_compass", Config.enableDimensionCompass);
   public static final ConfigEnabledCondition LOCK = add("lock", Config.enableLock);
   public static final ConfigEnabledCondition NORTH_COMPASS = add("north_compass", Config.enableNorthCompass);
   public static final ConfigEnabledCondition PHOTOMETER = add("photometer", Config.enablePhotometer);

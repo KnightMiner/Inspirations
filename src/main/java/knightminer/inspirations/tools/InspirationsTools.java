@@ -4,6 +4,7 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.ModuleBase;
 import knightminer.inspirations.common.item.HidableItem;
 import knightminer.inspirations.tools.block.RedstoneChargeBlock;
+import knightminer.inspirations.tools.capability.DimensionCompass;
 import knightminer.inspirations.tools.datagen.ToolsRecipeProvider;
 import knightminer.inspirations.tools.enchantment.AxeDamageEnchantment;
 import knightminer.inspirations.tools.enchantment.AxeLootBonusEnchantment;
@@ -12,12 +13,10 @@ import knightminer.inspirations.tools.enchantment.ExtendedKnockbackEnchantment;
 import knightminer.inspirations.tools.enchantment.ShieldProtectionEnchantment;
 import knightminer.inspirations.tools.enchantment.ShieldThornsEnchantment;
 import knightminer.inspirations.tools.entity.RedstoneArrow;
+import knightminer.inspirations.tools.item.DimensionCompassItem;
 import knightminer.inspirations.tools.item.EnchantableShieldItem;
 import knightminer.inspirations.tools.item.RedstoneArrowItem;
 import knightminer.inspirations.tools.item.RedstoneChargerItem;
-import knightminer.inspirations.tools.item.WaypointCompassItem;
-import knightminer.inspirations.tools.recipe.CopyWaypointCompassRecipe;
-import knightminer.inspirations.tools.recipe.DyeWaypointCompassRecipe;
 import net.minecraft.block.Block;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.data.DataGenerator;
@@ -36,13 +35,10 @@ import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ArrowItem;
 import net.minecraft.item.DirectionalPlaceContext;
-import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.SpecialRecipeSerializer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -55,7 +51,6 @@ import slimeknights.mantle.registration.adapter.BlockRegistryAdapter;
 import slimeknights.mantle.registration.adapter.EntityTypeRegistryAdapter;
 import slimeknights.mantle.registration.adapter.ItemRegistryAdapter;
 import slimeknights.mantle.registration.adapter.RegistryAdapter;
-import slimeknights.mantle.registration.object.EnumObject;
 
 @SuppressWarnings("unused")
 public class InspirationsTools extends ModuleBase {
@@ -73,7 +68,7 @@ public class InspirationsTools extends ModuleBase {
   static Item shield;
 
   // The "undyed" compass is White.
-  public static EnumObject<DyeColor, WaypointCompassItem> waypointCompasses = EnumObject.empty();
+  public static Item dimensionCompass;
 
   // blocks
   public static Block redstoneCharge;
@@ -83,6 +78,7 @@ public class InspirationsTools extends ModuleBase {
   @SubscribeEvent
   public void setup(FMLCommonSetupEvent event) {
     MinecraftForge.EVENT_BUS.register(ToolsEvents.class);
+    DimensionCompass.register();
     registerDispenserBehavior();
   }
 
@@ -110,11 +106,7 @@ public class InspirationsTools extends ModuleBase {
     barometer = registry.register(new HidableItem(toolProps, Config.enableBarometer), "barometer");
     photometer = registry.register(new HidableItem(toolProps, Config.enablePhotometer), "photometer");
 
-    // TODO: reevaluate
-    waypointCompasses = registry.registerEnum(color -> new WaypointCompassItem(
-        WaypointCompassItem.getBodyColor(color),
-        WaypointCompassItem.getNeedleColor(color),
-        () -> false), DyeColor.values(), "waypoint_compass");
+    dimensionCompass = registry.register(new DimensionCompassItem(toolProps), "dimension_compass");
 
     if (Config.shieldEnchantmentTable.get()) {
       shield = registry.register(new EnchantableShieldItem(new Item.Properties().maxDamage(Items.SHIELD.getMaxDamage()).group(ItemGroup.COMBAT)), Items.SHIELD);
@@ -139,13 +131,6 @@ public class InspirationsTools extends ModuleBase {
     if (event.includeServer()) {
       gen.addProvider(new ToolsRecipeProvider(gen));
     }
-  }
-
-  @SubscribeEvent
-  void registerRecipes(Register<IRecipeSerializer<?>> event) {
-    RegistryAdapter<IRecipeSerializer<?>> registry = new RegistryAdapter<>(event.getRegistry());
-    registry.register(new SpecialRecipeSerializer<>(CopyWaypointCompassRecipe::new), "copy_waypoint_compass");
-    registry.register(new DyeWaypointCompassRecipe.Serializer(), "dye_waypoint_compass");
   }
 
   @SubscribeEvent

@@ -4,7 +4,6 @@ import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.library.InspirationsRegistry;
-import knightminer.inspirations.tools.item.WaypointCompassItem;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.VineBlock;
@@ -15,7 +14,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ShearsItem;
@@ -44,7 +42,6 @@ import net.minecraftforge.items.ItemHandlerHelper;
 
 @SuppressWarnings("unused")
 public class ToolsEvents {
-
   @SubscribeEvent
   public static void lockAndUnlock(RightClickBlock event) {
     if (!Config.enableLock.get()) {
@@ -214,43 +211,6 @@ public class ToolsEvents {
     }
   }
    */
-
-  @SubscribeEvent
-  public static void setWaypoint(RightClickBlock event) {
-    ItemStack stack = event.getItemStack();
-
-    if (!WaypointCompassItem.isWaypointCompass(stack)) {
-      return;
-    }
-    World world = event.getWorld();
-    BlockPos pos = event.getPos();
-    if (WaypointCompassItem.beaconIsComplete(world.getTileEntity(pos))) {
-      if (!world.isRemote) {
-        // give the player the linked compass
-        ItemStack newStack;
-        if (stack.getItem() instanceof WaypointCompassItem) {
-          newStack = stack.copy();
-        } else {
-          newStack = new ItemStack(InspirationsTools.waypointCompasses.get(DyeColor.WHITE));
-        }
-        WaypointCompassItem.setNBT(newStack, world, pos);
-        if (stack.hasDisplayName()) {
-          newStack.setDisplayName(stack.getDisplayName());
-        }
-
-        // handle stacks of compasses
-        stack.shrink(1);
-        PlayerEntity player = event.getPlayer();
-        if (stack.isEmpty()) {
-          player.setHeldItem(event.getHand(), newStack);
-        } else {
-          ItemHandlerHelper.giveItemToPlayer(player, newStack);
-        }
-      }
-      event.setCanceled(true);
-      event.setCancellationResult(ActionResultType.SUCCESS);
-    }
-  }
 
   @SubscribeEvent
   static void onShieldHit(LivingAttackEvent event) {

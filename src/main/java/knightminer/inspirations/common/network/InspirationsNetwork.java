@@ -2,13 +2,11 @@ package knightminer.inspirations.common.network;
 
 import knightminer.inspirations.Inspirations;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.IPacket;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.PacketDistributor;
 import slimeknights.mantle.network.NetworkWrapper;
 import slimeknights.mantle.network.packet.ISimplePacket;
 
@@ -29,15 +27,7 @@ public class InspirationsNetwork extends NetworkWrapper {
     registerPacket(MilkablePacket.class, MilkablePacket::new, NetworkDirection.PLAY_TO_CLIENT);
     registerPacket(CauldronStateUpdatePacket.class, CauldronStateUpdatePacket::new, NetworkDirection.PLAY_TO_CLIENT);
     registerPacket(CauldronTransformUpatePacket.class, CauldronTransformUpatePacket::new, NetworkDirection.PLAY_TO_CLIENT);
-  }
-
-  /**
-   * Sends a packet to a specific player
-   * @param packet Packet
-   * @param player Player receiving packet
-   */
-  public static void sendTo(ISimplePacket packet, ServerPlayerEntity player) {
-    INSTANCE.network.send(PacketDistributor.PLAYER.with(() -> player), packet);
+    registerPacket(DimensionCompassPositionPacket.class, DimensionCompassPositionPacket::new, NetworkDirection.PLAY_TO_CLIENT);
   }
 
   /**

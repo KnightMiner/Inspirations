@@ -65,10 +65,6 @@ public class InspirationsItemTagsProvider extends ItemTagsProvider {
     Builder<Item> terracottaBuilder = this.getOrCreateBuilder(InspirationsTags.Items.TERRACOTTA);
     terracottaBuilder.add(Items.TERRACOTTA);
     VanillaEnum.TERRACOTTA.forEach(block -> terracottaBuilder.add(block.asItem()));
-
-    // compasses
-    Builder<Item> waypointCompassBuilder = this.getOrCreateBuilder(InspirationsTags.Items.WAYPOINT_COMPASSES);
-    InspirationsTools.waypointCompasses.values().forEach(waypointCompassBuilder::add);
   }
 
   private void registerForgeTags() {
