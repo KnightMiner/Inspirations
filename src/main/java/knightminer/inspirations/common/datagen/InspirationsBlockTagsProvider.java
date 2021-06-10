@@ -41,6 +41,8 @@ public class InspirationsBlockTagsProvider extends BlockTagsProvider {
     this.getOrCreateBuilder(BlockTags.DOORS).add(InspirationsBuilding.glassDoor);
     this.getOrCreateBuilder(BlockTags.TRAPDOORS).add(InspirationsBuilding.glassTrapdoor);
 
+    this.getOrCreateBuilder(BlockTags.WOODEN_DOORS).add(InspirationsBuilding.glassDoor);
+
     // utility
     this.getOrCreateBuilder(InspirationsTags.Blocks.CARPETED_TRAPDOORS).add(toArray(InspirationsUtility.carpetedTrapdoors));
     this.getOrCreateBuilder(InspirationsTags.Blocks.CARPETED_PRESSURE_PLATES).add(toArray(InspirationsUtility.carpetedPressurePlates));

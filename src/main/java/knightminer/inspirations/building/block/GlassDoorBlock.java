@@ -5,8 +5,10 @@ import knightminer.inspirations.common.IHidable;
 import knightminer.inspirations.library.Util;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.DoorBlock;
+import net.minecraft.entity.MobEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.pathfinding.PathNodeType;
 import net.minecraft.state.properties.DoorHingeSide;
 import net.minecraft.state.properties.DoubleBlockHalf;
 import net.minecraft.util.Direction;
@@ -17,10 +19,18 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 
+import javax.annotation.Nullable;
+
 public class GlassDoorBlock extends DoorBlock implements IHidable {
 
   public GlassDoorBlock(Properties props) {
     super(props);
+  }
+
+  @Nullable
+  @Override
+  public PathNodeType getAiPathNodeType(BlockState state, IBlockReader world, BlockPos pos, @Nullable MobEntity entity) {
+    return state.get(OPEN) ? PathNodeType.DOOR_WOOD_CLOSED : PathNodeType.DOOR_WOOD_CLOSED;
   }
 
   @Override
@@ -53,6 +63,12 @@ public class GlassDoorBlock extends DoorBlock implements IHidable {
         SHAPES[ind | 4] = VoxelShapes.or(door, handleR);
       }
     }
+  }
+
+  @Deprecated
+  @Override
+  public VoxelShape getCollisionShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+    return super.getShape(state, worldIn, pos, context);
   }
 
   @Override
