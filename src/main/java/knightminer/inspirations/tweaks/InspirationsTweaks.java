@@ -164,7 +164,7 @@ public class InspirationsTweaks extends ModuleBase {
         new NormalBrewingRecipe(Potions.AWKWARD, heartbeet, Potions.REGENERATION, Config.brewHeartbeet
         ));
 
-    registerCompostables();
+    event.enqueueWork(this::registerCompostables);
     registerDispenserBehavior();
 
     MinecraftForge.EVENT_BUS.addListener(new SmoothGrowthListener(Blocks.CACTUS, cactus));
