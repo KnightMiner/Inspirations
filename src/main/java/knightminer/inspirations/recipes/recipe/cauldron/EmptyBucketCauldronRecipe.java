@@ -7,6 +7,7 @@ import knightminer.inspirations.library.recipe.cauldron.inventory.IModifyableCau
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.ResourceLocation;
@@ -56,8 +57,16 @@ public class EmptyBucketCauldronRecipe implements ICauldronRecipe {
       return false;
     }
 
+    // on the chance the container is of size greater than 1, copy, as some containers don't process if not size 1
+    ItemStack stack;
+    if (inv.getStack().getCount() != 1) {
+      stack = inv.getStack().copy();
+      stack.setCount(1);
+    } else {
+      stack = inv.getStack();
+    }
     // must have a fluid handler
-    return FluidUtil.getFluidHandler(inv.getStack()).map(handler -> {
+    return FluidUtil.getFluidHandler(stack).map(handler -> {
       // drain the fluid from the handler
       FluidStack drained = drain(inv, handler, FluidAction.SIMULATE);
 
@@ -68,7 +77,8 @@ public class EmptyBucketCauldronRecipe implements ICauldronRecipe {
 
   @Override
   public void handleRecipe(IModifyableCauldronInventory inv) {
-    FluidUtil.getFluidHandler(inv.getStack()).ifPresent(handler -> {
+    ItemStack stack = inv.splitStack(1);
+    FluidUtil.getFluidHandler(stack).ifPresent(handler -> {
       // if we drain less or more, unfortunately the non bucket amount is lost. It passed in simulate, so this is a mod problem
       FluidStack drained = drain(inv, handler, FluidAction.EXECUTE);
       if (drained.getAmount() >= BUCKET_VOLUME) {
@@ -78,7 +88,6 @@ public class EmptyBucketCauldronRecipe implements ICauldronRecipe {
         // fill cauldron
         inv.setLevel(MAX);
         // replace held item with container
-        inv.shrinkStack(1);
         inv.setOrGiveStack(handler.getContainer());
 
         // play sound
