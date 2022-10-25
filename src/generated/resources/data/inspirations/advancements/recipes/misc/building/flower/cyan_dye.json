@@ -11,7 +11,9 @@
       "conditions": {
         "items": [
           {
-            "item": "inspirations:cyan_flower"
+            "items": [
+              "inspirations:cyan_flower"
+            ]
           }
         ]
       }

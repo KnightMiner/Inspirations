@@ -11,7 +11,9 @@
       "conditions": {
         "items": [
           {
-            "item": "inspirations:collector",
+            "items": [
+              "inspirations:collector"
+            ],
             "count": {
               "min": 5
             }

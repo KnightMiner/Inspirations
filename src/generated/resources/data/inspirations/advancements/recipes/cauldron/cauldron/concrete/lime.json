@@ -11,7 +11,9 @@
       "conditions": {
         "items": [
           {
-            "item": "minecraft:lime_concrete_powder"
+            "items": [
+              "minecraft:lime_concrete_powder"
+            ]
           }
         ]
       }

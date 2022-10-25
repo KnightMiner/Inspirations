@@ -11,7 +11,9 @@
       "conditions": {
         "items": [
           {
-            "item": "inspirations:yellow_dyed_bottle"
+            "items": [
+              "inspirations:yellow_dyed_bottle"
+            ]
           }
         ]
       }

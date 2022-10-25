@@ -11,7 +11,9 @@
       "conditions": {
         "items": [
           {
-            "item": "inspirations:plain_mulch"
+            "items": [
+              "inspirations:plain_mulch"
+            ]
           }
         ]
       }

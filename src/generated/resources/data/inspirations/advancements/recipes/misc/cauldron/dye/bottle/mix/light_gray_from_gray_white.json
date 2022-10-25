@@ -11,7 +11,9 @@
       "conditions": {
         "items": [
           {
-            "item": "inspirations:gray_dyed_bottle"
+            "items": [
+              "inspirations:gray_dyed_bottle"
+            ]
           }
         ]
       }
@@ -21,7 +23,9 @@
       "conditions": {
         "items": [
           {
-            "item": "inspirations:white_dyed_bottle"
+            "items": [
+              "inspirations:white_dyed_bottle"
+            ]
           }
         ]
       }

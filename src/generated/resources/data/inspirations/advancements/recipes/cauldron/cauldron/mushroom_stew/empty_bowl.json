@@ -11,7 +11,9 @@
       "conditions": {
         "items": [
           {
-            "item": "minecraft:mushroom_stew"
+            "items": [
+              "minecraft:mushroom_stew"
+            ]
           }
         ]
       }
