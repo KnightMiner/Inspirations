@@ -7,33 +7,33 @@ import knightminer.inspirations.building.client.ShelfScreen;
 import knightminer.inspirations.building.client.ShelfTileEntityRenderer;
 import knightminer.inspirations.building.tileentity.ShelfTileEntity;
 import knightminer.inspirations.common.ClientEvents;
-import knightminer.inspirations.library.Util;
+import knightminer.inspirations.library.MiscUtil;
 import knightminer.inspirations.library.client.ClientUtil;
 import knightminer.inspirations.library.client.model.ShelfModel;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.color.block.BlockColors;
+import net.minecraft.client.color.item.ItemColors;
+import net.minecraft.client.renderer.BiomeColors;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.RenderTypeLookup;
-import net.minecraft.client.renderer.color.BlockColors;
-import net.minecraft.client.renderer.color.ItemColors;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.FoliageColors;
-import net.minecraft.world.biome.BiomeColors;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.FoliageColor;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ColorHandlerEvent;
+import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import slimeknights.mantle.block.entity.IRetexturedBlockEntity;
 import slimeknights.mantle.item.RetexturedBlockItem;
-import slimeknights.mantle.tileentity.IRetexturedTileEntity;
-import slimeknights.mantle.util.TileEntityHelper;
+import slimeknights.mantle.util.BlockEntityHelper;
 
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -47,14 +47,13 @@ public class BuildingClientEvents extends ClientEvents {
   static void clientSetup(FMLClientSetupEvent event) {
     // set render types
     RenderType cutout = RenderType.cutout();
-    Consumer<Block> setCutout = (block) -> RenderTypeLookup.setRenderLayer(block, cutout);
+    Consumer<Block> setCutout = (block) -> ItemBlockRenderTypes.setRenderLayer(block, cutout);
     RenderType cutoutMipped = RenderType.cutoutMipped();
-    Consumer<Block> setCutoutMipped = (block) -> RenderTypeLookup.setRenderLayer(block, cutoutMipped);
+    Consumer<Block> setCutoutMipped = (block) -> ItemBlockRenderTypes.setRenderLayer(block, cutoutMipped);
 
     // general
     InspirationsBuilding.shelf.forEach(setCutout);
     InspirationsBuilding.enlightenedBush.forEach(setCutoutMipped);
-    ClientRegistry.bindTileEntityRenderer(InspirationsBuilding.shelfTileEntity, ShelfTileEntityRenderer::new);
 
     // ropes
     setRenderLayer(InspirationsBuilding.rope, cutout);
@@ -68,6 +67,11 @@ public class BuildingClientEvents extends ClientEvents {
     // flower
     InspirationsBuilding.flower.forEach(setCutout);
     InspirationsBuilding.flowerPot.forEach(setCutout);
+  }
+
+  @SubscribeEvent
+  static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
+    event.registerBlockEntityRenderer(InspirationsBuilding.shelfTileEntity, ShelfTileEntityRenderer::new);
   }
 
   @SubscribeEvent
@@ -88,7 +92,7 @@ public class BuildingClientEvents extends ClientEvents {
     // coloring of books for normal bookshelf
     registerBlockColors(blockColors, (state, world, pos, tintIndex) -> {
       if (tintIndex > 0 && tintIndex <= 16 && world != null && pos != null) {
-        TileEntity te = world.getBlockEntity(pos);
+        BlockEntity te = world.getBlockEntity(pos);
         if (te instanceof ShelfTileEntity) {
           ItemStack stack = ((ShelfTileEntity)te).getInventory().getStackInSlot(tintIndex - 1);
           if (!stack.isEmpty()) {
@@ -96,7 +100,7 @@ public class BuildingClientEvents extends ClientEvents {
             int itemColors = mc.getItemColors().getColor(stack, 0);
             if (itemColors > -1) {
               // combine twice to make sure the item colors result is dominant
-              color = Util.combineColors(color, itemColors, 3);
+              color = MiscUtil.combineColors(color, itemColors, 3);
             }
             return color;
           }
@@ -111,7 +115,7 @@ public class BuildingClientEvents extends ClientEvents {
       if (world != null && pos != null) {
         return BiomeColors.getAverageFoliageColor(world, pos);
       }
-      return FoliageColors.getDefaultColor();
+      return FoliageColor.getDefaultColor();
     }, InspirationsBuilding.vine);
 
     // bush block coloring
@@ -129,14 +133,14 @@ public class BuildingClientEvents extends ClientEvents {
         return -1;
       }
       // TODO: should probably pass block directly here
-      Optional<IRetexturedTileEntity> te = TileEntityHelper.getTile(IRetexturedTileEntity.class, world, pos);
+      Optional<IRetexturedBlockEntity> te = BlockEntityHelper.get(IRetexturedBlockEntity.class, world, pos);
       if (te.isPresent()) {
         Block block = te.get().getTexture();
         if (block != Blocks.AIR) {
           return ClientUtil.getStackBlockColorsSafe(new ItemStack(block), world, pos, 0);
         }
       }
-      return FoliageColors.getDefaultColor();
+      return FoliageColor.getDefaultColor();
     }, InspirationsBuilding.enlightenedBush.getOrNull(BushType.WHITE));
   }
 
@@ -154,7 +158,7 @@ public class BuildingClientEvents extends ClientEvents {
 
     // book covers, too lazy to make 16 cover textures
     InspirationsBuilding.coloredBooks.forEach((color, book) -> {
-      int hexColor = color.getColorValue();
+      int hexColor = MiscUtil.getColor(color);
       itemColors.register((stack, tintIndex) -> (tintIndex == 0) ? hexColor : -1, book);
     });
 
@@ -177,11 +181,11 @@ public class BuildingClientEvents extends ClientEvents {
       if (block != Blocks.AIR) {
         return itemColors.getColor(new ItemStack(block), 0);
       } else {
-        return FoliageColors.getDefaultColor();
+        return FoliageColor.getDefaultColor();
       }
     }, InspirationsBuilding.enlightenedBush.getOrNull(BushType.WHITE));
 
     // We can't get the world position of the item, so use the default tint.
-    registerItemColors(itemColors, (stack, tintIndex) -> FoliageColors.getDefaultColor(), InspirationsBuilding.vine);
+    registerItemColors(itemColors, (stack, tintIndex) -> FoliageColor.getDefaultColor(), InspirationsBuilding.vine);
   }
 }

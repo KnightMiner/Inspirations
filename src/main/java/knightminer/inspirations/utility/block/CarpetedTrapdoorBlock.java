@@ -2,16 +2,16 @@ package knightminer.inspirations.utility.block;
 
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.IHidable;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.TrapDoorBlock;
-import net.minecraft.block.material.Material;
-import net.minecraft.state.properties.Half;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.TrapDoorBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.Half;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class CarpetedTrapdoorBlock extends TrapDoorBlock implements IHidable {
   private static final VoxelShape EAST_OPEN_CARP_AABB = Block.box(0.0D, 0.0D, 0.0D, 4.0D, 16.0D, 16.0D);
@@ -30,28 +30,23 @@ public class CarpetedTrapdoorBlock extends TrapDoorBlock implements IHidable {
   }
 
   @Override
-  public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+  public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
     boolean isTop = state.getValue(HALF) == Half.TOP;
     if (!state.getValue(OPEN)) {
       return isTop ? TOP_CARP_AABB : BOTTOM_CARP_AABB;
     } else {
       // Topmost trapdoors open with carpet out, and are therefore thicker.
-      switch (state.getValue(FACING)) {
-        case NORTH:
-        default:
-          return isTop ? NORTH_OPEN_CARP_AABB : NORTH_OPEN_AABB;
-        case SOUTH:
-          return isTop ? SOUTH_OPEN_CARP_AABB : SOUTH_OPEN_AABB;
-        case WEST:
-          return isTop ? WEST_OPEN_CARP_AABB : WEST_OPEN_AABB;
-        case EAST:
-          return isTop ? EAST_OPEN_CARP_AABB : EAST_OPEN_AABB;
-      }
+      return switch (state.getValue(FACING)) {
+        default -> isTop ? NORTH_OPEN_CARP_AABB : NORTH_OPEN_AABB;
+        case SOUTH -> isTop ? SOUTH_OPEN_CARP_AABB : SOUTH_OPEN_AABB;
+        case WEST -> isTop ? WEST_OPEN_CARP_AABB : WEST_OPEN_AABB;
+        case EAST -> isTop ? EAST_OPEN_CARP_AABB : EAST_OPEN_AABB;
+      };
     }
   }
 
   @Override
   public boolean isEnabled() {
-    return Config.enableCarpetedTrapdoor.get();
+    return Config.enableCarpetedTrapdoor.getAsBoolean();
   }
 }

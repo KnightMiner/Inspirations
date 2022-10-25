@@ -1,7 +1,7 @@
 package knightminer.inspirations.building.block.type;
 
-import net.minecraft.item.DyeColor;
-import net.minecraft.util.IStringSerializable;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.util.StringRepresentable;
 
 import javax.annotation.Nullable;
 import java.util.Locale;
@@ -9,7 +9,7 @@ import java.util.Locale;
 /**
  * Variants for each of the mulch types
  */
-public enum BushType implements IStringSerializable {
+public enum BushType implements StringRepresentable {
   WHITE(null, -1),
   RED(DyeColor.RED, 0xBF0000),
   GREEN(DyeColor.GREEN, 0x267F00),

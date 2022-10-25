@@ -11,25 +11,25 @@ import com.google.gson.JsonSyntaxException;
 import com.mojang.datafixers.util.Pair;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.tileentity.ShelfTileEntity;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.client.renderer.model.BakedQuad;
-import net.minecraft.client.renderer.model.BlockPart;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.IModelTransform;
-import net.minecraft.client.renderer.model.IUnbakedModel;
-import net.minecraft.client.renderer.model.ItemOverrideList;
-import net.minecraft.client.renderer.model.ModelBakery;
-import net.minecraft.client.renderer.model.RenderMaterial;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.BlockElement;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.resources.IResourceManager;
-import net.minecraft.util.Direction;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.Material;
+import net.minecraft.client.resources.model.ModelBakery;
+import net.minecraft.client.resources.model.ModelState;
+import net.minecraft.client.resources.model.UnbakedModel;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.IModelConfiguration;
 import net.minecraftforge.client.model.IModelLoader;
 import net.minecraftforge.client.model.data.EmptyModelData;
@@ -44,6 +44,7 @@ import slimeknights.mantle.client.model.util.SimpleBlockModel;
 import slimeknights.mantle.item.RetexturedBlockItem;
 import slimeknights.mantle.util.RetexturedHelper;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.HashMap;
@@ -64,10 +65,10 @@ public class ShelfModel implements IModelGeometry<ShelfModel> {
   public static final Loader LOADER = new Loader();
   private final SimpleBlockModel model;
   private final Set<String> retextured;
-  private final List<List<BlockPart>> books;
+  private final List<List<BlockElement>> books;
   private final List<ModelItem> items;
 
-  protected ShelfModel(SimpleBlockModel model, Set<String> retextured, List<List<BlockPart>> books, List<ModelItem> items) {
+  protected ShelfModel(SimpleBlockModel model, Set<String> retextured, List<List<BlockElement>> books, List<ModelItem> items) {
     this.model = model;
     this.retextured = retextured;
     this.books = books;
@@ -75,25 +76,25 @@ public class ShelfModel implements IModelGeometry<ShelfModel> {
   }
 
   @Override
-  public Collection<RenderMaterial> getTextures(IModelConfiguration owner, Function<ResourceLocation,IUnbakedModel> modelGetter, Set<Pair<String,String>> missingTextureErrors) {
+  public Collection<Material> getTextures(IModelConfiguration owner, Function<ResourceLocation,UnbakedModel> modelGetter, Set<Pair<String,String>> missingTextureErrors) {
     model.fetchParent(owner, modelGetter);
-    List<BlockPart> elements = Lists.newArrayList(model.getElements());
+    List<BlockElement> elements = Lists.newArrayList(model.getElements());
     books.forEach(elements::addAll);
     return SimpleBlockModel.getTextures(owner, elements, missingTextureErrors);
   }
 
   @Override
-  public IBakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<RenderMaterial,TextureAtlasSprite> spriteGetter, IModelTransform transforms, ItemOverrideList overrides, ResourceLocation location) {
+  public BakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<Material,TextureAtlasSprite> spriteGetter, ModelState transforms, ItemOverrides overrides, ResourceLocation location) {
     Shelf model = new Shelf(owner, this.model, transforms, this.books);
-    IBakedModel baked = model.bake(spriteGetter, location);
-    return new BakedModel(baked, model, RetexturedModel.getAllRetextured(owner, this.model, retextured), items);
+    BakedModel baked = model.bake(spriteGetter, location);
+    return new Baked(baked, model, RetexturedModel.getAllRetextured(owner, this.model, retextured), items);
   }
 
   /** Model loader logic */
   private static class Loader implements IModelLoader<knightminer.inspirations.library.client.model.ShelfModel> {
 
     @Override
-    public void onResourceManagerReload(IResourceManager resourceManager) {}
+    public void onResourceManagerReload(ResourceManager resourceManager) {}
 
     @Override
     public knightminer.inspirations.library.client.model.ShelfModel read(JsonDeserializationContext context, JsonObject json) {
@@ -102,11 +103,11 @@ public class ShelfModel implements IModelGeometry<ShelfModel> {
       Set<String> retextured = RetexturedModel.Loader.getRetextured(json);
 
       // books
-      JsonArray bookArray = JSONUtils.getAsJsonArray(json, "books");
+      JsonArray bookArray = GsonHelper.getAsJsonArray(json, "books");
       if (bookArray.size() == 0) {
         throw new JsonSyntaxException("Must have at least one book element");
       }
-      ImmutableList.Builder<List<BlockPart>> builder = ImmutableList.builder();
+      ImmutableList.Builder<List<BlockElement>> builder = ImmutableList.builder();
       for (int i = 0; i < bookArray.size(); i++) {
         builder.add(SimpleBlockModel.getModelElements(context, bookArray.get(i), "books[" + i + "]"));
       }
@@ -123,13 +124,13 @@ public class ShelfModel implements IModelGeometry<ShelfModel> {
     /* Properties for baking */
     private final IModelConfiguration owner;
     private final SimpleBlockModel model;
-    private final IModelTransform transform;
+    private final ModelState transform;
     /* Model books */
-    private final List<List<BlockPart>> books;
+    private final List<List<BlockElement>> books;
     /* Cached baked model */
-    private IBakedModel baked;
+    private BakedModel baked;
 
-    private Shelf(IModelConfiguration owner, SimpleBlockModel model, IModelTransform transform, List<List<BlockPart>> books) {
+    private Shelf(IModelConfiguration owner, SimpleBlockModel model, ModelState transform, List<List<BlockElement>> books) {
       this.owner = owner;
       this.model = model;
       this.transform = transform;
@@ -142,10 +143,10 @@ public class ShelfModel implements IModelGeometry<ShelfModel> {
      * @param location      Bake location
      * @return  Baked model
      */
-    public IBakedModel bake(Function<RenderMaterial,TextureAtlasSprite> spriteGetter, ResourceLocation location) {
-      List<BlockPart> elements = Lists.newArrayList(model.getElements());
+    public BakedModel bake(Function<Material,TextureAtlasSprite> spriteGetter, ResourceLocation location) {
+      List<BlockElement> elements = Lists.newArrayList(model.getElements());
       books.forEach(elements::addAll);
-      baked = SimpleBlockModel.bakeModel(owner, elements, transform, ItemOverrideList.EMPTY, spriteGetter, location);
+      baked = SimpleBlockModel.bakeModel(owner, elements, transform, ItemOverrides.EMPTY, spriteGetter, location);
       return baked;
     }
 
@@ -153,9 +154,9 @@ public class ShelfModel implements IModelGeometry<ShelfModel> {
      * Gets the baked model, dynamically baking the unbaked one if missing
      * @return  Baked model
      */
-    public IBakedModel getBaked() {
+    public BakedModel getBaked() {
       if (baked == null) {
-        List<BlockPart> elements = Lists.newArrayList(model.getElements());
+        List<BlockElement> elements = Lists.newArrayList(model.getElements());
         books.forEach(elements::addAll);
         baked = SimpleBlockModel.bakeDynamic(owner, elements, transform);
       }
@@ -177,8 +178,8 @@ public class ShelfModel implements IModelGeometry<ShelfModel> {
      * @param modelBooks  Books to get
      * @return Shelf with the requested books
      */
-    public IBakedModel bakeWithBooks(int modelBooks) {
-      List<BlockPart> elements = Lists.newArrayList(model.getElements());
+    public BakedModel bakeWithBooks(int modelBooks) {
+      List<BlockElement> elements = Lists.newArrayList(model.getElements());
       for (int i = 0; i < books.size(); i++) {
         int flag = 1 << i;
         if ((modelBooks & flag) == flag) {
@@ -192,11 +193,11 @@ public class ShelfModel implements IModelGeometry<ShelfModel> {
   /**
    * Baked shelf model instance
    */
-  public static class BakedModel extends DynamicBakedWrapper<IBakedModel> {
+  public static class Baked extends DynamicBakedWrapper<BakedModel> {
     /** Cache of texture to shelf model, used for items and to make crafting the shelf with books faster */
     private final Map<ResourceLocation,Shelf> texturedCache = new HashMap<>();
     /** Cache of shelf with books and texture, limited size */
-    private final Cache<BookshelfCacheKey,IBakedModel> bookshelfCache = CacheBuilder.newBuilder().maximumSize(30).build();
+    private final Cache<BookshelfCacheKey,BakedModel> bookshelfCache = CacheBuilder.newBuilder().maximumSize(30).build();
 
     /** Unbaked model */
     private final Shelf model;
@@ -212,7 +213,7 @@ public class ShelfModel implements IModelGeometry<ShelfModel> {
      * @param retextured  List of textures for retexturing
      * @param items       List of model items for the TESR
      */
-    protected BakedModel(IBakedModel baked, Shelf model, Set<String> retextured, List<ModelItem> items) {
+    protected Baked(BakedModel baked, Shelf model, Set<String> retextured, List<ModelItem> items) {
       super(baked);
       this.model = model;
       this.retextured = retextured;
@@ -241,17 +242,18 @@ public class ShelfModel implements IModelGeometry<ShelfModel> {
     }
 
     @Override
-    public TextureAtlasSprite getParticleTexture(IModelData data) {
+    public TextureAtlasSprite getParticleIcon(IModelData data) {
       // particle must be retextured, and must have a block
       if (retextured.contains("particle")) {
         Block block = data.getData(RetexturedHelper.BLOCK_PROPERTY);
         if (block != null && block != Blocks.AIR) {
-          return getTexturedShelf(block).getBaked().getParticleTexture(data);
+          return getTexturedShelf(block).getBaked().getParticleIcon(data);
         }
       }
-      return originalModel.getParticleTexture(data);
+      return originalModel.getParticleIcon(data);
     }
 
+    @Nonnull
     @Override
     public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction direction, Random random, IModelData data) {
       if (data == EmptyModelData.INSTANCE) {
@@ -272,7 +274,7 @@ public class ShelfModel implements IModelGeometry<ShelfModel> {
       }
 
       // fetch combo from cache, compute if needed
-      IBakedModel finalModel;
+      BakedModel finalModel;
       try {
         BookshelfCacheKey key = new BookshelfCacheKey(texture, books);
         finalModel = bookshelfCache.get(key, () -> getTexturedShelf(key.texture).bakeWithBooks(key.books));
@@ -284,7 +286,7 @@ public class ShelfModel implements IModelGeometry<ShelfModel> {
     }
 
     @Override
-    public ItemOverrideList getOverrides() {
+    public ItemOverrides getOverrides() {
       return RetexturedOverride.INSTANCE;
     }
 
@@ -295,12 +297,12 @@ public class ShelfModel implements IModelGeometry<ShelfModel> {
   }
 
   /** Override list to swap the texture in from NBT */
-  private static class RetexturedOverride extends ItemOverrideList {
+  private static class RetexturedOverride extends ItemOverrides {
     private static final RetexturedOverride INSTANCE = new RetexturedOverride();
 
     @Nullable
     @Override
-    public IBakedModel resolve(IBakedModel originalModel, ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
+    public BakedModel resolve(BakedModel originalModel, ItemStack stack, @Nullable ClientLevel world, @Nullable LivingEntity entity, int seed) {
       if (stack.isEmpty() || !stack.hasTag()) {
         return originalModel;
       }
@@ -310,7 +312,7 @@ public class ShelfModel implements IModelGeometry<ShelfModel> {
         return originalModel;
       }
       // if valid, use the block
-      return ((BakedModel)originalModel).getTexturedShelf(block).getBaked();
+      return ((Baked)originalModel).getTexturedShelf(block).getBaked();
     }
   }
 

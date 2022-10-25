@@ -1,7 +1,7 @@
 package knightminer.inspirations.library.recipe.cauldron.ingredient;
 
 import com.google.gson.JsonObject;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 
 /**
  * Serializer for a cauldron ingredient type
@@ -27,12 +27,12 @@ public interface ICauldronIngredientSerializer<T extends ICauldronIngredient> {
    * @param buffer  Buffer instance
    * @return  Read ingredient
    */
-  T read(PacketBuffer buffer);
+  T read(FriendlyByteBuf buffer);
 
   /**
    * Writes the ingredient to the packet buffer
    * @param ingredient  Ingredient to write
    * @param buffer      Buffer instance
    */
-  void write(T ingredient, PacketBuffer buffer);
+  void write(T ingredient, FriendlyByteBuf buffer);
 }

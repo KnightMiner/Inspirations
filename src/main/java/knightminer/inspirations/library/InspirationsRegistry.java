@@ -2,13 +2,13 @@ package knightminer.inspirations.library;
 
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.Config;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.common.ToolType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import slimeknights.mantle.util.RegistryHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,8 +19,6 @@ import java.util.Objects;
 // This is an API.
 public class InspirationsRegistry {
   public static final Logger log = LogManager.getLogger(Inspirations.modID + "-" + "api");
-
-  public static final ToolType SHEAR_TYPE = ToolType.get("shears");
 
   /*
    * Books
@@ -55,7 +53,7 @@ public class InspirationsRegistry {
    * @return The enchantment power, or -1F.
    */
   private static Float bookPower(Item item) {
-    if (item.is(InspirationsTags.Items.BOOKS)) {
+    if (RegistryHelper.contains(InspirationsTags.Items.BOOKS, item)) {
       return Config.defaultEnchantingPower.get().floatValue();
     }
 

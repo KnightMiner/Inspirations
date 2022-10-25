@@ -2,7 +2,7 @@ package knightminer.inspirations.common.datagen;
 
 import knightminer.inspirations.Inspirations;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.FluidTagsProvider;
+import net.minecraft.data.tags.FluidTagsProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
 public class InspirationsFluidTagsProvider extends FluidTagsProvider {

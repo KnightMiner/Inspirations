@@ -1,8 +1,8 @@
 package knightminer.inspirations.library.recipe.cauldron.util;
 
 import com.google.gson.JsonObject;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.JSONUtils;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.util.GsonHelper;
 
 import java.util.function.IntPredicate;
 
@@ -77,8 +77,8 @@ public class LevelPredicate implements IntPredicate {
    * @return  Level predicate
    */
   public static LevelPredicate read(JsonObject json) {
-    int min = JSONUtils.getAsInt(json, KEY_MIN, 0);
-    int max = JSONUtils.getAsInt(json, KEY_MAX, MAX);
+    int min = GsonHelper.getAsInt(json, KEY_MIN, 0);
+    int max = GsonHelper.getAsInt(json, KEY_MAX, MAX);
     return range(min, max);
   }
 
@@ -87,7 +87,7 @@ public class LevelPredicate implements IntPredicate {
    * @param buffer  Buffer instance
    * @return  Level predicate
    */
-  public static LevelPredicate read(PacketBuffer buffer) {
+  public static LevelPredicate read(FriendlyByteBuf buffer) {
     int min = buffer.readVarInt();
     int max = buffer.readVarInt();
     return range(min, max);
@@ -118,7 +118,7 @@ public class LevelPredicate implements IntPredicate {
    * Writes this to the packet buffer
    * @param buffer  Buffer instance
    */
-  public void write(PacketBuffer buffer) {
+  public void write(FriendlyByteBuf buffer) {
     buffer.writeVarInt(min);
     buffer.writeVarInt(max);
   }

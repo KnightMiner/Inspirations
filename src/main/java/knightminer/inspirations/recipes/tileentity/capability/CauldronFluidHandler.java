@@ -3,8 +3,8 @@ package knightminer.inspirations.recipes.tileentity.capability;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
 import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.util.Mth;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -163,7 +163,7 @@ public class CauldronFluidHandler implements IFluidHandler {
    * @return  Cauldron levels amount
    */
   private static int getLevels(int amount) {
-    return MathHelper.clamp(amount * 4 / FluidAttributes.BUCKET_VOLUME, 0, 4) * ICauldronRecipe.QUARTER;
+    return Mth.clamp(amount * 4 / FluidAttributes.BUCKET_VOLUME, 0, 4) * ICauldronRecipe.QUARTER;
   }
 
   /**
@@ -172,6 +172,6 @@ public class CauldronFluidHandler implements IFluidHandler {
    * @return  Fluid amount
    */
   private static int getAmount(int levels) {
-    return MathHelper.clamp((levels / ICauldronRecipe.QUARTER) * FluidAttributes.BUCKET_VOLUME / 4, 0, FluidAttributes.BUCKET_VOLUME);
+    return Mth.clamp((levels / ICauldronRecipe.QUARTER) * FluidAttributes.BUCKET_VOLUME / 4, 0, FluidAttributes.BUCKET_VOLUME);
   }
 }

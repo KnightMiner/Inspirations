@@ -1,14 +1,14 @@
 package knightminer.inspirations.tweaks.block;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.item.DyeColor;
-import net.minecraft.state.StateContainer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.level.BlockGetter;
 
 public class FittedCarpetBlock extends FlatCarpetBlock {
   public FittedCarpetBlock(DyeColor color, Block.Properties props) {
@@ -21,7 +21,7 @@ public class FittedCarpetBlock extends FlatCarpetBlock {
   }
 
   @Override
-  protected void createBlockStateDefinition(StateContainer.Builder<Block,BlockState> builder) {
+  protected void createBlockStateDefinition(StateDefinition.Builder<Block,BlockState> builder) {
     builder.add(NORTHWEST, NORTHEAST, SOUTHWEST, SOUTHEAST);
   }
 
@@ -41,7 +41,7 @@ public class FittedCarpetBlock extends FlatCarpetBlock {
 
       if (!NW && !NE && !SW && !SE) {
         // Fully lowered, bit of a special case, but should never happen in world.
-        BOUNDS[i] = VoxelShapes.or(
+        BOUNDS[i] = Shapes.or(
             box( 0,  -7,  0, 17, -8, 17),
             box(-1, -16, -1,  0, -7, 17),
             box(-1, -16, -1, 16, -7,  0),
@@ -51,36 +51,36 @@ public class FittedCarpetBlock extends FlatCarpetBlock {
       }
 
       // First each flat segment, high or low.
-      VoxelShape shape = VoxelShapes.or(
+      VoxelShape shape = Shapes.or(
           box(0, NW ? HIGH : LOW, 0, 8, (NW ? HIGH : LOW) + 1, 8),
           box(8, NE ? HIGH : LOW, 0, 16, (NE ? HIGH : LOW) + 1, 8),
           box(0, SW ? HIGH : LOW, 8, 8, (SW ? HIGH : LOW) + 1, 16),
           box(8, SE ? HIGH : LOW, 8, 16, (SE ? HIGH : LOW) + 1, 16));
 
       // Add the lowermost shapes around the base.
-      if (!NE && !NW) shape = VoxelShapes.or(shape, box(0, -16, -1, 16, -7, 0));
-      if (!SE && !SW) shape = VoxelShapes.or(shape, box(0, -16, 16, 16, -7, 17));
-      if (!NW && !SW) shape = VoxelShapes.or(shape, box(-1, -16, 0, 0, -7, 16));
-      if (!NE && !SE) shape = VoxelShapes.or(shape, box(16, -16, 0, 17, -7, 16));
+      if (!NE && !NW) shape = Shapes.or(shape, box(0, -16, -1, 16, -7, 0));
+      if (!SE && !SW) shape = Shapes.or(shape, box(0, -16, 16, 16, -7, 17));
+      if (!NW && !SW) shape = Shapes.or(shape, box(-1, -16, 0, 0, -7, 16));
+      if (!NE && !SE) shape = Shapes.or(shape, box(16, -16, 0, 17, -7, 16));
 
       // Then, for each of the spaces between generate verticals if they're different.
-      if (NW && !NE) shape = VoxelShapes.or(shape, box(8, LOW, 0, 9, 1, 8));
-      if (!NW && NE) shape = VoxelShapes.or(shape, box(7, LOW, 0, 8, 1, 8));
+      if (NW && !NE) shape = Shapes.or(shape, box(8, LOW, 0, 9, 1, 8));
+      if (!NW && NE) shape = Shapes.or(shape, box(7, LOW, 0, 8, 1, 8));
 
-      if (SW && !SE) shape = VoxelShapes.or(shape, box(8, LOW, 8, 9, 1, 16));
-      if (!SW && SE) shape = VoxelShapes.or(shape, box(7, LOW, 8, 8, 1, 16));
+      if (SW && !SE) shape = Shapes.or(shape, box(8, LOW, 8, 9, 1, 16));
+      if (!SW && SE) shape = Shapes.or(shape, box(7, LOW, 8, 8, 1, 16));
 
-      if (NW && !SW) shape = VoxelShapes.or(shape, box(0, LOW, 8, 8, 1, 9));
-      if (!NW && SW) shape = VoxelShapes.or(shape, box(0, LOW, 7, 8, 1, 8));
+      if (NW && !SW) shape = Shapes.or(shape, box(0, LOW, 8, 8, 1, 9));
+      if (!NW && SW) shape = Shapes.or(shape, box(0, LOW, 7, 8, 1, 8));
 
-      if (NE && !SE) shape = VoxelShapes.or(shape, box(8, LOW, 8, 16, 1, 9));
-      if (!NE && SE) shape = VoxelShapes.or(shape, box(8, LOW, 7, 16, 1, 8));
+      if (NE && !SE) shape = Shapes.or(shape, box(8, LOW, 8, 16, 1, 9));
+      if (!NE && SE) shape = Shapes.or(shape, box(8, LOW, 7, 16, 1, 8));
 
       // Last, a the missing 1x1 post for both heights in outer corners.
-      if (!NW && !SE && !SW) shape = VoxelShapes.or(shape, box(7, -8, 8, 8, 1, 9), box(-1, -16, 16,  0, -7, 17)); // NE
-      if (!NE && !SE && !SW) shape = VoxelShapes.or(shape, box(8, -8, 8, 9, 1, 9), box(16, -16, 16, 17, -7, 17)); // NW
-      if (!NE && !NW && !SW) shape = VoxelShapes.or(shape, box(7, -8, 7, 8, 1, 8), box(-1, -16, -1,  0, -7,  0)); // SE
-      if (!NE && !NW && !SE) shape = VoxelShapes.or(shape, box(8, -8, 7, 9, 1, 8), box(16, -16, -1, 17, -7,  0)); // SW
+      if (!NW && !SE && !SW) shape = Shapes.or(shape, box(7, -8, 8, 8, 1, 9), box(-1, -16, 16,  0, -7, 17)); // NE
+      if (!NE && !SE && !SW) shape = Shapes.or(shape, box(8, -8, 8, 9, 1, 9), box(16, -16, 16, 17, -7, 17)); // NW
+      if (!NE && !NW && !SW) shape = Shapes.or(shape, box(7, -8, 7, 8, 1, 8), box(-1, -16, -1,  0, -7,  0)); // SE
+      if (!NE && !NW && !SE) shape = Shapes.or(shape, box(8, -8, 7, 9, 1, 8), box(16, -16, -1, 17, -7,  0)); // SW
 
       BOUNDS[i] = shape;
     }
@@ -97,7 +97,7 @@ public class FittedCarpetBlock extends FlatCarpetBlock {
   }
 
   @Override
-  public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
+  public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
     return BOUNDS[getBoundsKey(state)];
   }
 }

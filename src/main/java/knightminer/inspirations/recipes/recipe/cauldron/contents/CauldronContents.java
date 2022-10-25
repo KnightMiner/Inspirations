@@ -4,11 +4,11 @@ import com.google.gson.JsonObject;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.contents.CauldronContentType;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -58,15 +58,15 @@ public class CauldronContents<C> implements ICauldronContents {
   }
 
   @Override
-  public CompoundNBT toNBT() {
-    CompoundNBT nbt = new CompoundNBT();
+  public CompoundTag toNBT() {
+    CompoundTag nbt = new CompoundTag();
     nbt.putString(CauldronContentTypes.KEY_TYPE, CauldronContentTypes.getName(type).toString());
     type.write(value, nbt);
     return nbt;
   }
 
   @Override
-  public void write(PacketBuffer buffer) {
+  public void write(FriendlyByteBuf buffer) {
     buffer.writeResourceLocation(CauldronContentTypes.getName(type));
     type.write(value, buffer);
   }
@@ -84,12 +84,12 @@ public class CauldronContents<C> implements ICauldronContents {
   }
 
   @Override
-  public ITextComponent getDisplayName() {
+  public Component getDisplayName() {
     return type.getDisplayName(value);
   }
 
   @Override
-  public void addInformation(List<ITextComponent> tooltip, ITooltipFlag tooltipFlag) {
+  public void addInformation(List<Component> tooltip, TooltipFlag tooltipFlag) {
     type.addInformation(value, tooltip, tooltipFlag);
   }
 

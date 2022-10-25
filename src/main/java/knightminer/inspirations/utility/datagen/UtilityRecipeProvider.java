@@ -7,12 +7,12 @@ import knightminer.inspirations.library.InspirationsTags;
 import knightminer.inspirations.shared.InspirationsShared;
 import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.IFinishedRecipe;
-import net.minecraft.data.RecipeProvider;
-import net.minecraft.data.ShapedRecipeBuilder;
-import net.minecraft.data.ShapelessRecipeBuilder;
-import net.minecraft.item.Items;
+import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeProvider;
+import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.world.item.Items;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
@@ -20,7 +20,7 @@ import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
 import java.util.function.Consumer;
 
 public class UtilityRecipeProvider extends RecipeProvider implements IConditionBuilder, IInspirationsRecipeBuilder {
-  private Consumer<IFinishedRecipe> consumer;
+  private Consumer<FinishedRecipe> consumer;
 
   public UtilityRecipeProvider(DataGenerator gen) {
     super(gen);
@@ -37,12 +37,12 @@ public class UtilityRecipeProvider extends RecipeProvider implements IConditionB
   }
 
   @Override
-  public Consumer<IFinishedRecipe> getConsumer() {
+  public Consumer<FinishedRecipe> getConsumer() {
     return consumer;
   }
 
   @Override
-  protected void buildShapelessRecipes(Consumer<IFinishedRecipe> consumer) {
+  protected void buildCraftingRecipes(Consumer<FinishedRecipe> consumer) {
     this.consumer = consumer;
 
     // collector
@@ -96,7 +96,7 @@ public class UtilityRecipeProvider extends RecipeProvider implements IConditionB
             .save(withCondition(ConfigEnabledCondition.TORCH_LEVER), prefix(InspirationsUtility.soulLeverItem, "utility/"));
 
     // carpeted trapdoor.
-    Consumer<IFinishedRecipe> trapdoorConfig = withCondition(ConfigEnabledCondition.CARPETED_TRAPDOOR);
+    Consumer<FinishedRecipe> trapdoorConfig = withCondition(ConfigEnabledCondition.CARPETED_TRAPDOOR);
     String carpetedGroup = resourceName("carpeted_trapdoor");
     InspirationsUtility.carpetedTrapdoors.forEach((color, trapdoor) ->
                                                       ShapedRecipeBuilder.shaped(trapdoor)

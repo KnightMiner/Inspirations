@@ -1,26 +1,27 @@
 package knightminer.inspirations.plugins.jei.cauldron;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat.Mode;
+import com.mojang.math.Matrix4f;
+import knightminer.inspirations.library.client.ClientUtil;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import knightminer.inspirations.recipes.RecipesClientEvents;
 import mezz.jei.api.ingredients.IIngredientRenderer;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.inventory.container.PlayerContainer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Matrix4f;
-import net.minecraft.util.text.IFormattableTextComponent;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
-import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -42,7 +43,7 @@ public class CauldronRenderer {
   private static final String LEVEL_SIXTH = LEVEL + ".sixth";
   private static final String LEVEL_EMPTY = LEVEL + ".empty";
   private static final String LEVEL_FULL = LEVEL + ".full";
-  private static final ITextComponent[] AMOUNT_TEXTS = new ITextComponent[MAX + 1];
+  private static final Component[] AMOUNT_TEXTS = new Component[MAX + 1];
   /** Size of the cauldron in pixels */
   public static final int CAULDRON_SIZE = 12;
 
@@ -87,29 +88,29 @@ public class CauldronRenderer {
     return FLUID_LEVEL[amount];
   }
 
-  public static ITextComponent getAmountText(int amount) {
+  public static Component getAmountText(int amount) {
     if (amount < 0) amount = 0;
     if (amount > MAX) amount = MAX;
     if (AMOUNT_TEXTS[amount] == null) {
-      IFormattableTextComponent amountText;
+      MutableComponent amountText;
       // 0 is empty, display quarter and third as cleaner fractions
       if (amount == 0) {
-        amountText = new TranslationTextComponent(LEVEL_EMPTY);
+        amountText = new TranslatableComponent(LEVEL_EMPTY);
       } else if (amount == MAX) {
-        amountText = new TranslationTextComponent(LEVEL_FULL);
+        amountText = new TranslatableComponent(LEVEL_FULL);
       } else if (amount % HALF == 0) {
-        amountText = new TranslationTextComponent(LEVEL_HALF);
+        amountText = new TranslatableComponent(LEVEL_HALF);
       } else if (amount % THIRD == 0) {
-        amountText = new TranslationTextComponent(LEVEL_THIRD, amount / THIRD);
+        amountText = new TranslatableComponent(LEVEL_THIRD, amount / THIRD);
       } else if (amount % QUARTER == 0) {
-        amountText = new TranslationTextComponent(LEVEL_QUARTER, amount / QUARTER);
+        amountText = new TranslatableComponent(LEVEL_QUARTER, amount / QUARTER);
       } else if (amount % SIXTH == 0) {
-        amountText = new TranslationTextComponent(LEVEL_SIXTH, amount / SIXTH);
+        amountText = new TranslatableComponent(LEVEL_SIXTH, amount / SIXTH);
       } else {
         // default to x/12 for odd cases
-        amountText = new TranslationTextComponent(LEVEL, amount);
+        amountText = new TranslatableComponent(LEVEL, amount);
       }
-      AMOUNT_TEXTS[amount] = amountText.withStyle(TextFormatting.GRAY);
+      AMOUNT_TEXTS[amount] = amountText.withStyle(ChatFormatting.GRAY);
     }
     return AMOUNT_TEXTS[amount];
   }
@@ -125,17 +126,17 @@ public class CauldronRenderer {
    * @param texture  Texture to render
    * @param color    Texture color
    */
-  private static void render(MatrixStack matrices, int x, int y, int width, int height, int amount, ResourceLocation texture, int color) {
+  private static void render(PoseStack matrices, int x, int y, int width, int height, int amount, ResourceLocation texture, int color) {
     if (amount == 0) {
       return;
     }
 
     // set up renderer
     RenderSystem.enableBlend();
-    RenderSystem.enableAlphaTest();
+//    RenderSystem.enableAlphaTest();
     Minecraft minecraft = Minecraft.getInstance();
-    TextureAtlasSprite sprite = minecraft.getModelManager().getAtlas(PlayerContainer.BLOCK_ATLAS).getSprite(texture);
-    minecraft.getTextureManager().bind(PlayerContainer.BLOCK_ATLAS);
+    TextureAtlasSprite sprite = minecraft.getModelManager().getAtlas(InventoryMenu.BLOCK_ATLAS).getSprite(texture);
+    ClientUtil.bindTexture(InventoryMenu.BLOCK_ATLAS);
 
     // draw
     int scaled = amount * height / MAX;
@@ -144,8 +145,8 @@ public class CauldronRenderer {
     drawSprite(matrix, x, (y + height - scaled), width, scaled, sprite);
 
     // reset render system
-    RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-    RenderSystem.disableAlphaTest();
+    RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+//    RenderSystem.disableAlphaTest();
     RenderSystem.disableBlend();
   }
 
@@ -153,14 +154,13 @@ public class CauldronRenderer {
    * Sets the color based on the given int
    * @param color Int color
    */
-  @SuppressWarnings("deprecation")
   private static void setGLColorFromInt(int color) {
     float red = (color >> 16 & 255) / 255f;
     float green = (color >> 8 & 255) / 255f;
     float blue = (color & 255) / 255f;
     int alphaI = (color >> 24 & 255);
     float alpha = alphaI == 0 ? 1 : alphaI / 255f;
-    RenderSystem.color4f(red, green, blue, alpha);
+    RenderSystem.setShaderColor(red, green, blue, alpha);
   }
 
   /**
@@ -183,9 +183,9 @@ public class CauldronRenderer {
     float y2 = y1 + height;
 
     // start drawing
-    Tessellator tessellator = Tessellator.getInstance();
+    Tesselator tessellator = Tesselator.getInstance();
     BufferBuilder builder = tessellator.getBuilder();
-    builder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+    builder.begin(Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
     builder.vertex(matrix, x1, y2, z).uv(u1, v2).endVertex();
     builder.vertex(matrix, x2, y2, z).uv(u2, v2).endVertex();
     builder.vertex(matrix, x2, y1, z).uv(u2, v1).endVertex();
@@ -215,7 +215,7 @@ public class CauldronRenderer {
     }
 
     @Override
-    public void render(MatrixStack matrices, int x, int y, @Nullable ICauldronContents contents) {
+    public void render(PoseStack matrices, int x, int y, @Nullable ICauldronContents contents) {
       if (contents == null) {
         return;
       }
@@ -224,8 +224,8 @@ public class CauldronRenderer {
     }
 
     @Override
-    public List<ITextComponent> getTooltip(ICauldronContents contents, ITooltipFlag flag) {
-      List<ITextComponent> list = new ArrayList<>();
+    public List<Component> getTooltip(ICauldronContents contents, TooltipFlag flag) {
+      List<Component> list = new ArrayList<>();
       if (!isList && amount == 0) {
         list.add(getAmountText(0));
       } else {
@@ -253,7 +253,7 @@ public class CauldronRenderer {
     }
 
     @Override
-    public void render(MatrixStack matrices, int x, int y, @Nullable FluidStack fluid) {
+    public void render(PoseStack matrices, int x, int y, @Nullable FluidStack fluid) {
       if (fluid == null || fluid.isEmpty()) {
         return;
       }
@@ -263,8 +263,8 @@ public class CauldronRenderer {
     }
 
     @Override
-    public List<ITextComponent> getTooltip(FluidStack fluidStack, ITooltipFlag iTooltipFlag) {
-      List<ITextComponent> list = new ArrayList<>();
+    public List<Component> getTooltip(FluidStack fluidStack, TooltipFlag iTooltipFlag) {
+      List<Component> list = new ArrayList<>();
       if (amount == 0) {
         list.add(getAmountText(0));
       } else {

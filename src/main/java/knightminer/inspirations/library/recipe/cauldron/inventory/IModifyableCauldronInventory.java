@@ -1,8 +1,8 @@
 package knightminer.inspirations.library.recipe.cauldron.inventory;
 
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.SoundEvent;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.function.IntUnaryOperator;
 

@@ -1,8 +1,8 @@
 package knightminer.inspirations.tools.client;
 
-import net.minecraft.entity.item.ItemFrameEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.entity.decoration.ItemFrame;
+import net.minecraft.core.Direction;
+import net.minecraft.util.Mth;
 
 /**
  * Clone of vanilla wobble logic, since its all private
@@ -33,18 +33,18 @@ public class Angle {
 	public void wobble(long gameTime, double newRotation) {
 		this.lastUpdateTime = gameTime;
 		double diff = newRotation - this.rotation;
-		diff = MathHelper.positiveModulo(diff + 0.5D, 1.0D) - 0.5D;
+		diff = Mth.positiveModulo(diff + 0.5D, 1.0D) - 0.5D;
 		this.rotateAmount += diff * 0.1D;
 		this.rotateAmount *= 0.8D;
-		this.rotation = MathHelper.positiveModulo(this.rotation + this.rotateAmount, 1.0D);
+		this.rotation = Mth.positiveModulo(this.rotation + this.rotateAmount, 1.0D);
 	}
 
 	/**
 	 * Gets the angle for an item frame
 	 */
-	public static double getFrameRotation(ItemFrameEntity frame) {
+	public static double getFrameRotation(ItemFrame frame) {
 		Direction direction = frame.getDirection();
 		int dir = direction.getAxis().isVertical() ? 90 * direction.getAxisDirection().getStep() : 0;
-		return MathHelper.wrapDegrees(180 + direction.get2DDataValue() * 90 + frame.getRotation() * 45 + dir);
+		return Mth.wrapDegrees(180 + direction.get2DDataValue() * 90 + frame.getRotation() * 45 + dir);
 	}
 }

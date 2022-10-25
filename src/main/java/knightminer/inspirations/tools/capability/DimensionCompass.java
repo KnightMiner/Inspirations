@@ -3,29 +3,29 @@ package knightminer.inspirations.tools.capability;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.network.DimensionCompassPositionPacket;
 import knightminer.inspirations.common.network.InspirationsNetwork;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
-import net.minecraft.nbt.NBTUtil;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.Capability.IStorage;
-import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
-import net.minecraftforge.common.util.Constants.NBT;
+import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityTravelToDimensionEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerChangedDimensionEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -33,34 +33,21 @@ import javax.annotation.Nullable;
 /**
  * Default implementation for a dimension compass
  */
-public class DimensionCompass implements ICapabilitySerializable<CompoundNBT>, IDimensionCompass {
+public class DimensionCompass implements ICapabilitySerializable<CompoundTag>, IDimensionCompass {
 	public static final ResourceLocation KEY = Inspirations.getResource("dimension_compass");
 
 	/**
 	 * Capability instance for dimension compasses
 	 */
-	@CapabilityInject(IDimensionCompass.class)
-	public static Capability<IDimensionCompass> CAPABILITY = null;
+	public static final Capability<IDimensionCompass> CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
 
 	public static void register() {
-		// register a bunch of dumb unused things because I need to register one actually useful thing
-		CapabilityManager.INSTANCE.register(IDimensionCompass.class, new IStorage<IDimensionCompass>() {
-			@Nullable
-			@Override
-			public INBT writeNBT(Capability<IDimensionCompass> capability, IDimensionCompass instance, Direction side) {
-				return null;
-			}
-
-			@Override
-			public void readNBT(Capability<IDimensionCompass> capability, IDimensionCompass instance, Direction side, INBT nbt) {}
-		}, DimensionCompass::new);
-
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(EventPriority.NORMAL, false, RegisterCapabilitiesEvent.class, event -> event.register(IDimensionCompass.class));
 		MinecraftForge.EVENT_BUS.addGenericListener(Entity.class, DimensionCompass::attachCapability);
 		MinecraftForge.EVENT_BUS.addListener(DimensionCompass::dimensionChange);
 		MinecraftForge.EVENT_BUS.addListener(DimensionCompass::playerLoggedIn);
 		MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, DimensionCompass::dimensionTravel);
 	}
-
 
 	private final LazyOptional<IDimensionCompass> capabilityInstance = LazyOptional.of(() -> this);
 	private BlockPos enteredPosition;
@@ -76,6 +63,7 @@ public class DimensionCompass implements ICapabilitySerializable<CompoundNBT>, I
 		enteredPosition = pos;
 	}
 
+	@Nonnull
 	@Override
 	public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
 		if (cap == CAPABILITY) {
@@ -85,18 +73,18 @@ public class DimensionCompass implements ICapabilitySerializable<CompoundNBT>, I
 	}
 
 	@Override
-	public CompoundNBT serializeNBT() {
+	public CompoundTag serializeNBT() {
 		BlockPos pos = getEnteredPosition();
 		if (pos == null) {
-			return new CompoundNBT();
+			return new CompoundTag();
 		}
-		return NBTUtil.writeBlockPos(pos);
+		return NbtUtils.writeBlockPos(pos);
 	}
 
 	@Override
-	public void deserializeNBT(CompoundNBT nbt) {
-		if (nbt.contains("X", NBT.TAG_ANY_NUMERIC) && nbt.contains("Y", NBT.TAG_ANY_NUMERIC) && nbt.contains("Z", NBT.TAG_ANY_NUMERIC)) {
-			setEnteredPosition(NBTUtil.readBlockPos(nbt));
+	public void deserializeNBT(CompoundTag nbt) {
+		if (nbt.contains("X", Tag.TAG_ANY_NUMERIC) && nbt.contains("Y", Tag.TAG_ANY_NUMERIC) && nbt.contains("Z", Tag.TAG_ANY_NUMERIC)) {
+			setEnteredPosition(NbtUtils.readBlockPos(nbt));
 		} else {
 			setEnteredPosition(null);
 		}
@@ -111,7 +99,7 @@ public class DimensionCompass implements ICapabilitySerializable<CompoundNBT>, I
 	 */
 	private static void attachCapability(AttachCapabilitiesEvent<Entity> event) {
 		Entity entity = event.getObject();
-		if (entity instanceof PlayerEntity) {
+		if (entity instanceof Player) {
 			event.addCapability(KEY, new DimensionCompass());
 		}
 	}
@@ -121,9 +109,9 @@ public class DimensionCompass implements ICapabilitySerializable<CompoundNBT>, I
 	 * @param player  Player
 	 * @param pos     New position
 	 */
-	private static void sync(PlayerEntity player, @Nullable BlockPos pos) {
-		if (player instanceof ServerPlayerEntity) {
-			InspirationsNetwork.INSTANCE.sendTo(new DimensionCompassPositionPacket(pos), ((ServerPlayerEntity) player));
+	private static void sync(Player player, @Nullable BlockPos pos) {
+		if (player instanceof ServerPlayer) {
+			InspirationsNetwork.INSTANCE.sendTo(new DimensionCompassPositionPacket(pos), ((ServerPlayer) player));
 		}
 	}
 
@@ -132,12 +120,10 @@ public class DimensionCompass implements ICapabilitySerializable<CompoundNBT>, I
 	 * @param event  Event
 	 */
 	private static void dimensionChange(PlayerChangedDimensionEvent event) {
-		PlayerEntity player = event.getPlayer();
+		Player player = event.getPlayer();
 		BlockPos pos = player.blockPosition();
 		sync(player, pos);
-		player.getCapability(CAPABILITY).ifPresent(compass -> {
-			compass.setEnteredPosition(pos);
-		});
+		player.getCapability(CAPABILITY).ifPresent(compass -> compass.setEnteredPosition(pos));
 	}
 
 	/**
@@ -145,13 +131,13 @@ public class DimensionCompass implements ICapabilitySerializable<CompoundNBT>, I
 	 * Lowest priority should ensure this is not canceled, and if its not vanilla, the dimension change will update later
 	 */
 	private static void dimensionTravel(EntityTravelToDimensionEvent event) {
-		if (event.getDimension() == World.OVERWORLD) {
+		if (event.getDimension() == Level.OVERWORLD) {
 			Entity entity = event.getEntity();
-			if (entity.getCommandSenderWorld().dimension() == World.END) {
-				if (entity instanceof ServerPlayerEntity) {
+			if (entity.getCommandSenderWorld().dimension() == Level.END) {
+				if (entity instanceof ServerPlayer) {
 					// probably not needed as the client reset in my experience, but might as well
 					entity.getCapability(CAPABILITY).ifPresent(compass -> compass.setEnteredPosition(null));
-					InspirationsNetwork.INSTANCE.sendTo(new DimensionCompassPositionPacket((BlockPos)null), ((ServerPlayerEntity) entity));
+					InspirationsNetwork.INSTANCE.sendTo(new DimensionCompassPositionPacket((BlockPos)null), ((ServerPlayer) entity));
 				}
 			}
 		}
@@ -162,7 +148,7 @@ public class DimensionCompass implements ICapabilitySerializable<CompoundNBT>, I
 	 * @param event  Event
 	 */
 	private static void playerLoggedIn(PlayerLoggedInEvent event) {
-		PlayerEntity player = event.getPlayer();
+		Player player = event.getPlayer();
 		player.getCapability(CAPABILITY).ifPresent(compass -> {
 			BlockPos pos = compass.getEnteredPosition();
 			// defaults to null, so sync should not be needed

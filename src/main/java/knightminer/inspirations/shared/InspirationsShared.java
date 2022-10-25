@@ -5,13 +5,13 @@ import knightminer.inspirations.common.ModuleBase;
 import knightminer.inspirations.common.data.ConfigEnabledCondition;
 import knightminer.inspirations.library.recipe.ModItemList;
 import knightminer.inspirations.library.recipe.crafting.ShapelessNoContainerRecipe;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.loot.LootConditionType;
-import net.minecraft.loot.LootFunctionType;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.core.Registry;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
+import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -23,8 +23,8 @@ import slimeknights.mantle.registration.object.EnumObject;
  */
 @SuppressWarnings("unused")
 public class InspirationsShared extends ModuleBase {
-  public static LootConditionType lootConfig;
-  public static LootFunctionType textureFunction;
+  public static LootItemConditionType lootConfig;
+  public static LootItemFunctionType textureFunction;
 
   /**
    * Enum object for vanilla carpet blocks to aid in registration/lookups
@@ -49,16 +49,16 @@ public class InspirationsShared extends ModuleBase {
       .build();
 
   @SubscribeEvent
-  void registerRecipeTypes(RegistryEvent.Register<IRecipeSerializer<?>> event) {
+  void registerRecipeTypes(RegistryEvent.Register<RecipeSerializer<?>> event) {
     // recipe serializers
-    RegistryAdapter<IRecipeSerializer<?>> registry = new RegistryAdapter<>(event.getRegistry());
+    RegistryAdapter<RecipeSerializer<?>> registry = new RegistryAdapter<>(event.getRegistry());
     registry.register(new ShapelessNoContainerRecipe.Serializer(), "shapeless_no_container");
 
     // no event registries
     // config condition
-    ConfigEnabledCondition.Serializer confEnabled = new ConfigEnabledCondition.Serializer();
+    ConfigEnabledCondition.ConditionSerializer confEnabled = new ConfigEnabledCondition.ConditionSerializer();
     CraftingHelper.register(confEnabled);
-    lootConfig = register(Registry.LOOT_CONDITION_TYPE, "config", new LootConditionType(confEnabled));
+    lootConfig = register(Registry.LOOT_CONDITION_TYPE, "config", new LootItemConditionType(confEnabled));
 
     // recipe ingredient type
     CraftingHelper.register(Inspirations.getResource("mod_item_list"), ModItemList.SERIALIZER);

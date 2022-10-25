@@ -1,30 +1,28 @@
 package knightminer.inspirations.common.block;
 
 import knightminer.inspirations.common.IHidable;
-import net.minecraft.block.Block;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
 
-import java.util.function.Supplier;
-
-import net.minecraft.block.AbstractBlock.Properties;
+import java.util.function.BooleanSupplier;
 
 public class HidableBlock extends Block implements IHidable {
-  private final Supplier<Boolean> enabled;
+  private final BooleanSupplier enabled;
 
-  public HidableBlock(Properties properties, Supplier<Boolean> isEnabled) {
+  public HidableBlock(Properties properties, BooleanSupplier isEnabled) {
     super(properties);
     this.enabled = isEnabled;
   }
 
   @Override
   public boolean isEnabled() {
-    return enabled.get();
+    return enabled.getAsBoolean();
   }
 
   @Override
-  public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items) {
+  public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
     if (shouldAddtoItemGroup(group)) {
       super.fillItemCategory(group, items);
     }

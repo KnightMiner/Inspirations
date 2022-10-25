@@ -2,6 +2,6 @@
 @MethodsReturnNonnullByDefault
 package knightminer.inspirations.common.block;
 
-import mcp.MethodsReturnNonnullByDefault;
+import net.minecraft.MethodsReturnNonnullByDefault;
 
 import javax.annotation.ParametersAreNonnullByDefault;

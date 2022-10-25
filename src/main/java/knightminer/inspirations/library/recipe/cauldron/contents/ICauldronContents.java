@@ -2,12 +2,12 @@ package knightminer.inspirations.library.recipe.cauldron.contents;
 
 import com.google.gson.JsonObject;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -51,14 +51,14 @@ public interface ICauldronContents {
    * Gets the text component to display for this contents name
    * @return  Name text component
    */
-  ITextComponent getDisplayName();
+  Component getDisplayName();
 
   /**
    * Gets tooltip information for these contents
    * @param tooltip      Existing tooltip
    * @param tooltipFlag  Tooltip context flag
    */
-  default void addInformation(List<ITextComponent> tooltip, ITooltipFlag tooltipFlag) {}
+  default void addInformation(List<Component> tooltip, TooltipFlag tooltipFlag) {}
 
   /**
    * Gets the relevant mod ID for this contents
@@ -88,13 +88,13 @@ public interface ICauldronContents {
    * Writes the given contents to NBT
    * @return  NBT contents
    */
-  CompoundNBT toNBT();
+  CompoundTag toNBT();
 
   /**
    * Writes the given contents to the packet buffer
    * @param buffer  Buffer instance
    */
-  void write(PacketBuffer buffer);
+  void write(FriendlyByteBuf buffer);
 
 
   /* Mapping */

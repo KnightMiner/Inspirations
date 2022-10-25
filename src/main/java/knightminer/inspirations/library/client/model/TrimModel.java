@@ -4,22 +4,22 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.client.renderer.model.BlockFaceUV;
-import net.minecraft.client.renderer.model.BlockPart;
-import net.minecraft.client.renderer.model.BlockPartFace;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.IModelTransform;
-import net.minecraft.client.renderer.model.IUnbakedModel;
-import net.minecraft.client.renderer.model.ItemOverrideList;
-import net.minecraft.client.renderer.model.ModelBakery;
-import net.minecraft.client.renderer.model.RenderMaterial;
+import net.minecraft.client.renderer.block.model.BlockFaceUV;
+import net.minecraft.client.renderer.block.model.BlockElement;
+import net.minecraft.client.renderer.block.model.BlockElementFace;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelState;
+import net.minecraft.client.resources.model.UnbakedModel;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.resources.model.ModelBakery;
+import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.resources.IResourceManager;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Direction.Axis;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Direction.Axis;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.resources.ResourceLocation;
+import com.mojang.math.Vector3f;
 import net.minecraftforge.client.model.IModelConfiguration;
 import net.minecraftforge.client.model.IModelLoader;
 import net.minecraftforge.client.model.geometry.IModelGeometry;
@@ -58,24 +58,24 @@ public class TrimModel implements IModelGeometry<TrimModel> {
   }
 
   @Override
-  public Collection<RenderMaterial> getTextures(IModelConfiguration owner, Function<ResourceLocation,IUnbakedModel> modelGetter, Set<Pair<String,String>> missingTextureErrors) {
+  public Collection<Material> getTextures(IModelConfiguration owner, Function<ResourceLocation,UnbakedModel> modelGetter, Set<Pair<String,String>> missingTextureErrors) {
     return model.getTextures(owner, modelGetter, missingTextureErrors);
   }
 
   @Override
-  public IBakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<RenderMaterial,TextureAtlasSprite> spriteGetter, IModelTransform transform, ItemOverrideList overrides, ResourceLocation location) {
+  public BakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<Material,TextureAtlasSprite> spriteGetter, ModelState transform, ItemOverrides overrides, ResourceLocation location) {
     // first, determine the highest pixel for each xz location, this is needed as there may be multiple elements in a column
-    List<BlockPart> originalElements = model.getElements();
+    List<BlockElement> originalElements = model.getElements();
     // map of XZ to highest height
     Map<Pair<Float,Float>, Float> highest = new HashMap<>();
     // map of XZ to a face, to use if no top face
-    Map<Pair<Float,Float>, BlockPartFace> topFaces = new HashMap<>();
-    for (BlockPart part : originalElements){
+    Map<Pair<Float,Float>, BlockElementFace> topFaces = new HashMap<>();
+    for (BlockElement part : originalElements){
       // xz position
       Pair<Float,Float> xz = Pair.of(part.from.x(), part.from.z());
       float height = part.to.y();
       // if we found an element at this location, keep the largest
-      BlockPartFace face = part.faces.get(Direction.UP);
+      BlockElementFace face = part.faces.get(Direction.UP);
       if (highest.containsKey(xz)) {
         // replace if the highest
         boolean isHighest = height > highest.get(xz);
@@ -96,8 +96,8 @@ public class TrimModel implements IModelGeometry<TrimModel> {
     }
 
     // iterate all elements, trimming to the highest height
-    List<BlockPart> elements = new ArrayList<>();
-    for (BlockPart part : originalElements) {
+    List<BlockElement> elements = new ArrayList<>();
+    for (BlockElement part : originalElements) {
       // determine how tall this element can be
       Pair<Float, Float> xz = Pair.of(part.from.x(), part.from.z());
       float newHeight = highest.get(xz) - trim;
@@ -118,8 +118,8 @@ public class TrimModel implements IModelGeometry<TrimModel> {
           // if the element has a height of exactly 0, remove side faces
           boolean zeroHeight = to.y() == part.from.y();
           // trim UVs on each face
-          Map<Direction,BlockPartFace> faces = new EnumMap<>(Direction.class);
-          for (Entry<Direction, BlockPartFace> entry : part.faces.entrySet()) {
+          Map<Direction,BlockElementFace> faces = new EnumMap<>(Direction.class);
+          for (Entry<Direction, BlockElementFace> entry : part.faces.entrySet()) {
             Direction side = entry.getKey();
             boolean isY = side.getAxis() == Axis.Y;
             if (!zeroHeight || isY) {
@@ -134,14 +134,14 @@ public class TrimModel implements IModelGeometry<TrimModel> {
 
           // add a top face if missing
           if (!faces.containsKey(Direction.UP)) {
-            BlockPartFace topFace = topFaces.get(xz);
+            BlockElementFace topFace = topFaces.get(xz);
             if (topFace != null) {
               faces.put(Direction.UP, topFace);
             }
           }
 
           // add the updated element
-          elements.add(new BlockPart(part.from, to, faces, part.rotation, part.shade));
+          elements.add(new BlockElement(part.from, to, faces, part.rotation, part.shade));
         }
       }
     }
@@ -154,7 +154,7 @@ public class TrimModel implements IModelGeometry<TrimModel> {
    * @param face  Face to trim
    * @return  New face with trimmed UV, or original face if auto UV is used
    */
-  private static BlockPartFace trimUV(BlockPartFace face, float amount) {
+  private static BlockElementFace trimUV(BlockElementFace face, float amount) {
     // if no UV is set, we can return the original face, auto UV will handle it
     BlockFaceUV uv = face.uv;
     if (uv.uvs == null) {
@@ -176,7 +176,7 @@ public class TrimModel implements IModelGeometry<TrimModel> {
         trim(uvs, amount, 2, 0);
         break;
     }
-    return new BlockPartFace(face.cullForDirection, face.tintIndex, face.texture, new BlockFaceUV(uvs, uv.rotation));
+    return new BlockElementFace(face.cullForDirection, face.tintIndex, face.texture, new BlockFaceUV(uvs, uv.rotation));
   }
 
   /**
@@ -197,12 +197,12 @@ public class TrimModel implements IModelGeometry<TrimModel> {
   /** Loader logic */
   private static class Loader implements IModelLoader<TrimModel> {
     @Override
-    public void onResourceManagerReload(IResourceManager resourceManager) {}
+    public void onResourceManagerReload(ResourceManager resourceManager) {}
 
     @Override
     public TrimModel read(JsonDeserializationContext context, JsonObject json) {
       SimpleBlockModel model = SimpleBlockModel.deserialize(context, json);
-      float trim = JSONUtils.getAsFloat(json, "trim");
+      float trim = GsonHelper.getAsFloat(json, "trim");
       if (trim <= 0) {
         throw new JsonSyntaxException("trim must be greater than 0");
       }

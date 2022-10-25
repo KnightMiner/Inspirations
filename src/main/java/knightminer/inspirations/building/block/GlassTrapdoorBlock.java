@@ -2,9 +2,7 @@ package knightminer.inspirations.building.block;
 
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.IHidable;
-import net.minecraft.block.TrapDoorBlock;
-
-import net.minecraft.block.AbstractBlock.Properties;
+import net.minecraft.world.level.block.TrapDoorBlock;
 
 public class GlassTrapdoorBlock extends TrapDoorBlock implements IHidable {
 
@@ -14,6 +12,6 @@ public class GlassTrapdoorBlock extends TrapDoorBlock implements IHidable {
 
   @Override
   public boolean isEnabled() {
-    return Config.enableGlassDoor.get();
+    return Config.enableGlassDoor.getAsBoolean();
   }
 }

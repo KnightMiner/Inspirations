@@ -1,10 +1,10 @@
 package knightminer.inspirations.recipes.recipe.cauldron.contents;
 
 import knightminer.inspirations.library.recipe.cauldron.contents.RegistryContentType;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.registries.ForgeRegistries;
 
 /**
@@ -29,7 +29,7 @@ public class FluidContentType extends RegistryContentType<Fluid> {
   }
 
   @Override
-  public ITextComponent getDisplayName(Fluid value) {
-    return new TranslationTextComponent(value.getAttributes().getTranslationKey());
+  public Component getDisplayName(Fluid value) {
+    return new TranslatableComponent(value.getAttributes().getTranslationKey());
   }
 }

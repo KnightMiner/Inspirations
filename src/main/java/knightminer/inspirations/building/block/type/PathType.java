@@ -1,30 +1,30 @@
 package knightminer.inspirations.building.block.type;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.material.MaterialColor;
-import net.minecraft.util.IStringSerializable;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.phys.shapes.Shapes;
 
 import java.util.Locale;
 
 /**
  * Variants for each of the mulch types
  */
-public enum PathType implements IStringSerializable {
+public enum PathType implements StringRepresentable {
   // There's multiple variants for these, just use a square
   ROCK(MaterialColor.STONE, Block.box(.5, 0, .5, 15.5, 1, 15.5)),
-  ROUND(MaterialColor.STONE, VoxelShapes.or(
+  ROUND(MaterialColor.STONE, Shapes.or(
       Block.box(1, 0, 5, 15, 1, 11),
       Block.box(5, 0, 1, 11, 1, 15),
       Block.box(2, 0, 3, 14, 1, 13),
       Block.box(3, 0, 2, 13, 1, 14)).optimize()),
-  TILE(MaterialColor.STONE, VoxelShapes.or(
+  TILE(MaterialColor.STONE, Shapes.or(
       Block.box(1, 0, 1, 7, 1, 7),
       Block.box(9, 0, 1, 15, 1, 7),
       Block.box(9, 0, 9, 15, 1, 15),
       Block.box(1, 0, 9, 7, 1, 15))),
-  BRICK(MaterialColor.COLOR_RED, VoxelShapes.or(
+  BRICK(MaterialColor.COLOR_RED, Shapes.or(
       Block.box(0, 0, 0, 3, 1, 3),
       Block.box(4, 0, 0, 7, 1, 7),
       Block.box(0, 0, 4, 3, 1, 11),

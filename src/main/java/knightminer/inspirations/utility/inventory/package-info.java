@@ -2,6 +2,6 @@
 @MethodsReturnNonnullByDefault
 package knightminer.inspirations.utility.inventory;
 
-import mcp.MethodsReturnNonnullByDefault;
+import net.minecraft.MethodsReturnNonnullByDefault;
 
 import javax.annotation.ParametersAreNonnullByDefault;

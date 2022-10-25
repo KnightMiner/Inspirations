@@ -8,19 +8,19 @@ import knightminer.inspirations.building.block.type.ShelfType;
 import knightminer.inspirations.common.data.ConfigEnabledCondition;
 import knightminer.inspirations.common.datagen.IInspirationsRecipeBuilder;
 import knightminer.inspirations.library.InspirationsTags;
-import net.minecraft.advancements.ICriterionInstance;
+import net.minecraft.advancements.CriterionTriggerInstance;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.IFinishedRecipe;
-import net.minecraft.data.RecipeProvider;
-import net.minecraft.data.ShapedRecipeBuilder;
-import net.minecraft.data.ShapelessRecipeBuilder;
-import net.minecraft.data.SingleItemRecipeBuilder;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
-import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeProvider;
+import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.data.recipes.ShapelessRecipeBuilder;
+import net.minecraft.data.recipes.SingleItemRecipeBuilder;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.util.IItemProvider;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
@@ -31,7 +31,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 public class BuildingRecipeProvider extends RecipeProvider implements IConditionBuilder, IInspirationsRecipeBuilder {
-  private Consumer<IFinishedRecipe> consumer;
+  private Consumer<FinishedRecipe> consumer;
 
   public BuildingRecipeProvider(DataGenerator gen) {
     super(gen);
@@ -43,7 +43,7 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
   }
 
   @Override
-  public Consumer<IFinishedRecipe> getConsumer() {
+  public Consumer<FinishedRecipe> getConsumer() {
     return consumer;
   }
 
@@ -53,12 +53,12 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
   }
 
   @Override
-  protected void buildShapelessRecipes(Consumer<IFinishedRecipe> consumer) {
+  protected void buildCraftingRecipes(Consumer<FinishedRecipe> consumer) {
     // set consumer for the util
     this.consumer = consumer;
 
     // glass doors
-    Consumer<IFinishedRecipe> glassDoorCondition = withCondition(ConfigEnabledCondition.GLASS_DOOR);
+    Consumer<FinishedRecipe> glassDoorCondition = withCondition(ConfigEnabledCondition.GLASS_DOOR);
     ShapedRecipeBuilder.shaped(InspirationsBuilding.glassDoor)
                        .unlockedBy("has_glass", has(Items.GLASS_PANE))
                        .define('G', Items.GLASS_PANE)
@@ -74,7 +74,7 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
                        .save(glassDoorCondition, prefix(InspirationsBuilding.glassTrapdoor, "building/"));
 
     // rope
-    Consumer<IFinishedRecipe> ropeCondition = withCondition(ConfigEnabledCondition.ROPE);
+    Consumer<FinishedRecipe> ropeCondition = withCondition(ConfigEnabledCondition.ROPE);
     ShapedRecipeBuilder.shaped(InspirationsBuilding.rope, 3)
                        .unlockedBy("has_string", has(Tags.Items.STRING))
                        .define('S', Items.STRING)
@@ -91,18 +91,18 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
                        .save(ropeCondition, prefix(InspirationsBuilding.vine, "building/"));
 
     // path
-    Consumer<IFinishedRecipe> pathCondition = withCondition(ConfigEnabledCondition.PATH);
+    Consumer<FinishedRecipe> pathCondition = withCondition(ConfigEnabledCondition.PATH);
     addPath(pathCondition, PathType.BRICK, Ingredient.of(Items.BRICKS), has(Items.BRICKS));
     addPath(pathCondition, PathType.ROCK, Ingredient.of(Tags.Items.COBBLESTONE), has(Tags.Items.COBBLESTONE));
     addPath(pathCondition, PathType.ROUND, Ingredient.of(Items.STONE), has(Items.STONE));
     addPath(pathCondition, PathType.TILE, Ingredient.of(Items.STONE_BRICKS), has(Items.STONE_BRICKS));
 
     // mulch
-    Consumer<IFinishedRecipe> mulchCondition = withCondition(ConfigEnabledCondition.MULCH);
+    Consumer<FinishedRecipe> mulchCondition = withCondition(ConfigEnabledCondition.MULCH);
     // make plain in stonecutter
-    IItemProvider plainMulch = InspirationsBuilding.mulch.get(MulchType.PLAIN);
+    ItemLike plainMulch = InspirationsBuilding.mulch.get(MulchType.PLAIN);
     SingleItemRecipeBuilder.stonecutting(Ingredient.of(ItemTags.PLANKS), plainMulch)
-                           .unlocks("hasPlanks", has(ItemTags.PLANKS))
+                           .unlockedBy("hasPlanks", has(ItemTags.PLANKS))
                            .save(mulchCondition, resource("building/mulch/" + MulchType.PLAIN.getSerializedName()));
     // dye for other colors
     InspirationsBuilding.mulch.forEach((type, mulch) -> {
@@ -117,7 +117,7 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
     });
 
     // colored books
-    Consumer<IFinishedRecipe> bookConditions = withCondition(ConfigEnabledCondition.COLORED_BOOKS);
+    Consumer<FinishedRecipe> bookConditions = withCondition(ConfigEnabledCondition.COLORED_BOOKS);
     String bookGroup = resourceName("colored_book");
     InspirationsBuilding.coloredBooks.forEach((color, book) ->
       ShapelessRecipeBuilder.shapeless(book)
@@ -130,7 +130,7 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
 
     // flowers
     // add dye crafting recipes
-    Consumer<IFinishedRecipe> flowerConditions = withCondition(ConfigEnabledCondition.FLOWERS);
+    Consumer<FinishedRecipe> flowerConditions = withCondition(ConfigEnabledCondition.FLOWERS);
     InspirationsBuilding.flower.forEach((type, flower) -> {
       Item dye = type.getDye();
       ShapelessRecipeBuilder.shapeless(dye)
@@ -140,8 +140,8 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
                             .save(flowerConditions, resource("building/flower/" + Objects.requireNonNull(dye.getRegistryName()).getPath()));
     });
     // add temporary cyan dye crafting recipe
-    Consumer<IFinishedRecipe> cyanFlowerConditions = withCondition(ConfigEnabledCondition.FLOWERS, not(ConfigEnabledCondition.CAULDRON_DYEING));
-    IItemProvider rose = InspirationsBuilding.flower.get(FlowerType.ROSE);
+    Consumer<FinishedRecipe> cyanFlowerConditions = withCondition(ConfigEnabledCondition.FLOWERS, not(ConfigEnabledCondition.CAULDRON_DYEING));
+    ItemLike rose = InspirationsBuilding.flower.get(FlowerType.ROSE);
     ShapelessRecipeBuilder.shapeless(InspirationsBuilding.flower.get(FlowerType.CYAN))
                           .unlockedBy("has_dye", has(Tags.Items.DYES_CYAN))
                           .unlockedBy("has_flower", has(rose))
@@ -150,7 +150,7 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
                           .save(cyanFlowerConditions, resource("building/flower/cyan_flower"));
 
     // bookshelves
-    Consumer<IFinishedRecipe> bookshelfConditions = withCondition(ConfigEnabledCondition.BOOKSHELF);
+    Consumer<FinishedRecipe> bookshelfConditions = withCondition(ConfigEnabledCondition.BOOKSHELF);
     String shelfGroup = resourceName("bookshelf");
     InspirationsBuilding.shelf.forEach((type, shelf) -> {
       String[] variants = getShelfVariants(type);
@@ -166,16 +166,11 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
                                .pattern("SSS");
         // add extra items for the variant
         switch (type) {
-          case ANCIENT:
-            builder.define('P', Items.PAPER);
-            break;
-          case TOMES:
-            builder.define('B', Items.BOOK);
-            break;
-          case RAINBOW:
-            builder.define('R', Tags.Items.DYES_RED)
-                   .define('G', Tags.Items.DYES_GREEN)
-                   .define('B', Tags.Items.DYES_BLUE);
+          case ANCIENT -> builder.define('P', Items.PAPER);
+          case TOMES -> builder.define('B', Items.BOOK);
+          case RAINBOW -> builder.define('R', Tags.Items.DYES_RED)
+                                 .define('G', Tags.Items.DYES_GREEN)
+                                 .define('B', Tags.Items.DYES_BLUE);
         }
         // add texture and build
         String suffix = variants.length > 1 ? "_" + variant.toLowerCase(Locale.US) : "";
@@ -187,7 +182,7 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
     });
 
     // enlightened bushes
-    Consumer<IFinishedRecipe> bushConditions = withCondition(ConfigEnabledCondition.ENLIGHTENED_BUSH);
+    Consumer<FinishedRecipe> bushConditions = withCondition(ConfigEnabledCondition.ENLIGHTENED_BUSH);
     String bushGroup = resourceName("enlightened_bush");
     InspirationsBuilding.enlightenedBush.forEach((type, bush) -> {
       ShapedRecipeBuilder builder =
@@ -218,9 +213,9 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
    * @param ingredient Ingredient for crafting
    * @param criteria   Criteria instance
    */
-  private void addPath(Consumer<IFinishedRecipe> consumer, PathType type, Ingredient ingredient, ICriterionInstance criteria) {
+  private void addPath(Consumer<FinishedRecipe> consumer, PathType type, Ingredient ingredient, CriterionTriggerInstance criteria) {
     // crafting
-    IItemProvider path = InspirationsBuilding.path.get(type);
+    ItemLike path = InspirationsBuilding.path.get(type);
     // skip round path crafting, conflict with pressure plates
     if (type != PathType.ROUND) {
       ShapedRecipeBuilder.shaped(path, 6)
@@ -231,7 +226,7 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
     }
     // stonecutting
     SingleItemRecipeBuilder.stonecutting(ingredient, path, 6)
-                           .unlocks("has_stone", criteria)
+                           .unlockedBy("has_stone", criteria)
                            .save(consumer, resource("building/path/" + type.getSerializedName() + "_cutting"));
   }
 
@@ -241,16 +236,11 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
    * @return Array of recipe variants
    */
   private static String[] getShelfVariants(ShelfType type) {
-    switch (type) {
-      case NORMAL:
-      default:
-        return new String[]{" S "};
-      case ANCIENT:
-        return new String[]{"PPP"};
-      case TOMES:
-        return new String[]{" B "};
-      case RAINBOW:
-        return new String[]{"RGB", "RBG", "GRB"};
-    }
+    return switch (type) {
+      default -> new String[]{" S "};
+      case ANCIENT -> new String[]{"PPP"};
+      case TOMES -> new String[]{" B "};
+      case RAINBOW -> new String[]{"RGB", "RBG", "GRB"};
+    };
   }
 }

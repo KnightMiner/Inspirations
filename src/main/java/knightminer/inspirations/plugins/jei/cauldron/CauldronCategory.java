@@ -1,6 +1,6 @@
 package knightminer.inspirations.plugins.jei.cauldron;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipeDisplay;
@@ -17,17 +17,16 @@ import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import net.minecraft.block.Blocks;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Util;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fml.ForgeI18n;
 
 import java.awt.Color;
 import java.util.Collections;
@@ -49,7 +48,7 @@ public class CauldronCategory implements IRecipeCategory<ICauldronRecipeDisplay>
   private static final String KEY_COOL = TRANSLATION_KEY + ".cool";
   private static final String KEY_NORMAL = TRANSLATION_KEY + ".normal";
 
-  private final String title = ForgeI18n.getPattern(TRANSLATION_KEY);
+  private final Component title = new TranslatableComponent(TRANSLATION_KEY);
   private final IDrawable background;
   private final IDrawable icon;
   private final IDrawable boiling, warm, cool, freezing;
@@ -73,7 +72,7 @@ public class CauldronCategory implements IRecipeCategory<ICauldronRecipeDisplay>
   }
 
   @Override
-  public String getTitle() {
+  public Component getTitle() {
     return title;
   }
 
@@ -167,11 +166,11 @@ public class CauldronCategory implements IRecipeCategory<ICauldronRecipeDisplay>
   /* Boiling, freezing, and time */
 
   @Override
-  public void draw(ICauldronRecipeDisplay recipe, MatrixStack matrices, double mouseX, double mouseY) {
+  public void draw(ICauldronRecipeDisplay recipe, PoseStack matrices, double mouseX, double mouseY) {
     int time = recipe.getTime();
     if (time > 0) {
       String timeString = I18n.get(KEY_TIME, time / 20);
-      FontRenderer fontRenderer = Minecraft.getInstance().font;
+      Font fontRenderer = Minecraft.getInstance().font;
       int x = 46 - fontRenderer.width(timeString) / 2;
       fontRenderer.draw(matrices, timeString, x, 4, Color.GRAY.getRGB());
       // draw animated arrow icon
@@ -203,7 +202,7 @@ public class CauldronCategory implements IRecipeCategory<ICauldronRecipeDisplay>
   }
 
   @Override
-  public List<ITextComponent> getTooltipStrings(ICauldronRecipeDisplay recipe, double mouseX, double mouseY) {
+  public List<Component> getTooltipStrings(ICauldronRecipeDisplay recipe, double mouseX, double mouseY) {
     String tooltip = null;
     TemperaturePredicate temperature = recipe.getTemperature();
     // boiling fire
@@ -231,7 +230,7 @@ public class CauldronCategory implements IRecipeCategory<ICauldronRecipeDisplay>
 
     // return tooltip if we found one
     if (tooltip != null) {
-      return Collections.singletonList(new TranslationTextComponent(tooltip));
+      return Collections.singletonList(new TranslatableComponent(tooltip));
     }
     return Collections.emptyList();
   }

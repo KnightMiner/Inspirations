@@ -4,16 +4,16 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.recipe.cauldron.contents.CauldronContentType;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Util;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.common.util.Constants.NBT;
+import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.item.TooltipFlag;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -39,8 +39,8 @@ public class ColorContentType extends CauldronContentType<Integer> {
    * @param color  Color
    * @return  Tooltip text component
    */
-  public static ITextComponent getColorTooltip(int color) {
-    return new TranslationTextComponent("item.color", "#" + getColorString(color)).withStyle(TextFormatting.GRAY);
+  public static Component getColorTooltip(int color) {
+    return new TranslatableComponent("item.color", "#" + getColorString(color)).withStyle(ChatFormatting.GRAY);
   }
 
 
@@ -73,7 +73,7 @@ public class ColorContentType extends CauldronContentType<Integer> {
 
   @Override
   public Integer getValue(JsonElement element, String key) {
-    String text = JSONUtils.convertToString(element, key);
+    String text = GsonHelper.convertToString(element, key);
     Integer value = getValue(text);
     if (value != null) {
       return value;
@@ -83,20 +83,20 @@ public class ColorContentType extends CauldronContentType<Integer> {
 
   @Nullable
   @Override
-  public Integer read(CompoundNBT tag) {
-    if (tag.contains(getKey(), NBT.TAG_STRING)) {
+  public Integer read(CompoundTag tag) {
+    if (tag.contains(getKey(), Tag.TAG_STRING)) {
       return getValue(tag.getString(getKey()));
     }
     return null;
   }
 
   @Override
-  public Integer read(PacketBuffer buffer) {
+  public Integer read(FriendlyByteBuf buffer) {
     return buffer.readInt();
   }
 
   @Override
-  public void write(Integer color, PacketBuffer buffer) {
+  public void write(Integer color, FriendlyByteBuf buffer) {
     buffer.writeInt(color);
   }
 
@@ -114,12 +114,12 @@ public class ColorContentType extends CauldronContentType<Integer> {
   }
 
   @Override
-  public ITextComponent getDisplayName(Integer value) {
-    return new TranslationTextComponent(TRANSLATION_KEY);
+  public Component getDisplayName(Integer value) {
+    return new TranslatableComponent(TRANSLATION_KEY);
   }
 
   @Override
-  public void addInformation(Integer value, List<ITextComponent> tooltip, ITooltipFlag tooltipFlag) {
+  public void addInformation(Integer value, List<Component> tooltip, TooltipFlag tooltipFlag) {
     if (tooltipFlag.isAdvanced()) {
       tooltip.add(getColorTooltip(value));
     }

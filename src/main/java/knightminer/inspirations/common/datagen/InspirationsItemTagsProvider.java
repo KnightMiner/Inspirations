@@ -8,17 +8,17 @@ import knightminer.inspirations.recipes.data.VanillaEnum;
 import knightminer.inspirations.shared.InspirationsShared;
 import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.utility.InspirationsUtility;
-import net.minecraft.data.BlockTagsProvider;
+import net.minecraft.data.tags.BlockTagsProvider;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.ItemTagsProvider;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
+import net.minecraft.data.tags.ItemTagsProvider;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
-import net.minecraft.data.TagsProvider.Builder;
+import net.minecraft.data.tags.TagsProvider.TagAppender;
 
 public class InspirationsItemTagsProvider extends ItemTagsProvider {
 
@@ -47,7 +47,7 @@ public class InspirationsItemTagsProvider extends ItemTagsProvider {
     this.tag(ItemTags.DOORS).add(InspirationsBuilding.glassDoorItem);
     this.copy(BlockTags.TRAPDOORS, ItemTags.TRAPDOORS);
 
-    Builder<Item> bookBuilder = this.tag(InspirationsTags.Items.FORGE_BOOKS)
+    TagAppender<Item> bookBuilder = this.tag(InspirationsTags.Items.FORGE_BOOKS)
         .add(InspirationsBuilding.redstoneBook)
         .add(Items.BOOK, Items.WRITABLE_BOOK, Items.WRITTEN_BOOK)
         .add(Items.ENCHANTED_BOOK, Items.KNOWLEDGE_BOOK);
@@ -55,16 +55,16 @@ public class InspirationsItemTagsProvider extends ItemTagsProvider {
     this.tag(InspirationsTags.Items.BOOKS).addTag(InspirationsTags.Items.FORGE_BOOKS);
 
     // item list of all relevant carpets
-    Builder<Item> carpetBuilder = this.tag(InspirationsTags.Items.CARPETS);
+    TagAppender<Item> carpetBuilder = this.tag(InspirationsTags.Items.CARPETS);
     InspirationsShared.VANILLA_CARPETS.forEach(block -> carpetBuilder.add(block.asItem()));
 
     // item list of all relevant shulker boxes
-    Builder<Item> shulkerBoxBuilder = this.tag(InspirationsTags.Items.SHULKER_BOXES);
+    TagAppender<Item> shulkerBoxBuilder = this.tag(InspirationsTags.Items.SHULKER_BOXES);
     shulkerBoxBuilder.add(Items.SHULKER_BOX);
     VanillaEnum.SHULKER_BOX.forEach(block -> shulkerBoxBuilder.add(block.asItem()));
 
     // relevant terracotta
-    Builder<Item> terracottaBuilder = this.tag(InspirationsTags.Items.TERRACOTTA);
+    TagAppender<Item> terracottaBuilder = this.tag(InspirationsTags.Items.TERRACOTTA);
     terracottaBuilder.add(Items.TERRACOTTA);
     VanillaEnum.TERRACOTTA.forEach(block -> terracottaBuilder.add(block.asItem()));
   }

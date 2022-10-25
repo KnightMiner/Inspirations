@@ -5,31 +5,20 @@ import knightminer.inspirations.library.InspirationsRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.config.ModConfig;
-import slimeknights.mantle.config.CachedBoolean;
-import slimeknights.mantle.config.CachedValue;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
-import static net.minecraftforge.common.ForgeConfigSpec.Builder;
-import static net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
-
 import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 import net.minecraftforge.common.ForgeConfigSpec.Builder;
 import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
+import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.config.IConfigSpec;
+import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
+
+import java.util.Arrays;
+import java.util.function.BooleanSupplier;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("WeakerAccess")
 public class Config {
-  /** List of all cached config values, for cache clearing */
-  private static final List<CachedValue<?>> SERVER_VALUES = new ArrayList<>();
-  /** List of all cached client config values, for cache clearing */
-  private static final List<CachedValue<?>> CLIENT_VALUES = new ArrayList<>();
-
   /** Config for anything that affects gameplay */
   public static final ForgeConfigSpec SERVER_SPEC;
   /** Config for anything that is visual only */
@@ -38,45 +27,45 @@ public class Config {
   public static final ForgeConfigSpec OVERRIDE_SPEC;
 
   // modules
-  public static final CachedBoolean buildingModule;
-  public static final CachedBoolean utilityModule;
-  public static final CachedBoolean toolsModule;
-  public static final CachedBoolean tweaksModule;
-  public static final CachedBoolean recipesModule;
+  public static final BooleanValue buildingModule;
+  public static final BooleanValue utilityModule;
+  public static final BooleanValue toolsModule;
+  public static final BooleanValue tweaksModule;
+  public static final BooleanValue recipesModule;
 
   // general
-  public static final CachedBoolean showAllVariants;
+  public static final BooleanValue showAllVariants;
 
   // building
-  public static final CachedBoolean enableRope;
-  public static final CachedBoolean enableRopeLadder;
+  public static final BooleanSupplier enableRope;
+  public static final BooleanSupplier enableRopeLadder;
 
-  public static final CachedBoolean enableGlassDoor;
-  public static final CachedBoolean enableMulch;
-  public static final CachedBoolean enablePath;
-  public static final CachedBoolean enableFlowers;
-  public static final CachedBoolean enableEnlightenedBush;
+  public static final BooleanSupplier enableGlassDoor;
+  public static final BooleanSupplier enableMulch;
+  public static final BooleanSupplier enablePath;
+  public static final BooleanSupplier enableFlowers;
+  public static final BooleanSupplier enableEnlightenedBush;
   // OVERRIDE
-  public static final CachedBoolean climbableIronBars;
+  public static final BooleanValue climbableIronBars;
 
 
-  public static final CachedBoolean enableBookshelf;
-  public static final CachedBoolean enableColoredBooks;
-  public static final CachedBoolean bookshelvesBoostEnchanting;
-  public static final CachedValue<Double> defaultEnchantingPower;
+  public static final BooleanSupplier enableBookshelf;
+  public static final BooleanSupplier enableColoredBooks;
+  public static final BooleanSupplier bookshelvesBoostEnchanting;
+  public static final ConfigValue<Double> defaultEnchantingPower;
 
   @Deprecated
-  public static final CachedValue<String> bookKeywords;
+  private static final ConfigValue<String> bookKeywords;
   private static final String BOOK_KEYWORD_DEFAULTS = "almanac, atlas, book, catalogue, concordance, dictionary, directory, encyclopedia, guide, journal, lexicon, manual, thesaurus, tome";
 
   // utility
-  public static final CachedBoolean enableTorchLever;
-  public static final CachedBoolean enableRedstoneBook;
-  public static final CachedBoolean enableCarpetedTrapdoor;
-  public static final CachedBoolean enableCarpetedPressurePlate;
-  public static final CachedBoolean enableCollector;
-  public static final CachedBoolean enablePipe;
-  public static final CachedBoolean pipeUpwards;
+  public static final BooleanSupplier enableTorchLever;
+  public static final BooleanSupplier enableRedstoneBook;
+  public static final BooleanSupplier enableCarpetedTrapdoor;
+  public static final BooleanSupplier enableCarpetedPressurePlate;
+  public static final BooleanSupplier enableCollector;
+  public static final BooleanSupplier enablePipe;
+  public static final BooleanValue pipeUpwards;
   //public static BooleanValue enableDispenserFluidTanks;
   //public static BooleanValue milkSquids;
   //public static IntValue milkSquidCooldown;
@@ -84,71 +73,71 @@ public class Config {
   // recipes
 
   // cauldron
-  public static final CachedBoolean cauldronRecipes;
-  public static final CachedBoolean cauldronConcrete;
+  public static final BooleanSupplier cauldronRecipes;
+  public static final BooleanSupplier cauldronConcrete;
   // extended
-  public static final CachedBoolean extendedCauldron;
-  public static final CachedBoolean extendedCaulronRecipes;
-  public static final CachedBoolean cauldronIce;
+  public static final BooleanValue extendedCauldron;
+  public static final BooleanSupplier extendedCauldronRecipes;
+  public static final BooleanSupplier cauldronIce;
   // fluids
-  public static final CachedBoolean enableCauldronFluids;
+  public static final BooleanSupplier enableCauldronFluids;
   // dyes
-  public static final CachedBoolean enableCauldronDyeing;
-  public static final CachedBoolean extraBottleRecipes;
+  public static final BooleanSupplier enableCauldronDyeing;
+  public static final BooleanSupplier extraBottleRecipes;
   // potions
-  public static final CachedBoolean enableCauldronPotions;
-  public static final CachedBoolean enableCauldronBrewing;
-  public static final CachedBoolean cauldronTipArrows;
+  public static final BooleanSupplier enableCauldronPotions;
+  public static final BooleanSupplier enableCauldronBrewing;
+  public static final BooleanSupplier cauldronTipArrows;
   // misc
-  public static final CachedBoolean fasterCauldronRain;
+  public static final BooleanSupplier fasterCauldronRain;
 
   // tools
-  public static final CachedBoolean enableLock;
-  public static final CachedBoolean enableRedstoneCharger;
-  public static final CachedBoolean enableChargedArrow;
-  public static final CachedBoolean harvestHangingVines;
-  public static final CachedBoolean shearsReclaimMelons;
-  public static final CachedBoolean enableNorthCompass;
-  public static final CachedBoolean enableBarometer;
-  public static final CachedBoolean enablePhotometer;
+  public static final BooleanSupplier enableLock;
+  public static final BooleanSupplier enableRedstoneCharger;
+  public static final BooleanSupplier enableChargedArrow;
+  public static final BooleanSupplier harvestHangingVines;
+  public static final BooleanSupplier shearsReclaimMelons;
+  public static final BooleanSupplier enableNorthCompass;
+  public static final BooleanSupplier enableBarometer;
+  public static final BooleanSupplier enablePhotometer;
 
   // waypoint compass
-  public static final CachedBoolean enableDimensionCompass;
+  public static final BooleanSupplier enableDimensionCompass;
 
   // enchantments
-  public static final CachedBoolean moreShieldEnchantments;
-  public static final CachedBoolean shieldEnchantmentTable;
+  public static final BooleanValue moreShieldEnchantments;
+  public static final BooleanSupplier shieldEnchantmentTable;
 
-  public static final CachedBoolean fixShieldTooltip;
-  public static final CachedBoolean axeWeaponEnchants;
-  public static final CachedBoolean axeEnchantmentTable;
+  public static final BooleanSupplier fixShieldTooltip;
+  public static final BooleanValue axeWeaponEnchants;
+  public static final BooleanValue axeEnchantmentTable;
 
   // tweaks
-  public static final CachedBoolean enablePigDesaddle;
-  public static final CachedBoolean enableFittedCarpets;
-  public static final CachedBoolean lilypadBreakFall;
-  public static final CachedBoolean unstackableRecipeAlts;
-  public static final CachedBoolean dispensersPlaceAnvils;
-  public static final CachedBoolean milkCooldown;
-  public static final CachedValue<Integer> milkCooldownTime;
-  public static final CachedBoolean waterlogHopper;
+  public static final BooleanSupplier enablePigDesaddle;
+  public static final BooleanValue enableFittedCarpets;
+  public static final BooleanSupplier lilypadBreakFall;
+  public static final BooleanSupplier unstackableRecipeAlts;
+  public static final BooleanSupplier dispensersPlaceAnvils;
+  public static final BooleanValue milkCooldown;
+  public static final ConfigValue<Integer> milkCooldownTime;
+  public static final BooleanValue waterlogHopper;
 
   // client
-  public static final CachedBoolean betterCauldronItem;
-  public static final CachedBoolean coloredEnchantedRibbons;
-  public static final CachedBoolean coloredFireworkItems;
-  public static final CachedBoolean customPortalColor;
+  public static final BooleanValue betterCauldronItem;
+  public static final BooleanValue coloredEnchantedRibbons;
+  public static final BooleanValue coloredFireworkItems;
+  public static final BooleanValue customPortalColor;
 
   // heartbeet
-  public static final CachedBoolean enableHeartbeet;
-  public static final CachedBoolean brewHeartbeet;
+  public static final BooleanSupplier enableHeartbeet;
+  public static final BooleanSupplier brewHeartbeet;
 
   // seeds
-  public static final CachedBoolean enableBlockCrops;
-  public static final CachedBoolean smoothBlockCropGrowth;
-  public static final CachedBoolean bonemealBlockCrop;
+  public static final BooleanSupplier enableBlockCrops;
+  public static final BooleanSupplier smoothBlockCropGrowth;
+  public static final BooleanSupplier bonemealBlockCrop;
 
-  public static final CachedBoolean nerfCactusFarms;
+  public static final BooleanValue nerfCactusFarms;
   //  public static BooleanValue enableMoreSeeds;
   //	private static BooleanValue addGrassDrops;
   //	private static BooleanValue nerfCarrotPotatoDrops;
@@ -159,13 +148,13 @@ public class Config {
   //		return nerfCarrotPotatoDrops.get() && enableMoreSeeds.get();
   //	}
   // bonemeal
-  public static final CachedBoolean bonemealMushrooms;
-  public static final CachedBoolean bonemealDeadBush;
-  public static final CachedBoolean bonemealGrassSpread;
-  public static final CachedBoolean bonemealMyceliumSpread;
+  public static final BooleanSupplier bonemealMushrooms;
+  public static final BooleanSupplier bonemealDeadBush;
+  public static final BooleanSupplier bonemealGrassSpread;
+  public static final BooleanSupplier bonemealMyceliumSpread;
 
-  public static final CachedBoolean caveSpiderDrops;
-  public static final CachedBoolean skeletonSkull;
+  public static final BooleanSupplier caveSpiderDrops;
+  public static final BooleanSupplier skeletonSkull;
 
   static {
     Builder server = new Builder();
@@ -175,36 +164,36 @@ public class Config {
     // modules root config
     server.push("modules");
     {
-      buildingModule = server(server
+      buildingModule = server
           .comment("Building blocks to improve decoration")
           .worldRestart()
-          .define("building", true));
+          .define("building", true);
 
-      utilityModule = server(server
+      utilityModule = server
           .comment("Adds tools for automation and redstone interaction")
           .worldRestart()
-          .define("utility", true));
+          .define("utility", true);
 
-      tweaksModule = server(server
+      tweaksModule = server
           .comment("Contains tweaks to vanilla features")
           .worldRestart()
-          .define("tweaks", true));
+          .define("tweaks", true);
 
-      toolsModule = server(server
+      toolsModule = server
           .comment("Includes new tools to reduce dependency on debug features")
           .worldRestart()
-          .define("tools", true));
+          .define("tools", true);
 
-      recipesModule = server(server
+      recipesModule = server
           .comment("Includes new blocks that add new types of recipes")
           .worldRestart()
-          .define("tools", true));
+          .define("tools", true);
     }
     server.pop();
 
-    showAllVariants = server(server
+    showAllVariants = server
         .comment("Shows all variants for dynamically textured blocks, like bookshelves. If false just the first will be shown")
-        .define("general.showAllVariants", true));
+        .define("general.showAllVariants", true);
 
     /*
      * Building module
@@ -224,12 +213,12 @@ public class Config {
       bookshelvesBoostEnchanting = and(buildingModule, server
           .comment("If true, shelves will increase enchanting table power.")
           .define("bookshelf.boostEnchanting", true));
-      defaultEnchantingPower = server(server
+      defaultEnchantingPower = server
           .comment("Default power for a book for enchanting, can be overridden in the book overrides.")
-          .defineInRange("bookshelf.defaultEnchanting", 1.5f, 0.0f, 15.0f));
-      bookKeywords = server(server
+          .defineInRange("bookshelf.defaultEnchanting", 1.5f, 0.0f, 15.0f);
+      bookKeywords = server
           .comment("List of keywords for valid books, used to determine books in the shelf (non-books take more space). Separate each by commas.")
-          .define("bookshelf.bookKeywords", BOOK_KEYWORD_DEFAULTS));
+          .define("bookshelf.bookKeywords", BOOK_KEYWORD_DEFAULTS);
 
 
       // rope
@@ -240,10 +229,10 @@ public class Config {
       enableRopeLadder = and(enableRope, server
           .comment("Enables rope ladders: right click ropes with sticks to extend the hitbox")
           .define("ropeLadder", true));
-      climbableIronBars = override(override
+      climbableIronBars = override
           .comment("Makes iron bars climbable if a rope is below them.")
           .worldRestart()
-          .define("climbableBars", true));
+          .define("climbableBars", true);
 
       // glass door
       enableGlassDoor = and(buildingModule, server
@@ -282,7 +271,7 @@ public class Config {
      */
     server.push("utility");
     {
-      enableRedstoneBook = and(utilityModule, enableBookshelf, server
+      enableRedstoneBook = and(enableBookshelf, utilityModule, server
           .comment("Enables the trapped book: will emit redstone power when placed in a bookshelf. Requires bookshelf.")
           .worldRestart()
           .define("redstoneBook", true));
@@ -324,9 +313,9 @@ public class Config {
           .comment("Enables pipes: a more economical hopper that only outputs items, does not pull from inventories. Both cheaper and better for performance.")
           .worldRestart()
           .define("pipe.enable", true));
-      pipeUpwards = server(server
+      pipeUpwards = server
           .comment("Allows pipes to output upwards. This removes a limitation on not being able to pipe items up without dropper elevators, but should be balanced alongside modded pipes.")
-          .define("pipe.upwards", true));
+          .define("pipe.upwards", true);
 
       // dispenser fluid containers
 			/*
@@ -353,10 +342,10 @@ public class Config {
 			// cauldron //
 
       // extended options
-      extendedCauldron = override(override
+      extendedCauldron = override
 					.comment("Replace the cauldron block to allow it to hold other liquids and perform extended recipes.")
 					.worldRestart()
-					.define("cauldron", true));
+					.define("cauldron", true);
 
 			server.push("cauldron");
 			{
@@ -364,23 +353,23 @@ public class Config {
         cauldronRecipes = and(recipesModule, server
             .comment("Allows additional recipes to be performed in the cauldron. If the block replacement is disabled, functionality will be limited to water in cauldrons.")
             .define("enable", true));
-        extendedCaulronRecipes = and(extendedCauldron, cauldronRecipes);
+        extendedCauldronRecipes = and(cauldronRecipes, extendedCauldron);
         
         // base recipes
         cauldronConcrete = and(cauldronRecipes, server
             .comment("Allows concrete to be made in the cauldron")
             .define("concrete", true));
-        cauldronIce = and(extendedCaulronRecipes, server
+        cauldronIce = and(extendedCauldronRecipes, server
             .comment("If true, the cauldron can be used to make ice when in a cold biome or surrounded with ice")
             .define("ice", true));
 
 				// fluids
-				enableCauldronFluids = and(extendedCaulronRecipes, server
+				enableCauldronFluids = and(extendedCauldronRecipes, server
 						.comment("Allows cauldrons to be filled with any fluid and use them in recipes")
 						.define("fluids.enable", true));
 
 				// dyeing
-				enableCauldronDyeing = and(extendedCaulronRecipes, server
+				enableCauldronDyeing = and(extendedCauldronRecipes, server
 						.comment("Allows cauldrons to be filled with dyes and dye items using cauldrons")
 						.define("dyeing.enable", true));
 				extraBottleRecipes = and(enableCauldronDyeing, server
@@ -482,11 +471,11 @@ public class Config {
 
       // TODO: consider a way to allow the registry sub, but still have these props set by the server
       // enchantments
-      moreShieldEnchantments = server(override
+      moreShieldEnchantments = override
           .comment("If true, shields can now be enchanted with enchantments such as protection, fire aspect, knockback, and thorns. This requires replacing these enchantments.")
           .worldRestart()
-          .define("enchantments.moreShield", true));
-      shieldEnchantmentTable = andOverride(moreShieldEnchantments, override
+          .define("enchantments.moreShield", true);
+      shieldEnchantmentTable = and(moreShieldEnchantments, override
           .comment("If true, shields can be enchanted in an enchantment table. Does not support modded shields as it requires a registry substitution")
           .worldRestart()
           .define("enchantments.shieldTable", true));
@@ -495,14 +484,14 @@ public class Config {
           .worldRestart()
           .define("enchantments.fixShieldTooltip", true));
 
-      axeWeaponEnchants = server(override
+      axeWeaponEnchants = override
           .comment("If true, axes will be able to be enchanted with weapon enchants such as looting, fire aspect, and knockback")
           .worldRestart()
-          .define("enchantments.axeWeapon", true));
-      axeEnchantmentTable = server(override
+          .define("enchantments.axeWeapon", true);
+      axeEnchantmentTable = override
           .comment("If true, axes can receive available weapon enchantments at the enchantment table")
           .worldRestart()
-          .define("enchantments.axeTable", true));
+          .define("enchantments.axeTable", true);
     }
     server.pop();
 
@@ -517,16 +506,16 @@ public class Config {
           .define("desaddlePig", true));
 
       // fitted carpets
-      enableFittedCarpets = override(override
+      enableFittedCarpets = override
           .comment("Replace carpet blocks, allowing them to fit to stairs below them.")
           .worldRestart()
-          .define("fittedCarpets", true));
+          .define("fittedCarpets", true);
 
       // waterloggable hoppers
-      waterlogHopper = override(override
+      waterlogHopper = override
           .comment("Replace hopper blocks, allowing them to be waterlogged.")
           .worldRestart()
-          .define("waterlogHoppers", true));
+          .define("waterlogHoppers", true);
 
       // bonemeal
       server.push("bonemeal");
@@ -580,12 +569,12 @@ public class Config {
           .define("skeletonSkull", true));
 
       // milk cooldown
-      milkCooldown = server(server
+      milkCooldown = server
           .comment("Adds a cooldown to milking cows, prevents practically infinite milk in modded worlds where milk is more useful.")
-          .define("milkCooldown.enable", false));
-      milkCooldownTime = server(server
+          .define("milkCooldown.enable", false);
+      milkCooldownTime = server
           .comment("Delay in seconds after milking a cow before it can be milked again.")
-          .defineInRange("milkCooldown.time", 600, 1, Short.MAX_VALUE));
+          .defineInRange("milkCooldown.time", 600, 1, Short.MAX_VALUE);
 
       // seeds
       server.push("seeds");
@@ -602,10 +591,10 @@ public class Config {
           bonemealBlockCrop = and(tweaksModule, server
               .comment("If true, allows bonemeal to be used to speed block crop growth")
               .define("bonemeal", false));
-          nerfCactusFarms = server(server
+          nerfCactusFarms = server
               .comment("If false, cactus seeds planted on cactus have fewer restrictions.",
                        "Setting to true means cactus seeds are broken by neighboring blocks, meaning classic cactus farms will drop cactus seeds instead of full cactus.")
-              .define("nerfCactusFarms", false));
+              .define("nerfCactusFarms", false);
         }
         server.pop();
 				/*
@@ -645,27 +634,27 @@ public class Config {
      */
     {
       // better cauldron item
-      betterCauldronItem = client(client
+      betterCauldronItem = client
           .comment("Replaces the flat cauldron sprite with the 3D cauldron block model")
-          .define("betterCauldronItemModel", true));
+          .define("betterCauldronItemModel", true);
 
       // colored fireworks
-      coloredFireworkItems = client(client
+      coloredFireworkItems = client
           .comment("Colors the fireworks item based on the colors of the stars")
           .worldRestart()
-          .define("coloredFireworkItems", true));
+          .define("coloredFireworkItems", true);
 
       // colored enchanted book ribbons
-      coloredEnchantedRibbons = client(client
+      coloredEnchantedRibbons = client
           .comment("The ribbon on enchanted books colors based on the enchantment rarity")
           .worldRestart()
-          .define("coloredEnchantedRibbons", true));
+          .define("coloredEnchantedRibbons", true);
 
       // portal color
-      customPortalColor = client(client
+      customPortalColor = client
           .comment("Allows the portal color to be changed by placing colored blocks under the portal. Any block that tints a beacon beam will work for the color.")
           .worldRestart()
-          .define("customPortalColor", true));
+          .define("customPortalColor", true);
     }
 
     // build all specs
@@ -706,12 +695,11 @@ public class Config {
    * Function called when the config changes to update internal properties
    * @param configEvent  Event
    */
-  public static void configChanged(final ModConfig.ModConfigEvent configEvent) {
+  public static void configChanged(final ModConfigEvent configEvent) {
     ModConfig config = configEvent.getConfig();
     if (config.getModId().equals(Inspirations.modID)) {
-      ForgeConfigSpec spec = config.getSpec();
+      IConfigSpec<?> spec = config.getSpec();
       if (spec == Config.SERVER_SPEC) {
-        SERVER_VALUES.forEach(CachedValue::invalidate);
         loaded = true;
         InspirationsRegistry.setBookKeywords(
             Arrays.stream(Config.bookKeywords.get().split(","))
@@ -722,8 +710,6 @@ public class Config {
         if (updateJEI != null) {
           DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> Minecraft.getInstance().submitAsync(updateJEI));
         }
-      } else if (spec == CLIENT_SPEC) {
-        CLIENT_VALUES.forEach(CachedValue::invalidate);
       }
     }
   }
@@ -732,37 +718,13 @@ public class Config {
   /* Helpers */
 
   /**
-   * Creates a cached config value and adds it to the list to be invalidated on reload
-   * @param value  Config value
-   * @param <T>    Value type
+   * Creates a cached config value by anding two config values
+   * @param first   First config value, typically a module
+   * @param second  Property config value
    * @return  Cached config value
    */
-  private static <T> CachedValue<T> server(ConfigValue<T> value) {
-    CachedValue<T> cached = new CachedValue<>(value);
-    SERVER_VALUES.add(cached);
-    return cached;
-  }
-
-  /**
-   * Creates a cached boolean value and adds it to the list to be invalidated on reload
-   * @param value  Boolean config value
-   * @return  Cached config value
-   */
-  private static CachedBoolean server(BooleanValue value) {
-    CachedBoolean cached = new CachedBoolean(value);
-    SERVER_VALUES.add(cached);
-    return cached;
-  }
-
-  /**
-   * Creates a cached boolean value for the client and adds it to the list to be invalidated on reload
-   * @param value  Boolean config value
-   * @return  Cached config value
-   */
-  private static CachedBoolean client(BooleanValue value) {
-    CachedBoolean cached = new CachedBoolean(value);
-    CLIENT_VALUES.add(cached);
-    return cached;
+  private static BooleanSupplier and(BooleanValue first, BooleanValue second) {
+    return () -> first.get() && second.get();
   }
 
   /**
@@ -771,10 +733,8 @@ public class Config {
    * @param second  Property config value
    * @return  Cached config value
    */
-  private static CachedBoolean and(CachedBoolean first, BooleanValue second) {
-    CachedBoolean cached = new CachedBoolean(() -> first.get() && second.get());
-    SERVER_VALUES.add(cached);
-    return cached;
+  private static BooleanSupplier and(BooleanSupplier first, BooleanValue second) {
+    return () -> first.getAsBoolean() && second.get();
   }
 
   /**
@@ -783,11 +743,8 @@ public class Config {
    * @param second  Property config value
    * @return  Cached config value
    */
-  @SuppressWarnings("SameParameterValue")
-  private static CachedBoolean and(CachedBoolean first, CachedBoolean second) {
-    CachedBoolean cached = new CachedBoolean(() -> first.get() && second.get());
-    SERVER_VALUES.add(cached);
-    return cached;
+  private static BooleanSupplier and(BooleanSupplier first, BooleanSupplier second) {
+    return () -> first.getAsBoolean() && second.getAsBoolean();
   }
 
   /**
@@ -797,32 +754,18 @@ public class Config {
    * @param third   Property config value
    * @return  Cached config value
    */
-  private static CachedBoolean and(CachedBoolean first, CachedBoolean second, BooleanValue third) {
-    CachedBoolean cached = new CachedBoolean(() -> first.get() && second.get() && third.get());
-    SERVER_VALUES.add(cached);
-    return cached;
-  }
-
-
-  /* Override methods */
-
-  /**
-   * Creates a cached config value for an override config value. Unlike {@link #server(BooleanValue)}, override does not invalidate as it does not reload.
-   * @param value  Config value
-   * @return  Cached config value
-   */
-  private static CachedBoolean override(BooleanValue value) {
-    return new CachedBoolean(value);
+  private static BooleanSupplier and(BooleanValue first, BooleanValue second, BooleanValue third) {
+    return () -> first.get() && second.get() && third.get();
   }
 
   /**
-   * Ands two override config properties together, caching the result
-   * @param first   First config value
-   * @param second  Property config value
+   * Creates a cached config value by anding three config values
+   * @param first   First config value, typically a module
+   * @param second  Second config value
+   * @param third   Property config value
    * @return  Cached config value
    */
-  @SuppressWarnings("SameParameterValue")
-  private static CachedBoolean andOverride(CachedBoolean first, BooleanValue second) {
-    return new CachedBoolean(() -> first.get() && second.get());
+  private static BooleanSupplier and(BooleanSupplier first, BooleanValue second, BooleanValue third) {
+    return () -> first.getAsBoolean() && second.get() && third.get();
   }
 }

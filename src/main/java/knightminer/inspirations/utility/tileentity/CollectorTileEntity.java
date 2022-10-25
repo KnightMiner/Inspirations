@@ -2,38 +2,39 @@ package knightminer.inspirations.utility.tileentity;
 
 import knightminer.inspirations.utility.InspirationsUtility;
 import knightminer.inspirations.utility.inventory.CollectorContainer;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.item.ItemStack;
-import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.common.util.Constants.WorldEvents;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.LevelEvent;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.common.util.NonNullConsumer;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
-import slimeknights.mantle.tileentity.InventoryTileEntity;
+import slimeknights.mantle.block.entity.InventoryBlockEntity;
 import slimeknights.mantle.util.WeakConsumerWrapper;
 
 import javax.annotation.Nullable;
 
-public class CollectorTileEntity extends InventoryTileEntity {
-  private static final ITextComponent TITLE = new TranslationTextComponent("gui.inspirations.collector");
+public class CollectorTileEntity extends InventoryBlockEntity {
+  private static final Component TITLE = new TranslatableComponent("gui.inspirations.collector");
 
   /** Cache of the current TE we are facing */
   @Nullable
   private LazyOptional<IItemHandler> facingHandler;
   /** Cache of the bounds to check for items */
   @Nullable
-  private AxisAlignedBB itemBounds;
+  private AABB itemBounds;
 
   /** Lambda to call on every item transfer. Final variable to reduce memory usage every tick */
   private final NonNullConsumer<IItemHandler> extractItem = this::extractItem;
@@ -44,8 +45,8 @@ public class CollectorTileEntity extends InventoryTileEntity {
     }
   });
 
-  public CollectorTileEntity() {
-    super(InspirationsUtility.tileCollector, TITLE, 9);
+  public CollectorTileEntity(BlockPos pos, BlockState state) {
+    super(InspirationsUtility.tileCollector, pos, state, TITLE, false, 9);
   }
 
   /**
@@ -72,14 +73,14 @@ public class CollectorTileEntity extends InventoryTileEntity {
           collected = true;
           // empty means item is gone
           if (remainder.isEmpty()) {
-            entity.remove();
+            entity.discard();
           } else {
             entity.setItem(remainder);
           }
         }
       }
       // play sound. Plays dispenser dispense if success and dispenser fail if not
-      level.levelEvent(collected ? WorldEvents.DISPENSER_DISPENSE_SOUND : WorldEvents.DISPENSER_FAIL_SOUND, worldPosition, 0);
+      level.levelEvent(collected ? LevelEvent.SOUND_DISPENSER_DISPENSE : LevelEvent.SOUND_DISPENSER_FAIL, worldPosition, 0);
     }
   }
 
@@ -95,7 +96,7 @@ public class CollectorTileEntity extends InventoryTileEntity {
     // if no inventory cached yet, find a new one
     Direction facing = getBlockState().getValue(BlockStateProperties.FACING);
     assert level != null;
-    TileEntity te = level.getBlockEntity(worldPosition.relative(facing));
+    BlockEntity te = level.getBlockEntity(worldPosition.relative(facing));
     // if we have a TE and its an item handler, try extracting from that
     if (te != null) {
       LazyOptional<IItemHandler> handler = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing.getOpposite());
@@ -114,10 +115,10 @@ public class CollectorTileEntity extends InventoryTileEntity {
    * Gets the bounds for grabbing items
    * @return  Item bounds
    */
-  private AxisAlignedBB getItemBounds() {
+  private AABB getItemBounds() {
     if (itemBounds == null) {
       BlockPos offset = worldPosition.relative(getBlockState().getValue(BlockStateProperties.FACING));
-      itemBounds = new AxisAlignedBB(offset.getX(), offset.getY(), offset.getZ(), offset.getX() + 1, offset.getY() + 1, offset.getZ() + 1);
+      itemBounds = new AABB(offset.getX(), offset.getY(), offset.getZ(), offset.getX() + 1, offset.getY() + 1, offset.getZ() + 1);
     }
     return itemBounds;
   }
@@ -149,8 +150,8 @@ public class CollectorTileEntity extends InventoryTileEntity {
   }
 
   @Override
-  public void clearCache() {
-    super.clearCache();
+  public void setBlockState(BlockState pBlockState) {
+    super.setBlockState(pBlockState);
     // if the block changed and this TE is intact, remove cache. likely we were rotated
     this.clearCachedInventories();
   }
@@ -167,7 +168,7 @@ public class CollectorTileEntity extends InventoryTileEntity {
 
   @Nullable
   @Override
-  public Container createMenu(int winId, PlayerInventory playerInv, PlayerEntity player) {
+  public AbstractContainerMenu createMenu(int winId, Inventory playerInv, Player player) {
     return new CollectorContainer(winId, playerInv, this);
   }
 }

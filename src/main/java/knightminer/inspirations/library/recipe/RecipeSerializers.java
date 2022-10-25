@@ -15,7 +15,7 @@ import knightminer.inspirations.recipes.recipe.cauldron.FillDyedBottleRecipe;
 import knightminer.inspirations.recipes.recipe.cauldron.MixCauldronDyeRecipe;
 import knightminer.inspirations.recipes.recipe.cauldron.PotionFermentCauldronTransform;
 import knightminer.inspirations.recipes.recipe.cauldron.RemoveBannerPatternCauldronRecipe;
-import net.minecraft.item.crafting.SpecialRecipeSerializer;
+import net.minecraft.world.item.crafting.SimpleRecipeSerializer;
 import net.minecraftforge.registries.ObjectHolder;
 
 import static slimeknights.mantle.registration.RegistrationHelper.injected;
@@ -41,10 +41,10 @@ public class RecipeSerializers {
   public static final DyeableCauldronRecipe.Serializer CAULDRON_DYE_DYEABLE = injected();
   public static final DyeableCauldronRecipe.Serializer CAULDRON_CLEAR_DYEABLE = injected();
   // special recipes
-  public static final SpecialRecipeSerializer<EmptyBucketCauldronRecipe> CAULDRON_EMPTY_BUCKET = injected();
-  public static final SpecialRecipeSerializer<FillBucketCauldronRecipe> CAULDRON_FILL_BUCKET = injected();
-  public static final SpecialRecipeSerializer<FillDyedBottleRecipe> CAULDRON_FILL_DYED_BOTTLE = injected();
-  public static final SpecialRecipeSerializer<RemoveBannerPatternCauldronRecipe> CAULDRON_REMOVE_BANNER_PATTERN = injected();
+  public static final SimpleRecipeSerializer<EmptyBucketCauldronRecipe> CAULDRON_EMPTY_BUCKET = injected();
+  public static final SimpleRecipeSerializer<FillBucketCauldronRecipe> CAULDRON_FILL_BUCKET = injected();
+  public static final SimpleRecipeSerializer<FillDyedBottleRecipe> CAULDRON_FILL_DYED_BOTTLE = injected();
+  public static final SimpleRecipeSerializer<RemoveBannerPatternCauldronRecipe> CAULDRON_REMOVE_BANNER_PATTERN = injected();
   public static final BrewingCauldronRecipe.Serializer CAULDRON_POTION_BREWING = injected();
   public static final BrewingCauldronRecipe.Serializer CAULDRON_FORGE_BREWING = injected();
   public static final PotionFermentCauldronTransform.Serializer CAULDRON_POTION_FERMENT = injected();

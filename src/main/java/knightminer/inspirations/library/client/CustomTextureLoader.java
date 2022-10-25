@@ -4,17 +4,15 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import knightminer.inspirations.Inspirations;
-import net.minecraft.inventory.container.PlayerContainer;
-import net.minecraft.resources.IResource;
-import net.minecraft.resources.IResourceManager;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.resource.IResourceType;
-import net.minecraftforge.resource.VanillaResourceType;
-import slimeknights.mantle.client.IEarlySelectiveReloadListener;
+import slimeknights.mantle.data.IEarlyReloadListener;
 
 import javax.annotation.Nullable;
 import java.io.BufferedReader;
@@ -27,13 +25,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
  * Class that will load a list of textures from a JSON file
  */
-public class CustomTextureLoader implements IEarlySelectiveReloadListener {
+public class CustomTextureLoader implements IEarlyReloadListener {
   /** Map of resource name to texture name */
   private final Map<ResourceLocation, ResourceLocation> textures = new HashMap<>();
   /** JSON file containing the textures list */
@@ -49,49 +46,47 @@ public class CustomTextureLoader implements IEarlySelectiveReloadListener {
   }
 
   @Override
-  public void onResourceManagerReload(IResourceManager manager, Predicate<IResourceType> type) {
+  public void onResourceManagerReload(ResourceManager manager) {
     // model type as the TESR is linked to the blockstate models
-    if (type.test(VanillaResourceType.MODELS)) {
-      // first, get a list of all json files
-      List<JsonObject> jsonFiles;
-      try {
-        // get all files
-        jsonFiles = manager.getResources(file).stream()
-                           .map(CustomTextureLoader::getJson)
-                           .filter(Objects::nonNull)
-                           .collect(Collectors.toList());
-      } catch(IOException e) {
-        jsonFiles = Collections.emptyList();
-        Inspirations.log.error("Failed to load model settings file", e);
-      }
+    // first, get a list of all json files
+    List<JsonObject> jsonFiles;
+    try {
+      // get all files
+      jsonFiles = manager.getResources(file).stream()
+                         .map(CustomTextureLoader::getJson)
+                         .filter(Objects::nonNull)
+                         .collect(Collectors.toList());
+    } catch(IOException e) {
+      jsonFiles = Collections.emptyList();
+      Inspirations.log.error("Failed to load model settings file", e);
+    }
 
-      // first object is bottom most pack, so upper resource packs will replace it
-      for (JsonObject json : jsonFiles) {
-        // right now just do simply key value pairs
-        for (Entry<String, JsonElement> entry : json.entrySet()) {
-          // get a valid name
-          String key = entry.getKey();
-          ResourceLocation name = ResourceLocation.tryParse(key);
-          if (name == null) {
-            Inspirations.log.error("Skipping invalid key " + key + " as it is not a valid resource location");
-            continue;
-          } else if (!ModList.get().isLoaded(name.getNamespace())) {
-            Inspirations.log.debug("Skipping loading texture " + key + " as the dependent mod is not loaded");
-            continue;
-          }
+    // first object is bottom most pack, so upper resource packs will replace it
+    for (JsonObject json : jsonFiles) {
+      // right now just do simply key value pairs
+      for (Entry<String, JsonElement> entry : json.entrySet()) {
+        // get a valid name
+        String key = entry.getKey();
+        ResourceLocation name = ResourceLocation.tryParse(key);
+        if (name == null) {
+          Inspirations.log.error("Skipping invalid key " + key + " as it is not a valid resource location");
+          continue;
+        } else if (!ModList.get().isLoaded(name.getNamespace())) {
+          Inspirations.log.debug("Skipping loading texture " + key + " as the dependent mod is not loaded");
+          continue;
+        }
 
-          // get a valid element
-          JsonElement element = entry.getValue();
-          if (!element.isJsonPrimitive()) {
-            Inspirations.log.error("Skipping key " + key + " as the value is not a string");
-            continue;
-          }
-          ResourceLocation texture = ResourceLocation.tryParse(element.getAsString());
-          if (texture == null) {
-            Inspirations.log.error("Skipping key " + key + " as the texture " + element.getAsString() + " is an invalid texture path");
-          } else {
-            textures.put(name, texture);
-          }
+        // get a valid element
+        JsonElement element = entry.getValue();
+        if (!element.isJsonPrimitive()) {
+          Inspirations.log.error("Skipping key " + key + " as the value is not a string");
+          continue;
+        }
+        ResourceLocation texture = ResourceLocation.tryParse(element.getAsString());
+        if (texture == null) {
+          Inspirations.log.error("Skipping key " + key + " as the texture " + element.getAsString() + " is an invalid texture path");
+        } else {
+          textures.put(name, texture);
         }
       }
     }
@@ -102,7 +97,7 @@ public class CustomTextureLoader implements IEarlySelectiveReloadListener {
    * @param event  Texture stitch event
    */
   private void onTextureStitch(TextureStitchEvent.Pre event) {
-    if (PlayerContainer.BLOCK_ATLAS.equals(event.getMap().location())) {
+    if (InventoryMenu.BLOCK_ATLAS.equals(event.getAtlas().location())) {
       textures.values().forEach(event::addSprite);
     }
   }
@@ -116,29 +111,10 @@ public class CustomTextureLoader implements IEarlySelectiveReloadListener {
    * @return  JSON object, or null if failed to parse
    */
   @Nullable
-  private static JsonObject getJson(IResource resource) {
+  private static JsonObject getJson(Resource resource) {
     // this code is heavily based on ResourcePack::getResourceMetadata
-    try {
-      Throwable thrown = null;
-      BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8));
-      try {
-        return JSONUtils.parse(reader);
-      } catch (Throwable e) {
-        // store this exception in case we throw again
-        thrown = e;
-        throw e;
-      } finally {
-        try {
-          reader.close();
-        } catch (Throwable e) {
-          // if we already threw, suppress this exception
-          if (thrown != null) {
-            thrown.addSuppressed(e);
-          } else {
-            throw e;
-          }
-        }
-      }
+    try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8))) {
+      return GsonHelper.parse(reader);
     } catch (JsonParseException | IOException e) {
       Inspirations.log.error("Failed to load texture JSON " + resource.getLocation(), e);
       return null;

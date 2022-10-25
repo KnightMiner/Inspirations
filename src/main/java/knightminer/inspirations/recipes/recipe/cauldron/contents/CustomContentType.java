@@ -3,14 +3,14 @@ package knightminer.inspirations.recipes.recipe.cauldron.contents;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
 import knightminer.inspirations.library.recipe.cauldron.contents.CauldronContentType;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Util;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.common.util.Constants.NBT;
+import net.minecraft.Util;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
 
 import javax.annotation.Nullable;
 
@@ -24,8 +24,8 @@ public class CustomContentType extends CauldronContentType<ResourceLocation> {
   }
 
   @Override
-  public ITextComponent getDisplayName(ResourceLocation value) {
-    return new TranslationTextComponent(Util.makeDescriptionId("cauldron_contents", value));
+  public Component getDisplayName(ResourceLocation value) {
+    return new TranslatableComponent(Util.makeDescriptionId("cauldron_contents", value));
   }
 
   @Override
@@ -42,7 +42,7 @@ public class CustomContentType extends CauldronContentType<ResourceLocation> {
 
   @Override
   public ResourceLocation getValue(JsonElement element, String key) {
-    String name = JSONUtils.convertToString(element, key);
+    String name = GsonHelper.convertToString(element, key);
     ResourceLocation location = ResourceLocation.tryParse(name);
     if (location != null) {
       return location;
@@ -52,20 +52,20 @@ public class CustomContentType extends CauldronContentType<ResourceLocation> {
 
   @Nullable
   @Override
-  public ResourceLocation read(CompoundNBT tag) {
-    if (tag.contains(getKey(), NBT.TAG_STRING)) {
+  public ResourceLocation read(CompoundTag tag) {
+    if (tag.contains(getKey(), Tag.TAG_STRING)) {
       return ResourceLocation.tryParse(tag.getString(getKey()));
     }
     return null;
   }
 
   @Override
-  public ResourceLocation read(PacketBuffer buffer) {
+  public ResourceLocation read(FriendlyByteBuf buffer) {
     return buffer.readResourceLocation();
   }
 
   @Override
-  public void write(ResourceLocation value, PacketBuffer buffer) {
+  public void write(ResourceLocation value, FriendlyByteBuf buffer) {
     buffer.writeResourceLocation(value);
   }
 }

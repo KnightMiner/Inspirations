@@ -25,34 +25,34 @@ import knightminer.inspirations.common.ModuleBase;
 import knightminer.inspirations.common.item.HidableBlockItem;
 import knightminer.inspirations.common.item.HidableItem;
 import knightminer.inspirations.common.item.HidableRetexturedBlockItem;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.ComposterBlock;
-import net.minecraft.block.DoublePlantBlock;
-import net.minecraft.block.FlowerPotBlock;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.material.MaterialColor;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.Items;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.ToolType;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.ComposterBlock;
+import net.minecraft.world.level.block.DoublePlantBlock;
+import net.minecraft.world.level.block.FlowerPotBlock;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
+import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
+import slimeknights.mantle.registration.adapter.BlockEntityTypeRegistryAdapter;
 import slimeknights.mantle.registration.adapter.BlockRegistryAdapter;
 import slimeknights.mantle.registration.adapter.ContainerTypeRegistryAdapter;
 import slimeknights.mantle.registration.adapter.ItemRegistryAdapter;
-import slimeknights.mantle.registration.adapter.TileEntityTypeRegistryAdapter;
 import slimeknights.mantle.registration.object.EnumObject;
 
 import java.util.Objects;
@@ -86,22 +86,22 @@ public class InspirationsBuilding extends ModuleBase {
   public static EnumObject<DyeColor,Item> coloredBooks;
 
   // Tile Entities
-  public static TileEntityType<ShelfTileEntity> shelfTileEntity;
-  public static TileEntityType<EnlightenedBushTileEntity> enlightenedBushTileEntity;
+  public static BlockEntityType<ShelfTileEntity> shelfTileEntity;
+  public static BlockEntityType<EnlightenedBushTileEntity> enlightenedBushTileEntity;
 
   // Container Types
-  public static ContainerType<ShelfContainer> shelfContainer;
+  public static MenuType<ShelfContainer> shelfContainer;
 
   @SubscribeEvent
-  void registerTE(Register<TileEntityType<?>> event) {
-    TileEntityTypeRegistryAdapter registry = new TileEntityTypeRegistryAdapter(event.getRegistry());
+  void registerTE(Register<BlockEntityType<?>> event) {
+    BlockEntityTypeRegistryAdapter registry = new BlockEntityTypeRegistryAdapter(event.getRegistry());
 
     shelfTileEntity = registry.register(ShelfTileEntity::new, shelf, "bookshelf");
     enlightenedBushTileEntity = registry.register(EnlightenedBushTileEntity::new, enlightenedBush, "enlightened_bush");
   }
 
   @SubscribeEvent
-  void registerContainers(Register<ContainerType<?>> event) {
+  void registerContainers(Register<MenuType<?>> event) {
     ContainerTypeRegistryAdapter registry = new ContainerTypeRegistryAdapter(event.getRegistry());
     shelfContainer = registry.registerType(ShelfContainer::new, "shelf");
   }
@@ -111,7 +111,7 @@ public class InspirationsBuilding extends ModuleBase {
     BlockRegistryAdapter registry = new BlockRegistryAdapter(event.getRegistry());
 
     // normal shelf uses a less regular naming
-    AbstractBlock.Properties shelfProps = Block.Properties.of(Material.WOOD).harvestTool(ToolType.AXE).strength(2.0F, 5.0F).sound(SoundType.WOOD).noOcclusion();
+    BlockBehaviour.Properties shelfProps = Block.Properties.of(Material.WOOD).strength(2.0F, 5.0F).sound(SoundType.WOOD).noOcclusion();
     shelf = new EnumObject.Builder<ShelfType,ShelfBlock>(ShelfType.class)
         .putDelegate(ShelfType.NORMAL, registry.register(new ShelfBlock(shelfProps), "shelf").delegate)
         .putAll(registry.registerEnum(type -> new ShelfBlock(shelfProps), ShelfType.FANCY, "shelf"))
@@ -131,12 +131,14 @@ public class InspirationsBuilding extends ModuleBase {
       ironBars = registry.register(new ClimbablePaneBlock(Block.Properties.of(Material.METAL, MaterialColor.NONE).strength(5.0F, 6.0F).sound(SoundType.METAL)), new ResourceLocation("iron_bars"));
     }
 
-    AbstractBlock.Properties glassDoorProps = Block.Properties.of(Material.GLASS).strength(0.3F).sound(SoundType.GLASS).noOcclusion();
+    BlockBehaviour.Properties glassDoorProps = Block.Properties.of(Material.GLASS).strength(0.3F).sound(SoundType.GLASS).noOcclusion();
     glassDoor = registry.register(new GlassDoorBlock(glassDoorProps), "glass_door");
     glassTrapdoor = registry.register(new GlassTrapdoorBlock(glassDoorProps), "glass_trapdoor");
 
-    mulch = registry.registerEnum(type -> new MulchBlock(type.getColor()), MulchType.values(), "mulch");
-    path = registry.registerEnum(type -> new PathBlock(type.getShape(), type.getColor()), PathType.values(), "path");
+    mulch = registry.registerEnum(type -> new MulchBlock(
+        Properties.of(Material.WOOD, type.getColor()).sound(SoundType.WET_GRASS).strength(0.6F)
+    ), MulchType.values(), "mulch");
+    path = registry.registerEnum(type -> new PathBlock(Block.Properties.of(Material.STONE, type.getColor()).strength(1.5F, 10F), type.getShape()), PathType.values(), "path");
     enlightenedBush = registry.registerEnum(type -> new EnlightenedBushBlock(type.getColor()), BushType.values(), "enlightened_bush");
 
     // flowers, have no base name
@@ -163,10 +165,10 @@ public class InspirationsBuilding extends ModuleBase {
   public void registerItems(Register<Item> event) {
     ItemRegistryAdapter registry = new ItemRegistryAdapter(event.getRegistry());
     // common props
-    Item.Properties materialProps = new Item.Properties().tab(ItemGroup.TAB_MATERIALS);
-    Item.Properties decorationProps = new Item.Properties().tab(ItemGroup.TAB_DECORATIONS);
-    Item.Properties buildingProps = new Item.Properties().tab(ItemGroup.TAB_BUILDING_BLOCKS);
-    Item.Properties redstoneProps = new Item.Properties().tab(ItemGroup.TAB_REDSTONE);
+    Item.Properties materialProps = new Item.Properties().tab(CreativeModeTab.TAB_MATERIALS);
+    Item.Properties decorationProps = new Item.Properties().tab(CreativeModeTab.TAB_DECORATIONS);
+    Item.Properties buildingProps = new Item.Properties().tab(CreativeModeTab.TAB_BUILDING_BLOCKS);
+    Item.Properties redstoneProps = new Item.Properties().tab(CreativeModeTab.TAB_REDSTONE);
 
     coloredBooks = registry.registerEnum(color -> new HidableItem(materialProps, Config.enableColoredBooks), DyeColor.values(), "book");
     redstoneBook = registry.register(new HidableItem(materialProps, Config.enableRedstoneBook), "redstone_book");

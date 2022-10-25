@@ -3,15 +3,15 @@ package knightminer.inspirations.building.block;
 import knightminer.inspirations.building.tileentity.EnlightenedBushTileEntity;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.IHidable;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import slimeknights.mantle.block.RetexturedBlock;
 
 import javax.annotation.Nullable;
@@ -37,15 +37,16 @@ public class EnlightenedBushBlock extends RetexturedBlock implements IHidable {
     return color;
   }
 
+
   @Nullable
   @Override
-  public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-    return new EnlightenedBushTileEntity();
+  public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+    return new EnlightenedBushTileEntity(pos, state);
   }
 
   @Override
   public boolean isEnabled() {
-    return Config.enableEnlightenedBush.get();
+    return Config.enableEnlightenedBush.getAsBoolean();
   }
 
   /*
@@ -55,7 +56,7 @@ public class EnlightenedBushBlock extends RetexturedBlock implements IHidable {
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public VoxelShape getBlockSupportShape(BlockState p_230335_1_, IBlockReader p_230335_2_, BlockPos p_230335_3_) {
-    return VoxelShapes.empty();
+  public VoxelShape getBlockSupportShape(BlockState p_230335_1_, BlockGetter p_230335_2_, BlockPos p_230335_3_) {
+    return Shapes.empty();
   }
 }

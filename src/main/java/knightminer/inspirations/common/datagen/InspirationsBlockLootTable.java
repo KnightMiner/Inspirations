@@ -7,30 +7,30 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import knightminer.inspirations.utility.InspirationsUtility;
-import net.minecraft.advancements.criterion.StatePropertiesPredicate;
-import net.minecraft.block.Block;
-import net.minecraft.block.DoorBlock;
-import net.minecraft.data.loot.BlockLootTables;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.Items;
-import net.minecraft.loot.ConstantRange;
-import net.minecraft.loot.ItemLootEntry;
-import net.minecraft.loot.LootPool;
-import net.minecraft.loot.LootTable;
-import net.minecraft.loot.TableLootEntry;
-import net.minecraft.loot.conditions.BlockStateProperty;
-import net.minecraft.loot.functions.CopyName;
-import net.minecraft.loot.functions.SetCount;
-import net.minecraft.state.properties.DoubleBlockHalf;
+import net.minecraft.advancements.critereon.StatePropertiesPredicate;
+import net.minecraft.data.loot.BlockLoot;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
+import net.minecraft.world.level.storage.loot.LootPool;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.entries.LootItem;
+import net.minecraft.world.level.storage.loot.entries.LootTableReference;
+import net.minecraft.world.level.storage.loot.functions.CopyNameFunction;
+import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
+import net.minecraft.world.level.storage.loot.predicates.LootItemBlockStatePropertyCondition;
+import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraftforge.registries.ForgeRegistries;
-import slimeknights.mantle.loot.RetexturedLootFunction;
+import slimeknights.mantle.loot.function.RetexturedLootFunction;
 
+import javax.annotation.Nonnull;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-// TODO: javadocs
-public class InspirationsBlockLootTable extends BlockLootTables {
-
+public class InspirationsBlockLootTable extends BlockLoot {
+  @Nonnull
   @Override
   protected Iterable<Block> getKnownBlocks() {
     // We only care about our blocks.
@@ -65,9 +65,9 @@ public class InspirationsBlockLootTable extends BlockLootTables {
     this.add(InspirationsBuilding.glassDoor,
                            LootTable.lootTable().withPool(
                                LootPool.lootPool()
-                                       .add(ItemLootEntry.lootTableItem(InspirationsBuilding.glassDoor))
+                                       .add(LootItem.lootTableItem(InspirationsBuilding.glassDoor))
                                        .when(
-                                           BlockStateProperty.hasBlockStateProperties(InspirationsBuilding.glassDoor)
+                                           LootItemBlockStatePropertyCondition.hasBlockStateProperties(InspirationsBuilding.glassDoor)
                                                              .setProperties(
                                                                  StatePropertiesPredicate.Builder.properties()
                                                                                                  .hasProperty(DoorBlock.HALF, DoubleBlockHalf.LOWER)))
@@ -105,9 +105,9 @@ public class InspirationsBlockLootTable extends BlockLootTables {
     InspirationsUtility.carpetedPressurePlates.forEach((color, plate) ->
                                                            this.add(plate, LootTable.lootTable()
                                                                                                   .withPool(applyExplosionCondition(plate, LootPool.lootPool()
-                                                                                                                                                    .add(ItemLootEntry.lootTableItem(plate.getCarpet()))))
+                                                                                                                                                    .add(LootItem.lootTableItem(plate.getCarpet()))))
                                                                                                   .withPool(applyExplosionCondition(plate, LootPool.lootPool()
-                                                                                                                                                    .add(ItemLootEntry.lootTableItem(Items.STONE_PRESSURE_PLATE)))))
+                                                                                                                                                    .add(LootItem.lootTableItem(Items.STONE_PRESSURE_PLATE)))))
                                                       );
     this.dropSelf(InspirationsUtility.pipe);
     this.dropSelf(InspirationsUtility.collector);
@@ -121,14 +121,14 @@ public class InspirationsBlockLootTable extends BlockLootTables {
     return LootTable.lootTable()
                     // The rope block itself
                     .withPool(applyExplosionCondition(block, LootPool.lootPool()
-                                                                      .add(ItemLootEntry.lootTableItem(block))
+                                                                      .add(LootItem.lootTableItem(block))
                                                       ))
                     // And, if rungs are present the items for those.
                     .withPool(applyExplosionDecay(block, LootPool.lootPool()
-                                                                   .add(ItemLootEntry.lootTableItem(rope.getRungsItem())
-                                                                                          .apply(SetCount.setCount(ConstantRange.exactly(RopeBlock.RUNG_ITEM_COUNT)))
+                                                                   .add(LootItem.lootTableItem(rope.getRungsItem())
+                                                                                          .apply(SetItemCountFunction.setCount(ConstantValue.exactly(RopeBlock.RUNG_ITEM_COUNT)))
                                                                             )
-                                                                   .when(BlockStateProperty.hasBlockStateProperties(rope)
+                                                                   .when(LootItemBlockStatePropertyCondition.hasBlockStateProperties(rope)
                                                                                                       .setProperties(StatePropertiesPredicate.Builder.properties()
                                                                                                                                                       .hasProperty(RopeBlock.RUNGS, RopeBlock.Rungs.NONE))
                                                                                                       .invert()
@@ -141,7 +141,7 @@ public class InspirationsBlockLootTable extends BlockLootTables {
                     // No explosion check, since that's not going to pass a
                     // tool check.
                     .withPool(LootPool.lootPool()
-                                         .add(ItemLootEntry.lootTableItem(bush)
+                                         .add(LootItem.lootTableItem(bush)
                                                                 .apply(RetexturedLootFunction::new))
                                          .when(HAS_SHEARS_OR_SILK_TOUCH)
                                 );
@@ -150,15 +150,15 @@ public class InspirationsBlockLootTable extends BlockLootTables {
   private LootTable.Builder droppingWithNameAndTexture(Block block) {
     return LootTable.lootTable()
                     .withPool(applyExplosionCondition(block, LootPool.lootPool()
-                                                                      .add(ItemLootEntry.lootTableItem(block)
-                                                                                             .apply(CopyName.copyName(CopyName.Source.BLOCK_ENTITY))
+                                                                      .add(LootItem.lootTableItem(block)
+                                                                                             .apply(CopyNameFunction.copyName(CopyNameFunction.NameSource.BLOCK_ENTITY))
                                                                                              .apply(RetexturedLootFunction::new)
                                                                                )));
   }
 
   private void registerRedirect(Block block, Block originalBlock) {
     this.add(block, LootTable.lootTable()
-                                           .withPool(LootPool.lootPool().add(TableLootEntry.lootTableReference(originalBlock.getLootTable()))
+                                           .withPool(LootPool.lootPool().add(LootTableReference.lootTableReference(originalBlock.getLootTable()))
                                                        ));
   }
 }

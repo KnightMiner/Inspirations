@@ -11,16 +11,16 @@ import knightminer.inspirations.library.recipe.cauldron.util.LevelUpdate;
 import knightminer.inspirations.library.recipe.cauldron.util.TemperaturePredicate;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.Advancement.Builder;
-import net.minecraft.data.IFinishedRecipe;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.potion.Potion;
-import net.minecraft.util.IItemProvider;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvent;
-import slimeknights.mantle.recipe.SizedIngredient;
+import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.material.Fluid;
 import slimeknights.mantle.recipe.data.AbstractRecipeBuilder;
+import slimeknights.mantle.recipe.ingredient.SizedIngredient;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -30,6 +30,7 @@ import java.util.function.Consumer;
 /**
  * Builder for a standard cauldron recipe
  */
+@SuppressWarnings("UnusedReturnValue")
 public class CauldronRecipeBuilder extends AbstractRecipeBuilder<CauldronRecipeBuilder> {
   private final SizedIngredient input;
   private final ICauldronIngredient contents;
@@ -146,7 +147,7 @@ public class CauldronRecipeBuilder extends AbstractRecipeBuilder<CauldronRecipeB
    * @param output  Output
    * @return  Builder instance
    */
-  public CauldronRecipeBuilder setOutput(IItemProvider output) {
+  public CauldronRecipeBuilder setOutput(ItemLike output) {
     return setOutput(new ItemStack(output));
   }
 
@@ -182,7 +183,7 @@ public class CauldronRecipeBuilder extends AbstractRecipeBuilder<CauldronRecipeB
    * @param container  Container item
    * @return  Builder instance
    */
-  public CauldronRecipeBuilder setContainer(IItemProvider container) {
+  public CauldronRecipeBuilder setContainer(ItemLike container) {
     return setContainer(new ItemStack(container));
   }
 
@@ -246,16 +247,16 @@ public class CauldronRecipeBuilder extends AbstractRecipeBuilder<CauldronRecipeB
   }
 
   @Override
-  public void build(Consumer<IFinishedRecipe> consumer) {
+  public void save(Consumer<FinishedRecipe> consumer) {
     // try output first
     if (!output.isEmpty()) {
-      build(consumer, Objects.requireNonNull(output.getItem().getRegistryName()));
+      save(consumer, Objects.requireNonNull(output.getItem().getRegistryName()));
       return;
     }
     if (newContents != null) {
       ResourceLocation name = nameFromContents(newContents);
       if (name != null) {
-        build(consumer, name);
+        save(consumer, name);
       }
     }
     throw new IllegalStateException("Unable to create automatic recipe ID");
@@ -279,7 +280,7 @@ public class CauldronRecipeBuilder extends AbstractRecipeBuilder<CauldronRecipeB
   }
 
   @Override
-  public void build(Consumer<IFinishedRecipe> consumer, ResourceLocation id) {
+  public void save(Consumer<FinishedRecipe> consumer, ResourceLocation id) {
     if (levels == null) {
       throw new IllegalStateException("No levels defined for cauldron recipe " + id + "!");
     }
@@ -289,7 +290,7 @@ public class CauldronRecipeBuilder extends AbstractRecipeBuilder<CauldronRecipeB
                                newContents, levelUpdate, container, sound, advancementBuilder, advancementId));
   }
 
-  private static class Result implements IFinishedRecipe {
+  private static class Result implements FinishedRecipe {
     private final ResourceLocation id;
     private final String group;
     private final SizedIngredient input;
@@ -392,7 +393,7 @@ public class CauldronRecipeBuilder extends AbstractRecipeBuilder<CauldronRecipeB
     }
 
     @Override
-    public IRecipeSerializer<?> getType() {
+    public RecipeSerializer<?> getType() {
       return RecipeSerializers.CAULDRON;
     }
 

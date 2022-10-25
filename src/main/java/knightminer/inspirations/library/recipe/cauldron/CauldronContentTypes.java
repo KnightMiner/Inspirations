@@ -13,15 +13,15 @@ import knightminer.inspirations.recipes.recipe.cauldron.contents.CustomContentTy
 import knightminer.inspirations.recipes.recipe.cauldron.contents.DyeContentType;
 import knightminer.inspirations.recipes.recipe.cauldron.contents.FluidContentType;
 import knightminer.inspirations.recipes.recipe.cauldron.contents.PotionContentType;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.item.DyeColor;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.potion.Potion;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.util.Constants.NBT;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.common.util.Lazy;
 
 import javax.annotation.Nullable;
@@ -125,7 +125,7 @@ public class CauldronContentTypes {
    * @throws JsonSyntaxException  If the type is missing or the data invalid
    */
   public static ICauldronContents read(JsonObject json) {
-    ResourceLocation location = new ResourceLocation(JSONUtils.getAsString(json, KEY_TYPE));
+    ResourceLocation location = new ResourceLocation(GsonHelper.getAsString(json, KEY_TYPE));
     CauldronContentType<?> type = get(location);
     if (type != null) {
       return read(type, json, CauldronContentType::read);
@@ -138,8 +138,8 @@ public class CauldronContentTypes {
    * @param nbt  NBT contents
    * @return  Cauldron contents
    */
-  public static ICauldronContents read(CompoundNBT nbt) {
-    if (nbt.contains(KEY_TYPE, NBT.TAG_STRING)) {
+  public static ICauldronContents read(CompoundTag nbt) {
+    if (nbt.contains(KEY_TYPE, Tag.TAG_STRING)) {
       ResourceLocation location = new ResourceLocation(nbt.getString(KEY_TYPE));
       CauldronContentType<?> type = get(location);
       if (type != null) {
@@ -155,7 +155,7 @@ public class CauldronContentTypes {
    * @return  Cauldron contents
    * @throws  DecoderException  if the type is missing or the data invalids
    */
-  public static ICauldronContents read(PacketBuffer buffer) {
+  public static ICauldronContents read(FriendlyByteBuf buffer) {
     ResourceLocation name = buffer.readResourceLocation();
     CauldronContentType<?> type = get(name);
     if (type == null) {

@@ -7,12 +7,13 @@ import com.google.gson.JsonSyntaxException;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.shared.InspirationsShared;
-import net.minecraft.loot.ILootSerializer;
-import net.minecraft.loot.LootConditionType;
-import net.minecraft.loot.LootContext;
-import net.minecraft.loot.conditions.ILootCondition;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.Serializer;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
+import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.crafting.conditions.IConditionSerializer;
 
@@ -22,7 +23,7 @@ import java.util.Map;
 import java.util.function.BooleanSupplier;
 
 // Reuse code for both a recipe and loot table condition.
-public class ConfigEnabledCondition implements ICondition, ILootCondition {
+public class ConfigEnabledCondition implements ICondition, LootItemCondition {
   private static final ResourceLocation ID = Inspirations.getResource("config");
   /* Map of config names to condition cache */
   private static final Map<String,ConfigEnabledCondition> PROPS = new HashMap<>();
@@ -51,11 +52,11 @@ public class ConfigEnabledCondition implements ICondition, ILootCondition {
   }
 
   @Override
-  public LootConditionType getType() {
+  public LootItemConditionType getType() {
     return InspirationsShared.lootConfig;
   }
 
-  public static class Serializer implements ILootSerializer<ConfigEnabledCondition>, IConditionSerializer<ConfigEnabledCondition> {
+  public static class ConditionSerializer implements Serializer<ConfigEnabledCondition>, IConditionSerializer<ConfigEnabledCondition> {
     @Override
     public ResourceLocation getID() {
       return ID;
@@ -68,7 +69,7 @@ public class ConfigEnabledCondition implements ICondition, ILootCondition {
 
     @Override
     public ConfigEnabledCondition read(JsonObject json) {
-      String prop = JSONUtils.getAsString(json, "prop");
+      String prop = GsonHelper.getAsString(json, "prop");
       ConfigEnabledCondition config = PROPS.get(prop.toLowerCase(Locale.ROOT));
       if (config == null) {
         throw new JsonSyntaxException("Invalid property name '" + prop + "'");
@@ -97,6 +98,16 @@ public class ConfigEnabledCondition implements ICondition, ILootCondition {
     ConfigEnabledCondition conf = new ConfigEnabledCondition(prop, supplier);
     PROPS.put(prop.toLowerCase(Locale.ROOT), conf);
     return conf;
+  }
+
+  /**
+   * Adds a condition
+   * @param prop     Property name
+   * @param supplier Boolean supplier
+   * @return Added condition
+   */
+  private static ConfigEnabledCondition add(String prop, BooleanValue supplier) {
+    return add(prop, supplier::get);
   }
 
   /* Config conditions available */
@@ -146,7 +157,7 @@ public class ConfigEnabledCondition implements ICondition, ILootCondition {
   public static final ConfigEnabledCondition CAULDRON_RECIPES = add("cauldron_recipes", Config.cauldronRecipes);
   public static final ConfigEnabledCondition CAULDRON_CONCRETE = add("cauldron_concrete", Config.cauldronConcrete);
   public static final ConfigEnabledCondition CAULDRON_ICE = add("cauldron_ice", Config.cauldronIce);
-  public static final ConfigEnabledCondition EXTENDED_CAULDRON = add("extended_cauldron_recipes", Config.extendedCaulronRecipes);
+  public static final ConfigEnabledCondition EXTENDED_CAULDRON = add("extended_cauldron_recipes", Config.extendedCauldronRecipes);
   // fluids
   public static final ConfigEnabledCondition CAULDRON_FLUIDS = add("cauldron_fluids", Config.enableCauldronFluids);
   // dyes

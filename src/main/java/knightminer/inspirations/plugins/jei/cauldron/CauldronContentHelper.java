@@ -4,7 +4,10 @@ import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.contents.CauldronContentType;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
+import knightminer.inspirations.plugins.jei.JEIPlugin;
 import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.subtypes.UidContext;
 
 import javax.annotation.Nullable;
 
@@ -32,7 +35,7 @@ public class CauldronContentHelper implements IIngredientHelper<ICauldronContent
 
   @Nullable
   @Override
-  public ICauldronContents getMatch(Iterable<ICauldronContents> options, ICauldronContents match) {
+  public ICauldronContents getMatch(Iterable<ICauldronContents> options, ICauldronContents match, UidContext context) {
     CauldronContentType<?> type = getType(match);
     String name = match.getName();
     for (ICauldronContents content : options) {
@@ -49,18 +52,23 @@ public class CauldronContentHelper implements IIngredientHelper<ICauldronContent
   }
 
   @Override
+  public IIngredientType<ICauldronContents> getIngredientType() {
+    return JEIPlugin.CAULDRON_CONTENTS;
+  }
+
+  @Override
   public String getDisplayName(ICauldronContents contents) {
     return contents.getDisplayName().getString();
   }
 
   @Override
-  public String getUniqueId(ICauldronContents contents) {
-    return CauldronContentTypes.getName(getType(contents)).toString() + ":" + contents.getName();
+  public String getUniqueId(ICauldronContents contents, UidContext context) {
+    return CauldronContentTypes.getName(getType(contents)) + ":" + contents.getName();
   }
 
   @Override
   public String getWildcardId(ICauldronContents contents) {
-    return getUniqueId(contents);
+    return getUniqueId(contents, UidContext.Ingredient);
   }
 
   @Override
@@ -79,6 +87,6 @@ public class CauldronContentHelper implements IIngredientHelper<ICauldronContent
     if (contents == null) {
       return "null";
     }
-    return getUniqueId(contents);
+    return getUniqueId(contents, UidContext.Ingredient);
   }
 }

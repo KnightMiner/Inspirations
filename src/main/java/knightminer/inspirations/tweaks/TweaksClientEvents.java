@@ -6,29 +6,28 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.client.model.TrimModel;
 import knightminer.inspirations.shared.SharedClientEvents;
 import knightminer.inspirations.tweaks.client.PortalColorHandler;
-import net.minecraft.block.Blocks;
+import net.minecraft.client.color.block.BlockColors;
+import net.minecraft.client.color.item.ItemColors;
+import net.minecraft.client.renderer.BiomeColors;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.RenderTypeLookup;
-import net.minecraft.client.renderer.color.BlockColors;
-import net.minecraft.client.renderer.color.ItemColors;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.item.EnchantedBookItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.biome.BiomeColors;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.EnchantedBookItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -44,8 +43,8 @@ public class TweaksClientEvents extends ClientEvents {
   @SubscribeEvent
   static void clientSetup(FMLClientSetupEvent event) {
     RenderType cutout = RenderType.cutout();
-    RenderTypeLookup.setRenderLayer(InspirationsTweaks.cactus, cutout);
-    RenderTypeLookup.setRenderLayer(InspirationsTweaks.sugarCane, cutout);
+    ItemBlockRenderTypes.setRenderLayer(InspirationsTweaks.cactus, cutout);
+    ItemBlockRenderTypes.setRenderLayer(InspirationsTweaks.sugarCane, cutout);
 
     MinecraftForge.EVENT_BUS.addListener(TweaksClientEvents::fixShieldTooltip);
   }
@@ -89,9 +88,9 @@ public class TweaksClientEvents extends ClientEvents {
       if (tintIndex == 0 && Config.coloredEnchantedRibbons.get()) {
         // find the rarest enchantment we have
         Enchantment.Rarity rarity = Enchantment.Rarity.COMMON;
-        for (INBT tag : EnchantedBookItem.getEnchantments(stack)) {
-          if (tag.getId() == Constants.NBT.TAG_COMPOUND) {
-            ResourceLocation id = new ResourceLocation(((CompoundNBT)tag).getString("id"));
+        for (Tag tag : EnchantedBookItem.getEnchantments(stack)) {
+          if (tag.getId() == Tag.TAG_COMPOUND) {
+            ResourceLocation id = new ResourceLocation(((CompoundTag)tag).getString("id"));
             Enchantment enchantment = ForgeRegistries.ENCHANTMENTS.getValue(id);
             if (enchantment != null) {
               Enchantment.Rarity newRarity = enchantment.getRarity();
@@ -103,16 +102,12 @@ public class TweaksClientEvents extends ClientEvents {
         }
 
         // color by that rarity
-        switch (rarity) {
-          case COMMON:
-            return 0xFF2151;
-          case UNCOMMON:
-            return 0xE2882D;
-          case RARE:
-            return 0x00FF21;
-          case VERY_RARE:
-            return 0x9F7FFF;
-        }
+        return switch (rarity) {
+          case COMMON -> 0xFF2151;
+          case UNCOMMON -> 0xE2882D;
+          case RARE -> 0x00FF21;
+          case VERY_RARE -> 0x9F7FFF;
+        };
       }
       return -1;
     }, Items.ENCHANTED_BOOK);
@@ -121,10 +116,10 @@ public class TweaksClientEvents extends ClientEvents {
       if (!Config.coloredFireworkItems.get()) {
         return -1;
       }
-      CompoundNBT nbt = stack.getTagElement("Fireworks");
+      CompoundTag nbt = stack.getTagElement("Fireworks");
       // string is darker with more gunpowder
       if (tintIndex == 2) {
-        if (nbt != null && nbt.contains("Flight", Constants.NBT.TAG_ANY_NUMERIC)) {
+        if (nbt != null && nbt.contains("Flight", Tag.TAG_ANY_NUMERIC)) {
           byte flight = nbt.getByte("Flight");
           switch (flight) {
             case 1:
@@ -148,14 +143,14 @@ public class TweaksClientEvents extends ClientEvents {
           return missing;
         }
 
-        ListNBT stars = nbt.getList("Explosions", 10);
+        ListTag stars = nbt.getList("Explosions", 10);
         // not enough stars?
         if (tintIndex >= stars.size()) {
           return missing;
         }
 
         // grab the proper star's first color
-        CompoundNBT star = stars.getCompound(tintIndex);
+        CompoundTag star = stars.getCompound(tintIndex);
         int[] colors = star.getIntArray("Colors");
         if (colors.length > 0) {
           return colors[0];
@@ -170,20 +165,20 @@ public class TweaksClientEvents extends ClientEvents {
 
   // registered with Forge bus
   private static void fixShieldTooltip(ItemTooltipEvent event) {
-    if (!Config.fixShieldTooltip.get()) return;
+    if (!Config.fixShieldTooltip.getAsBoolean()) return;
     ItemStack stack = event.getItemStack();
     if (stack.getItem() != Items.SHIELD) return;
 
     // only need to run if it has patterns and is enchanted
-    CompoundNBT tags = stack.getTagElement("BlockEntityTag");
+    CompoundTag tags = stack.getTagElement("BlockEntityTag");
     if (tags != null && tags.contains("Patterns") && stack.isEnchanted()) {
       // find the last banner pattern line in the tooltip
-      List<ITextComponent> text = event.getToolTip();
+      List<Component> text = event.getToolTip();
       int i = text.size() - 1;
       for (; i >= 0; i--) {
-        ITextComponent component = text.get(i);
-        if (component instanceof TranslationTextComponent && ((TranslationTextComponent)component).getKey().contains("banner")) {
-          text.add(i + 1, StringTextComponent.EMPTY);
+        Component component = text.get(i);
+        if (component instanceof TranslatableComponent && ((TranslatableComponent)component).getKey().contains("banner")) {
+          text.add(i + 1, TextComponent.EMPTY);
           break;
         }
       }

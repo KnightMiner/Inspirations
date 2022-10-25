@@ -3,22 +3,22 @@ package knightminer.inspirations.building.inventory;
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.building.tileentity.ShelfInventory;
 import knightminer.inspirations.building.tileentity.ShelfTileEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import slimeknights.mantle.inventory.BaseContainer;
-import slimeknights.mantle.inventory.ItemHandlerSlot;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
+import slimeknights.mantle.inventory.BaseContainerMenu;
+import slimeknights.mantle.inventory.SmartItemHandlerSlot;
 
 import javax.annotation.Nullable;
 
-public class ShelfContainer extends BaseContainer<ShelfTileEntity> {
+public class ShelfContainer extends BaseContainerMenu<ShelfTileEntity> {
   /**
    * Standard constructor
    * @param id    Window ID
    * @param inv   Player inventory instance
    * @param shelf Bookshelf tile entity
    */
-  public ShelfContainer(int id, PlayerInventory inv, @Nullable ShelfTileEntity shelf) {
+  public ShelfContainer(int id, Inventory inv, @Nullable ShelfTileEntity shelf) {
     super(InspirationsBuilding.shelfContainer, id, inv, shelf);
     if (tile != null) {
       // two rows of slots
@@ -39,7 +39,7 @@ public class ShelfContainer extends BaseContainer<ShelfTileEntity> {
    * @param inv Player inventory
    * @param buf Packet buffer instance
    */
-  public ShelfContainer(int id, PlayerInventory inv, PacketBuffer buf) {
+  public ShelfContainer(int id, Inventory inv, FriendlyByteBuf buf) {
     this(id, inv, getTileEntityFromBuf(buf, ShelfTileEntity.class));
   }
 
@@ -56,7 +56,7 @@ public class ShelfContainer extends BaseContainer<ShelfTileEntity> {
   /**
    * Slot that limits to just books
    */
-  private static class ShelfSlot extends ItemHandlerSlot {
+  private static class ShelfSlot extends SmartItemHandlerSlot {
     private final ShelfInventory shelf;
     private ShelfSlot(ShelfInventory inventory, int index, int x, int y) {
       super(inventory, index, x, y);

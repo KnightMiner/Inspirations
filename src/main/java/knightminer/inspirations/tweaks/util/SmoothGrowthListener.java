@@ -1,11 +1,11 @@
 package knightminer.inspirations.tweaks.util;
 
 import knightminer.inspirations.common.Config;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.BlockEvent.CropGrowEvent.Pre;
@@ -30,7 +30,7 @@ public class SmoothGrowthListener implements Consumer<Pre> {
 
   @Override
   public void accept(BlockEvent.CropGrowEvent.Pre event) {
-    if (!Config.smoothBlockCropGrowth.get()) {
+    if (!Config.smoothBlockCropGrowth.getAsBoolean()) {
       return;
     }
 
@@ -41,7 +41,7 @@ public class SmoothGrowthListener implements Consumer<Pre> {
     }
 
     // first, place the seed
-    IWorld world = event.getWorld();
+    LevelAccessor world = event.getWorld();
     BlockPos dest, source;
 
     // sugar cane fires the event at the source, cactus at the destination
@@ -67,8 +67,7 @@ public class SmoothGrowthListener implements Consumer<Pre> {
     event.setResult(Result.DENY);
 
     // update the block above and fire relevant events
-    if (world instanceof World) {
-      World casted = (World)world;
+    if (world instanceof Level casted) {
       state.neighborChanged(casted, dest, seed.get(), source, false);
       ForgeHooks.onCropsGrowPost(casted, source, state);
     }

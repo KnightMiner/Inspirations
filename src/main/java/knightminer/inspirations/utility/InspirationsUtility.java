@@ -15,30 +15,30 @@ import knightminer.inspirations.utility.inventory.PipeContainer;
 import knightminer.inspirations.utility.item.TorchLeverItem;
 import knightminer.inspirations.utility.tileentity.CollectorTileEntity;
 import knightminer.inspirations.utility.tileentity.PipeTileEntity;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.DispenserBlock;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
+import net.minecraft.core.dispenser.DispenseItemBehavior;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.dispenser.IDispenseItemBehavior;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.DispenserBlock;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.Material;
 import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
+import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.registries.IForgeRegistry;
+import slimeknights.mantle.registration.adapter.BlockEntityTypeRegistryAdapter;
 import slimeknights.mantle.registration.adapter.BlockRegistryAdapter;
 import slimeknights.mantle.registration.adapter.ContainerTypeRegistryAdapter;
 import slimeknights.mantle.registration.adapter.ItemRegistryAdapter;
-import slimeknights.mantle.registration.adapter.TileEntityTypeRegistryAdapter;
 import slimeknights.mantle.registration.object.EnumObject;
 
 @SuppressWarnings("unused")
@@ -60,12 +60,12 @@ public class InspirationsUtility extends ModuleBase {
   public static Item soulLeverItem;
 
   // Tile entities
-  public static TileEntityType<CollectorTileEntity> tileCollector;
-  public static TileEntityType<PipeTileEntity> tilePipe;
+  public static BlockEntityType<CollectorTileEntity> tileCollector;
+  public static BlockEntityType<PipeTileEntity> tilePipe;
 
   // Inventory containers
-  public static ContainerType<CollectorContainer> contCollector;
-  public static ContainerType<PipeContainer> contPipe;
+  public static MenuType<CollectorContainer> contCollector;
+  public static MenuType<PipeContainer> contPipe;
 
   @SubscribeEvent
   public void registerBlocks(Register<Block> event) {
@@ -73,20 +73,20 @@ public class InspirationsUtility extends ModuleBase {
     IForgeRegistry<Block> r = event.getRegistry();
 
     torchLeverFloor = registry.register(new TorchLeverBlock(
-            AbstractBlock.Properties.copy(Blocks.TORCH).sound(SoundType.WOOD),
+            BlockBehaviour.Properties.copy(Blocks.TORCH).sound(SoundType.WOOD),
             ParticleTypes.FLAME
     ), "torch_lever");
     torchLeverWall = registry.register(new TorchLeverWallBlock(
-            AbstractBlock.Properties.copy(Blocks.WALL_TORCH).lootFrom(() -> torchLeverFloor),
+            BlockBehaviour.Properties.copy(Blocks.WALL_TORCH).lootFrom(() -> torchLeverFloor),
             ParticleTypes.FLAME
     ), "wall_torch_lever");
 
     soulLeverFloor = registry.register(new TorchLeverBlock(
-            AbstractBlock.Properties.copy(Blocks.SOUL_TORCH),
+            BlockBehaviour.Properties.copy(Blocks.SOUL_TORCH),
             ParticleTypes.SOUL_FIRE_FLAME
     ), "soul_torch_lever");
     soulLeverWall = registry.register(new TorchLeverWallBlock(
-            AbstractBlock.Properties.copy(Blocks.SOUL_WALL_TORCH).lootFrom(() -> soulLeverFloor),
+            BlockBehaviour.Properties.copy(Blocks.SOUL_WALL_TORCH).lootFrom(() -> soulLeverFloor),
             ParticleTypes.SOUL_FIRE_FLAME
     ), "wall_soul_torch_lever");
 
@@ -101,17 +101,17 @@ public class InspirationsUtility extends ModuleBase {
   }
 
   @SubscribeEvent
-  public void registerTEs(Register<TileEntityType<?>> event) {
-    TileEntityTypeRegistryAdapter registry = new TileEntityTypeRegistryAdapter(event.getRegistry());
+  public void registerTEs(Register<BlockEntityType<?>> event) {
+    BlockEntityTypeRegistryAdapter registry = new BlockEntityTypeRegistryAdapter(event.getRegistry());
 
     tileCollector = registry.register(CollectorTileEntity::new, collector, "collector");
     tilePipe = registry.register(PipeTileEntity::new, pipe, "pipe");
   }
 
   @SubscribeEvent
-  public void registerContainers(Register<ContainerType<?>> event) {
+  public void registerContainers(Register<MenuType<?>> event) {
     ContainerTypeRegistryAdapter registry = new ContainerTypeRegistryAdapter(event.getRegistry());
-    IForgeRegistry<ContainerType<?>> r = event.getRegistry();
+    IForgeRegistry<MenuType<?>> r = event.getRegistry();
 
     contCollector = registry.registerType(CollectorContainer::new, "collector");
     contPipe = registry.registerType(PipeContainer::new, "pipe");
@@ -119,7 +119,7 @@ public class InspirationsUtility extends ModuleBase {
 
   @SubscribeEvent
   public void registerItems(Register<Item> event) {
-    Item.Properties props = new Item.Properties().tab(ItemGroup.TAB_REDSTONE);
+    Item.Properties props = new Item.Properties().tab(CreativeModeTab.TAB_REDSTONE);
     ItemRegistryAdapter registry = new ItemRegistryAdapter(event.getRegistry(), props);
 
     // itemblocks
@@ -150,7 +150,7 @@ public class InspirationsUtility extends ModuleBase {
   private static class DispenserRegAccess extends DispenserBlock {
     DispenserRegAccess() { super(Block.Properties.of(Material.AIR));}
 
-    IDispenseItemBehavior getRegisteredBehaviour(Item item) {
+    DispenseItemBehavior getRegisteredBehaviour(Item item) {
       return super.getDispenseMethod(new ItemStack(item));
     }
   }

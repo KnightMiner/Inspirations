@@ -5,24 +5,24 @@ import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
 import knightminer.inspirations.recipes.RecipesClientEvents;
 import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.renderer.model.BakedQuad;
-import net.minecraft.client.renderer.model.BlockPart;
-import net.minecraft.client.renderer.model.BlockPartFace;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.IModelTransform;
-import net.minecraft.client.renderer.model.IUnbakedModel;
-import net.minecraft.client.renderer.model.ItemOverrideList;
-import net.minecraft.client.renderer.model.ModelBakery;
-import net.minecraft.client.renderer.model.RenderMaterial;
-import net.minecraft.client.renderer.texture.MissingTextureSprite;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.BlockElement;
+import net.minecraft.client.renderer.block.model.BlockElementFace;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelState;
+import net.minecraft.client.resources.model.UnbakedModel;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.resources.model.ModelBakery;
+import net.minecraft.client.resources.model.Material;
+import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.resources.IResourceManager;
-import net.minecraft.util.Direction;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.core.Direction;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import com.mojang.math.Vector3f;
 import net.minecraftforge.client.model.IModelConfiguration;
 import net.minecraftforge.client.model.IModelLoader;
 import net.minecraftforge.client.model.data.EmptyModelData;
@@ -68,8 +68,8 @@ public class CauldronModel implements IModelGeometry<CauldronModel> {
   }
 
   @Override
-  public Collection<RenderMaterial> getTextures(IModelConfiguration owner, Function<ResourceLocation,IUnbakedModel> modelGetter, Set<Pair<String,String>> missingTextureErrors) {
-    Collection<RenderMaterial> textures = model.getTextures(owner, modelGetter, missingTextureErrors);
+  public Collection<Material> getTextures(IModelConfiguration owner, Function<ResourceLocation,UnbakedModel> modelGetter, Set<Pair<String,String>> missingTextureErrors) {
+    Collection<Material> textures = model.getTextures(owner, modelGetter, missingTextureErrors);
     // get special frost texture
     if (owner.isTexturePresent("frost")) {
       textures.add(owner.resolveTexture("frost"));
@@ -80,51 +80,51 @@ public class CauldronModel implements IModelGeometry<CauldronModel> {
   }
 
   @Override
-  public IBakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<RenderMaterial,TextureAtlasSprite> spriteGetter, IModelTransform modelTransform, ItemOverrideList overrides, ResourceLocation modelLocation) {
+  public BakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<Material,TextureAtlasSprite> spriteGetter, ModelState modelTransform, ItemOverrides overrides, ResourceLocation modelLocation) {
     // fetch textures before rebaking
     Set<String> retextured = this.retextured.isEmpty() ? Collections.emptySet() : RetexturedModel.getAllRetextured(owner, model, this.retextured);
     // making two models, normal and frosted
-    List<BlockPart> warmElements = new ArrayList<>();
-    List<BlockPart> frostElements = new ArrayList<>();
-    List<BlockPart> liquidElements = new ArrayList<>();
-    for (BlockPart part : model.getElements()) {
+    List<BlockElement> warmElements = new ArrayList<>();
+    List<BlockElement> frostElements = new ArrayList<>();
+    List<BlockElement> liquidElements = new ArrayList<>();
+    for (BlockElement part : model.getElements()) {
       boolean updated = false;
-      Map<Direction, BlockPartFace> warmFaces = new EnumMap<>(Direction.class);
-      Map<Direction, BlockPartFace> frostFaces = new EnumMap<>(Direction.class);
-      Map<Direction, BlockPartFace> liquidFaces = new EnumMap<>(Direction.class);
-      for (Entry<Direction,BlockPartFace> entry : part.faces.entrySet()) {
-        BlockPartFace face = entry.getValue();
+      Map<Direction, BlockElementFace> warmFaces = new EnumMap<>(Direction.class);
+      Map<Direction, BlockElementFace> frostFaces = new EnumMap<>(Direction.class);
+      Map<Direction, BlockElementFace> liquidFaces = new EnumMap<>(Direction.class);
+      for (Entry<Direction,BlockElementFace> entry : part.faces.entrySet()) {
+        BlockElementFace face = entry.getValue();
         // if the texture is liquid, update the tint index and insert into the liquid list
         if (retextured.contains(face.texture.substring(1))) {
-          liquidFaces.put(entry.getKey(), new BlockPartFace(face.cullForDirection, 1, face.texture, face.uv));
+          liquidFaces.put(entry.getKey(), new BlockElementFace(face.cullForDirection, 1, face.texture, face.uv));
         } else {
           // otherwise use original face and make a copy for frost
           warmFaces.put(entry.getKey(), face);
-          frostFaces.put(entry.getKey(), new BlockPartFace(face.cullForDirection, -1, "frost", face.uv));
+          frostFaces.put(entry.getKey(), new BlockElementFace(face.cullForDirection, -1, "frost", face.uv));
         }
       }
       // if we had a liquid face, make a new part for the warm elements and add a liquid element
-      BlockPart newPart = part;
+      BlockElement newPart = part;
       if (!liquidFaces.isEmpty()) {
-        newPart = new BlockPart(part.from, part.to, warmFaces, part.rotation, part.shade);
+        newPart = new BlockElement(part.from, part.to, warmFaces, part.rotation, part.shade);
         Vector3f newTo = part.to;
         if (liquidOffset != 0) {
           newTo = part.to.copy();
           newTo.add(0, liquidOffset, 0);
         }
-        liquidElements.add(new BlockPart(part.from, newTo, liquidFaces, part.rotation, part.shade));
+        liquidElements.add(new BlockElement(part.from, newTo, liquidFaces, part.rotation, part.shade));
       }
       // frosted has all elements of normal, plus an overlay when relevant
       warmElements.add(newPart);
       frostElements.add(newPart);
       // add frost element if anything is frosted
       if (!frostFaces.isEmpty()) {
-        frostElements.add(new BlockPart(part.from, part.to, frostFaces, part.rotation, part.shade));
+        frostElements.add(new BlockElement(part.from, part.to, frostFaces, part.rotation, part.shade));
       }
     }
 
     // make a list of parts with warm and liquid for the base model
-    List<BlockPart> firstBake = warmElements;
+    List<BlockElement> firstBake = warmElements;
     if (liquidElements.isEmpty()) {
       liquidElements = Collections.emptyList();
     } else {
@@ -133,9 +133,9 @@ public class CauldronModel implements IModelGeometry<CauldronModel> {
     }
 
     // if nothing retextured, bake frosted and return simple baked model
-    IBakedModel baked = SimpleBlockModel.bakeModel(owner, firstBake, modelTransform, overrides, spriteGetter, modelLocation);
+    BakedModel baked = SimpleBlockModel.bakeModel(owner, firstBake, modelTransform, overrides, spriteGetter, modelLocation);
     if (retextured.isEmpty()) {
-      IBakedModel frosted = SimpleBlockModel.bakeModel(owner, frostElements, modelTransform, overrides, spriteGetter, modelLocation);
+      BakedModel frosted = SimpleBlockModel.bakeModel(owner, frostElements, modelTransform, overrides, spriteGetter, modelLocation);
       return new FrostedBakedModel(baked, frosted);
     }
 
@@ -144,19 +144,19 @@ public class CauldronModel implements IModelGeometry<CauldronModel> {
   }
 
   /** Full baked model, does frost and fluid textures */
-  private static class TexturedBakedModel extends DynamicBakedWrapper<IBakedModel> {
-    private final Map<TextureOffsetPair,IBakedModel> warmCache = new HashMap<>();
-    private final Map<TextureOffsetPair,IBakedModel> frostedCache = new HashMap<>();
+  private static class TexturedBakedModel extends DynamicBakedWrapper<BakedModel> {
+    private final Map<TextureOffsetPair,BakedModel> warmCache = new HashMap<>();
+    private final Map<TextureOffsetPair,BakedModel> frostedCache = new HashMap<>();
     // data needed to rebake
     private final IModelConfiguration owner;
-    private final IModelTransform transform;
+    private final ModelState transform;
     private final Set<String> retextured;
-    private final List<BlockPart> liquidElements;
+    private final List<BlockElement> liquidElements;
     /** Function to bake a warm model for the given texture */
-    private final Function<TextureOffsetPair, IBakedModel> warmBakery;
+    private final Function<TextureOffsetPair, BakedModel> warmBakery;
     /** Function to bake a frosted model for the given texture */
-    private final Function<TextureOffsetPair, IBakedModel> frostedBakery;
-    protected TexturedBakedModel(IBakedModel originalModel, IModelConfiguration owner, List<BlockPart> warmElements, List<BlockPart> frostElements, List<BlockPart> liquidElements, IModelTransform transform, Set<String> fluidNames) {
+    private final Function<TextureOffsetPair, BakedModel> frostedBakery;
+    protected TexturedBakedModel(BakedModel originalModel, IModelConfiguration owner, List<BlockElement> warmElements, List<BlockElement> frostElements, List<BlockElement> liquidElements, ModelState transform, Set<String> fluidNames) {
       super(originalModel);
       this.owner = owner;
       this.transform = transform;
@@ -171,19 +171,19 @@ public class CauldronModel implements IModelGeometry<CauldronModel> {
      * @param pair  Object containing texture and offset amount
      * @return  Baked model
      */
-    private IBakedModel getFluidModel(TextureOffsetPair pair, List<BlockPart> baseElements) {
+    private BakedModel getFluidModel(TextureOffsetPair pair, List<BlockElement> baseElements) {
       // if we have liquid elements, add them
-      List<BlockPart> elements = new ArrayList<>(baseElements);
+      List<BlockElement> elements = new ArrayList<>(baseElements);
       // if no offset, copy in liquid list exactly
       if (pair.offset == 0) {
         elements.addAll(liquidElements);
       } else {
         // offset each element. Note -3 is moved up slightly to prevent z-fighting, its only used when the cauldron is level 1
-        float offset = MathHelper.clamp(pair.offset, -2.95f, 3f);
+        float offset = Mth.clamp(pair.offset, -2.95f, 3f);
         liquidElements.stream().map(part -> {
           Vector3f newTo = part.to.copy();
           newTo.add(0, offset, 0);
-          return new BlockPart(part.from, newTo, part.faces, part.rotation, part.shade);
+          return new BlockElement(part.from, newTo, part.faces, part.rotation, part.shade);
         }).forEach(elements::add);
       }
       // bake the new model
@@ -200,7 +200,7 @@ public class CauldronModel implements IModelGeometry<CauldronModel> {
       // also use missing if no retextured, that just makes the cache smaller for empty cauldron
       ResourceLocation texture = data.getData(CauldronTileEntity.TEXTURE);
       if (texture == null) {
-        texture = MissingTextureSprite.getLocation();
+        texture = MissingTextureAtlasSprite.getLocation();
       } else {
         // serverside uses texture "name" rather than path, use the sprite getter to translate
         texture = RecipesClientEvents.cauldronTextures.getTexture(texture);
@@ -210,7 +210,7 @@ public class CauldronModel implements IModelGeometry<CauldronModel> {
       Integer offset = data.getData(CauldronTileEntity.OFFSET);
       TextureOffsetPair pair = new TextureOffsetPair(texture, offset == null ? 0 : offset);
       // determine model variant
-      IBakedModel baked = (data.getData(CauldronTileEntity.FROSTED) == Boolean.TRUE)
+      BakedModel baked = (data.getData(CauldronTileEntity.FROSTED) == Boolean.TRUE)
                           ? frostedCache.computeIfAbsent(pair, frostedBakery)
                           : warmCache.computeIfAbsent(pair, warmBakery);
       // return quads
@@ -219,9 +219,9 @@ public class CauldronModel implements IModelGeometry<CauldronModel> {
   }
 
   /** Simplier baked model for when textures are not needed */
-  private static class FrostedBakedModel extends DynamicBakedWrapper<IBakedModel> {
-    private final IBakedModel frosted;
-    private FrostedBakedModel(IBakedModel originalModel, IBakedModel frosted) {
+  private static class FrostedBakedModel extends DynamicBakedWrapper<BakedModel> {
+    private final BakedModel frosted;
+    private FrostedBakedModel(BakedModel originalModel, BakedModel frosted) {
       super(originalModel);
       this.frosted = frosted;
     }
@@ -264,13 +264,13 @@ public class CauldronModel implements IModelGeometry<CauldronModel> {
     private Loader() {}
 
     @Override
-    public void onResourceManagerReload(IResourceManager resourceManager) {}
+    public void onResourceManagerReload(ResourceManager resourceManager) {}
 
     @Override
     public CauldronModel read(JsonDeserializationContext context, JsonObject json) {
       SimpleBlockModel model = SimpleBlockModel.deserialize(context, json);
       Set<String> retextured = json.has("retextured") ? RetexturedModel.Loader.getRetextured(json) : Collections.emptySet();
-      float offset = JSONUtils.getAsFloat(json, "liquid_offset", 0);
+      float offset = GsonHelper.getAsFloat(json, "liquid_offset", 0);
       return new CauldronModel(model, retextured, offset);
     }
   }

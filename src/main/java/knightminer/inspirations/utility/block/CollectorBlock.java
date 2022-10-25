@@ -3,37 +3,37 @@ package knightminer.inspirations.utility.block;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.IHidable;
 import knightminer.inspirations.utility.tileentity.CollectorTileEntity;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.InventoryHelper;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.DirectionProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.Rotation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Container;
+import net.minecraft.world.Containers;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.material.Material;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.network.NetworkHooks;
 import slimeknights.mantle.block.InventoryBlock;
 
+import javax.annotation.Nullable;
 import java.util.Random;
 
 public class CollectorBlock extends InventoryBlock implements IHidable {
@@ -55,11 +55,11 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
 
   @Override
   public boolean isEnabled() {
-    return Config.enableCollector.get();
+    return Config.enableCollector.getAsBoolean();
   }
 
   @Override
-  public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> stacks) {
+  public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> stacks) {
     if (shouldAddtoItemGroup(group)) {
       super.fillItemCategory(group, stacks);
     }
@@ -68,12 +68,12 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
   /* Block state settings */
 
   @Override
-  protected void createBlockStateDefinition(StateContainer.Builder<Block,BlockState> builder) {
+  protected void createBlockStateDefinition(StateDefinition.Builder<Block,BlockState> builder) {
     builder.add(FACING, TRIGGERED);
   }
 
   @Override
-  public BlockState rotate(BlockState state, IWorld world, BlockPos pos, Rotation direction) {
+  public BlockState rotate(BlockState state, LevelAccessor world, BlockPos pos, Rotation direction) {
     return state.setValue(FACING, direction.rotate(state.getValue(FACING)));
   }
 
@@ -85,10 +85,10 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
   }
 
   @Override
-  public BlockState getStateForPlacement(BlockItemUseContext context) {
+  public BlockState getStateForPlacement(BlockPlaceContext context) {
     // place opposite since its more useful to face into what you clicked
     Direction facing = context.getNearestLookingDirection();
-    PlayerEntity player = context.getPlayer();
+    Player player = context.getPlayer();
     if (player != null && player.isCrouching()) {
       facing = facing.getOpposite();
     }
@@ -96,12 +96,12 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
   }
 
   @Override
-  public void onRemove(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
+  public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
     // If destroyed, drop contents.
     if (state.getBlock() != newState.getBlock()) {
-      TileEntity te = world.getBlockEntity(pos);
-      if (te instanceof IInventory) {
-        InventoryHelper.dropContents(world, pos, (IInventory)te);
+      BlockEntity te = world.getBlockEntity(pos);
+      if (te instanceof Container) {
+        Containers.dropContents(world, pos, (Container)te);
       }
     }
     super.onRemove(state, world, pos, newState, isMoving);
@@ -109,19 +109,20 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
 
   /* Tile Entity */
 
+  @Nullable
   @Override
-  public TileEntity createTileEntity(BlockState blockState, IBlockReader iBlockReader) {
-    return new CollectorTileEntity();
+  public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+    return new CollectorTileEntity(pos, state);
   }
 
   @Override
-  protected boolean openGui(PlayerEntity player, World world, BlockPos pos) {
-    if (!(player instanceof ServerPlayerEntity)) {
+  protected boolean openGui(Player player, Level world, BlockPos pos) {
+    if (!(player instanceof ServerPlayer)) {
       throw new AssertionError("Needs to be server!");
     }
-    TileEntity te = world.getBlockEntity(pos);
+    BlockEntity te = world.getBlockEntity(pos);
     if (te instanceof CollectorTileEntity) {
-      NetworkHooks.openGui((ServerPlayerEntity)player, (INamedContainerProvider)te, pos);
+      NetworkHooks.openGui((ServerPlayer)player, (MenuProvider)te, pos);
       return true;
     }
     return false;
@@ -133,8 +134,8 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public int getAnalogOutputSignal(BlockState blockState, World world, BlockPos pos) {
-    TileEntity te = world.getBlockEntity(pos);
+  public int getAnalogOutputSignal(BlockState blockState, Level world, BlockPos pos) {
+    BlockEntity te = world.getBlockEntity(pos);
     if (te != null) {
       return te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).map(
           ItemHandlerHelper::calcRedstoneFromInventory
@@ -156,10 +157,10 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public void neighborChanged(BlockState state, World world, BlockPos pos, Block block, BlockPos neighbor, boolean isMoving) {
+  public void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, BlockPos neighbor, boolean isMoving) {
     // clear inventory cache
     if (pos.relative(state.getValue(FACING)).equals(neighbor)) {
-      TileEntity te = world.getBlockEntity(pos);
+      BlockEntity te = world.getBlockEntity(pos);
       if (te instanceof CollectorTileEntity) {
         ((CollectorTileEntity) te).clearCachedInventories();
       }
@@ -169,7 +170,7 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
     boolean powered = world.hasNeighborSignal(pos) || world.hasNeighborSignal(pos.above());
     boolean triggered = state.getValue(TRIGGERED);
     if (powered && !triggered) {
-      world.getBlockTicks().scheduleTick(pos, this, 4);
+      world.scheduleTick(pos, this, 4);
       world.setBlock(pos, state.setValue(TRIGGERED, true), 4);
     } else if (!powered && triggered) {
       world.setBlock(pos, state.setValue(TRIGGERED, false), 4);
@@ -179,11 +180,11 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public void tick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+  public void tick(BlockState state, ServerLevel world, BlockPos pos, Random random) {
     if (world.isClientSide) {
       return;
     }
-    TileEntity te = world.getBlockEntity(pos);
+    BlockEntity te = world.getBlockEntity(pos);
     if (te instanceof CollectorTileEntity) {
       ((CollectorTileEntity)te).collect();
     }

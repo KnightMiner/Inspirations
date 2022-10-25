@@ -3,23 +3,24 @@ package knightminer.inspirations.tweaks.datagen;
 import knightminer.inspirations.common.data.ConfigEnabledCondition;
 import knightminer.inspirations.common.datagen.IInspirationsRecipeBuilder;
 import knightminer.inspirations.utility.InspirationsUtility;
-import net.minecraft.advancements.criterion.EnchantmentPredicate;
-import net.minecraft.advancements.criterion.ItemPredicate;
-import net.minecraft.advancements.criterion.MinMaxBounds;
-import net.minecraft.advancements.criterion.NBTPredicate;
+import net.minecraft.advancements.critereon.EnchantmentPredicate;
+import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.advancements.critereon.MinMaxBounds;
+import net.minecraft.advancements.critereon.NbtPredicate;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.IFinishedRecipe;
-import net.minecraft.data.RecipeProvider;
-import net.minecraft.data.ShapedRecipeBuilder;
-import net.minecraft.item.Items;
+import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeProvider;
+import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.world.item.Items;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
 
+import java.util.Collections;
 import java.util.function.Consumer;
 
 public class TweaksRecipeProvider extends RecipeProvider implements IConditionBuilder, IInspirationsRecipeBuilder {
-  private Consumer<IFinishedRecipe> consumer;
+  private Consumer<FinishedRecipe> consumer;
 
   public TweaksRecipeProvider(DataGenerator gen) {
     super(gen);
@@ -36,12 +37,12 @@ public class TweaksRecipeProvider extends RecipeProvider implements IConditionBu
   }
 
   @Override
-  public Consumer<IFinishedRecipe> getConsumer() {
+  public Consumer<FinishedRecipe> getConsumer() {
     return consumer;
   }
 
   @Override
-  protected void buildShapelessRecipes(Consumer<IFinishedRecipe> consumer) {
+  protected void buildCraftingRecipes(Consumer<FinishedRecipe> consumer) {
     this.consumer = consumer;
 
     // Since these are mass-production recipes, show them after the user makes
@@ -52,13 +53,13 @@ public class TweaksRecipeProvider extends RecipeProvider implements IConditionBu
                        // builder is missing count, so use ItemPredicate constructor
                        .unlockedBy("many_collectors", inventoryTrigger(new ItemPredicate(
                            null, // tag
-                           InspirationsUtility.collector.asItem(),
-                           MinMaxBounds.IntBound.atLeast(5),
-                           MinMaxBounds.IntBound.ANY,
+                           Collections.singleton(InspirationsUtility.collector.asItem()),
+                           MinMaxBounds.Ints.atLeast(5),
+                           MinMaxBounds.Ints.ANY,
                            EnchantmentPredicate.NONE,
                            EnchantmentPredicate.NONE,
                            null, // potion
-                           NBTPredicate.ANY
+                           NbtPredicate.ANY
                        )))
                        .define('T', Tags.Items.RODS_WOODEN)
                        .define('S', Tags.Items.STRING)
@@ -76,13 +77,13 @@ public class TweaksRecipeProvider extends RecipeProvider implements IConditionBu
                        // builder is missing count, so use ItemPredicate constructor
                        .unlockedBy("many_collectors", inventoryTrigger(new ItemPredicate(
                            null, // tag
-                           Items.DISPENSER,
-                           MinMaxBounds.IntBound.atLeast(5),
-                           MinMaxBounds.IntBound.ANY,
+                           Collections.singleton(Items.DISPENSER),
+                           MinMaxBounds.Ints.atLeast(5),
+                           MinMaxBounds.Ints.ANY,
                            EnchantmentPredicate.NONE,
                            EnchantmentPredicate.NONE,
                            null, // potion
-                           NBTPredicate.ANY
+                           NbtPredicate.ANY
                        )))
                        .define('T', Tags.Items.RODS_WOODEN)
                        .define('S', Tags.Items.STRING)

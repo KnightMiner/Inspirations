@@ -1,9 +1,9 @@
 package knightminer.inspirations.recipes.data;
 
 import knightminer.inspirations.shared.InspirationsShared;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.item.DyeColor;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.item.DyeColor;
 import slimeknights.mantle.registration.object.EnumObject;
 
 /**

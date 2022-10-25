@@ -2,9 +2,9 @@ package knightminer.inspirations.library.recipe.cauldron.util;
 
 import com.google.gson.JsonObject;
 import io.netty.handler.codec.DecoderException;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.util.Mth;
 
 import javax.annotation.Nullable;
 import java.util.Locale;
@@ -29,7 +29,7 @@ public abstract class LevelUpdate implements IntUnaryOperator {
   /** Level update that returns the input */
   public static final LevelUpdate IDENTITY = new LevelUpdate() {
     @Override
-    public void write(PacketBuffer buffer) {
+    public void write(FriendlyByteBuf buffer) {
       buffer.writeEnum(Type.IDENTITY);
     }
 
@@ -92,10 +92,10 @@ public abstract class LevelUpdate implements IntUnaryOperator {
    */
   public static LevelUpdate read(JsonObject json) {
     if (json.has(KEY_ADD)) {
-      return new Add(JSONUtils.getAsInt(json, KEY_ADD));
+      return new Add(GsonHelper.getAsInt(json, KEY_ADD));
     }
     if (json.has(KEY_SET)) {
-      return new Set(JSONUtils.getAsInt(json, KEY_SET));
+      return new Set(GsonHelper.getAsInt(json, KEY_SET));
     }
 
     // neither? means identity
@@ -107,7 +107,7 @@ public abstract class LevelUpdate implements IntUnaryOperator {
    * @param buffer  Buffer instance
    * @return  Level predicate
    */
-  public static LevelUpdate read(PacketBuffer buffer) {
+  public static LevelUpdate read(FriendlyByteBuf buffer) {
     Type type = buffer.readEnum(Type.class);
     switch (type) {
       case IDENTITY: return IDENTITY;
@@ -121,7 +121,7 @@ public abstract class LevelUpdate implements IntUnaryOperator {
    * Writes this to the packet buffer
    * @param buffer  Buffer instance
    */
-  public abstract void write(PacketBuffer buffer);
+  public abstract void write(FriendlyByteBuf buffer);
 
   /**
    * Writes this to the packet buffer
@@ -153,7 +153,7 @@ public abstract class LevelUpdate implements IntUnaryOperator {
     }
 
     @Override
-    public void write(PacketBuffer buffer) {
+    public void write(FriendlyByteBuf buffer) {
       buffer.writeEnum(Type.SET);
       buffer.writeVarInt(amount);
     }
@@ -180,11 +180,11 @@ public abstract class LevelUpdate implements IntUnaryOperator {
 
     @Override
     public int applyAsInt(int original) {
-      return MathHelper.clamp(original + amount, 0, MAX);
+      return Mth.clamp(original + amount, 0, MAX);
     }
 
     @Override
-    public void write(PacketBuffer buffer) {
+    public void write(FriendlyByteBuf buffer) {
       buffer.writeEnum(Type.ADD);
       buffer.writeVarInt(amount);
     }

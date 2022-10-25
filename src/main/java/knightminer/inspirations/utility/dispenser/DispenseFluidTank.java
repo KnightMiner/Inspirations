@@ -1,17 +1,17 @@
 package knightminer.inspirations.utility.dispenser;
 
 import knightminer.inspirations.library.InspirationsTags;
-import net.minecraft.block.DispenserBlock;
-import net.minecraft.dispenser.DefaultDispenseItemBehavior;
-import net.minecraft.dispenser.IBlockSource;
-import net.minecraft.dispenser.IDispenseItemBehavior;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.DispenserTileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.BlockSource;
+import net.minecraft.core.Direction;
+import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
+import net.minecraft.core.dispenser.DispenseItemBehavior;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.DispenserBlock;
+import net.minecraft.world.level.block.entity.DispenserBlockEntity;
 import net.minecraftforge.fluids.FluidActionResult;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
@@ -20,21 +20,21 @@ import java.util.Optional;
 
 public class DispenseFluidTank extends DefaultDispenseItemBehavior {
   private static final DefaultDispenseItemBehavior DEFAULT = new DefaultDispenseItemBehavior();
-  private final IDispenseItemBehavior fallback;
+  private final DispenseItemBehavior fallback;
 
-  public DispenseFluidTank(IDispenseItemBehavior fallback) {
+  public DispenseFluidTank(DispenseItemBehavior fallback) {
     this.fallback = fallback;
   }
 
   @Override
-  protected ItemStack execute(IBlockSource source, ItemStack stack) {
-    if (!stack.getItem().is(InspirationsTags.Items.DISP_FLUID_TANKS)) {
+  protected ItemStack execute(BlockSource source, ItemStack stack) {
+    if (!stack.is(InspirationsTags.Items.DISP_FLUID_TANKS)) {
       return fallback.dispense(source, stack);
     }
 
     Direction side = source.getBlockState().getValue(DispenserBlock.FACING);
     BlockPos pos = source.getPos().relative(side);
-    World world = source.getLevel();
+    Level world = source.getLevel();
     return FluidUtil.getFluidHandler(world, pos, side.getOpposite()).map((handler) -> {
       FluidActionResult result;
       Optional<FluidStack> optFluid = FluidUtil.getFluidContained(stack);
@@ -54,13 +54,13 @@ public class DispenseFluidTank extends DefaultDispenseItemBehavior {
           return resultFluid.getFluid().getAttributes().getFillSound(resultFluid);
         });
 
-        world.playSound(null, pos, sound, SoundCategory.BLOCKS, 1.0F, 1.0F);
+        world.playSound(null, pos, sound, SoundSource.BLOCKS, 1.0F, 1.0F);
 
         if (stack.getCount() == 1) {
           return resultStack;
         }
 
-        if (!resultStack.isEmpty() && ((DispenserTileEntity)source.getEntity()).addItem(resultStack) < 0) {
+        if (!resultStack.isEmpty() && ((DispenserBlockEntity)source.getEntity()).addItem(resultStack) < 0) {
           DEFAULT.dispense(source, resultStack);
         }
 

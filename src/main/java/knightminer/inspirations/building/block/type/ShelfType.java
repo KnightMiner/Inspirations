@@ -1,13 +1,13 @@
 package knightminer.inspirations.building.block.type;
 
-import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.StringRepresentable;
 
 import java.util.Locale;
 
 /**
  * Variants for each of the mulch types
  */
-public enum ShelfType implements IStringSerializable {
+public enum ShelfType implements StringRepresentable {
   NORMAL,
   ANCIENT,
   RAINBOW,

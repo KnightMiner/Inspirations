@@ -1,7 +1,6 @@
 package knightminer.inspirations.library.recipe.cauldron.recipe;
 
 import com.google.gson.JsonObject;
-import knightminer.inspirations.library.recipe.RecipeSerializer;
 import knightminer.inspirations.library.recipe.RecipeSerializers;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.CauldronIngredients;
@@ -10,14 +9,15 @@ import knightminer.inspirations.library.recipe.cauldron.ingredient.ICauldronIngr
 import knightminer.inspirations.library.recipe.cauldron.inventory.ICauldronState;
 import knightminer.inspirations.library.recipe.cauldron.util.LevelPredicate;
 import knightminer.inspirations.library.recipe.cauldron.util.TemperaturePredicate;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.world.World;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.level.Level;
+import slimeknights.mantle.recipe.helper.AbstractRecipeSerializer;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -53,7 +53,7 @@ public class CauldronTransform extends AbstractCauldronRecipe implements ICauldr
   }
 
   @Override
-  public boolean matches(ICauldronState inv, World worldIn) {
+  public boolean matches(ICauldronState inv, Level worldIn) {
     return inv.getLevel() != 0 && matches(inv);
   }
 
@@ -112,42 +112,42 @@ public class CauldronTransform extends AbstractCauldronRecipe implements ICauldr
   }
 
   @Override
-  public IRecipeSerializer<?> getSerializer() {
+  public RecipeSerializer<?> getSerializer() {
     return RecipeSerializers.CAULDRON_TRANSFORM;
   }
 
   /**
    * Serializer for standard cauldron transforms
    */
-  public static class Serializer extends RecipeSerializer<CauldronTransform> {
+  public static class Serializer extends AbstractRecipeSerializer<CauldronTransform> {
     @Override
     public CauldronTransform fromJson(ResourceLocation id, JsonObject json) {
-      String group = JSONUtils.getAsString(json, "group", "");
+      String group = GsonHelper.getAsString(json, "group", "");
       // input
-      ICauldronIngredient ingredient = CauldronIngredients.read(JSONUtils.getAsJsonObject(json, "input"));
+      ICauldronIngredient ingredient = CauldronIngredients.read(GsonHelper.getAsJsonObject(json, "input"));
       TemperaturePredicate temperature = getBoiling(json, "temperature");
       LevelPredicate level;
       if (json.has("level")) {
-        level = LevelPredicate.read(JSONUtils.getAsJsonObject(json, "level"));
+        level = LevelPredicate.read(GsonHelper.getAsJsonObject(json, "level"));
       } else {
         level = LevelPredicate.range(1, ICauldronRecipe.MAX);
       }
 
       // output
-      ICauldronContents output = CauldronContentTypes.read(JSONUtils.getAsJsonObject(json, "output"));
-      int time = JSONUtils.getAsInt(json, "time");
+      ICauldronContents output = CauldronContentTypes.read(GsonHelper.getAsJsonObject(json, "output"));
+      int time = GsonHelper.getAsInt(json, "time");
 
       // sound
       SoundEvent sound = SoundEvents.BREWING_STAND_BREW;
       if (json.has("sound")) {
-        sound = CauldronRecipe.Serializer.getSound(new ResourceLocation(JSONUtils.getAsString(json, "sound")), sound);
+        sound = CauldronRecipe.Serializer.getSound(new ResourceLocation(GsonHelper.getAsString(json, "sound")), sound);
       }
       return new CauldronTransform(id, group, ingredient, level, temperature, output, time, sound);
     }
 
     @Nullable
     @Override
-    public CauldronTransform fromNetwork(ResourceLocation id, PacketBuffer buffer) {
+    public CauldronTransform fromNetwork(ResourceLocation id, FriendlyByteBuf buffer) {
       String group = buffer.readUtf(Short.MAX_VALUE);
       ICauldronIngredient ingredient = CauldronIngredients.read(buffer);
       TemperaturePredicate temperature = buffer.readEnum(TemperaturePredicate.class);
@@ -159,7 +159,7 @@ public class CauldronTransform extends AbstractCauldronRecipe implements ICauldr
     }
 
     @Override
-    public void toNetwork(PacketBuffer buffer, CauldronTransform recipe) {
+    public void toNetwork(FriendlyByteBuf buffer, CauldronTransform recipe) {
       buffer.writeUtf(recipe.group);
       CauldronIngredients.write(recipe.ingredient, buffer);
       buffer.writeEnum(recipe.temperature);

@@ -1,14 +1,14 @@
 package knightminer.inspirations.building.client;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import knightminer.inspirations.building.tileentity.ShelfTileEntity;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.client.model.ShelfModel;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.item.ItemStack;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import slimeknights.mantle.client.model.inventory.ModelItem;
 import slimeknights.mantle.client.model.util.ModelHelper;
@@ -16,16 +16,14 @@ import slimeknights.mantle.client.render.RenderingHelper;
 
 import java.util.List;
 
-public class ShelfTileEntityRenderer extends TileEntityRenderer<ShelfTileEntity> {
-	public ShelfTileEntityRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
-		super(rendererDispatcherIn);
-	}
+public class ShelfTileEntityRenderer implements BlockEntityRenderer<ShelfTileEntity> {
+	public ShelfTileEntityRenderer(BlockEntityRendererProvider.Context context) {}
 
 	@Override
-	public void render(ShelfTileEntity shelf, float partialTicks, MatrixStack matrices, IRenderTypeBuffer buffer, int light, int combinedOverlay) {
+	public void render(ShelfTileEntity shelf, float partialTicks, PoseStack matrices, MultiBufferSource buffer, int light, int combinedOverlay) {
 		// first, find the model for item display locations
 		BlockState state = shelf.getBlockState();
-		ShelfModel.BakedModel model = ModelHelper.getBakedModel(state, ShelfModel.BakedModel.class);
+		ShelfModel.Baked model = ModelHelper.getBakedModel(state, ShelfModel.Baked.class);
 		IItemHandlerModifiable inventory = shelf.getInventory();
 		if (model != null) {
 			// if the block is rotatable, rotate item display

@@ -3,21 +3,21 @@ package knightminer.inspirations.utility;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.Config;
 import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.CarpetBlock;
-import net.minecraft.block.HopperBlock;
-import net.minecraft.block.SoundType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.HopperBlock;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.WoolCarpetBlock;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -29,19 +29,19 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 public class UtilityEvents {
   @SubscribeEvent
   public static void placeCarpetOnPressurePlate(RightClickBlock event) {
-    if (!Config.enableCarpetedPressurePlate.get()) {
+    if (!Config.enableCarpetedPressurePlate.getAsBoolean()) {
       return;
     }
 
     // must be using carpet
     ItemStack stack = event.getItemStack();
     Block carpetBlock = Block.byItem(stack.getItem());
-    if (!(carpetBlock instanceof CarpetBlock)) {
+    if (!(carpetBlock instanceof WoolCarpetBlock)) {
       return;
     }
 
     // must be clicking a stone pressure plate or the block below one
-    World world = event.getWorld();
+    Level world = event.getWorld();
     BlockPos pos = event.getPos();
     BlockState current = world.getBlockState(pos);
     if (current.getBlock() != Blocks.STONE_PRESSURE_PLATE) {
@@ -53,14 +53,14 @@ public class UtilityEvents {
     }
 
     // determine the state to place
-    DyeColor color = ((CarpetBlock)carpetBlock).getColor();
+    DyeColor color = ((WoolCarpetBlock)carpetBlock).getColor();
     BlockState state = InspirationsUtility.carpetedPressurePlates.get(color).defaultBlockState();
     state = state.updateShape(Direction.DOWN, world.getBlockState(pos.below()), world, pos, pos.below());
 
     // play sound
-    PlayerEntity player = event.getPlayer();
+    Player player = event.getPlayer();
     SoundType sound = state.getBlock().getSoundType(state, world, pos, player);
-    world.playSound(player, pos, sound.getPlaceSound(), SoundCategory.BLOCKS, (sound.getVolume() + 1.0F) / 2.0F, sound.getPitch() * 0.8F);
+    world.playSound(player, pos, sound.getPlaceSound(), SoundSource.BLOCKS, (sound.getVolume() + 1.0F) / 2.0F, sound.getPitch() * 0.8F);
 
     // place the block
     if (!world.isClientSide) {
@@ -68,8 +68,8 @@ public class UtilityEvents {
       world.setBlockAndUpdate(pos, state);
 
       // add statistic
-      if (player instanceof ServerPlayerEntity) {
-        CriteriaTriggers.PLACED_BLOCK.trigger((ServerPlayerEntity)player, pos, stack);
+      if (player instanceof ServerPlayer) {
+        CriteriaTriggers.PLACED_BLOCK.trigger((ServerPlayer)player, pos, stack);
       }
 
       // take one carpet
@@ -78,7 +78,7 @@ public class UtilityEvents {
       }
     }
     event.setCanceled(true);
-    event.setCancellationResult(ActionResultType.SUCCESS);
+    event.setCancellationResult(InteractionResult.SUCCESS);
   }
 
   /**
@@ -86,10 +86,10 @@ public class UtilityEvents {
    */
   @SubscribeEvent
   static void clickHopperWithPipe(RightClickBlock event) {
-    if (!Config.enablePipe.get() || event.getItemStack().getItem() != InspirationsUtility.pipe.asItem()) {
+    if (!Config.enablePipe.getAsBoolean() || event.getItemStack().getItem() != InspirationsUtility.pipe.asItem()) {
       return;
     }
-    World world = event.getWorld();
+    Level world = event.getWorld();
     if (world.isClientSide || !(world.getBlockState(event.getPos()).getBlock() instanceof HopperBlock)) {
       return;
     }

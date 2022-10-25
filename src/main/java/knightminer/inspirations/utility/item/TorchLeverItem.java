@@ -2,28 +2,24 @@ package knightminer.inspirations.utility.item;
 
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.IHidable;
-import knightminer.inspirations.utility.InspirationsUtility;
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.WallOrFloorItem;
-import net.minecraft.util.NonNullList;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.StandingAndWallBlockItem;
+import net.minecraft.world.level.block.Block;
 
-import net.minecraft.item.Item.Properties;
-
-public class TorchLeverItem extends WallOrFloorItem implements IHidable {
+public class TorchLeverItem extends StandingAndWallBlockItem implements IHidable {
   public TorchLeverItem(Block floorBlock, Block wallBlock, Properties properties) {
     super(floorBlock, wallBlock, properties);
   }
 
   @Override
   public boolean isEnabled() {
-    return Config.enableTorchLever.get();
+    return Config.enableTorchLever.getAsBoolean();
   }
 
   @Override
-  public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items) {
+  public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
     if (shouldAddtoItemGroup(group)) {
       super.fillItemCategory(group, items);
     }

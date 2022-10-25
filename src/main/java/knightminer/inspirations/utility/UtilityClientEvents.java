@@ -4,7 +4,7 @@ import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.ClientEvents;
 import knightminer.inspirations.shared.client.BackgroundContainerScreen;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;

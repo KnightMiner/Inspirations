@@ -3,14 +3,14 @@ package knightminer.inspirations.common.network;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronTransform;
 import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkEvent.Context;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.network.NetworkEvent.Context;
 import slimeknights.mantle.network.packet.IThreadsafePacket;
-import slimeknights.mantle.recipe.RecipeHelper;
-import slimeknights.mantle.util.TileEntityHelper;
+import slimeknights.mantle.recipe.helper.RecipeHelper;
+import slimeknights.mantle.util.BlockEntityHelper;
 
 import javax.annotation.Nullable;
 
@@ -27,7 +27,7 @@ public class CauldronTransformUpatePacket implements IThreadsafePacket {
     this.recipe = recipe == null ? null : recipe.getId();
   }
 
-  public CauldronTransformUpatePacket(PacketBuffer buffer) {
+  public CauldronTransformUpatePacket(FriendlyByteBuf buffer) {
     this.pos = buffer.readBlockPos();
     if (buffer.readBoolean()) {
       this.recipe = buffer.readResourceLocation();
@@ -37,7 +37,7 @@ public class CauldronTransformUpatePacket implements IThreadsafePacket {
   }
 
   @Override
-  public void encode(PacketBuffer buffer) {
+  public void encode(FriendlyByteBuf buffer) {
     buffer.writeBlockPos(pos);
     if (recipe == null) {
       buffer.writeBoolean(false);
@@ -55,10 +55,10 @@ public class CauldronTransformUpatePacket implements IThreadsafePacket {
   /** Once removed client class */
   private static class HandleClient {
     private static void handle(CauldronTransformUpatePacket packet) {
-      World world = Minecraft.getInstance().level;
+      Level world = Minecraft.getInstance().level;
       if (world != null) {
         ICauldronTransform recipe = packet.recipe == null ? null : RecipeHelper.getRecipe(world.getRecipeManager(), packet.recipe, ICauldronTransform.class).orElse(null);
-        TileEntityHelper.getTile(CauldronTileEntity.class, world, packet.pos, true).ifPresent(te -> {
+        BlockEntityHelper.get(CauldronTileEntity.class, world, packet.pos, true).ifPresent(te -> {
           te.setTransformRecipe(recipe);
         });
       }

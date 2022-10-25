@@ -4,35 +4,41 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.recipe.cauldron.util.CauldronTemperature;
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.CauldronBlock;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.particles.IParticleData;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.cauldron.CauldronInteraction;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.biome.Biome.Precipitation;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.LayeredCauldronBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import slimeknights.mantle.util.TileEntityHelper;
+import slimeknights.mantle.util.BlockEntityHelper;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Random;
 
 /**
  * Cauldron block exteneded to have a tile entity
  */
 @SuppressWarnings("WeakerAccess")
-public class EnhancedCauldronBlock extends CauldronBlock {
+public class EnhancedCauldronBlock extends LayeredCauldronBlock implements EntityBlock {
   public EnhancedCauldronBlock(Block.Properties props) {
-    super(props);
+    super(props, LayeredCauldronBlock.RAIN, CauldronInteraction.WATER);
   }
 
   /**
@@ -44,24 +50,23 @@ public class EnhancedCauldronBlock extends CauldronBlock {
     return state.getValue(LEVEL);
   }
 
-  @Override
-  public void setWaterLevel(World world, BlockPos pos, BlockState state, int level) {
+  // not an override anymore
+  public void setWaterLevel(Level world, BlockPos pos, BlockState state, int level) {
     if (level != getLevel(state)) {
-      super.setWaterLevel(world, pos, state, level);
+      world.setBlockAndUpdate(pos, state.setValue(LEVEL, level));
     }
   }
 
   @Override
-  public void handleRain(World world, BlockPos pos) {
-    TileEntity te = world.getBlockEntity(pos);
+  public void handlePrecipitation(BlockState state, Level world, BlockPos pos, Precipitation precipitation) {
+    BlockEntity te = world.getBlockEntity(pos);
     // do not fill unless the current contents are water
     if (te instanceof CauldronTileEntity && !((CauldronTileEntity)te).getContents().isSimple()) {
       return;
     }
 
     // allow disabling the random 1/20 chance
-    if ((Config.fasterCauldronRain.get() || world.random.nextInt(20) == 0) && world.getBiome(pos).getTemperature(pos) >= 0.15F) {
-      BlockState state = world.getBlockState(pos);
+    if ((Config.fasterCauldronRain.getAsBoolean() || world.random.nextInt(20) == 0) && world.getBiome(pos).value().getTemperature(pos) >= 0.15F) {
       int level = getLevel(state);
       if (level < 3) {
         setWaterLevel(world, pos, state, level + 1);
@@ -69,29 +74,31 @@ public class EnhancedCauldronBlock extends CauldronBlock {
     }
   }
 
+  @Nullable
+  @Override
+  public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState pState, BlockEntityType<T> matchType) {
+    return BlockEntityHelper.castTicker(matchType, InspirationsRecipes.tileCauldron, level.isClientSide ? CauldronTileEntity.CLIENT_TICKER : CauldronTileEntity.SERVER_TICKER);
+  }
+
   /* TE behavior */
 
   @Override
-  public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult ray) {
+  public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult ray) {
     if (Config.cauldronRecipes.getAsBoolean()) {
       // all moved to the cauldron registry
-      return ActionResultType.SUCCESS;
+      return InteractionResult.SUCCESS;
     }
     return super.use(state, world, pos, player, hand, ray);
   }
 
+  @Nullable
   @Override
-  public boolean hasTileEntity(BlockState state) {
-    return true;
+  public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+    return new CauldronTileEntity(pos, state, this);
   }
 
   @Override
-  public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-    return new CauldronTileEntity(this);
-  }
-
-  @Override
-  public void entityInside(BlockState state, World world, BlockPos pos, Entity entity) {
+  public void entityInside(BlockState state, Level world, BlockPos pos, Entity entity) {
     if (world.isClientSide) {
       return;
     }
@@ -100,7 +107,7 @@ public class EnhancedCauldronBlock extends CauldronBlock {
     int level = getLevel(state);
     if (entity.getBoundingBox().minY <= (pos.getY() + (5.5F + (3 * Math.max(level, 1))) / 16.0F)) {
       // if so, have the TE handle it
-      TileEntityHelper.getTile(CauldronTileEntity.class, world, pos).ifPresent(te -> {
+      BlockEntityHelper.get(CauldronTileEntity.class, world, pos).ifPresent(te -> {
         int newLevel = te.onEntityCollide(entity, level, state);
         // if the level changed, update it
         if (level != newLevel) {
@@ -110,12 +117,13 @@ public class EnhancedCauldronBlock extends CauldronBlock {
     }
   }
 
+  @Nonnull
   @SuppressWarnings("deprecation")
   @Override
   @Deprecated
-  public BlockState updateShape(BlockState state, Direction facing, BlockState facingState, IWorld world, BlockPos currentPos, BlockPos facingPos) {
+  public BlockState updateShape(BlockState state, Direction facing, BlockState facingState, LevelAccessor world, BlockPos currentPos, BlockPos facingPos) {
     // need a method called on both sides, neighborChanged is server only
-    TileEntityHelper.getTile(CauldronTileEntity.class, world, currentPos).ifPresent(te -> te.neighborChanged(facingPos));
+    BlockEntityHelper.get(CauldronTileEntity.class, world, currentPos).ifPresent(te -> te.neighborChanged(facingPos));
     return state;
   }
 
@@ -125,15 +133,14 @@ public class EnhancedCauldronBlock extends CauldronBlock {
   @Deprecated
   @Override
   @OnlyIn(Dist.CLIENT)
-  public void animateTick(BlockState state, World world, BlockPos pos, Random rand) {
+  public void animateTick(BlockState state, Level world, BlockPos pos, Random rand) {
     if (getLevel(state) == 0) {
       return;
     }
 
     // transform particles
-    TileEntity te = world.getBlockEntity(pos);
-    if (te instanceof CauldronTileEntity) {
-      CauldronTileEntity cauldron = (CauldronTileEntity)te;
+    BlockEntity te = world.getBlockEntity(pos);
+    if (te instanceof CauldronTileEntity cauldron) {
       int level = cauldron.getFluidLevel();
 
       // boiling particles if boiling
@@ -155,7 +162,7 @@ public class EnhancedCauldronBlock extends CauldronBlock {
    * @param level  Fluid level
    * @param rand   Random instance
    */
-  private static void addParticles(IParticleData type, World world, BlockPos pos, int count, int level, Random rand) {
+  private static void addParticles(ParticleOptions type, Level world, BlockPos pos, int count, int level, Random rand) {
     for (int i = 0; i < count; i++) {
       double x = pos.getX() + 0.1875D + (rand.nextFloat() * 0.625D);
       double y = pos.getY() + 0.1875D + (level * 0.0625);

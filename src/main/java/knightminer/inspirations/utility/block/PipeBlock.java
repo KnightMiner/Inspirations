@@ -4,51 +4,54 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.IHidable;
 import knightminer.inspirations.utility.InspirationsUtility;
 import knightminer.inspirations.utility.tileentity.PipeTileEntity;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.DropperBlock;
-import net.minecraft.block.HopperBlock;
-import net.minecraft.block.IWaterLoggable;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.material.MaterialColor;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.InventoryHelper;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.DirectionProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.Rotation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Container;
+import net.minecraft.world.Containers;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.DropperBlock;
+import net.minecraft.world.level.block.HopperBlock;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.SimpleWaterloggedBlock;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.network.NetworkHooks;
 import slimeknights.mantle.block.InventoryBlock;
+import slimeknights.mantle.util.BlockEntityHelper;
 
 import javax.annotation.Nullable;
 
 @SuppressWarnings("WeakerAccess")
-public class PipeBlock extends InventoryBlock implements IHidable, IWaterLoggable {
+public class PipeBlock extends InventoryBlock implements IHidable, SimpleWaterloggedBlock {
   // Facing is the direction we output to.
   public static final DirectionProperty FACING = BlockStateProperties.FACING;
   // These six values specify if another pipe/hopper is in this direction for us
@@ -91,11 +94,11 @@ public class PipeBlock extends InventoryBlock implements IHidable, IWaterLoggabl
 
   @Override
   public boolean isEnabled() {
-    return Config.enablePipe.get();
+    return Config.enablePipe.getAsBoolean();
   }
 
   @Override
-  public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> stacks) {
+  public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> stacks) {
     if (shouldAddtoItemGroup(group)) {
       super.fillItemCategory(group, stacks);
     }
@@ -104,7 +107,7 @@ public class PipeBlock extends InventoryBlock implements IHidable, IWaterLoggabl
   /* Block state settings */
 
   @Override
-  protected void createBlockStateDefinition(StateContainer.Builder<Block,BlockState> builder) {
+  protected void createBlockStateDefinition(StateDefinition.Builder<Block,BlockState> builder) {
     builder.add(WATERLOGGED, FACING, NORTH, EAST, SOUTH, WEST, UP, DOWN, HOPPER);
   }
 
@@ -125,7 +128,7 @@ public class PipeBlock extends InventoryBlock implements IHidable, IWaterLoggabl
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public BlockState updateShape(BlockState state, Direction neighFacing, BlockState neighState, IWorld world, BlockPos pos, BlockPos neighPos) {
+  public BlockState updateShape(BlockState state, Direction neighFacing, BlockState neighState, LevelAccessor world, BlockPos pos, BlockPos neighPos) {
     Direction outFacing = state.getValue(FACING);
 
     // We only need to check the one side that updated.
@@ -144,8 +147,8 @@ public class PipeBlock extends InventoryBlock implements IHidable, IWaterLoggabl
 
   @Nullable
   @Override
-  public BlockState getStateForPlacement(BlockItemUseContext context) {
-    World world = context.getLevel();
+  public BlockState getStateForPlacement(BlockPlaceContext context) {
+    Level world = context.getLevel();
     BlockPos pos = context.getClickedPos();
 
     Direction facing = context.getClickedFace().getOpposite();
@@ -178,22 +181,22 @@ public class PipeBlock extends InventoryBlock implements IHidable, IWaterLoggabl
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) {
+  public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult trace) {
     // return false if holding a pipe to make easier to place
     Item item = player.getItemInHand(hand).getItem();
     if (item == InspirationsUtility.pipe.asItem() || Block.byItem(item) instanceof HopperBlock) {
-      return ActionResultType.PASS;
+      return InteractionResult.PASS;
     }
     return super.use(state, world, pos, player, hand, trace);
   }
 
   @Override
-  public void onRemove(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
+  public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
     // If destroyed, drop contents.
     if (state.getBlock() != newState.getBlock()) {
-      TileEntity te = world.getBlockEntity(pos);
-      if (te instanceof IInventory) {
-        InventoryHelper.dropContents(world, pos, (IInventory)te);
+      BlockEntity te = world.getBlockEntity(pos);
+      if (te instanceof Container) {
+        Containers.dropContents(world, pos, (Container)te);
       }
     }
     super.onRemove(state, world, pos, newState, isMoving);
@@ -201,7 +204,7 @@ public class PipeBlock extends InventoryBlock implements IHidable, IWaterLoggabl
 
   /* Model and shape */
 
-  private static boolean canConnectTo(IWorld world, BlockPos pos, Direction facing, Direction side) {
+  private static boolean canConnectTo(LevelAccessor world, BlockPos pos, Direction facing, Direction side) {
     // ignore side pipe is facing
     if (facing == side) return false;
 
@@ -216,28 +219,36 @@ public class PipeBlock extends InventoryBlock implements IHidable, IWaterLoggabl
 
 
   /* Tile Entity */
+
+  @Nullable
   @Override
-  public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-    return new PipeTileEntity();
+  public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+    return new PipeTileEntity(pos, state);
+  }
+
+  @Nullable
+  @Override
+  public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> matchType) {
+    return BlockEntityHelper.serverTicker(level, matchType, InspirationsUtility.tilePipe, PipeTileEntity.SERVER_TICKER);
   }
 
   @Override
-  protected boolean openGui(PlayerEntity player, World world, BlockPos pos) {
-    if (!(player instanceof ServerPlayerEntity)) {
+  protected boolean openGui(Player player, Level world, BlockPos pos) {
+    if (!(player instanceof ServerPlayer)) {
       throw new AssertionError("Needs to be server!");
     }
-    TileEntity te = world.getBlockEntity(pos);
+    BlockEntity te = world.getBlockEntity(pos);
     if (te instanceof PipeTileEntity) {
-      NetworkHooks.openGui((ServerPlayerEntity)player, (INamedContainerProvider)te, pos);
+      NetworkHooks.openGui((ServerPlayer)player, (MenuProvider)te, pos);
       return true;
     }
     return false;
   }
 
   @Override
-  public void neighborChanged(BlockState state, World world, BlockPos pos, Block blockIn, BlockPos neighbor, boolean isMoving) {
+  public void neighborChanged(BlockState state, Level world, BlockPos pos, Block blockIn, BlockPos neighbor, boolean isMoving) {
     if (pos.relative(state.getValue(FACING)).equals(neighbor)) {
-      TileEntity te = world.getBlockEntity(pos);
+      BlockEntity te = world.getBlockEntity(pos);
       if (te instanceof PipeTileEntity) {
         ((PipeTileEntity) te).clearCachedInventories();
       }
@@ -248,21 +259,21 @@ public class PipeBlock extends InventoryBlock implements IHidable, IWaterLoggabl
   /* Bounds */
 
   // base bounds
-  private static final VoxelShape BOUNDS_CENTER = VoxelShapes.box(0.375, 0.25, 0.375, 0.625, 0.5, 0.625),
+  private static final VoxelShape BOUNDS_CENTER = Shapes.box(0.375, 0.25, 0.375, 0.625, 0.5, 0.625),
   // main bounds for side pipes
-  BOUNDS_DOWN = VoxelShapes.box(0.375, 0, 0.375, 0.625, 0.25, 0.625),
-      BOUNDS_UP = VoxelShapes.box(0.375, 0.5, 0.375, 0.625, 1, 0.625),
-      BOUNDS_NORTH = VoxelShapes.box(0.375, 0.25, 0, 0.625, 0.5, 0.375),
-      BOUNDS_SOUTH = VoxelShapes.box(0.375, 0.25, 0.625, 0.625, 0.5, 1),
-      BOUNDS_WEST = VoxelShapes.box(0, 0.25, 0.375, 0.375, 0.5, 0.625),
-      BOUNDS_EAST = VoxelShapes.box(0.625, 0.25, 0.375, 1, 0.5, 0.625),
+  BOUNDS_DOWN = Shapes.box(0.375, 0, 0.375, 0.625, 0.25, 0.625),
+      BOUNDS_UP = Shapes.box(0.375, 0.5, 0.375, 0.625, 1, 0.625),
+      BOUNDS_NORTH = Shapes.box(0.375, 0.25, 0, 0.625, 0.5, 0.375),
+      BOUNDS_SOUTH = Shapes.box(0.375, 0.25, 0.625, 0.625, 0.5, 1),
+      BOUNDS_WEST = Shapes.box(0, 0.25, 0.375, 0.375, 0.5, 0.625),
+      BOUNDS_EAST = Shapes.box(0.625, 0.25, 0.375, 1, 0.5, 0.625),
   // extra bounds for the raytrace to select the little connections
-  BOUNDS_DOWN_CONNECT = VoxelShapes.box(0.34375, 0, 0.34375, 0.65625, 0.0625, 0.65625),
-      BOUNDS_UP_CONNECT = VoxelShapes.box(0.34375, 0.9375, 0.34375, 0.65625, 1, 0.65625),
-      BOUNDS_NORTH_CONNECT = VoxelShapes.box(0.34375, 0.21875, 0, 0.65625, 0.53125, 0.0625),
-      BOUNDS_SOUTH_CONNECT = VoxelShapes.box(0.34375, 0.21875, 0.9375, 0.65625, 0.53125, 1),
-      BOUNDS_WEST_CONNECT = VoxelShapes.box(0, 0.21875, 0.34375, 0.0625, 0.53125, 0.65625),
-      BOUNDS_EAST_CONNECT = VoxelShapes.box(0.9375, 0.21875, 0.34375, 1, 0.53125, 0.65625);
+  BOUNDS_DOWN_CONNECT = Shapes.box(0.34375, 0, 0.34375, 0.65625, 0.0625, 0.65625),
+      BOUNDS_UP_CONNECT = Shapes.box(0.34375, 0.9375, 0.34375, 0.65625, 1, 0.65625),
+      BOUNDS_NORTH_CONNECT = Shapes.box(0.34375, 0.21875, 0, 0.65625, 0.53125, 0.0625),
+      BOUNDS_SOUTH_CONNECT = Shapes.box(0.34375, 0.21875, 0.9375, 0.65625, 0.53125, 1),
+      BOUNDS_WEST_CONNECT = Shapes.box(0, 0.21875, 0.34375, 0.0625, 0.53125, 0.65625),
+      BOUNDS_EAST_CONNECT = Shapes.box(0.9375, 0.21875, 0.34375, 1, 0.53125, 0.65625);
 
 
   // Compute a static lookup table for all the combinations.
@@ -282,11 +293,11 @@ public class PipeBlock extends InventoryBlock implements IHidable, IWaterLoggabl
       VoxelShape shape = BOUNDS_CENTER;
       for (int j = 0; j < 6; j++) {
         if ((i & (1 << j)) != 0) {
-          shape = VoxelShapes.or(shape, BOUNDS_CONN_SIDES[j], BOUNDS_SIDES[j]);
+          shape = Shapes.or(shape, BOUNDS_CONN_SIDES[j], BOUNDS_SIDES[j]);
         }
       }
       for (int j = 0; j < 6; j++) {
-        BOUNDS[j][i] = VoxelShapes.or(shape, BOUNDS_SIDES[j]);
+        BOUNDS[j][i] = Shapes.or(shape, BOUNDS_SIDES[j]);
       }
     }
   }
@@ -294,7 +305,7 @@ public class PipeBlock extends InventoryBlock implements IHidable, IWaterLoggabl
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
+  public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
     int bitmask = 0;
     for (int i = 0; i < 6; i++) {
       bitmask |= state.getValue(DIR_ENABLED[i]) ? (1 << i) : 0;

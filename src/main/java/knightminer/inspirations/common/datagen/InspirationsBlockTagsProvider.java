@@ -5,15 +5,15 @@ import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.library.InspirationsTags;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import knightminer.inspirations.utility.InspirationsUtility;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.data.BlockTagsProvider;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.data.tags.BlockTagsProvider;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.tags.BlockTags;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import slimeknights.mantle.registration.object.EnumObject;
 
-import net.minecraft.data.TagsProvider.Builder;
+import net.minecraft.data.tags.TagsProvider.TagAppender;
 
 public class InspirationsBlockTagsProvider extends BlockTagsProvider {
   public InspirationsBlockTagsProvider(DataGenerator gen, ExistingFileHelper existing) {
@@ -60,7 +60,7 @@ public class InspirationsBlockTagsProvider extends BlockTagsProvider {
     this.tag(BlockTags.BAMBOO_PLANTABLE_ON).addTag(InspirationsTags.Blocks.MULCH);
     this.tag(BlockTags.WOODEN_TRAPDOORS).addTag(InspirationsTags.Blocks.CARPETED_TRAPDOORS);
     this.tag(BlockTags.FLOWER_POTS).addTag(InspirationsTags.Blocks.FLOWER_POTS);
-    Builder<Block> carpets = this.tag(BlockTags.CARPETS);
+    TagAppender<Block> carpets = this.tag(BlockTags.CARPETS);
     InspirationsTweaks.fitCarpets.forEach(block -> carpets.add(block));
     this.tag(BlockTags.PIGLIN_REPELLENTS).add(InspirationsUtility.soulLeverWall, InspirationsUtility.soulLeverFloor);
     this.tag(BlockTags.WALL_POST_OVERRIDE).add(

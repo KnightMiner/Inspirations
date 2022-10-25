@@ -1,16 +1,17 @@
 package knightminer.inspirations.library.client;
 
 import knightminer.inspirations.Inspirations;
-import net.minecraft.block.Block;
-import net.minecraft.resources.IPackFinder;
-import net.minecraft.resources.ResourcePack;
-import net.minecraft.resources.ResourcePackFileNotFoundException;
-import net.minecraft.resources.ResourcePackInfo;
-import net.minecraft.resources.ResourcePackInfo.IFactory;
-import net.minecraft.resources.ResourcePackType;
-import net.minecraft.util.IItemProvider;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.AbstractPackResources;
+import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.ResourcePackFileNotFoundException;
+import net.minecraft.server.packs.repository.Pack;
+import net.minecraft.server.packs.repository.Pack.PackConstructor;
+import net.minecraft.server.packs.repository.RepositorySource;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.block.Block;
+import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +29,7 @@ import java.util.function.Predicate;
 /**
  * Resource pack that overrides resources based on config
  */
-public class ConfigurableResourcePack extends ResourcePack implements IPackFinder {
+public class ConfigurableResourcePack extends AbstractPackResources implements RepositorySource {
   /** Class within the mod jar to serve as a root for getting resources */
   private final Class<?> resourceLoader;
   /** Namespaced pack name, used to pass to resource pack loaders and for the translation key */
@@ -51,7 +52,7 @@ public class ConfigurableResourcePack extends ResourcePack implements IPackFinde
    * @param namespaces      List of namespaces that have resources replaced
    */
   public ConfigurableResourcePack(Class<?> resourceLoader, ResourceLocation packId, String displayName, Set<String> namespaces) {
-    this(resourceLoader, packId.toString(), String.format("/%s/%s/%s/", ResourcePackType.CLIENT_RESOURCES.getDirectory(), packId.getNamespace(), packId.getPath()), displayName, namespaces);
+    this(resourceLoader, packId.toString(), String.format("/%s/%s/%s/", PackType.CLIENT_RESOURCES.getDirectory(), packId.getNamespace(), packId.getPath()), displayName, namespaces);
   }
 
   /**
@@ -76,8 +77,8 @@ public class ConfigurableResourcePack extends ResourcePack implements IPackFinde
   }
 
   @Override
-  public Set<String> getNamespaces(ResourcePackType type) {
-    return type == ResourcePackType.CLIENT_RESOURCES ? namespaces : Collections.emptySet();
+  public Set<String> getNamespaces(PackType type) {
+    return type == PackType.CLIENT_RESOURCES ? namespaces : Collections.emptySet();
   }
 
   /**
@@ -113,7 +114,7 @@ public class ConfigurableResourcePack extends ResourcePack implements IPackFinde
   }
 
   @Override
-  public Collection<ResourceLocation> getResources(ResourcePackType type, String domain, String path, int maxDepth, Predicate<String> filter) {
+  public Collection<ResourceLocation> getResources(PackType type, String domain, String path, int maxDepth, Predicate<String> filter) {
     // this method appears to only be called for fonts and GUIs, so just return an empty list as neither is used here
     return Collections.emptyList();
   }
@@ -122,11 +123,11 @@ public class ConfigurableResourcePack extends ResourcePack implements IPackFinde
   public void close() {}
 
   @Override
-  public void loadPacks(Consumer<ResourcePackInfo> consumer, IFactory factory) {
+  public void loadPacks(Consumer<Pack> consumer, PackConstructor factory) {
     // add a new always enabled pack. Config is how you disable the replacements
-    consumer.accept(ResourcePackInfo.create(
-        packId, true, () -> this, factory, ResourcePackInfo.Priority.TOP,
-        name -> new TranslationTextComponent("pack.nameAndSource", name, Inspirations.modID)));
+    consumer.accept(Pack.create(
+        packId, true, () -> this, factory, Pack.Position.TOP,
+        name -> new TranslatableComponent("pack.nameAndSource", name, Inspirations.modID)));
   }
 
   /* Replacement additions */
@@ -151,7 +152,7 @@ public class ConfigurableResourcePack extends ResourcePack implements IPackFinde
    * @return  Full resource path
    */
   private static String makePath(ResourceLocation id, String folder, String extension) {
-    return String.format("%s/%s/%s/%s.%s", ResourcePackType.CLIENT_RESOURCES.getDirectory(), id.getNamespace(), folder, id.getPath(), extension);
+    return String.format("%s/%s/%s/%s.%s", PackType.CLIENT_RESOURCES.getDirectory(), id.getNamespace(), folder, id.getPath(), extension);
   }
 
   /**
@@ -165,13 +166,33 @@ public class ConfigurableResourcePack extends ResourcePack implements IPackFinde
   }
 
   /**
+   * Adds a replacement for a blockstate JSON
+   * @param condition  Condition for replacement
+   * @param block      Block to replace the model
+   * @param resource   Name of blockstate replacement
+   */
+  public void addBlockstateReplacement(BooleanValue condition, Block block, String resource) {
+    addBlockstateReplacement(condition::get, block, resource);
+  }
+
+  /**
    * Adds a replacement for a item model replacement
    * @param condition  Condition for replacement
    * @param item       Item to replace the model
    * @param resource   New name supplier
    */
-  public void addItemModelReplacement(BooleanSupplier condition, IItemProvider item, String resource) {
+  public void addItemModelReplacement(BooleanSupplier condition, ItemLike item, String resource) {
     addReplacement(condition, makePath(Objects.requireNonNull(item.asItem().getRegistryName()), "models/item", "json"), "item_models/" + resource + ".json");
+  }
+
+  /**
+   * Adds a replacement for a item model replacement
+   * @param condition  Condition for replacement
+   * @param item       Item to replace the model
+   * @param resource   New name supplier
+   */
+  public void addItemModelReplacement(BooleanValue condition, ItemLike item, String resource) {
+    addItemModelReplacement(condition::get, item, resource);
   }
 
   /**

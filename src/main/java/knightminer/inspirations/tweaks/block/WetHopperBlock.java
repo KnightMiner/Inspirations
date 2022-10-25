@@ -1,16 +1,15 @@
 package knightminer.inspirations.tweaks.block;
 
 import knightminer.inspirations.tweaks.InspirationsTweaks;
-import net.minecraft.block.BlockState;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorld;
-
-// Hopper block with waterlogged=True.
-import net.minecraft.block.AbstractBlock.Properties;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
 
 public class WetHopperBlock extends DryHopperBlock {
   public WetHopperBlock(Properties props) {
@@ -25,23 +24,21 @@ public class WetHopperBlock extends DryHopperBlock {
 
   // Duplicate IWaterLoggable's code, but don't use the property.
   @Override
-  public boolean canPlaceLiquid(IBlockReader world, BlockPos pos, BlockState state, Fluid fluid) {
+  public boolean canPlaceLiquid(BlockGetter world, BlockPos pos, BlockState state, Fluid fluid) {
     // No new fluid can be inserted.
     return false;
   }
 
   @Override
-  public boolean placeLiquid(IWorld world, BlockPos pos, BlockState state, FluidState fluid) {
+  public boolean placeLiquid(LevelAccessor world, BlockPos pos, BlockState state, FluidState fluid) {
     return false;
   }
 
   @Override
-  public Fluid takeLiquid(IWorld world, BlockPos pos, BlockState state) {
-    // Swap the block but don't alter the properties itself.
-    world.setBlock(pos, InspirationsTweaks.dryHopper.defaultBlockState()
-                                                         .setValue(FACING, state.getValue(FACING))
-                                                         .setValue(ENABLED, state.getValue(ENABLED))
-        , 3);
-    return Fluids.WATER;
+  public ItemStack pickupBlock(LevelAccessor world, BlockPos pos, BlockState state) {
+      world.setBlock(pos, InspirationsTweaks.dryHopper.defaultBlockState()
+                                                      .setValue(FACING, state.getValue(FACING))
+                                                      .setValue(ENABLED, state.getValue(ENABLED)), 3);
+      return new ItemStack(Items.WATER_BUCKET);
   }
 }

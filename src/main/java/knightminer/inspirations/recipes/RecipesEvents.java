@@ -5,19 +5,19 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.recipes.recipe.inventory.CauldronItemInventory;
 import knightminer.inspirations.recipes.recipe.inventory.VanillaCauldronInventory;
 import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.CauldronBlock;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.CauldronBlock;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
-import slimeknights.mantle.util.TileEntityHelper;
+import slimeknights.mantle.util.BlockEntityHelper;
 
 @EventBusSubscriber(modid = Inspirations.modID, bus = Bus.FORGE)
 @SuppressWarnings("WeakerAccess")
@@ -28,17 +28,17 @@ public class RecipesEvents {
    */
   @SubscribeEvent(priority = EventPriority.HIGH)
   public static void clickCauldron(RightClickBlock event) {
-    if(!Config.cauldronRecipes.get()) {
+    if(!Config.cauldronRecipes.getAsBoolean()) {
       return;
     }
 
-    PlayerEntity player = event.getPlayer();
+    Player player = event.getPlayer();
     if (player.isCrouching()) {
       return;
     }
 
     // basic properties
-    World world = event.getWorld();
+    Level world = event.getWorld();
     BlockPos pos = event.getPos();
     BlockState state = world.getBlockState(pos);
     if (!(state.getBlock() instanceof CauldronBlock)) {
@@ -46,15 +46,15 @@ public class RecipesEvents {
     }
 
     // extended uses TE
-    Hand hand = event.getHand();
+    InteractionHand hand = event.getHand();
     if (Config.extendedCauldron.get()) {
-      CauldronTileEntity cauldron = TileEntityHelper.getTile(CauldronTileEntity.class, world, pos).orElse(null);
+      CauldronTileEntity cauldron = BlockEntityHelper.get(CauldronTileEntity.class, world, pos).orElse(null);
       if (cauldron != null) {
         // TODO: blacklist?
         // stop further processing if we did a recipe or the cauldron cannot mimic vanilla cauldron
         if (cauldron.interact(player, hand) || !cauldron.canMimicVanilla()) {
           event.setCanceled(true);
-          event.setCancellationResult(ActionResultType.SUCCESS);
+          event.setCancellationResult(InteractionResult.SUCCESS);
         }
         return;
       }
@@ -67,7 +67,7 @@ public class RecipesEvents {
     // if the recipe does something, stop further interaction
     if (inventory.handleRecipe()) {
       event.setCanceled(true);
-      event.setCancellationResult(ActionResultType.SUCCESS);
+      event.setCancellationResult(InteractionResult.SUCCESS);
     }
     // TODO: blacklist?
   }

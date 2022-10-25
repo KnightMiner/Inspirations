@@ -2,9 +2,8 @@ package knightminer.inspirations.recipes.recipe.cauldron;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
-import knightminer.inspirations.library.Util;
+import knightminer.inspirations.library.MiscUtil;
 import knightminer.inspirations.library.recipe.DynamicFinishedRecipe;
-import knightminer.inspirations.library.recipe.RecipeSerializer;
 import knightminer.inspirations.library.recipe.RecipeSerializers;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
@@ -12,22 +11,24 @@ import knightminer.inspirations.library.recipe.cauldron.inventory.ICauldronInven
 import knightminer.inspirations.library.recipe.cauldron.inventory.IModifyableCauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipeDisplay;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.world.World;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.material.Fluids;
+import slimeknights.mantle.recipe.helper.AbstractRecipeSerializer;
 import slimeknights.mantle.util.JsonHelper;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Cauldron recipe that takes a liquid container filled with dye and increases the cauldron liquid
@@ -56,7 +57,7 @@ public class MixCauldronDyeRecipe implements ICauldronRecipe, ICauldronRecipeDis
   }
 
   @Override
-  public boolean matches(ICauldronInventory inv, World worldIn) {
+  public boolean matches(ICauldronInventory inv, Level worldIn) {
     // must have space
     int level = inv.getLevel();
     if (level == MAX) {
@@ -71,12 +72,7 @@ public class MixCauldronDyeRecipe implements ICauldronRecipe, ICauldronRecipeDis
   @Override
   public void handleRecipe(IModifyableCauldronInventory inv) {
     // can set the color to null to read color from NBT
-    int newColor;
-    if (this.color == null) {
-      newColor = Util.getColor(inv.getStack());
-    } else {
-      newColor = this.color;
-    }
+    int newColor = Objects.requireNonNullElseGet(this.color, () -> MiscUtil.getColor(inv.getStack()));
 
     // if water, set the color directly
     ICauldronContents contents = inv.getContents();
@@ -119,7 +115,7 @@ public class MixCauldronDyeRecipe implements ICauldronRecipe, ICauldronRecipeDis
   }
 
   @Override
-  public IRecipeSerializer<?> getSerializer() {
+  public RecipeSerializer<?> getSerializer() {
     return RecipeSerializers.CAULDRON_MIX_DYE;
   }
 
@@ -175,7 +171,7 @@ public class MixCauldronDyeRecipe implements ICauldronRecipe, ICauldronRecipeDis
     return color != null;
   }
 
-  public static class Serializer extends RecipeSerializer<MixCauldronDyeRecipe> {
+  public static class Serializer extends AbstractRecipeSerializer<MixCauldronDyeRecipe> {
     @SuppressWarnings("ConstantConditions")
     @Override
     public MixCauldronDyeRecipe fromJson(ResourceLocation id, JsonObject json) {
@@ -185,14 +181,14 @@ public class MixCauldronDyeRecipe implements ICauldronRecipe, ICauldronRecipeDis
       Integer color = null;
       if (json.has("color")) {
         // try dye color name first
-        String colorText = JSONUtils.getAsString(json, "color");
+        String colorText = GsonHelper.getAsString(json, "color");
         DyeColor dye = DyeColor.byName(colorText, null);
         if (dye != null) {
-          color = dye.getColorValue();
+          color = MiscUtil.getColor(dye);
         } else {
           // hexadecimal color next
           try {
-            color = Integer.parseInt(JSONUtils.getAsString(json, "color"), 16);
+            color = Integer.parseInt(GsonHelper.getAsString(json, "color"), 16);
           } catch (NumberFormatException e) {
             throw new JsonSyntaxException("Invalid color string '" + colorText + "'");
           }
@@ -204,7 +200,7 @@ public class MixCauldronDyeRecipe implements ICauldronRecipe, ICauldronRecipeDis
 
     @Nullable
     @Override
-    public MixCauldronDyeRecipe fromNetwork(ResourceLocation id, PacketBuffer buffer) {
+    public MixCauldronDyeRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buffer) {
       Ingredient ingredient = Ingredient.fromNetwork(buffer);
       Integer color = null;
       if (buffer.readBoolean()) {
@@ -214,7 +210,7 @@ public class MixCauldronDyeRecipe implements ICauldronRecipe, ICauldronRecipeDis
     }
 
     @Override
-    public void toNetwork(PacketBuffer buffer, MixCauldronDyeRecipe recipe) {
+    public void toNetwork(FriendlyByteBuf buffer, MixCauldronDyeRecipe recipe) {
       recipe.ingredient.toNetwork(buffer);
       if (recipe.color == null) {
         buffer.writeBoolean(false);

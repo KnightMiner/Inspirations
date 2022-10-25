@@ -4,44 +4,42 @@ import com.google.common.collect.ImmutableMap;
 import knightminer.inspirations.building.tileentity.ShelfTileEntity;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.IHidable;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.state.DirectionProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.Rotation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.shapes.IBooleanFunction;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.BooleanOp;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import slimeknights.mantle.block.InventoryBlock;
 import slimeknights.mantle.block.RetexturedBlock;
 
 import javax.annotation.Nullable;
-
-import net.minecraft.block.AbstractBlock.Properties;
+import java.util.Map;
 
 public class ShelfBlock extends InventoryBlock implements IHidable {
-
   public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
 
   public ShelfBlock(Properties properties) {
@@ -50,28 +48,24 @@ public class ShelfBlock extends InventoryBlock implements IHidable {
   }
 
   @Override
-  public boolean hasTileEntity(BlockState state) {
-    return true;
-  }
-
-  @Override
-  protected void createBlockStateDefinition(StateContainer.Builder<Block,BlockState> builder) {
+  protected void createBlockStateDefinition(StateDefinition.Builder<Block,BlockState> builder) {
     builder.add(FACING);
-  }
-
-  @Override
-  public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-    return new ShelfTileEntity();
   }
 
   @Nullable
   @Override
-  public BlockState getStateForPlacement(BlockItemUseContext context) {
+  public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+    return new ShelfTileEntity(pos, state);
+  }
+
+  @Nullable
+  @Override
+  public BlockState getStateForPlacement(BlockPlaceContext context) {
     return defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
   }
 
   @Override
-  public void setPlacedBy(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
+  public void setPlacedBy(Level world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
     super.setPlacedBy(world, pos, state, placer, stack);
     RetexturedBlock.updateTextureBlock(world, pos, stack);
   }
@@ -81,11 +75,11 @@ public class ShelfBlock extends InventoryBlock implements IHidable {
 
   @Override
   public boolean isEnabled() {
-    return Config.enableBookshelf.get();
+    return Config.enableBookshelf.getAsBoolean();
   }
 
   @Override
-  public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items) {
+  public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
     if (shouldAddtoItemGroup(group)) {
       super.fillItemCategory(group, items);
     }
@@ -97,37 +91,37 @@ public class ShelfBlock extends InventoryBlock implements IHidable {
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) {
+  public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult trace) {
     Direction facing = state.getValue(FACING);
 
     // skip opposite, not needed as the back is never clicked for books
     if (facing.getOpposite() == trace.getDirection()) {
-      return ActionResultType.PASS;
+      return InteractionResult.PASS;
     }
 
     // if sneaking, just do the GUI
     if (player.isCrouching()) {
-      return (world.isClientSide || openGui(player, world, pos)) ? ActionResultType.SUCCESS : ActionResultType.PASS;
+      return (world.isClientSide || openGui(player, world, pos)) ? InteractionResult.SUCCESS : InteractionResult.PASS;
     }
 
     // if we did not click a book, just do the GUI as well
-    Vector3d hitWorld = trace.getLocation();
-    Vector3d click = new Vector3d(hitWorld.x - pos.getX(), hitWorld.y - pos.getY(), hitWorld.z - pos.getZ());
+    Vec3 hitWorld = trace.getLocation();
+    Vec3 click = new Vec3(hitWorld.x - pos.getX(), hitWorld.y - pos.getY(), hitWorld.z - pos.getZ());
     if (!isBookClicked(facing, click)) {
-      return (world.isClientSide || openGui(player, world, pos)) ? ActionResultType.SUCCESS : ActionResultType.PASS;
+      return (world.isClientSide || openGui(player, world, pos)) ? InteractionResult.SUCCESS : InteractionResult.PASS;
     }
-    TileEntity te = world.getBlockEntity(pos);
+    BlockEntity te = world.getBlockEntity(pos);
     if (te instanceof ShelfTileEntity) {
       // try interacting
       if (((ShelfTileEntity)te).interact(player, hand, click)) {
-        return ActionResultType.SUCCESS;
+        return InteractionResult.SUCCESS;
       }
       // if we failed to place an item on the shelf, pass if the offhand might try
-      if (hand != Hand.OFF_HAND && !player.getOffhandItem().isEmpty()) {
-        return ActionResultType.CONSUME;
+      if (hand != InteractionHand.OFF_HAND && !player.getOffhandItem().isEmpty()) {
+        return InteractionResult.CONSUME;
       }
     }
-    return ActionResultType.CONSUME;
+    return InteractionResult.CONSUME;
   }
 
   /**
@@ -136,7 +130,7 @@ public class ShelfBlock extends InventoryBlock implements IHidable {
    * @param click   Block relative click position
    * @return  True if a book was clicked, false if the UI should open instead
    */
-  private static boolean isBookClicked(Direction facing, Vector3d click) {
+  private static boolean isBookClicked(Direction facing, Vec3 click) {
    // if we did not click between the shelves, ignore
     if (click.y < 0.0625 || click.y > 0.9375) {
       return false;
@@ -149,8 +143,8 @@ public class ShelfBlock extends InventoryBlock implements IHidable {
     int offZ = facing.getStepZ();
     double x1 = offX == -1 ? 0.625 : 0;
     double z1 = offZ == -1 ? 0.625 : 0;
-    double x2 = offX == +1 ? 0.375 : 1;
-    double z2 = offZ == +1 ? 0.375 : 1;
+    double x2 = offX ==  1 ? 0.375 : 1;
+    double z2 = offZ ==  1 ? 0.375 : 1;
     // ensure we clicked within a shelf, not outside one
     return !(click.x < x1) && !(click.x > x2) && !(click.z < z1) && !(click.z > z2);
   }
@@ -158,7 +152,7 @@ public class ShelfBlock extends InventoryBlock implements IHidable {
   /*
    * Bounds
    */
-  private static final ImmutableMap<Direction,VoxelShape> BOUNDS;
+  private static final Map<Direction,VoxelShape> BOUNDS;
 
   static {
     // shelf bounds
@@ -175,16 +169,16 @@ public class ShelfBlock extends InventoryBlock implements IHidable {
       double z2 = offZ == 1 ? 0.5 : 1;
 
       // Rotate the 2 X-Z points correctly for the inset shelves.
-      Vector3d min = new Vector3d(-0.5, 0, -7 / 16.0).yRot(-(float)Math.PI / 2F * side.get2DDataValue());
-      Vector3d max = new Vector3d( 0.5, 1, 0).yRot(-(float)Math.PI / 2F * side.get2DDataValue());
+      Vec3 min = new Vec3(-0.5, 0, -7 / 16.0).yRot(-(float)Math.PI / 2F * side.get2DDataValue());
+      Vec3 max = new Vec3( 0.5, 1, 0).yRot(-(float)Math.PI / 2F * side.get2DDataValue());
 
       // Then assemble.
-      builder.put(side, VoxelShapes.join(
-          VoxelShapes.box(x1, 0, z1, x2, 1, z2), // Full half slab
-          VoxelShapes.or( // Then the two shelves.
-                          VoxelShapes.box(0.5 + min.x, 1 / 16.0, 0.5 + min.z, 0.5 + max.x, 7 / 16.0, 0.5 + max.z),
-                          VoxelShapes.box(0.5 + min.x, 9 / 16.0, 0.5 + min.z, 0.5 + max.x, 15 / 16.0, 0.5 + max.z)
-                        ), IBooleanFunction.ONLY_FIRST));
+      builder.put(side, Shapes.join(
+          Shapes.box(x1, 0, z1, x2, 1, z2), // Full half slab
+          Shapes.or( // Then the two shelves.
+                          Shapes.box(0.5 + min.x, 1 / 16.0, 0.5 + min.z, 0.5 + max.x, 7 / 16.0, 0.5 + max.z),
+                          Shapes.box(0.5 + min.x, 9 / 16.0, 0.5 + min.z, 0.5 + max.x, 15 / 16.0, 0.5 + max.z)
+                        ), BooleanOp.ONLY_FIRST));
     }
     BOUNDS = builder.build();
   }
@@ -192,7 +186,7 @@ public class ShelfBlock extends InventoryBlock implements IHidable {
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+  public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
     return BOUNDS.get(state.getValue(FACING));
   }
 
@@ -210,8 +204,8 @@ public class ShelfBlock extends InventoryBlock implements IHidable {
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public int getAnalogOutputSignal(BlockState state, World world, BlockPos pos) {
-    TileEntity te = world.getBlockEntity(pos);
+  public int getAnalogOutputSignal(BlockState state, Level world, BlockPos pos) {
+    BlockEntity te = world.getBlockEntity(pos);
     if (te instanceof ShelfTileEntity) {
       return ((ShelfTileEntity)te).getComparatorPower();
     }
@@ -223,7 +217,7 @@ public class ShelfBlock extends InventoryBlock implements IHidable {
    * Block properties
    */
   @Override
-  public BlockState rotate(BlockState state, IWorld world, BlockPos pos, Rotation direction) {
+  public BlockState rotate(BlockState state, LevelAccessor world, BlockPos pos, Rotation direction) {
     return state.setValue(FACING, direction.rotate(state.getValue(FACING)));
   }
 
@@ -237,16 +231,16 @@ public class ShelfBlock extends InventoryBlock implements IHidable {
   /* Drops */
 
   @Override
-  public ItemStack getPickBlock(BlockState state, RayTraceResult target, IBlockReader world, BlockPos pos, PlayerEntity player) {
-    return RetexturedBlock.getPickBlock(world, pos, state);
+  public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter level, BlockPos pos, Player player) {
+    return RetexturedBlock.getPickBlock(level, pos, state);
   }
 
   @Override
-  public float getEnchantPowerBonus(BlockState state, IWorldReader world, BlockPos pos) {
-    if (!Config.bookshelvesBoostEnchanting.get()) {
+  public float getEnchantPowerBonus(BlockState state, LevelReader world, BlockPos pos) {
+    if (!Config.bookshelvesBoostEnchanting.getAsBoolean()) {
       return 0;
     }
-    TileEntity te = world.getBlockEntity(pos);
+    BlockEntity te = world.getBlockEntity(pos);
     if (te instanceof ShelfTileEntity) {
       return ((ShelfTileEntity)te).getEnchantPower();
     }

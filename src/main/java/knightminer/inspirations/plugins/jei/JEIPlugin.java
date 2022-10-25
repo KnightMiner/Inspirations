@@ -15,7 +15,7 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
+import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
 import mezz.jei.api.registration.IModIngredientRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
@@ -23,14 +23,14 @@ import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.ISubtypeRegistration;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiRuntime;
-import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.item.crafting.RecipeManager;
-import net.minecraft.util.IItemProvider;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.registries.ForgeRegistries;
 import slimeknights.mantle.item.RetexturedBlockItem;
 import slimeknights.mantle.recipe.IMultiRecipe;
@@ -69,8 +69,8 @@ public class JEIPlugin implements IModPlugin {
   private static List<ICauldronRecipeDisplay> getCauldronRecipes() {
     assert Minecraft.getInstance().level != null;
     RecipeManager manager = Minecraft.getInstance().level.getRecipeManager();
-    boolean isExtended = Config.extendedCauldron.getAsBoolean();
-    Stream<? extends IRecipe<?>> allRecipes = manager.byType(RecipeTypes.CAULDRON).values().stream();
+    boolean isExtended = Config.extendedCauldron.get();
+    Stream<? extends Recipe<?>> allRecipes = manager.byType(RecipeTypes.CAULDRON).values().stream();
     // combine in transform recipes if extended
     if (isExtended) {
       allRecipes = Stream.concat(allRecipes, manager.byType(RecipeTypes.CAULDRON_TRANSFORM).values().stream());
@@ -100,24 +100,19 @@ public class JEIPlugin implements IModPlugin {
     if (Config.cauldronRecipes.getAsBoolean()) {
       // need the ingredient regardless, but will be empty if simple
       List<ICauldronContents> contents;
-      if (Config.extendedCauldron.getAsBoolean()) {
+      if (Config.extendedCauldron.get()) {
         contents = new ArrayList<>();
         // first, add potions
-        contents.addAll(ForgeRegistries.POTION_TYPES.getValues()
-                                                    .stream()
-                                                    .map(CauldronContentTypes.POTION::of)
-                                                    .collect(Collectors.toList()));
+        contents.addAll(ForgeRegistries.POTIONS.getValues().stream().map(CauldronContentTypes.POTION::of).toList());
         // next, dyes
         contents.addAll(Arrays.stream(DyeColor.values())
-                              .map(CauldronContentTypes.DYE::of)
-                              .collect(Collectors.toList()));
+                              .map(CauldronContentTypes.DYE::of).toList());
         // finally custom, do this by scanning all recipe outputs
         recipes = getCauldronRecipes();
         contents.addAll(recipes.stream()
                                .map(ICauldronRecipeDisplay::getContentOutput)
                                .filter(c -> c.contains(CauldronContentTypes.CUSTOM))
-                               .distinct()
-                               .collect(Collectors.toList()));
+                               .distinct().toList());
         // filter out any types cross registered as fluids or another type
         contents = contents.stream().filter(content -> !content.contains(CauldronContentTypes.FLUID)).distinct().collect(Collectors.toList());
       } else {
@@ -155,8 +150,8 @@ public class JEIPlugin implements IModPlugin {
 
   @Override
   public void registerItemSubtypes(ISubtypeRegistration registry) {
-    ISubtypeInterpreter texture = RetexturedBlockItem::getTextureName;
-    Consumer<IItemProvider> setTextureSubtype = item -> registry.registerSubtypeInterpreter(item.asItem(), texture);
+    IIngredientSubtypeInterpreter<ItemStack> texture = (ingredient, content) -> RetexturedBlockItem.getTextureName(ingredient);
+    Consumer<ItemLike> setTextureSubtype = item -> registry.registerSubtypeInterpreter(item.asItem(), texture);
 
     // building
     InspirationsBuilding.shelf.values().forEach(setTextureSubtype);

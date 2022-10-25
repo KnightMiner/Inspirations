@@ -2,29 +2,29 @@ package knightminer.inspirations.tweaks.block;
 
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.CarpetBlock;
-import net.minecraft.block.StairsBlock;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.ItemStack;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.properties.Half;
-import net.minecraft.state.properties.StairsShape;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.StairBlock;
+import net.minecraft.world.level.block.WoolCarpetBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.Half;
+import net.minecraft.world.level.block.state.properties.StairsShape;
+import net.minecraft.world.phys.HitResult;
 
 import javax.annotation.Nullable;
 
 @SuppressWarnings("WeakerAccess")
-public class FlatCarpetBlock extends CarpetBlock {
+public class FlatCarpetBlock extends WoolCarpetBlock {
   protected static final BooleanProperty NORTHWEST = BooleanProperty.create("northwest");
   protected static final BooleanProperty NORTHEAST = BooleanProperty.create("northeast");
   protected static final BooleanProperty SOUTHWEST = BooleanProperty.create("southwest");
@@ -38,7 +38,7 @@ public class FlatCarpetBlock extends CarpetBlock {
   }
 
   @Override
-  public BlockState updateShape(BlockState state, Direction facing, BlockState facingState, IWorld world, BlockPos pos, BlockPos facingPos) {
+  public BlockState updateShape(BlockState state, Direction facing, BlockState facingState, LevelAccessor world, BlockPos pos, BlockPos facingPos) {
     if (!state.canSurvive(world, pos)) {
       return Blocks.AIR.defaultBlockState();
     }
@@ -57,15 +57,12 @@ public class FlatCarpetBlock extends CarpetBlock {
   }
 
   @Override
-  public void setPlacedBy(World world, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack stack) {
-    world.setBlock(pos, updateShape(state, null, null, world, pos, null), 2);
+  public void setPlacedBy(Level world, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack stack) {
+    world.setBlock(pos, updateShape(state, Direction.UP, state, world, pos, pos), 2);
   }
 
-  /**
-   * Always produce the original carpet item, not the altered carpet blocks.
-   */
   @Override
-  public ItemStack getPickBlock(BlockState state, RayTraceResult target, IBlockReader world, BlockPos pos, PlayerEntity player) {
+  public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter level, BlockPos pos, Player player) {
     return new ItemStack(InspirationsTweaks.flatCarpets.get(getColor()));
   }
 
@@ -79,68 +76,44 @@ public class FlatCarpetBlock extends CarpetBlock {
       return SHAPE_FLAT;
       // } else if(stairs instanceof BlockSlab && !((BlockSlab)stairs).isDouble() && stairs.getValue(BlockSlab.HALF) == EnumBlockHalf.BOTTOM) {
       //	return 0b1111;
-    } else if (!(stairs.getBlock() instanceof StairsBlock) ||
-               stairs.getValue(StairsBlock.HALF) != Half.BOTTOM) {
+    } else if (!(stairs.getBlock() instanceof StairBlock) ||
+               stairs.getValue(StairBlock.HALF) != Half.BOTTOM) {
       return SHAPE_FLAT;
     }
 
-    StairsShape shape = stairs.getValue(StairsBlock.SHAPE);
+    StairsShape shape = stairs.getValue(StairBlock.SHAPE);
     // seemed like the simplest way, convert each shape to four bits
     // bits are NW NE SW SE
-    switch (stairs.getValue(StairsBlock.FACING)) {
-      case NORTH:
-        switch (shape) {
-          case STRAIGHT:
-            return 0b0011;
-          case INNER_LEFT:
-            return 0b0001;
-          case INNER_RIGHT:
-            return 0b0010;
-          case OUTER_LEFT:
-            return 0b0111;
-          case OUTER_RIGHT:
-            return 0b1011;
-        }
-      case SOUTH:
-        switch (shape) {
-          case STRAIGHT:
-            return 0b1100;
-          case INNER_LEFT:
-            return 0b1000;
-          case INNER_RIGHT:
-            return 0b0100;
-          case OUTER_LEFT:
-            return 0b1110;
-          case OUTER_RIGHT:
-            return 0b1101;
-        }
-      case WEST:
-        switch (shape) {
-          case STRAIGHT:
-            return 0b0101;
-          case INNER_LEFT:
-            return 0b0100;
-          case INNER_RIGHT:
-            return 0b0001;
-          case OUTER_LEFT:
-            return 0b1101;
-          case OUTER_RIGHT:
-            return 0b0111;
-        }
-      case EAST:
-        switch (shape) {
-          case STRAIGHT:
-            return 0b1010;
-          case INNER_LEFT:
-            return 0b0010;
-          case INNER_RIGHT:
-            return 0b1000;
-          case OUTER_LEFT:
-            return 0b1011;
-          case OUTER_RIGHT:
-            return 0b1110;
-        }
-    }
-    return SHAPE_FLAT;
+    return switch (stairs.getValue(StairBlock.FACING)) {
+      case NORTH -> switch (shape) {
+        case STRAIGHT -> 0b0011;
+        case INNER_LEFT -> 0b0001;
+        case INNER_RIGHT -> 0b0010;
+        case OUTER_LEFT -> 0b0111;
+        case OUTER_RIGHT -> 0b1011;
+      };
+      case SOUTH -> switch (shape) {
+        case STRAIGHT -> 0b1100;
+        case INNER_LEFT -> 0b1000;
+        case INNER_RIGHT -> 0b0100;
+        case OUTER_LEFT -> 0b1110;
+        case OUTER_RIGHT -> 0b1101;
+      };
+      case WEST -> switch (shape) {
+        case STRAIGHT -> 0b0101;
+        case INNER_LEFT -> 0b0100;
+        case INNER_RIGHT -> 0b0001;
+        case OUTER_LEFT -> 0b1101;
+        case OUTER_RIGHT -> 0b0111;
+      };
+      case EAST -> switch (shape) {
+        case STRAIGHT -> 0b1010;
+        case INNER_LEFT -> 0b0010;
+        case INNER_RIGHT -> 0b1000;
+        case OUTER_LEFT -> 0b1011;
+        case OUTER_RIGHT -> 0b1110;
+      };
+      default -> SHAPE_FLAT;
+    };
   }
 }

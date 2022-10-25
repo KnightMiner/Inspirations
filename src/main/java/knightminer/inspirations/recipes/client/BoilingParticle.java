@@ -1,15 +1,15 @@
 package knightminer.inspirations.recipes.client;
 
 import net.minecraft.client.particle.BubbleParticle;
-import net.minecraft.client.particle.IAnimatedSprite;
-import net.minecraft.client.particle.IParticleFactory;
+import net.minecraft.client.particle.SpriteSet;
+import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.Particle;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.particles.BasicParticleType;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.particles.SimpleParticleType;
 
 public class BoilingParticle extends BubbleParticle {
 
-  public BoilingParticle(ClientWorld world, double xCoord, double yCoord, double zCoord, double xSpeed, double ySpeed, double zSpeed) {
+  public BoilingParticle(ClientLevel world, double xCoord, double yCoord, double zCoord, double xSpeed, double ySpeed, double zSpeed) {
     super(world, xCoord, yCoord, zCoord, xSpeed, ySpeed, zSpeed);
     this.alpha = 0.5f;
     this.hasPhysics = false;
@@ -38,14 +38,14 @@ public class BoilingParticle extends BubbleParticle {
     this.z += z;
   }
 
-  public static class Factory implements IParticleFactory<BasicParticleType> {
-    private final IAnimatedSprite spriteSet;
-    public Factory(IAnimatedSprite spriteSet) {
+  public static class Factory implements ParticleProvider<SimpleParticleType> {
+    private final SpriteSet spriteSet;
+    public Factory(SpriteSet spriteSet) {
       this.spriteSet = spriteSet;
     }
 
     @Override
-    public Particle createParticle(BasicParticleType typeIn, ClientWorld worldIn, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
+    public Particle createParticle(SimpleParticleType typeIn, ClientLevel worldIn, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
       BoilingParticle bubble = new BoilingParticle(worldIn, x, y, z, xSpeed, ySpeed, zSpeed);
       bubble.pickSprite(this.spriteSet);
       return bubble;

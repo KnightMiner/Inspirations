@@ -1,12 +1,12 @@
 package knightminer.inspirations.common.item;
 
 import knightminer.inspirations.common.IHidable;
-import net.minecraft.block.Block;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.NonNullList;
 
 import java.util.function.Supplier;
 
@@ -29,7 +29,7 @@ public class HidableBlockItem extends BlockItem implements IHidable {
   }
 
   @Override
-  public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items) {
+  public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
     if (shouldAddtoItemGroup(group)) {
       super.fillItemCategory(group, items);
     }

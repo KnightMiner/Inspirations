@@ -2,9 +2,9 @@ package knightminer.inspirations.common.network;
 
 import knightminer.inspirations.shared.SharedEvents;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.Entity;
+import net.minecraftforge.network.NetworkEvent;
 import slimeknights.mantle.network.packet.IThreadsafePacket;
 
 @SuppressWarnings("WeakerAccess")
@@ -18,13 +18,13 @@ public class MilkablePacket implements IThreadsafePacket {
     this.milkable = milkable;
   }
 
-  public MilkablePacket(PacketBuffer buf) {
+  public MilkablePacket(FriendlyByteBuf buf) {
     this.entityID = buf.readInt();
     this.milkable = buf.readBoolean();
   }
 
   @Override
-  public void encode(PacketBuffer buf) {
+  public void encode(FriendlyByteBuf buf) {
     buf.writeInt(entityID);
     buf.writeBoolean(milkable);
   }

@@ -6,7 +6,7 @@ import knightminer.inspirations.common.network.CauldronStateUpdatePacket;
 import knightminer.inspirations.common.network.CauldronTransformUpatePacket;
 import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.library.InspirationsTags;
-import knightminer.inspirations.library.Util;
+import knightminer.inspirations.library.MiscUtil;
 import knightminer.inspirations.library.recipe.RecipeTypes;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
@@ -17,37 +17,38 @@ import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.recipes.block.EnhancedCauldronBlock;
 import knightminer.inspirations.recipes.recipe.inventory.CauldronItemInventory;
 import knightminer.inspirations.recipes.recipe.inventory.TileCauldronInventory;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Potion;
-import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.tags.FluidTags;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Direction.Axis;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Direction.Axis;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.Entity.RemovalReason;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelDataMap;
 import net.minecraftforge.client.model.data.ModelProperty;
-import net.minecraftforge.common.util.Constants.NBT;
-import slimeknights.mantle.recipe.RecipeHelper;
-import slimeknights.mantle.tileentity.MantleTileEntity;
+import slimeknights.mantle.block.entity.MantleBlockEntity;
+import slimeknights.mantle.datagen.MantleTags;
+import slimeknights.mantle.recipe.helper.RecipeHelper;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -57,7 +58,12 @@ import java.util.function.Consumer;
 /**
  * Tile entity logic for the cauldron, handles more complex content types
  */
-public class CauldronTileEntity extends MantleTileEntity implements ITickableTileEntity {
+public class CauldronTileEntity extends MantleBlockEntity {
+  /** Ticking on the server side */
+  public static final BlockEntityTicker<CauldronTileEntity> SERVER_TICKER = (level, pos, state, be) -> be.serverTick(level);
+  /** Ticking on the client side */
+  public static final BlockEntityTicker<CauldronTileEntity> CLIENT_TICKER = (level, pos, state, be) -> be.clientTick(level);
+
   private static final DamageSource DAMAGE_BOIL = new DamageSource(Inspirations.prefix("boiling")).bypassArmor();
   public static final ModelProperty<ResourceLocation> TEXTURE = new ModelProperty<>();
   public static final ModelProperty<Boolean> FROSTED = new ModelProperty<>();
@@ -111,16 +117,16 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
   /**
    * Creates a new cauldron with no block set
    */
-  public CauldronTileEntity() {
-    this(InspirationsRecipes.cauldron);
+  public CauldronTileEntity(BlockPos pos, BlockState state) {
+    this(pos, state, InspirationsRecipes.cauldron);
   }
 
   /**
    * Creates a new cauldron for the given block
    * @param block  Parent block
    */
-  public CauldronTileEntity(EnhancedCauldronBlock block) {
-    this(InspirationsRecipes.tileCauldron, block);
+  public CauldronTileEntity(BlockPos pos, BlockState state, EnhancedCauldronBlock block) {
+    this(InspirationsRecipes.tileCauldron, pos, state, block);
   }
 
   /**
@@ -128,8 +134,8 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
    * @param type   Tile entity type
    * @param block  Parent block
    */
-  protected CauldronTileEntity(TileEntityType<?> type, EnhancedCauldronBlock block) {
-    super(type);
+  protected CauldronTileEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, EnhancedCauldronBlock block) {
+    super(type, pos, state);
     this.contents = CauldronContentTypes.DEFAULT.get();
     this.data.setData(TEXTURE, contents.getTextureName());
     this.cauldronBlock = block;
@@ -281,7 +287,7 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
    * @return True if the state is considered fire
    */
   public static boolean isCauldronFire(BlockState state) {
-    if (state.getBlock().is(InspirationsTags.Blocks.CAULDRON_FIRE)) {
+    if (state.is(InspirationsTags.Blocks.CAULDRON_FIRE)) {
       // if it has a lit property, use that (campfires, furnaces). Otherwise just needs to be in the tag
       return !state.hasProperty(BlockStateProperties.LIT) || state.getValue(BlockStateProperties.LIT);
     }
@@ -295,7 +301,7 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
    * @param direction  Direction to check. Also checks opposite direction
    * @return  True if the direction has enough ice
    */
-  private static boolean isDirectionFreezing(World world, BlockPos pos, Direction direction) {
+  private static boolean isDirectionFreezing(Level world, BlockPos pos, Direction direction) {
     return world.getBlockState(pos.relative(direction)).is(InspirationsTags.Blocks.CAULDRON_ICE)
            && world.getBlockState(pos.relative(direction.getOpposite())).is(InspirationsTags.Blocks.CAULDRON_ICE);
   }
@@ -306,7 +312,7 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
    * @param pos    Cauldron position
    * @return True if the state is considered freezing
    */
-  public static boolean isFreezing(World world, BlockPos pos) {
+  public static boolean isFreezing(Level world, BlockPos pos) {
     // either axis must have two ice blocks
     return isDirectionFreezing(world, pos, Direction.NORTH) || isDirectionFreezing(world, pos, Direction.WEST);
   }
@@ -315,7 +321,7 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
    * Calculates and caches the temperature
    * @return  Calculated temperature for the world and positions
    */
-  public static CauldronTemperature calcTemperature(IWorld world, BlockPos pos, boolean boiling, boolean freezing) {
+  public static CauldronTemperature calcTemperature(LevelAccessor world, BlockPos pos, boolean boiling, boolean freezing) {
     // overrides from neighbors
     if (boiling) {
       return freezing ? CauldronTemperature.NORMAL : CauldronTemperature.BOILING;
@@ -328,7 +334,7 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
       return CauldronTemperature.BOILING;
     }
     // freeze if biome is cold enough for snow/ice. direct methods do a bunch of ice/snow checks
-    if (world.getBiome(pos).getTemperature(pos) < 0.15F) {
+    if (world.getBiome(pos).value().getTemperature(pos) < 0.15F) {
       return CauldronTemperature.FREEZING;
     }
     // normal otherwise
@@ -400,7 +406,7 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
     if (level != null && level.isClientSide) {
       temperature = getTemperature();
       if (temperature != oldTemperature) {
-        Util.notifyClientUpdate(this);
+        MiscUtil.notifyClientUpdate(this);
       }
     }
   }
@@ -459,7 +465,7 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
    * Method to run cauldron interaction code
    * @return True if successful, false for pass
    */
-  public boolean interact(PlayerEntity player, Hand hand) {
+  public boolean interact(Player player, InteractionHand hand) {
     // ensure we have a stack, or we can be done
     if (level == null) {
       return false;
@@ -513,7 +519,7 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
     // if an entity item, try crafting with it
     if (entity instanceof ItemEntity entityItem && Config.cauldronRecipes.getAsBoolean()) {
       // skip items that we have already processed
-      CompoundNBT entityTags = entity.getPersistentData();
+      CompoundTag entityTags = entity.getPersistentData();
       // if it was tagged, skip it
       if (entityTags.getBoolean(TAG_CAULDRON_CRAFTED)) {
         return level;
@@ -552,7 +558,7 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
 
       // kill entity if empty
       if (entityItem.getItem().isEmpty()) {
-        entityItem.remove();
+        entityItem.remove(RemovalReason.DISCARDED);
       } else if (success) {
         // if the recipe worked, mark as crafted
         entityTags.putBoolean(TAG_CAULDRON_CRAFTED, true);
@@ -571,7 +577,7 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
       if (fluidType.isPresent()) {
         // water puts out fire
         Fluid fluid = fluidType.get();
-        if (FluidTags.WATER.contains(fluid)) {
+        if (fluid.is(MantleTags.Fluids.WATER)) {
           if (entity.isOnFire()) {
             entity.clearFire();
             level = level - 1;
@@ -590,13 +596,13 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
         if (potionType.isPresent() && entity instanceof LivingEntity living) {
 
           // if any of the effects are not currently on the player, apply it and lower the level
-          List<EffectInstance> effects = potionType.get().getEffects();
+          List<MobEffectInstance> effects = potionType.get().getEffects();
           if (effects.stream().anyMatch(effect -> !living.hasEffect(effect.getEffect()))) {
-            for (EffectInstance effect : effects) {
+            for (MobEffectInstance effect : effects) {
               if (effect.getEffect().isInstantenous()) {
                 effect.getEffect().applyInstantenousEffect(null, null, living, effect.getAmplifier(), 1.0D);
               } else {
-                living.addEffect(new EffectInstance(effect));
+                living.addEffect(new MobEffectInstance(effect));
               }
             }
             level = level - 1;
@@ -616,8 +622,8 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
   /* Transform recipes */
 
   @Override
-  public void clearCache() {
-    super.clearCache();
+  public void setBlockState(BlockState state) {
+    super.setBlockState(state);
     this.contentsChanged();
   }
 
@@ -659,14 +665,11 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
     }
   }
 
-  @Override
-  public void tick() {
-    if (level == null) {
-      return;
-    }
-
+  /** Tick on the server side */
+  private void serverTick(Level level) {
+    assert !level.isClientSide;
     // updates the transform recipe
-    if (updateTransform && !level.isClientSide) {
+    if (updateTransform) {
       this.updateTransform();
       updateTransform = false;
     }
@@ -680,16 +683,24 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
     timer++;
 
     // if the recipe is done, run recipe
-    if (!level.isClientSide && timer >= currentTransform.getTime()) {
+    if (timer >= currentTransform.getTime()) {
       timer = 0;
 
       // play sound effect, note its before contents update
       SoundEvent sound = currentTransform.getSound();
-      level.playSound(null, worldPosition, sound, SoundCategory.BLOCKS, 1.0f, 1.0f);
+      level.playSound(null, worldPosition, sound, SoundSource.BLOCKS, 1.0f, 1.0f);
 
       // set contents will clear the current transform if no longer current
       // have to pass in level offset as this function is reused a lot, so just use current
       updateState(currentTransform.getContentOutput(craftingInventory), levelOffset);
+    }
+  }
+
+  /** Tick on the client side */
+  private void clientTick(Level level) {
+    // timer updates on both sides, easier than syncing
+    if (currentTransform != null) {
+      timer++;
     }
   }
 
@@ -781,11 +792,11 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
   private static final String TAG_TIMER = "timer";
 
   @Override
-  public void setLevelAndPosition(World world, BlockPos pos) {
-    super.setLevelAndPosition(world, pos);
+  public void setLevel(Level level) {
+    super.setLevel(level);
     // if we have a recipe name, swap recipe name for recipe instance
     if (currentTransformName != null) {
-      loadTransform(world, currentTransformName);
+      loadTransform(level, currentTransformName);
       currentTransformName = null;
     }
   }
@@ -795,7 +806,7 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
    * @param world  World instance
    * @param name   Recipe name
    */
-  private void loadTransform(World world, ResourceLocation name) {
+  private void loadTransform(Level world, ResourceLocation name) {
     RecipeHelper.getRecipe(world.getRecipeManager(), name, ICauldronTransform.class).ifPresent(recipe -> this.currentTransform = recipe);
   }
 
@@ -805,8 +816,8 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
   }
 
   @Override
-  protected void writeSynced(CompoundNBT tags) {
-    super.writeSynced(tags);
+  protected void saveSynced(CompoundTag tags) {
+    super.saveSynced(tags);
     tags.put(TAG_CONTENTS, getContents().toNBT());
     // write transform if present, or transform name if we somehow wrote before world is set
     if (currentTransform != null) {
@@ -820,17 +831,17 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
   }
 
   @Override
-  public void load(BlockState state, CompoundNBT tags) {
-    super.load(state, tags);
+  public void load(CompoundTag tags) {
+    super.load(tags);
 
     // update block reference
-    Block block = state.getBlock();
+    Block block = getBlockState().getBlock();
     if (block instanceof EnhancedCauldronBlock) {
       this.cauldronBlock = (EnhancedCauldronBlock)block;
     }
 
     // update current transform
-    if (tags.contains(TAG_TRANSFORM, NBT.TAG_STRING)) {
+    if (tags.contains(TAG_TRANSFORM, Tag.TAG_STRING)) {
       ResourceLocation name = new ResourceLocation(tags.getString(TAG_TRANSFORM));
       // if we have a world, fetch the recipe
       if (level != null) {

@@ -9,10 +9,10 @@ import knightminer.inspirations.library.recipe.cauldron.util.LevelPredicate;
 import knightminer.inspirations.library.recipe.cauldron.util.TemperaturePredicate;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.Advancement.Builder;
-import net.minecraft.data.IFinishedRecipe;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvent;
+import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.item.crafting.RecipeSerializer;
 import slimeknights.mantle.recipe.data.AbstractRecipeBuilder;
 
 import javax.annotation.Nullable;
@@ -123,16 +123,16 @@ public class CauldronTransformBuilder extends AbstractRecipeBuilder<CauldronTran
   }
 
   @Override
-  public void build(Consumer<IFinishedRecipe> consumer) {
+  public void save(Consumer<FinishedRecipe> consumer) {
     ResourceLocation name = CauldronRecipeBuilder.nameFromContents(output);
     if (name != null) {
-      build(consumer, name);
+      save(consumer, name);
     }
     throw new IllegalStateException("Unable to create automatic recipe ID");
   }
 
   @Override
-  public void build(Consumer<IFinishedRecipe> consumer, ResourceLocation id) {
+  public void save(Consumer<FinishedRecipe> consumer, ResourceLocation id) {
     ResourceLocation advancementId = this.buildAdvancement(id, "cauldron");
     consumer.accept(new Result(id, group, ingredient, level, temperature, output, time, sound, advancementBuilder, advancementId));
   }
@@ -140,7 +140,7 @@ public class CauldronTransformBuilder extends AbstractRecipeBuilder<CauldronTran
   /**
    * Result class
    */
-  private static class Result implements IFinishedRecipe {
+  private static class Result implements FinishedRecipe {
     private final ResourceLocation id;
     private final String group;
     private final ICauldronIngredient ingredient;
@@ -192,7 +192,7 @@ public class CauldronTransformBuilder extends AbstractRecipeBuilder<CauldronTran
     }
 
     @Override
-    public IRecipeSerializer<?> getType() {
+    public RecipeSerializer<?> getType() {
       return RecipeSerializers.CAULDRON_TRANSFORM;
     }
 

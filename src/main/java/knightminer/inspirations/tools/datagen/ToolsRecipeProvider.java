@@ -4,27 +4,28 @@ import knightminer.inspirations.common.data.ConfigEnabledCondition;
 import knightminer.inspirations.common.datagen.IInspirationsRecipeBuilder;
 import knightminer.inspirations.common.datagen.NBTIngredient;
 import knightminer.inspirations.tools.InspirationsTools;
-import net.minecraft.advancements.criterion.EnchantmentPredicate;
-import net.minecraft.advancements.criterion.ItemPredicate;
-import net.minecraft.advancements.criterion.MinMaxBounds;
-import net.minecraft.advancements.criterion.NBTPredicate;
+import net.minecraft.advancements.critereon.EnchantmentPredicate;
+import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.advancements.critereon.MinMaxBounds;
+import net.minecraft.advancements.critereon.NbtPredicate;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.IFinishedRecipe;
-import net.minecraft.data.RecipeProvider;
-import net.minecraft.data.ShapedRecipeBuilder;
-import net.minecraft.data.ShapelessRecipeBuilder;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.potion.PotionUtils;
-import net.minecraft.potion.Potions;
+import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeProvider;
+import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.data.recipes.ShapelessRecipeBuilder;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.Potions;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
 
+import java.util.Collections;
 import java.util.function.Consumer;
 
 public class ToolsRecipeProvider extends RecipeProvider implements IConditionBuilder, IInspirationsRecipeBuilder {
-  private Consumer<IFinishedRecipe> consumer;
+  private Consumer<FinishedRecipe> consumer;
 
   public ToolsRecipeProvider(DataGenerator gen) {
     super(gen);
@@ -41,12 +42,12 @@ public class ToolsRecipeProvider extends RecipeProvider implements IConditionBui
   }
 
   @Override
-  public Consumer<IFinishedRecipe> getConsumer() {
+  public Consumer<FinishedRecipe> getConsumer() {
     return consumer;
   }
 
   @Override
-  protected void buildShapelessRecipes(Consumer<IFinishedRecipe> consumer) {
+  protected void buildCraftingRecipes(Consumer<FinishedRecipe> consumer) {
     // set for the util
     this.consumer = consumer;
 
@@ -66,13 +67,13 @@ public class ToolsRecipeProvider extends RecipeProvider implements IConditionBui
     // not using the builder because it lacks potion
     ItemPredicate hasWaterBottle = new ItemPredicate(
         null,  // Tag
-        Items.POTION,
-        MinMaxBounds.IntBound.ANY,
-        MinMaxBounds.IntBound.ANY,
+        Collections.singleton(Items.POTION),
+        MinMaxBounds.Ints.ANY,
+        MinMaxBounds.Ints.ANY,
         EnchantmentPredicate.NONE,
         EnchantmentPredicate.NONE,
         Potions.WATER,
-        NBTPredicate.ANY
+        NbtPredicate.ANY
     );
     ShapedRecipeBuilder.shaped(InspirationsTools.barometer)
                        .unlockedBy("has_bottle", inventoryTrigger(hasWaterBottle))
@@ -84,7 +85,7 @@ public class ToolsRecipeProvider extends RecipeProvider implements IConditionBui
                        .save(withCondition(ConfigEnabledCondition.BAROMETER), prefix(InspirationsTools.barometer, "tools/"));
 
     // lock and key
-    Consumer<IFinishedRecipe> lockCondition = withCondition(ConfigEnabledCondition.LOCK);
+    Consumer<FinishedRecipe> lockCondition = withCondition(ConfigEnabledCondition.LOCK);
     ShapedRecipeBuilder.shaped(InspirationsTools.lock)
                        .unlockedBy("has_iron", has(Tags.Items.INGOTS_IRON))
                        .define('I', Tags.Items.INGOTS_IRON)

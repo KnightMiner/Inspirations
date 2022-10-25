@@ -4,11 +4,11 @@ import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronConten
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.util.CauldronTemperature;
 import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.util.Mth;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
@@ -35,9 +35,9 @@ public class TileCauldronInventory extends CauldronItemInventory {
   @Override
   public void playSound(SoundEvent sound) {
     if (!silent) {
-      World world = tile.getLevel();
+      Level world = tile.getLevel();
       if (world != null) {
-        world.playSound(null, tile.getBlockPos(), sound, SoundCategory.BLOCKS, 1.0f, 1.0f);
+        world.playSound(null, tile.getBlockPos(), sound, SoundSource.BLOCKS, 1.0f, 1.0f);
       }
     }
   }
@@ -98,7 +98,7 @@ public class TileCauldronInventory extends CauldronItemInventory {
   @Override
   public void setLevel(int level) {
     // set variable so we can just run updates at the end
-    newLevel = MathHelper.clamp(level, 0, ICauldronRecipe.MAX);
+    newLevel = Mth.clamp(level, 0, ICauldronRecipe.MAX);
   }
 
 

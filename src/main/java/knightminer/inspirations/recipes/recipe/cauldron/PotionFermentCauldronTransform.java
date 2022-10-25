@@ -2,20 +2,20 @@ package knightminer.inspirations.recipes.recipe.cauldron;
 
 import com.google.gson.JsonObject;
 import knightminer.inspirations.library.recipe.DynamicFinishedRecipe;
-import knightminer.inspirations.library.recipe.RecipeSerializer;
 import knightminer.inspirations.library.recipe.RecipeSerializers;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.inventory.ICauldronState;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronTransform;
 import knightminer.inspirations.library.recipe.cauldron.util.CauldronTemperature;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.world.World;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.level.Level;
+import slimeknights.mantle.recipe.helper.AbstractRecipeSerializer;
 
 import javax.annotation.Nullable;
 
@@ -32,7 +32,7 @@ public class PotionFermentCauldronTransform implements ICauldronTransform {
   }
 
   @Override
-  public boolean matches(ICauldronState inv, World worldIn) {
+  public boolean matches(ICauldronState inv, Level worldIn) {
     return inv.getLevel() > 0 && inv.getTemperature() == CauldronTemperature.BOILING && inv.getContents().contains(CauldronContentTypes.UNFERMENTED_POTION);
   }
 
@@ -55,7 +55,7 @@ public class PotionFermentCauldronTransform implements ICauldronTransform {
   }
 
   @Override
-  public IRecipeSerializer<?> getSerializer() {
+  public RecipeSerializer<?> getSerializer() {
     return RecipeSerializers.CAULDRON_POTION_FERMENT;
   }
 
@@ -65,21 +65,21 @@ public class PotionFermentCauldronTransform implements ICauldronTransform {
   }
 
   /** Serializer for a potion transform */
-  public static class Serializer extends RecipeSerializer<PotionFermentCauldronTransform> {
+  public static class Serializer extends AbstractRecipeSerializer<PotionFermentCauldronTransform> {
     @Override
     public PotionFermentCauldronTransform fromJson(ResourceLocation id, JsonObject json) {
-      int time = JSONUtils.getAsInt(json, "time");
+      int time = GsonHelper.getAsInt(json, "time");
       return new PotionFermentCauldronTransform(id, time);
     }
 
     @Nullable
     @Override
-    public PotionFermentCauldronTransform fromNetwork(ResourceLocation id, PacketBuffer buffer) {
+    public PotionFermentCauldronTransform fromNetwork(ResourceLocation id, FriendlyByteBuf buffer) {
       return new PotionFermentCauldronTransform(id, buffer.readVarInt());
     }
 
     @Override
-    public void toNetwork(PacketBuffer buffer, PotionFermentCauldronTransform recipe) {
+    public void toNetwork(FriendlyByteBuf buffer, PotionFermentCauldronTransform recipe) {
       buffer.writeVarInt(recipe.time);
     }
   }

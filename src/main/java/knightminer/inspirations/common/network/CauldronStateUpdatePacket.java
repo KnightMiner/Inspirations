@@ -1,15 +1,15 @@
 package knightminer.inspirations.common.network;
 
-import knightminer.inspirations.library.Util;
+import knightminer.inspirations.library.MiscUtil;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.network.NetworkEvent.Context;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkEvent.Context;
 import slimeknights.mantle.network.packet.IThreadsafePacket;
-import slimeknights.mantle.util.TileEntityHelper;
+import slimeknights.mantle.util.BlockEntityHelper;
 
 import javax.annotation.Nullable;
 
@@ -38,7 +38,7 @@ public class CauldronStateUpdatePacket implements IThreadsafePacket {
    * Reads the packet from the buffer
    * @param buffer  Buffer instance
    */
-  public CauldronStateUpdatePacket(PacketBuffer buffer) {
+  public CauldronStateUpdatePacket(FriendlyByteBuf buffer) {
     this.pos = buffer.readBlockPos();
     if (buffer.readBoolean()) {
       this.contents = CauldronContentTypes.read(buffer);
@@ -49,7 +49,7 @@ public class CauldronStateUpdatePacket implements IThreadsafePacket {
   }
 
   @Override
-  public void encode(PacketBuffer buffer) {
+  public void encode(FriendlyByteBuf buffer) {
     buffer.writeBlockPos(pos);
     if (contents != null) {
       buffer.writeBoolean(true);
@@ -68,9 +68,9 @@ public class CauldronStateUpdatePacket implements IThreadsafePacket {
   /** Once removed client class */
   private static class HandleClient {
     private static void handle(CauldronStateUpdatePacket packet) {
-      TileEntityHelper.getTile(CauldronTileEntity.class, Minecraft.getInstance().level, packet.pos, true).ifPresent(te -> {
+      BlockEntityHelper.get(CauldronTileEntity.class, Minecraft.getInstance().level, packet.pos, true).ifPresent(te -> {
         if (te.updateStateAndData(packet.contents, packet.levelOffset)) {
-          Util.notifyClientUpdate(te);
+          MiscUtil.notifyClientUpdate(te);
         }
       });
     }

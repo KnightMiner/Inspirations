@@ -7,7 +7,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import knightminer.inspirations.library.recipe.cauldron.contents.CauldronContentType;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 import slimeknights.mantle.util.JsonHelper;
 
 import java.util.ArrayList;
@@ -46,7 +46,7 @@ public abstract class ContentMatchIngredient<T> implements ICauldronIngredient {
    * Writes the fluid ingredient to the packet buffer
    * @param buffer  Buffer instance
    */
-  protected abstract void write(PacketBuffer buffer);
+  protected abstract void write(FriendlyByteBuf buffer);
 
   @Override
   public boolean test(ICauldronContents contents) {
@@ -80,7 +80,7 @@ public abstract class ContentMatchIngredient<T> implements ICauldronIngredient {
     }
 
     @Override
-    protected void write(PacketBuffer buffer) {
+    protected void write(FriendlyByteBuf buffer) {
       buffer.writeVarInt(1);
       serializer.type.write(value, buffer);
     }
@@ -118,7 +118,7 @@ public abstract class ContentMatchIngredient<T> implements ICauldronIngredient {
     }
 
     @Override
-    protected void write(PacketBuffer buffer) {
+    protected void write(FriendlyByteBuf buffer) {
       buffer.writeVarInt(values.size());
       for (T value : values) {
         serializer.type.write(value, buffer);
@@ -210,7 +210,7 @@ public abstract class ContentMatchIngredient<T> implements ICauldronIngredient {
     }
 
     @Override
-    public ContentMatchIngredient<T> read(PacketBuffer buffer) {
+    public ContentMatchIngredient<T> read(FriendlyByteBuf buffer) {
       // read all values from the buffer
       int size = buffer.readVarInt();
       List<T> values = new ArrayList<>(size);
@@ -223,7 +223,7 @@ public abstract class ContentMatchIngredient<T> implements ICauldronIngredient {
     }
 
     @Override
-    public void write(ContentMatchIngredient<T> ingredient, PacketBuffer buffer) {
+    public void write(ContentMatchIngredient<T> ingredient, FriendlyByteBuf buffer) {
       ingredient.write(buffer);
     }
   }

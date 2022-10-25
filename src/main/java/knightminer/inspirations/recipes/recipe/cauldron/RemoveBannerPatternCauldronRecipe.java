@@ -5,14 +5,14 @@ import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.inventory.ICauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.inventory.IModifyableCauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipeSerializer;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.tileentity.BannerTileEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.world.World;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BannerBlockEntity;
+import net.minecraft.world.level.material.Fluids;
 
 /**
  * Cauldron recipe to remove banner patterns
@@ -24,19 +24,19 @@ public class RemoveBannerPatternCauldronRecipe implements ICauldronRecipe {
   }
 
   @Override
-  public boolean matches(ICauldronInventory inv, World worldIn) {
+  public boolean matches(ICauldronInventory inv, Level worldIn) {
     ItemStack stack = inv.getStack();
     // must be at least one level of water, be a banner, and have patterns
     return inv.getLevel() >= THIRD && inv.getContents().contains(CauldronContentTypes.FLUID, Fluids.WATER)
-           && ItemTags.BANNERS.contains(stack.getItem())
-           && BannerTileEntity.getPatternCount(stack) > 0;
+           && stack.is(ItemTags.BANNERS)
+           && BannerBlockEntity.getPatternCount(stack) > 0;
   }
 
   @Override
   public void handleRecipe(IModifyableCauldronInventory inv) {
     // remove patterns
     ItemStack stack = inv.splitStack(1);
-    BannerTileEntity.removeLastPattern(stack);
+    BannerBlockEntity.removeLastPattern(stack);
     inv.setOrGiveStack(stack);
     // use one level of water
     inv.addLevel(-THIRD);
@@ -51,7 +51,7 @@ public class RemoveBannerPatternCauldronRecipe implements ICauldronRecipe {
   }
 
   @Override
-  public IRecipeSerializer<?> getSerializer() {
+  public RecipeSerializer<?> getSerializer() {
     return RecipeSerializers.CAULDRON_REMOVE_BANNER_PATTERN;
   }
 }

@@ -3,11 +3,11 @@ package knightminer.inspirations.library.recipe.cauldron.contents;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
 import io.netty.handler.codec.DecoderException;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.util.Constants.NBT;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
@@ -72,25 +72,25 @@ public abstract class RegistryContentType<T extends IForgeRegistryEntry<T>> exte
 
   @Override
   public T getValue(JsonElement element, String key) {
-    return getValue(new ResourceLocation(JSONUtils.convertToString(element, key)), JsonSyntaxException::new);
+    return getValue(new ResourceLocation(GsonHelper.convertToString(element, key)), JsonSyntaxException::new);
   }
 
   @Nullable
   @Override
-  public T read(CompoundNBT tag) {
-    if (tag.contains(getKey(), NBT.TAG_STRING)) {
+  public T read(CompoundTag tag) {
+    if (tag.contains(getKey(), Tag.TAG_STRING)) {
       return getValue(new ResourceLocation(tag.getString(getKey())));
     }
     return null;
   }
 
   @Override
-  public T read(PacketBuffer buffer) {
+  public T read(FriendlyByteBuf buffer) {
     return getValue(buffer.readResourceLocation(), DecoderException::new);
   }
 
   @Override
-  public void write(T value, PacketBuffer buffer) {
+  public void write(T value, FriendlyByteBuf buffer) {
     buffer.writeResourceLocation(Objects.requireNonNull(value.getRegistryName()));
   }
 }

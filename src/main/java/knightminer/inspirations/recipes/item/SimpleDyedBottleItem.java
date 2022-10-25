@@ -2,20 +2,20 @@ package knightminer.inspirations.recipes.item;
 
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.IHidable;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.passive.SheepEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.DyeItem;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.SoundEvents;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.animal.Sheep;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.DyeItem;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.core.NonNullList;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraftforge.items.ItemHandlerHelper;
 
-import net.minecraft.item.Item.Properties;
+import net.minecraft.world.item.Item.Properties;
 
 /**
  * Item for a dye item that is also a bottle.
@@ -37,20 +37,20 @@ public class SimpleDyedBottleItem extends DyeItem implements IHidable {
   }
 
   @Override
-  public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items) {
+  public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
     if (shouldAddtoItemGroup(group)) {
       super.fillItemCategory(group, items);
     }
   }
 
   @Override
-  public ActionResultType interactLivingEntity(ItemStack stack, PlayerEntity player, LivingEntity target, Hand hand) {
+  public InteractionResult interactLivingEntity(ItemStack stack, Player player, LivingEntity target, InteractionHand hand) {
     // this method reimplements many entity dye behaviors to properly return bottles
     DyeColor color = getDyeColor();
 
     // dye sheep
-    if (target instanceof SheepEntity) {
-      SheepEntity sheep = (SheepEntity)target;
+    if (target instanceof Sheep) {
+      Sheep sheep = (Sheep)target;
       if (!sheep.isSheared() && sheep.getColor() != color) {
         sheep.setColor(color);
         player.playSound(SoundEvents.BOTTLE_EMPTY, 1.0F, 1.0F);
@@ -58,10 +58,10 @@ public class SimpleDyedBottleItem extends DyeItem implements IHidable {
         // give back bottle;
         consumeItem(player, hand, stack);
       }
-      return ActionResultType.SUCCESS;
+      return InteractionResult.SUCCESS;
     }
 
-    return ActionResultType.PASS;
+    return InteractionResult.PASS;
   }
 
   /**
@@ -70,7 +70,7 @@ public class SimpleDyedBottleItem extends DyeItem implements IHidable {
    * @param hand    Hand used
    * @param stack   Consumed stack
    */
-  private static void consumeItem(PlayerEntity player, Hand hand, ItemStack stack) {
+  private static void consumeItem(Player player, InteractionHand hand, ItemStack stack) {
     if (!player.isCreative()) {
       ItemStack bottle = stack.getContainerItem().copy();
       if (stack.getCount() == 1) {

@@ -4,8 +4,8 @@ import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
 import knightminer.inspirations.recipes.recipe.inventory.TileCauldronInventory;
 import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.items.IItemHandler;
 
 import java.util.function.Consumer;
@@ -137,7 +137,7 @@ public class CauldronItemHandler implements IItemHandler {
 
     // validate the cached recipe as we are about to extract
     if (needsValidation) {
-      World world = te.getLevel();
+      Level world = te.getLevel();
       if (world == null || !currentRecipe.matches(inventory, world)) {
         clearCache();
         Inspirations.log.error("Attempted to extract items from a recipe that does not match the cauldron.");

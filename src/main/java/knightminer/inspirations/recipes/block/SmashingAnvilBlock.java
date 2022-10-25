@@ -1,14 +1,14 @@
 package knightminer.inspirations.recipes.block;
 
 import knightminer.inspirations.recipes.InspirationsRecipes;
-import net.minecraft.block.AnvilBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.item.FallingBlockEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.item.FallingBlockEntity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.AnvilBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LevelEvent;
+import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nullable;
 
@@ -32,7 +32,7 @@ public class SmashingAnvilBlock extends AnvilBlock {
   }
 
   @Override
-  public void onLand(World world, BlockPos pos, BlockState anvil, BlockState target, FallingBlockEntity entity) {
+  public void onLand(Level world, BlockPos pos, BlockState anvil, BlockState target, FallingBlockEntity entity) {
     BlockPos down = pos.below();
     if (!smashBlock(world, down, world.getBlockState(down))) {
       super.onLand(world, pos, anvil, target, entity);
@@ -47,7 +47,7 @@ public class SmashingAnvilBlock extends AnvilBlock {
    * @return True if somethign was smashed
    */
   @SuppressWarnings("WeakerAccess")
-  public static boolean smashBlock(World world, BlockPos pos, BlockState state) {
+  public static boolean smashBlock(Level world, BlockPos pos, BlockState state) {
     // if we started on air, just return true
     if (state.getBlock() == Blocks.AIR) {
       return true;
@@ -67,7 +67,7 @@ public class SmashingAnvilBlock extends AnvilBlock {
       world.destroyBlock(pos, true);
     } else {
       // breaking particles
-      world.levelEvent(Constants.WorldEvents.BREAK_BLOCK_EFFECTS, pos, Block.getId(state));
+      world.levelEvent(LevelEvent.PARTICLES_DESTROY_BLOCK, pos, Block.getId(state));
       world.setBlockAndUpdate(pos, transformation);
     }
     return true;

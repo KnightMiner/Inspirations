@@ -1,22 +1,22 @@
 package knightminer.inspirations.common;
 
 import knightminer.inspirations.Inspirations;
-import net.minecraft.block.Block;
-import net.minecraft.client.gui.IHasContainer;
-import net.minecraft.client.gui.ScreenManager;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.client.gui.screens.inventory.MenuAccess;
+import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.RenderTypeLookup;
-import net.minecraft.client.renderer.color.BlockColors;
-import net.minecraft.client.renderer.color.IBlockColor;
-import net.minecraft.client.renderer.color.IItemColor;
-import net.minecraft.client.renderer.color.ItemColors;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.item.IItemPropertyGetter;
-import net.minecraft.item.ItemModelsProperties;
-import net.minecraft.item.Items;
-import net.minecraft.util.IItemProvider;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.color.block.BlockColors;
+import net.minecraft.client.color.block.BlockColor;
+import net.minecraft.client.color.item.ItemColor;
+import net.minecraft.client.color.item.ItemColors;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.client.renderer.item.ItemPropertyFunction;
+import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.ItemLike;
 
 import javax.annotation.Nullable;
 
@@ -31,7 +31,7 @@ public abstract class ClientEvents {
    * @param handler     Color handler logic
    * @param blocks      List of blocks to register
    */
-  protected static void registerBlockColors(BlockColors blockColors, IBlockColor handler, Block... blocks) {
+  protected static void registerBlockColors(BlockColors blockColors, BlockColor handler, Block... blocks) {
     for (Block block : blocks) {
       if (block != null) {
         blockColors.register(handler, block);
@@ -45,8 +45,8 @@ public abstract class ClientEvents {
    * @param handler    Color handler logic
    * @param items      List of items to register
    */
-  protected static void registerItemColors(ItemColors itemColors, IItemColor handler, IItemProvider... items) {
-    for (IItemProvider item : items) {
+  protected static void registerItemColors(ItemColors itemColors, ItemColor handler, ItemLike... items) {
+    for (ItemLike item : items) {
       if (item != null && item.asItem() != Items.AIR) {
         itemColors.register(handler, item);
       }
@@ -59,9 +59,9 @@ public abstract class ClientEvents {
    * @param name Property name, will be namespaced under Inspirations
    * @param prop Property getter instance
    */
-  protected static void registerModelProperty(@Nullable IItemProvider item, String name, IItemPropertyGetter prop) {
+  protected static void registerModelProperty(@Nullable ItemLike item, String name, ItemPropertyFunction prop) {
     if (item != null) {
-      ItemModelsProperties.register(item.asItem(), Inspirations.getResource(name), prop);
+      ItemProperties.register(item.asItem(), Inspirations.getResource(name), prop);
     }
   }
 
@@ -72,7 +72,7 @@ public abstract class ClientEvents {
    */
   protected static void setRenderLayer(@Nullable Block block, RenderType renderLayer) {
     if (block != null) {
-      RenderTypeLookup.setRenderLayer(block, renderLayer);
+      ItemBlockRenderTypes.setRenderLayer(block, renderLayer);
     }
   }
 
@@ -83,9 +83,9 @@ public abstract class ClientEvents {
    * @param <M>     Container type
    * @param <U>     Screen type
    */
-  protected static <M extends Container, U extends Screen & IHasContainer<M>> void registerScreenFactory(@Nullable ContainerType<? extends M> type, ScreenManager.IScreenFactory<M,U> factory) {
+  protected static <M extends AbstractContainerMenu, U extends Screen & MenuAccess<M>> void registerScreenFactory(@Nullable MenuType<? extends M> type, MenuScreens.ScreenConstructor<M,U> factory) {
     if (type != null) {
-      ScreenManager.register(type, factory);
+      MenuScreens.register(type, factory);
     }
   }
 }

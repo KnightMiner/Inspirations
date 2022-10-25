@@ -1,16 +1,16 @@
 package knightminer.inspirations.library.recipe.crafting;
 
 import com.google.gson.JsonObject;
-import knightminer.inspirations.library.recipe.RecipeSerializer;
 import knightminer.inspirations.library.recipe.RecipeSerializers;
-import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.item.crafting.ShapelessRecipe;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.core.NonNullList;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.ShapelessRecipe;
+import slimeknights.mantle.recipe.helper.AbstractRecipeSerializer;
 
 import javax.annotation.Nullable;
 
@@ -38,22 +38,22 @@ public class ShapelessNoContainerRecipe extends ShapelessRecipe {
   }
 
   @Override
-  public NonNullList<ItemStack> getRemainingItems(CraftingInventory inv) {
+  public NonNullList<ItemStack> getRemainingItems(CraftingContainer inv) {
     return NonNullList.withSize(inv.getContainerSize(), ItemStack.EMPTY);
   }
 
   @Override
-  public IRecipeSerializer<?> getSerializer() {
+  public RecipeSerializer<?> getSerializer() {
     return RecipeSerializers.SHAPELESS_NO_CONTAINER;
   }
 
   /**
    * Serializer to redirect to the shapeless serializer
    */
-  public static class Serializer extends RecipeSerializer<ShapelessNoContainerRecipe> {
+  public static class Serializer extends AbstractRecipeSerializer<ShapelessNoContainerRecipe> {
     @Nullable
     @Override
-    public ShapelessNoContainerRecipe fromNetwork(ResourceLocation recipeID, PacketBuffer buffer) {
+    public ShapelessNoContainerRecipe fromNetwork(ResourceLocation recipeID, FriendlyByteBuf buffer) {
       ShapelessRecipe recipe = SHAPELESS_RECIPE.fromNetwork(recipeID, buffer);
       if (recipe != null) {
         return new ShapelessNoContainerRecipe(recipe);
@@ -67,7 +67,7 @@ public class ShapelessNoContainerRecipe extends ShapelessRecipe {
     }
 
     @Override
-    public void toNetwork(PacketBuffer buffer, ShapelessNoContainerRecipe recipe) {
+    public void toNetwork(FriendlyByteBuf buffer, ShapelessNoContainerRecipe recipe) {
       Serializer.SHAPELESS_RECIPE.toNetwork(buffer, recipe);
     }
   }

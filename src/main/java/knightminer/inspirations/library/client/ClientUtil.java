@@ -1,29 +1,30 @@
 package knightminer.inspirations.library.client;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat.Mode;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.InspirationsRegistry;
-import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.texture.AtlasTexture;
-import net.minecraft.client.renderer.texture.MissingTextureSprite;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.inventory.container.PlayerContainer;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockDisplayReader;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.data.EmptyModelData;
-import net.minecraftforge.resource.ISelectiveResourceReloadListener;
-import net.minecraftforge.resource.VanillaResourceType;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.text.WordUtils;
-import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
 import java.awt.Color;
@@ -56,11 +57,11 @@ public final class ClientUtil {
    * @author InsomniaKitten
    */
   private static Integer getItemColorRaw(Item key) {
-    IBakedModel model = mc.getItemRenderer().getModel(new ItemStack(key), null, null);
+    BakedModel model = mc.getItemRenderer().getModel(new ItemStack(key), null, null, 0);
     if (model == mc.getModelManager().getMissingModel()) {
       return -1;
     }
-    TextureAtlasSprite sprite = model.getParticleTexture(EmptyModelData.INSTANCE);
+    TextureAtlasSprite sprite = model.getParticleIcon(EmptyModelData.INSTANCE);
     if (sprite == null) {
       return -1;
     }
@@ -103,9 +104,9 @@ public final class ClientUtil {
    * Gets the sprite for the given texture location, or Missing Texture if no sprite is found
    */
   public static TextureAtlasSprite getSprite(@Nullable ResourceLocation location) {
-    AtlasTexture atlas = mc.getModelManager().getAtlas(PlayerContainer.BLOCK_ATLAS);
+    TextureAtlas atlas = mc.getModelManager().getAtlas(InventoryMenu.BLOCK_ATLAS);
     if (location == null) {
-      return atlas.getSprite(MissingTextureSprite.getLocation());
+      return atlas.getSprite(MissingTextureAtlasSprite.getLocation());
     }
     return atlas.getSprite(location);
   }
@@ -126,9 +127,10 @@ public final class ClientUtil {
     uMax = uMax - (16 - size) / 16.0f * (uMax - uMin);
     vMax = vMax - (16 - filled) / 16.0f * (vMax - vMin);
 
-    Tessellator tessellator = Tessellator.getInstance();
+    Tesselator tessellator = Tesselator.getInstance();
     BufferBuilder bufferBuilder = tessellator.getBuilder();
-    bufferBuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+
+    bufferBuilder.begin(Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
     bufferBuilder.vertex(x, y + size, 100).uv(uMin, vMax).endVertex();
     bufferBuilder.vertex(x + size, y + size, 100).uv(uMax, vMax).endVertex();
     bufferBuilder.vertex(x + size, y + size - filled, 100).uv(uMax, vMin).endVertex();
@@ -149,7 +151,7 @@ public final class ClientUtil {
    * @param index Tint index
    * @return color, or -1 for undefined
    */
-  public static int getStackBlockColorsSafe(ItemStack stack, @Nullable IBlockDisplayReader world, @Nullable BlockPos pos, int index) {
+  public static int getStackBlockColorsSafe(ItemStack stack, @Nullable BlockAndTintGetter world, @Nullable BlockPos pos, int index) {
     if (stack.isEmpty()) {
       return -1;
     }
@@ -178,11 +180,10 @@ public final class ClientUtil {
    * @param index Tint index
    * @return color, or -1 for undefined
    */
-  public static int getStackBlockColors(ItemStack stack, @Nullable IBlockDisplayReader world, @Nullable BlockPos pos, int index) {
-    if (stack.isEmpty() || !(stack.getItem() instanceof BlockItem)) {
+  public static int getStackBlockColors(ItemStack stack, @Nullable BlockAndTintGetter world, @Nullable BlockPos pos, int index) {
+    if (stack.isEmpty() || !(stack.getItem() instanceof BlockItem item)) {
       return -1;
     }
-    BlockItem item = (BlockItem)stack.getItem();
     BlockState state = item.getBlock().defaultBlockState();
     return mc.getBlockColors().getColor(state, world, pos, index);
   }
@@ -199,9 +200,38 @@ public final class ClientUtil {
   }
 
   /** Reload listener for client utils */
-  public static final ISelectiveResourceReloadListener RELOAD_LISTENER = (manager, predicate) -> {
-    if (predicate.test(VanillaResourceType.MODELS) || predicate.test(VanillaResourceType.TEXTURES)) {
-      COLOR_CACHE.clear();
-    }
-  };
+  public static final ResourceManagerReloadListener RELOAD_LISTENER = manager -> COLOR_CACHE.clear();
+
+
+  /* GUI helpers */
+
+  /**
+   * Binds a texture for rendering
+   * @param texture  Texture
+   */
+  public static void bindTexture(ResourceLocation texture) {
+    RenderSystem.setShader(GameRenderer::getPositionTexShader);
+    RenderSystem.setShaderTexture(0, texture);
+  }
+
+  /**
+   * Sets up the shader for rendering
+   * @param texture  Texture
+   * @param red      Red tint
+   * @param green    Green tint
+   * @param blue     Blue tint
+   * @param alpha    Alpha tint
+   */
+  public static void setup(ResourceLocation texture, float red, float green, float blue, float alpha) {
+    bindTexture(texture);
+    RenderSystem.setShaderColor(red, green, blue, alpha);
+  }
+
+  /**
+   * Sets up the shader for rendering
+   * @param texture  Texture
+   */
+  public static void setup(ResourceLocation texture) {
+    setup(texture, 1.0f, 1.0f, 1.0f, 1.0f);
+  }
 }

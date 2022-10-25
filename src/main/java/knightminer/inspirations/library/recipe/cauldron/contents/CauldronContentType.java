@@ -7,11 +7,11 @@ import io.netty.handler.codec.DecoderException;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.recipes.recipe.cauldron.contents.CauldronContents;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
 import slimeknights.mantle.util.JsonHelper;
 
 import javax.annotation.Nullable;
@@ -110,7 +110,7 @@ public abstract class CauldronContentType<T> {
    * @param value  Value to fetch name
    * @return  Value name
    */
-  public abstract ITextComponent getDisplayName(T value);
+  public abstract Component getDisplayName(T value);
 
   /**
    * Gets tooltip information for these contents
@@ -118,7 +118,7 @@ public abstract class CauldronContentType<T> {
    * @param tooltip      Existing tooltip
    * @param tooltipFlag  Tooltip context flag
    */
-  public void addInformation(T value, List<ITextComponent> tooltip, ITooltipFlag tooltipFlag) {}
+  public void addInformation(T value, List<Component> tooltip, TooltipFlag tooltipFlag) {}
 
   /**
    * Gets the mod ID for the given value
@@ -154,13 +154,13 @@ public abstract class CauldronContentType<T> {
    * @return  Read value
    */
   @Nullable
-  public abstract T read(CompoundNBT tag);
+  public abstract T read(CompoundTag tag);
 
   /**
    * Writes the given type to NBT
    * @param tag       NBT tag
    */
-  public void write(T value, CompoundNBT tag) {
+  public void write(T value, CompoundTag tag) {
     tag.putString(getKey(), getName(value));
   }
 
@@ -207,14 +207,14 @@ public abstract class CauldronContentType<T> {
    * @return  Read value
    * @throws DecoderException if the type is invalid
    */
-  public abstract T read(PacketBuffer buffer);
+  public abstract T read(FriendlyByteBuf buffer);
 
   /**
    * Writes the given type to the packet buffer
    * @param value    Value to write
    * @param buffer    Packet buffer
    */
-  public abstract void write(T value, PacketBuffer buffer);
+  public abstract void write(T value, FriendlyByteBuf buffer);
 
   @Override
   public String toString() {

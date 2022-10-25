@@ -1,28 +1,27 @@
 package knightminer.inspirations.tools.enchantment;
 
 import knightminer.inspirations.common.Config;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.enchantment.FireAspectEnchantment;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.AxeItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.AxeItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.item.enchantment.FireAspectEnchantment;
+import net.minecraftforge.common.ToolActions;
 
 import java.util.Map;
 
-import net.minecraft.enchantment.Enchantment.Rarity;
-
 public class ExtendedFireAspectEnchantment extends FireAspectEnchantment {
-  public ExtendedFireAspectEnchantment(Rarity rarity, EquipmentSlotType... slots) {
+  public ExtendedFireAspectEnchantment(Rarity rarity, EquipmentSlot... slots) {
     super(rarity, slots);
   }
 
   @Override
   public boolean canApplyAtEnchantingTable(ItemStack stack) {
     Item item = stack.getItem();
-    return (Config.moreShieldEnchantments.get() && item.isShield(stack, null))
+    return (Config.moreShieldEnchantments.get() && stack.canPerformAction(ToolActions.SHIELD_BLOCK))
            || (Config.axeEnchantmentTable.get() && Config.axeWeaponEnchants.get() && item instanceof AxeItem)
            || super.canApplyAtEnchantingTable(stack);
   }
@@ -34,11 +33,11 @@ public class ExtendedFireAspectEnchantment extends FireAspectEnchantment {
   }
 
   @Override
-  public Map<EquipmentSlotType,ItemStack> getSlotItems(LivingEntity entity) {
+  public Map<EquipmentSlot,ItemStack> getSlotItems(LivingEntity entity) {
     // shields in hand should not give knockback, just on hit
-    Map<EquipmentSlotType,ItemStack> items = super.getSlotItems(entity);
-    for (EquipmentSlotType slot : EquipmentSlotType.values()) {
-      if (items.containsKey(slot) && items.get(slot).isShield(entity)) {
+    Map<EquipmentSlot,ItemStack> items = super.getSlotItems(entity);
+    for (EquipmentSlot slot : EquipmentSlot.values()) {
+      if (items.containsKey(slot) && items.get(slot).canPerformAction(ToolActions.SHIELD_BLOCK)) {
         items.put(slot, ItemStack.EMPTY);
       }
     }

@@ -7,11 +7,11 @@ import knightminer.inspirations.library.client.ClientUtil;
 import knightminer.inspirations.library.client.ConfigurableResourcePack;
 import knightminer.inspirations.recipes.RecipesClientEvents;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.IReloadableResourceManager;
-import net.minecraft.resources.IResourceManager;
+import net.minecraft.client.resources.model.ModelBakery;
+import net.minecraft.server.packs.resources.ReloadableResourceManager;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ModelBakeEvent;
-import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
@@ -38,9 +38,9 @@ public class SharedClientEvents extends ClientEvents {
   @SubscribeEvent
   static void setup(FMLCommonSetupEvent event) {
     // listener to clear color cache from client utils
-    IResourceManager manager = Minecraft.getInstance().getResourceManager();
-    if (manager instanceof IReloadableResourceManager) {
-      ((IReloadableResourceManager)manager).registerReloadListener(ClientUtil.RELOAD_LISTENER);
+    ResourceManager manager = Minecraft.getInstance().getResourceManager();
+    if (manager instanceof ReloadableResourceManager) {
+      ((ReloadableResourceManager)manager).registerReloadListener(ClientUtil.RELOAD_LISTENER);
     } else {
       Inspirations.log.error("Failed to register resource reload listener, expected instance of IReloadableResourceManager but got {}", manager.getClass());
     }
@@ -48,7 +48,7 @@ public class SharedClientEvents extends ClientEvents {
 
   // For the textured blocks, we need to rebake the blocks with the new texture.
   // Those are private, so grab copies from these two events when they fire.
-  public static ModelLoader modelLoader;
+  public static ModelBakery modelLoader;
 
   @SubscribeEvent
   public void collectBakeParameters(ModelBakeEvent event) {

@@ -6,26 +6,26 @@ import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.common.network.MilkablePacket;
 import knightminer.inspirations.library.InspirationsTags;
 import knightminer.inspirations.shared.SharedEvents;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.BushBlock;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.passive.CowEntity;
-import net.minecraft.entity.passive.PigEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.animal.Cow;
+import net.minecraft.world.entity.animal.Pig;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.BushBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract;
@@ -35,6 +35,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.items.ItemHandlerHelper;
+import slimeknights.mantle.util.RegistryHelper;
 
 @SuppressWarnings({"unused"})
 @EventBusSubscriber(modid = Inspirations.modID, bus = Bus.FORGE)
@@ -42,21 +43,20 @@ public class TweaksEvents {
 
   @SubscribeEvent
   static void unsaddlePig(EntityInteract event) {
-    if (!Config.enablePigDesaddle.get()) {
+    if (!Config.enablePigDesaddle.getAsBoolean()) {
       return;
     }
 
-    PlayerEntity player = event.getPlayer();
+    Player player = event.getPlayer();
     ItemStack stack = player.getItemInHand(event.getHand());
     // must be sneaking and holding nothing
     if (player.isCrouching() && stack.isEmpty()) {
       Entity target = event.getTarget();
-      if (target instanceof PigEntity) {
-        PigEntity pig = (PigEntity)target;
+      if (target instanceof Pig pig) {
         if (pig.isSaddled()) {
           pig.steering.setSaddle(false);
-          pig.level.playSound(player, pig.getX(), pig.getY(), pig.getZ(), SoundEvents.PIG_SADDLE, SoundCategory.NEUTRAL, 0.5F, 1.0F);
-          ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(Items.SADDLE), player.inventory.selected);
+          pig.level.playSound(player, pig.getX(), pig.getY(), pig.getZ(), SoundEvents.PIG_SADDLE, SoundSource.NEUTRAL, 0.5F, 1.0F);
+          ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(Items.SADDLE), player.getInventory().selected);
           event.setCanceled(true);
         }
       }
@@ -65,12 +65,12 @@ public class TweaksEvents {
 
   @SubscribeEvent
   static void extraBonemeal(BonemealEvent event) {
-    if (!Config.bonemealMushrooms.get() && !Config.bonemealDeadBush.get() && !Config.bonemealGrassSpread.get() && !Config.bonemealMyceliumSpread.get()) {
+    if (!Config.bonemealMushrooms.getAsBoolean() && !Config.bonemealDeadBush.getAsBoolean() && !Config.bonemealGrassSpread.getAsBoolean() && !Config.bonemealMyceliumSpread.getAsBoolean()) {
       return;
     }
 
     // running client side acts weird
-    World world = event.getWorld();
+    Level world = event.getWorld();
     if (world.isClientSide) {
       return;
     }
@@ -79,12 +79,12 @@ public class TweaksEvents {
     BlockState state = world.getBlockState(pos);
     Block block = state.getBlock();
     // block must be mycelium for mushrooms or sand for dead bushes
-    if ((Config.bonemealMushrooms.get() && block == Blocks.MYCELIUM) || (Config.bonemealDeadBush.get() && block.is(BlockTags.SAND))) {
+    if ((Config.bonemealMushrooms.getAsBoolean() && block == Blocks.MYCELIUM) || (Config.bonemealDeadBush.getAsBoolean() && RegistryHelper.contains(BlockTags.SAND, block))) {
       bonemealPlants(block, world, pos);
       event.setResult(Event.Result.ALLOW);
     }
     // block must be dirt for grass/mycelium spread
-    else if ((Config.bonemealGrassSpread.get() || Config.bonemealMyceliumSpread.get()) && block == Blocks.DIRT) {
+    else if ((Config.bonemealGrassSpread.getAsBoolean() || Config.bonemealMyceliumSpread.getAsBoolean()) && block == Blocks.DIRT) {
       if (bonemealDirt(world, pos)) {
         event.setResult(Event.Result.ALLOW);
       }
@@ -94,7 +94,7 @@ public class TweaksEvents {
   /**
    * Called when using bonemeal on mycelium or sand to produce a plant
    */
-  private static void bonemealPlants(Block base, World world, BlockPos pos) {
+  private static void bonemealPlants(Block base, Level world, BlockPos pos) {
     // this is mostly copied from grass block code, so its a bit weird
     BlockPos up = pos.above();
     BushBlock bush = (BushBlock)Blocks.DEAD_BUSH;
@@ -142,7 +142,7 @@ public class TweaksEvents {
   /**
    * Called when using bonemeal on a dirt block to spread grass
    */
-  private static boolean bonemealDirt(World world, BlockPos pos) {
+  private static boolean bonemealDirt(Level world, BlockPos pos) {
     if (world.getMaxLocalRawBrightness(pos.above()) < 9) {
       return false;
     }
@@ -156,7 +156,7 @@ public class TweaksEvents {
       Block block = state.getBlock();
 
       // hill logic: go up for dirt, down for air
-      if (block.isAir(state, world, pos)) {
+      if (state.isAir()) {
         state = world.getBlockState(offset.below());
         block = state.getBlock();
       } else if (block != Blocks.GRASS_BLOCK && block != Blocks.MYCELIUM) {
@@ -165,9 +165,9 @@ public class TweaksEvents {
       }
 
       // increment if the state is grass/mycelium
-      if (Config.bonemealGrassSpread.get() && block == Blocks.GRASS_BLOCK) {
+      if (Config.bonemealGrassSpread.getAsBoolean() && block == Blocks.GRASS_BLOCK) {
         grass++;
-      } else if (Config.bonemealMyceliumSpread.get() && block == Blocks.MYCELIUM) {
+      } else if (Config.bonemealMyceliumSpread.getAsBoolean() && block == Blocks.MYCELIUM) {
         mycelium++;
       }
     }
@@ -260,7 +260,7 @@ public class TweaksEvents {
 
   @SubscribeEvent(priority = EventPriority.LOW)
   static void onFall(LivingFallEvent event) {
-    if (!Config.lilypadBreakFall.get()) {
+    if (!Config.lilypadBreakFall.getAsBoolean()) {
       return;
     }
 
@@ -271,12 +271,12 @@ public class TweaksEvents {
 
     // ensure client world
     LivingEntity entity = event.getEntityLiving();
-    World world = entity.getCommandSenderWorld();
+    Level world = entity.getCommandSenderWorld();
     if (world.isClientSide) {
       return;
     }
     // actually hit the lily pad
-    Vector3d vec = entity.position();
+    Vec3 vec = entity.position();
     if (vec.y % 1 > 0.09375) {
       return;
     }
@@ -337,17 +337,17 @@ public class TweaksEvents {
 
     // only care about cows
     Entity target = event.getTarget();
-    if (!(target instanceof CowEntity) || ((CowEntity)target).isBaby()) {
+    if (!(target instanceof Cow) || ((Cow)target).isBaby()) {
       return;
     }
 
     // must be holding a milk container
     ItemStack stack = event.getPlayer().getItemInHand(event.getHand());
-    if (stack.getItem().is(InspirationsTags.Items.MILK_CONTAINERS)) {
+    if (stack.is(InspirationsTags.Items.MILK_CONTAINERS)) {
       // if has tag, cannot be milked
-      CompoundNBT tags = target.getPersistentData();
+      CompoundTag tags = target.getPersistentData();
       if (tags.getShort(SharedEvents.TAG_MILKCOOLDOWN) > 0) {
-        event.setCancellationResult(ActionResultType.PASS);
+        event.setCancellationResult(InteractionResult.PASS);
         event.setCanceled(true);
       } else {
         // no tag means we add it as part of milking

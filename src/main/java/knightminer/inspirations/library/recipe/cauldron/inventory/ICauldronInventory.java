@@ -1,6 +1,6 @@
 package knightminer.inspirations.library.recipe.cauldron.inventory;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * Inventory representing contents of the cauldron

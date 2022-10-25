@@ -7,21 +7,20 @@ import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronConten
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.util.CauldronTemperature;
 import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.CauldronBlock;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.LayeredCauldronBlock;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.Optional;
 import java.util.function.Consumer;
 
 public class VanillaCauldronInventory extends CauldronItemInventory {
-  private final World world;
+  private final Level world;
   private final BlockPos pos;
   private final BlockState state;
 
@@ -37,7 +36,7 @@ public class VanillaCauldronInventory extends CauldronItemInventory {
    * @param itemSetter  Logic to update the item stack in context
    * @param itemAdder   Logic to give the context a new item stack
    */
-  public VanillaCauldronInventory(World world, BlockPos pos, BlockState state, ItemStack stack, Consumer<ItemStack> itemSetter, Consumer<ItemStack> itemAdder) {
+  public VanillaCauldronInventory(Level world, BlockPos pos, BlockState state, ItemStack stack, Consumer<ItemStack> itemSetter, Consumer<ItemStack> itemAdder) {
     super(stack, itemSetter, itemAdder);
     this.state = state;
     this.world = world;
@@ -52,7 +51,7 @@ public class VanillaCauldronInventory extends CauldronItemInventory {
    * @param stack       Item stack used to interact
    * @param itemAdder   Logic to give the context a new item stack
    */
-  public VanillaCauldronInventory(World world, BlockPos pos, BlockState state, ItemStack stack, Consumer<ItemStack> itemAdder) {
+  public VanillaCauldronInventory(Level world, BlockPos pos, BlockState state, ItemStack stack, Consumer<ItemStack> itemAdder) {
     this(world, pos, state, stack, EMPTY_CONSUMER, itemAdder);
   }
 
@@ -63,21 +62,21 @@ public class VanillaCauldronInventory extends CauldronItemInventory {
 
   @Override
   public void playSound(SoundEvent sound) {
-    world.playSound(null, pos, sound, SoundCategory.BLOCKS, 1.0f, 1.0f);
+    world.playSound(null, pos, sound, SoundSource.BLOCKS, 1.0f, 1.0f);
   }
 
   /* Levels */
 
   @Override
   public int getLevel() {
-    return state.getValue(CauldronBlock.LEVEL) * 4;
+    return state.getValue(LayeredCauldronBlock.LEVEL) * 4;
   }
 
   @Override
   public void setLevel(int level) {
-    level = MathHelper.clamp(level, 0, ICauldronRecipe.MAX) / 4;
-    if (state.getValue(CauldronBlock.LEVEL) != level) {
-      ((CauldronBlock) Blocks.CAULDRON).setWaterLevel(world, pos, state, level);
+    level = Mth.clamp(level, 0, ICauldronRecipe.MAX) / 4;
+    if (state.getValue(LayeredCauldronBlock.LEVEL) != level) {
+      world.setBlockAndUpdate(pos, state.setValue(LayeredCauldronBlock.LEVEL, level));
     }
   }
 

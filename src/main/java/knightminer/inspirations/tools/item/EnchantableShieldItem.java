@@ -1,8 +1,8 @@
 package knightminer.inspirations.tools.item;
 
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ShieldItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ShieldItem;
 
 public class EnchantableShieldItem extends ShieldItem {
   public EnchantableShieldItem(Item.Properties props) {

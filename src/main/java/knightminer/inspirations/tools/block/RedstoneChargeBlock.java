@@ -1,30 +1,30 @@
 package knightminer.inspirations.tools.block;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderType;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.DirectionalBlock;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.material.PushReaction;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.particles.RedstoneParticleData;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.DirectionProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.util.Direction;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.DirectionalBlock;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.PushReaction;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -48,14 +48,14 @@ public class RedstoneChargeBlock extends Block {
   // These should be overwritten by everything.
 
   @Override
-  public boolean isAir(BlockState state, IBlockReader world, BlockPos pos) {
+  public boolean isAir(BlockState state) {
     return true;
   }
 
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public boolean canBeReplaced(BlockState p_196253_1_, BlockItemUseContext p_196253_2_) {
+  public boolean canBeReplaced(BlockState p_196253_1_, BlockPlaceContext p_196253_2_) {
     return true;
   }
 
@@ -69,17 +69,17 @@ public class RedstoneChargeBlock extends Block {
   /* Blockstate */
 
   @Override
-  protected void createBlockStateDefinition(StateContainer.Builder<Block,BlockState> builder) {
+  protected void createBlockStateDefinition(StateDefinition.Builder<Block,BlockState> builder) {
     builder.add(FACING, QUICK);
   }
 
   /* Fading */
 
   @Override
-  public void setPlacedBy(World world, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack stack) {
+  public void setPlacedBy(Level world, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack stack) {
     if (!world.isClientSide()) {
       world.updateNeighborsAt(pos.relative(state.getValue(FACING)), this);
-      world.getBlockTicks().scheduleTick(pos, this, state.getValue(QUICK) ? 2 : 20);
+      world.scheduleTick(pos, this, state.getValue(QUICK) ? 2 : 20);
     }
     super.setPlacedBy(world, pos, state, entity, stack);
   }
@@ -87,7 +87,7 @@ public class RedstoneChargeBlock extends Block {
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public void onRemove(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
+  public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
     if (!isMoving && state.getBlock() != newState.getBlock()) {
       super.onRemove(state, worldIn, pos, newState, false);
       worldIn.updateNeighborsAt(pos, this);
@@ -98,10 +98,10 @@ public class RedstoneChargeBlock extends Block {
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public void tick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+  public void tick(BlockState state, ServerLevel world, BlockPos pos, Random random) {
     if (!world.isClientSide) {
       world.removeBlock(pos, false);
-      world.playSound(null, pos, SoundEvents.REDSTONE_TORCH_BURNOUT, SoundCategory.BLOCKS, 0.5F, 2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F);
+      world.playSound(null, pos, SoundEvents.REDSTONE_TORCH_BURNOUT, SoundSource.BLOCKS, 0.5F, 2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F);
     }
   }
 
@@ -111,14 +111,14 @@ public class RedstoneChargeBlock extends Block {
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public int getSignal(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
+  public int getSignal(BlockState state, BlockGetter world, BlockPos pos, Direction side) {
     return 15;
   }
 
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public int getDirectSignal(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
+  public int getDirectSignal(BlockState state, BlockGetter world, BlockPos pos, Direction side) {
     return state.getValue(FACING).getOpposite() == side ? 15 : 0;
   }
 
@@ -130,7 +130,7 @@ public class RedstoneChargeBlock extends Block {
   }
 
   @Override
-  public boolean canConnectRedstone(BlockState state, IBlockReader world, BlockPos pos, @Nullable Direction side) {
+  public boolean canConnectRedstone(BlockState state, BlockGetter world, BlockPos pos, @Nullable Direction side) {
     return false;
   }
 
@@ -141,15 +141,15 @@ public class RedstoneChargeBlock extends Block {
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
+  public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
     return BOUNDS;
   }
 
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public VoxelShape getCollisionShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
-    return VoxelShapes.empty();
+  public VoxelShape getCollisionShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
+    return Shapes.empty();
   }
 
 
@@ -158,20 +158,20 @@ public class RedstoneChargeBlock extends Block {
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public boolean canSurvive(BlockState state, IWorldReader world, BlockPos pos) {
+  public boolean canSurvive(BlockState state, LevelReader world, BlockPos pos) {
     return !world.getBlockState(pos).getFluidState().isEmpty();
   }
 
   @Deprecated
   @Nullable
   @Override
-  public BlockState getStateForPlacement(BlockItemUseContext context) {
+  public BlockState getStateForPlacement(BlockPlaceContext context) {
     return canSurvive(defaultBlockState(), context.getLevel(), context.getClickedPos()) ? defaultBlockState() : Blocks.AIR.defaultBlockState();
   }
 
   @Override
   @OnlyIn(Dist.CLIENT)
-  public void animateTick(BlockState stateIn, World worldIn, BlockPos pos, Random rand) {
+  public void animateTick(BlockState stateIn, Level worldIn, BlockPos pos, Random rand) {
     Direction facing = stateIn.getValue(FACING);
 
     int offX = facing.getStepX();
@@ -182,14 +182,14 @@ public class RedstoneChargeBlock extends Block {
     double y = pos.getY() + 0.5;
     double z = pos.getZ() + 0.5;
     for (double i = 0; i <= 0.25; i += 0.05) {
-      worldIn.addParticle(RedstoneParticleData.REDSTONE, x + offX * i, y + offY * i, z + offZ * i, 0, 0, 0);
+      worldIn.addParticle(DustParticleOptions.REDSTONE, x + offX * i, y + offY * i, z + offZ * i, 0, 0, 0);
     }
   }
 
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public BlockRenderType getRenderShape(BlockState state) {
-    return BlockRenderType.INVISIBLE;
+  public RenderShape getRenderShape(BlockState state) {
+    return RenderShape.INVISIBLE;
   }
 }

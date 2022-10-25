@@ -9,7 +9,7 @@ import knightminer.inspirations.library.recipe.cauldron.inventory.ICauldronState
 import knightminer.inspirations.library.recipe.cauldron.util.DisplayCauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.util.LevelPredicate;
 import knightminer.inspirations.library.recipe.cauldron.util.TemperaturePredicate;
-import net.minecraft.util.JSONUtils;
+import net.minecraft.util.GsonHelper;
 import net.minecraftforge.fluids.FluidStack;
 
 import javax.annotation.Nullable;
@@ -114,7 +114,7 @@ public abstract class AbstractCauldronRecipe implements ICauldronRecipeDisplay {
    * @throws JsonSyntaxException  If the value is invalid
    */
   public static TemperaturePredicate getBoiling(JsonObject json, String key) {
-    String name = JSONUtils.getAsString(json, key, "any");
+    String name = GsonHelper.getAsString(json, key, "any");
     TemperaturePredicate boiling = TemperaturePredicate.byName(name);
     if (boiling == null) {
       throw new JsonSyntaxException("Invalid boiling predicate '" + name + "'");

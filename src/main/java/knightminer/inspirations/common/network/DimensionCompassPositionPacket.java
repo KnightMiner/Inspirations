@@ -2,10 +2,10 @@ package knightminer.inspirations.common.network;
 
 import knightminer.inspirations.tools.capability.DimensionCompass;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.network.NetworkEvent.Context;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.network.NetworkEvent.Context;
 import slimeknights.mantle.network.packet.IThreadsafePacket;
 
 import javax.annotation.Nullable;
@@ -21,7 +21,7 @@ public class DimensionCompassPositionPacket implements IThreadsafePacket {
 		this.pos = pos;
 	}
 
-	public DimensionCompassPositionPacket(PacketBuffer buffer) {
+	public DimensionCompassPositionPacket(FriendlyByteBuf buffer) {
 		if (buffer.readBoolean()) {
 			this.pos = buffer.readBlockPos();
 		} else {
@@ -30,7 +30,7 @@ public class DimensionCompassPositionPacket implements IThreadsafePacket {
 	}
 
 	@Override
-	public void encode(PacketBuffer buffer) {
+	public void encode(FriendlyByteBuf buffer) {
 		if (pos == null) {
 			buffer.writeBoolean(false);
 		} else {
@@ -46,7 +46,7 @@ public class DimensionCompassPositionPacket implements IThreadsafePacket {
 
 	private static class HandleClient {
 		private static void handle(DimensionCompassPositionPacket packet) {
-			PlayerEntity player = Minecraft.getInstance().player;
+			Player player = Minecraft.getInstance().player;
 			if (player != null) {
 				player.getCapability(DimensionCompass.CAPABILITY).ifPresent(compass -> compass.setEnteredPosition(packet.pos));
 			}

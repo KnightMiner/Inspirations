@@ -1,6 +1,6 @@
 package knightminer.inspirations.tools.capability;
 
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 
 import javax.annotation.Nullable;
 

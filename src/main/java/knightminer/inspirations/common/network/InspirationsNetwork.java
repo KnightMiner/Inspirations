@@ -1,12 +1,12 @@
 package knightminer.inspirations.common.network;
 
 import knightminer.inspirations.Inspirations;
-import net.minecraft.entity.Entity;
-import net.minecraft.network.IPacket;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.fml.network.NetworkDirection;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.network.NetworkDirection;
 import slimeknights.mantle.network.NetworkWrapper;
 import slimeknights.mantle.network.packet.ISimplePacket;
 
@@ -35,7 +35,7 @@ public class InspirationsNetwork extends NetworkWrapper {
    * @param player Player receiving packet
    * @param packet Packet
    */
-  public static void sendPacket(Entity player, IPacket<?> packet) {
+  public static void sendPacket(Entity player, Packet<?> packet) {
     INSTANCE.sendVanillaPacket(packet, player);
   }
 
@@ -45,9 +45,9 @@ public class InspirationsNetwork extends NetworkWrapper {
    * @param pos    Players too far from this position will not receive the packet
    * @param packet Packet
    */
-  public static void sendToClients(@Nullable World world, BlockPos pos, ISimplePacket packet) {
-    if (world instanceof ServerWorld) {
-      sendToClients((ServerWorld)world, pos, packet);
+  public static void sendToClients(@Nullable Level world, BlockPos pos, ISimplePacket packet) {
+    if (world instanceof ServerLevel) {
+      sendToClients((ServerLevel)world, pos, packet);
     }
   }
 
@@ -57,7 +57,7 @@ public class InspirationsNetwork extends NetworkWrapper {
    * @param pos    Players too far from this position will not receive the packet
    * @param packet Packet
    */
-  public static void sendToClients(ServerWorld world, BlockPos pos, ISimplePacket packet) {
+  public static void sendToClients(ServerLevel world, BlockPos pos, ISimplePacket packet) {
     INSTANCE.sendToClientsAround(packet, world, pos);
   }
 }

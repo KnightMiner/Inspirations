@@ -1,16 +1,14 @@
 package knightminer.inspirations.recipes.item;
 
-import knightminer.inspirations.library.Util;
+import knightminer.inspirations.library.MiscUtil;
 import knightminer.inspirations.recipes.InspirationsRecipes;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.NonNullList;
-import net.minecraftforge.common.util.Constants;
-
-import net.minecraft.item.Item.Properties;
+import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 public class MixedDyedBottleItem extends Item {
   private static final String TAG_COLOR = "color";
@@ -19,7 +17,7 @@ public class MixedDyedBottleItem extends Item {
   }
 
   @Override
-  public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items) {
+  public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
     // hide from creative as means nothing without NBT, and the simple ones do the NBT
   }
 
@@ -29,12 +27,12 @@ public class MixedDyedBottleItem extends Item {
    * @return A single bottle.
    */
   public static ItemStack bottleFromDye(int color) {
-    DyeColor dyeColor = Util.getDyeForColor(color);
+    DyeColor dyeColor = MiscUtil.getDyeForColor(color);
     if (dyeColor != null) {
       return new ItemStack(InspirationsRecipes.simpleDyedWaterBottle.get(dyeColor));
     }
 
-    return Util.setColor(new ItemStack(InspirationsRecipes.mixedDyedWaterBottle), color);
+    return MiscUtil.setColor(new ItemStack(InspirationsRecipes.mixedDyedWaterBottle), color);
   }
 
   /**
@@ -44,14 +42,14 @@ public class MixedDyedBottleItem extends Item {
    */
   public static int dyeFromBottle(ItemStack bottle) {
     Item item = bottle.getItem();
-    if (item instanceof SimpleDyedBottleItem) {
-      return ((SimpleDyedBottleItem)item).getDyeColor().getColorValue();
+    if (item instanceof SimpleDyedBottleItem bottleItem) {
+      return MiscUtil.getColor(bottleItem.getDyeColor());
     } else if (item == InspirationsRecipes.mixedDyedWaterBottle) {
-      CompoundNBT tags = bottle.getTag();
+      CompoundTag tags = bottle.getTag();
 
       if (tags != null) {
-        CompoundNBT display = tags.getCompound("display");
-        if (display.contains(TAG_COLOR, Constants.NBT.TAG_INT)) {
+        CompoundTag display = tags.getCompound("display");
+        if (display.contains(TAG_COLOR, Tag.TAG_INT)) {
           return display.getInt(TAG_COLOR);
         }
       }

@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableSet;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.ModuleBase;
+import knightminer.inspirations.library.MiscUtil;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronRecipe;
@@ -26,44 +27,44 @@ import knightminer.inspirations.recipes.recipe.cauldron.MixCauldronDyeRecipe;
 import knightminer.inspirations.recipes.recipe.cauldron.PotionFermentCauldronTransform;
 import knightminer.inspirations.recipes.recipe.cauldron.RemoveBannerPatternCauldronRecipe;
 import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.FlowingFluidBlock;
-import net.minecraft.block.material.Material;
+import net.minecraft.core.particles.ParticleType;
+import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.item.BucketItem;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.DyeItem;
-import net.minecraft.item.Food;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.Items;
-import net.minecraft.item.SoupItem;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.SpecialRecipeSerializer;
-import net.minecraft.particles.BasicParticleType;
-import net.minecraft.particles.ParticleType;
-import net.minecraft.potion.Potions;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.village.PointOfInterestType;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.ai.village.poi.PoiType;
+import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.item.BowlFoodItem;
+import net.minecraft.world.item.BucketItem;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.DyeItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.SimpleRecipeSerializer;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.level.material.Material;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
+import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.registries.GameData;
 import slimeknights.mantle.registration.FluidBuilder;
+import slimeknights.mantle.registration.adapter.BlockEntityTypeRegistryAdapter;
 import slimeknights.mantle.registration.adapter.BlockRegistryAdapter;
 import slimeknights.mantle.registration.adapter.FluidRegistryAdapter;
 import slimeknights.mantle.registration.adapter.ItemRegistryAdapter;
 import slimeknights.mantle.registration.adapter.RegistryAdapter;
-import slimeknights.mantle.registration.adapter.TileEntityTypeRegistryAdapter;
 import slimeknights.mantle.registration.object.EnumObject;
 
 import java.util.Map;
@@ -81,39 +82,39 @@ public class InspirationsRecipes extends ModuleBase {
   public static Block damagedAnvil;
 
   public static EnhancedCauldronBlock cauldron;
-  public static TileEntityType<CauldronTileEntity> tileCauldron;
+  public static BlockEntityType<CauldronTileEntity> tileCauldron;
 
   // items
   public static Item splashBottle;
   public static Item lingeringBottle;
   public static EnumObject<DyeColor,SimpleDyedBottleItem> simpleDyedWaterBottle = EnumObject.empty();
   public static MixedDyedBottleItem mixedDyedWaterBottle;
-  public static SoupItem potatoSoupItem;
+  public static BowlFoodItem potatoSoupItem;
 
   // fluids
   public static ForgeFlowingFluid milk;
   // mushroom
   public static ForgeFlowingFluid mushroomStew;
   public static BucketItem mushroomStewBucket;
-  public static FlowingFluidBlock mushroomStewBlock;
+  public static LiquidBlock mushroomStewBlock;
   // beetroot
   public static ForgeFlowingFluid beetrootSoup;
   public static BucketItem beetrootSoupBucket;
-  public static FlowingFluidBlock beetrootSoupBlock;
+  public static LiquidBlock beetrootSoupBlock;
   // rabbit
   public static ForgeFlowingFluid rabbitStew;
   public static BucketItem rabbitStewBucket;
-  public static FlowingFluidBlock rabbitStewBlock;
+  public static LiquidBlock rabbitStewBlock;
   // potato
   public static ForgeFlowingFluid potatoSoup;
   public static BucketItem potatoSoupBucket;
-  public static FlowingFluidBlock potatoSoupBlock;
+  public static LiquidBlock potatoSoupBlock;
   // honey
   public static ForgeFlowingFluid honey;
   public static BucketItem honeyBucket;
-  public static FlowingFluidBlock honeyFluidBlock;
+  public static LiquidBlock honeyFluidBlock;
 
-  public static BasicParticleType boilingParticle;
+  public static SimpleParticleType boilingParticle;
 
   public InspirationsRecipes() {
     ForgeMod.enableMilkFluid();
@@ -175,33 +176,33 @@ public class InspirationsRecipes extends ModuleBase {
 
     // potato soup
     potatoSoupItem = registry.register(
-        new SoupItem(new Item.Properties().stacksTo(1)
-                                          .tab(ItemGroup.TAB_FOOD)
-                                          .food(new Food.Builder().nutrition(8).saturationMod(0.6F).build())),
+        new BowlFoodItem(new Item.Properties().stacksTo(1)
+                                          .tab(CreativeModeTab.TAB_FOOD)
+                                          .food(new FoodProperties.Builder().nutrition(8).saturationMod(0.6F).build())),
         "potato_soup");
 
     // empty bottles
-    Item.Properties brewingProps = new Item.Properties().tab(ItemGroup.TAB_BREWING);
+    Item.Properties brewingProps = new Item.Properties().tab(CreativeModeTab.TAB_BREWING);
     splashBottle = registry.register(new EmptyBottleItem(brewingProps, Items.SPLASH_POTION.delegate), "splash_bottle");
     lingeringBottle = registry.register(new EmptyBottleItem(brewingProps, Items.LINGERING_POTION.delegate), "lingering_bottle");
 
     // dyed bottles
     Item.Properties bottleProps = new Item.Properties()
-        .tab(ItemGroup.TAB_MATERIALS)
+        .tab(CreativeModeTab.TAB_MATERIALS)
         .stacksTo(16)
         .craftRemainder(Items.GLASS_BOTTLE);
     simpleDyedWaterBottle = registry.registerEnum(color -> new SimpleDyedBottleItem(bottleProps, DyeItem.byColor(color)), DyeColor.values(), "dyed_bottle");
     mixedDyedWaterBottle = registry.register(new MixedDyedBottleItem(bottleProps), "mixed_dyed_bottle");
 
     // cauldron item
-    if (Config.extendedCauldron.getAsBoolean()) {
+    if (Config.extendedCauldron.get()) {
       registry.registerBlockItem(cauldron, brewingProps);
     }
   }
 
   @SubscribeEvent
-  void registerTileEntities(Register<TileEntityType<?>> event) {
-    TileEntityTypeRegistryAdapter registry = new TileEntityTypeRegistryAdapter(event.getRegistry());
+  void registerTileEntities(Register<BlockEntityType<?>> event) {
+    BlockEntityTypeRegistryAdapter registry = new BlockEntityTypeRegistryAdapter(event.getRegistry());
 
     if (Config.extendedCauldron.get()) {
       tileCauldron = registry.register(CauldronTileEntity::new, cauldron, "cauldron");
@@ -211,12 +212,12 @@ public class InspirationsRecipes extends ModuleBase {
   @SubscribeEvent
   void registerParticleTypes(Register<ParticleType<?>> event) {
     RegistryAdapter<ParticleType<?>> registry = new RegistryAdapter<>(event.getRegistry());
-    boilingParticle = registry.register(new BasicParticleType(false), "boiling");
+    boilingParticle = registry.register(new SimpleParticleType(false), "boiling");
   }
 
   @SubscribeEvent
-  void registerSerializers(Register<IRecipeSerializer<?>> event) {
-    RegistryAdapter<IRecipeSerializer<?>> registry = new RegistryAdapter<>(event.getRegistry());
+  void registerSerializers(Register<RecipeSerializer<?>> event) {
+    RegistryAdapter<RecipeSerializer<?>> registry = new RegistryAdapter<>(event.getRegistry());
     registry.register(new CauldronRecipe.Serializer(), "cauldron");
     registry.register(new EmptyPotionCauldronRecipe.Serializer(), "cauldron_empty_potion");
     registry.register(new FillPotionCauldronRecipe.Serializer(), "cauldron_fill_potion");
@@ -227,10 +228,10 @@ public class InspirationsRecipes extends ModuleBase {
     registry.register(new CauldronTransform.Serializer(), "cauldron_transform");
     registry.register(new PotionFermentCauldronTransform.Serializer(), "cauldron_potion_ferment");
 
-    registry.register(new SpecialRecipeSerializer<>(EmptyBucketCauldronRecipe::new), "cauldron_empty_bucket");
-    registry.register(new SpecialRecipeSerializer<>(FillBucketCauldronRecipe::new), "cauldron_fill_bucket");
-    registry.register(new SpecialRecipeSerializer<>(FillDyedBottleRecipe::new), "cauldron_fill_dyed_bottle");
-    registry.register(new SpecialRecipeSerializer<>(RemoveBannerPatternCauldronRecipe::new), "cauldron_remove_banner_pattern");
+    registry.register(new SimpleRecipeSerializer<>(EmptyBucketCauldronRecipe::new), "cauldron_empty_bucket");
+    registry.register(new SimpleRecipeSerializer<>(FillBucketCauldronRecipe::new), "cauldron_fill_bucket");
+    registry.register(new SimpleRecipeSerializer<>(FillDyedBottleRecipe::new), "cauldron_fill_dyed_bottle");
+    registry.register(new SimpleRecipeSerializer<>(RemoveBannerPatternCauldronRecipe::new), "cauldron_remove_banner_pattern");
     registry.register(new BrewingCauldronRecipe.Serializer(BrewingCauldronRecipe.Vanilla::new), "cauldron_potion_brewing");
     registry.register(new BrewingCauldronRecipe.Serializer(BrewingCauldronRecipe.Forge::new), "cauldron_forge_brewing");
 
@@ -240,7 +241,7 @@ public class InspirationsRecipes extends ModuleBase {
 
     // add all dyes as overrides into color
     for (DyeColor color : DyeColor.values()) {
-      CauldronContentTypes.COLOR.setResult(color.getColorValue(), CauldronContentTypes.DYE.of(color));
+      CauldronContentTypes.COLOR.setResult(MiscUtil.getColor(color), CauldronContentTypes.DYE.of(color));
     }
   }
 
@@ -254,19 +255,19 @@ public class InspirationsRecipes extends ModuleBase {
 
   @SubscribeEvent
   void commonSetup(FMLCommonSetupEvent event) {
-    if (Config.extendedCauldron.getAsBoolean()) {
+    if (Config.extendedCauldron.get()) {
       // inject new cauldron blocks into the leatherworker point of interest
       // it should be as simple as injecting it into the map, but people keep reporting issues with this so just over do it
-      Map<BlockState, PointOfInterestType> map = GameData.getBlockStatePointOfInterestTypeMap();
+      Map<BlockState, PoiType> map = GameData.getBlockStatePointOfInterestTypeMap();
       synchronized (map) {
         ImmutableList<BlockState> newStates = cauldron.getStateDefinition().getPossibleStates();
-        synchronized (PointOfInterestType.LEATHERWORKER) {
+        synchronized (PoiType.LEATHERWORKER) {
           ImmutableSet.Builder<BlockState> builder = ImmutableSet.builder();
-          builder.addAll(PointOfInterestType.LEATHERWORKER.matchingStates);
+          builder.addAll(PoiType.LEATHERWORKER.matchingStates);
           builder.addAll(newStates);
-          PointOfInterestType.LEATHERWORKER.matchingStates = builder.build();
+          PoiType.LEATHERWORKER.matchingStates = builder.build();
         }
-        newStates.forEach(state -> map.put(state, PointOfInterestType.LEATHERWORKER));
+        newStates.forEach(state -> map.put(state, PoiType.LEATHERWORKER));
       }
     }
   }

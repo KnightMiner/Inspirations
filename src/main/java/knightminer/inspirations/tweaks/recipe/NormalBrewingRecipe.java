@@ -1,26 +1,26 @@
 package knightminer.inspirations.tweaks.recipe;
 
 import knightminer.inspirations.common.IHidable;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionUtils;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.common.brewing.IBrewingRecipe;
 
-import java.util.function.Supplier;
+import java.util.function.BooleanSupplier;
 
 /**
  * A brewing recipe type which can be applied to all three potion item types.
  */
 public class NormalBrewingRecipe implements IHidable, IBrewingRecipe {
-  private final Supplier<Boolean> enabled;
+  private final BooleanSupplier enabled;
   private final Potion start;
   private final Ingredient catalyst;
   private final Potion output;
 
-  public NormalBrewingRecipe(Potion start, Ingredient catalyst, Potion output, Supplier<Boolean> enabledFunc) {
+  public NormalBrewingRecipe(Potion start, Ingredient catalyst, Potion output, BooleanSupplier enabledFunc) {
     this.start = start;
     this.catalyst = catalyst;
     this.output = output;
@@ -29,7 +29,7 @@ public class NormalBrewingRecipe implements IHidable, IBrewingRecipe {
 
   @Override
   public boolean isEnabled() {
-    return enabled.get();
+    return enabled.getAsBoolean();
   }
 
   public Ingredient getCatalyst() {

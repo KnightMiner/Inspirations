@@ -8,13 +8,13 @@ import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.util.DisplayCauldronRecipe;
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.recipes.item.MixedDyedBottleItem;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.world.World;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.level.Level;
 import slimeknights.mantle.recipe.IMultiRecipe;
 
 import java.util.Arrays;
@@ -33,7 +33,7 @@ public class FillDyedBottleRecipe implements ICauldronRecipe, IMultiRecipe<Displ
   }
 
   @Override
-  public boolean matches(ICauldronInventory inv, World worldIn) {
+  public boolean matches(ICauldronInventory inv, Level worldIn) {
     return inv.getLevel() >= THIRD && inv.getStack().getItem() == Items.GLASS_BOTTLE && inv.getContents().contains(CauldronContentTypes.COLOR);
   }
 
@@ -55,7 +55,7 @@ public class FillDyedBottleRecipe implements ICauldronRecipe, IMultiRecipe<Displ
   }
 
   @Override
-  public IRecipeSerializer<?> getSerializer() {
+  public RecipeSerializer<?> getSerializer() {
     return RecipeSerializers.CAULDRON_FILL_DYED_BOTTLE;
   }
 

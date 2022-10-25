@@ -1,12 +1,12 @@
 package knightminer.inspirations.common;
 
 import knightminer.inspirations.Inspirations;
-import net.minecraft.loot.ConstantRange;
-import net.minecraft.loot.LootPool;
-import net.minecraft.loot.LootTable;
-import net.minecraft.loot.TableLootEntry;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.storage.loot.LootPool;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.entries.LootTableReference;
+import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraftforge.event.LootTableLoadEvent;
 
 public class ModuleBase {
@@ -44,8 +44,8 @@ public class ModuleBase {
       ResourceLocation location = Inspirations.getResource(base.getPath());
       table.addPool(new LootPool.Builder()
                         .name(location.toString())
-                        .setRolls(ConstantRange.exactly(1))
-                        .add(TableLootEntry.lootTableReference(location))
+                        .setRolls(ConstantValue.exactly(1))
+                        .add(LootTableReference.lootTableReference(location))
                         .build()
                    );
     }

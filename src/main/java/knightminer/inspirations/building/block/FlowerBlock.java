@@ -3,38 +3,36 @@ package knightminer.inspirations.building.block;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.IHidable;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.BushBlock;
-import net.minecraft.block.DoublePlantBlock;
-import net.minecraft.block.IGrowable;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.ConstantRange;
-import net.minecraft.loot.LootPool;
-import net.minecraft.loot.LootTable;
-import net.minecraft.loot.TableLootEntry;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.NonNullList;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.BonemealableBlock;
+import net.minecraft.world.level.block.BushBlock;
+import net.minecraft.world.level.block.DoublePlantBlock;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.storage.loot.LootPool;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.entries.LootTableReference;
+import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.event.LootTableLoadEvent;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.Random;
 
-import net.minecraft.block.AbstractBlock.OffsetType;
-
-public class FlowerBlock extends BushBlock implements IGrowable, IHidable {
+public class FlowerBlock extends BushBlock implements BonemealableBlock, IHidable {
   private static final VoxelShape SHAPE = Block.box(5.0D, 0.0D, 5.0D, 11.0D, 10.0D, 11.0D);
   private final DoublePlantBlock largePlant;
 
@@ -46,11 +44,11 @@ public class FlowerBlock extends BushBlock implements IGrowable, IHidable {
 
   @Override
   public boolean isEnabled() {
-    return Config.enableFlowers.get();
+    return Config.enableFlowers.getAsBoolean();
   }
 
   @Override
-  public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items) {
+  public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
     if (shouldAddtoItemGroup(group)) {
       super.fillItemCategory(group, items);
     }
@@ -61,16 +59,16 @@ public class FlowerBlock extends BushBlock implements IGrowable, IHidable {
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
-    Vector3d off = state.getOffset(world, pos);
+  public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
+    Vec3 off = state.getOffset(world, pos);
     return SHAPE.move(off.x, off.y, off.z);
   }
 
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public VoxelShape getCollisionShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-    return VoxelShapes.empty();
+  public VoxelShape getCollisionShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
+    return Shapes.empty();
   }
 
   @Override
@@ -82,24 +80,24 @@ public class FlowerBlock extends BushBlock implements IGrowable, IHidable {
   /* Doubling up */
 
   @Override
-  public boolean isValidBonemealTarget(IBlockReader world, BlockPos pos, BlockState state, boolean isClient) {
+  public boolean isValidBonemealTarget(BlockGetter world, BlockPos pos, BlockState state, boolean isClient) {
     return largePlant != null;
   }
 
   @Override
-  public boolean isBonemealSuccess(World worldIn, Random rand, BlockPos pos, BlockState state) {
+  public boolean isBonemealSuccess(Level worldIn, Random rand, BlockPos pos, BlockState state) {
     return true;
   }
 
   @Override
-  public void performBonemeal(ServerWorld world, Random rand, BlockPos pos, BlockState state) {
+  public void performBonemeal(ServerLevel world, Random rand, BlockPos pos, BlockState state) {
     // should not happen, but catch anyways
     if (largePlant == null) {
       return;
     }
 
     if (world.isEmptyBlock(pos.above())) {
-      largePlant.placeAt(world, pos, 2);
+      DoublePlantBlock.placeAt(world, largePlant.defaultBlockState(), pos, 2);
     }
   }
 
@@ -122,8 +120,8 @@ public class FlowerBlock extends BushBlock implements IGrowable, IHidable {
     ResourceLocation location = Inspirations.getResource("blocks/inject/" + Objects.requireNonNull(getRegistryName()).getPath());
     table.addPool(new LootPool.Builder()
                       .name(location.toString())
-                      .setRolls(ConstantRange.exactly(1))
-                      .add(TableLootEntry.lootTableReference(location))
+                      .setRolls(ConstantValue.exactly(1))
+                      .add(LootTableReference.lootTableReference(location))
                       .build()
                  );
   }

@@ -1,14 +1,15 @@
 package knightminer.inspirations.recipes.recipe.cauldron.contents;
 
 import knightminer.inspirations.Inspirations;
+import knightminer.inspirations.library.MiscUtil;
 import knightminer.inspirations.library.recipe.cauldron.contents.NamedContentType;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.DyeColor;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Util;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.Util;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.TooltipFlag;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -27,18 +28,18 @@ public class DyeContentType extends NamedContentType<DyeColor> {
 
   @Override
   public int getColor(DyeColor value) {
-    return value.getColorValue();
+    return MiscUtil.getColor(value);
   }
 
   @Override
-  public ITextComponent getDisplayName(DyeColor value) {
-    return new TranslationTextComponent(TRANSLATION_KEY, new TranslationTextComponent("color.minecraft." + value.getSerializedName()));
+  public Component getDisplayName(DyeColor value) {
+    return new TranslatableComponent(TRANSLATION_KEY, new TranslatableComponent("color.minecraft." + value.getSerializedName()));
   }
 
   @Override
-  public void addInformation(DyeColor value, List<ITextComponent> tooltip, ITooltipFlag tooltipFlag) {
+  public void addInformation(DyeColor value, List<Component> tooltip, TooltipFlag tooltipFlag) {
     if (tooltipFlag.isAdvanced()) {
-      tooltip.add(ColorContentType.getColorTooltip(value.getColorValue()));
+      tooltip.add(ColorContentType.getColorTooltip(MiscUtil.getColor(value)));
     }
   }
 
@@ -53,12 +54,12 @@ public class DyeContentType extends NamedContentType<DyeColor> {
   }
 
   @Override
-  public DyeColor read(PacketBuffer buffer) {
+  public DyeColor read(FriendlyByteBuf buffer) {
     return buffer.readEnum(DyeColor.class);
   }
 
   @Override
-  public void write(DyeColor value, PacketBuffer buffer) {
+  public void write(DyeColor value, FriendlyByteBuf buffer) {
     buffer.writeEnum(value);
   }
 }

@@ -4,10 +4,10 @@ import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipeDisplay;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.IItemProvider;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.util.Mth;
 import net.minecraftforge.common.util.Lazy;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
@@ -151,8 +151,8 @@ public class DisplayCauldronRecipe implements ICauldronRecipeDisplay {
     private TemperaturePredicate temperature = TemperaturePredicate.ANY;
     private int time = -1;
     private Builder(int levelInput, int levelOutput) {
-      this.levelInput = MathHelper.clamp(levelInput, 0, ICauldronRecipe.MAX);
-      this.levelOutput = MathHelper.clamp(levelOutput, 0, ICauldronRecipe.MAX);
+      this.levelInput = Mth.clamp(levelInput, 0, ICauldronRecipe.MAX);
+      this.levelOutput = Mth.clamp(levelOutput, 0, ICauldronRecipe.MAX);
     }
 
     /* Input */
@@ -181,7 +181,7 @@ public class DisplayCauldronRecipe implements ICauldronRecipeDisplay {
      * @param input  Input item
      * @return  Builder instance
      */
-    public Builder setItemInputs(IItemProvider input) {
+    public Builder setItemInputs(ItemLike input) {
       return setItemInputs(new ItemStack(input));
     }
 
@@ -223,7 +223,7 @@ public class DisplayCauldronRecipe implements ICauldronRecipeDisplay {
      * @param output  Output item
      * @return  Builder instance
      */
-    public Builder setItemOutput(IItemProvider output) {
+    public Builder setItemOutput(ItemLike output) {
       return setItemOutput(new ItemStack(output));
     }
 

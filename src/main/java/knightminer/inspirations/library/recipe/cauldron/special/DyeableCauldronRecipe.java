@@ -1,9 +1,8 @@
 package knightminer.inspirations.library.recipe.cauldron.special;
 
 import com.google.gson.JsonObject;
-import knightminer.inspirations.library.Util;
+import knightminer.inspirations.library.MiscUtil;
 import knightminer.inspirations.library.recipe.DynamicFinishedRecipe;
-import knightminer.inspirations.library.recipe.RecipeSerializer;
 import knightminer.inspirations.library.recipe.RecipeSerializers;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
@@ -11,16 +10,17 @@ import knightminer.inspirations.library.recipe.cauldron.inventory.ICauldronInven
 import knightminer.inspirations.library.recipe.cauldron.inventory.IModifyableCauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.util.DisplayCauldronRecipe;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.world.World;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.material.Fluids;
 import slimeknights.mantle.recipe.IMultiRecipe;
+import slimeknights.mantle.recipe.helper.AbstractRecipeSerializer;
 import slimeknights.mantle.util.JsonHelper;
 
 import javax.annotation.Nullable;
@@ -50,7 +50,7 @@ public abstract class DyeableCauldronRecipe implements ICauldronRecipe, IMultiRe
   }
 
   @Override
-  public boolean matches(ICauldronInventory inv, World worldIn) {
+  public boolean matches(ICauldronInventory inv, Level worldIn) {
     ItemStack stack = inv.getStack();
     return inv.getLevel() >= THIRD && ingredient.test(stack) && matches(inv.getContents(), stack);
   }
@@ -116,13 +116,13 @@ public abstract class DyeableCauldronRecipe implements ICauldronRecipe, IMultiRe
 
     @Override
     protected boolean matches(ICauldronContents contents, ItemStack stack) {
-      return contents.get(CauldronContentTypes.COLOR).filter(color -> !Util.hasColor(stack) || Util.getColor(stack) != color).isPresent();
+      return contents.get(CauldronContentTypes.COLOR).filter(color -> !MiscUtil.hasColor(stack) || MiscUtil.getColor(stack) != color).isPresent();
     }
 
     @Override
     protected ItemStack updateColor(ICauldronContents contents, ItemStack stack) {
       int color = contents.get(CauldronContentTypes.COLOR).orElse(-1);
-      return Util.setColor(stack, color);
+      return MiscUtil.setColor(stack, color);
     }
 
     @Override
@@ -132,12 +132,12 @@ public abstract class DyeableCauldronRecipe implements ICauldronRecipe, IMultiRe
                    .map(color -> DisplayCauldronRecipe.builder(THIRD, 0)
                                                       .setItemInputs(inputs)
                                                       .setContentInputs(CauldronContentTypes.DYE.of(color))
-                                                      .setItemOutput(Util.setColor(stack.copy(), color.getColorValue()))
+                                                      .setItemOutput(MiscUtil.setColor(stack.copy(), MiscUtil.getColor(color)))
                                                       .build());
     }
 
     @Override
-    public IRecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<?> getSerializer() {
       return RecipeSerializers.CAULDRON_DYE_DYEABLE;
     }
   }
@@ -152,26 +152,26 @@ public abstract class DyeableCauldronRecipe implements ICauldronRecipe, IMultiRe
 
     @Override
     protected boolean matches(ICauldronContents contents, ItemStack stack) {
-      return contents.contains(CauldronContentTypes.FLUID, Fluids.WATER) && Util.hasColor(stack);
+      return contents.contains(CauldronContentTypes.FLUID, Fluids.WATER) && MiscUtil.hasColor(stack);
     }
 
     @Override
     protected ItemStack updateColor(ICauldronContents contents, ItemStack stack) {
-      return Util.clearColor(stack);
+      return MiscUtil.clearColor(stack);
     }
 
     @Override
     protected Stream<DisplayCauldronRecipe> getDisplayRecipes(ItemStack stack) {
-      List<ItemStack> inputs = Arrays.stream(DyeColor.values()).map(color -> Util.setColor(stack.copy(), color.getColorValue())).collect(Collectors.toList());
+      List<ItemStack> inputs = Arrays.stream(DyeColor.values()).map(color -> MiscUtil.setColor(stack.copy(), MiscUtil.getColor(color))).collect(Collectors.toList());
       return Stream.of(DisplayCauldronRecipe.builder(THIRD, 0)
                                             .setItemInputs(inputs)
                                             .setContentInputs(DisplayCauldronRecipe.WATER_CONTENTS.get())
-                                            .setItemOutput(Util.clearColor(stack.copy()))
+                                            .setItemOutput(MiscUtil.clearColor(stack.copy()))
                                             .build());
     }
 
     @Override
-    public IRecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<?> getSerializer() {
       return RecipeSerializers.CAULDRON_CLEAR_DYEABLE;
     }
   }
@@ -179,7 +179,7 @@ public abstract class DyeableCauldronRecipe implements ICauldronRecipe, IMultiRe
   /**
    * Serializer for the recipe
    */
-  public static class Serializer extends RecipeSerializer<DyeableCauldronRecipe> {
+  public static class Serializer extends AbstractRecipeSerializer<DyeableCauldronRecipe> {
     private final BiFunction<ResourceLocation, Ingredient, DyeableCauldronRecipe> factory;
     public Serializer(BiFunction<ResourceLocation, Ingredient, DyeableCauldronRecipe> factory) {
       this.factory = factory;
@@ -192,12 +192,12 @@ public abstract class DyeableCauldronRecipe implements ICauldronRecipe, IMultiRe
 
     @Nullable
     @Override
-    public DyeableCauldronRecipe fromNetwork(ResourceLocation id, PacketBuffer buffer) {
+    public DyeableCauldronRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buffer) {
       return factory.apply(id, Ingredient.fromNetwork(buffer));
     }
 
     @Override
-    public void toNetwork(PacketBuffer buffer, DyeableCauldronRecipe recipe) {
+    public void toNetwork(FriendlyByteBuf buffer, DyeableCauldronRecipe recipe) {
       recipe.ingredient.toNetwork(buffer);
     }
   }

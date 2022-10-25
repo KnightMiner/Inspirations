@@ -3,8 +3,10 @@ package knightminer.inspirations.library.recipe.cauldron.recipe;
 import knightminer.inspirations.library.recipe.RecipeTypes;
 import knightminer.inspirations.library.recipe.cauldron.inventory.ICauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.inventory.IModifyableCauldronInventory;
-import net.minecraft.item.crafting.IRecipeType;
+import net.minecraft.world.item.crafting.RecipeType;
 import slimeknights.mantle.recipe.ICustomOutputRecipe;
+
+import javax.annotation.Nonnull;
 
 /**
  * Base interface for all cauldron recipes based on direct interaction
@@ -29,8 +31,9 @@ public interface ICauldronRecipe extends ICustomOutputRecipe<ICauldronInventory>
    */
   void handleRecipe(IModifyableCauldronInventory inventory);
 
+  @Nonnull
   @Override
-  default IRecipeType<?> getType() {
+  default RecipeType<?> getType() {
     return RecipeTypes.CAULDRON;
   }
 }

@@ -12,11 +12,11 @@ import knightminer.inspirations.library.recipe.cauldron.ingredient.ContentMatchI
 import knightminer.inspirations.library.recipe.cauldron.ingredient.FluidCauldronIngredient;
 import knightminer.inspirations.library.recipe.cauldron.ingredient.ICauldronIngredient;
 import knightminer.inspirations.library.recipe.cauldron.ingredient.ICauldronIngredientSerializer;
-import net.minecraft.item.DyeColor;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.potion.Potion;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * Registry that helps with registering, serializing, and deserializing cauldron properties
@@ -119,7 +119,7 @@ public class CauldronIngredients {
    * @return  Cauldron contents
    */
   public static ICauldronIngredient read(JsonObject json) {
-    ResourceLocation location = new ResourceLocation(JSONUtils.getAsString(json, KEY_TYPE));
+    ResourceLocation location = new ResourceLocation(GsonHelper.getAsString(json, KEY_TYPE));
     ICauldronIngredientSerializer<?> serializer = INGREDIENTS.get(location);
     if (serializer != null) {
       return serializer.read(json);
@@ -132,7 +132,7 @@ public class CauldronIngredients {
    * @param contents  Contents to write
    * @param buffer    Buffer instance
    */
-  public static <T extends ICauldronIngredient> void write(T contents, PacketBuffer buffer) {
+  public static <T extends ICauldronIngredient> void write(T contents, FriendlyByteBuf buffer) {
     ICauldronIngredientSerializer<T> serializer = getSerializer(contents);
     buffer.writeResourceLocation(getName(serializer));
     serializer.write(contents, buffer);
@@ -143,7 +143,7 @@ public class CauldronIngredients {
    * @param buffer Buffer instance
    * @return  Cauldron contents
    */
-  public static ICauldronIngredient read(PacketBuffer buffer) {
+  public static ICauldronIngredient read(FriendlyByteBuf buffer) {
     ResourceLocation name = buffer.readResourceLocation();
     ICauldronIngredientSerializer<?> serializer = INGREDIENTS.get(name);
     if (serializer == null) {

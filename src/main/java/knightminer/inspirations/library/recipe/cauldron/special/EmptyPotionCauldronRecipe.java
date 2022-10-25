@@ -1,25 +1,25 @@
 package knightminer.inspirations.library.recipe.cauldron.special;
 
 import com.google.gson.JsonObject;
-import knightminer.inspirations.library.Util;
+import knightminer.inspirations.library.MiscUtil;
 import knightminer.inspirations.library.recipe.DynamicFinishedRecipe;
-import knightminer.inspirations.library.recipe.RecipeSerializer;
 import knightminer.inspirations.library.recipe.RecipeSerializers;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.inventory.ICauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.inventory.IModifyableCauldronInventory;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionUtils;
-import net.minecraft.potion.Potions;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.world.World;
-import slimeknights.mantle.recipe.RecipeHelper;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.level.Level;
+import slimeknights.mantle.recipe.helper.AbstractRecipeSerializer;
+import slimeknights.mantle.recipe.helper.RecipeHelper;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -45,7 +45,7 @@ public class EmptyPotionCauldronRecipe implements ICauldronRecipe {
   }
 
   @Override
-  public boolean matches(ICauldronInventory inv, World worldIn) {
+  public boolean matches(ICauldronInventory inv, Level worldIn) {
     // not too full
     if (inv.getLevel() == MAX) {
       return false;
@@ -91,28 +91,28 @@ public class EmptyPotionCauldronRecipe implements ICauldronRecipe {
   }
 
   @Override
-  public IRecipeSerializer<?> getSerializer() {
+  public RecipeSerializer<?> getSerializer() {
     return RecipeSerializers.CAULDRON_EMPTY_POTION;
   }
 
-  public static class Serializer extends RecipeSerializer<EmptyPotionCauldronRecipe> {
+  public static class Serializer extends AbstractRecipeSerializer<EmptyPotionCauldronRecipe> {
     @Override
     public EmptyPotionCauldronRecipe fromJson(ResourceLocation id, JsonObject json) {
-      Item potion = Util.deserializeItem(json, "potion");
-      Item bottle = Util.deserializeItem(json, "bottle");
+      Item potion = MiscUtil.deserializeItem(json, "potion");
+      Item bottle = MiscUtil.deserializeItem(json, "bottle");
       return new EmptyPotionCauldronRecipe(id, potion, bottle);
     }
 
     @Nullable
     @Override
-    public EmptyPotionCauldronRecipe fromNetwork(ResourceLocation id, PacketBuffer buffer) {
+    public EmptyPotionCauldronRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buffer) {
       Item potion = RecipeHelper.readItem(buffer);
       Item bottle = RecipeHelper.readItem(buffer);
       return new EmptyPotionCauldronRecipe(id, potion, bottle);
     }
 
     @Override
-    public void toNetwork(PacketBuffer buffer, EmptyPotionCauldronRecipe recipe) {
+    public void toNetwork(FriendlyByteBuf buffer, EmptyPotionCauldronRecipe recipe) {
       RecipeHelper.writeItem(buffer, recipe.potionItem);
       RecipeHelper.writeItem(buffer, recipe.bottle);
     }

@@ -1,8 +1,8 @@
 package knightminer.inspirations.recipes.recipe.inventory;
 
 import knightminer.inspirations.library.recipe.cauldron.inventory.IModifyableCauldronInventory;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 import java.util.function.Consumer;
@@ -45,7 +45,7 @@ public abstract class CauldronItemInventory implements IModifyableCauldronInvent
    * @param player  Player to give items to
    * @return  Consumer for item stacks
    */
-  public static Consumer<ItemStack> getPlayerAdder(PlayerEntity player) {
-    return stack -> ItemHandlerHelper.giveItemToPlayer(player, stack, player.inventory.selected);
+  public static Consumer<ItemStack> getPlayerAdder(Player player) {
+    return stack -> ItemHandlerHelper.giveItemToPlayer(player, stack, player.getInventory().selected);
   }
 }

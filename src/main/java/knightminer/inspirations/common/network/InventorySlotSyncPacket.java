@@ -1,14 +1,15 @@
 package knightminer.inspirations.common.network;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.ModelDataManager;
-import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.network.NetworkEvent.Context;
 import slimeknights.mantle.network.packet.IThreadsafePacket;
 
 @SuppressWarnings("WeakerAccess")
@@ -24,21 +25,21 @@ public class InventorySlotSyncPacket implements IThreadsafePacket {
     this.slot = slot;
   }
 
-  public InventorySlotSyncPacket(PacketBuffer buf) {
+  public InventorySlotSyncPacket(FriendlyByteBuf buf) {
     this.pos = buf.readBlockPos();
     this.slot = buf.readShort();
     this.itemStack = buf.readItem();
   }
 
   @Override
-  public void encode(PacketBuffer buf) {
+  public void encode(FriendlyByteBuf buf) {
     buf.writeBlockPos(pos);
     buf.writeShort(slot);
     buf.writeItemStack(itemStack, false);
   }
 
   @Override
-  public void handleThreadsafe(NetworkEvent.Context context) {
+  public void handleThreadsafe(Context context) {
     HandleClient.handle(this);
   }
 
@@ -50,13 +51,15 @@ public class InventorySlotSyncPacket implements IThreadsafePacket {
       // Only ever sent to players in the same dimension as the position
       // This should never be called on servers, but protect access to the clientside MC.
       assert Minecraft.getInstance().level != null;
-      TileEntity tileEntity = Minecraft.getInstance().level.getBlockEntity(packet.pos);
+      BlockEntity tileEntity = Minecraft.getInstance().level.getBlockEntity(packet.pos);
       if (tileEntity != null) {
         tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
                   .filter(handler -> handler instanceof IItemHandlerModifiable)
                   .ifPresent(handler -> {
                     ((IItemHandlerModifiable) handler).setStackInSlot(packet.slot, packet.itemStack);
-                    Minecraft.getInstance().levelRenderer.blockChanged(null, packet.pos, null, null, 3);
+                    Minecraft minecraft = Minecraft.getInstance();
+                    BlockState state = tileEntity.getBlockState();
+                    minecraft.levelRenderer.blockChanged(minecraft.level, packet.pos, state, state, 3);
                     ModelDataManager.requestModelDataRefresh(tileEntity);
                   });
       }

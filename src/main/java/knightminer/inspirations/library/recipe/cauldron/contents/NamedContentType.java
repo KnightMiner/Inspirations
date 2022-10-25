@@ -2,18 +2,18 @@ package knightminer.inspirations.library.recipe.cauldron.contents;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.IStringSerializable;
-import net.minecraft.util.JSONUtils;
-import net.minecraftforge.common.util.Constants.NBT;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.util.StringRepresentable;
 
 import javax.annotation.Nullable;
 
 /**
- * Cauldron content type based on {@link IStringSerializable}, typically an enum
+ * Cauldron content type based on {@link StringRepresentable}, typically an enum
  * @param <T>  Type class
  */
-public abstract class NamedContentType<T extends IStringSerializable> extends CauldronContentType<T> {
+public abstract class NamedContentType<T extends StringRepresentable> extends CauldronContentType<T> {
   /**
    * Gets the name of the given value for writing to JSON and NBT
    * @param value  Value
@@ -40,7 +40,7 @@ public abstract class NamedContentType<T extends IStringSerializable> extends Ca
    */
   @Override
   public T getValue(JsonElement element, String key) {
-    String name = JSONUtils.convertToString(element, key);
+    String name = GsonHelper.convertToString(element, key);
     T value = getValue(name);
     if (value == null) {
       throw new JsonSyntaxException("Invalid value '" + name + "' for enum");
@@ -50,8 +50,8 @@ public abstract class NamedContentType<T extends IStringSerializable> extends Ca
 
   @Nullable
   @Override
-  public T read(CompoundNBT tag) {
-    if (tag.contains(getKey(), NBT.TAG_STRING)) {
+  public T read(CompoundTag tag) {
+    if (tag.contains(getKey(), Tag.TAG_STRING)) {
       return getValue(tag.getString(getKey()));
     }
     return null;

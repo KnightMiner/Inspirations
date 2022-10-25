@@ -1,45 +1,42 @@
 package knightminer.inspirations.tools.client;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.IItemPropertyGetter;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.world.LightType;
-import net.minecraft.world.World;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.item.ItemPropertyFunction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LightLayer;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 
 import javax.annotation.Nullable;
 
-public class PhotometerPropertyGetter implements IItemPropertyGetter {
+public class PhotometerPropertyGetter implements ItemPropertyFunction {
   @Override
-  public float call(ItemStack stack, @Nullable ClientWorld clientWorld, @Nullable LivingEntity entityIn) {
+  public float call(ItemStack stack, @Nullable ClientLevel clientWorld, @Nullable LivingEntity entityIn, int seed) {
     Entity entity = entityIn != null ? entityIn : stack.getFrame();
-    World world = clientWorld;
+    Level world = clientWorld;
     if (entity == null) {
       return 0;
     }
     if (world == null) {
-      if (entity.level == null) {
-        return 0;
-      }
       world = entity.level;
     }
 
     // if currently holding the item, use the block the player is looking at
     BlockPos pos = null;
     if (entity == Minecraft.getInstance().player) {
-      PlayerEntity player = Minecraft.getInstance().player;
+      Player player = Minecraft.getInstance().player;
       if (player.getMainHandItem() == stack || player.getOffhandItem() == stack) {
-        RayTraceResult trace = Minecraft.getInstance().hitResult;
-        if (trace != null && trace.getType() == RayTraceResult.Type.BLOCK) {
-          pos = ((BlockRayTraceResult)trace).getBlockPos();
+        HitResult trace = Minecraft.getInstance().hitResult;
+        if (trace != null && trace.getType() == HitResult.Type.BLOCK) {
+          pos = ((BlockHitResult)trace).getBlockPos();
           if (world.getBlockState(pos).isSolidRender(world, pos)) {
-            pos = pos.relative(((BlockRayTraceResult)trace).getDirection());
+            pos = pos.relative(((BlockHitResult)trace).getDirection());
           }
         }
       }
@@ -50,6 +47,6 @@ public class PhotometerPropertyGetter implements IItemPropertyGetter {
     }
 
     // only use block light, skylight is not too useful
-    return world.getBrightness(LightType.BLOCK, pos);
+    return world.getBrightness(LightLayer.BLOCK, pos);
   }
 }

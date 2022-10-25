@@ -1,18 +1,18 @@
 package knightminer.inspirations.tools.enchantment;
 
 import knightminer.inspirations.common.Config;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentType;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.enchantment.LootBonusEnchantment;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.AxeItem;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentCategory;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.item.enchantment.LootBonusEnchantment;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.AxeItem;
+import net.minecraft.world.item.ItemStack;
 
-import net.minecraft.enchantment.Enchantment.Rarity;
+import net.minecraft.world.item.enchantment.Enchantment.Rarity;
 
 public class AxeLootBonusEnchantment extends LootBonusEnchantment {
-  public AxeLootBonusEnchantment(Rarity rarityIn, EnchantmentType typeIn, EquipmentSlotType... slots) {
+  public AxeLootBonusEnchantment(Rarity rarityIn, EnchantmentCategory typeIn, EquipmentSlot... slots) {
     super(rarityIn, typeIn, slots);
   }
 

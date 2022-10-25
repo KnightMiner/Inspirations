@@ -1,9 +1,9 @@
 package knightminer.inspirations.tweaks.item;
 
 import knightminer.inspirations.common.item.HidableBlockItem;
-import net.minecraft.block.Block;
+import net.minecraft.world.level.block.Block;
 
-import net.minecraft.item.Item.Properties;
+import net.minecraft.world.item.Item.Properties;
 
 public class SeedItem extends HidableBlockItem {
 

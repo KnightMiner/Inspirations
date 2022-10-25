@@ -1,16 +1,16 @@
 package knightminer.inspirations.building.tileentity;
 
 import knightminer.inspirations.library.InspirationsRegistry;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.util.NonNullList;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.core.NonNullList;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
 
-public class ShelfInventory implements IItemHandler, IItemHandlerModifiable, INBTSerializable<ListNBT> {
+public class ShelfInventory implements IItemHandler, IItemHandlerModifiable, INBTSerializable<ListTag> {
 	/** Max size of the shelf */
 	public static final int MAX_ITEMS = 16;
 
@@ -146,12 +146,12 @@ public class ShelfInventory implements IItemHandler, IItemHandlerModifiable, INB
 	private static final String SLOT_TAG = "Slot";
 
 	@Override
-	public ListNBT serializeNBT() {
-		ListNBT list = new ListNBT();
+	public ListTag serializeNBT() {
+		ListTag list = new ListTag();
 		for (int i = 0; i < MAX_ITEMS; i++) {
 			ItemStack stack = stacks.get(i);
 			if (!stack.isEmpty()) {
-				CompoundNBT itemTag = new CompoundNBT();
+				CompoundTag itemTag = new CompoundTag();
 				itemTag.putByte(SLOT_TAG, (byte)i);
 				stack.save(itemTag);
 				list.add(itemTag);
@@ -161,9 +161,9 @@ public class ShelfInventory implements IItemHandler, IItemHandlerModifiable, INB
 	}
 
 	@Override
-	public void deserializeNBT(ListNBT list) {
+	public void deserializeNBT(ListTag list) {
 		for (int i = 0; i < list.size(); i++) {
-			CompoundNBT itemNBT = list.getCompound(i);
+			CompoundTag itemNBT = list.getCompound(i);
 			int slot = itemNBT.getByte(SLOT_TAG) & 0xFF;
 			if (isSlotValid(slot)) {
 				stacks.set(slot, ItemStack.of(itemNBT));

@@ -1,7 +1,6 @@
 package knightminer.inspirations.library.recipe.cauldron.recipe;
 
 import com.google.gson.JsonObject;
-import knightminer.inspirations.library.recipe.RecipeSerializer;
 import knightminer.inspirations.library.recipe.RecipeSerializers;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.CauldronIngredients;
@@ -12,18 +11,19 @@ import knightminer.inspirations.library.recipe.cauldron.inventory.IModifyableCau
 import knightminer.inspirations.library.recipe.cauldron.util.LevelPredicate;
 import knightminer.inspirations.library.recipe.cauldron.util.LevelUpdate;
 import knightminer.inspirations.library.recipe.cauldron.util.TemperaturePredicate;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.world.World;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.registries.ForgeRegistries;
-import slimeknights.mantle.recipe.SizedIngredient;
+import slimeknights.mantle.recipe.helper.AbstractRecipeSerializer;
+import slimeknights.mantle.recipe.ingredient.SizedIngredient;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -74,7 +74,7 @@ public class CauldronRecipe extends AbstractCauldronRecipe implements ICauldronR
   /* Behavior */
 
   @Override
-  public boolean matches(ICauldronInventory inv, World worldIn) {
+  public boolean matches(ICauldronInventory inv, Level worldIn) {
     // if this cauldron only supports simple recipes, block if the result is not simple
     if (inv.isSimple() && outputContents != null && !outputContents.isSimple()) {
       return false;
@@ -98,7 +98,7 @@ public class CauldronRecipe extends AbstractCauldronRecipe implements ICauldronR
 
     // determine container item if passed container is null
     ItemStack original = inventory.getStack();
-    CompoundNBT originalTag = original.getTag();
+    CompoundTag originalTag = original.getTag();
     ItemStack container = this.container;
     if (container == null) {
       container = original.getContainerItem().copy();
@@ -164,14 +164,14 @@ public class CauldronRecipe extends AbstractCauldronRecipe implements ICauldronR
   }
 
   @Override
-  public IRecipeSerializer<?> getSerializer() {
+  public RecipeSerializer<?> getSerializer() {
     return RecipeSerializers.CAULDRON;
   }
 
   /**
    * Serializer class for the recipe
    */
-  public static class Serializer extends RecipeSerializer<CauldronRecipe> {
+  public static class Serializer extends AbstractRecipeSerializer<CauldronRecipe> {
     /**
      * Gets a sound event, or the default if missing
      * @param name  Sound name
@@ -186,39 +186,39 @@ public class CauldronRecipe extends AbstractCauldronRecipe implements ICauldronR
 
     @Override
     public CauldronRecipe fromJson(ResourceLocation id, JsonObject json) {
-      String group = JSONUtils.getAsString(json, "group", "");
+      String group = GsonHelper.getAsString(json, "group", "");
 
       // parse inputs
-      JsonObject inputJson = JSONUtils.getAsJsonObject(json, "input");
+      JsonObject inputJson = GsonHelper.getAsJsonObject(json, "input");
       SizedIngredient input = SizedIngredient.EMPTY;
       if (inputJson.has("item")) {
-        input = SizedIngredient.deserialize(JSONUtils.getAsJsonObject(inputJson, "item"));
+        input = SizedIngredient.deserialize(GsonHelper.getAsJsonObject(inputJson, "item"));
       }
-      ICauldronIngredient contents = CauldronIngredients.read(JSONUtils.getAsJsonObject(inputJson, "contents"));
-      LevelPredicate levels = LevelPredicate.read(JSONUtils.getAsJsonObject(inputJson, "level"));
+      ICauldronIngredient contents = CauldronIngredients.read(GsonHelper.getAsJsonObject(inputJson, "contents"));
+      LevelPredicate levels = LevelPredicate.read(GsonHelper.getAsJsonObject(inputJson, "level"));
       TemperaturePredicate temperature = getBoiling(inputJson, "temperature");
 
       // parse outputs
-      JsonObject outputJson = JSONUtils.getAsJsonObject(json, "output");
+      JsonObject outputJson = GsonHelper.getAsJsonObject(json, "output");
       ItemStack output = ItemStack.EMPTY;
       boolean copyNBT = false;
       if (outputJson.has("item")) {
-        output = CraftingHelper.getItemStack(JSONUtils.getAsJsonObject(outputJson, "item"), true);
-        copyNBT = JSONUtils.getAsBoolean(outputJson, "copy_nbt", false);
+        output = CraftingHelper.getItemStack(GsonHelper.getAsJsonObject(outputJson, "item"), true);
+        copyNBT = GsonHelper.getAsBoolean(outputJson, "copy_nbt", false);
       }
       ICauldronContents newContents = null;
       if (outputJson.has("contents")) {
-        newContents = CauldronContentTypes.read(JSONUtils.getAsJsonObject(outputJson, "contents"));
+        newContents = CauldronContentTypes.read(GsonHelper.getAsJsonObject(outputJson, "contents"));
       }
       LevelUpdate levelUpdate = LevelUpdate.IDENTITY;
       if (outputJson.has("level")) {
-        levelUpdate = LevelUpdate.read(JSONUtils.getAsJsonObject(outputJson, "level"));
+        levelUpdate = LevelUpdate.read(GsonHelper.getAsJsonObject(outputJson, "level"));
       }
       ItemStack container = null;
       if (outputJson.has("container")) {
-        JsonObject data = JSONUtils.getAsJsonObject(outputJson, "container");
+        JsonObject data = GsonHelper.getAsJsonObject(outputJson, "container");
         // special case for empty
-        boolean empty = JSONUtils.getAsBoolean(data, "empty", false);
+        boolean empty = GsonHelper.getAsBoolean(data, "empty", false);
         if (empty) {
           container = ItemStack.EMPTY;
         } else {
@@ -229,7 +229,7 @@ public class CauldronRecipe extends AbstractCauldronRecipe implements ICauldronR
       // sound
       SoundEvent sound = SoundEvents.GENERIC_SPLASH;
       if (json.has("sound")) {
-        sound = getSound(new ResourceLocation(JSONUtils.getAsString(json, "sound")), sound);
+        sound = getSound(new ResourceLocation(GsonHelper.getAsString(json, "sound")), sound);
       }
 
       // finally, after all that return the recipe
@@ -237,7 +237,7 @@ public class CauldronRecipe extends AbstractCauldronRecipe implements ICauldronR
     }
 
     @Override
-    public void toNetwork(PacketBuffer buffer, CauldronRecipe recipe) {
+    public void toNetwork(FriendlyByteBuf buffer, CauldronRecipe recipe) {
       buffer.writeUtf(recipe.group);
       recipe.input.write(buffer);
       CauldronIngredients.write(recipe.ingredient, buffer);
@@ -263,7 +263,7 @@ public class CauldronRecipe extends AbstractCauldronRecipe implements ICauldronR
 
     @Nullable
     @Override
-    public CauldronRecipe fromNetwork(ResourceLocation id, PacketBuffer buffer) {
+    public CauldronRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buffer) {
       String group = buffer.readUtf();
       SizedIngredient input = SizedIngredient.read(buffer);
       ICauldronIngredient contents = CauldronIngredients.read(buffer);

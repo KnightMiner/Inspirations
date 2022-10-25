@@ -1,19 +1,19 @@
 package knightminer.inspirations.recipes.recipe.cauldron.contents;
 
 import knightminer.inspirations.library.recipe.cauldron.contents.RegistryContentType;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.potion.Effect;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.EffectUtils;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionUtils;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Util;
-import net.minecraft.util.text.IFormattableTextComponent;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffectUtil;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
@@ -35,7 +35,7 @@ public class PotionContentType extends RegistryContentType<Potion> {
    * @param wrapName     If true, name will be wrapped using a translation key from the texture name
    */
   public PotionContentType(ResourceLocation textureName, boolean wrapName) {
-    super(ForgeRegistries.POTION_TYPES);
+    super(ForgeRegistries.POTIONS);
     this.textureName = textureName;
     if (wrapName) {
       this.wrapName = Util.makeDescriptionId("cauldron_contents", textureName);
@@ -55,33 +55,33 @@ public class PotionContentType extends RegistryContentType<Potion> {
   }
 
   @Override
-  public ITextComponent getDisplayName(Potion value) {
-    ITextComponent component = new TranslationTextComponent(value.getName(PREFIX));
+  public Component getDisplayName(Potion value) {
+    Component component = new TranslatableComponent(value.getName(PREFIX));
     if (wrapName != null) {
-      return new TranslationTextComponent(wrapName, component);
+      return new TranslatableComponent(wrapName, component);
     }
     return component;
   }
 
   @Override
-  public void addInformation(Potion potion, List<ITextComponent> tooltip, ITooltipFlag tooltipFlag) {
+  public void addInformation(Potion potion, List<Component> tooltip, TooltipFlag tooltipFlag) {
     // strongly based on PotionUtil version, but takes a potion instead of a stack. main difference is it skips the no effects tooltip
-    for (EffectInstance instance : potion.getEffects()) {
-      IFormattableTextComponent effectString = new TranslationTextComponent(instance.getEffect().getDescriptionId());
-      Effect effect = instance.getEffect();
+    for (MobEffectInstance instance : potion.getEffects()) {
+      MutableComponent effectString = new TranslatableComponent(instance.getEffect().getDescriptionId());
+      MobEffect effect = instance.getEffect();
       if (instance.getAmplifier() > 0) {
         effectString.append(" ");
-        effectString.append(new TranslationTextComponent("potion.potency." + instance.getAmplifier()));
+        effectString.append(new TranslatableComponent("potion.potency." + instance.getAmplifier()));
       }
       if (instance.getDuration() > 20) {
-        effectString.append(new StringTextComponent(" (" + EffectUtils.formatDuration(instance, 1.0f) + ")"));
+        effectString.append(new TextComponent(" (" + MobEffectUtil.formatDuration(instance, 1.0f) + ")"));
       }
-      effectString.withStyle(effect.isBeneficial() ? TextFormatting.BLUE : TextFormatting.RED);
+      effectString.withStyle(effect.isBeneficial() ? ChatFormatting.BLUE : ChatFormatting.RED);
       tooltip.add(effectString);
     }
     // add tooltip for unfermented
     if (wrapName != null) {
-      tooltip.add(new TranslationTextComponent(wrapName + ".tooltip").withStyle(TextFormatting.GRAY, TextFormatting.ITALIC));
+      tooltip.add(new TranslatableComponent(wrapName + ".tooltip").withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
     }
   }
 }

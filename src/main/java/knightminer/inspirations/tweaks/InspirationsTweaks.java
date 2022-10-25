@@ -16,30 +16,30 @@ import knightminer.inspirations.tweaks.datagen.TweaksRecipeProvider;
 import knightminer.inspirations.tweaks.item.SeedItem;
 import knightminer.inspirations.tweaks.recipe.NormalBrewingRecipe;
 import knightminer.inspirations.tweaks.util.SmoothGrowthListener;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.ComposterBlock;
-import net.minecraft.block.DispenserBlock;
-import net.minecraft.block.HopperBlock;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
+import net.minecraft.core.dispenser.DispenseItemBehavior;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.dispenser.DefaultDispenseItemBehavior;
-import net.minecraft.dispenser.IDispenseItemBehavior;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.DirectionalPlaceContext;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.Food;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.Items;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
-import net.minecraft.potion.Potions;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.item.context.DirectionalPlaceContext;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.ComposterBlock;
+import net.minecraft.world.level.block.DispenserBlock;
+import net.minecraft.world.level.block.HopperBlock;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.PlantType;
 import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
@@ -47,7 +47,7 @@ import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
+import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.registration.adapter.BlockRegistryAdapter;
 import slimeknights.mantle.registration.adapter.ItemRegistryAdapter;
@@ -80,7 +80,7 @@ public class InspirationsTweaks extends ModuleBase {
     BlockRegistryAdapter registry = new BlockRegistryAdapter(event.getRegistry());
     IForgeRegistry<Block> r = event.getRegistry();
 
-    boolean replaceVanilla = Config.enableFittedCarpets.getAsBoolean();
+    boolean replaceVanilla = Config.enableFittedCarpets.get();
     EnumObject.Builder<DyeColor,FlatCarpetBlock> flatBuilder = new EnumObject.Builder<>(DyeColor.class);
     EnumObject.Builder<DyeColor,FittedCarpetBlock> fittedBuilder = new EnumObject.Builder<>(DyeColor.class);
     for (DyeColor color : DyeColor.values()) {
@@ -109,7 +109,7 @@ public class InspirationsTweaks extends ModuleBase {
   @SubscribeEvent
   void registerItem(Register<Item> event) {
     ItemRegistryAdapter registry = new ItemRegistryAdapter(event.getRegistry());
-    Item.Properties decorationProps = new Item.Properties().tab(ItemGroup.TAB_DECORATIONS);
+    Item.Properties decorationProps = new Item.Properties().tab(CreativeModeTab.TAB_DECORATIONS);
     IForgeRegistry<Item> r = event.getRegistry();
 
     if (Config.enableFittedCarpets.get()) {
@@ -122,14 +122,14 @@ public class InspirationsTweaks extends ModuleBase {
     }
 
     if (Config.waterlogHopper.get()) {
-      registry.register(new BlockItem(dryHopper, new Item.Properties().tab(ItemGroup.TAB_REDSTONE)), Items.HOPPER);
+      registry.register(new BlockItem(dryHopper, new Item.Properties().tab(CreativeModeTab.TAB_REDSTONE)), Items.HOPPER);
     }
 
-    Item.Properties props = new Item.Properties().tab(ItemGroup.TAB_FOOD);
+    Item.Properties props = new Item.Properties().tab(CreativeModeTab.TAB_FOOD);
     cactusSeeds = registry.register(new SeedItem(cactus, props), "cactus_seeds");
     sugarCaneSeeds = registry.register(new SeedItem(sugarCane, props), "sugar_cane_seeds");
-    heartbeet = registry.register(new HidableItem(new Item.Properties().tab(ItemGroup.TAB_FOOD)
-                                                                       .food(new Food.Builder().nutrition(2).saturationMod(2.4f).effect(() -> new EffectInstance(Effects.REGENERATION, 100), 1).build()
+    heartbeet = registry.register(new HidableItem(new Item.Properties().tab(CreativeModeTab.TAB_FOOD)
+                                                                       .food(new FoodProperties.Builder().nutrition(2).saturationMod(2.4f).effect(() -> new MobEffectInstance(MobEffects.REGENERATION, 100), 1).build()
                                                                             ), Config.enableHeartbeet), "heartbeet");
 
     //		silverfishPowder = registerItem(r, new HidableItem(
@@ -139,13 +139,13 @@ public class InspirationsTweaks extends ModuleBase {
   }
 
   @SubscribeEvent
-  public void registerTileEntities(Register<TileEntityType<?>> event) {
+  public void registerTileEntities(Register<BlockEntityType<?>> event) {
     if (Config.waterlogHopper.get()) {
       // We need to inject our replacement hopper blocks into the valid ones for the TE type.
       // It's an immutable set, so we need to replace it entirely.
-      synchronized (TileEntityType.HOPPER) {
-        TileEntityType.HOPPER.validBlocks = new ImmutableSet.Builder<Block>()
-            .addAll(TileEntityType.HOPPER.validBlocks)
+      synchronized (BlockEntityType.HOPPER) {
+        BlockEntityType.HOPPER.validBlocks = new ImmutableSet.Builder<Block>()
+            .addAll(BlockEntityType.HOPPER.validBlocks)
             .add(dryHopper)
             .add(wetHopper)
             .build();
@@ -157,12 +157,8 @@ public class InspirationsTweaks extends ModuleBase {
   public void setup(FMLCommonSetupEvent event) {
     // brew heartbeets into regen potions
     Ingredient heartbeet = Ingredient.of(InspirationsTweaks.heartbeet);
-    BrewingRecipeRegistry.addRecipe(
-        new NormalBrewingRecipe(Potions.WATER, heartbeet, Potions.MUNDANE, Config.brewHeartbeet)
-                                   );
-    BrewingRecipeRegistry.addRecipe(
-        new NormalBrewingRecipe(Potions.AWKWARD, heartbeet, Potions.REGENERATION, Config.brewHeartbeet
-        ));
+    BrewingRecipeRegistry.addRecipe(new NormalBrewingRecipe(Potions.WATER, heartbeet, Potions.MUNDANE, Config.brewHeartbeet));
+    BrewingRecipeRegistry.addRecipe(new NormalBrewingRecipe(Potions.AWKWARD, heartbeet, Potions.REGENERATION, Config.brewHeartbeet));
 
     event.enqueueWork(this::registerCompostables);
     registerDispenserBehavior();
@@ -186,7 +182,7 @@ public class InspirationsTweaks extends ModuleBase {
     addToVanillaLoot(event, "entities/skeleton");
   }
 
-  private static final IDispenseItemBehavior DEFAULT = new DefaultDispenseItemBehavior();
+  private static final DispenseItemBehavior DEFAULT = new DefaultDispenseItemBehavior();
 
   private void registerCompostables() {
     ComposterBlock.add(0.3F, cactusSeeds);
@@ -195,18 +191,18 @@ public class InspirationsTweaks extends ModuleBase {
   }
 
   private void registerDispenserBehavior() {
-    IDispenseItemBehavior behavior = (source, stack) -> {
-      if (!Config.dispensersPlaceAnvils.get()) {
+    DispenseItemBehavior behavior = (source, stack) -> {
+      if (!Config.dispensersPlaceAnvils.getAsBoolean()) {
         DEFAULT.dispense(source, stack);
       }
       // get basic data
       Direction facing = source.getBlockState().getValue(DispenserBlock.FACING);
-      World world = source.getLevel();
+      Level world = source.getLevel();
       BlockPos pos = source.getPos().relative(facing);
 
       DirectionalPlaceContext context = new DirectionalPlaceContext(world, pos, facing, stack, facing.getOpposite());
 
-      if (((BlockItem)stack.getItem()).place(context) == ActionResultType.SUCCESS) {
+      if (((BlockItem)stack.getItem()).place(context) == InteractionResult.SUCCESS) {
         return stack;
       } else {
         // if we cannot place it, toss the item

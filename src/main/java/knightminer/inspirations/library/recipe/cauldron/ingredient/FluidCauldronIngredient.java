@@ -5,12 +5,13 @@ import com.google.gson.JsonSyntaxException;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.CauldronIngredients;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tags.ITag;
-import net.minecraft.tags.TagCollectionManager;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.core.Registry;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.material.Fluid;
+import slimeknights.mantle.util.JsonHelper;
+import slimeknights.mantle.util.RegistryHelper;
 
 import java.util.List;
 import java.util.Objects;
@@ -20,28 +21,28 @@ import java.util.stream.Collectors;
  * Cauldron ingredient type for fluid contents, mostly an extension of {@link ContentMatchIngredient}, but also includes tags
  */
 public class FluidCauldronIngredient extends ContentMatchIngredient<Fluid> {
-  private final ITag<Fluid> tag;
+  private final TagKey<Fluid> tag;
   private List<ICauldronContents> displayValues;
-  private FluidCauldronIngredient(ITag<Fluid> tag) {
+  private FluidCauldronIngredient(TagKey<Fluid> tag) {
     super(CauldronIngredients.FLUID);
     this.tag = tag;
   }
 
   @Override
   protected boolean testValue(Fluid value) {
-    return tag.contains(value);
+    return value.is(tag);
   }
 
   @Override
   protected void write(JsonObject json) {
-    json.addProperty("tag", TagCollectionManager.getInstance().getFluids().getIdOrThrow(this.tag).toString());
+    json.addProperty("tag", tag.location().toString());
   }
 
   @Override
-  protected void write(PacketBuffer buffer) {
-    List<Fluid> elements = tag.getValues();
-    buffer.writeVarInt(elements.size());
-    for (Fluid fluid : elements) {
+  protected void write(FriendlyByteBuf buffer) {
+    List<Fluid> fluids = RegistryHelper.getTagValueStream(Registry.FLUID, tag).toList();
+    buffer.writeVarInt(fluids.size());
+    for (Fluid fluid : fluids) {
       buffer.writeResourceLocation(Objects.requireNonNull(fluid.getRegistryName()));
     }
   }
@@ -49,7 +50,9 @@ public class FluidCauldronIngredient extends ContentMatchIngredient<Fluid> {
   @Override
   public List<ICauldronContents> getMatchingContents() {
     if (displayValues == null) {
-      displayValues = tag.getValues().stream().map(CauldronContentTypes.FLUID::of).collect(Collectors.toList());
+      displayValues = RegistryHelper.getTagValueStream(Registry.FLUID, tag)
+                                    .map(CauldronContentTypes.FLUID::of)
+                                    .collect(Collectors.toList());
     }
     return displayValues;
   }
@@ -68,7 +71,7 @@ public class FluidCauldronIngredient extends ContentMatchIngredient<Fluid> {
      * @param tag  Tag instance
      * @return  Ingredient instance
      */
-    public ContentMatchIngredient<Fluid> of(ITag<Fluid> tag) {
+    public ContentMatchIngredient<Fluid> of(TagKey<Fluid> tag) {
       return new FluidCauldronIngredient(tag);
     }
 
@@ -81,11 +84,8 @@ public class FluidCauldronIngredient extends ContentMatchIngredient<Fluid> {
 
       // tag
       if (json.has("tag")) {
-        ResourceLocation tagName = new ResourceLocation(JSONUtils.getAsString(json, "tag"));
-        ITag<Fluid> tag = TagCollectionManager.getInstance().getFluids().getTag(tagName);
-        if (tag == null) {
-          throw new JsonSyntaxException("Unknown fluid tag '" + tagName + "'");
-        }
+        ResourceLocation tagName = JsonHelper.getResourceLocation(json, "tag");
+        TagKey<Fluid> tag = TagKey.create(Registry.FLUID_REGISTRY, tagName);
         return of(tag);
       }
 

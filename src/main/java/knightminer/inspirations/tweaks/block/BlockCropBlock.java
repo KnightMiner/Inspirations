@@ -2,16 +2,16 @@ package knightminer.inspirations.tweaks.block;
 
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.IHidable;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.CropsBlock;
-import net.minecraft.state.IntegerProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.CropBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.PlantType;
@@ -19,10 +19,8 @@ import net.minecraftforge.common.PlantType;
 import java.util.Random;
 import java.util.function.Supplier;
 
-import net.minecraft.block.AbstractBlock.Properties;
-
 @SuppressWarnings("WeakerAccess")
-public abstract class BlockCropBlock extends CropsBlock implements IHidable, IPlantable {
+public abstract class BlockCropBlock extends CropBlock implements IHidable, IPlantable {
   public static final IntegerProperty LARGE_AGE = IntegerProperty.create("age", 0, 14);
 
   protected Supplier<Block> block;
@@ -40,7 +38,7 @@ public abstract class BlockCropBlock extends CropsBlock implements IHidable, IPl
   /* Age logic */
 
   @Override
-  protected void createBlockStateDefinition(StateContainer.Builder<Block,BlockState> builder) {
+  protected void createBlockStateDefinition(StateDefinition.Builder<Block,BlockState> builder) {
     builder.add(getAgeProperty());
     // No super, we want a different age size!
   }
@@ -70,7 +68,7 @@ public abstract class BlockCropBlock extends CropsBlock implements IHidable, IPl
   }
 
   @Override
-  public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+  public void randomTick(BlockState state, ServerLevel world, BlockPos pos, Random random) {
     // Forge: prevent loading unloaded chunks when checking neighbor's light
     if (!world.isAreaLoaded(pos, 1)) return;
     // age will always be less than max, but safe to check
@@ -84,7 +82,7 @@ public abstract class BlockCropBlock extends CropsBlock implements IHidable, IPl
         if (age == max) {
           world.setBlock(pos, newState, 3);
           if (!newState.canSurvive(world, pos)) {
-            world.getBlockTicks().scheduleTick(pos, block.get(), 1);
+            world.scheduleTick(pos, block.get(), 1);
           }
         } else {
           world.setBlock(pos, newState, 2);
@@ -96,13 +94,13 @@ public abstract class BlockCropBlock extends CropsBlock implements IHidable, IPl
 
   /* Crop logic */
   @Override
-  public PlantType getPlantType(IBlockReader world, BlockPos pos) {
+  public PlantType getPlantType(BlockGetter world, BlockPos pos) {
     return type;
   }
 
   @Deprecated
   @Override
-  public boolean canSurvive(BlockState state, IWorldReader world, BlockPos pos) {
+  public boolean canSurvive(BlockState state, LevelReader world, BlockPos pos) {
     return block.get().canSurvive(block.get().defaultBlockState(), world, pos);
   }
 
@@ -110,13 +108,13 @@ public abstract class BlockCropBlock extends CropsBlock implements IHidable, IPl
   /* Bonemeal */
 
   @Override
-  public boolean isValidBonemealTarget(IBlockReader worldIn, BlockPos pos, BlockState state, boolean isClient) {
-    return Config.bonemealBlockCrop.get();
+  public boolean isValidBonemealTarget(BlockGetter worldIn, BlockPos pos, BlockState state, boolean isClient) {
+    return Config.bonemealBlockCrop.getAsBoolean();
   }
 
   @Override
-  public boolean isBonemealSuccess(World worldIn, Random rand, BlockPos pos, BlockState state) {
-    return Config.bonemealBlockCrop.get();
+  public boolean isBonemealSuccess(Level worldIn, Random rand, BlockPos pos, BlockState state) {
+    return Config.bonemealBlockCrop.getAsBoolean();
   }
 
 
@@ -135,6 +133,6 @@ public abstract class BlockCropBlock extends CropsBlock implements IHidable, IPl
   /* Hidable */
   @Override
   public boolean isEnabled() {
-    return Config.enableBlockCrops.get();
+    return Config.enableBlockCrops.getAsBoolean();
   }
 }

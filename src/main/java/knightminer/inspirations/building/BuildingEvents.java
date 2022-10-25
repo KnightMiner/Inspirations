@@ -3,15 +3,15 @@ package knightminer.inspirations.building;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.block.RopeBlock;
 import knightminer.inspirations.common.Config;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SoundType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -28,36 +28,36 @@ public class BuildingEvents {
    */
   @SubscribeEvent
   static void toggleRopeLadder(PlayerInteractEvent.RightClickBlock event) {
-    if (!Config.enableRopeLadder.get() || event.getWorld().isClientSide()) {
+    if (!Config.enableRopeLadder.getAsBoolean() || event.getWorld().isClientSide()) {
       return;
     }
 
-    World world = event.getWorld();
+    Level world = event.getWorld();
     BlockPos pos = event.getPos();
     BlockState state = world.getBlockState(pos);
     if (!(state.getBlock() instanceof RopeBlock)) {
       return;
     }
 
-    PlayerEntity player = event.getPlayer();
+    Player player = event.getPlayer();
     if (state.getValue(RopeBlock.RUNGS) != RopeBlock.Rungs.NONE) {
       if (removeRopeLadder(world, pos, state, player)) {
         event.setCanceled(true);
-        event.setCancellationResult(ActionResultType.SUCCESS);
+        event.setCancellationResult(InteractionResult.SUCCESS);
       }
       return;
     }
 
     if (makeRopeLadder(world, pos, state, event.getFace(), player, event.getItemStack())) {
       event.setCanceled(true);
-      event.setCancellationResult(ActionResultType.SUCCESS);
+      event.setCancellationResult(InteractionResult.SUCCESS);
     }
   }
 
   /**
    * Logic to remove rungs from a rope ladder
    */
-  private static boolean removeRopeLadder(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+  private static boolean removeRopeLadder(Level world, BlockPos pos, BlockState state, Player player) {
     // only remove rungs when sneaking
     if (!player.isCrouching()) {
       return false;
@@ -67,8 +67,8 @@ public class BuildingEvents {
     world.setBlockAndUpdate(pos, state.setValue(RopeBlock.RUNGS, RopeBlock.Rungs.NONE));
     RopeBlock rope = (RopeBlock)state.getBlock();
     SoundType soundtype = rope.getSoundType(state, world, pos, player);
-    world.playSound(player, pos, soundtype.getBreakSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
-    ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(rope.getRungsItem(), RopeBlock.RUNG_ITEM_COUNT), player.inventory.selected);
+    world.playSound(player, pos, soundtype.getBreakSound(), SoundSource.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
+    ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(rope.getRungsItem(), RopeBlock.RUNG_ITEM_COUNT), player.getInventory().selected);
     player.stopUsingItem();
 
     return true;
@@ -77,7 +77,7 @@ public class BuildingEvents {
   /**
    * Logic to add rungs to a rope ladder
    */
-  private static boolean makeRopeLadder(World world, BlockPos pos, BlockState state, @Nullable Direction side, PlayerEntity player, ItemStack stack) {
+  private static boolean makeRopeLadder(Level world, BlockPos pos, BlockState state, @Nullable Direction side, Player player, ItemStack stack) {
     // must have not clicked the bottom and we must have 4 items
     if (side == null || side.getAxis() == Direction.Axis.Y || (stack.getCount() < RopeBlock.RUNG_ITEM_COUNT && !player.isCreative())) {
       return false;
@@ -92,7 +92,7 @@ public class BuildingEvents {
     // add rungs
     world.setBlockAndUpdate(pos, state.setValue(RopeBlock.RUNGS, RopeBlock.Rungs.fromAxis(side.getClockWise().getAxis())));
     SoundType soundtype = state.getBlock().getSoundType(state, world, pos, player);
-    world.playSound(player, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
+    world.playSound(player, pos, soundtype.getPlaceSound(), SoundSource.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
     if (!player.isCreative()) {
       stack.shrink(RopeBlock.RUNG_ITEM_COUNT);
     }

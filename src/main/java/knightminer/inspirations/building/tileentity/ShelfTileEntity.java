@@ -6,40 +6,42 @@ import knightminer.inspirations.building.inventory.ShelfContainer;
 import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.common.network.InventorySlotSyncPacket;
 import knightminer.inspirations.library.InspirationsRegistry;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.model.ModelDataManager;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelDataMap;
 import net.minecraftforge.client.model.data.ModelProperty;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.Constants.NBT;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
-import slimeknights.mantle.tileentity.IRetexturedTileEntity;
-import slimeknights.mantle.tileentity.NamableTileEntity;
+import slimeknights.mantle.block.entity.IRetexturedBlockEntity;
+import slimeknights.mantle.block.entity.NameableBlockEntity;
 import slimeknights.mantle.util.RetexturedHelper;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class ShelfTileEntity extends NamableTileEntity implements IRetexturedTileEntity {
+public class ShelfTileEntity extends NameableBlockEntity implements IRetexturedBlockEntity {
   public static final ModelProperty<Integer> BOOKS = new ModelProperty<>();
-  private static final ITextComponent TITLE = new TranslationTextComponent("gui.inspirations.shelf.name");
+  private static final Component TITLE = new TranslatableComponent("gui.inspirations.shelf.name");
 
   /**
    * Cached enchantment bonus, so we are not constantly digging the inventory
@@ -49,8 +51,8 @@ public class ShelfTileEntity extends NamableTileEntity implements IRetexturedTil
   private final ShelfInventory inventory = new ShelfInventory(this);
   private final LazyOptional<IItemHandler> itemCapability = LazyOptional.of(() -> inventory);
   private final IModelData data = new ModelDataMap.Builder().withProperty(BOOKS).withProperty(RetexturedHelper.BLOCK_PROPERTY).build();
-  public ShelfTileEntity() {
-    super(InspirationsBuilding.shelfTileEntity, TITLE);
+  public ShelfTileEntity(BlockPos pos, BlockState state) {
+    super(InspirationsBuilding.shelfTileEntity, pos, state, TITLE);
   }
 
   /**
@@ -59,12 +61,12 @@ public class ShelfTileEntity extends NamableTileEntity implements IRetexturedTil
    * @param click  Click vector
    * @return  Index of book clicked, or -1 if the item cannot be placed
    */
-  private int getIndexFromHit(ItemStack held, Vector3d click) {
+  private int getIndexFromHit(ItemStack held, Vec3 click) {
     Direction dir = getBlockState().getValue(ShelfBlock.FACING).getCounterClockWise();
     // location clicked on the block, 0 to 1
     double clicked = (dir.getStepX() * (click.x - 0.5)) + (dir.getStepZ() * (click.z - 0.5)) + 0.5;
     // pixel clicked, 0 to 15
-    int pixel = MathHelper.clamp((int)(clicked * 16), 0, 15);
+    int pixel = Mth.clamp((int)(clicked * 16), 0, 15);
     // shelf index clicked, 0 to 7
     int shelfIndex = pixel / 2;
     // index for the whole shelf
@@ -121,7 +123,7 @@ public class ShelfTileEntity extends NamableTileEntity implements IRetexturedTil
    * @param click   Block relative click location
    * @return  True if the shelf was modified
    */
-  public boolean interact(PlayerEntity player, Hand hand, Vector3d click) {
+  public boolean interact(Player player, InteractionHand hand, Vec3 click) {
     ItemStack stack = player.getItemInHand(hand);
     int index = getIndexFromHit(stack, click);
     if (index == -1) {
@@ -132,7 +134,7 @@ public class ShelfTileEntity extends NamableTileEntity implements IRetexturedTil
     ItemStack current = inventory.getStackInSlot(index);
     if (!current.isEmpty()) {
       if (level != null && !level.isClientSide) {
-        ItemHandlerHelper.giveItemToPlayer(player, current, player.inventory.selected);
+        ItemHandlerHelper.giveItemToPlayer(player, current, player.getInventory().selected);
         inventory.setStackInSlot(index, ItemStack.EMPTY);
       }
       return true;
@@ -156,7 +158,7 @@ public class ShelfTileEntity extends NamableTileEntity implements IRetexturedTil
    */
   public void onSlotChanged(int slot, ItemStack oldStack, ItemStack newStack) {
     // slot update
-    World world = getLevel();
+    Level world = getLevel();
     if (world != null && !world.isClientSide) {
       InspirationsNetwork.sendToClients(world, this.worldPosition, new InventorySlotSyncPacket(newStack, slot, worldPosition));
     }
@@ -185,6 +187,7 @@ public class ShelfTileEntity extends NamableTileEntity implements IRetexturedTil
     return inventory;
   }
 
+  @Nonnull
   @Override
   public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
     if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
@@ -194,7 +197,7 @@ public class ShelfTileEntity extends NamableTileEntity implements IRetexturedTil
   }
 
   @Override
-  protected void invalidateCaps() {
+  public void invalidateCaps() {
     super.invalidateCaps();
     itemCapability.invalidate();
   }
@@ -206,7 +209,7 @@ public class ShelfTileEntity extends NamableTileEntity implements IRetexturedTil
 
   @Nullable
   @Override
-  public Container createMenu(int winId, PlayerInventory playerInv, PlayerEntity player) {
+  public AbstractContainerMenu createMenu(int winId, Inventory playerInv, Player player) {
     return new ShelfContainer(winId, playerInv, this);
   }
 
@@ -252,6 +255,7 @@ public class ShelfTileEntity extends NamableTileEntity implements IRetexturedTil
   /*
    * Rendering
    */
+  @Nonnull
   @Override
   public IModelData getModelData() {
     // pack books into integer
@@ -286,19 +290,20 @@ public class ShelfTileEntity extends NamableTileEntity implements IRetexturedTil
   private static final String TAG_ITEMS = "Items";
 
   @Override
-  public void writeSynced(CompoundNBT tags) {
-    super.writeSynced(tags);
+  public void saveSynced(CompoundTag tags) {
+    super.saveSynced(tags);
     tags.put(TAG_ITEMS, inventory.serializeNBT());
   }
 
   @Override
-  public void load(BlockState blockState, CompoundNBT tags) {
-    super.load(blockState, tags);
-    if (tags.contains(TAG_ITEMS, NBT.TAG_LIST)) {
-      inventory.deserializeNBT(tags.getList(TAG_ITEMS, NBT.TAG_COMPOUND));
+  public void load(CompoundTag tags) {
+    super.load(tags);
+    if (tags.contains(TAG_ITEMS, Tag.TAG_LIST)) {
+      inventory.deserializeNBT(tags.getList(TAG_ITEMS, Tag.TAG_COMPOUND));
       if (level != null && level.isClientSide) {
         requestModelDataUpdate();
-        level.sendBlockUpdated(worldPosition, blockState, blockState, 0);
+        BlockState state = getBlockState();
+        level.sendBlockUpdated(worldPosition, state, state, 0);
       }
     }
   }

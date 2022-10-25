@@ -4,31 +4,34 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.utility.InspirationsUtility;
 import knightminer.inspirations.utility.block.PipeBlock;
 import knightminer.inspirations.utility.inventory.PipeContainer;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.HopperTileEntity;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.HopperBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.common.util.NonNullConsumer;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
-import slimeknights.mantle.tileentity.InventoryTileEntity;
+import slimeknights.mantle.block.entity.InventoryBlockEntity;
 import slimeknights.mantle.util.WeakConsumerWrapper;
 
 import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 
-public class PipeTileEntity extends InventoryTileEntity implements ITickableTileEntity {
-  private static final ITextComponent TITLE = new TranslationTextComponent("gui.inspirations.pipe");
+public class PipeTileEntity extends InventoryBlockEntity {
+  /** Server tick logic */
+  public static final BlockEntityTicker<PipeTileEntity> SERVER_TICKER = (level, pos, state, te) -> te.tick();
+  private static final Component TITLE = new TranslatableComponent("gui.inspirations.pipe");
 
   /* Number of ticks before transfer is allowed again */
   private short cooldown = 0;
@@ -38,7 +41,7 @@ public class PipeTileEntity extends InventoryTileEntity implements ITickableTile
   private LazyOptional<IItemHandler> facingHandler = null;
   /** Cache of the current hopper we are facing */
   @Nullable
-  private WeakReference<HopperTileEntity> hopper;
+  private WeakReference<HopperBlockEntity> hopper;
 
   /** Lambda to call on every item transfer. Final variable to reduce memory usage every tick */
   private final NonNullConsumer<IItemHandler> transferItem = this::transferItem;
@@ -49,16 +52,11 @@ public class PipeTileEntity extends InventoryTileEntity implements ITickableTile
     }
   });
 
-  public PipeTileEntity() {
-    super(InspirationsUtility.tilePipe, TITLE, 1);
+  public PipeTileEntity(BlockPos pos, BlockState state) {
+    super(InspirationsUtility.tilePipe, pos, state, TITLE, false, 1);
   }
 
-  @Override
-  public void tick() {
-    if (level == null || level.isClientSide) {
-      return;
-    }
-
+  private void tick() {
     // do not function if facing up when disallowed
     Direction facing = this.getBlockState().getValue(PipeBlock.FACING);
     if (!Config.pipeUpwards.get() && facing == Direction.UP) {
@@ -94,15 +92,15 @@ public class PipeTileEntity extends InventoryTileEntity implements ITickableTile
 
     // fetch TE and capability
     assert level != null;
-    TileEntity te = level.getBlockEntity(worldPosition.relative(facing));
+    BlockEntity te = level.getBlockEntity(worldPosition.relative(facing));
     if (te != null) {
       LazyOptional<IItemHandler> handler = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing.getOpposite());
       if (handler.isPresent()) {
         // add the invalidator
         handler.addListener(facingInvalidator);
         // if its a hopper, store that so we can update cooldowns
-        if (te instanceof HopperTileEntity) {
-          hopper = new WeakReference<>((HopperTileEntity)te);
+        if (te instanceof HopperBlockEntity) {
+          hopper = new WeakReference<>((HopperBlockEntity)te);
         }
         // cache and return
         return facingHandler = handler;
@@ -128,7 +126,7 @@ public class PipeTileEntity extends InventoryTileEntity implements ITickableTile
     if (ItemHandlerHelper.insertItemStacked(neighbor, copy, false).isEmpty()) {
       // set cooldown on the hopper
       if (hopper != null) {
-        HopperTileEntity hop = this.hopper.get();
+        HopperBlockEntity hop = this.hopper.get();
         if (hop != null) {
           hop.setCooldown(8);
         }
@@ -153,9 +151,10 @@ public class PipeTileEntity extends InventoryTileEntity implements ITickableTile
     this.hopper = null;
   }
 
+  @SuppressWarnings("deprecation")
   @Override
-  public void clearCache() {
-    super.clearCache();
+  public void setBlockState(BlockState pBlockState) {
+    super.setBlockState(pBlockState);
     // if the block changed and this TE is intact, remove cache. likely we were rotated
     this.clearCachedInventories();
   }
@@ -170,7 +169,7 @@ public class PipeTileEntity extends InventoryTileEntity implements ITickableTile
   /* GUI */
 
   @Override
-  public Container createMenu(int winId, PlayerInventory inv, PlayerEntity entity) {
+  public AbstractContainerMenu createMenu(int winId, Inventory inv, Player entity) {
     return new PipeContainer(winId, inv, this);
   }
 
@@ -180,16 +179,14 @@ public class PipeTileEntity extends InventoryTileEntity implements ITickableTile
   private static final String TAG_COOLDOWN = "cooldown";
 
   @Override
-  public void load(BlockState state, CompoundNBT tags) {
-    super.load(state, tags);
+  public void load(CompoundTag tags) {
+    super.load(tags);
     this.cooldown = tags.getShort(TAG_COOLDOWN);
   }
 
   @Override
-  public CompoundNBT save(CompoundNBT tags) {
-    super.save(tags);
+  public void saveAdditional(CompoundTag tags) {
+    super.saveAdditional(tags);
     tags.putShort(TAG_COOLDOWN, this.cooldown);
-
-    return tags;
   }
 }
