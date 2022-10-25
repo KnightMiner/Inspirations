@@ -24,8 +24,6 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import slimeknights.mantle.util.BlockEntityHelper;
 
 import javax.annotation.Nonnull;
@@ -132,7 +130,6 @@ public class EnhancedCauldronBlock extends LayeredCauldronBlock implements Entit
 
   @Deprecated
   @Override
-  @OnlyIn(Dist.CLIENT)
   public void animateTick(BlockState state, Level world, BlockPos pos, Random rand) {
     if (getLevel(state) == 0) {
       return;
