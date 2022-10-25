@@ -29,20 +29,20 @@ public class RemoveBannerPatternCauldronRecipe implements ICauldronRecipe {
     // must be at least one level of water, be a banner, and have patterns
     return inv.getLevel() >= THIRD && inv.getContents().contains(CauldronContentTypes.FLUID, Fluids.WATER)
            && ItemTags.BANNERS.contains(stack.getItem())
-           && BannerTileEntity.getPatterns(stack) > 0;
+           && BannerTileEntity.getPatternCount(stack) > 0;
   }
 
   @Override
   public void handleRecipe(IModifyableCauldronInventory inv) {
     // remove patterns
     ItemStack stack = inv.splitStack(1);
-    BannerTileEntity.removeBannerData(stack);
+    BannerTileEntity.removeLastPattern(stack);
     inv.setOrGiveStack(stack);
     // use one level of water
     inv.addLevel(-THIRD);
 
     // play sound
-    inv.playSound(SoundEvents.ENTITY_FISHING_BOBBER_SPLASH);
+    inv.playSound(SoundEvents.FISHING_BOBBER_SPLASH);
   }
 
   @Override

@@ -27,16 +27,16 @@ public class HidableRetexturedBlockItem extends HidableBlockItem {
   }
 
   @Override
-  public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
-    if (shouldAddtoItemGroup(group) && isInGroup(group)) {
+  public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items) {
+    if (shouldAddtoItemGroup(group) && allowdedIn(group)) {
       RetexturedBlockItem.addTagVariants(this.getBlock(), textureTag, items, Config.showAllVariants.get());
     }
   }
 
   @OnlyIn(Dist.CLIENT)
   @Override
-  public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+  public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
     RetexturedBlockItem.addTooltip(stack, tooltip);
-    super.addInformation(stack, worldIn, tooltip, flagIn);
+    super.appendHoverText(stack, worldIn, tooltip, flagIn);
   }
 }

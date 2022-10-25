@@ -119,7 +119,7 @@ public class CauldronIngredients {
    * @return  Cauldron contents
    */
   public static ICauldronIngredient read(JsonObject json) {
-    ResourceLocation location = new ResourceLocation(JSONUtils.getString(json, KEY_TYPE));
+    ResourceLocation location = new ResourceLocation(JSONUtils.getAsString(json, KEY_TYPE));
     ICauldronIngredientSerializer<?> serializer = INGREDIENTS.get(location);
     if (serializer != null) {
       return serializer.read(json);

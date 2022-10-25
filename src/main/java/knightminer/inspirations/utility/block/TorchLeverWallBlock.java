@@ -31,32 +31,32 @@ public class TorchLeverWallBlock extends WallTorchBlock {
 
   public TorchLeverWallBlock(AbstractBlock.Properties props, IParticleData particles) {
     super(props, particles);
-    setDefaultState(getDefaultState().with(POWERED, false));
+    registerDefaultState(defaultBlockState().setValue(POWERED, false));
   }
 
   @Override
-  protected void fillStateContainer(StateContainer.Builder<Block,BlockState> builder) {
+  protected void createBlockStateDefinition(StateContainer.Builder<Block,BlockState> builder) {
     builder.add(POWERED, FACING);
   }
 
 
   @Override
   public void animateTick(BlockState state, World world, BlockPos pos, Random rand) {
-    Direction facing = state.get(FACING);
+    Direction facing = state.getValue(FACING);
     double x = pos.getX() + 0.5D;
     double y = pos.getY() + 0.7D;
     double z = pos.getZ() + 0.5D;
 
     Direction opposite = facing.getOpposite();
-    int offsetX = opposite.getXOffset();
-    int offsetZ = opposite.getZOffset();
+    int offsetX = opposite.getStepX();
+    int offsetZ = opposite.getStepZ();
     // particleData is the appropriate flame particle passed to the constructor.
-    if (state.get(POWERED)) {
+    if (state.getValue(POWERED)) {
       world.addParticle(ParticleTypes.SMOKE, x + 0.10D * offsetX, y + 0.08D, z + 0.10D * offsetZ, 0.0D, 0.0D, 0.0D);
-      world.addParticle(particleData, x + 0.10D * offsetX, y + 0.08D, z + 0.10D * offsetZ, 0.0D, 0.0D, 0.0D);
+      world.addParticle(flameParticle, x + 0.10D * offsetX, y + 0.08D, z + 0.10D * offsetZ, 0.0D, 0.0D, 0.0D);
     } else {
       world.addParticle(ParticleTypes.SMOKE, x + 0.27D * offsetX, y + 0.22D, z + 0.27D * offsetZ, 0.0D, 0.0D, 0.0D);
-      world.addParticle(particleData, x + 0.27D * offsetX, y + 0.22D, z + 0.27D * offsetZ, 0.0D, 0.0D, 0.0D);
+      world.addParticle(flameParticle, x + 0.27D * offsetX, y + 0.22D, z + 0.27D * offsetZ, 0.0D, 0.0D, 0.0D);
     }
   }
 
@@ -67,20 +67,20 @@ public class TorchLeverWallBlock extends WallTorchBlock {
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) {
-    if (world.isRemote) {
+  public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) {
+    if (world.isClientSide) {
       return ActionResultType.SUCCESS;
     }
 
     // update state
-    state = state.func_235896_a_(POWERED);
-    world.setBlockState(pos, state, 3);
+    state = state.cycle(POWERED);
+    world.setBlock(pos, state, 3);
     // play sound
-    float pitch = state.get(POWERED) ? 0.6F : 0.5F;
-    world.playSound(null, pos, SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.3F, pitch);
+    float pitch = state.getValue(POWERED) ? 0.6F : 0.5F;
+    world.playSound(null, pos, SoundEvents.LEVER_CLICK, SoundCategory.BLOCKS, 0.3F, pitch);
     // notify update
-    world.notifyNeighborsOfStateChange(pos, this);
-    world.notifyNeighborsOfStateChange(pos.offset(state.get(FACING).getOpposite()), this);
+    world.updateNeighborsAt(pos, this);
+    world.updateNeighborsAt(pos.relative(state.getValue(FACING).getOpposite()), this);
     return ActionResultType.SUCCESS;
   }
 
@@ -92,36 +92,36 @@ public class TorchLeverWallBlock extends WallTorchBlock {
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
+  public void onRemove(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
     // if powered, send updates for power
-    if (state.getBlock() != newState.getBlock() && !isMoving && state.get(POWERED)) {
-      world.notifyNeighborsOfStateChange(pos, this);
-      world.notifyNeighborsOfStateChange(pos.offset(state.get(FACING).getOpposite()), this);
+    if (state.getBlock() != newState.getBlock() && !isMoving && state.getValue(POWERED)) {
+      world.updateNeighborsAt(pos, this);
+      world.updateNeighborsAt(pos.relative(state.getValue(FACING).getOpposite()), this);
     }
-    super.onReplaced(state, world, pos, newState, isMoving);
+    super.onRemove(state, world, pos, newState, isMoving);
   }
 
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public int getWeakPower(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
-    return state.get(POWERED) ? 15 : 0;
+  public int getSignal(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
+    return state.getValue(POWERED) ? 15 : 0;
   }
 
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public int getStrongPower(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
-    if (!state.get(POWERED)) {
+  public int getDirectSignal(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
+    if (!state.getValue(POWERED)) {
       return 0;
     }
-    return state.get(FACING) == side ? 15 : 0;
+    return state.getValue(FACING) == side ? 15 : 0;
   }
 
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public boolean canProvidePower(BlockState state) {
+  public boolean isSignalSource(BlockState state) {
     return true;
   }
 }

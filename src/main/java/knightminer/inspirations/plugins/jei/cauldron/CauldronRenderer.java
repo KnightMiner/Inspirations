@@ -109,7 +109,7 @@ public class CauldronRenderer {
         // default to x/12 for odd cases
         amountText = new TranslationTextComponent(LEVEL, amount);
       }
-      AMOUNT_TEXTS[amount] = amountText.mergeStyle(TextFormatting.GRAY);
+      AMOUNT_TEXTS[amount] = amountText.withStyle(TextFormatting.GRAY);
     }
     return AMOUNT_TEXTS[amount];
   }
@@ -134,12 +134,12 @@ public class CauldronRenderer {
     RenderSystem.enableBlend();
     RenderSystem.enableAlphaTest();
     Minecraft minecraft = Minecraft.getInstance();
-    TextureAtlasSprite sprite = minecraft.getModelManager().getAtlasTexture(PlayerContainer.LOCATION_BLOCKS_TEXTURE).getSprite(texture);
-    minecraft.getTextureManager().bindTexture(PlayerContainer.LOCATION_BLOCKS_TEXTURE);
+    TextureAtlasSprite sprite = minecraft.getModelManager().getAtlas(PlayerContainer.BLOCK_ATLAS).getSprite(texture);
+    minecraft.getTextureManager().bind(PlayerContainer.BLOCK_ATLAS);
 
     // draw
     int scaled = amount * height / MAX;
-    Matrix4f matrix = matrices.getLast().getMatrix();
+    Matrix4f matrix = matrices.last().pose();
     setGLColorFromInt(color);
     drawSprite(matrix, x, (y + height - scaled), width, scaled, sprite);
 
@@ -175,22 +175,22 @@ public class CauldronRenderer {
   private static void drawSprite(Matrix4f matrix, float x1, float y1, float width, float height, TextureAtlasSprite sprite) {
     // calculate missing numbers
     final float z = 100.0f;
-    float u1 = sprite.getMinU();
-    float u2 = sprite.getInterpolatedU((16 * width) / sprite.getWidth());
-    float v1 = sprite.getMinV();
-    float v2 = sprite.getInterpolatedV((16 * height) / sprite.getHeight());
+    float u1 = sprite.getU0();
+    float u2 = sprite.getU((16 * width) / sprite.getWidth());
+    float v1 = sprite.getV0();
+    float v2 = sprite.getV((16 * height) / sprite.getHeight());
     float x2 = x1 + width;
     float y2 = y1 + height;
 
     // start drawing
     Tessellator tessellator = Tessellator.getInstance();
-    BufferBuilder builder = tessellator.getBuffer();
+    BufferBuilder builder = tessellator.getBuilder();
     builder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-    builder.pos(matrix, x1, y2, z).tex(u1, v2).endVertex();
-    builder.pos(matrix, x2, y2, z).tex(u2, v2).endVertex();
-    builder.pos(matrix, x2, y1, z).tex(u2, v1).endVertex();
-    builder.pos(matrix, x1, y1, z).tex(u1, v1).endVertex();
-    tessellator.draw();
+    builder.vertex(matrix, x1, y2, z).uv(u1, v2).endVertex();
+    builder.vertex(matrix, x2, y2, z).uv(u2, v2).endVertex();
+    builder.vertex(matrix, x2, y1, z).uv(u2, v1).endVertex();
+    builder.vertex(matrix, x1, y1, z).uv(u1, v1).endVertex();
+    tessellator.end();
   }
 
   /**

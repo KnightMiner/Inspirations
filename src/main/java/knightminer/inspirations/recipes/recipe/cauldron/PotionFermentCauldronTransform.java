@@ -61,25 +61,25 @@ public class PotionFermentCauldronTransform implements ICauldronTransform {
 
   @Override
   public SoundEvent getSound() {
-    return SoundEvents.BLOCK_BREWING_STAND_BREW;
+    return SoundEvents.BREWING_STAND_BREW;
   }
 
   /** Serializer for a potion transform */
   public static class Serializer extends RecipeSerializer<PotionFermentCauldronTransform> {
     @Override
-    public PotionFermentCauldronTransform read(ResourceLocation id, JsonObject json) {
-      int time = JSONUtils.getInt(json, "time");
+    public PotionFermentCauldronTransform fromJson(ResourceLocation id, JsonObject json) {
+      int time = JSONUtils.getAsInt(json, "time");
       return new PotionFermentCauldronTransform(id, time);
     }
 
     @Nullable
     @Override
-    public PotionFermentCauldronTransform read(ResourceLocation id, PacketBuffer buffer) {
+    public PotionFermentCauldronTransform fromNetwork(ResourceLocation id, PacketBuffer buffer) {
       return new PotionFermentCauldronTransform(id, buffer.readVarInt());
     }
 
     @Override
-    public void write(PacketBuffer buffer, PotionFermentCauldronTransform recipe) {
+    public void toNetwork(PacketBuffer buffer, PotionFermentCauldronTransform recipe) {
       buffer.writeVarInt(recipe.time);
     }
   }
@@ -93,7 +93,7 @@ public class PotionFermentCauldronTransform implements ICauldronTransform {
     }
 
     @Override
-    public void serialize(JsonObject json) {
+    public void serializeRecipeData(JsonObject json) {
       json.addProperty("time", time);
     }
   }

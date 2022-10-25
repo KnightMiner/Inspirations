@@ -61,7 +61,7 @@ public abstract class ClientEvents {
    */
   protected static void registerModelProperty(@Nullable IItemProvider item, String name, IItemPropertyGetter prop) {
     if (item != null) {
-      ItemModelsProperties.registerProperty(item.asItem(), Inspirations.getResource(name), prop);
+      ItemModelsProperties.register(item.asItem(), Inspirations.getResource(name), prop);
     }
   }
 
@@ -85,7 +85,7 @@ public abstract class ClientEvents {
    */
   protected static <M extends Container, U extends Screen & IHasContainer<M>> void registerScreenFactory(@Nullable ContainerType<? extends M> type, ScreenManager.IScreenFactory<M,U> factory) {
     if (type != null) {
-      ScreenManager.registerFactory(type, factory);
+      ScreenManager.register(type, factory);
     }
   }
 }

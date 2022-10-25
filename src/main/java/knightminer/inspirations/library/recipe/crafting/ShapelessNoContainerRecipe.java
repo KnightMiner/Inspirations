@@ -34,12 +34,12 @@ public class ShapelessNoContainerRecipe extends ShapelessRecipe {
    * @param orig  Shapeless recipe to copy
    */
   private ShapelessNoContainerRecipe(ShapelessRecipe orig) {
-    super(orig.getId(), orig.getGroup(), orig.getRecipeOutput(), orig.getIngredients());
+    super(orig.getId(), orig.getGroup(), orig.getResultItem(), orig.getIngredients());
   }
 
   @Override
   public NonNullList<ItemStack> getRemainingItems(CraftingInventory inv) {
-    return NonNullList.withSize(inv.getSizeInventory(), ItemStack.EMPTY);
+    return NonNullList.withSize(inv.getContainerSize(), ItemStack.EMPTY);
   }
 
   @Override
@@ -53,8 +53,8 @@ public class ShapelessNoContainerRecipe extends ShapelessRecipe {
   public static class Serializer extends RecipeSerializer<ShapelessNoContainerRecipe> {
     @Nullable
     @Override
-    public ShapelessNoContainerRecipe read(ResourceLocation recipeID, PacketBuffer buffer) {
-      ShapelessRecipe recipe = CRAFTING_SHAPELESS.read(recipeID, buffer);
+    public ShapelessNoContainerRecipe fromNetwork(ResourceLocation recipeID, PacketBuffer buffer) {
+      ShapelessRecipe recipe = SHAPELESS_RECIPE.fromNetwork(recipeID, buffer);
       if (recipe != null) {
         return new ShapelessNoContainerRecipe(recipe);
       }
@@ -62,13 +62,13 @@ public class ShapelessNoContainerRecipe extends ShapelessRecipe {
     }
 
     @Override
-    public ShapelessNoContainerRecipe read(ResourceLocation recipeID, JsonObject json) {
-      return new ShapelessNoContainerRecipe(CRAFTING_SHAPELESS.read(recipeID, json));
+    public ShapelessNoContainerRecipe fromJson(ResourceLocation recipeID, JsonObject json) {
+      return new ShapelessNoContainerRecipe(SHAPELESS_RECIPE.fromJson(recipeID, json));
     }
 
     @Override
-    public void write(PacketBuffer buffer, ShapelessNoContainerRecipe recipe) {
-      Serializer.CRAFTING_SHAPELESS.write(buffer, recipe);
+    public void toNetwork(PacketBuffer buffer, ShapelessNoContainerRecipe recipe) {
+      Serializer.SHAPELESS_RECIPE.toNetwork(buffer, recipe);
     }
   }
 }

@@ -61,8 +61,8 @@ public class RecipesEvents {
     }
 
     // normal interaction if TE is missing
-    VanillaCauldronInventory inventory = new VanillaCauldronInventory(world, pos, state, player.getHeldItem(hand),
-                                                                      stack -> player.setHeldItem(hand, stack),
+    VanillaCauldronInventory inventory = new VanillaCauldronInventory(world, pos, state, player.getItemInHand(hand),
+                                                                      stack -> player.setItemInHand(hand, stack),
                                                                       CauldronItemInventory.getPlayerAdder(player));
     // if the recipe does something, stop further interaction
     if (inventory.handleRecipe()) {

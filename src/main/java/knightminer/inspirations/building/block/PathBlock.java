@@ -32,43 +32,43 @@ public class PathBlock extends HidableBlock implements IWaterLoggable {
   private final VoxelShape collShape;
 
   public PathBlock(VoxelShape shape, MaterialColor mapColor) {
-    super(Block.Properties.create(Material.ROCK, mapColor)
-                          .hardnessAndResistance(1.5F, 10F)
+    super(Block.Properties.of(Material.STONE, mapColor)
+                          .strength(1.5F, 10F)
                           .harvestTool(ToolType.PICKAXE).harvestLevel(0),
           Config.enablePath::get
          );
     // Each path has a different shape, but use the bounding box for collisions.
     this.shape = shape;
-    this.collShape = VoxelShapes.create(shape.getBoundingBox());
-    setDefaultState(getDefaultState().with(WATERLOGGED, false));
+    this.collShape = VoxelShapes.create(shape.bounds());
+    registerDefaultState(defaultBlockState().setValue(WATERLOGGED, false));
   }
 
   @Override
-  protected void fillStateContainer(StateContainer.Builder<Block,BlockState> builder) {
+  protected void createBlockStateDefinition(StateContainer.Builder<Block,BlockState> builder) {
     builder.add(WATERLOGGED);
   }
 
   @Override
   public BlockState getStateForPlacement(BlockItemUseContext context) {
-    FluidState fluid = context.getWorld().getFluidState(context.getPos());
-    return getDefaultState().with(WATERLOGGED, fluid.getFluid() == Fluids.WATER);
+    FluidState fluid = context.getLevel().getFluidState(context.getClickedPos());
+    return defaultBlockState().setValue(WATERLOGGED, fluid.getType() == Fluids.WATER);
   }
 
   @SuppressWarnings("deprecation")
   @Override
   @Deprecated
   public FluidState getFluidState(BlockState state) {
-    return state.get(WATERLOGGED) ? Fluids.WATER.getStillFluidState(false) : super.getFluidState(state);
+    return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
   }
 
   @SuppressWarnings("deprecation")
   @Override
   @Deprecated
-  public BlockState updatePostPlacement(BlockState state, Direction facing, BlockState facingState, IWorld world, BlockPos currentPos, BlockPos facingPos) {
-    if (state.get(WATERLOGGED)) {
-      world.getPendingFluidTicks().scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+  public BlockState updateShape(BlockState state, Direction facing, BlockState facingState, IWorld world, BlockPos currentPos, BlockPos facingPos) {
+    if (state.getValue(WATERLOGGED)) {
+      world.getLiquidTicks().scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickDelay(world));
     }
-    return super.updatePostPlacement(state, facing, facingState, world, currentPos, facingPos);
+    return super.updateShape(state, facing, facingState, world, currentPos, facingPos);
   }
 
   /* Block Shape */
@@ -92,13 +92,13 @@ public class PathBlock extends HidableBlock implements IWaterLoggable {
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public boolean isValidPosition(BlockState state, IWorldReader world, BlockPos pos) {
-    return super.isValidPosition(state, world, pos) && this.canBlockStay(world, pos);
+  public boolean canSurvive(BlockState state, IWorldReader world, BlockPos pos) {
+    return super.canSurvive(state, world, pos) && this.canBlockStay(world, pos);
   }
 
   private boolean canBlockStay(IWorldReader world, BlockPos pos) {
-    BlockPos down = pos.down();
-    return Block.hasSolidSideOnTop(world, down) || world.getBlockState(down).isIn(InspirationsTags.Blocks.MULCH);
+    BlockPos down = pos.below();
+    return Block.canSupportRigidBlock(world, down) || world.getBlockState(down).is(InspirationsTags.Blocks.MULCH);
   }
 
   @SuppressWarnings("deprecation")
@@ -107,8 +107,8 @@ public class PathBlock extends HidableBlock implements IWaterLoggable {
   public void neighborChanged(BlockState state, World world, BlockPos pos, Block other, BlockPos fromPos, boolean isMoving) {
     if (!this.canBlockStay(world, pos)) {
       world.destroyBlock(pos, true);
-    } else if (state.get(WATERLOGGED)) {
-      world.getPendingFluidTicks().scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+    } else if (state.getValue(WATERLOGGED)) {
+      world.getLiquidTicks().scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(world));
     }
   }
 }

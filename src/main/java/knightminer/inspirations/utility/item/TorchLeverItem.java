@@ -10,6 +10,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.WallOrFloorItem;
 import net.minecraft.util.NonNullList;
 
+import net.minecraft.item.Item.Properties;
+
 public class TorchLeverItem extends WallOrFloorItem implements IHidable {
   public TorchLeverItem(Block floorBlock, Block wallBlock, Properties properties) {
     super(floorBlock, wallBlock, properties);
@@ -21,9 +23,9 @@ public class TorchLeverItem extends WallOrFloorItem implements IHidable {
   }
 
   @Override
-  public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
+  public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items) {
     if (shouldAddtoItemGroup(group)) {
-      super.fillItemGroup(group, items);
+      super.fillItemCategory(group, items);
     }
   }
 }

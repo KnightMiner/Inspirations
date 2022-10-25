@@ -64,7 +64,7 @@ public class ShelfContainer extends BaseContainer<ShelfTileEntity> {
     }
 
     @Override
-    public boolean isItemValid(ItemStack stack) {
+    public boolean mayPlace(ItemStack stack) {
       return shelf.canHoldItem(getSlotIndex(), stack);
     }
   }

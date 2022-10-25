@@ -12,6 +12,8 @@ import net.minecraft.item.ItemStack;
 
 import java.util.Map;
 
+import net.minecraft.enchantment.Enchantment.Rarity;
+
 public class ExtendedKnockbackEnchantment extends KnockbackEnchantment {
   public ExtendedKnockbackEnchantment(Rarity rarityIn, EquipmentSlotType... slots) {
     super(rarityIn, slots);
@@ -26,15 +28,15 @@ public class ExtendedKnockbackEnchantment extends KnockbackEnchantment {
   }
 
   @Override
-  public boolean canApply(ItemStack stack) {
+  public boolean canEnchant(ItemStack stack) {
     // fallback in case axes cannot be enchanted at the table, but can receive from books
-    return (Config.axeWeaponEnchants.get() && stack.getItem() instanceof AxeItem) || super.canApply(stack);
+    return (Config.axeWeaponEnchants.get() && stack.getItem() instanceof AxeItem) || super.canEnchant(stack);
   }
 
   @Override
-  public Map<EquipmentSlotType,ItemStack> getEntityEquipment(LivingEntity entity) {
+  public Map<EquipmentSlotType,ItemStack> getSlotItems(LivingEntity entity) {
     // shields in hand should not give knockback, just on hit
-    Map<EquipmentSlotType,ItemStack> items = super.getEntityEquipment(entity);
+    Map<EquipmentSlotType,ItemStack> items = super.getSlotItems(entity);
     for (EquipmentSlotType slot : EquipmentSlotType.values()) {
       if (items.containsKey(slot) && items.get(slot).isShield(entity)) {
         items.put(slot, ItemStack.EMPTY);
@@ -44,8 +46,8 @@ public class ExtendedKnockbackEnchantment extends KnockbackEnchantment {
   }
 
   @Override
-  public boolean canApplyTogether(Enchantment ench) {
+  public boolean checkCompatibility(Enchantment ench) {
     // no efficiency and knockback
-    return super.canApplyTogether(ench) && ench != Enchantments.EFFICIENCY;
+    return super.checkCompatibility(ench) && ench != Enchantments.BLOCK_EFFICIENCY;
   }
 }

@@ -70,20 +70,20 @@ public class PipeBlock extends InventoryBlock implements IHidable, IWaterLoggabl
 
   public PipeBlock() {
     super(Block.Properties
-              .create(Material.IRON, MaterialColor.STONE)  // Darker than iron blocks.
-              .hardnessAndResistance(3.0F, 8.0F)
+              .of(Material.METAL, MaterialColor.STONE)  // Darker than iron blocks.
+              .strength(3.0F, 8.0F)
               .sound(SoundType.METAL)
          );
-    this.setDefaultState(this.getStateContainer().getBaseState()
-                             .with(FACING, Direction.NORTH)
-                             .with(NORTH, false)
-                             .with(EAST, false)
-                             .with(SOUTH, false)
-                             .with(WEST, false)
-                             .with(UP, false)
-                             .with(DOWN, false)
-                             .with(HOPPER, false)
-                             .with(WATERLOGGED, false)
+    this.registerDefaultState(this.getStateDefinition().any()
+                             .setValue(FACING, Direction.NORTH)
+                             .setValue(NORTH, false)
+                             .setValue(EAST, false)
+                             .setValue(SOUTH, false)
+                             .setValue(WEST, false)
+                             .setValue(UP, false)
+                             .setValue(DOWN, false)
+                             .setValue(HOPPER, false)
+                             .setValue(WATERLOGGED, false)
                         );
   }
 
@@ -95,16 +95,16 @@ public class PipeBlock extends InventoryBlock implements IHidable, IWaterLoggabl
   }
 
   @Override
-  public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> stacks) {
+  public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> stacks) {
     if (shouldAddtoItemGroup(group)) {
-      super.fillItemGroup(group, stacks);
+      super.fillItemCategory(group, stacks);
     }
   }
 
   /* Block state settings */
 
   @Override
-  protected void fillStateContainer(StateContainer.Builder<Block,BlockState> builder) {
+  protected void createBlockStateDefinition(StateContainer.Builder<Block,BlockState> builder) {
     builder.add(WATERLOGGED, FACING, NORTH, EAST, SOUTH, WEST, UP, DOWN, HOPPER);
   }
 
@@ -112,31 +112,31 @@ public class PipeBlock extends InventoryBlock implements IHidable, IWaterLoggabl
   @Deprecated
   @Override
   public BlockState rotate(BlockState state, Rotation rot) {
-    return state.with(FACING, rot.rotate(state.get(FACING)));
+    return state.setValue(FACING, rot.rotate(state.getValue(FACING)));
   }
 
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public BlockState mirror(BlockState state, Mirror mirror) {
-    return state.with(FACING, mirror.mirror(state.get(FACING)));
+    return state.setValue(FACING, mirror.mirror(state.getValue(FACING)));
   }
 
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public BlockState updatePostPlacement(BlockState state, Direction neighFacing, BlockState neighState, IWorld world, BlockPos pos, BlockPos neighPos) {
-    Direction outFacing = state.get(FACING);
+  public BlockState updateShape(BlockState state, Direction neighFacing, BlockState neighState, IWorld world, BlockPos pos, BlockPos neighPos) {
+    Direction outFacing = state.getValue(FACING);
 
     // We only need to check the one side that updated.
-    state = state.with(DIR_ENABLED[neighFacing.getIndex()], canConnectTo(world, pos, outFacing, neighFacing));
+    state = state.setValue(DIR_ENABLED[neighFacing.get3DDataValue()], canConnectTo(world, pos, outFacing, neighFacing));
 
     // Check if the output side is a hopper if that side was changed.
     if (outFacing == neighFacing) {
-      BlockState offsetState = world.getBlockState(pos.offset(outFacing));
-      state = state.with(HOPPER,
+      BlockState offsetState = world.getBlockState(pos.relative(outFacing));
+      state = state.setValue(HOPPER,
                          offsetState.getBlock() instanceof HopperBlock &&
-                         offsetState.get(HopperBlock.FACING) != outFacing.getOpposite()
+                         offsetState.getValue(HopperBlock.FACING) != outFacing.getOpposite()
                         );
     }
     return state;
@@ -145,58 +145,58 @@ public class PipeBlock extends InventoryBlock implements IHidable, IWaterLoggabl
   @Nullable
   @Override
   public BlockState getStateForPlacement(BlockItemUseContext context) {
-    World world = context.getWorld();
-    BlockPos pos = context.getPos();
+    World world = context.getLevel();
+    BlockPos pos = context.getClickedPos();
 
-    Direction facing = context.getFace().getOpposite();
+    Direction facing = context.getClickedFace().getOpposite();
     // only allow up if allowed in the config.
     if (!Config.pipeUpwards.get() && facing == Direction.UP) {
-      facing = context.getPlacementHorizontalFacing();
+      facing = context.getHorizontalDirection();
     }
 
-    BlockState offsetState = world.getBlockState(pos.offset(facing));
+    BlockState offsetState = world.getBlockState(pos.relative(facing));
     // When first placed, check every side.
-    return this.getDefaultState()
-               .with(FACING, facing)
-               .with(HOPPER, offsetState.getBlock() instanceof HopperBlock && offsetState.get(HopperBlock.FACING) != facing.getOpposite())
-               .with(WATERLOGGED, context.getWorld().getFluidState(context.getPos()).getFluid() == Fluids.WATER)
-               .with(UP, canConnectTo(world, pos, facing, Direction.UP))
-               .with(DOWN, canConnectTo(world, pos, facing, Direction.DOWN))
-               .with(NORTH, canConnectTo(world, pos, facing, Direction.NORTH))
-               .with(EAST, canConnectTo(world, pos, facing, Direction.EAST))
-               .with(SOUTH, canConnectTo(world, pos, facing, Direction.SOUTH))
-               .with(WEST, canConnectTo(world, pos, facing, Direction.WEST));
+    return this.defaultBlockState()
+               .setValue(FACING, facing)
+               .setValue(HOPPER, offsetState.getBlock() instanceof HopperBlock && offsetState.getValue(HopperBlock.FACING) != facing.getOpposite())
+               .setValue(WATERLOGGED, context.getLevel().getFluidState(context.getClickedPos()).getType() == Fluids.WATER)
+               .setValue(UP, canConnectTo(world, pos, facing, Direction.UP))
+               .setValue(DOWN, canConnectTo(world, pos, facing, Direction.DOWN))
+               .setValue(NORTH, canConnectTo(world, pos, facing, Direction.NORTH))
+               .setValue(EAST, canConnectTo(world, pos, facing, Direction.EAST))
+               .setValue(SOUTH, canConnectTo(world, pos, facing, Direction.SOUTH))
+               .setValue(WEST, canConnectTo(world, pos, facing, Direction.WEST));
   }
 
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public FluidState getFluidState(BlockState state) {
-    return state.get(WATERLOGGED) ? Fluids.WATER.getStillFluidState(false) : super.getFluidState(state);
+    return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
   }
 
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) {
+  public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) {
     // return false if holding a pipe to make easier to place
-    Item item = player.getHeldItem(hand).getItem();
-    if (item == InspirationsUtility.pipe.asItem() || Block.getBlockFromItem(item) instanceof HopperBlock) {
+    Item item = player.getItemInHand(hand).getItem();
+    if (item == InspirationsUtility.pipe.asItem() || Block.byItem(item) instanceof HopperBlock) {
       return ActionResultType.PASS;
     }
-    return super.onBlockActivated(state, world, pos, player, hand, trace);
+    return super.use(state, world, pos, player, hand, trace);
   }
 
   @Override
-  public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
+  public void onRemove(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
     // If destroyed, drop contents.
     if (state.getBlock() != newState.getBlock()) {
-      TileEntity te = world.getTileEntity(pos);
+      TileEntity te = world.getBlockEntity(pos);
       if (te instanceof IInventory) {
-        InventoryHelper.dropInventoryItems(world, pos, (IInventory)te);
+        InventoryHelper.dropContents(world, pos, (IInventory)te);
       }
     }
-    super.onReplaced(state, world, pos, newState, isMoving);
+    super.onRemove(state, world, pos, newState, isMoving);
   }
 
   /* Model and shape */
@@ -205,13 +205,13 @@ public class PipeBlock extends InventoryBlock implements IHidable, IWaterLoggabl
     // ignore side pipe is facing
     if (facing == side) return false;
 
-    BlockState state = world.getBlockState(pos.offset(side));
+    BlockState state = world.getBlockState(pos.relative(side));
     Block block = state.getBlock();
     Direction opposite = side.getOpposite();
     // if it is a known item output thingy and is facing us, connect
-    if ((block instanceof PipeBlock || block instanceof DropperBlock) && state.get(FACING) == opposite) return true;
+    if ((block instanceof PipeBlock || block instanceof DropperBlock) && state.getValue(FACING) == opposite) return true;
     // hopper check, we can skip on down since hoppers cannot face up
-    return side != Direction.DOWN && block instanceof HopperBlock && state.get(HopperBlock.FACING) == opposite;
+    return side != Direction.DOWN && block instanceof HopperBlock && state.getValue(HopperBlock.FACING) == opposite;
   }
 
 
@@ -226,7 +226,7 @@ public class PipeBlock extends InventoryBlock implements IHidable, IWaterLoggabl
     if (!(player instanceof ServerPlayerEntity)) {
       throw new AssertionError("Needs to be server!");
     }
-    TileEntity te = world.getTileEntity(pos);
+    TileEntity te = world.getBlockEntity(pos);
     if (te instanceof PipeTileEntity) {
       NetworkHooks.openGui((ServerPlayerEntity)player, (INamedContainerProvider)te, pos);
       return true;
@@ -236,8 +236,8 @@ public class PipeBlock extends InventoryBlock implements IHidable, IWaterLoggabl
 
   @Override
   public void neighborChanged(BlockState state, World world, BlockPos pos, Block blockIn, BlockPos neighbor, boolean isMoving) {
-    if (pos.offset(state.get(FACING)).equals(neighbor)) {
-      TileEntity te = world.getTileEntity(pos);
+    if (pos.relative(state.getValue(FACING)).equals(neighbor)) {
+      TileEntity te = world.getBlockEntity(pos);
       if (te instanceof PipeTileEntity) {
         ((PipeTileEntity) te).clearCachedInventories();
       }
@@ -248,21 +248,21 @@ public class PipeBlock extends InventoryBlock implements IHidable, IWaterLoggabl
   /* Bounds */
 
   // base bounds
-  private static final VoxelShape BOUNDS_CENTER = VoxelShapes.create(0.375, 0.25, 0.375, 0.625, 0.5, 0.625),
+  private static final VoxelShape BOUNDS_CENTER = VoxelShapes.box(0.375, 0.25, 0.375, 0.625, 0.5, 0.625),
   // main bounds for side pipes
-  BOUNDS_DOWN = VoxelShapes.create(0.375, 0, 0.375, 0.625, 0.25, 0.625),
-      BOUNDS_UP = VoxelShapes.create(0.375, 0.5, 0.375, 0.625, 1, 0.625),
-      BOUNDS_NORTH = VoxelShapes.create(0.375, 0.25, 0, 0.625, 0.5, 0.375),
-      BOUNDS_SOUTH = VoxelShapes.create(0.375, 0.25, 0.625, 0.625, 0.5, 1),
-      BOUNDS_WEST = VoxelShapes.create(0, 0.25, 0.375, 0.375, 0.5, 0.625),
-      BOUNDS_EAST = VoxelShapes.create(0.625, 0.25, 0.375, 1, 0.5, 0.625),
+  BOUNDS_DOWN = VoxelShapes.box(0.375, 0, 0.375, 0.625, 0.25, 0.625),
+      BOUNDS_UP = VoxelShapes.box(0.375, 0.5, 0.375, 0.625, 1, 0.625),
+      BOUNDS_NORTH = VoxelShapes.box(0.375, 0.25, 0, 0.625, 0.5, 0.375),
+      BOUNDS_SOUTH = VoxelShapes.box(0.375, 0.25, 0.625, 0.625, 0.5, 1),
+      BOUNDS_WEST = VoxelShapes.box(0, 0.25, 0.375, 0.375, 0.5, 0.625),
+      BOUNDS_EAST = VoxelShapes.box(0.625, 0.25, 0.375, 1, 0.5, 0.625),
   // extra bounds for the raytrace to select the little connections
-  BOUNDS_DOWN_CONNECT = VoxelShapes.create(0.34375, 0, 0.34375, 0.65625, 0.0625, 0.65625),
-      BOUNDS_UP_CONNECT = VoxelShapes.create(0.34375, 0.9375, 0.34375, 0.65625, 1, 0.65625),
-      BOUNDS_NORTH_CONNECT = VoxelShapes.create(0.34375, 0.21875, 0, 0.65625, 0.53125, 0.0625),
-      BOUNDS_SOUTH_CONNECT = VoxelShapes.create(0.34375, 0.21875, 0.9375, 0.65625, 0.53125, 1),
-      BOUNDS_WEST_CONNECT = VoxelShapes.create(0, 0.21875, 0.34375, 0.0625, 0.53125, 0.65625),
-      BOUNDS_EAST_CONNECT = VoxelShapes.create(0.9375, 0.21875, 0.34375, 1, 0.53125, 0.65625);
+  BOUNDS_DOWN_CONNECT = VoxelShapes.box(0.34375, 0, 0.34375, 0.65625, 0.0625, 0.65625),
+      BOUNDS_UP_CONNECT = VoxelShapes.box(0.34375, 0.9375, 0.34375, 0.65625, 1, 0.65625),
+      BOUNDS_NORTH_CONNECT = VoxelShapes.box(0.34375, 0.21875, 0, 0.65625, 0.53125, 0.0625),
+      BOUNDS_SOUTH_CONNECT = VoxelShapes.box(0.34375, 0.21875, 0.9375, 0.65625, 0.53125, 1),
+      BOUNDS_WEST_CONNECT = VoxelShapes.box(0, 0.21875, 0.34375, 0.0625, 0.53125, 0.65625),
+      BOUNDS_EAST_CONNECT = VoxelShapes.box(0.9375, 0.21875, 0.34375, 1, 0.53125, 0.65625);
 
 
   // Compute a static lookup table for all the combinations.
@@ -297,8 +297,8 @@ public class PipeBlock extends InventoryBlock implements IHidable, IWaterLoggabl
   public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
     int bitmask = 0;
     for (int i = 0; i < 6; i++) {
-      bitmask |= state.get(DIR_ENABLED[i]) ? (1 << i) : 0;
+      bitmask |= state.getValue(DIR_ENABLED[i]) ? (1 << i) : 0;
     }
-    return BOUNDS[state.get(FACING).getIndex()][bitmask];
+    return BOUNDS[state.getValue(FACING).get3DDataValue()][bitmask];
   }
 }

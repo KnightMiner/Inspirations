@@ -17,6 +17,8 @@ import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import net.minecraft.item.Item.Properties;
+
 /* Yes, the interface says armor, but in mojmappings its not armor, its just dyeable */
 public class DimensionCompassItem extends CompassItem implements IDyeableArmorItem {
 	public DimensionCompassItem(Properties builder) {
@@ -24,28 +26,28 @@ public class DimensionCompassItem extends CompassItem implements IDyeableArmorIt
 	}
 
 	@Override
-	public String getTranslationKey(ItemStack stack) {
-		return func_234670_d_(stack) ? "item.inspirations.lodestone_dimension_compass" : this.getTranslationKey();
+	public String getDescriptionId(ItemStack stack) {
+		return isLodestoneCompass(stack) ? "item.inspirations.lodestone_dimension_compass" : this.getDescriptionId();
 	}
 
 	@Override
-	public ActionResultType onItemUse(ItemUseContext context) {
+	public ActionResultType useOn(ItemUseContext context) {
 		// basically a copy of the vanilla compass, but does not hardcode to compass item
-		BlockPos blockpos = context.getPos();
-		World world = context.getWorld();
-		if (!world.getBlockState(blockpos).isIn(Blocks.LODESTONE)) {
+		BlockPos blockpos = context.getClickedPos();
+		World world = context.getLevel();
+		if (!world.getBlockState(blockpos).is(Blocks.LODESTONE)) {
 			return ActionResultType.PASS;
 		}
 
-		world.playSound(null, blockpos, SoundEvents.ITEM_LODESTONE_COMPASS_LOCK, SoundCategory.PLAYERS, 1.0F, 1.0F);
+		world.playSound(null, blockpos, SoundEvents.LODESTONE_COMPASS_LOCK, SoundCategory.PLAYERS, 1.0F, 1.0F);
 		PlayerEntity player = context.getPlayer();
 		if (player == null) {
 			return ActionResultType.PASS;
 		}
-		ItemStack stack = context.getItem();
-		boolean singleItem = !player.abilities.isCreativeMode && stack.getCount() == 1;
+		ItemStack stack = context.getItemInHand();
+		boolean singleItem = !player.abilities.instabuild && stack.getCount() == 1;
 		if (singleItem) {
-			write(world.getDimensionKey(), blockpos, stack.getOrCreateTag());
+			write(world.dimension(), blockpos, stack.getOrCreateTag());
 		} else {
 			ItemStack copy = new ItemStack(this, 1);
 			CompoundNBT nbt = stack.getTag();
@@ -55,16 +57,16 @@ public class DimensionCompassItem extends CompassItem implements IDyeableArmorIt
 				nbt = nbt.copy();
 			}
 			copy.setTag(nbt);
-			if (!player.abilities.isCreativeMode) {
+			if (!player.abilities.instabuild) {
 				stack.shrink(1);
 			}
-			write(world.getDimensionKey(), blockpos, nbt);
-			if (!player.inventory.addItemStackToInventory(copy)) {
-				player.dropItem(copy, false);
+			write(world.dimension(), blockpos, nbt);
+			if (!player.inventory.add(copy)) {
+				player.drop(copy, false);
 			}
 		}
 
-		return ActionResultType.func_233537_a_(world.isRemote);
+		return ActionResultType.sidedSuccess(world.isClientSide);
 	}
 
 	/**
@@ -75,7 +77,7 @@ public class DimensionCompassItem extends CompassItem implements IDyeableArmorIt
 	 */
 	private static void write(RegistryKey<World> dimension, BlockPos pos, CompoundNBT nbt) {
 		nbt.put("LodestonePos", NBTUtil.writeBlockPos(pos));
-		World.CODEC.encodeStart(NBTDynamicOps.INSTANCE, dimension)
+		World.RESOURCE_KEY_CODEC.encodeStart(NBTDynamicOps.INSTANCE, dimension)
 							 .resultOrPartial(Inspirations.log::error)
 							 .ifPresent(key -> nbt.put("LodestoneDimension", key));
 		nbt.putBoolean("LodestoneTracked", true);

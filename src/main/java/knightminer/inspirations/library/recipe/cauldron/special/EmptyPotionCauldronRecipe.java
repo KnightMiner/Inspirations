@@ -55,7 +55,7 @@ public class EmptyPotionCauldronRecipe implements ICauldronRecipe {
     if (stack.getItem() != potionItem) {
       return false;
     }
-    Potion potion = PotionUtils.getPotionFromItem(stack);
+    Potion potion = PotionUtils.getPotion(stack);
     if (potion == Potions.EMPTY) {
       return false;
     }
@@ -69,7 +69,7 @@ public class EmptyPotionCauldronRecipe implements ICauldronRecipe {
 
   @Override
   public void handleRecipe(IModifyableCauldronInventory inv) {
-    Potion potion = PotionUtils.getPotionFromItem(inv.getStack());
+    Potion potion = PotionUtils.getPotion(inv.getStack());
     if (potion != Potions.EMPTY) {
       // add levels
       inv.addLevel(THIRD);
@@ -81,7 +81,7 @@ public class EmptyPotionCauldronRecipe implements ICauldronRecipe {
       inv.setOrGiveStack(new ItemStack(bottle));
 
       // play sound
-      inv.playSound(SoundEvents.ITEM_BOTTLE_EMPTY);
+      inv.playSound(SoundEvents.BOTTLE_EMPTY);
     }
   }
 
@@ -97,7 +97,7 @@ public class EmptyPotionCauldronRecipe implements ICauldronRecipe {
 
   public static class Serializer extends RecipeSerializer<EmptyPotionCauldronRecipe> {
     @Override
-    public EmptyPotionCauldronRecipe read(ResourceLocation id, JsonObject json) {
+    public EmptyPotionCauldronRecipe fromJson(ResourceLocation id, JsonObject json) {
       Item potion = Util.deserializeItem(json, "potion");
       Item bottle = Util.deserializeItem(json, "bottle");
       return new EmptyPotionCauldronRecipe(id, potion, bottle);
@@ -105,14 +105,14 @@ public class EmptyPotionCauldronRecipe implements ICauldronRecipe {
 
     @Nullable
     @Override
-    public EmptyPotionCauldronRecipe read(ResourceLocation id, PacketBuffer buffer) {
+    public EmptyPotionCauldronRecipe fromNetwork(ResourceLocation id, PacketBuffer buffer) {
       Item potion = RecipeHelper.readItem(buffer);
       Item bottle = RecipeHelper.readItem(buffer);
       return new EmptyPotionCauldronRecipe(id, potion, bottle);
     }
 
     @Override
-    public void write(PacketBuffer buffer, EmptyPotionCauldronRecipe recipe) {
+    public void toNetwork(PacketBuffer buffer, EmptyPotionCauldronRecipe recipe) {
       RecipeHelper.writeItem(buffer, recipe.potionItem);
       RecipeHelper.writeItem(buffer, recipe.bottle);
     }
@@ -129,7 +129,7 @@ public class EmptyPotionCauldronRecipe implements ICauldronRecipe {
     }
 
     @Override
-    public void serialize(JsonObject json) {
+    public void serializeRecipeData(JsonObject json) {
       json.addProperty("potion", Objects.requireNonNull(potionItem.getRegistryName()).toString());
       json.addProperty("bottle", Objects.requireNonNull(bottle.getRegistryName()).toString());
     }

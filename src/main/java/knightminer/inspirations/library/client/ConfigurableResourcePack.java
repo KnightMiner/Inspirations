@@ -51,7 +51,7 @@ public class ConfigurableResourcePack extends ResourcePack implements IPackFinde
    * @param namespaces      List of namespaces that have resources replaced
    */
   public ConfigurableResourcePack(Class<?> resourceLoader, ResourceLocation packId, String displayName, Set<String> namespaces) {
-    this(resourceLoader, packId.toString(), String.format("/%s/%s/%s/", ResourcePackType.CLIENT_RESOURCES.getDirectoryName(), packId.getNamespace(), packId.getPath()), displayName, namespaces);
+    this(resourceLoader, packId.toString(), String.format("/%s/%s/%s/", ResourcePackType.CLIENT_RESOURCES.getDirectory(), packId.getNamespace(), packId.getPath()), displayName, namespaces);
   }
 
   /**
@@ -76,7 +76,7 @@ public class ConfigurableResourcePack extends ResourcePack implements IPackFinde
   }
 
   @Override
-  public Set<String> getResourceNamespaces(ResourcePackType type) {
+  public Set<String> getNamespaces(ResourcePackType type) {
     return type == ResourcePackType.CLIENT_RESOURCES ? namespaces : Collections.emptySet();
   }
 
@@ -90,7 +90,7 @@ public class ConfigurableResourcePack extends ResourcePack implements IPackFinde
   }
 
   @Override
-  protected InputStream getInputStream(String name) throws IOException {
+  protected InputStream getResource(String name) throws IOException {
     // pack.mcmeta and pack.png are requested without prefix, and requird directly
     if (name.equals("pack.mcmeta") || name.equals("pack.png")) {
       return getPackResource(name);
@@ -107,13 +107,13 @@ public class ConfigurableResourcePack extends ResourcePack implements IPackFinde
   }
 
   @Override
-  protected boolean resourceExists(String name) {
+  protected boolean hasResource(String name) {
     Replacement replacement = replacements.get(name);
     return replacement != null && replacement.isEnabled();
   }
 
   @Override
-  public Collection<ResourceLocation> getAllResourceLocations(ResourcePackType type, String domain, String path, int maxDepth, Predicate<String> filter) {
+  public Collection<ResourceLocation> getResources(ResourcePackType type, String domain, String path, int maxDepth, Predicate<String> filter) {
     // this method appears to only be called for fonts and GUIs, so just return an empty list as neither is used here
     return Collections.emptyList();
   }
@@ -122,9 +122,9 @@ public class ConfigurableResourcePack extends ResourcePack implements IPackFinde
   public void close() {}
 
   @Override
-  public void findPacks(Consumer<ResourcePackInfo> consumer, IFactory factory) {
+  public void loadPacks(Consumer<ResourcePackInfo> consumer, IFactory factory) {
     // add a new always enabled pack. Config is how you disable the replacements
-    consumer.accept(ResourcePackInfo.createResourcePack(
+    consumer.accept(ResourcePackInfo.create(
         packId, true, () -> this, factory, ResourcePackInfo.Priority.TOP,
         name -> new TranslationTextComponent("pack.nameAndSource", name, Inspirations.modID)));
   }
@@ -151,7 +151,7 @@ public class ConfigurableResourcePack extends ResourcePack implements IPackFinde
    * @return  Full resource path
    */
   private static String makePath(ResourceLocation id, String folder, String extension) {
-    return String.format("%s/%s/%s/%s.%s", ResourcePackType.CLIENT_RESOURCES.getDirectoryName(), id.getNamespace(), folder, id.getPath(), extension);
+    return String.format("%s/%s/%s/%s.%s", ResourcePackType.CLIENT_RESOURCES.getDirectory(), id.getNamespace(), folder, id.getPath(), extension);
   }
 
   /**

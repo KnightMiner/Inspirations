@@ -60,9 +60,9 @@ public class ShelfTileEntity extends NamableTileEntity implements IRetexturedTil
    * @return  Index of book clicked, or -1 if the item cannot be placed
    */
   private int getIndexFromHit(ItemStack held, Vector3d click) {
-    Direction dir = getBlockState().get(ShelfBlock.FACING).rotateYCCW();
+    Direction dir = getBlockState().getValue(ShelfBlock.FACING).getCounterClockWise();
     // location clicked on the block, 0 to 1
-    double clicked = (dir.getXOffset() * (click.x - 0.5)) + (dir.getZOffset() * (click.z - 0.5)) + 0.5;
+    double clicked = (dir.getStepX() * (click.x - 0.5)) + (dir.getStepZ() * (click.z - 0.5)) + 0.5;
     // pixel clicked, 0 to 15
     int pixel = MathHelper.clamp((int)(clicked * 16), 0, 15);
     // shelf index clicked, 0 to 7
@@ -122,7 +122,7 @@ public class ShelfTileEntity extends NamableTileEntity implements IRetexturedTil
    * @return  True if the shelf was modified
    */
   public boolean interact(PlayerEntity player, Hand hand, Vector3d click) {
-    ItemStack stack = player.getHeldItem(hand);
+    ItemStack stack = player.getItemInHand(hand);
     int index = getIndexFromHit(stack, click);
     if (index == -1) {
       return false;
@@ -131,8 +131,8 @@ public class ShelfTileEntity extends NamableTileEntity implements IRetexturedTil
     // if it contains a book, take the book out
     ItemStack current = inventory.getStackInSlot(index);
     if (!current.isEmpty()) {
-      if (world != null && !world.isRemote) {
-        ItemHandlerHelper.giveItemToPlayer(player, current, player.inventory.currentItem);
+      if (level != null && !level.isClientSide) {
+        ItemHandlerHelper.giveItemToPlayer(player, current, player.inventory.selected);
         inventory.setStackInSlot(index, ItemStack.EMPTY);
       }
       return true;
@@ -140,7 +140,7 @@ public class ShelfTileEntity extends NamableTileEntity implements IRetexturedTil
 
     // try adding book
     if (inventory.canInsertItem(index, stack)) {
-      if (world != null && !world.isRemote) {
+      if (level != null && !level.isClientSide) {
         inventory.setStackInSlot(index, stack.split(1));
       }
       return true;
@@ -156,19 +156,19 @@ public class ShelfTileEntity extends NamableTileEntity implements IRetexturedTil
    */
   public void onSlotChanged(int slot, ItemStack oldStack, ItemStack newStack) {
     // slot update
-    World world = getWorld();
-    if (world != null && !world.isRemote) {
-      InspirationsNetwork.sendToClients(world, this.pos, new InventorySlotSyncPacket(newStack, slot, pos));
+    World world = getLevel();
+    if (world != null && !world.isClientSide) {
+      InspirationsNetwork.sendToClients(world, this.worldPosition, new InventorySlotSyncPacket(newStack, slot, worldPosition));
     }
     if (world != null) {
       // update for rendering
-      if (world.isRemote) {
+      if (world.isClientSide) {
         ModelDataManager.requestModelDataRefresh(this);
       }
 
       // if we have redstone books and either the old stack xor the new one is a book, update
       if (oldStack.getItem() == InspirationsBuilding.redstoneBook ^ newStack.getItem() == InspirationsBuilding.redstoneBook) {
-        world.updateComparatorOutputLevel(pos, this.getBlockState().getBlock());
+        world.updateNeighbourForOutputSignal(worldPosition, this.getBlockState().getBlock());
       }
     }
     // clear bonus to recalculate it
@@ -292,13 +292,13 @@ public class ShelfTileEntity extends NamableTileEntity implements IRetexturedTil
   }
 
   @Override
-  public void read(BlockState blockState, CompoundNBT tags) {
-    super.read(blockState, tags);
+  public void load(BlockState blockState, CompoundNBT tags) {
+    super.load(blockState, tags);
     if (tags.contains(TAG_ITEMS, NBT.TAG_LIST)) {
       inventory.deserializeNBT(tags.getList(TAG_ITEMS, NBT.TAG_COMPOUND));
-      if (world != null && world.isRemote) {
+      if (level != null && level.isClientSide) {
         requestModelDataUpdate();
-        world.notifyBlockUpdate(pos, blockState, blockState, 0);
+        level.sendBlockUpdated(worldPosition, blockState, blockState, 0);
       }
     }
   }

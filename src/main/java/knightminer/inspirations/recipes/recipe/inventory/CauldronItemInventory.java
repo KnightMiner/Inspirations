@@ -46,6 +46,6 @@ public abstract class CauldronItemInventory implements IModifyableCauldronInvent
    * @return  Consumer for item stacks
    */
   public static Consumer<ItemStack> getPlayerAdder(PlayerEntity player) {
-    return stack -> ItemHandlerHelper.giveItemToPlayer(player, stack, player.inventory.currentItem);
+    return stack -> ItemHandlerHelper.giveItemToPlayer(player, stack, player.inventory.selected);
   }
 }

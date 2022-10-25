@@ -94,7 +94,7 @@ public class MixCauldronDyeRecipe implements ICauldronRecipe, ICauldronRecipeDis
       inv.setContents(CauldronContentTypes.COLOR.of(DyeCauldronWaterRecipe.addColors(newColor, THIRD, 0x808080, originalLevel)));
 
       // play sound
-      inv.playSound(SoundEvents.ITEM_BOTTLE_EMPTY);
+      inv.playSound(SoundEvents.BOTTLE_EMPTY);
     } else {
       contents.get(CauldronContentTypes.COLOR).ifPresent(color -> {
         // update dye stack and return container
@@ -108,7 +108,7 @@ public class MixCauldronDyeRecipe implements ICauldronRecipe, ICauldronRecipeDis
         inv.setContents(CauldronContentTypes.COLOR.of(DyeCauldronWaterRecipe.addColors(newColor, THIRD, color, inv.getLevel())));
 
         // play sound
-        inv.playSound(SoundEvents.ITEM_BOTTLE_EMPTY);
+        inv.playSound(SoundEvents.BOTTLE_EMPTY);
       });
     }
   }
@@ -128,7 +128,7 @@ public class MixCauldronDyeRecipe implements ICauldronRecipe, ICauldronRecipeDis
   @Override
   public List<ItemStack> getItemInputs() {
     if (inputDisplay == null) {
-      inputDisplay = Arrays.asList(ingredient.getMatchingStacks());
+      inputDisplay = Arrays.asList(ingredient.getItems());
     }
     return inputDisplay;
   }
@@ -151,7 +151,7 @@ public class MixCauldronDyeRecipe implements ICauldronRecipe, ICauldronRecipeDis
   @Override
   public ItemStack getItemOutput() {
     if (outputDisplay == null) {
-      ItemStack[] items = ingredient.getMatchingStacks();
+      ItemStack[] items = ingredient.getItems();
       if (items.length != 0) {
         outputDisplay = items[0].getContainerItem();
       } else {
@@ -178,21 +178,21 @@ public class MixCauldronDyeRecipe implements ICauldronRecipe, ICauldronRecipeDis
   public static class Serializer extends RecipeSerializer<MixCauldronDyeRecipe> {
     @SuppressWarnings("ConstantConditions")
     @Override
-    public MixCauldronDyeRecipe read(ResourceLocation id, JsonObject json) {
-      Ingredient ingredient = Ingredient.deserialize(JsonHelper.getElement(json, "ingredient"));
+    public MixCauldronDyeRecipe fromJson(ResourceLocation id, JsonObject json) {
+      Ingredient ingredient = Ingredient.fromJson(JsonHelper.getElement(json, "ingredient"));
 
       // if color is defined, parse it
       Integer color = null;
       if (json.has("color")) {
         // try dye color name first
-        String colorText = JSONUtils.getString(json, "color");
-        DyeColor dye = DyeColor.byTranslationKey(colorText, null);
+        String colorText = JSONUtils.getAsString(json, "color");
+        DyeColor dye = DyeColor.byName(colorText, null);
         if (dye != null) {
           color = dye.getColorValue();
         } else {
           // hexadecimal color next
           try {
-            color = Integer.parseInt(JSONUtils.getString(json, "color"), 16);
+            color = Integer.parseInt(JSONUtils.getAsString(json, "color"), 16);
           } catch (NumberFormatException e) {
             throw new JsonSyntaxException("Invalid color string '" + colorText + "'");
           }
@@ -204,8 +204,8 @@ public class MixCauldronDyeRecipe implements ICauldronRecipe, ICauldronRecipeDis
 
     @Nullable
     @Override
-    public MixCauldronDyeRecipe read(ResourceLocation id, PacketBuffer buffer) {
-      Ingredient ingredient = Ingredient.read(buffer);
+    public MixCauldronDyeRecipe fromNetwork(ResourceLocation id, PacketBuffer buffer) {
+      Ingredient ingredient = Ingredient.fromNetwork(buffer);
       Integer color = null;
       if (buffer.readBoolean()) {
         color = buffer.readInt();
@@ -214,8 +214,8 @@ public class MixCauldronDyeRecipe implements ICauldronRecipe, ICauldronRecipeDis
     }
 
     @Override
-    public void write(PacketBuffer buffer, MixCauldronDyeRecipe recipe) {
-      recipe.ingredient.write(buffer);
+    public void toNetwork(PacketBuffer buffer, MixCauldronDyeRecipe recipe) {
+      recipe.ingredient.toNetwork(buffer);
       if (recipe.color == null) {
         buffer.writeBoolean(false);
       } else {
@@ -257,8 +257,8 @@ public class MixCauldronDyeRecipe implements ICauldronRecipe, ICauldronRecipeDis
     }
 
     @Override
-    public void serialize(JsonObject json) {
-      json.add("ingredient", ingredient.serialize());
+    public void serializeRecipeData(JsonObject json) {
+      json.add("ingredient", ingredient.toJson());
       if (color != null) {
         json.addProperty("color", Integer.toHexString(color));
       }

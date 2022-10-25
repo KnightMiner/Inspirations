@@ -47,7 +47,7 @@ public class RecipesClientEvents extends ClientEvents {
     // listener to clear color cache from client utils
     IResourceManager manager = Minecraft.getInstance().getResourceManager();
     if (manager instanceof IReloadableResourceManager) {
-      ((IReloadableResourceManager)manager).addReloadListener(cauldronTextures);
+      ((IReloadableResourceManager)manager).registerReloadListener(cauldronTextures);
     } else {
       Inspirations.log.error("Failed to register resource reload listener, expected instance of IReloadableResourceManager but got {}", manager.getClass());
     }
@@ -55,10 +55,10 @@ public class RecipesClientEvents extends ClientEvents {
 
   @SubscribeEvent
   static void clientSetup(FMLClientSetupEvent event) {
-    RenderTypeLookup.setRenderLayer(InspirationsRecipes.honey, RenderType.getTranslucent());
-    RenderTypeLookup.setRenderLayer(InspirationsRecipes.honey.getFlowingFluid(), RenderType.getTranslucent());
+    RenderTypeLookup.setRenderLayer(InspirationsRecipes.honey, RenderType.translucent());
+    RenderTypeLookup.setRenderLayer(InspirationsRecipes.honey.getFlowing(), RenderType.translucent());
     if (Config.extendedCauldron.getAsBoolean()) {
-      RenderTypeLookup.setRenderLayer(Blocks.CAULDRON, RenderType.getCutout());
+      RenderTypeLookup.setRenderLayer(Blocks.CAULDRON, RenderType.cutout());
     }
   }
 
@@ -77,7 +77,7 @@ public class RecipesClientEvents extends ClientEvents {
       // skip tint index 0, that is particles
       if (tintIndex > 0 && world != null && pos != null) {
         // must be cauldron TE
-        TileEntity te = world.getTileEntity(pos);
+        TileEntity te = world.getBlockEntity(pos);
         if(te instanceof CauldronTileEntity) {
           // if it contains water, run vanilla tinting
           ICauldronContents contents = ((CauldronTileEntity) te).getContents();
@@ -86,7 +86,7 @@ public class RecipesClientEvents extends ClientEvents {
           }
         }
         // water tinting if contains water or TE is missing
-        return BiomeColors.getWaterColor(world, pos);
+        return BiomeColors.getAverageWaterColor(world, pos);
       }
 
       return -1;
@@ -95,7 +95,7 @@ public class RecipesClientEvents extends ClientEvents {
 
   @SubscribeEvent
   static void registerParticleFactories(ParticleFactoryRegisterEvent event) {
-    Minecraft.getInstance().particles.registerFactory(InspirationsRecipes.boilingParticle, BoilingParticle.Factory::new);
+    Minecraft.getInstance().particleEngine.register(InspirationsRecipes.boilingParticle, BoilingParticle.Factory::new);
   }
 
   @SubscribeEvent
@@ -109,7 +109,7 @@ public class RecipesClientEvents extends ClientEvents {
 
   @SubscribeEvent
   static void registerTextures(TextureStitchEvent.Pre event) {
-    if (PlayerContainer.LOCATION_BLOCKS_TEXTURE.equals(event.getMap().getTextureLocation())) {
+    if (PlayerContainer.BLOCK_ATLAS.equals(event.getMap().location())) {
       event.addSprite(InspirationsRecipes.STILL_FLUID);
       event.addSprite(InspirationsRecipes.FLOWING_FLUID);
     }

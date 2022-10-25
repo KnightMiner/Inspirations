@@ -21,15 +21,17 @@ import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.PlantType;
 import net.minecraftforge.common.ToolType;
 
+import net.minecraft.block.AbstractBlock.Properties;
+
 public class MulchBlock extends FallingBlock implements IHidable {
 
-  private static final VoxelShape SHAPE = Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 15.0D, 16.0D);
+  private static final VoxelShape SHAPE = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 15.0D, 16.0D);
 
   public MulchBlock(MaterialColor color) {
-    super(Properties.create(Material.WOOD, color)
+    super(Properties.of(Material.WOOD, color)
                     .harvestTool(ToolType.SHOVEL)
                     .sound(SoundType.WET_GRASS)
-                    .hardnessAndResistance(0.6F)
+                    .strength(0.6F)
          );
   }
 
@@ -39,9 +41,9 @@ public class MulchBlock extends FallingBlock implements IHidable {
   }
 
   @Override
-  public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
+  public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items) {
     if (shouldAddtoItemGroup(group)) {
-      super.fillItemGroup(group, items);
+      super.fillItemCategory(group, items);
     }
   }
 
@@ -59,6 +61,6 @@ public class MulchBlock extends FallingBlock implements IHidable {
   public boolean canSustainPlant(BlockState state, IBlockReader world, BlockPos pos, Direction direction, IPlantable plantable) {
     // we are fine with most plants, but saplings are a bit much
     // this is mostly cop out since I have no way of stopping sapling growth
-    return plantable.getPlantType(world, pos.offset(direction)) == PlantType.PLAINS && !(plantable instanceof SaplingBlock);
+    return plantable.getPlantType(world, pos.relative(direction)) == PlantType.PLAINS && !(plantable instanceof SaplingBlock);
   }
 }

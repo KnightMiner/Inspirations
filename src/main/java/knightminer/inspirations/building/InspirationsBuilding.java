@@ -111,27 +111,27 @@ public class InspirationsBuilding extends ModuleBase {
     BlockRegistryAdapter registry = new BlockRegistryAdapter(event.getRegistry());
 
     // normal shelf uses a less regular naming
-    AbstractBlock.Properties shelfProps = Block.Properties.create(Material.WOOD).harvestTool(ToolType.AXE).hardnessAndResistance(2.0F, 5.0F).sound(SoundType.WOOD).notSolid();
+    AbstractBlock.Properties shelfProps = Block.Properties.of(Material.WOOD).harvestTool(ToolType.AXE).strength(2.0F, 5.0F).sound(SoundType.WOOD).noOcclusion();
     shelf = new EnumObject.Builder<ShelfType,ShelfBlock>(ShelfType.class)
         .putDelegate(ShelfType.NORMAL, registry.register(new ShelfBlock(shelfProps), "shelf").delegate)
         .putAll(registry.registerEnum(type -> new ShelfBlock(shelfProps), ShelfType.FANCY, "shelf"))
         .build();
     rope = registry.register(new RopeBlock(Items.STICK, Block.Properties
-        .create(Material.CARPET, MaterialColor.OBSIDIAN)
-        .sound(SoundType.CLOTH)
-        .hardnessAndResistance(0.5F)
+        .of(Material.CLOTH_DECORATION, MaterialColor.PODZOL)
+        .sound(SoundType.WOOL)
+        .strength(0.5F)
     ), "rope");
     vine = registry.register(new RopeBlock(Items.BAMBOO, Block.Properties
-        .create(Material.CARPET, MaterialColor.FOLIAGE)
-        .sound(SoundType.PLANT)
-        .hardnessAndResistance(0.5F)
+        .of(Material.CLOTH_DECORATION, MaterialColor.PLANT)
+        .sound(SoundType.GRASS)
+        .strength(0.5F)
     ), "vine");
     // iron bars override
     if (Config.climbableIronBars.get()) {
-      ironBars = registry.register(new ClimbablePaneBlock(Block.Properties.create(Material.IRON, MaterialColor.AIR).hardnessAndResistance(5.0F, 6.0F).sound(SoundType.METAL)), new ResourceLocation("iron_bars"));
+      ironBars = registry.register(new ClimbablePaneBlock(Block.Properties.of(Material.METAL, MaterialColor.NONE).strength(5.0F, 6.0F).sound(SoundType.METAL)), new ResourceLocation("iron_bars"));
     }
 
-    AbstractBlock.Properties glassDoorProps = Block.Properties.create(Material.GLASS).hardnessAndResistance(0.3F).sound(SoundType.GLASS).notSolid();
+    AbstractBlock.Properties glassDoorProps = Block.Properties.of(Material.GLASS).strength(0.3F).sound(SoundType.GLASS).noOcclusion();
     glassDoor = registry.register(new GlassDoorBlock(glassDoorProps), "glass_door");
     glassTrapdoor = registry.register(new GlassTrapdoorBlock(glassDoorProps), "glass_trapdoor");
 
@@ -149,7 +149,7 @@ public class InspirationsBuilding extends ModuleBase {
     // flower pots
     Supplier<FlowerPotBlock> emptyPot = () -> (FlowerPotBlock)Blocks.FLOWER_POT.delegate.get();
     FlowerPotBlock vanillaPot = (FlowerPotBlock)Blocks.FLOWER_POT;
-    Block.Properties props = Block.Properties.from(Blocks.FLOWER_POT);
+    Block.Properties props = Block.Properties.copy(Blocks.FLOWER_POT);
     flowerPot = registry.registerEnum(type -> {
       // create pot and register it with the vanilla pot.
       Block plant = flower.get(type);
@@ -163,10 +163,10 @@ public class InspirationsBuilding extends ModuleBase {
   public void registerItems(Register<Item> event) {
     ItemRegistryAdapter registry = new ItemRegistryAdapter(event.getRegistry());
     // common props
-    Item.Properties materialProps = new Item.Properties().group(ItemGroup.MATERIALS);
-    Item.Properties decorationProps = new Item.Properties().group(ItemGroup.DECORATIONS);
-    Item.Properties buildingProps = new Item.Properties().group(ItemGroup.BUILDING_BLOCKS);
-    Item.Properties redstoneProps = new Item.Properties().group(ItemGroup.REDSTONE);
+    Item.Properties materialProps = new Item.Properties().tab(ItemGroup.TAB_MATERIALS);
+    Item.Properties decorationProps = new Item.Properties().tab(ItemGroup.TAB_DECORATIONS);
+    Item.Properties buildingProps = new Item.Properties().tab(ItemGroup.TAB_BUILDING_BLOCKS);
+    Item.Properties redstoneProps = new Item.Properties().tab(ItemGroup.TAB_REDSTONE);
 
     coloredBooks = registry.registerEnum(color -> new HidableItem(materialProps, Config.enableColoredBooks), DyeColor.values(), "book");
     redstoneBook = registry.register(new HidableItem(materialProps, Config.enableRedstoneBook), "redstone_book");
@@ -221,11 +221,11 @@ public class InspirationsBuilding extends ModuleBase {
 
   private static void registerCompostables() {
     for (Block bush : enlightenedBush.values()) {
-      ComposterBlock.registerCompostable(0.3F, bush);
+      ComposterBlock.add(0.3F, bush);
     }
-    ComposterBlock.registerCompostable(0.5F, vine);
+    ComposterBlock.add(0.5F, vine);
     for (Block plant : flower.values()) {
-      ComposterBlock.registerCompostable(0.65F, plant);
+      ComposterBlock.add(0.65F, plant);
     }
   }
 }

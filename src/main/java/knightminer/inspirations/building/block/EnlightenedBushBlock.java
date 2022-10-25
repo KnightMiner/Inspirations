@@ -20,11 +20,11 @@ public class EnlightenedBushBlock extends RetexturedBlock implements IHidable {
   private final int color;
 
   public EnlightenedBushBlock(int color) {
-    super(Block.Properties.create(Material.LEAVES)
-                          .setLightLevel((state) -> 15)
-                          .hardnessAndResistance(0.2F)
-                          .sound(SoundType.PLANT)
-                          .notSolid()
+    super(Block.Properties.of(Material.LEAVES)
+                          .lightLevel((state) -> 15)
+                          .strength(0.2F)
+                          .sound(SoundType.GRASS)
+                          .noOcclusion()
          );
     this.color = color;
   }
@@ -55,7 +55,7 @@ public class EnlightenedBushBlock extends RetexturedBlock implements IHidable {
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public VoxelShape getCollisionShape(BlockState p_230335_1_, IBlockReader p_230335_2_, BlockPos p_230335_3_) {
+  public VoxelShape getBlockSupportShape(BlockState p_230335_1_, IBlockReader p_230335_2_, BlockPos p_230335_3_) {
     return VoxelShapes.empty();
   }
 }

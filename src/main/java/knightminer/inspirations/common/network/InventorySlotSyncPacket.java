@@ -27,7 +27,7 @@ public class InventorySlotSyncPacket implements IThreadsafePacket {
   public InventorySlotSyncPacket(PacketBuffer buf) {
     this.pos = buf.readBlockPos();
     this.slot = buf.readShort();
-    this.itemStack = buf.readItemStack();
+    this.itemStack = buf.readItem();
   }
 
   @Override
@@ -49,14 +49,14 @@ public class InventorySlotSyncPacket implements IThreadsafePacket {
     private static void handle(InventorySlotSyncPacket packet) {
       // Only ever sent to players in the same dimension as the position
       // This should never be called on servers, but protect access to the clientside MC.
-      assert Minecraft.getInstance().world != null;
-      TileEntity tileEntity = Minecraft.getInstance().world.getTileEntity(packet.pos);
+      assert Minecraft.getInstance().level != null;
+      TileEntity tileEntity = Minecraft.getInstance().level.getBlockEntity(packet.pos);
       if (tileEntity != null) {
         tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
                   .filter(handler -> handler instanceof IItemHandlerModifiable)
                   .ifPresent(handler -> {
                     ((IItemHandlerModifiable) handler).setStackInSlot(packet.slot, packet.itemStack);
-                    Minecraft.getInstance().worldRenderer.notifyBlockUpdate(null, packet.pos, null, null, 3);
+                    Minecraft.getInstance().levelRenderer.blockChanged(null, packet.pos, null, null, 3);
                     ModelDataManager.requestModelDataRefresh(tileEntity);
                   });
       }

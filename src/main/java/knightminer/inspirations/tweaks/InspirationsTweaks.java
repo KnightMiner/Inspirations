@@ -85,21 +85,21 @@ public class InspirationsTweaks extends ModuleBase {
     EnumObject.Builder<DyeColor,FittedCarpetBlock> fittedBuilder = new EnumObject.Builder<>(DyeColor.class);
     for (DyeColor color : DyeColor.values()) {
       Block original = InspirationsShared.VANILLA_CARPETS.get(color);
-      Block.Properties props = Block.Properties.from(original);
+      Block.Properties props = Block.Properties.copy(original);
       if (replaceVanilla) {
         flatBuilder.putDelegate(color, registry.register(new FlatCarpetBlock(color, props), original).delegate);
       } else {
         flatBuilder.putDelegate(color, original.delegate);
       }
       // bounding box messes with sprinting on stairs, so disable
-      fittedBuilder.putDelegate(color, registry.register(new FittedCarpetBlock(color, props.doesNotBlockMovement()), color.getString() + "_fitted_carpet").delegate);
+      fittedBuilder.putDelegate(color, registry.register(new FittedCarpetBlock(color, props.noCollission()), color.getSerializedName() + "_fitted_carpet").delegate);
     }
     flatCarpets = flatBuilder.build();
     fitCarpets = fittedBuilder.build();
 
     if (Config.waterlogHopper.get()) {
       dryHopper = registry.registerOverride(DryHopperBlock::new, Blocks.HOPPER);
-      wetHopper = registry.register(new WetHopperBlock(Block.Properties.from(Blocks.HOPPER)), "wet_hopper");
+      wetHopper = registry.register(new WetHopperBlock(Block.Properties.copy(Blocks.HOPPER)), "wet_hopper");
     }
 
     cactus = registry.register(new CactusCropBlock(Blocks.CACTUS, PlantType.DESERT), "cactus");
@@ -109,27 +109,27 @@ public class InspirationsTweaks extends ModuleBase {
   @SubscribeEvent
   void registerItem(Register<Item> event) {
     ItemRegistryAdapter registry = new ItemRegistryAdapter(event.getRegistry());
-    Item.Properties decorationProps = new Item.Properties().group(ItemGroup.DECORATIONS);
+    Item.Properties decorationProps = new Item.Properties().tab(ItemGroup.TAB_DECORATIONS);
     IForgeRegistry<Item> r = event.getRegistry();
 
     if (Config.enableFittedCarpets.get()) {
       for (DyeColor color : DyeColor.values()) {
         Block carpet = InspirationsShared.VANILLA_CARPETS.get(color);
         BlockItem item = registry.registerBlockItem(carpet, decorationProps);
-        Item.BLOCK_TO_ITEM.put(carpet, item);
-        Item.BLOCK_TO_ITEM.put(Objects.requireNonNull(flatCarpets.get(color)), item);
+        Item.BY_BLOCK.put(carpet, item);
+        Item.BY_BLOCK.put(Objects.requireNonNull(flatCarpets.get(color)), item);
       }
     }
 
     if (Config.waterlogHopper.get()) {
-      registry.register(new BlockItem(dryHopper, new Item.Properties().group(ItemGroup.REDSTONE)), Items.HOPPER);
+      registry.register(new BlockItem(dryHopper, new Item.Properties().tab(ItemGroup.TAB_REDSTONE)), Items.HOPPER);
     }
 
-    Item.Properties props = new Item.Properties().group(ItemGroup.FOOD);
+    Item.Properties props = new Item.Properties().tab(ItemGroup.TAB_FOOD);
     cactusSeeds = registry.register(new SeedItem(cactus, props), "cactus_seeds");
     sugarCaneSeeds = registry.register(new SeedItem(sugarCane, props), "sugar_cane_seeds");
-    heartbeet = registry.register(new HidableItem(new Item.Properties().group(ItemGroup.FOOD)
-                                                                       .food(new Food.Builder().hunger(2).saturation(2.4f).effect(() -> new EffectInstance(Effects.REGENERATION, 100), 1).build()
+    heartbeet = registry.register(new HidableItem(new Item.Properties().tab(ItemGroup.TAB_FOOD)
+                                                                       .food(new Food.Builder().nutrition(2).saturationMod(2.4f).effect(() -> new EffectInstance(Effects.REGENERATION, 100), 1).build()
                                                                             ), Config.enableHeartbeet), "heartbeet");
 
     //		silverfishPowder = registerItem(r, new HidableItem(
@@ -156,7 +156,7 @@ public class InspirationsTweaks extends ModuleBase {
   @SubscribeEvent
   public void setup(FMLCommonSetupEvent event) {
     // brew heartbeets into regen potions
-    Ingredient heartbeet = Ingredient.fromItems(InspirationsTweaks.heartbeet);
+    Ingredient heartbeet = Ingredient.of(InspirationsTweaks.heartbeet);
     BrewingRecipeRegistry.addRecipe(
         new NormalBrewingRecipe(Potions.WATER, heartbeet, Potions.MUNDANE, Config.brewHeartbeet)
                                    );
@@ -189,9 +189,9 @@ public class InspirationsTweaks extends ModuleBase {
   private static final IDispenseItemBehavior DEFAULT = new DefaultDispenseItemBehavior();
 
   private void registerCompostables() {
-    ComposterBlock.registerCompostable(0.3F, cactusSeeds);
-    ComposterBlock.registerCompostable(0.3F, sugarCaneSeeds);
-    ComposterBlock.registerCompostable(0.8F, heartbeet);
+    ComposterBlock.add(0.3F, cactusSeeds);
+    ComposterBlock.add(0.3F, sugarCaneSeeds);
+    ComposterBlock.add(0.8F, heartbeet);
   }
 
   private void registerDispenserBehavior() {
@@ -200,13 +200,13 @@ public class InspirationsTweaks extends ModuleBase {
         DEFAULT.dispense(source, stack);
       }
       // get basic data
-      Direction facing = source.getBlockState().get(DispenserBlock.FACING);
-      World world = source.getWorld();
-      BlockPos pos = source.getBlockPos().offset(facing);
+      Direction facing = source.getBlockState().getValue(DispenserBlock.FACING);
+      World world = source.getLevel();
+      BlockPos pos = source.getPos().relative(facing);
 
       DirectionalPlaceContext context = new DirectionalPlaceContext(world, pos, facing, stack, facing.getOpposite());
 
-      if (((BlockItem)stack.getItem()).tryPlace(context) == ActionResultType.SUCCESS) {
+      if (((BlockItem)stack.getItem()).place(context) == ActionResultType.SUCCESS) {
         return stack;
       } else {
         // if we cannot place it, toss the item
@@ -214,9 +214,9 @@ public class InspirationsTweaks extends ModuleBase {
       }
     };
 
-    DispenserBlock.registerDispenseBehavior(Blocks.ANVIL, behavior);
-    DispenserBlock.registerDispenseBehavior(Blocks.CHIPPED_ANVIL, behavior);
-    DispenserBlock.registerDispenseBehavior(Blocks.DAMAGED_ANVIL, behavior);
+    DispenserBlock.registerBehavior(Blocks.ANVIL, behavior);
+    DispenserBlock.registerBehavior(Blocks.CHIPPED_ANVIL, behavior);
+    DispenserBlock.registerBehavior(Blocks.DAMAGED_ANVIL, behavior);
 
   }
 }

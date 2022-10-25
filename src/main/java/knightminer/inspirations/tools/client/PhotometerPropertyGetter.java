@@ -18,38 +18,38 @@ import javax.annotation.Nullable;
 public class PhotometerPropertyGetter implements IItemPropertyGetter {
   @Override
   public float call(ItemStack stack, @Nullable ClientWorld clientWorld, @Nullable LivingEntity entityIn) {
-    Entity entity = entityIn != null ? entityIn : stack.getItemFrame();
+    Entity entity = entityIn != null ? entityIn : stack.getFrame();
     World world = clientWorld;
     if (entity == null) {
       return 0;
     }
     if (world == null) {
-      if (entity.world == null) {
+      if (entity.level == null) {
         return 0;
       }
-      world = entity.world;
+      world = entity.level;
     }
 
     // if currently holding the item, use the block the player is looking at
     BlockPos pos = null;
     if (entity == Minecraft.getInstance().player) {
       PlayerEntity player = Minecraft.getInstance().player;
-      if (player.getHeldItemMainhand() == stack || player.getHeldItemOffhand() == stack) {
-        RayTraceResult trace = Minecraft.getInstance().objectMouseOver;
+      if (player.getMainHandItem() == stack || player.getOffhandItem() == stack) {
+        RayTraceResult trace = Minecraft.getInstance().hitResult;
         if (trace != null && trace.getType() == RayTraceResult.Type.BLOCK) {
-          pos = ((BlockRayTraceResult)trace).getPos();
-          if (world.getBlockState(pos).isOpaqueCube(world, pos)) {
-            pos = pos.offset(((BlockRayTraceResult)trace).getFace());
+          pos = ((BlockRayTraceResult)trace).getBlockPos();
+          if (world.getBlockState(pos).isSolidRender(world, pos)) {
+            pos = pos.relative(((BlockRayTraceResult)trace).getDirection());
           }
         }
       }
     }
     // if any part failed, just use the entity position
     if (pos == null) {
-      pos = entity.getPosition();
+      pos = entity.blockPosition();
     }
 
     // only use block light, skylight is not too useful
-    return world.getLightFor(LightType.BLOCK, pos);
+    return world.getBrightness(LightType.BLOCK, pos);
   }
 }

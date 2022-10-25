@@ -39,26 +39,26 @@ public class PortalColorHandler implements IBlockColor {
 
     // Get the real world, not the fake one so we can look at the blocks far enough below us.
     if (world instanceof ChunkRenderCache) {
-      world = ((ChunkRenderCache)world).world;
+      world = ((ChunkRenderCache)world).level;
     }
 
     // if we are at the top of the chunk, notify the portal above that it needs to update
     if (pos.getY() % 16 == 15) {
-      BlockPos above = pos.up();
+      BlockPos above = pos.above();
       if (world.getBlockState(above).getBlock() == Blocks.NETHER_PORTAL) {
         Minecraft mc = Minecraft.getInstance();
-        mc.deferTask(() -> mc.worldRenderer.notifyBlockUpdate(null, above, null, null, 8));
+        mc.submitAsync(() -> mc.levelRenderer.blockChanged(null, above, null, null, 8));
       }
     }
 
     // iterate down until the first non-portal block
     // can skip every other block as it takes at least 2 from a portal to below a portal
-    pos = pos.down();
+    pos = pos.below();
     while (world.getBlockState(pos).getBlock() == Blocks.NETHER_PORTAL) {
-      pos = pos.down();
+      pos = pos.below();
     }
 
-    return getColorValue(world, pos.down());
+    return getColorValue(world, pos.below());
   }
 
   /**

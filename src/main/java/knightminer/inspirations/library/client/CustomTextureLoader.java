@@ -56,7 +56,7 @@ public class CustomTextureLoader implements IEarlySelectiveReloadListener {
       List<JsonObject> jsonFiles;
       try {
         // get all files
-        jsonFiles = manager.getAllResources(file).stream()
+        jsonFiles = manager.getResources(file).stream()
                            .map(CustomTextureLoader::getJson)
                            .filter(Objects::nonNull)
                            .collect(Collectors.toList());
@@ -71,7 +71,7 @@ public class CustomTextureLoader implements IEarlySelectiveReloadListener {
         for (Entry<String, JsonElement> entry : json.entrySet()) {
           // get a valid name
           String key = entry.getKey();
-          ResourceLocation name = ResourceLocation.tryCreate(key);
+          ResourceLocation name = ResourceLocation.tryParse(key);
           if (name == null) {
             Inspirations.log.error("Skipping invalid key " + key + " as it is not a valid resource location");
             continue;
@@ -86,7 +86,7 @@ public class CustomTextureLoader implements IEarlySelectiveReloadListener {
             Inspirations.log.error("Skipping key " + key + " as the value is not a string");
             continue;
           }
-          ResourceLocation texture = ResourceLocation.tryCreate(element.getAsString());
+          ResourceLocation texture = ResourceLocation.tryParse(element.getAsString());
           if (texture == null) {
             Inspirations.log.error("Skipping key " + key + " as the texture " + element.getAsString() + " is an invalid texture path");
           } else {
@@ -102,7 +102,7 @@ public class CustomTextureLoader implements IEarlySelectiveReloadListener {
    * @param event  Texture stitch event
    */
   private void onTextureStitch(TextureStitchEvent.Pre event) {
-    if (PlayerContainer.LOCATION_BLOCKS_TEXTURE.equals(event.getMap().getTextureLocation())) {
+    if (PlayerContainer.BLOCK_ATLAS.equals(event.getMap().location())) {
       textures.values().forEach(event::addSprite);
     }
   }
@@ -122,7 +122,7 @@ public class CustomTextureLoader implements IEarlySelectiveReloadListener {
       Throwable thrown = null;
       BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8));
       try {
-        return JSONUtils.fromJson(reader);
+        return JSONUtils.parse(reader);
       } catch (Throwable e) {
         // store this exception in case we throw again
         thrown = e;

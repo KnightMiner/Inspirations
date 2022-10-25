@@ -45,7 +45,7 @@ public class FillDyedBottleRecipe implements ICauldronRecipe, IMultiRecipe<Displ
       inventory.addLevel(-THIRD);
 
       // play sound
-      inventory.playSound(SoundEvents.ITEM_BOTTLE_FILL);
+      inventory.playSound(SoundEvents.BOTTLE_FILL);
     });
   }
 

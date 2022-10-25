@@ -17,16 +17,16 @@ public class NorthCompassPropertyGetter implements IItemPropertyGetter {
 
   @Override
   public float call(ItemStack stack, @Nullable ClientWorld clientWorld, @Nullable LivingEntity entity) {
-    ItemFrameEntity frame = stack.getItemFrame();
+    ItemFrameEntity frame = stack.getFrame();
     if (frame != null) {
-      Direction facing = frame.getHorizontalFacing();
+      Direction facing = frame.getDirection();
       if (facing == Direction.DOWN) {
         return frame.getRotation() / 8f;
       } else if (facing == Direction.UP) {
         // Flip 180 degrees.
         return MathHelper.positiveModulo(0.5f + frame.getRotation() / 8f, 1f);
       }
-      return MathHelper.positiveModulo(facing.getHorizontalIndex() / 4f + 0.5f + frame.getRotation() / 8f, 1);
+      return MathHelper.positiveModulo(facing.get2DDataValue() / 4f + 0.5f + frame.getRotation() / 8f, 1);
     }
 
     if (entity == null) {
@@ -34,13 +34,13 @@ public class NorthCompassPropertyGetter implements IItemPropertyGetter {
     }
     World world = clientWorld;
     if (world == null) {
-      if (entity.world == null) {
+      if (entity.level == null) {
         return 0;
       }
-      world = entity.world;
+      world = entity.level;
     }
 
-    double angle = MathHelper.positiveModulo(entity.rotationYaw / 360, 1);
+    double angle = MathHelper.positiveModulo(entity.yRot / 360, 1);
     if (entity == Minecraft.getInstance().player) {
       long gameTime = world.getGameTime();
       if (this.angle.shouldUpdate(gameTime)) {

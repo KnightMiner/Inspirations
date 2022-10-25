@@ -36,20 +36,20 @@ public class ModItemList extends CompoundIngredient {
     public ModItemList parse(JsonObject json) {
       List<Ingredient> ingredientList = new LinkedList<>();
       // start by iterating the array of ingredients
-      JsonArray ingredients = JSONUtils.getJsonArray(json, "ingredients");
+      JsonArray ingredients = JSONUtils.getAsJsonArray(json, "ingredients");
       for (JsonElement ingredient : ingredients) {
         JsonObject object = ingredient.getAsJsonObject();
 
         // if supplied with a mod ID, only parse if that mod is loaded
-        if (JSONUtils.hasField(object, "modid")) {
-          String mod = JSONUtils.getString(object, "modid");
+        if (JSONUtils.isValidNode(object, "modid")) {
+          String mod = JSONUtils.getAsString(object, "modid");
           if (!ModList.get().isLoaded(mod)) {
             continue;
           }
         }
 
         // if supplied with ingredient, parse that as the ingredent, otherwise parse the object itself
-        if (JSONUtils.hasField(object, "ingredient")) {
+        if (JSONUtils.isValidNode(object, "ingredient")) {
           ingredientList.add(CraftingHelper.getIngredient(object.get("ingredient")));
         } else {
           ingredientList.add(CraftingHelper.getIngredient(object));
@@ -62,13 +62,13 @@ public class ModItemList extends CompoundIngredient {
     @Override
     public void write(PacketBuffer buffer, ModItemList ingredient) {
       buffer.writeVarInt(ingredient.getChildren().size());
-      ingredient.getChildren().forEach((child) -> child.write(buffer));
+      ingredient.getChildren().forEach((child) -> child.toNetwork(buffer));
     }
 
     @Override
     public ModItemList parse(PacketBuffer buffer) {
       return new ModItemList(Stream
-                                 .generate(() -> Ingredient.read(buffer))
+                                 .generate(() -> Ingredient.fromNetwork(buffer))
                                  .limit(buffer.readVarInt())
                                  .collect(Collectors.toList())
       );

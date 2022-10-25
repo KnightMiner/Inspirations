@@ -68,7 +68,7 @@ public class CauldronStateUpdatePacket implements IThreadsafePacket {
   /** Once removed client class */
   private static class HandleClient {
     private static void handle(CauldronStateUpdatePacket packet) {
-      TileEntityHelper.getTile(CauldronTileEntity.class, Minecraft.getInstance().world, packet.pos, true).ifPresent(te -> {
+      TileEntityHelper.getTile(CauldronTileEntity.class, Minecraft.getInstance().level, packet.pos, true).ifPresent(te -> {
         if (te.updateStateAndData(packet.contents, packet.levelOffset)) {
           Util.notifyClientUpdate(te);
         }

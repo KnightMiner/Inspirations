@@ -35,7 +35,7 @@ public class UtilityEvents {
 
     // must be using carpet
     ItemStack stack = event.getItemStack();
-    Block carpetBlock = Block.getBlockFromItem(stack.getItem());
+    Block carpetBlock = Block.byItem(stack.getItem());
     if (!(carpetBlock instanceof CarpetBlock)) {
       return;
     }
@@ -45,7 +45,7 @@ public class UtilityEvents {
     BlockPos pos = event.getPos();
     BlockState current = world.getBlockState(pos);
     if (current.getBlock() != Blocks.STONE_PRESSURE_PLATE) {
-      pos = pos.up();
+      pos = pos.above();
       current = world.getBlockState(pos);
       if (current.getBlock() != Blocks.STONE_PRESSURE_PLATE) {
         return;
@@ -54,8 +54,8 @@ public class UtilityEvents {
 
     // determine the state to place
     DyeColor color = ((CarpetBlock)carpetBlock).getColor();
-    BlockState state = InspirationsUtility.carpetedPressurePlates.get(color).getDefaultState();
-    state = state.updatePostPlacement(Direction.DOWN, world.getBlockState(pos.down()), world, pos, pos.down());
+    BlockState state = InspirationsUtility.carpetedPressurePlates.get(color).defaultBlockState();
+    state = state.updateShape(Direction.DOWN, world.getBlockState(pos.below()), world, pos, pos.below());
 
     // play sound
     PlayerEntity player = event.getPlayer();
@@ -63,9 +63,9 @@ public class UtilityEvents {
     world.playSound(player, pos, sound.getPlaceSound(), SoundCategory.BLOCKS, (sound.getVolume() + 1.0F) / 2.0F, sound.getPitch() * 0.8F);
 
     // place the block
-    if (!world.isRemote) {
+    if (!world.isClientSide) {
       // and place it
-      world.setBlockState(pos, state);
+      world.setBlockAndUpdate(pos, state);
 
       // add statistic
       if (player instanceof ServerPlayerEntity) {
@@ -90,7 +90,7 @@ public class UtilityEvents {
       return;
     }
     World world = event.getWorld();
-    if (world.isRemote || !(world.getBlockState(event.getPos()).getBlock() instanceof HopperBlock)) {
+    if (world.isClientSide || !(world.getBlockState(event.getPos()).getBlock() instanceof HopperBlock)) {
       return;
     }
 

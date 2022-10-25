@@ -42,13 +42,13 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
   private static final BooleanProperty TRIGGERED = BlockStateProperties.TRIGGERED;
 
   public CollectorBlock() {
-    super(Block.Properties.create(Material.ROCK)
-                          .hardnessAndResistance(3.5F)
+    super(Block.Properties.of(Material.STONE)
+                          .strength(3.5F)
                           .sound(SoundType.STONE)
          );
-    this.setDefaultState(this.getStateContainer().getBaseState()
-                             .with(FACING, Direction.NORTH)
-                             .with(TRIGGERED, false));
+    this.registerDefaultState(this.getStateDefinition().any()
+                             .setValue(FACING, Direction.NORTH)
+                             .setValue(TRIGGERED, false));
   }
 
   /* IHidable */
@@ -59,29 +59,29 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
   }
 
   @Override
-  public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> stacks) {
+  public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> stacks) {
     if (shouldAddtoItemGroup(group)) {
-      super.fillItemGroup(group, stacks);
+      super.fillItemCategory(group, stacks);
     }
   }
 
   /* Block state settings */
 
   @Override
-  protected void fillStateContainer(StateContainer.Builder<Block,BlockState> builder) {
+  protected void createBlockStateDefinition(StateContainer.Builder<Block,BlockState> builder) {
     builder.add(FACING, TRIGGERED);
   }
 
   @Override
   public BlockState rotate(BlockState state, IWorld world, BlockPos pos, Rotation direction) {
-    return state.with(FACING, direction.rotate(state.get(FACING)));
+    return state.setValue(FACING, direction.rotate(state.getValue(FACING)));
   }
 
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public BlockState mirror(BlockState state, Mirror mirror) {
-    return state.with(FACING, mirror.mirror(state.get(FACING)));
+    return state.setValue(FACING, mirror.mirror(state.getValue(FACING)));
   }
 
   @Override
@@ -92,19 +92,19 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
     if (player != null && player.isCrouching()) {
       facing = facing.getOpposite();
     }
-    return this.getDefaultState().with(FACING, facing);
+    return this.defaultBlockState().setValue(FACING, facing);
   }
 
   @Override
-  public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
+  public void onRemove(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
     // If destroyed, drop contents.
     if (state.getBlock() != newState.getBlock()) {
-      TileEntity te = world.getTileEntity(pos);
+      TileEntity te = world.getBlockEntity(pos);
       if (te instanceof IInventory) {
-        InventoryHelper.dropInventoryItems(world, pos, (IInventory)te);
+        InventoryHelper.dropContents(world, pos, (IInventory)te);
       }
     }
-    super.onReplaced(state, world, pos, newState, isMoving);
+    super.onRemove(state, world, pos, newState, isMoving);
   }
 
   /* Tile Entity */
@@ -119,7 +119,7 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
     if (!(player instanceof ServerPlayerEntity)) {
       throw new AssertionError("Needs to be server!");
     }
-    TileEntity te = world.getTileEntity(pos);
+    TileEntity te = world.getBlockEntity(pos);
     if (te instanceof CollectorTileEntity) {
       NetworkHooks.openGui((ServerPlayerEntity)player, (INamedContainerProvider)te, pos);
       return true;
@@ -133,8 +133,8 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public int getComparatorInputOverride(BlockState blockState, World world, BlockPos pos) {
-    TileEntity te = world.getTileEntity(pos);
+  public int getAnalogOutputSignal(BlockState blockState, World world, BlockPos pos) {
+    TileEntity te = world.getBlockEntity(pos);
     if (te != null) {
       return te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).map(
           ItemHandlerHelper::calcRedstoneFromInventory
@@ -146,7 +146,7 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public boolean hasComparatorInputOverride(BlockState state) {
+  public boolean hasAnalogOutputSignal(BlockState state) {
     return true;
   }
 
@@ -158,21 +158,21 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
   @Override
   public void neighborChanged(BlockState state, World world, BlockPos pos, Block block, BlockPos neighbor, boolean isMoving) {
     // clear inventory cache
-    if (pos.offset(state.get(FACING)).equals(neighbor)) {
-      TileEntity te = world.getTileEntity(pos);
+    if (pos.relative(state.getValue(FACING)).equals(neighbor)) {
+      TileEntity te = world.getBlockEntity(pos);
       if (te instanceof CollectorTileEntity) {
         ((CollectorTileEntity) te).clearCachedInventories();
       }
     }
 
     // update powered state
-    boolean powered = world.isBlockPowered(pos) || world.isBlockPowered(pos.up());
-    boolean triggered = state.get(TRIGGERED);
+    boolean powered = world.hasNeighborSignal(pos) || world.hasNeighborSignal(pos.above());
+    boolean triggered = state.getValue(TRIGGERED);
     if (powered && !triggered) {
-      world.getPendingBlockTicks().scheduleTick(pos, this, 4);
-      world.setBlockState(pos, state.with(TRIGGERED, true), 4);
+      world.getBlockTicks().scheduleTick(pos, this, 4);
+      world.setBlock(pos, state.setValue(TRIGGERED, true), 4);
     } else if (!powered && triggered) {
-      world.setBlockState(pos, state.with(TRIGGERED, false), 4);
+      world.setBlock(pos, state.setValue(TRIGGERED, false), 4);
     }
   }
 
@@ -180,10 +180,10 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
   @Deprecated
   @Override
   public void tick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-    if (world.isRemote) {
+    if (world.isClientSide) {
       return;
     }
-    TileEntity te = world.getTileEntity(pos);
+    TileEntity te = world.getBlockEntity(pos);
     if (te instanceof CollectorTileEntity) {
       ((CollectorTileEntity)te).collect();
     }

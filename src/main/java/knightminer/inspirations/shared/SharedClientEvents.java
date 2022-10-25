@@ -30,7 +30,7 @@ public class SharedClientEvents extends ClientEvents {
     //noinspection ConstantConditions  Not constant as minecraft is null during datagen
     if (minecraft != null) {
       configPack = new ConfigurableResourcePack(Inspirations.class, Inspirations.getResource("config_resources"), "Inspirations Config", ImmutableSet.of("minecraft"));
-      minecraft.getResourcePackList().addPackFinder(configPack);
+      minecraft.getResourcePackRepository().addPackFinder(configPack);
       RecipesClientEvents.onConstruct();
     }
   }
@@ -40,7 +40,7 @@ public class SharedClientEvents extends ClientEvents {
     // listener to clear color cache from client utils
     IResourceManager manager = Minecraft.getInstance().getResourceManager();
     if (manager instanceof IReloadableResourceManager) {
-      ((IReloadableResourceManager)manager).addReloadListener(ClientUtil.RELOAD_LISTENER);
+      ((IReloadableResourceManager)manager).registerReloadListener(ClientUtil.RELOAD_LISTENER);
     } else {
       Inspirations.log.error("Failed to register resource reload listener, expected instance of IReloadableResourceManager but got {}", manager.getClass());
     }

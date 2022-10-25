@@ -74,7 +74,7 @@ public class FillBucketCauldronRecipe implements ICauldronRecipe {
         // play sound
         SoundEvent sound = fluid.getAttributes().getFillSound();
         if (sound == null) {
-          sound = fluid.isIn(FluidTags.LAVA) ? SoundEvents.ITEM_BUCKET_FILL_LAVA : SoundEvents.ITEM_BUCKET_FILL;
+          sound = fluid.is(FluidTags.LAVA) ? SoundEvents.BUCKET_FILL_LAVA : SoundEvents.BUCKET_FILL;
         }
         inv.playSound(sound);
       }

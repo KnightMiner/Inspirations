@@ -27,14 +27,14 @@ public class DispenseFluidTank extends DefaultDispenseItemBehavior {
   }
 
   @Override
-  protected ItemStack dispenseStack(IBlockSource source, ItemStack stack) {
-    if (!stack.getItem().isIn(InspirationsTags.Items.DISP_FLUID_TANKS)) {
+  protected ItemStack execute(IBlockSource source, ItemStack stack) {
+    if (!stack.getItem().is(InspirationsTags.Items.DISP_FLUID_TANKS)) {
       return fallback.dispense(source, stack);
     }
 
-    Direction side = source.getBlockState().get(DispenserBlock.FACING);
-    BlockPos pos = source.getBlockPos().offset(side);
-    World world = source.getWorld();
+    Direction side = source.getBlockState().getValue(DispenserBlock.FACING);
+    BlockPos pos = source.getPos().relative(side);
+    World world = source.getLevel();
     return FluidUtil.getFluidHandler(world, pos, side.getOpposite()).map((handler) -> {
       FluidActionResult result;
       Optional<FluidStack> optFluid = FluidUtil.getFluidContained(stack);
@@ -60,7 +60,7 @@ public class DispenseFluidTank extends DefaultDispenseItemBehavior {
           return resultStack;
         }
 
-        if (!resultStack.isEmpty() && ((DispenserTileEntity)source.getBlockTileEntity()).addItemStack(resultStack) < 0) {
+        if (!resultStack.isEmpty() && ((DispenserTileEntity)source.getEntity()).addItem(resultStack) < 0) {
           DEFAULT.dispense(source, resultStack);
         }
 

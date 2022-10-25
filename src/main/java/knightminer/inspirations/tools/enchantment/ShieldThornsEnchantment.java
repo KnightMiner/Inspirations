@@ -6,6 +6,8 @@ import net.minecraft.enchantment.ThornsEnchantment;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 
+import net.minecraft.enchantment.Enchantment.Rarity;
+
 public class ShieldThornsEnchantment extends ThornsEnchantment {
   public ShieldThornsEnchantment(Rarity rarityIn, EquipmentSlotType... slots) {
     super(rarityIn, slots);
@@ -17,8 +19,8 @@ public class ShieldThornsEnchantment extends ThornsEnchantment {
   }
 
   @Override
-  public boolean canApplyTogether(Enchantment ench) {
+  public boolean checkCompatibility(Enchantment ench) {
     // thorns or fire, never needed this choice before
-    return super.canApplyTogether(ench) && ench != Enchantments.FIRE_ASPECT;
+    return super.checkCompatibility(ench) && ench != Enchantments.FIRE_ASPECT;
   }
 }

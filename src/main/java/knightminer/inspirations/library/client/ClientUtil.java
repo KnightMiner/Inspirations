@@ -56,7 +56,7 @@ public final class ClientUtil {
    * @author InsomniaKitten
    */
   private static Integer getItemColorRaw(Item key) {
-    IBakedModel model = mc.getItemRenderer().getItemModelWithOverrides(new ItemStack(key), null, null);
+    IBakedModel model = mc.getItemRenderer().getModel(new ItemStack(key), null, null);
     if (model == mc.getModelManager().getMissingModel()) {
       return -1;
     }
@@ -103,7 +103,7 @@ public final class ClientUtil {
    * Gets the sprite for the given texture location, or Missing Texture if no sprite is found
    */
   public static TextureAtlasSprite getSprite(@Nullable ResourceLocation location) {
-    AtlasTexture atlas = mc.getModelManager().getAtlasTexture(PlayerContainer.LOCATION_BLOCKS_TEXTURE);
+    AtlasTexture atlas = mc.getModelManager().getAtlas(PlayerContainer.BLOCK_ATLAS);
     if (location == null) {
       return atlas.getSprite(MissingTextureSprite.getLocation());
     }
@@ -119,21 +119,21 @@ public final class ClientUtil {
    * @param filled Amount of sprite filled in pixels
    */
   public static void renderFilledSprite(TextureAtlasSprite sprite, final int x, final int y, final int size, final int filled) {
-    float uMin = sprite.getMinU();
-    float uMax = sprite.getMaxU();
-    float vMin = sprite.getMinV();
-    float vMax = sprite.getMaxV();
+    float uMin = sprite.getU0();
+    float uMax = sprite.getU1();
+    float vMin = sprite.getV0();
+    float vMax = sprite.getV1();
     uMax = uMax - (16 - size) / 16.0f * (uMax - uMin);
     vMax = vMax - (16 - filled) / 16.0f * (vMax - vMin);
 
     Tessellator tessellator = Tessellator.getInstance();
-    BufferBuilder bufferBuilder = tessellator.getBuffer();
+    BufferBuilder bufferBuilder = tessellator.getBuilder();
     bufferBuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-    bufferBuilder.pos(x, y + size, 100).tex(uMin, vMax).endVertex();
-    bufferBuilder.pos(x + size, y + size, 100).tex(uMax, vMax).endVertex();
-    bufferBuilder.pos(x + size, y + size - filled, 100).tex(uMax, vMin).endVertex();
-    bufferBuilder.pos(x, y + size - filled, 100).tex(uMin, vMin).endVertex();
-    tessellator.draw();
+    bufferBuilder.vertex(x, y + size, 100).uv(uMin, vMax).endVertex();
+    bufferBuilder.vertex(x + size, y + size, 100).uv(uMax, vMax).endVertex();
+    bufferBuilder.vertex(x + size, y + size - filled, 100).uv(uMax, vMin).endVertex();
+    bufferBuilder.vertex(x, y + size - filled, 100).uv(uMin, vMin).endVertex();
+    tessellator.end();
   }
 
   /**
@@ -183,7 +183,7 @@ public final class ClientUtil {
       return -1;
     }
     BlockItem item = (BlockItem)stack.getItem();
-    BlockState state = item.getBlock().getDefaultState();
+    BlockState state = item.getBlock().defaultBlockState();
     return mc.getBlockColors().getColor(state, world, pos, index);
   }
 

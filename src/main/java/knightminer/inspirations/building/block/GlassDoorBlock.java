@@ -21,6 +21,8 @@ import net.minecraft.world.IBlockReader;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.block.AbstractBlock.Properties;
+
 public class GlassDoorBlock extends DoorBlock implements IHidable {
 
   public GlassDoorBlock(Properties props) {
@@ -30,7 +32,7 @@ public class GlassDoorBlock extends DoorBlock implements IHidable {
   @Nullable
   @Override
   public PathNodeType getAiPathNodeType(BlockState state, IBlockReader world, BlockPos pos, @Nullable MobEntity entity) {
-    return state.get(OPEN) ? PathNodeType.DOOR_WOOD_CLOSED : PathNodeType.DOOR_WOOD_CLOSED;
+    return state.getValue(OPEN) ? PathNodeType.DOOR_WOOD_CLOSED : PathNodeType.DOOR_WOOD_CLOSED;
   }
 
   @Override
@@ -39,9 +41,9 @@ public class GlassDoorBlock extends DoorBlock implements IHidable {
   }
 
   @Override
-  public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
+  public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items) {
     if (shouldAddtoItemGroup(group)) {
-      super.fillItemGroup(group, items);
+      super.fillItemCategory(group, items);
     }
   }
 
@@ -53,7 +55,7 @@ public class GlassDoorBlock extends DoorBlock implements IHidable {
   static {
     for (boolean onTop : new boolean[]{false, true}) {
       for (Direction yaw : Direction.Plane.HORIZONTAL) {
-        int ind = (onTop ? 8 : 0) | yaw.getHorizontalIndex();
+        int ind = (onTop ? 8 : 0) | yaw.get2DDataValue();
         VoxelShape door = Util.makeRotatedShape(yaw, 0, 0, 0, 16, 16, 3);
         int z1 = onTop ? 0 : 6;
         int z2 = onTop ? 9 : 16;
@@ -73,14 +75,14 @@ public class GlassDoorBlock extends DoorBlock implements IHidable {
 
   @Override
   public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-    Direction direction = state.get(FACING);
-    boolean flipped = state.get(HINGE) == DoorHingeSide.RIGHT;
+    Direction direction = state.getValue(FACING);
+    boolean flipped = state.getValue(HINGE) == DoorHingeSide.RIGHT;
     // If open, rotate and flip to replicate the hinge swap.
-    if (state.get(OPEN)) {
-      direction = flipped ? direction.rotateYCCW() : direction.rotateY();
+    if (state.getValue(OPEN)) {
+      direction = flipped ? direction.getCounterClockWise() : direction.getClockWise();
       flipped = !flipped;
     }
-    int half = state.get(HALF) == DoubleBlockHalf.UPPER ? 8 : 0;
-    return SHAPES[direction.getHorizontalIndex() | half | (flipped ? 4 : 0)];
+    int half = state.getValue(HALF) == DoubleBlockHalf.UPPER ? 8 : 0;
+    return SHAPES[direction.get2DDataValue() | half | (flipped ? 4 : 0)];
   }
 }

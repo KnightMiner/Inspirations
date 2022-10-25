@@ -38,27 +38,27 @@ public class FlatCarpetBlock extends CarpetBlock {
   }
 
   @Override
-  public BlockState updatePostPlacement(BlockState state, Direction facing, BlockState facingState, IWorld world, BlockPos pos, BlockPos facingPos) {
-    if (!state.isValidPosition(world, pos)) {
-      return Blocks.AIR.getDefaultState();
+  public BlockState updateShape(BlockState state, Direction facing, BlockState facingState, IWorld world, BlockPos pos, BlockPos facingPos) {
+    if (!state.canSurvive(world, pos)) {
+      return Blocks.AIR.defaultBlockState();
     }
-    int shape = getStairShape(world.getBlockState(pos.down()));
+    int shape = getStairShape(world.getBlockState(pos.below()));
 
     if (shape != SHAPE_FLAT) {
       return InspirationsTweaks.fitCarpets.get(getColor())
-                                          .getDefaultState()
-                                          .with(NORTHWEST, (shape & 8) > 0)
-                                          .with(NORTHEAST, (shape & 4) > 0)
-                                          .with(SOUTHWEST, (shape & 2) > 0)
-                                          .with(SOUTHEAST, (shape & 1) > 0);
+                                          .defaultBlockState()
+                                          .setValue(NORTHWEST, (shape & 8) > 0)
+                                          .setValue(NORTHEAST, (shape & 4) > 0)
+                                          .setValue(SOUTHWEST, (shape & 2) > 0)
+                                          .setValue(SOUTHEAST, (shape & 1) > 0);
     } else {
-      return InspirationsTweaks.flatCarpets.get(getColor()).getDefaultState();
+      return InspirationsTweaks.flatCarpets.get(getColor()).defaultBlockState();
     }
   }
 
   @Override
-  public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack stack) {
-    world.setBlockState(pos, updatePostPlacement(state, null, null, world, pos, null), 2);
+  public void setPlacedBy(World world, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack stack) {
+    world.setBlock(pos, updateShape(state, null, null, world, pos, null), 2);
   }
 
   /**
@@ -80,14 +80,14 @@ public class FlatCarpetBlock extends CarpetBlock {
       // } else if(stairs instanceof BlockSlab && !((BlockSlab)stairs).isDouble() && stairs.getValue(BlockSlab.HALF) == EnumBlockHalf.BOTTOM) {
       //	return 0b1111;
     } else if (!(stairs.getBlock() instanceof StairsBlock) ||
-               stairs.get(StairsBlock.HALF) != Half.BOTTOM) {
+               stairs.getValue(StairsBlock.HALF) != Half.BOTTOM) {
       return SHAPE_FLAT;
     }
 
-    StairsShape shape = stairs.get(StairsBlock.SHAPE);
+    StairsShape shape = stairs.getValue(StairsBlock.SHAPE);
     // seemed like the simplest way, convert each shape to four bits
     // bits are NW NE SW SE
-    switch (stairs.get(StairsBlock.FACING)) {
+    switch (stairs.getValue(StairsBlock.FACING)) {
       case NORTH:
         switch (shape) {
           case STRAIGHT:

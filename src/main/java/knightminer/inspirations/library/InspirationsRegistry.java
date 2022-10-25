@@ -55,12 +55,12 @@ public class InspirationsRegistry {
    * @return The enchantment power, or -1F.
    */
   private static Float bookPower(Item item) {
-    if (item.isIn(InspirationsTags.Items.BOOKS)) {
+    if (item.is(InspirationsTags.Items.BOOKS)) {
       return Config.defaultEnchantingPower.get().floatValue();
     }
 
     // blocks are not books, catches bookshelves
-    if (Block.getBlockFromItem(item) != Blocks.AIR) {
+    if (Block.byItem(item) != Blocks.AIR) {
       return -1f;
     }
 
@@ -69,7 +69,7 @@ public class InspirationsRegistry {
     for (String keyword : bookKeywords) {
       // if the unlocalized name or the registry name has the keyword, its a book
       if (Objects.requireNonNull(item.getRegistryName()).getPath().contains(keyword)
-          || item.getTranslationKey().contains(keyword)) {
+          || item.getDescriptionId().contains(keyword)) {
         return Config.defaultEnchantingPower.get().floatValue();
       }
     }

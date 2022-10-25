@@ -32,13 +32,15 @@ import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.Random;
 
+import net.minecraft.block.AbstractBlock.OffsetType;
+
 public class FlowerBlock extends BushBlock implements IGrowable, IHidable {
-  private static final VoxelShape SHAPE = Block.makeCuboidShape(5.0D, 0.0D, 5.0D, 11.0D, 10.0D, 11.0D);
+  private static final VoxelShape SHAPE = Block.box(5.0D, 0.0D, 5.0D, 11.0D, 10.0D, 11.0D);
   private final DoublePlantBlock largePlant;
 
 
   public FlowerBlock(@Nullable DoublePlantBlock largePlant) {
-    super(Block.Properties.create(Material.PLANTS).hardnessAndResistance(0F).sound(SoundType.PLANT));
+    super(Block.Properties.of(Material.PLANT).strength(0F).sound(SoundType.GRASS));
     this.largePlant = largePlant;
   }
 
@@ -48,9 +50,9 @@ public class FlowerBlock extends BushBlock implements IGrowable, IHidable {
   }
 
   @Override
-  public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
+  public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items) {
     if (shouldAddtoItemGroup(group)) {
-      super.fillItemGroup(group, items);
+      super.fillItemCategory(group, items);
     }
   }
 
@@ -61,7 +63,7 @@ public class FlowerBlock extends BushBlock implements IGrowable, IHidable {
   @Override
   public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
     Vector3d off = state.getOffset(world, pos);
-    return SHAPE.withOffset(off.x, off.y, off.z);
+    return SHAPE.move(off.x, off.y, off.z);
   }
 
   @SuppressWarnings("deprecation")
@@ -80,23 +82,23 @@ public class FlowerBlock extends BushBlock implements IGrowable, IHidable {
   /* Doubling up */
 
   @Override
-  public boolean canGrow(IBlockReader world, BlockPos pos, BlockState state, boolean isClient) {
+  public boolean isValidBonemealTarget(IBlockReader world, BlockPos pos, BlockState state, boolean isClient) {
     return largePlant != null;
   }
 
   @Override
-  public boolean canUseBonemeal(World worldIn, Random rand, BlockPos pos, BlockState state) {
+  public boolean isBonemealSuccess(World worldIn, Random rand, BlockPos pos, BlockState state) {
     return true;
   }
 
   @Override
-  public void grow(ServerWorld world, Random rand, BlockPos pos, BlockState state) {
+  public void performBonemeal(ServerWorld world, Random rand, BlockPos pos, BlockState state) {
     // should not happen, but catch anyways
     if (largePlant == null) {
       return;
     }
 
-    if (world.isAirBlock(pos.up())) {
+    if (world.isEmptyBlock(pos.above())) {
       largePlant.placeAt(world, pos, 2);
     }
   }
@@ -120,8 +122,8 @@ public class FlowerBlock extends BushBlock implements IGrowable, IHidable {
     ResourceLocation location = Inspirations.getResource("blocks/inject/" + Objects.requireNonNull(getRegistryName()).getPath());
     table.addPool(new LootPool.Builder()
                       .name(location.toString())
-                      .rolls(ConstantRange.of(1))
-                      .addEntry(TableLootEntry.builder(location))
+                      .setRolls(ConstantRange.exactly(1))
+                      .add(TableLootEntry.lootTableReference(location))
                       .build()
                  );
   }

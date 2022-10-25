@@ -54,36 +54,36 @@ public class InspirationsBlockLootTable extends BlockLootTables {
 
   private void addBuilding() {
     // enum
-    InspirationsBuilding.shelf.values().forEach(block -> this.registerLootTable(block, this::droppingWithNameAndTexture));
-    InspirationsBuilding.enlightenedBush.values().forEach(block -> this.registerLootTable(block, this::enlightenedBush));
-    InspirationsBuilding.mulch.values().forEach(this::registerDropSelfLootTable);
-    InspirationsBuilding.path.values().forEach(this::registerDropSelfLootTable);
+    InspirationsBuilding.shelf.values().forEach(block -> this.add(block, this::droppingWithNameAndTexture));
+    InspirationsBuilding.enlightenedBush.values().forEach(block -> this.add(block, this::enlightenedBush));
+    InspirationsBuilding.mulch.values().forEach(this::dropSelf);
+    InspirationsBuilding.path.values().forEach(this::dropSelf);
 
     // glass doors
-    this.registerSilkTouch(InspirationsBuilding.glassTrapdoor);
+    this.dropWhenSilkTouch(InspirationsBuilding.glassTrapdoor);
     // For glass doors, they need to only drop from one of the blocks so it doesn't dupe.
-    this.registerLootTable(InspirationsBuilding.glassDoor,
-                           LootTable.builder().addLootPool(
-                               LootPool.builder()
-                                       .addEntry(ItemLootEntry.builder(InspirationsBuilding.glassDoor))
-                                       .acceptCondition(
-                                           BlockStateProperty.builder(InspirationsBuilding.glassDoor)
-                                                             .fromProperties(
-                                                                 StatePropertiesPredicate.Builder.newBuilder()
-                                                                                                 .withProp(DoorBlock.HALF, DoubleBlockHalf.LOWER)))
-                                       .acceptCondition(SILK_TOUCH)));
+    this.add(InspirationsBuilding.glassDoor,
+                           LootTable.lootTable().withPool(
+                               LootPool.lootPool()
+                                       .add(ItemLootEntry.lootTableItem(InspirationsBuilding.glassDoor))
+                                       .when(
+                                           BlockStateProperty.hasBlockStateProperties(InspirationsBuilding.glassDoor)
+                                                             .setProperties(
+                                                                 StatePropertiesPredicate.Builder.properties()
+                                                                                                 .hasProperty(DoorBlock.HALF, DoubleBlockHalf.LOWER)))
+                                       .when(HAS_SILK_TOUCH)));
 
     // flowers
-    InspirationsBuilding.flower.values().forEach(this::registerDropSelfLootTable);
-    InspirationsBuilding.flowerPot.values().forEach(this::registerFlowerPot);
+    InspirationsBuilding.flower.values().forEach(this::dropSelf);
+    InspirationsBuilding.flowerPot.values().forEach(this::dropPottedContents);
 
     // ropes
-    this.registerLootTable(InspirationsBuilding.rope, this::rope);
-    this.registerLootTable(InspirationsBuilding.vine, this::rope);
+    this.add(InspirationsBuilding.rope, this::rope);
+    this.add(InspirationsBuilding.vine, this::rope);
   }
 
   private void addTools() {
-    this.registerLootTable(InspirationsTools.redstoneCharge, blockNoDrop());
+    this.add(InspirationsTools.redstoneCharge, noDrop());
   }
 
   private void addTweaks() {
@@ -95,70 +95,70 @@ public class InspirationsBlockLootTable extends BlockLootTables {
                              );
       }
     }
-    this.registerLootTable(InspirationsTweaks.wetHopper, droppingWithName(InspirationsTweaks.dryHopper));
-    this.registerDropping(InspirationsTweaks.sugarCane, InspirationsTweaks.sugarCaneSeeds);
-    this.registerDropping(InspirationsTweaks.cactus, InspirationsTweaks.cactusSeeds);
+    this.add(InspirationsTweaks.wetHopper, createNameableBlockEntityTable(InspirationsTweaks.dryHopper));
+    this.dropOther(InspirationsTweaks.sugarCane, InspirationsTweaks.sugarCaneSeeds);
+    this.dropOther(InspirationsTweaks.cactus, InspirationsTweaks.cactusSeeds);
   }
 
   private void addUtility() {
-    InspirationsUtility.carpetedTrapdoors.values().forEach(this::registerDropSelfLootTable);
+    InspirationsUtility.carpetedTrapdoors.values().forEach(this::dropSelf);
     InspirationsUtility.carpetedPressurePlates.forEach((color, plate) ->
-                                                           this.registerLootTable(plate, LootTable.builder()
-                                                                                                  .addLootPool(withSurvivesExplosion(plate, LootPool.builder()
-                                                                                                                                                    .addEntry(ItemLootEntry.builder(plate.getCarpet()))))
-                                                                                                  .addLootPool(withSurvivesExplosion(plate, LootPool.builder()
-                                                                                                                                                    .addEntry(ItemLootEntry.builder(Items.STONE_PRESSURE_PLATE)))))
+                                                           this.add(plate, LootTable.lootTable()
+                                                                                                  .withPool(applyExplosionCondition(plate, LootPool.lootPool()
+                                                                                                                                                    .add(ItemLootEntry.lootTableItem(plate.getCarpet()))))
+                                                                                                  .withPool(applyExplosionCondition(plate, LootPool.lootPool()
+                                                                                                                                                    .add(ItemLootEntry.lootTableItem(Items.STONE_PRESSURE_PLATE)))))
                                                       );
-    this.registerDropSelfLootTable(InspirationsUtility.pipe);
-    this.registerDropSelfLootTable(InspirationsUtility.collector);
+    this.dropSelf(InspirationsUtility.pipe);
+    this.dropSelf(InspirationsUtility.collector);
     // Wall blocks redirect to the floor table.
-    this.registerDropping(InspirationsUtility.torchLeverFloor, InspirationsUtility.torchLeverItem);
-    this.registerDropping(InspirationsUtility.soulLeverFloor, InspirationsUtility.soulLeverItem);
+    this.dropOther(InspirationsUtility.torchLeverFloor, InspirationsUtility.torchLeverItem);
+    this.dropOther(InspirationsUtility.soulLeverFloor, InspirationsUtility.soulLeverItem);
   }
 
   private LootTable.Builder rope(Block block) {
     RopeBlock rope = (RopeBlock)block;
-    return LootTable.builder()
+    return LootTable.lootTable()
                     // The rope block itself
-                    .addLootPool(withSurvivesExplosion(block, LootPool.builder()
-                                                                      .addEntry(ItemLootEntry.builder(block))
+                    .withPool(applyExplosionCondition(block, LootPool.lootPool()
+                                                                      .add(ItemLootEntry.lootTableItem(block))
                                                       ))
                     // And, if rungs are present the items for those.
-                    .addLootPool(withExplosionDecay(block, LootPool.builder()
-                                                                   .addEntry(ItemLootEntry.builder(rope.getRungsItem())
-                                                                                          .acceptFunction(SetCount.builder(ConstantRange.of(RopeBlock.RUNG_ITEM_COUNT)))
+                    .withPool(applyExplosionDecay(block, LootPool.lootPool()
+                                                                   .add(ItemLootEntry.lootTableItem(rope.getRungsItem())
+                                                                                          .apply(SetCount.setCount(ConstantRange.exactly(RopeBlock.RUNG_ITEM_COUNT)))
                                                                             )
-                                                                   .acceptCondition(BlockStateProperty.builder(rope)
-                                                                                                      .fromProperties(StatePropertiesPredicate.Builder.newBuilder()
-                                                                                                                                                      .withProp(RopeBlock.RUNGS, RopeBlock.Rungs.NONE))
-                                                                                                      .inverted()
+                                                                   .when(BlockStateProperty.hasBlockStateProperties(rope)
+                                                                                                      .setProperties(StatePropertiesPredicate.Builder.properties()
+                                                                                                                                                      .hasProperty(RopeBlock.RUNGS, RopeBlock.Rungs.NONE))
+                                                                                                      .invert()
                                                                                    )
                                                    ));
   }
 
   private LootTable.Builder enlightenedBush(Block bush) {
-    return LootTable.builder()
+    return LootTable.lootTable()
                     // No explosion check, since that's not going to pass a
                     // tool check.
-                    .addLootPool(LootPool.builder()
-                                         .addEntry(ItemLootEntry.builder(bush)
-                                                                .acceptFunction(RetexturedLootFunction::new))
-                                         .acceptCondition(SILK_TOUCH_OR_SHEARS)
+                    .withPool(LootPool.lootPool()
+                                         .add(ItemLootEntry.lootTableItem(bush)
+                                                                .apply(RetexturedLootFunction::new))
+                                         .when(HAS_SHEARS_OR_SILK_TOUCH)
                                 );
   }
 
   private LootTable.Builder droppingWithNameAndTexture(Block block) {
-    return LootTable.builder()
-                    .addLootPool(withSurvivesExplosion(block, LootPool.builder()
-                                                                      .addEntry(ItemLootEntry.builder(block)
-                                                                                             .acceptFunction(CopyName.builder(CopyName.Source.BLOCK_ENTITY))
-                                                                                             .acceptFunction(RetexturedLootFunction::new)
+    return LootTable.lootTable()
+                    .withPool(applyExplosionCondition(block, LootPool.lootPool()
+                                                                      .add(ItemLootEntry.lootTableItem(block)
+                                                                                             .apply(CopyName.copyName(CopyName.Source.BLOCK_ENTITY))
+                                                                                             .apply(RetexturedLootFunction::new)
                                                                                )));
   }
 
   private void registerRedirect(Block block, Block originalBlock) {
-    this.registerLootTable(block, LootTable.builder()
-                                           .addLootPool(LootPool.builder().addEntry(TableLootEntry.builder(originalBlock.getLootTable()))
+    this.add(block, LootTable.lootTable()
+                                           .withPool(LootPool.lootPool().add(TableLootEntry.lootTableReference(originalBlock.getLootTable()))
                                                        ));
   }
 }

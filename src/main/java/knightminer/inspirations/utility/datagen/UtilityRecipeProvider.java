@@ -42,71 +42,71 @@ public class UtilityRecipeProvider extends RecipeProvider implements IConditionB
   }
 
   @Override
-  protected void registerRecipes(Consumer<IFinishedRecipe> consumer) {
+  protected void buildShapelessRecipes(Consumer<IFinishedRecipe> consumer) {
     this.consumer = consumer;
 
     // collector
-    ShapedRecipeBuilder.shapedRecipe(InspirationsUtility.collector)
-                       .addCriterion("has_rod", hasItem(Items.FISHING_ROD))
-                       .key('C', Tags.Items.COBBLESTONE)
-                       .key('R', Tags.Items.DUSTS_REDSTONE)
-                       .key('F', Items.FISHING_ROD)
-                       .patternLine("CCC")
-                       .patternLine("CFC")
-                       .patternLine("CRC")
-                       .build(withCondition(ConfigEnabledCondition.COLLECTOR), prefix(InspirationsUtility.collector, "utility/"));
+    ShapedRecipeBuilder.shaped(InspirationsUtility.collector)
+                       .unlockedBy("has_rod", has(Items.FISHING_ROD))
+                       .define('C', Tags.Items.COBBLESTONE)
+                       .define('R', Tags.Items.DUSTS_REDSTONE)
+                       .define('F', Items.FISHING_ROD)
+                       .pattern("CCC")
+                       .pattern("CFC")
+                       .pattern("CRC")
+                       .save(withCondition(ConfigEnabledCondition.COLLECTOR), prefix(InspirationsUtility.collector, "utility/"));
 
     // pipe
-    ShapedRecipeBuilder.shapedRecipe(InspirationsUtility.pipe, 4)
-                       .addCriterion("has_hopper", hasItem(Items.HOPPER))
-                       .key('I', Tags.Items.INGOTS_IRON)
-                       .key('P', ItemTags.PLANKS)
-                       .patternLine("IPI")
-                       .build(withCondition(ConfigEnabledCondition.PIPE), prefix(InspirationsUtility.pipe, "utility/"));
+    ShapedRecipeBuilder.shaped(InspirationsUtility.pipe, 4)
+                       .unlockedBy("has_hopper", has(Items.HOPPER))
+                       .define('I', Tags.Items.INGOTS_IRON)
+                       .define('P', ItemTags.PLANKS)
+                       .pattern("IPI")
+                       .save(withCondition(ConfigEnabledCondition.PIPE), prefix(InspirationsUtility.pipe, "utility/"));
 
     // redstone book
-    ShapelessRecipeBuilder.shapelessRecipe(InspirationsBuilding.redstoneBook)
-                          .addCriterion("has_bookshelf", hasItem(InspirationsTags.Items.BOOKSHELVES))
-                          .addIngredient(Tags.Items.LEATHER)
-                          .addIngredient(Items.PAPER).addIngredient(Items.PAPER)
-                          .addIngredient(Tags.Items.DUSTS_REDSTONE)
-                          .build(
+    ShapelessRecipeBuilder.shapeless(InspirationsBuilding.redstoneBook)
+                          .unlockedBy("has_bookshelf", has(InspirationsTags.Items.BOOKSHELVES))
+                          .requires(Tags.Items.LEATHER)
+                          .requires(Items.PAPER).requires(Items.PAPER)
+                          .requires(Tags.Items.DUSTS_REDSTONE)
+                          .save(
                               withCondition(ConfigEnabledCondition.MODULE_BUILDING, ConfigEnabledCondition.REDSTONE_BOOK),
                               prefix(InspirationsBuilding.redstoneBook, "utility/")
                                 );
 
     // torch lever
-    ShapedRecipeBuilder.shapedRecipe(InspirationsUtility.torchLeverItem)
-            .addCriterion("has_torch", hasItem(Items.TORCH))
-            .addCriterion("has_lever", hasItem(Items.LEVER))
-            .key('S', Tags.Items.COBBLESTONE)
-            .key('T', Items.TORCH)
-            .patternLine("T")
-            .patternLine("S")
-            .build(withCondition(ConfigEnabledCondition.TORCH_LEVER), prefix(InspirationsUtility.torchLeverItem, "utility/"));
+    ShapedRecipeBuilder.shaped(InspirationsUtility.torchLeverItem)
+            .unlockedBy("has_torch", has(Items.TORCH))
+            .unlockedBy("has_lever", has(Items.LEVER))
+            .define('S', Tags.Items.COBBLESTONE)
+            .define('T', Items.TORCH)
+            .pattern("T")
+            .pattern("S")
+            .save(withCondition(ConfigEnabledCondition.TORCH_LEVER), prefix(InspirationsUtility.torchLeverItem, "utility/"));
 
     // soul torch lever
-    ShapedRecipeBuilder.shapedRecipe(InspirationsUtility.soulLeverItem)
-            .addCriterion("has_soul_torch", hasItem(Items.SOUL_TORCH))
-            .addCriterion("has_lever", hasItem(Items.LEVER))
-            .key('S', Tags.Items.COBBLESTONE)
-            .key('T', Items.SOUL_TORCH)
-            .patternLine("T")
-            .patternLine("S")
-            .build(withCondition(ConfigEnabledCondition.TORCH_LEVER), prefix(InspirationsUtility.soulLeverItem, "utility/"));
+    ShapedRecipeBuilder.shaped(InspirationsUtility.soulLeverItem)
+            .unlockedBy("has_soul_torch", has(Items.SOUL_TORCH))
+            .unlockedBy("has_lever", has(Items.LEVER))
+            .define('S', Tags.Items.COBBLESTONE)
+            .define('T', Items.SOUL_TORCH)
+            .pattern("T")
+            .pattern("S")
+            .save(withCondition(ConfigEnabledCondition.TORCH_LEVER), prefix(InspirationsUtility.soulLeverItem, "utility/"));
 
     // carpeted trapdoor.
     Consumer<IFinishedRecipe> trapdoorConfig = withCondition(ConfigEnabledCondition.CARPETED_TRAPDOOR);
     String carpetedGroup = resourceName("carpeted_trapdoor");
     InspirationsUtility.carpetedTrapdoors.forEach((color, trapdoor) ->
-                                                      ShapedRecipeBuilder.shapedRecipe(trapdoor)
-                                                                         .addCriterion("has_carpet", hasItem(InspirationsTags.Items.CARPETS))
-                                                                         .setGroup(carpetedGroup)
-                                                                         .key('C', InspirationsShared.VANILLA_CARPETS.get(color))
-                                                                         .key('T', ItemTags.WOODEN_TRAPDOORS)
-                                                                         .patternLine("C")
-                                                                         .patternLine("T")
-                                                                         .build(trapdoorConfig, resource("utility/carpeted_trapdoor/" + color.getString()))
+                                                      ShapedRecipeBuilder.shaped(trapdoor)
+                                                                         .unlockedBy("has_carpet", has(InspirationsTags.Items.CARPETS))
+                                                                         .group(carpetedGroup)
+                                                                         .define('C', InspirationsShared.VANILLA_CARPETS.get(color))
+                                                                         .define('T', ItemTags.WOODEN_TRAPDOORS)
+                                                                         .pattern("C")
+                                                                         .pattern("T")
+                                                                         .save(trapdoorConfig, resource("utility/carpeted_trapdoor/" + color.getSerializedName()))
                                                  );
   }
 }

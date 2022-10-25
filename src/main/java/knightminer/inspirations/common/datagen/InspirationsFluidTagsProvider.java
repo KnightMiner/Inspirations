@@ -16,6 +16,6 @@ public class InspirationsFluidTagsProvider extends FluidTagsProvider {
   }
 
   @Override
-  protected void registerTags() {
+  protected void addTags() {
   }
 }

@@ -34,8 +34,8 @@ public class ToolsClientEvents extends ClientEvents {
     registerModelProperty(InspirationsTools.dimensionCompass, "angle", new DimensionCompassPropertyGetter());
     // re-register shield blocking with registry sub shield, not strictly needed unless certain mods decide to register their properties before regsitry events
     if (InspirationsTools.shield != null) {
-      ItemModelsProperties.registerProperty(InspirationsTools.shield, new ResourceLocation("blocking"),
-                           (stack, world, entity) -> entity != null && entity.isHandActive() && entity.getActiveItemStack() == stack ? 1.0F : 0.0F);
+      ItemModelsProperties.register(InspirationsTools.shield, new ResourceLocation("blocking"),
+                           (stack, world, entity) -> entity != null && entity.isUsingItem() && entity.getUseItem() == stack ? 1.0F : 0.0F);
     }
   }
 

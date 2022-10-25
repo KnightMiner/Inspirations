@@ -14,7 +14,7 @@ public class MilkablePacket implements IThreadsafePacket {
   private final boolean milkable;
 
   public MilkablePacket(Entity entity, boolean milkable) {
-    this.entityID = entity.getEntityId();
+    this.entityID = entity.getId();
     this.milkable = milkable;
   }
 
@@ -39,8 +39,8 @@ public class MilkablePacket implements IThreadsafePacket {
    */
   private static class HandleClient {
     private static void handle(MilkablePacket packet) {
-      assert Minecraft.getInstance().world != null;
-      Entity entity = Minecraft.getInstance().world.getEntityByID(packet.entityID);
+      assert Minecraft.getInstance().level != null;
+      Entity entity = Minecraft.getInstance().level.getEntity(packet.entityID);
       if (entity == null) {
         return;
       }

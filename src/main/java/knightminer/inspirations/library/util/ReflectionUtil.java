@@ -26,7 +26,7 @@ public final class ReflectionUtil {
 
   @Nullable
   public static <T extends ForgeRegistryEntry<T>> T getMixPredicateInput(Object mixPredicate) {
-    IRegistryDelegate<T> effect = getPrivateValue(getClass("net.minecraft.potion.PotionBrewing$MixPredicate"), mixPredicate, "field_185198_a");
+    IRegistryDelegate<T> effect = getPrivateValue(getClass("net.minecraft.potion.PotionBrewing$MixPredicate"), mixPredicate, "from");
     if (effect != null) {
       return effect.get();
     }
@@ -35,12 +35,12 @@ public final class ReflectionUtil {
 
   @Nullable
   public static Ingredient getMixPredicateReagent(Object mixPredicate) {
-    return getPrivateValue(getClass("net.minecraft.potion.PotionBrewing$MixPredicate"), mixPredicate, "field_185199_b");
+    return getPrivateValue(getClass("net.minecraft.potion.PotionBrewing$MixPredicate"), mixPredicate, "ingredient");
   }
 
   @Nullable
   public static <T extends ForgeRegistryEntry<T>> T getMixPredicateOutput(Object mixPredicate) {
-    IRegistryDelegate<T> effect = getPrivateValue(getClass("net.minecraft.potion.PotionBrewing$MixPredicate"), mixPredicate, "field_185200_c");
+    IRegistryDelegate<T> effect = getPrivateValue(getClass("net.minecraft.potion.PotionBrewing$MixPredicate"), mixPredicate, "to");
     if (effect != null) {
       return effect.get();
     }

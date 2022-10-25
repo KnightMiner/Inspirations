@@ -13,15 +13,15 @@ import net.minecraft.world.IBlockReader;
 public class FittedCarpetBlock extends FlatCarpetBlock {
   public FittedCarpetBlock(DyeColor color, Block.Properties props) {
     super(color, props);
-    this.setDefaultState(this.getStateContainer().getBaseState()
-                             .with(NORTHWEST, false)
-                             .with(NORTHEAST, false)
-                             .with(SOUTHWEST, false)
-                             .with(SOUTHEAST, false));
+    this.registerDefaultState(this.getStateDefinition().any()
+                             .setValue(NORTHWEST, false)
+                             .setValue(NORTHEAST, false)
+                             .setValue(SOUTHWEST, false)
+                             .setValue(SOUTHEAST, false));
   }
 
   @Override
-  protected void fillStateContainer(StateContainer.Builder<Block,BlockState> builder) {
+  protected void createBlockStateDefinition(StateContainer.Builder<Block,BlockState> builder) {
     builder.add(NORTHWEST, NORTHEAST, SOUTHWEST, SOUTHEAST);
   }
 
@@ -42,45 +42,45 @@ public class FittedCarpetBlock extends FlatCarpetBlock {
       if (!NW && !NE && !SW && !SE) {
         // Fully lowered, bit of a special case, but should never happen in world.
         BOUNDS[i] = VoxelShapes.or(
-            makeCuboidShape( 0,  -7,  0, 17, -8, 17),
-            makeCuboidShape(-1, -16, -1,  0, -7, 17),
-            makeCuboidShape(-1, -16, -1, 16, -7,  0),
-            makeCuboidShape(16, -16, -1, 17, -7, 17),
-            makeCuboidShape(-1, -16, 16, 16, -7, 17));
+            box( 0,  -7,  0, 17, -8, 17),
+            box(-1, -16, -1,  0, -7, 17),
+            box(-1, -16, -1, 16, -7,  0),
+            box(16, -16, -1, 17, -7, 17),
+            box(-1, -16, 16, 16, -7, 17));
         continue;
       }
 
       // First each flat segment, high or low.
       VoxelShape shape = VoxelShapes.or(
-          makeCuboidShape(0, NW ? HIGH : LOW, 0, 8, (NW ? HIGH : LOW) + 1, 8),
-          makeCuboidShape(8, NE ? HIGH : LOW, 0, 16, (NE ? HIGH : LOW) + 1, 8),
-          makeCuboidShape(0, SW ? HIGH : LOW, 8, 8, (SW ? HIGH : LOW) + 1, 16),
-          makeCuboidShape(8, SE ? HIGH : LOW, 8, 16, (SE ? HIGH : LOW) + 1, 16));
+          box(0, NW ? HIGH : LOW, 0, 8, (NW ? HIGH : LOW) + 1, 8),
+          box(8, NE ? HIGH : LOW, 0, 16, (NE ? HIGH : LOW) + 1, 8),
+          box(0, SW ? HIGH : LOW, 8, 8, (SW ? HIGH : LOW) + 1, 16),
+          box(8, SE ? HIGH : LOW, 8, 16, (SE ? HIGH : LOW) + 1, 16));
 
       // Add the lowermost shapes around the base.
-      if (!NE && !NW) shape = VoxelShapes.or(shape, makeCuboidShape(0, -16, -1, 16, -7, 0));
-      if (!SE && !SW) shape = VoxelShapes.or(shape, makeCuboidShape(0, -16, 16, 16, -7, 17));
-      if (!NW && !SW) shape = VoxelShapes.or(shape, makeCuboidShape(-1, -16, 0, 0, -7, 16));
-      if (!NE && !SE) shape = VoxelShapes.or(shape, makeCuboidShape(16, -16, 0, 17, -7, 16));
+      if (!NE && !NW) shape = VoxelShapes.or(shape, box(0, -16, -1, 16, -7, 0));
+      if (!SE && !SW) shape = VoxelShapes.or(shape, box(0, -16, 16, 16, -7, 17));
+      if (!NW && !SW) shape = VoxelShapes.or(shape, box(-1, -16, 0, 0, -7, 16));
+      if (!NE && !SE) shape = VoxelShapes.or(shape, box(16, -16, 0, 17, -7, 16));
 
       // Then, for each of the spaces between generate verticals if they're different.
-      if (NW && !NE) shape = VoxelShapes.or(shape, makeCuboidShape(8, LOW, 0, 9, 1, 8));
-      if (!NW && NE) shape = VoxelShapes.or(shape, makeCuboidShape(7, LOW, 0, 8, 1, 8));
+      if (NW && !NE) shape = VoxelShapes.or(shape, box(8, LOW, 0, 9, 1, 8));
+      if (!NW && NE) shape = VoxelShapes.or(shape, box(7, LOW, 0, 8, 1, 8));
 
-      if (SW && !SE) shape = VoxelShapes.or(shape, makeCuboidShape(8, LOW, 8, 9, 1, 16));
-      if (!SW && SE) shape = VoxelShapes.or(shape, makeCuboidShape(7, LOW, 8, 8, 1, 16));
+      if (SW && !SE) shape = VoxelShapes.or(shape, box(8, LOW, 8, 9, 1, 16));
+      if (!SW && SE) shape = VoxelShapes.or(shape, box(7, LOW, 8, 8, 1, 16));
 
-      if (NW && !SW) shape = VoxelShapes.or(shape, makeCuboidShape(0, LOW, 8, 8, 1, 9));
-      if (!NW && SW) shape = VoxelShapes.or(shape, makeCuboidShape(0, LOW, 7, 8, 1, 8));
+      if (NW && !SW) shape = VoxelShapes.or(shape, box(0, LOW, 8, 8, 1, 9));
+      if (!NW && SW) shape = VoxelShapes.or(shape, box(0, LOW, 7, 8, 1, 8));
 
-      if (NE && !SE) shape = VoxelShapes.or(shape, makeCuboidShape(8, LOW, 8, 16, 1, 9));
-      if (!NE && SE) shape = VoxelShapes.or(shape, makeCuboidShape(8, LOW, 7, 16, 1, 8));
+      if (NE && !SE) shape = VoxelShapes.or(shape, box(8, LOW, 8, 16, 1, 9));
+      if (!NE && SE) shape = VoxelShapes.or(shape, box(8, LOW, 7, 16, 1, 8));
 
       // Last, a the missing 1x1 post for both heights in outer corners.
-      if (!NW && !SE && !SW) shape = VoxelShapes.or(shape, makeCuboidShape(7, -8, 8, 8, 1, 9), makeCuboidShape(-1, -16, 16,  0, -7, 17)); // NE
-      if (!NE && !SE && !SW) shape = VoxelShapes.or(shape, makeCuboidShape(8, -8, 8, 9, 1, 9), makeCuboidShape(16, -16, 16, 17, -7, 17)); // NW
-      if (!NE && !NW && !SW) shape = VoxelShapes.or(shape, makeCuboidShape(7, -8, 7, 8, 1, 8), makeCuboidShape(-1, -16, -1,  0, -7,  0)); // SE
-      if (!NE && !NW && !SE) shape = VoxelShapes.or(shape, makeCuboidShape(8, -8, 7, 9, 1, 8), makeCuboidShape(16, -16, -1, 17, -7,  0)); // SW
+      if (!NW && !SE && !SW) shape = VoxelShapes.or(shape, box(7, -8, 8, 8, 1, 9), box(-1, -16, 16,  0, -7, 17)); // NE
+      if (!NE && !SE && !SW) shape = VoxelShapes.or(shape, box(8, -8, 8, 9, 1, 9), box(16, -16, 16, 17, -7, 17)); // NW
+      if (!NE && !NW && !SW) shape = VoxelShapes.or(shape, box(7, -8, 7, 8, 1, 8), box(-1, -16, -1,  0, -7,  0)); // SE
+      if (!NE && !NW && !SE) shape = VoxelShapes.or(shape, box(8, -8, 7, 9, 1, 8), box(16, -16, -1, 17, -7,  0)); // SW
 
       BOUNDS[i] = shape;
     }
@@ -92,8 +92,8 @@ public class FittedCarpetBlock extends FlatCarpetBlock {
    * @return  Bounds key
    */
   private static int getBoundsKey(BlockState state) {
-    return (state.get(NORTHWEST) ? 8 : 0) | (state.get(NORTHEAST) ? 4 : 0) |
-           (state.get(SOUTHWEST) ? 2 : 0) | (state.get(SOUTHEAST) ? 1 : 0);
+    return (state.getValue(NORTHWEST) ? 8 : 0) | (state.getValue(NORTHEAST) ? 4 : 0) |
+           (state.getValue(SOUTHWEST) ? 2 : 0) | (state.getValue(SOUTHEAST) ? 1 : 0);
   }
 
   @Override

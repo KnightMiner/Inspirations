@@ -18,6 +18,8 @@ import net.minecraft.tags.ItemTags;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
+import net.minecraft.data.TagsProvider.Builder;
+
 public class InspirationsItemTagsProvider extends ItemTagsProvider {
 
   public InspirationsItemTagsProvider(DataGenerator gen, ExistingFileHelper existing, BlockTagsProvider blocks) {
@@ -30,7 +32,7 @@ public class InspirationsItemTagsProvider extends ItemTagsProvider {
   }
 
   @Override
-  protected void registerTags() {
+  protected void addTags() {
     registerInspTags();
     registerForgeTags();
     registerVanillaTags();
@@ -42,47 +44,47 @@ public class InspirationsItemTagsProvider extends ItemTagsProvider {
     this.copy(InspirationsTags.Blocks.CARPETED_TRAPDOORS, InspirationsTags.Items.CARPETED_TRAPDOORS);
     this.copy(InspirationsTags.Blocks.SHELVES, InspirationsTags.Items.BOOKSHELVES);
     this.copy(InspirationsTags.Blocks.ENLIGHTENED_BUSHES, InspirationsTags.Items.ENLIGHTENED_BUSHES);
-    this.getOrCreateBuilder(ItemTags.DOORS).add(InspirationsBuilding.glassDoorItem);
+    this.tag(ItemTags.DOORS).add(InspirationsBuilding.glassDoorItem);
     this.copy(BlockTags.TRAPDOORS, ItemTags.TRAPDOORS);
 
-    Builder<Item> bookBuilder = this.getOrCreateBuilder(InspirationsTags.Items.FORGE_BOOKS)
+    Builder<Item> bookBuilder = this.tag(InspirationsTags.Items.FORGE_BOOKS)
         .add(InspirationsBuilding.redstoneBook)
         .add(Items.BOOK, Items.WRITABLE_BOOK, Items.WRITTEN_BOOK)
         .add(Items.ENCHANTED_BOOK, Items.KNOWLEDGE_BOOK);
     InspirationsBuilding.coloredBooks.values().forEach(bookBuilder::add);
-    this.getOrCreateBuilder(InspirationsTags.Items.BOOKS).addTag(InspirationsTags.Items.FORGE_BOOKS);
+    this.tag(InspirationsTags.Items.BOOKS).addTag(InspirationsTags.Items.FORGE_BOOKS);
 
     // item list of all relevant carpets
-    Builder<Item> carpetBuilder = this.getOrCreateBuilder(InspirationsTags.Items.CARPETS);
+    Builder<Item> carpetBuilder = this.tag(InspirationsTags.Items.CARPETS);
     InspirationsShared.VANILLA_CARPETS.forEach(block -> carpetBuilder.add(block.asItem()));
 
     // item list of all relevant shulker boxes
-    Builder<Item> shulkerBoxBuilder = this.getOrCreateBuilder(InspirationsTags.Items.SHULKER_BOXES);
+    Builder<Item> shulkerBoxBuilder = this.tag(InspirationsTags.Items.SHULKER_BOXES);
     shulkerBoxBuilder.add(Items.SHULKER_BOX);
     VanillaEnum.SHULKER_BOX.forEach(block -> shulkerBoxBuilder.add(block.asItem()));
 
     // relevant terracotta
-    Builder<Item> terracottaBuilder = this.getOrCreateBuilder(InspirationsTags.Items.TERRACOTTA);
+    Builder<Item> terracottaBuilder = this.tag(InspirationsTags.Items.TERRACOTTA);
     terracottaBuilder.add(Items.TERRACOTTA);
     VanillaEnum.TERRACOTTA.forEach(block -> terracottaBuilder.add(block.asItem()));
   }
 
   private void registerForgeTags() {
-    this.getOrCreateBuilder(Tags.Items.BOOKSHELVES).addTag(InspirationsTags.Items.BOOKSHELVES);
+    this.tag(Tags.Items.BOOKSHELVES).addTag(InspirationsTags.Items.BOOKSHELVES);
 
-    this.getOrCreateBuilder(InspirationsTags.Items.SPLASH_BOTTLES).add(InspirationsRecipes.splashBottle);
-    this.getOrCreateBuilder(InspirationsTags.Items.LINGERING_BOTTLES).add(InspirationsRecipes.lingeringBottle);
+    this.tag(InspirationsTags.Items.SPLASH_BOTTLES).add(InspirationsRecipes.splashBottle);
+    this.tag(InspirationsTags.Items.LINGERING_BOTTLES).add(InspirationsRecipes.lingeringBottle);
 
     // add dyed bottles to dye tag, forge tag are always INamedTag
-    InspirationsRecipes.simpleDyedWaterBottle.forEach((color, bottle) -> this.getOrCreateBuilder(color.getTag()).add(bottle));
+    InspirationsRecipes.simpleDyedWaterBottle.forEach((color, bottle) -> this.tag(color.getTag()).add(bottle));
   }
 
   private void registerVanillaTags() {
-    this.getOrCreateBuilder(ItemTags.ARROWS).add(InspirationsTools.redstoneArrow);
+    this.tag(ItemTags.ARROWS).add(InspirationsTools.redstoneArrow);
     this.copy(BlockTags.LEAVES, ItemTags.LEAVES);
     this.copy(BlockTags.WOODEN_TRAPDOORS, ItemTags.WOODEN_TRAPDOORS);
     // Not copy(), we don't want to include the wall torch.
-    this.getOrCreateBuilder(ItemTags.PIGLIN_REPELLENTS).add(InspirationsUtility.soulLeverItem);
-    this.getOrCreateBuilder(ItemTags.PIGLIN_LOVED).add(InspirationsTools.redstoneCharger);
+    this.tag(ItemTags.PIGLIN_REPELLENTS).add(InspirationsUtility.soulLeverItem);
+    this.tag(ItemTags.PIGLIN_LOVED).add(InspirationsTools.redstoneCharger);
   }
 }

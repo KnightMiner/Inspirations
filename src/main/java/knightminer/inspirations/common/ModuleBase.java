@@ -40,12 +40,12 @@ public class ModuleBase {
     }
     ResourceLocation base = new ResourceLocation(name);
     LootTable table = event.getTable();
-    if (table != LootTable.EMPTY_LOOT_TABLE) {
+    if (table != LootTable.EMPTY) {
       ResourceLocation location = Inspirations.getResource(base.getPath());
       table.addPool(new LootPool.Builder()
                         .name(location.toString())
-                        .rolls(ConstantRange.of(1))
-                        .addEntry(TableLootEntry.builder(location))
+                        .setRolls(ConstantRange.exactly(1))
+                        .add(TableLootEntry.lootTableReference(location))
                         .build()
                    );
     }

@@ -41,55 +41,55 @@ public class TweaksRecipeProvider extends RecipeProvider implements IConditionBu
   }
 
   @Override
-  protected void registerRecipes(Consumer<IFinishedRecipe> consumer) {
+  protected void buildShapelessRecipes(Consumer<IFinishedRecipe> consumer) {
     this.consumer = consumer;
 
     // Since these are mass-production recipes, show them after the user makes
     // several of the original.
 
     // stackable collector
-    ShapedRecipeBuilder.shapedRecipe(InspirationsUtility.collector)
+    ShapedRecipeBuilder.shaped(InspirationsUtility.collector)
                        // builder is missing count, so use ItemPredicate constructor
-                       .addCriterion("many_collectors", hasItem(new ItemPredicate(
+                       .unlockedBy("many_collectors", inventoryTrigger(new ItemPredicate(
                            null, // tag
                            InspirationsUtility.collector.asItem(),
                            MinMaxBounds.IntBound.atLeast(5),
-                           MinMaxBounds.IntBound.UNBOUNDED,
-                           EnchantmentPredicate.enchantments,
-                           EnchantmentPredicate.enchantments,
+                           MinMaxBounds.IntBound.ANY,
+                           EnchantmentPredicate.NONE,
+                           EnchantmentPredicate.NONE,
                            null, // potion
                            NBTPredicate.ANY
                        )))
-                       .key('T', Tags.Items.RODS_WOODEN)
-                       .key('S', Tags.Items.STRING)
-                       .key('D', Items.DROPPER)
-                       .patternLine("  T")
-                       .patternLine(" TS")
-                       .patternLine("TDS")
-                       .build(
+                       .define('T', Tags.Items.RODS_WOODEN)
+                       .define('S', Tags.Items.STRING)
+                       .define('D', Items.DROPPER)
+                       .pattern("  T")
+                       .pattern(" TS")
+                       .pattern("TDS")
+                       .save(
                            withCondition(ConfigEnabledCondition.MODULE_UTILITY, ConfigEnabledCondition.COLLECTOR, ConfigEnabledCondition.UNSTACKABLE_ALTS),
                            resource("tweaks/collector_stackable")
                              );
 
     // stackable dispenser
-    ShapedRecipeBuilder.shapedRecipe(Items.DISPENSER)
+    ShapedRecipeBuilder.shaped(Items.DISPENSER)
                        // builder is missing count, so use ItemPredicate constructor
-                       .addCriterion("many_collectors", hasItem(new ItemPredicate(
+                       .unlockedBy("many_collectors", inventoryTrigger(new ItemPredicate(
                            null, // tag
                            Items.DISPENSER,
                            MinMaxBounds.IntBound.atLeast(5),
-                           MinMaxBounds.IntBound.UNBOUNDED,
-                           EnchantmentPredicate.enchantments,
-                           EnchantmentPredicate.enchantments,
+                           MinMaxBounds.IntBound.ANY,
+                           EnchantmentPredicate.NONE,
+                           EnchantmentPredicate.NONE,
                            null, // potion
                            NBTPredicate.ANY
                        )))
-                       .key('T', Tags.Items.RODS_WOODEN)
-                       .key('S', Tags.Items.STRING)
-                       .key('D', Items.DROPPER)
-                       .patternLine(" TS")
-                       .patternLine("TDS")
-                       .patternLine(" TS")
-                       .build(withCondition(ConfigEnabledCondition.UNSTACKABLE_ALTS), resource("tweaks/dispenser_stackable"));
+                       .define('T', Tags.Items.RODS_WOODEN)
+                       .define('S', Tags.Items.STRING)
+                       .define('D', Items.DROPPER)
+                       .pattern(" TS")
+                       .pattern("TDS")
+                       .pattern(" TS")
+                       .save(withCondition(ConfigEnabledCondition.UNSTACKABLE_ALTS), resource("tweaks/dispenser_stackable"));
   }
 }

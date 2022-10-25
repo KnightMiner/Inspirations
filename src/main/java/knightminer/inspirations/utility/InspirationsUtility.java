@@ -73,20 +73,20 @@ public class InspirationsUtility extends ModuleBase {
     IForgeRegistry<Block> r = event.getRegistry();
 
     torchLeverFloor = registry.register(new TorchLeverBlock(
-            AbstractBlock.Properties.from(Blocks.TORCH).sound(SoundType.WOOD),
+            AbstractBlock.Properties.copy(Blocks.TORCH).sound(SoundType.WOOD),
             ParticleTypes.FLAME
     ), "torch_lever");
     torchLeverWall = registry.register(new TorchLeverWallBlock(
-            AbstractBlock.Properties.from(Blocks.WALL_TORCH).lootFrom(() -> torchLeverFloor),
+            AbstractBlock.Properties.copy(Blocks.WALL_TORCH).lootFrom(() -> torchLeverFloor),
             ParticleTypes.FLAME
     ), "wall_torch_lever");
 
     soulLeverFloor = registry.register(new TorchLeverBlock(
-            AbstractBlock.Properties.from(Blocks.SOUL_TORCH),
+            AbstractBlock.Properties.copy(Blocks.SOUL_TORCH),
             ParticleTypes.SOUL_FIRE_FLAME
     ), "soul_torch_lever");
     soulLeverWall = registry.register(new TorchLeverWallBlock(
-            AbstractBlock.Properties.from(Blocks.SOUL_WALL_TORCH).lootFrom(() -> soulLeverFloor),
+            AbstractBlock.Properties.copy(Blocks.SOUL_WALL_TORCH).lootFrom(() -> soulLeverFloor),
             ParticleTypes.SOUL_FIRE_FLAME
     ), "wall_soul_torch_lever");
 
@@ -119,7 +119,7 @@ public class InspirationsUtility extends ModuleBase {
 
   @SubscribeEvent
   public void registerItems(Register<Item> event) {
-    Item.Properties props = new Item.Properties().group(ItemGroup.REDSTONE);
+    Item.Properties props = new Item.Properties().tab(ItemGroup.TAB_REDSTONE);
     ItemRegistryAdapter registry = new ItemRegistryAdapter(event.getRegistry(), props);
 
     // itemblocks
@@ -148,10 +148,10 @@ public class InspirationsUtility extends ModuleBase {
 
   // Get access to the existing behaviours.
   private static class DispenserRegAccess extends DispenserBlock {
-    DispenserRegAccess() { super(Block.Properties.create(Material.AIR));}
+    DispenserRegAccess() { super(Block.Properties.of(Material.AIR));}
 
     IDispenseItemBehavior getRegisteredBehaviour(Item item) {
-      return super.getBehavior(new ItemStack(item));
+      return super.getDispenseMethod(new ItemStack(item));
     }
   }
 

@@ -21,7 +21,7 @@ public abstract class NamedContentType<T extends IStringSerializable> extends Ca
    */
   @Override
   public String getName(T value) {
-    return value.getString();
+    return value.getSerializedName();
   }
 
   /**
@@ -40,7 +40,7 @@ public abstract class NamedContentType<T extends IStringSerializable> extends Ca
    */
   @Override
   public T getValue(JsonElement element, String key) {
-    String name = JSONUtils.getString(element, key);
+    String name = JSONUtils.convertToString(element, key);
     T value = getValue(name);
     if (value == null) {
       throw new JsonSyntaxException("Invalid value '" + name + "' for enum");

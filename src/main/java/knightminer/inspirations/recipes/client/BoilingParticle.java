@@ -11,31 +11,31 @@ public class BoilingParticle extends BubbleParticle {
 
   public BoilingParticle(ClientWorld world, double xCoord, double yCoord, double zCoord, double xSpeed, double ySpeed, double zSpeed) {
     super(world, xCoord, yCoord, zCoord, xSpeed, ySpeed, zSpeed);
-    this.particleAlpha = 0.5f;
-    this.canCollide = false;
+    this.alpha = 0.5f;
+    this.hasPhysics = false;
   }
 
   @Override
   public void tick() {
-    this.prevPosX = this.posX;
-    this.prevPosY = this.posY;
-    this.prevPosZ = this.posZ;
-    this.move(this.motionX, this.motionY, this.motionZ);
-    this.motionX *= 0.8500000238418579D;
-    this.motionY *= 0.8500000238418579D;
-    this.motionZ *= 0.8500000238418579D;
+    this.xo = this.x;
+    this.yo = this.y;
+    this.zo = this.z;
+    this.move(this.xd, this.yd, this.zd);
+    this.xd *= 0.8500000238418579D;
+    this.yd *= 0.8500000238418579D;
+    this.zd *= 0.8500000238418579D;
 
-    if (this.maxAge-- <= 0) {
-      this.setExpired();
+    if (this.lifetime-- <= 0) {
+      this.remove();
     }
   }
 
   @Override
   public void move(double x, double y, double z) {
-    this.setBoundingBox(this.getBoundingBox().offset(x, y, z));
-    this.posX += x;
-    this.posY += y;
-    this.posZ += z;
+    this.setBoundingBox(this.getBoundingBox().move(x, y, z));
+    this.x += x;
+    this.y += y;
+    this.z += z;
   }
 
   public static class Factory implements IParticleFactory<BasicParticleType> {
@@ -45,9 +45,9 @@ public class BoilingParticle extends BubbleParticle {
     }
 
     @Override
-    public Particle makeParticle(BasicParticleType typeIn, ClientWorld worldIn, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
+    public Particle createParticle(BasicParticleType typeIn, ClientWorld worldIn, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
       BoilingParticle bubble = new BoilingParticle(worldIn, x, y, z, xSpeed, ySpeed, zSpeed);
-      bubble.selectSpriteRandomly(this.spriteSet);
+      bubble.pickSprite(this.spriteSet);
       return bubble;
     }
   }

@@ -58,7 +58,7 @@ import java.util.function.Consumer;
  * Tile entity logic for the cauldron, handles more complex content types
  */
 public class CauldronTileEntity extends MantleTileEntity implements ITickableTileEntity {
-  private static final DamageSource DAMAGE_BOIL = new DamageSource(Inspirations.prefix("boiling")).setDamageBypassesArmor();
+  private static final DamageSource DAMAGE_BOIL = new DamageSource(Inspirations.prefix("boiling")).bypassArmor();
   public static final ModelProperty<ResourceLocation> TEXTURE = new ModelProperty<>();
   public static final ModelProperty<Boolean> FROSTED = new ModelProperty<>();
   public static final ModelProperty<Integer> OFFSET = new ModelProperty<>();
@@ -157,7 +157,7 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
    * Gets the level of fluid in the cauldron, between 0 and {@link ICauldronRecipe#MAX}
    * @return  Cauldron fluid level
    */
-  public int getLevel() {
+  public int getFluidLevel() {
     return cauldronBlock.getLevel(getBlockState()) * 4 + levelOffset;
   }
 
@@ -187,8 +187,8 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
    */
   public void updateStateAndBlock(@Nullable ICauldronContents contents, int level) {
     int stateLevel = updateStateFromLevels(contents, level);
-    if (world != null) {
-      cauldronBlock.setWaterLevel(world, pos, getBlockState(), stateLevel);
+    if (this.level != null) {
+      cauldronBlock.setWaterLevel(this.level, worldPosition, getBlockState(), stateLevel);
     }
   }
 
@@ -242,7 +242,7 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
     // if either changed, send a packet
     if (levelOffset != this.levelOffset || contents != null) {
       this.levelOffset = levelOffset;
-      InspirationsNetwork.sendToClients(world, pos, new CauldronStateUpdatePacket(pos, contents, levelOffset));
+      InspirationsNetwork.sendToClients(level, worldPosition, new CauldronStateUpdatePacket(worldPosition, contents, levelOffset));
       this.contentsChanged();
     }
   }
@@ -281,9 +281,9 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
    * @return True if the state is considered fire
    */
   public static boolean isCauldronFire(BlockState state) {
-    if (state.getBlock().isIn(InspirationsTags.Blocks.CAULDRON_FIRE)) {
+    if (state.getBlock().is(InspirationsTags.Blocks.CAULDRON_FIRE)) {
       // if it has a lit property, use that (campfires, furnaces). Otherwise just needs to be in the tag
-      return !state.hasProperty(BlockStateProperties.LIT) || state.get(BlockStateProperties.LIT);
+      return !state.hasProperty(BlockStateProperties.LIT) || state.getValue(BlockStateProperties.LIT);
     }
     return false;
   }
@@ -296,8 +296,8 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
    * @return  True if the direction has enough ice
    */
   private static boolean isDirectionFreezing(World world, BlockPos pos, Direction direction) {
-    return world.getBlockState(pos.offset(direction)).isIn(InspirationsTags.Blocks.CAULDRON_ICE)
-           && world.getBlockState(pos.offset(direction.getOpposite())).isIn(InspirationsTags.Blocks.CAULDRON_ICE);
+    return world.getBlockState(pos.relative(direction)).is(InspirationsTags.Blocks.CAULDRON_ICE)
+           && world.getBlockState(pos.relative(direction.getOpposite())).is(InspirationsTags.Blocks.CAULDRON_ICE);
   }
 
   /**
@@ -324,7 +324,7 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
     if (freezing) return CauldronTemperature.FREEZING;
 
     // boil if water evaporates
-    if (world.getDimensionType().isUltrawarm()) {
+    if (world.dimensionType().ultraWarm()) {
       return CauldronTemperature.BOILING;
     }
     // freeze if biome is cold enough for snow/ice. direct methods do a bunch of ice/snow checks
@@ -341,15 +341,15 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
    * @return  Temperature at current location
    */
   private CauldronTemperature getTemperature(boolean updateModelData) {
-    if (world == null) {
+    if (level == null) {
       return CauldronTemperature.NORMAL;
     }
     // if no temperature cache, calculate
     if (temperature == null) {
       // ensure we have cached freezing and boiling
-      if (isBoiling == null) isBoiling = isCauldronFire(world.getBlockState(pos.down()));
-      if (isFreezing == null) isFreezing = isFreezing(world, pos);
-      temperature = calcTemperature(world, pos, isBoiling, isFreezing);
+      if (isBoiling == null) isBoiling = isCauldronFire(level.getBlockState(worldPosition.below()));
+      if (isFreezing == null) isFreezing = isFreezing(level, worldPosition);
+      temperature = calcTemperature(level, worldPosition, isBoiling, isFreezing);
       data.setData(FROSTED, temperature == CauldronTemperature.FREEZING);
       if (updateModelData) requestModelDataUpdate();
     }
@@ -373,7 +373,7 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
    */
   private static Direction getDirection(BlockPos offset) {
     for (Direction direction : Direction.values()) {
-      if (direction.getDirectionVec().equals(offset)) {
+      if (direction.getNormal().equals(offset)) {
         return direction;
       }
     }
@@ -385,7 +385,7 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
    * @param neighbor  Neighbor that changed
    */
   public void neighborChanged(BlockPos neighbor) {
-    Direction direction = getDirection(neighbor.subtract(pos));
+    Direction direction = getDirection(neighbor.subtract(worldPosition));
     CauldronTemperature oldTemperature = temperature;
     if (direction == Direction.DOWN) {
       isBoiling = null;
@@ -397,7 +397,7 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
       this.contentsChanged();
     }
     // on the client, immediately update temperature
-    if (world != null && world.isRemote) {
+    if (level != null && level.isClientSide) {
       temperature = getTemperature();
       if (temperature != oldTemperature) {
         Util.notifyClientUpdate(this);
@@ -410,15 +410,15 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
 
   @Nullable
   public ICauldronRecipe findRecipe() {
-    if (world == null) {
+    if (level == null) {
       return null;
     }
     // try last recipe first
-    if (lastRecipe != null && lastRecipe.matches(craftingInventory, world)) {
+    if (lastRecipe != null && lastRecipe.matches(craftingInventory, level)) {
       return lastRecipe;
     }
     // fall back to finding a new recipe
-    ICauldronRecipe recipe = world.getRecipeManager().getRecipe(RecipeTypes.CAULDRON, craftingInventory, world).orElse(null);
+    ICauldronRecipe recipe = level.getRecipeManager().getRecipeFor(RecipeTypes.CAULDRON, craftingInventory, level).orElse(null);
     if (recipe != null) {
       lastRecipe = recipe;
       return recipe;
@@ -436,7 +436,7 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
    * @return  True if the recipe matched, false otherwise
    */
   private boolean handleRecipe(ItemStack stack, @Nullable Consumer<ItemStack> itemSetter, Consumer<ItemStack> itemAdder) {
-    if (world == null) {
+    if (level == null) {
       return false;
     }
 
@@ -448,7 +448,7 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
     boolean success = false;
     if (recipe != null) {
       success = true;
-      if (!world.isRemote) {
+      if (!level.isClientSide) {
         recipe.handleRecipe(craftingInventory);
       }
     }
@@ -461,12 +461,12 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
    */
   public boolean interact(PlayerEntity player, Hand hand) {
     // ensure we have a stack, or we can be done
-    if (world == null) {
+    if (level == null) {
       return false;
     }
 
     // handle the recipe using the common function
-    boolean success = handleRecipe(player.getHeldItem(hand), stack -> player.setHeldItem(hand, stack), CauldronItemInventory.getPlayerAdder(player));
+    boolean success = handleRecipe(player.getItemInHand(hand), stack -> player.setItemInHand(hand, stack), CauldronItemInventory.getPlayerAdder(player));
     if (success) {
       updateStateAndBlock(craftingInventory.getContents(), craftingInventory.getLevel());
     }
@@ -482,7 +482,7 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
    */
   @Nullable
   public ItemStack handleDispenser(ItemStack stack, Consumer<ItemStack> itemAdder) {
-    if (world == null) {
+    if (level == null) {
       return null;
     }
 
@@ -506,14 +506,13 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
    * @return New cauldron level after the collision
    */
   public int onEntityCollide(Entity entity, int level, BlockState currentState) {
-    if (world == null) {
+    if (this.level == null) {
       return level;
     }
 
     // if an entity item, try crafting with it
-    if (entity instanceof ItemEntity && Config.cauldronRecipes.getAsBoolean()) {
+    if (entity instanceof ItemEntity entityItem && Config.cauldronRecipes.getAsBoolean()) {
       // skip items that we have already processed
-      ItemEntity entityItem = (ItemEntity)entity;
       CompoundNBT entityTags = entity.getPersistentData();
       // if it was tagged, skip it
       if (entityTags.getBoolean(TAG_CAULDRON_CRAFTED)) {
@@ -530,16 +529,16 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
       // run recipe.
       // We need to copy when setting the item, to force it to update.
       boolean success = handleRecipe(entityItem.getItem(), stack -> entityItem.setItem(stack.copy()), stack -> {
-        ItemEntity newItem = new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, stack);
+        ItemEntity newItem = new ItemEntity(this.level, worldPosition.getX() + 0.5, worldPosition.getY() + 0.5, worldPosition.getZ() + 0.5, stack);
         newItem.getPersistentData().putBoolean(CauldronTileEntity.TAG_CAULDRON_CRAFTED, true);
-        newItem.setDefaultPickupDelay();
-        world.addEntity(newItem);
+        newItem.setDefaultPickUpDelay();
+        this.level.addFreshEntity(newItem);
       });
 
       // on success, run the recipe a few more times
       if (success) {
         int matches = 0;
-        while (lastRecipe.matches(craftingInventory, world) && matches < 64) {
+        while (lastRecipe.matches(craftingInventory, this.level) && matches < 64) {
           lastRecipe.handleRecipe(craftingInventory);
           matches++;
         }
@@ -573,32 +572,31 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
         // water puts out fire
         Fluid fluid = fluidType.get();
         if (FluidTags.WATER.contains(fluid)) {
-          if (entity.isBurning()) {
-            entity.extinguish();
+          if (entity.isOnFire()) {
+            entity.clearFire();
             level = level - 1;
           }
         }
 
         // hot fluids set fire to the entity
-        else if (fluid.getAttributes().getTemperature() > 450 && !entity.isImmuneToFire()) {
-          entity.attackEntityFrom(DamageSource.LAVA, 4.0F);
-          entity.setFire(15);
+        else if (fluid.getAttributes().getTemperature() > 450 && !entity.fireImmune()) {
+          entity.hurt(DamageSource.LAVA, 4.0F);
+          entity.setSecondsOnFire(15);
           return level;
         }
       } else {
         // potions apply potion effects
         Optional<Potion> potionType = contents.get(CauldronContentTypes.POTION);
-        if (potionType.isPresent() && entity instanceof LivingEntity) {
-          LivingEntity living = (LivingEntity)entity;
+        if (potionType.isPresent() && entity instanceof LivingEntity living) {
 
           // if any of the effects are not currently on the player, apply it and lower the level
           List<EffectInstance> effects = potionType.get().getEffects();
-          if (effects.stream().anyMatch(effect -> !living.isPotionActive(effect.getPotion()))) {
+          if (effects.stream().anyMatch(effect -> !living.hasEffect(effect.getEffect()))) {
             for (EffectInstance effect : effects) {
-              if (effect.getPotion().isInstant()) {
-                effect.getPotion().affectEntity(null, null, living, effect.getAmplifier(), 1.0D);
+              if (effect.getEffect().isInstantenous()) {
+                effect.getEffect().applyInstantenousEffect(null, null, living, effect.getAmplifier(), 1.0D);
               } else {
-                living.addPotionEffect(new EffectInstance(effect));
+                living.addEffect(new EffectInstance(effect));
               }
             }
             level = level - 1;
@@ -609,7 +607,7 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
 
       // if the cauldron is boiling, boiling the entity
       if (getTemperature() == CauldronTemperature.BOILING) {
-        entity.attackEntityFrom(DAMAGE_BOIL, 2.0F);
+        entity.hurt(DAMAGE_BOIL, 2.0F);
       }
     }
     return level;
@@ -618,8 +616,8 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
   /* Transform recipes */
 
   @Override
-  public void updateContainingBlockInfo() {
-    super.updateContainingBlockInfo();
+  public void clearCache() {
+    super.clearCache();
     this.contentsChanged();
   }
 
@@ -633,7 +631,7 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
     }
 
     // if the current transform matches, do nothing
-    if (world == null || (currentTransform != null && currentTransform.matches(craftingInventory, world))) {
+    if (level == null || (currentTransform != null && currentTransform.matches(craftingInventory, level))) {
       return;
     }
 
@@ -642,11 +640,11 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
 
     // try to find a recipe
     ICauldronTransform transform = null;
-    if (getLevel() > 0) {
-      if (lastTransform != null && lastTransform.matches(craftingInventory, world)) {
+    if (getFluidLevel() > 0) {
+      if (lastTransform != null && lastTransform.matches(craftingInventory, level)) {
         transform = lastTransform;
       } else {
-        Optional<ICauldronTransform> newTransform = world.getRecipeManager().getRecipe(RecipeTypes.CAULDRON_TRANSFORM, craftingInventory, world);
+        Optional<ICauldronTransform> newTransform = level.getRecipeManager().getRecipeFor(RecipeTypes.CAULDRON_TRANSFORM, craftingInventory, level);
         if (newTransform.isPresent()) {
           transform = lastTransform = newTransform.get();
         }
@@ -657,18 +655,18 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
     if (currentTransform != transform) {
       // update and sync to clients
       currentTransform = transform;
-      InspirationsNetwork.sendToClients(world, pos, new CauldronTransformUpatePacket(pos, transform));
+      InspirationsNetwork.sendToClients(level, worldPosition, new CauldronTransformUpatePacket(worldPosition, transform));
     }
   }
 
   @Override
   public void tick() {
-    if (world == null) {
+    if (level == null) {
       return;
     }
 
     // updates the transform recipe
-    if (updateTransform && !world.isRemote) {
+    if (updateTransform && !level.isClientSide) {
       this.updateTransform();
       updateTransform = false;
     }
@@ -682,12 +680,12 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
     timer++;
 
     // if the recipe is done, run recipe
-    if (!world.isRemote && timer >= currentTransform.getTime()) {
+    if (!level.isClientSide && timer >= currentTransform.getTime()) {
       timer = 0;
 
       // play sound effect, note its before contents update
       SoundEvent sound = currentTransform.getSound();
-      world.playSound(null, pos, sound, SoundCategory.BLOCKS, 1.0f, 1.0f);
+      level.playSound(null, worldPosition, sound, SoundCategory.BLOCKS, 1.0f, 1.0f);
 
       // set contents will clear the current transform if no longer current
       // have to pass in level offset as this function is reused a lot, so just use current
@@ -783,8 +781,8 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
   private static final String TAG_TIMER = "timer";
 
   @Override
-  public void setWorldAndPos(World world, BlockPos pos) {
-    super.setWorldAndPos(world, pos);
+  public void setLevelAndPosition(World world, BlockPos pos) {
+    super.setLevelAndPosition(world, pos);
     // if we have a recipe name, swap recipe name for recipe instance
     if (currentTransformName != null) {
       loadTransform(world, currentTransformName);
@@ -822,8 +820,8 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
   }
 
   @Override
-  public void read(BlockState state, CompoundNBT tags) {
-    super.read(state, tags);
+  public void load(BlockState state, CompoundNBT tags) {
+    super.load(state, tags);
 
     // update block reference
     Block block = state.getBlock();
@@ -835,8 +833,8 @@ public class CauldronTileEntity extends MantleTileEntity implements ITickableTil
     if (tags.contains(TAG_TRANSFORM, NBT.TAG_STRING)) {
       ResourceLocation name = new ResourceLocation(tags.getString(TAG_TRANSFORM));
       // if we have a world, fetch the recipe
-      if (world != null) {
-        loadTransform(world, name);
+      if (level != null) {
+        loadTransform(level, name);
       } else {
         // otherwise fetch the recipe when the world is set
         currentTransformName = name;

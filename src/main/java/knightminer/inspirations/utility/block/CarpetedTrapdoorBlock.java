@@ -14,29 +14,29 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 
 public class CarpetedTrapdoorBlock extends TrapDoorBlock implements IHidable {
-  private static final VoxelShape EAST_OPEN_CARP_AABB = Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 4.0D, 16.0D, 16.0D);
-  private static final VoxelShape WEST_OPEN_CARP_AABB = Block.makeCuboidShape(12.0D, 0.0D, 0.0D, 16.0D, 16.0D, 16.0D);
-  private static final VoxelShape SOUTH_OPEN_CARP_AABB = Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 16.0D, 4.0D);
-  private static final VoxelShape NORTH_OPEN_CARP_AABB = Block.makeCuboidShape(0.0D, 0.0D, 12.0D, 16.0D, 16.0D, 16.0D);
-  private static final VoxelShape BOTTOM_CARP_AABB = Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 4.0D, 16.0D);
-  private static final VoxelShape TOP_CARP_AABB = Block.makeCuboidShape(0.0D, 13.0D, 0.0D, 16.0D, 16.9D, 16.0D);
+  private static final VoxelShape EAST_OPEN_CARP_AABB = Block.box(0.0D, 0.0D, 0.0D, 4.0D, 16.0D, 16.0D);
+  private static final VoxelShape WEST_OPEN_CARP_AABB = Block.box(12.0D, 0.0D, 0.0D, 16.0D, 16.0D, 16.0D);
+  private static final VoxelShape SOUTH_OPEN_CARP_AABB = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 16.0D, 4.0D);
+  private static final VoxelShape NORTH_OPEN_CARP_AABB = Block.box(0.0D, 0.0D, 12.0D, 16.0D, 16.0D, 16.0D);
+  private static final VoxelShape BOTTOM_CARP_AABB = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 4.0D, 16.0D);
+  private static final VoxelShape TOP_CARP_AABB = Block.box(0.0D, 13.0D, 0.0D, 16.0D, 16.9D, 16.0D);
 
   public CarpetedTrapdoorBlock() {
     super(Block.Properties
-              .create(Material.WOOD)
-              .hardnessAndResistance(3.0F)
-              .sound(SoundType.CLOTH)
+              .of(Material.WOOD)
+              .strength(3.0F)
+              .sound(SoundType.WOOL)
          );
   }
 
   @Override
   public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-    boolean isTop = state.get(HALF) == Half.TOP;
-    if (!state.get(OPEN)) {
+    boolean isTop = state.getValue(HALF) == Half.TOP;
+    if (!state.getValue(OPEN)) {
       return isTop ? TOP_CARP_AABB : BOTTOM_CARP_AABB;
     } else {
       // Topmost trapdoors open with carpet out, and are therefore thicker.
-      switch (state.get(HORIZONTAL_FACING)) {
+      switch (state.getValue(FACING)) {
         case NORTH:
         default:
           return isTop ? NORTH_OPEN_CARP_AABB : NORTH_OPEN_AABB;

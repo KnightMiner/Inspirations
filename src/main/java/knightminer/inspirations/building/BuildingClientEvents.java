@@ -46,9 +46,9 @@ public class BuildingClientEvents extends ClientEvents {
   @SubscribeEvent
   static void clientSetup(FMLClientSetupEvent event) {
     // set render types
-    RenderType cutout = RenderType.getCutout();
+    RenderType cutout = RenderType.cutout();
     Consumer<Block> setCutout = (block) -> RenderTypeLookup.setRenderLayer(block, cutout);
-    RenderType cutoutMipped = RenderType.getCutoutMipped();
+    RenderType cutoutMipped = RenderType.cutoutMipped();
     Consumer<Block> setCutoutMipped = (block) -> RenderTypeLookup.setRenderLayer(block, cutoutMipped);
 
     // general
@@ -88,7 +88,7 @@ public class BuildingClientEvents extends ClientEvents {
     // coloring of books for normal bookshelf
     registerBlockColors(blockColors, (state, world, pos, tintIndex) -> {
       if (tintIndex > 0 && tintIndex <= 16 && world != null && pos != null) {
-        TileEntity te = world.getTileEntity(pos);
+        TileEntity te = world.getBlockEntity(pos);
         if (te instanceof ShelfTileEntity) {
           ItemStack stack = ((ShelfTileEntity)te).getInventory().getStackInSlot(tintIndex - 1);
           if (!stack.isEmpty()) {
@@ -109,9 +109,9 @@ public class BuildingClientEvents extends ClientEvents {
     // rope vine coloring
     registerBlockColors(blockColors, (state, world, pos, tintIndex) -> {
       if (world != null && pos != null) {
-        return BiomeColors.getFoliageColor(world, pos);
+        return BiomeColors.getAverageFoliageColor(world, pos);
       }
-      return FoliageColors.getDefault();
+      return FoliageColors.getDefaultColor();
     }, InspirationsBuilding.vine);
 
     // bush block coloring
@@ -136,7 +136,7 @@ public class BuildingClientEvents extends ClientEvents {
           return ClientUtil.getStackBlockColorsSafe(new ItemStack(block), world, pos, 0);
         }
       }
-      return FoliageColors.getDefault();
+      return FoliageColors.getDefaultColor();
     }, InspirationsBuilding.enlightenedBush.getOrNull(BushType.WHITE));
   }
 
@@ -177,11 +177,11 @@ public class BuildingClientEvents extends ClientEvents {
       if (block != Blocks.AIR) {
         return itemColors.getColor(new ItemStack(block), 0);
       } else {
-        return FoliageColors.getDefault();
+        return FoliageColors.getDefaultColor();
       }
     }, InspirationsBuilding.enlightenedBush.getOrNull(BushType.WHITE));
 
     // We can't get the world position of the item, so use the default tint.
-    registerItemColors(itemColors, (stack, tintIndex) -> FoliageColors.getDefault(), InspirationsBuilding.vine);
+    registerItemColors(itemColors, (stack, tintIndex) -> FoliageColors.getDefaultColor(), InspirationsBuilding.vine);
   }
 }

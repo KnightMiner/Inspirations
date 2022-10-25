@@ -35,9 +35,9 @@ public class TileCauldronInventory extends CauldronItemInventory {
   @Override
   public void playSound(SoundEvent sound) {
     if (!silent) {
-      World world = tile.getWorld();
+      World world = tile.getLevel();
       if (world != null) {
-        world.playSound(null, tile.getPos(), sound, SoundCategory.BLOCKS, 1.0f, 1.0f);
+        world.playSound(null, tile.getBlockPos(), sound, SoundCategory.BLOCKS, 1.0f, 1.0f);
       }
     }
   }
@@ -92,7 +92,7 @@ public class TileCauldronInventory extends CauldronItemInventory {
     if (newLevel != -1) {
       return newLevel;
     }
-    return tile.getLevel();
+    return tile.getFluidLevel();
   }
 
   @Override

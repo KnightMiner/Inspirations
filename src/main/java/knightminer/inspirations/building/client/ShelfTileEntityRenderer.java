@@ -43,7 +43,7 @@ public class ShelfTileEntityRenderer extends TileEntityRenderer<ShelfTileEntity>
 
 			// pop back rotation
 			if (isRotated) {
-				matrices.pop();
+				matrices.popPose();
 			}
 		}
 	}

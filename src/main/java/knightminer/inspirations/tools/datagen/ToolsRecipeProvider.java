@@ -46,98 +46,98 @@ public class ToolsRecipeProvider extends RecipeProvider implements IConditionBui
   }
 
   @Override
-  protected void registerRecipes(Consumer<IFinishedRecipe> consumer) {
+  protected void buildShapelessRecipes(Consumer<IFinishedRecipe> consumer) {
     // set for the util
     this.consumer = consumer;
 
     // photometer
-    ShapedRecipeBuilder.shapedRecipe(InspirationsTools.photometer)
-                       .addCriterion("has_glowstone", hasItem(Tags.Items.DUSTS_GLOWSTONE))
-                       .addCriterion("has_redstone", hasItem(Tags.Items.DUSTS_REDSTONE))
-                       .key('B', Items.GLASS_BOTTLE)
-                       .key('R', Tags.Items.DUSTS_REDSTONE)
-                       .key('G', Tags.Items.DUSTS_GLOWSTONE)
-                       .key('I', Tags.Items.INGOTS_IRON)
-                       .patternLine("RBG")
-                       .patternLine(" I ")
-                       .build(withCondition(ConfigEnabledCondition.PHOTOMETER), prefix(InspirationsTools.photometer, "tools/"));
+    ShapedRecipeBuilder.shaped(InspirationsTools.photometer)
+                       .unlockedBy("has_glowstone", has(Tags.Items.DUSTS_GLOWSTONE))
+                       .unlockedBy("has_redstone", has(Tags.Items.DUSTS_REDSTONE))
+                       .define('B', Items.GLASS_BOTTLE)
+                       .define('R', Tags.Items.DUSTS_REDSTONE)
+                       .define('G', Tags.Items.DUSTS_GLOWSTONE)
+                       .define('I', Tags.Items.INGOTS_IRON)
+                       .pattern("RBG")
+                       .pattern(" I ")
+                       .save(withCondition(ConfigEnabledCondition.PHOTOMETER), prefix(InspirationsTools.photometer, "tools/"));
 
     // barometer
     // not using the builder because it lacks potion
     ItemPredicate hasWaterBottle = new ItemPredicate(
         null,  // Tag
         Items.POTION,
-        MinMaxBounds.IntBound.UNBOUNDED,
-        MinMaxBounds.IntBound.UNBOUNDED,
-        EnchantmentPredicate.enchantments,
-        EnchantmentPredicate.enchantments,
+        MinMaxBounds.IntBound.ANY,
+        MinMaxBounds.IntBound.ANY,
+        EnchantmentPredicate.NONE,
+        EnchantmentPredicate.NONE,
         Potions.WATER,
         NBTPredicate.ANY
     );
-    ShapedRecipeBuilder.shapedRecipe(InspirationsTools.barometer)
-                       .addCriterion("has_bottle", hasItem(hasWaterBottle))
-                       .key('W', new NBTIngredient(PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), Potions.WATER)))
-                       .key('B', Items.GLASS_BOTTLE)
-                       .key('R', Tags.Items.DUSTS_REDSTONE)
-                       .patternLine(" W")
-                       .patternLine("BR")
-                       .build(withCondition(ConfigEnabledCondition.BAROMETER), prefix(InspirationsTools.barometer, "tools/"));
+    ShapedRecipeBuilder.shaped(InspirationsTools.barometer)
+                       .unlockedBy("has_bottle", inventoryTrigger(hasWaterBottle))
+                       .define('W', new NBTIngredient(PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.WATER)))
+                       .define('B', Items.GLASS_BOTTLE)
+                       .define('R', Tags.Items.DUSTS_REDSTONE)
+                       .pattern(" W")
+                       .pattern("BR")
+                       .save(withCondition(ConfigEnabledCondition.BAROMETER), prefix(InspirationsTools.barometer, "tools/"));
 
     // lock and key
     Consumer<IFinishedRecipe> lockCondition = withCondition(ConfigEnabledCondition.LOCK);
-    ShapedRecipeBuilder.shapedRecipe(InspirationsTools.lock)
-                       .addCriterion("has_iron", hasItem(Tags.Items.INGOTS_IRON))
-                       .key('I', Tags.Items.INGOTS_IRON)
-                       .key('N', Tags.Items.NUGGETS_IRON)
-                       .patternLine("I")
-                       .patternLine("N")
-                       .build(lockCondition, prefix(InspirationsTools.lock, "tools/"));
-    ShapedRecipeBuilder.shapedRecipe(InspirationsTools.key)
-                       .addCriterion("has_iron", hasItem(Tags.Items.INGOTS_IRON))
-                       .key('I', Tags.Items.INGOTS_IRON)
-                       .key('N', Tags.Items.NUGGETS_IRON)
-                       .patternLine("IN")
-                       .build(lockCondition, prefix(InspirationsTools.key, "tools/"));
+    ShapedRecipeBuilder.shaped(InspirationsTools.lock)
+                       .unlockedBy("has_iron", has(Tags.Items.INGOTS_IRON))
+                       .define('I', Tags.Items.INGOTS_IRON)
+                       .define('N', Tags.Items.NUGGETS_IRON)
+                       .pattern("I")
+                       .pattern("N")
+                       .save(lockCondition, prefix(InspirationsTools.lock, "tools/"));
+    ShapedRecipeBuilder.shaped(InspirationsTools.key)
+                       .unlockedBy("has_iron", has(Tags.Items.INGOTS_IRON))
+                       .define('I', Tags.Items.INGOTS_IRON)
+                       .define('N', Tags.Items.NUGGETS_IRON)
+                       .pattern("IN")
+                       .save(lockCondition, prefix(InspirationsTools.key, "tools/"));
 
     // north compass
-    ShapedRecipeBuilder.shapedRecipe(InspirationsTools.northCompass)
-                       .addCriterion("has_iron", hasItem(Tags.Items.INGOTS_IRON))
-                       .key('I', Tags.Items.INGOTS_IRON)
-                       .key('N', Tags.Items.NUGGETS_IRON)
-                       .patternLine(" I ")
-                       .patternLine("INI")
-                       .patternLine(" I ")
-                       .build(withCondition(ConfigEnabledCondition.NORTH_COMPASS), prefix(InspirationsTools.northCompass, "tools/"));
+    ShapedRecipeBuilder.shaped(InspirationsTools.northCompass)
+                       .unlockedBy("has_iron", has(Tags.Items.INGOTS_IRON))
+                       .define('I', Tags.Items.INGOTS_IRON)
+                       .define('N', Tags.Items.NUGGETS_IRON)
+                       .pattern(" I ")
+                       .pattern("INI")
+                       .pattern(" I ")
+                       .save(withCondition(ConfigEnabledCondition.NORTH_COMPASS), prefix(InspirationsTools.northCompass, "tools/"));
 
     // waypoint compasses
     // white
-    ShapedRecipeBuilder.shapedRecipe(InspirationsTools.dimensionCompass)
-                       .addCriterion("has_ender", hasItem(Tags.Items.ENDER_PEARLS))
-                       .key('G', Tags.Items.INGOTS_GOLD)
-                       .key('E', Tags.Items.ENDER_PEARLS)
-                       .patternLine(" G ")
-                       .patternLine("GEG")
-                       .patternLine(" G ")
-                       .build(withCondition(ConfigEnabledCondition.DIMENSION_COMPASS), resource("tools/dimension_compass"));
+    ShapedRecipeBuilder.shaped(InspirationsTools.dimensionCompass)
+                       .unlockedBy("has_ender", has(Tags.Items.ENDER_PEARLS))
+                       .define('G', Tags.Items.INGOTS_GOLD)
+                       .define('E', Tags.Items.ENDER_PEARLS)
+                       .pattern(" G ")
+                       .pattern("GEG")
+                       .pattern(" G ")
+                       .save(withCondition(ConfigEnabledCondition.DIMENSION_COMPASS), resource("tools/dimension_compass"));
 
     // redstone arrow
-    ShapedRecipeBuilder.shapedRecipe(InspirationsTools.redstoneArrow, 8)
-                       .addCriterion("has_redstone", hasItem(Tags.Items.DUSTS_REDSTONE))
-                       .key('R', Tags.Items.DUSTS_REDSTONE)
-                       .key('S', Tags.Items.RODS_WOODEN)
-                       .key('F', Tags.Items.FEATHERS)
-                       .patternLine("R")
-                       .patternLine("S")
-                       .patternLine("F")
-                       .build(withCondition(ConfigEnabledCondition.CHARGED_ARROW), prefix(InspirationsTools.redstoneArrow, "tools/"));
+    ShapedRecipeBuilder.shaped(InspirationsTools.redstoneArrow, 8)
+                       .unlockedBy("has_redstone", has(Tags.Items.DUSTS_REDSTONE))
+                       .define('R', Tags.Items.DUSTS_REDSTONE)
+                       .define('S', Tags.Items.RODS_WOODEN)
+                       .define('F', Tags.Items.FEATHERS)
+                       .pattern("R")
+                       .pattern("S")
+                       .pattern("F")
+                       .save(withCondition(ConfigEnabledCondition.CHARGED_ARROW), prefix(InspirationsTools.redstoneArrow, "tools/"));
 
     // redstone charger
-    ShapelessRecipeBuilder.shapelessRecipe(InspirationsTools.redstoneCharger)
-                          .addCriterion("has_redstone", hasItem(Tags.Items.DUSTS_REDSTONE))
-                          .addCriterion("has_gold", hasItem(Tags.Items.INGOTS_GOLD))
-                          .addIngredient(Tags.Items.DUSTS_REDSTONE)
-                          .addIngredient(Tags.Items.INGOTS_GOLD)
-                          .build(withCondition(ConfigEnabledCondition.REDSTONE_CHARGER), prefix(InspirationsTools.redstoneCharger, "tools/"));
+    ShapelessRecipeBuilder.shapeless(InspirationsTools.redstoneCharger)
+                          .unlockedBy("has_redstone", has(Tags.Items.DUSTS_REDSTONE))
+                          .unlockedBy("has_gold", has(Tags.Items.INGOTS_GOLD))
+                          .requires(Tags.Items.DUSTS_REDSTONE)
+                          .requires(Tags.Items.INGOTS_GOLD)
+                          .save(withCondition(ConfigEnabledCondition.REDSTONE_CHARGER), prefix(InspirationsTools.redstoneCharger, "tools/"));
 
   }
 }

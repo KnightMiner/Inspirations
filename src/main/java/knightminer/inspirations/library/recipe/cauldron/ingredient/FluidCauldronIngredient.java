@@ -34,12 +34,12 @@ public class FluidCauldronIngredient extends ContentMatchIngredient<Fluid> {
 
   @Override
   protected void write(JsonObject json) {
-    json.addProperty("tag", TagCollectionManager.getManager().getFluidTags().getValidatedIdFromTag(this.tag).toString());
+    json.addProperty("tag", TagCollectionManager.getInstance().getFluids().getIdOrThrow(this.tag).toString());
   }
 
   @Override
   protected void write(PacketBuffer buffer) {
-    List<Fluid> elements = tag.getAllElements();
+    List<Fluid> elements = tag.getValues();
     buffer.writeVarInt(elements.size());
     for (Fluid fluid : elements) {
       buffer.writeResourceLocation(Objects.requireNonNull(fluid.getRegistryName()));
@@ -49,7 +49,7 @@ public class FluidCauldronIngredient extends ContentMatchIngredient<Fluid> {
   @Override
   public List<ICauldronContents> getMatchingContents() {
     if (displayValues == null) {
-      displayValues = tag.getAllElements().stream().map(CauldronContentTypes.FLUID::of).collect(Collectors.toList());
+      displayValues = tag.getValues().stream().map(CauldronContentTypes.FLUID::of).collect(Collectors.toList());
     }
     return displayValues;
   }
@@ -81,8 +81,8 @@ public class FluidCauldronIngredient extends ContentMatchIngredient<Fluid> {
 
       // tag
       if (json.has("tag")) {
-        ResourceLocation tagName = new ResourceLocation(JSONUtils.getString(json, "tag"));
-        ITag<Fluid> tag = TagCollectionManager.getManager().getFluidTags().get(tagName);
+        ResourceLocation tagName = new ResourceLocation(JSONUtils.getAsString(json, "tag"));
+        ITag<Fluid> tag = TagCollectionManager.getInstance().getFluids().getTag(tagName);
         if (tag == null) {
           throw new JsonSyntaxException("Unknown fluid tag '" + tagName + "'");
         }

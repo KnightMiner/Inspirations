@@ -4,6 +4,8 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.IHidable;
 import net.minecraft.block.TrapDoorBlock;
 
+import net.minecraft.block.AbstractBlock.Properties;
+
 public class GlassTrapdoorBlock extends TrapDoorBlock implements IHidable {
 
   public GlassTrapdoorBlock(Properties props) {

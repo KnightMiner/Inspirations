@@ -55,7 +55,7 @@ public class CauldronTransformUpatePacket implements IThreadsafePacket {
   /** Once removed client class */
   private static class HandleClient {
     private static void handle(CauldronTransformUpatePacket packet) {
-      World world = Minecraft.getInstance().world;
+      World world = Minecraft.getInstance().level;
       if (world != null) {
         ICauldronTransform recipe = packet.recipe == null ? null : RecipeHelper.getRecipe(world.getRecipeManager(), packet.recipe, ICauldronTransform.class).orElse(null);
         TileEntityHelper.getTile(CauldronTileEntity.class, world, packet.pos, true).ifPresent(te -> {

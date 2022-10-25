@@ -153,7 +153,7 @@ public class ShelfInventory implements IItemHandler, IItemHandlerModifiable, INB
 			if (!stack.isEmpty()) {
 				CompoundNBT itemTag = new CompoundNBT();
 				itemTag.putByte(SLOT_TAG, (byte)i);
-				stack.write(itemTag);
+				stack.save(itemTag);
 				list.add(itemTag);
 			}
 		}
@@ -166,7 +166,7 @@ public class ShelfInventory implements IItemHandler, IItemHandlerModifiable, INB
 			CompoundNBT itemNBT = list.getCompound(i);
 			int slot = itemNBT.getByte(SLOT_TAG) & 0xFF;
 			if (isSlotValid(slot)) {
-				stacks.set(slot, ItemStack.read(itemNBT));
+				stacks.set(slot, ItemStack.of(itemNBT));
 			}
 		}
 	}

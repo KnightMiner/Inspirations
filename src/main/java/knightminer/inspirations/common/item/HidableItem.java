@@ -8,6 +8,8 @@ import slimeknights.mantle.item.TooltipItem;
 
 import java.util.function.Supplier;
 
+import net.minecraft.item.Item.Properties;
+
 /**
  * Item which is hidden if the config value is disabled.
  */
@@ -25,9 +27,9 @@ public class HidableItem extends TooltipItem implements IHidable {
   }
 
   @Override
-  public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
+  public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items) {
     if (shouldAddtoItemGroup(group)) {
-      super.fillItemGroup(group, items);
+      super.fillItemCategory(group, items);
     }
   }
 }

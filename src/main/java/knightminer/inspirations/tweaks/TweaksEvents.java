@@ -47,16 +47,16 @@ public class TweaksEvents {
     }
 
     PlayerEntity player = event.getPlayer();
-    ItemStack stack = player.getHeldItem(event.getHand());
+    ItemStack stack = player.getItemInHand(event.getHand());
     // must be sneaking and holding nothing
     if (player.isCrouching() && stack.isEmpty()) {
       Entity target = event.getTarget();
       if (target instanceof PigEntity) {
         PigEntity pig = (PigEntity)target;
-        if (pig.isHorseSaddled()) {
-          pig.field_234214_bx_.setSaddledFromBoolean(false);
-          pig.world.playSound(player, pig.getPosX(), pig.getPosY(), pig.getPosZ(), SoundEvents.ENTITY_PIG_SADDLE, SoundCategory.NEUTRAL, 0.5F, 1.0F);
-          ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(Items.SADDLE), player.inventory.currentItem);
+        if (pig.isSaddled()) {
+          pig.steering.setSaddle(false);
+          pig.level.playSound(player, pig.getX(), pig.getY(), pig.getZ(), SoundEvents.PIG_SADDLE, SoundCategory.NEUTRAL, 0.5F, 1.0F);
+          ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(Items.SADDLE), player.inventory.selected);
           event.setCanceled(true);
         }
       }
@@ -71,7 +71,7 @@ public class TweaksEvents {
 
     // running client side acts weird
     World world = event.getWorld();
-    if (world.isRemote) {
+    if (world.isClientSide) {
       return;
     }
 
@@ -79,7 +79,7 @@ public class TweaksEvents {
     BlockState state = world.getBlockState(pos);
     Block block = state.getBlock();
     // block must be mycelium for mushrooms or sand for dead bushes
-    if ((Config.bonemealMushrooms.get() && block == Blocks.MYCELIUM) || (Config.bonemealDeadBush.get() && block.isIn(BlockTags.SAND))) {
+    if ((Config.bonemealMushrooms.get() && block == Blocks.MYCELIUM) || (Config.bonemealDeadBush.get() && block.is(BlockTags.SAND))) {
       bonemealPlants(block, world, pos);
       event.setResult(Event.Result.ALLOW);
     }
@@ -96,9 +96,9 @@ public class TweaksEvents {
    */
   private static void bonemealPlants(Block base, World world, BlockPos pos) {
     // this is mostly copied from grass block code, so its a bit weird
-    BlockPos up = pos.up();
+    BlockPos up = pos.above();
     BushBlock bush = (BushBlock)Blocks.DEAD_BUSH;
-    BlockState state = bush.getDefaultState();
+    BlockState state = bush.defaultBlockState();
 
     // 128 chances, this affects how far blocks are spread
     boolean isMycelium = base == Blocks.MYCELIUM;
@@ -109,16 +109,16 @@ public class TweaksEvents {
       while (true) {
         // the longer we go, the closer to old blocks we place the block
         if (j >= i / 16) {
-          if (world.isAirBlock(next)) {
-            if (world.rand.nextInt(128) == 0) {
+          if (world.isEmptyBlock(next)) {
+            if (world.random.nextInt(128) == 0) {
               // mycelium randomly picks between red and brown
               if (isMycelium) {
-                bush = (BushBlock)(world.rand.nextInt(2) == 0 ? Blocks.RED_MUSHROOM : Blocks.BROWN_MUSHROOM);
-                state = bush.getDefaultState();
+                bush = (BushBlock)(world.random.nextInt(2) == 0 ? Blocks.RED_MUSHROOM : Blocks.BROWN_MUSHROOM);
+                state = bush.defaultBlockState();
               }
               // if it can be planted here, plant it
-              if (bush.isValidPosition(state, world, next)) {
-                world.setBlockState(next, state);
+              if (bush.canSurvive(state, world, next)) {
+                world.setBlockAndUpdate(next, state);
               }
             }
           }
@@ -127,10 +127,10 @@ public class TweaksEvents {
         }
 
         // randomly offset the position
-        next = next.add(world.rand.nextInt(3) - 1, (world.rand.nextInt(3) - 1) * world.rand.nextInt(3) / 2, world.rand.nextInt(3) - 1);
+        next = next.offset(world.random.nextInt(3) - 1, (world.random.nextInt(3) - 1) * world.random.nextInt(3) / 2, world.random.nextInt(3) - 1);
 
         // if the new position is invalid, this cycle is done
-        if (world.getBlockState(next.down()).getBlock() != base || world.getBlockState(next).isNormalCube(world, next)) {
+        if (world.getBlockState(next.below()).getBlock() != base || world.getBlockState(next).isRedstoneConductor(world, next)) {
           break;
         }
 
@@ -143,7 +143,7 @@ public class TweaksEvents {
    * Called when using bonemeal on a dirt block to spread grass
    */
   private static boolean bonemealDirt(World world, BlockPos pos) {
-    if (world.getLight(pos.up()) < 9) {
+    if (world.getMaxLocalRawBrightness(pos.above()) < 9) {
       return false;
     }
 
@@ -151,16 +151,16 @@ public class TweaksEvents {
     int grass = 0;
     int mycelium = 0;
     for (Direction side : Direction.Plane.HORIZONTAL) {
-      BlockPos offset = pos.offset(side);
+      BlockPos offset = pos.relative(side);
       BlockState state = world.getBlockState(offset);
       Block block = state.getBlock();
 
       // hill logic: go up for dirt, down for air
       if (block.isAir(state, world, pos)) {
-        state = world.getBlockState(offset.down());
+        state = world.getBlockState(offset.below());
         block = state.getBlock();
       } else if (block != Blocks.GRASS_BLOCK && block != Blocks.MYCELIUM) {
-        state = world.getBlockState(offset.up());
+        state = world.getBlockState(offset.above());
         block = state.getBlock();
       }
 
@@ -178,18 +178,18 @@ public class TweaksEvents {
     }
 
     // chance gets higher the more blocks of the type surround
-    if (world.rand.nextInt(5) > (Math.max(grass, mycelium) - 1)) {
+    if (world.random.nextInt(5) > (Math.max(grass, mycelium) - 1)) {
       return true;
     }
 
     //  place block based on which has more
     // if there is a tie, randomly choose
     if (grass == mycelium) {
-      if (world.rand.nextBoolean()) {
+      if (world.random.nextBoolean()) {
         mycelium++;
       }
     }
-    world.setBlockState(pos, grass >= mycelium ? Blocks.GRASS_BLOCK.getDefaultState() : Blocks.MYCELIUM.getDefaultState());
+    world.setBlockAndUpdate(pos, grass >= mycelium ? Blocks.GRASS_BLOCK.defaultBlockState() : Blocks.MYCELIUM.defaultBlockState());
     return true;
   }
 
@@ -271,18 +271,18 @@ public class TweaksEvents {
 
     // ensure client world
     LivingEntity entity = event.getEntityLiving();
-    World world = entity.getEntityWorld();
-    if (world.isRemote) {
+    World world = entity.getCommandSenderWorld();
+    if (world.isClientSide) {
       return;
     }
     // actually hit the lily pad
-    Vector3d vec = entity.getPositionVec();
+    Vector3d vec = entity.position();
     if (vec.y % 1 > 0.09375) {
       return;
     }
 
     // build a list of lily pads we hit
-    BlockPos blockPos = entity.getPosition();
+    BlockPos blockPos = entity.blockPosition();
     BlockPos[] posList = new BlockPos[4];
     int i = 0;
     posList[i++] = blockPos;
@@ -337,13 +337,13 @@ public class TweaksEvents {
 
     // only care about cows
     Entity target = event.getTarget();
-    if (!(target instanceof CowEntity) || ((CowEntity)target).isChild()) {
+    if (!(target instanceof CowEntity) || ((CowEntity)target).isBaby()) {
       return;
     }
 
     // must be holding a milk container
-    ItemStack stack = event.getPlayer().getHeldItem(event.getHand());
-    if (stack.getItem().isIn(InspirationsTags.Items.MILK_CONTAINERS)) {
+    ItemStack stack = event.getPlayer().getItemInHand(event.getHand());
+    if (stack.getItem().is(InspirationsTags.Items.MILK_CONTAINERS)) {
       // if has tag, cannot be milked
       CompoundNBT tags = target.getPersistentData();
       if (tags.getShort(SharedEvents.TAG_MILKCOOLDOWN) > 0) {
@@ -352,8 +352,8 @@ public class TweaksEvents {
       } else {
         // no tag means we add it as part of milking
         tags.putShort(SharedEvents.TAG_MILKCOOLDOWN, Config.milkCooldownTime.get().shortValue());
-        if (!event.getWorld().isRemote) {
-          InspirationsNetwork.sendToClients(event.getWorld(), target.getPosition(), new MilkablePacket(target, false));
+        if (!event.getWorld().isClientSide) {
+          InspirationsNetwork.sendToClients(event.getWorld(), target.blockPosition(), new MilkablePacket(target, false));
         }
       }
     }

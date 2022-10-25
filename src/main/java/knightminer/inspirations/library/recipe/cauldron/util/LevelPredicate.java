@@ -77,8 +77,8 @@ public class LevelPredicate implements IntPredicate {
    * @return  Level predicate
    */
   public static LevelPredicate read(JsonObject json) {
-    int min = JSONUtils.getInt(json, KEY_MIN, 0);
-    int max = JSONUtils.getInt(json, KEY_MAX, MAX);
+    int min = JSONUtils.getAsInt(json, KEY_MIN, 0);
+    int max = JSONUtils.getAsInt(json, KEY_MAX, MAX);
     return range(min, max);
   }
 

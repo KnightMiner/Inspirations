@@ -41,7 +41,7 @@ public class CauldronCategory implements IRecipeCategory<ICauldronRecipeDisplay>
   public static final ResourceLocation ID = Inspirations.getResource("cauldron");
   private static final ResourceLocation BACKGROUND_LOC = Inspirations.getResource("textures/gui/jei/cauldron.png");
   /** Base translation key for all JEI string */
-  public static final String TRANSLATION_KEY = Util.makeTranslationKey("jei", ID);
+  public static final String TRANSLATION_KEY = Util.makeDescriptionId("jei", ID);
   private static final String KEY_TIME = TRANSLATION_KEY + ".time";
   private static final String KEY_BOILING = TRANSLATION_KEY + ".boiling";
   private static final String KEY_WARM = TRANSLATION_KEY + ".warm";
@@ -170,10 +170,10 @@ public class CauldronCategory implements IRecipeCategory<ICauldronRecipeDisplay>
   public void draw(ICauldronRecipeDisplay recipe, MatrixStack matrices, double mouseX, double mouseY) {
     int time = recipe.getTime();
     if (time > 0) {
-      String timeString = I18n.format(KEY_TIME, time / 20);
-      FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
-      int x = 46 - fontRenderer.getStringWidth(timeString) / 2;
-      fontRenderer.drawString(matrices, timeString, x, 4, Color.GRAY.getRGB());
+      String timeString = I18n.get(KEY_TIME, time / 20);
+      FontRenderer fontRenderer = Minecraft.getInstance().font;
+      int x = 46 - fontRenderer.width(timeString) / 2;
+      fontRenderer.draw(matrices, timeString, x, 4, Color.GRAY.getRGB());
       // draw animated arrow icon
       arrow.draw(matrices, 35, 17);
     }

@@ -92,8 +92,8 @@ public class InspirationsTools extends ModuleBase {
   @SuppressWarnings("deprecation")
   public void registerItems(Register<Item> event) {
     ItemRegistryAdapter registry = new ItemRegistryAdapter(event.getRegistry());
-    Item.Properties materialsProps = new Item.Properties().group(ItemGroup.MATERIALS);
-    Item.Properties toolProps = new Item.Properties().group(ItemGroup.TOOLS);
+    Item.Properties materialsProps = new Item.Properties().tab(ItemGroup.TAB_MATERIALS);
+    Item.Properties toolProps = new Item.Properties().tab(ItemGroup.TAB_TOOLS);
 
     redstoneArrow = registry.register(new RedstoneArrowItem(toolProps), "charged_arrow");
 
@@ -109,7 +109,7 @@ public class InspirationsTools extends ModuleBase {
     dimensionCompass = registry.register(new DimensionCompassItem(toolProps), "dimension_compass");
 
     if (Config.shieldEnchantmentTable.get()) {
-      shield = registry.register(new EnchantableShieldItem(new Item.Properties().maxDamage(Items.SHIELD.getMaxDamage()).group(ItemGroup.COMBAT)), Items.SHIELD);
+      shield = registry.register(new EnchantableShieldItem(new Item.Properties().durability(Items.SHIELD.getMaxDamage()).tab(ItemGroup.TAB_COMBAT)), Items.SHIELD);
     }
   }
 
@@ -117,8 +117,8 @@ public class InspirationsTools extends ModuleBase {
   void registerEntities(Register<EntityType<?>> event) {
     EntityTypeRegistryAdapter registry = new EntityTypeRegistryAdapter(event.getRegistry());
     entRSArrow = registry.register(EntityType.Builder
-                                       .<RedstoneArrow>create(RedstoneArrow::new, EntityClassification.MISC)
-                                       .size(0.5F, 0.5F)
+                                       .<RedstoneArrow>of(RedstoneArrow::new, EntityClassification.MISC)
+                                       .sized(0.5F, 0.5F)
                                        .setTrackingRange(4)
                                        .setUpdateInterval(20)
                                        .setCustomClientFactory((packet, world) -> new RedstoneArrow(InspirationsTools.entRSArrow, world)),
@@ -145,12 +145,12 @@ public class InspirationsTools extends ModuleBase {
           EquipmentSlotType.FEET
       };
       for (ProtectionEnchantment ench : new ProtectionEnchantment[]{
-          (ProtectionEnchantment)Enchantments.PROTECTION,
+          (ProtectionEnchantment)Enchantments.ALL_DAMAGE_PROTECTION,
           (ProtectionEnchantment)Enchantments.FIRE_PROTECTION,
           (ProtectionEnchantment)Enchantments.PROJECTILE_PROTECTION,
           (ProtectionEnchantment)Enchantments.BLAST_PROTECTION
       }) {
-        registry.register(new ShieldProtectionEnchantment(ench.getRarity(), ench.protectionType, slots), ench);
+        registry.register(new ShieldProtectionEnchantment(ench.getRarity(), ench.type, slots), ench);
       }
       registry.register(new ShieldThornsEnchantment(Enchantments.THORNS.getRarity(), slots), Enchantments.THORNS);
     }
@@ -160,7 +160,7 @@ public class InspirationsTools extends ModuleBase {
       registry.register(new ExtendedKnockbackEnchantment(Enchantment.Rarity.UNCOMMON, slots), Enchantments.KNOCKBACK);
       registry.register(new ExtendedFireAspectEnchantment(Enchantment.Rarity.RARE, slots), Enchantments.FIRE_ASPECT);
       if (Config.axeWeaponEnchants.get()) {
-        registry.register(new AxeLootBonusEnchantment(Enchantment.Rarity.RARE, EnchantmentType.WEAPON, slots), Enchantments.LOOTING);
+        registry.register(new AxeLootBonusEnchantment(Enchantment.Rarity.RARE, EnchantmentType.WEAPON, slots), Enchantments.MOB_LOOTING);
       }
     }
 
@@ -173,31 +173,31 @@ public class InspirationsTools extends ModuleBase {
   }
 
   private void registerDispenserBehavior() {
-    DispenserBlock.registerDispenseBehavior(redstoneArrow, new ProjectileDispenseBehavior() {
+    DispenserBlock.registerBehavior(redstoneArrow, new ProjectileDispenseBehavior() {
       @Override
-      protected ProjectileEntity getProjectileEntity(World world, IPosition position, ItemStack stack) {
-        RedstoneArrow arrow = new RedstoneArrow(world, position.getX(), position.getY(), position.getZ());
-        arrow.pickupStatus = ArrowEntity.PickupStatus.ALLOWED;
+      protected ProjectileEntity getProjectile(World world, IPosition position, ItemStack stack) {
+        RedstoneArrow arrow = new RedstoneArrow(world, position.x(), position.y(), position.z());
+        arrow.pickup = ArrowEntity.PickupStatus.ALLOWED;
         return arrow;
       }
     });
-    DispenserBlock.registerDispenseBehavior(redstoneCharger, new OptionalDispenseBehavior() {
+    DispenserBlock.registerBehavior(redstoneCharger, new OptionalDispenseBehavior() {
       @Override
-      protected ItemStack dispenseStack(IBlockSource source, ItemStack stack) {
-        this.setSuccessful(true);
-        World world = source.getWorld();
-        Direction facing = source.getBlockState().get(DispenserBlock.FACING);
-        BlockPos pos = source.getBlockPos().offset(facing);
+      protected ItemStack execute(IBlockSource source, ItemStack stack) {
+        this.setSuccess(true);
+        World world = source.getLevel();
+        Direction facing = source.getBlockState().getValue(DispenserBlock.FACING);
+        BlockPos pos = source.getPos().relative(facing);
 
-        if (world.getBlockState(pos).isReplaceable(new DirectionalPlaceContext(
+        if (world.getBlockState(pos).canBeReplaced(new DirectionalPlaceContext(
             world, pos, facing, ItemStack.EMPTY, facing
         ))) {
-          world.setBlockState(pos, redstoneCharge.getDefaultState().with(RedstoneChargeBlock.FACING, facing));
-          if (stack.attemptDamageItem(1, world.rand, null)) {
+          world.setBlockAndUpdate(pos, redstoneCharge.defaultBlockState().setValue(RedstoneChargeBlock.FACING, facing));
+          if (stack.hurt(1, world.random, null)) {
             stack.setCount(0);
           }
         } else {
-          this.setSuccessful(false);
+          this.setSuccess(false);
         }
 
         return stack;

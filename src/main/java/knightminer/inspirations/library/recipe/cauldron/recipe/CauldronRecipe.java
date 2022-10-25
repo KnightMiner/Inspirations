@@ -185,40 +185,40 @@ public class CauldronRecipe extends AbstractCauldronRecipe implements ICauldronR
     }
 
     @Override
-    public CauldronRecipe read(ResourceLocation id, JsonObject json) {
-      String group = JSONUtils.getString(json, "group", "");
+    public CauldronRecipe fromJson(ResourceLocation id, JsonObject json) {
+      String group = JSONUtils.getAsString(json, "group", "");
 
       // parse inputs
-      JsonObject inputJson = JSONUtils.getJsonObject(json, "input");
+      JsonObject inputJson = JSONUtils.getAsJsonObject(json, "input");
       SizedIngredient input = SizedIngredient.EMPTY;
       if (inputJson.has("item")) {
-        input = SizedIngredient.deserialize(JSONUtils.getJsonObject(inputJson, "item"));
+        input = SizedIngredient.deserialize(JSONUtils.getAsJsonObject(inputJson, "item"));
       }
-      ICauldronIngredient contents = CauldronIngredients.read(JSONUtils.getJsonObject(inputJson, "contents"));
-      LevelPredicate levels = LevelPredicate.read(JSONUtils.getJsonObject(inputJson, "level"));
+      ICauldronIngredient contents = CauldronIngredients.read(JSONUtils.getAsJsonObject(inputJson, "contents"));
+      LevelPredicate levels = LevelPredicate.read(JSONUtils.getAsJsonObject(inputJson, "level"));
       TemperaturePredicate temperature = getBoiling(inputJson, "temperature");
 
       // parse outputs
-      JsonObject outputJson = JSONUtils.getJsonObject(json, "output");
+      JsonObject outputJson = JSONUtils.getAsJsonObject(json, "output");
       ItemStack output = ItemStack.EMPTY;
       boolean copyNBT = false;
       if (outputJson.has("item")) {
-        output = CraftingHelper.getItemStack(JSONUtils.getJsonObject(outputJson, "item"), true);
-        copyNBT = JSONUtils.getBoolean(outputJson, "copy_nbt", false);
+        output = CraftingHelper.getItemStack(JSONUtils.getAsJsonObject(outputJson, "item"), true);
+        copyNBT = JSONUtils.getAsBoolean(outputJson, "copy_nbt", false);
       }
       ICauldronContents newContents = null;
       if (outputJson.has("contents")) {
-        newContents = CauldronContentTypes.read(JSONUtils.getJsonObject(outputJson, "contents"));
+        newContents = CauldronContentTypes.read(JSONUtils.getAsJsonObject(outputJson, "contents"));
       }
       LevelUpdate levelUpdate = LevelUpdate.IDENTITY;
       if (outputJson.has("level")) {
-        levelUpdate = LevelUpdate.read(JSONUtils.getJsonObject(outputJson, "level"));
+        levelUpdate = LevelUpdate.read(JSONUtils.getAsJsonObject(outputJson, "level"));
       }
       ItemStack container = null;
       if (outputJson.has("container")) {
-        JsonObject data = JSONUtils.getJsonObject(outputJson, "container");
+        JsonObject data = JSONUtils.getAsJsonObject(outputJson, "container");
         // special case for empty
-        boolean empty = JSONUtils.getBoolean(data, "empty", false);
+        boolean empty = JSONUtils.getAsBoolean(data, "empty", false);
         if (empty) {
           container = ItemStack.EMPTY;
         } else {
@@ -227,9 +227,9 @@ public class CauldronRecipe extends AbstractCauldronRecipe implements ICauldronR
       }
 
       // sound
-      SoundEvent sound = SoundEvents.ENTITY_GENERIC_SPLASH;
+      SoundEvent sound = SoundEvents.GENERIC_SPLASH;
       if (json.has("sound")) {
-        sound = getSound(new ResourceLocation(JSONUtils.getString(json, "sound")), sound);
+        sound = getSound(new ResourceLocation(JSONUtils.getAsString(json, "sound")), sound);
       }
 
       // finally, after all that return the recipe
@@ -237,13 +237,13 @@ public class CauldronRecipe extends AbstractCauldronRecipe implements ICauldronR
     }
 
     @Override
-    public void write(PacketBuffer buffer, CauldronRecipe recipe) {
-      buffer.writeString(recipe.group);
+    public void toNetwork(PacketBuffer buffer, CauldronRecipe recipe) {
+      buffer.writeUtf(recipe.group);
       recipe.input.write(buffer);
       CauldronIngredients.write(recipe.ingredient, buffer);
       recipe.level.write(buffer);
-      buffer.writeEnumValue(recipe.temperature);
-      buffer.writeItemStack(recipe.output);
+      buffer.writeEnum(recipe.temperature);
+      buffer.writeItem(recipe.output);
       buffer.writeBoolean(recipe.copyNBT);
       if (recipe.outputContents != null) {
         buffer.writeBoolean(true);
@@ -256,20 +256,20 @@ public class CauldronRecipe extends AbstractCauldronRecipe implements ICauldronR
         buffer.writeBoolean(false);
       } else {
         buffer.writeBoolean(true);
-        buffer.writeItemStack(recipe.container);
+        buffer.writeItem(recipe.container);
       }
       buffer.writeResourceLocation(Objects.requireNonNull(recipe.sound.getRegistryName()));
     }
 
     @Nullable
     @Override
-    public CauldronRecipe read(ResourceLocation id, PacketBuffer buffer) {
-      String group = buffer.readString();
+    public CauldronRecipe fromNetwork(ResourceLocation id, PacketBuffer buffer) {
+      String group = buffer.readUtf();
       SizedIngredient input = SizedIngredient.read(buffer);
       ICauldronIngredient contents = CauldronIngredients.read(buffer);
       LevelPredicate levels = LevelPredicate.read(buffer);
-      TemperaturePredicate boiling = buffer.readEnumValue(TemperaturePredicate.class);
-      ItemStack output = buffer.readItemStack();
+      TemperaturePredicate boiling = buffer.readEnum(TemperaturePredicate.class);
+      ItemStack output = buffer.readItem();
       boolean copyNBT = buffer.readBoolean();
       ICauldronContents newContents = null;
       if (buffer.readBoolean()) {
@@ -278,9 +278,9 @@ public class CauldronRecipe extends AbstractCauldronRecipe implements ICauldronR
       LevelUpdate levelUpdate = LevelUpdate.read(buffer);
       ItemStack container = null;
       if (buffer.readBoolean()) {
-        container = buffer.readItemStack();
+        container = buffer.readItem();
       }
-      SoundEvent sound = getSound(buffer.readResourceLocation(), SoundEvents.ENTITY_GENERIC_SPLASH);
+      SoundEvent sound = getSound(buffer.readResourceLocation(), SoundEvents.GENERIC_SPLASH);
 
       // finally, after all that return the recipe
       return new CauldronRecipe(id, group, input, contents, levels, boiling, output, copyNBT, newContents, levelUpdate, container, sound);

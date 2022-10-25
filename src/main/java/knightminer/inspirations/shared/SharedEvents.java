@@ -20,14 +20,14 @@ public class SharedEvents {
   @SubscribeEvent
   static void updateMilkCooldown(LivingUpdateEvent event) {
     LivingEntity entity = event.getEntityLiving();
-    World world = entity.getEntityWorld();
+    World world = entity.getCommandSenderWorld();
     // only run every 20 ticks on serverside
-    if (world.isRemote || (world.getGameTime() % 20) != 0) {
+    if (world.isClientSide || (world.getGameTime() % 20) != 0) {
       return;
     }
 
     // runs for both adult cows and squids, based on config
-    if ((Config.milkCooldown.get() && entity instanceof CowEntity && !entity.isChild())
+    if ((Config.milkCooldown.get() && entity instanceof CowEntity && !entity.isBaby())
       /*|| (Config.milkSquids.get() && entity instanceof SquidEntity)*/) {
 
       // if not already cooled down, cool down
@@ -38,7 +38,7 @@ public class SharedEvents {
 
         // reached 0, send pack so client knows
         if (cooldown == 1) {
-          InspirationsNetwork.sendToClients(world, entity.getPosition(), new MilkablePacket(entity, true));
+          InspirationsNetwork.sendToClients(world, entity.blockPosition(), new MilkablePacket(entity, true));
         }
       }
     }

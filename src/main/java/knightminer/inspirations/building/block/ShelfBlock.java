@@ -38,13 +38,15 @@ import slimeknights.mantle.block.RetexturedBlock;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.block.AbstractBlock.Properties;
+
 public class ShelfBlock extends InventoryBlock implements IHidable {
 
   public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
 
   public ShelfBlock(Properties properties) {
     super(properties);
-    this.setDefaultState(this.getStateContainer().getBaseState().with(FACING, Direction.NORTH));
+    this.registerDefaultState(this.getStateDefinition().any().setValue(FACING, Direction.NORTH));
   }
 
   @Override
@@ -53,7 +55,7 @@ public class ShelfBlock extends InventoryBlock implements IHidable {
   }
 
   @Override
-  protected void fillStateContainer(StateContainer.Builder<Block,BlockState> builder) {
+  protected void createBlockStateDefinition(StateContainer.Builder<Block,BlockState> builder) {
     builder.add(FACING);
   }
 
@@ -65,12 +67,12 @@ public class ShelfBlock extends InventoryBlock implements IHidable {
   @Nullable
   @Override
   public BlockState getStateForPlacement(BlockItemUseContext context) {
-    return getDefaultState().with(FACING, context.getPlacementHorizontalFacing().getOpposite());
+    return defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
   }
 
   @Override
-  public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-    super.onBlockPlacedBy(world, pos, state, placer, stack);
+  public void setPlacedBy(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
+    super.setPlacedBy(world, pos, state, placer, stack);
     RetexturedBlock.updateTextureBlock(world, pos, stack);
   }
 
@@ -83,9 +85,9 @@ public class ShelfBlock extends InventoryBlock implements IHidable {
   }
 
   @Override
-  public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
+  public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items) {
     if (shouldAddtoItemGroup(group)) {
-      super.fillItemGroup(group, items);
+      super.fillItemCategory(group, items);
     }
   }
 
@@ -95,33 +97,33 @@ public class ShelfBlock extends InventoryBlock implements IHidable {
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) {
-    Direction facing = state.get(FACING);
+  public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) {
+    Direction facing = state.getValue(FACING);
 
     // skip opposite, not needed as the back is never clicked for books
-    if (facing.getOpposite() == trace.getFace()) {
+    if (facing.getOpposite() == trace.getDirection()) {
       return ActionResultType.PASS;
     }
 
     // if sneaking, just do the GUI
     if (player.isCrouching()) {
-      return (world.isRemote || openGui(player, world, pos)) ? ActionResultType.SUCCESS : ActionResultType.PASS;
+      return (world.isClientSide || openGui(player, world, pos)) ? ActionResultType.SUCCESS : ActionResultType.PASS;
     }
 
     // if we did not click a book, just do the GUI as well
-    Vector3d hitWorld = trace.getHitVec();
+    Vector3d hitWorld = trace.getLocation();
     Vector3d click = new Vector3d(hitWorld.x - pos.getX(), hitWorld.y - pos.getY(), hitWorld.z - pos.getZ());
     if (!isBookClicked(facing, click)) {
-      return (world.isRemote || openGui(player, world, pos)) ? ActionResultType.SUCCESS : ActionResultType.PASS;
+      return (world.isClientSide || openGui(player, world, pos)) ? ActionResultType.SUCCESS : ActionResultType.PASS;
     }
-    TileEntity te = world.getTileEntity(pos);
+    TileEntity te = world.getBlockEntity(pos);
     if (te instanceof ShelfTileEntity) {
       // try interacting
       if (((ShelfTileEntity)te).interact(player, hand, click)) {
         return ActionResultType.SUCCESS;
       }
       // if we failed to place an item on the shelf, pass if the offhand might try
-      if (hand != Hand.OFF_HAND && !player.getHeldItemOffhand().isEmpty()) {
+      if (hand != Hand.OFF_HAND && !player.getOffhandItem().isEmpty()) {
         return ActionResultType.CONSUME;
       }
     }
@@ -143,8 +145,8 @@ public class ShelfBlock extends InventoryBlock implements IHidable {
     if (click.y > 0.4375 && click.y < 0.5625) {
       return false;
     }
-    int offX = facing.getXOffset();
-    int offZ = facing.getZOffset();
+    int offX = facing.getStepX();
+    int offZ = facing.getStepZ();
     double x1 = offX == -1 ? 0.625 : 0;
     double z1 = offZ == -1 ? 0.625 : 0;
     double x2 = offX == +1 ? 0.375 : 1;
@@ -165,23 +167,23 @@ public class ShelfBlock extends InventoryBlock implements IHidable {
       // Construct the shelf by constructing a half slab, then cutting out the two shelves.
 
       // Exterior slab shape. For each direction, do 0.1 if the side is pointing that way.
-      int offX = side.getXOffset();
-      int offZ = side.getZOffset();
+      int offX = side.getStepX();
+      int offZ = side.getStepZ();
       double x1 = offX == -1 ? 0.5 : 0;
       double z1 = offZ == -1 ? 0.5 : 0;
       double x2 = offX == 1 ? 0.5 : 1;
       double z2 = offZ == 1 ? 0.5 : 1;
 
       // Rotate the 2 X-Z points correctly for the inset shelves.
-      Vector3d min = new Vector3d(-0.5, 0, -7 / 16.0).rotateYaw(-(float)Math.PI / 2F * side.getHorizontalIndex());
-      Vector3d max = new Vector3d( 0.5, 1, 0).rotateYaw(-(float)Math.PI / 2F * side.getHorizontalIndex());
+      Vector3d min = new Vector3d(-0.5, 0, -7 / 16.0).yRot(-(float)Math.PI / 2F * side.get2DDataValue());
+      Vector3d max = new Vector3d( 0.5, 1, 0).yRot(-(float)Math.PI / 2F * side.get2DDataValue());
 
       // Then assemble.
-      builder.put(side, VoxelShapes.combineAndSimplify(
-          VoxelShapes.create(x1, 0, z1, x2, 1, z2), // Full half slab
+      builder.put(side, VoxelShapes.join(
+          VoxelShapes.box(x1, 0, z1, x2, 1, z2), // Full half slab
           VoxelShapes.or( // Then the two shelves.
-                          VoxelShapes.create(0.5 + min.x, 1 / 16.0, 0.5 + min.z, 0.5 + max.x, 7 / 16.0, 0.5 + max.z),
-                          VoxelShapes.create(0.5 + min.x, 9 / 16.0, 0.5 + min.z, 0.5 + max.x, 15 / 16.0, 0.5 + max.z)
+                          VoxelShapes.box(0.5 + min.x, 1 / 16.0, 0.5 + min.z, 0.5 + max.x, 7 / 16.0, 0.5 + max.z),
+                          VoxelShapes.box(0.5 + min.x, 9 / 16.0, 0.5 + min.z, 0.5 + max.x, 15 / 16.0, 0.5 + max.z)
                         ), IBooleanFunction.ONLY_FIRST));
     }
     BOUNDS = builder.build();
@@ -191,7 +193,7 @@ public class ShelfBlock extends InventoryBlock implements IHidable {
   @Deprecated
   @Override
   public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-    return BOUNDS.get(state.get(FACING));
+    return BOUNDS.get(state.getValue(FACING));
   }
 
   /*
@@ -201,15 +203,15 @@ public class ShelfBlock extends InventoryBlock implements IHidable {
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public boolean hasComparatorInputOverride(BlockState state) {
+  public boolean hasAnalogOutputSignal(BlockState state) {
     return true;
   }
 
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public int getComparatorInputOverride(BlockState state, World world, BlockPos pos) {
-    TileEntity te = world.getTileEntity(pos);
+  public int getAnalogOutputSignal(BlockState state, World world, BlockPos pos) {
+    TileEntity te = world.getBlockEntity(pos);
     if (te instanceof ShelfTileEntity) {
       return ((ShelfTileEntity)te).getComparatorPower();
     }
@@ -222,14 +224,14 @@ public class ShelfBlock extends InventoryBlock implements IHidable {
    */
   @Override
   public BlockState rotate(BlockState state, IWorld world, BlockPos pos, Rotation direction) {
-    return state.with(FACING, direction.rotate(state.get(FACING)));
+    return state.setValue(FACING, direction.rotate(state.getValue(FACING)));
   }
 
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public BlockState mirror(BlockState state, Mirror mirror) {
-    return state.with(FACING, mirror.mirror(state.get(FACING)));
+    return state.setValue(FACING, mirror.mirror(state.getValue(FACING)));
   }
 
   /* Drops */
@@ -244,7 +246,7 @@ public class ShelfBlock extends InventoryBlock implements IHidable {
     if (!Config.bookshelvesBoostEnchanting.get()) {
       return 0;
     }
-    TileEntity te = world.getTileEntity(pos);
+    TileEntity te = world.getBlockEntity(pos);
     if (te instanceof ShelfTileEntity) {
       return ((ShelfTileEntity)te).getEnchantPower();
     }

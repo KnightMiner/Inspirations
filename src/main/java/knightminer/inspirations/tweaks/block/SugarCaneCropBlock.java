@@ -13,9 +13,11 @@ import net.minecraftforge.common.PlantType;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
+import net.minecraft.block.AbstractBlock.Properties;
+
 public class SugarCaneCropBlock extends BlockCropBlock {
 
-  private static final VoxelShape[] BOUNDS = IntStream.range(1, 16).mapToObj(i -> makeCuboidShape(2, 0, 2, 14, i, 14)).toArray(VoxelShape[]::new);
+  private static final VoxelShape[] BOUNDS = IntStream.range(1, 16).mapToObj(i -> box(2, 0, 2, 14, i, 14)).toArray(VoxelShape[]::new);
   public SugarCaneCropBlock(Supplier<Block> block, PlantType type, Properties props) {
     super(block, type, props);
   }
@@ -25,7 +27,7 @@ public class SugarCaneCropBlock extends BlockCropBlock {
   }
 
   @Override
-  protected IItemProvider getSeedsItem() {
+  protected IItemProvider getBaseSeedId() {
     return InspirationsTweaks.sugarCaneSeeds;
   }
 

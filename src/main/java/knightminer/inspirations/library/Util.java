@@ -42,10 +42,10 @@ public class Util {
    * Compute a voxelshape, rotated by the provided yaw.
    */
   public static VoxelShape makeRotatedShape(Direction side, int x1, int y1, int z1, int x2, int y2, int z2) {
-    float yaw = -(float)Math.PI / 2F * side.getHorizontalIndex();
-    Vector3d min = new Vector3d(x1 - 8, y1 - 8, z1 - 8).rotateYaw(yaw);
-    Vector3d max = new Vector3d(x2 - 8, y2 - 8, z2 - 8).rotateYaw(yaw);
-    return VoxelShapes.create(
+    float yaw = -(float)Math.PI / 2F * side.get2DDataValue();
+    Vector3d min = new Vector3d(x1 - 8, y1 - 8, z1 - 8).yRot(yaw);
+    Vector3d max = new Vector3d(x2 - 8, y2 - 8, z2 - 8).yRot(yaw);
+    return VoxelShapes.box(
         0.5 + min.x / 16.0, 0.5 + min.y / 16.0, 0.5 + min.z / 16.0,
         0.5 + max.x / 16.0, 0.5 + max.y / 16.0, 0.5 + max.z / 16.0
                              );
@@ -55,7 +55,7 @@ public class Util {
   // Using a Stick makes sure it won't be damaged.
   private static final ItemStack silkTouchItem = new ItemStack(Items.STICK);
   static {
-    silkTouchItem.addEnchantment(Enchantments.SILK_TOUCH, 1);
+    silkTouchItem.enchant(Enchantments.SILK_TOUCH, 1);
   }
 
   /**
@@ -80,7 +80,7 @@ public class Util {
     // THIS_ENTITY, BLOCK_ENTITY and EXPLOSION_RADIUS are optional.
     // BLOCK_STATE is provided by getDrops().
     List<ItemStack> drops = state.getDrops(new LootContext.Builder(world)
-                                               .withParameter(LootParameters.field_237457_g_, new Vector3d(0.5, 64, 0.5))
+                                               .withParameter(LootParameters.ORIGIN, new Vector3d(0.5, 64, 0.5))
                                                .withParameter(LootParameters.TOOL, silkTouchItem)
                                           );
     if (drops.size() > 0) {
@@ -91,7 +91,7 @@ public class Util {
     InspirationsRegistry.log.error("Failed to get silk touch drop for {}, using fallback", state);
 
     // fallback, use item dropped
-    Item item = Item.getItemFromBlock(block);
+    Item item = Item.byBlock(block);
     if (item == Items.AIR) {
       return ItemStack.EMPTY;
     }
@@ -198,9 +198,9 @@ public class Util {
     Item item = stack.getItem();
     // use the interface if present
     if (item instanceof IDyeableArmorItem) {
-      return ((IDyeableArmorItem) item).hasColor(stack);
+      return ((IDyeableArmorItem) item).hasCustomColor(stack);
     }
-    CompoundNBT tags = stack.getChildTag(TAG_COLOR);
+    CompoundNBT tags = stack.getTagElement(TAG_COLOR);
     return tags != null && tags.contains(TAG_COLOR, NBT.TAG_ANY_NUMERIC);
   }
 
@@ -216,7 +216,7 @@ public class Util {
     if (item instanceof IDyeableArmorItem) {
       ((IDyeableArmorItem) item).setColor(stack, color);
     } else {
-      stack.getOrCreateChildTag(TAG_DISPLAY).putInt(TAG_COLOR, color);
+      stack.getOrCreateTagElement(TAG_DISPLAY).putInt(TAG_COLOR, color);
     }
     return stack;
   }
@@ -230,9 +230,9 @@ public class Util {
     Item item = stack.getItem();
     // use the interface if present
     if (item instanceof IDyeableArmorItem) {
-      ((IDyeableArmorItem) item).removeColor(stack);
+      ((IDyeableArmorItem) item).clearColor(stack);
     } else {
-      CompoundNBT displayTag = stack.getChildTag(TAG_DISPLAY);
+      CompoundNBT displayTag = stack.getTagElement(TAG_DISPLAY);
       if (displayTag != null && displayTag.contains(TAG_COLOR)) {
         displayTag.remove(TAG_COLOR);
       }
@@ -248,7 +248,7 @@ public class Util {
    * @throws JsonSyntaxException  If item is invalid or missing
    */
   public static Item deserializeItem(JsonObject parent, String key) {
-    String name = JSONUtils.getString(parent, key);
+    String name = JSONUtils.getAsString(parent, key);
     Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(name));
     if (item == null) {
       throw new JsonSyntaxException("Invalid " + key + ": Unknown item " + name + "'");
@@ -262,11 +262,11 @@ public class Util {
    * @param te  TE to update
    */
   public static void notifyClientUpdate(TileEntity te) {
-    World world = te.getWorld();
-    if (world != null && world.isRemote) {
+    World world = te.getLevel();
+    if (world != null && world.isClientSide) {
       te.requestModelDataUpdate();
       BlockState state = te.getBlockState();
-      world.notifyBlockUpdate(te.getPos(), state, state, BlockFlags.NO_RERENDER | BlockFlags.NO_NEIGHBOR_DROPS);
+      world.sendBlockUpdated(te.getBlockPos(), state, state, BlockFlags.NO_RERENDER | BlockFlags.NO_NEIGHBOR_DROPS);
     }
   }
 }

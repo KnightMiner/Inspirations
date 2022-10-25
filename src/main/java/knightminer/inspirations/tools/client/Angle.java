@@ -43,8 +43,8 @@ public class Angle {
 	 * Gets the angle for an item frame
 	 */
 	public static double getFrameRotation(ItemFrameEntity frame) {
-		Direction direction = frame.getHorizontalFacing();
-		int dir = direction.getAxis().isVertical() ? 90 * direction.getAxisDirection().getOffset() : 0;
-		return MathHelper.wrapDegrees(180 + direction.getHorizontalIndex() * 90 + frame.getRotation() * 45 + dir);
+		Direction direction = frame.getDirection();
+		int dir = direction.getAxis().isVertical() ? 90 * direction.getAxisDirection().getStep() : 0;
+		return MathHelper.wrapDegrees(180 + direction.get2DDataValue() * 90 + frame.getRotation() * 45 + dir);
 	}
 }

@@ -25,7 +25,7 @@ public class CustomContentType extends CauldronContentType<ResourceLocation> {
 
   @Override
   public ITextComponent getDisplayName(ResourceLocation value) {
-    return new TranslationTextComponent(Util.makeTranslationKey("cauldron_contents", value));
+    return new TranslationTextComponent(Util.makeDescriptionId("cauldron_contents", value));
   }
 
   @Override
@@ -42,8 +42,8 @@ public class CustomContentType extends CauldronContentType<ResourceLocation> {
 
   @Override
   public ResourceLocation getValue(JsonElement element, String key) {
-    String name = JSONUtils.getString(element, key);
-    ResourceLocation location = ResourceLocation.tryCreate(name);
+    String name = JSONUtils.convertToString(element, key);
+    ResourceLocation location = ResourceLocation.tryParse(name);
     if (location != null) {
       return location;
     }
@@ -54,7 +54,7 @@ public class CustomContentType extends CauldronContentType<ResourceLocation> {
   @Override
   public ResourceLocation read(CompoundNBT tag) {
     if (tag.contains(getKey(), NBT.TAG_STRING)) {
-      return ResourceLocation.tryCreate(tag.getString(getKey()));
+      return ResourceLocation.tryParse(tag.getString(getKey()));
     }
     return null;
   }

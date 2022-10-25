@@ -10,6 +10,8 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 
 // Hopper block with waterlogged=True.
+import net.minecraft.block.AbstractBlock.Properties;
+
 public class WetHopperBlock extends DryHopperBlock {
   public WetHopperBlock(Properties props) {
     super(props);
@@ -18,27 +20,27 @@ public class WetHopperBlock extends DryHopperBlock {
   @Deprecated
   @Override
   public FluidState getFluidState(BlockState state) {
-    return Fluids.WATER.getStillFluidState(false);
+    return Fluids.WATER.getSource(false);
   }
 
   // Duplicate IWaterLoggable's code, but don't use the property.
   @Override
-  public boolean canContainFluid(IBlockReader world, BlockPos pos, BlockState state, Fluid fluid) {
+  public boolean canPlaceLiquid(IBlockReader world, BlockPos pos, BlockState state, Fluid fluid) {
     // No new fluid can be inserted.
     return false;
   }
 
   @Override
-  public boolean receiveFluid(IWorld world, BlockPos pos, BlockState state, FluidState fluid) {
+  public boolean placeLiquid(IWorld world, BlockPos pos, BlockState state, FluidState fluid) {
     return false;
   }
 
   @Override
-  public Fluid pickupFluid(IWorld world, BlockPos pos, BlockState state) {
+  public Fluid takeLiquid(IWorld world, BlockPos pos, BlockState state) {
     // Swap the block but don't alter the properties itself.
-    world.setBlockState(pos, InspirationsTweaks.dryHopper.getDefaultState()
-                                                         .with(FACING, state.get(FACING))
-                                                         .with(ENABLED, state.get(ENABLED))
+    world.setBlock(pos, InspirationsTweaks.dryHopper.defaultBlockState()
+                                                         .setValue(FACING, state.getValue(FACING))
+                                                         .setValue(ENABLED, state.getValue(ENABLED))
         , 3);
     return Fluids.WATER;
   }

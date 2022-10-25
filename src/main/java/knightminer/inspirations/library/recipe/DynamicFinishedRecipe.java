@@ -20,27 +20,27 @@ public class DynamicFinishedRecipe implements IFinishedRecipe {
   }
 
   @Override
-  public void serialize(JsonObject json) {}
+  public void serializeRecipeData(JsonObject json) {}
 
   @Override
-  public ResourceLocation getID() {
+  public ResourceLocation getId() {
     return id;
   }
 
   @Override
-  public IRecipeSerializer<?> getSerializer() {
+  public IRecipeSerializer<?> getType() {
     return serializer;
   }
 
   @Override
   @Nullable
-  public JsonObject getAdvancementJson() {
+  public JsonObject serializeAdvancement() {
     return null;
   }
 
   @Override
   @Nullable
-  public ResourceLocation getAdvancementID() {
+  public ResourceLocation getAdvancementId() {
     return null;
   }
 }

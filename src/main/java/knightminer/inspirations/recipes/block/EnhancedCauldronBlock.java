@@ -41,7 +41,7 @@ public class EnhancedCauldronBlock extends CauldronBlock {
    * @return  Water level of state
    */
   public int getLevel(BlockState state) {
-    return state.get(LEVEL);
+    return state.getValue(LEVEL);
   }
 
   @Override
@@ -52,15 +52,15 @@ public class EnhancedCauldronBlock extends CauldronBlock {
   }
 
   @Override
-  public void fillWithRain(World world, BlockPos pos) {
-    TileEntity te = world.getTileEntity(pos);
+  public void handleRain(World world, BlockPos pos) {
+    TileEntity te = world.getBlockEntity(pos);
     // do not fill unless the current contents are water
     if (te instanceof CauldronTileEntity && !((CauldronTileEntity)te).getContents().isSimple()) {
       return;
     }
 
     // allow disabling the random 1/20 chance
-    if ((Config.fasterCauldronRain.get() || world.rand.nextInt(20) == 0) && world.getBiome(pos).getTemperature(pos) >= 0.15F) {
+    if ((Config.fasterCauldronRain.get() || world.random.nextInt(20) == 0) && world.getBiome(pos).getTemperature(pos) >= 0.15F) {
       BlockState state = world.getBlockState(pos);
       int level = getLevel(state);
       if (level < 3) {
@@ -72,12 +72,12 @@ public class EnhancedCauldronBlock extends CauldronBlock {
   /* TE behavior */
 
   @Override
-  public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult ray) {
+  public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult ray) {
     if (Config.cauldronRecipes.getAsBoolean()) {
       // all moved to the cauldron registry
       return ActionResultType.SUCCESS;
     }
-    return super.onBlockActivated(state, world, pos, player, hand, ray);
+    return super.use(state, world, pos, player, hand, ray);
   }
 
   @Override
@@ -91,8 +91,8 @@ public class EnhancedCauldronBlock extends CauldronBlock {
   }
 
   @Override
-  public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-    if (world.isRemote) {
+  public void entityInside(BlockState state, World world, BlockPos pos, Entity entity) {
+    if (world.isClientSide) {
       return;
     }
 
@@ -113,7 +113,7 @@ public class EnhancedCauldronBlock extends CauldronBlock {
   @SuppressWarnings("deprecation")
   @Override
   @Deprecated
-  public BlockState updatePostPlacement(BlockState state, Direction facing, BlockState facingState, IWorld world, BlockPos currentPos, BlockPos facingPos) {
+  public BlockState updateShape(BlockState state, Direction facing, BlockState facingState, IWorld world, BlockPos currentPos, BlockPos facingPos) {
     // need a method called on both sides, neighborChanged is server only
     TileEntityHelper.getTile(CauldronTileEntity.class, world, currentPos).ifPresent(te -> te.neighborChanged(facingPos));
     return state;
@@ -131,10 +131,10 @@ public class EnhancedCauldronBlock extends CauldronBlock {
     }
 
     // transform particles
-    TileEntity te = world.getTileEntity(pos);
+    TileEntity te = world.getBlockEntity(pos);
     if (te instanceof CauldronTileEntity) {
       CauldronTileEntity cauldron = (CauldronTileEntity)te;
-      int level = cauldron.getLevel();
+      int level = cauldron.getFluidLevel();
 
       // boiling particles if boiling
       if (cauldron.getTemperature() == CauldronTemperature.BOILING) {

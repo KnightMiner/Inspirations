@@ -27,55 +27,55 @@ import static knightminer.inspirations.tools.InspirationsTools.redstoneCharge;
 public class RedstoneChargerItem extends HidableItem {
   public RedstoneChargerItem() {
     super(new Item.Properties()
-              .maxDamage(120)
-              .group(ItemGroup.TOOLS), Config.enableRedstoneCharger);
+              .durability(120)
+              .tab(ItemGroup.TAB_TOOLS), Config.enableRedstoneCharger);
   }
 
   @Override
-  public ActionResultType onItemUse(ItemUseContext context) {
-    BlockPos pos = context.getPos();
-    Direction facing = context.getFace();
-    World world = context.getWorld();
+  public ActionResultType useOn(ItemUseContext context) {
+    BlockPos pos = context.getClickedPos();
+    Direction facing = context.getClickedFace();
+    World world = context.getLevel();
 
     // we clicked a block, but want the position in front of the block
-    if (world.getBlockState(pos).isSolid()) {
-      pos = pos.offset(facing);
+    if (world.getBlockState(pos).canOcclude()) {
+      pos = pos.relative(facing);
     }
 
     // stop if we cannot edit
     PlayerEntity player = context.getPlayer();
-    if (player == null || !player.canPlayerEdit(pos, facing, ItemStack.EMPTY)) {
+    if (player == null || !player.mayUseItemAt(pos, facing, ItemStack.EMPTY)) {
       return ActionResultType.FAIL;
     }
 
-    BlockState state = InspirationsTools.redstoneCharge.getDefaultState()
-                                                       .with(RedstoneChargeBlock.FACING, facing.getOpposite())
-                                                       .with(RedstoneChargeBlock.QUICK, player.isCrouching());
+    BlockState state = InspirationsTools.redstoneCharge.defaultBlockState()
+                                                       .setValue(RedstoneChargeBlock.FACING, facing.getOpposite())
+                                                       .setValue(RedstoneChargeBlock.QUICK, player.isCrouching());
 
     DirectionalPlaceContext blockContext = new DirectionalPlaceContext(world, pos, facing, ItemStack.EMPTY, facing);
 
 
     // try placing a redstone charge
 
-    if (world.getBlockState(pos).isReplaceable(blockContext)) {
-      world.playSound(context.getPlayer(), pos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0F, world.rand.nextFloat() * 0.4F + 0.8F);
-      world.setBlockState(pos, state, Constants.BlockFlags.DEFAULT_AND_RERENDER);
-      redstoneCharge.onBlockPlacedBy(world, pos, state, null, ItemStack.EMPTY);
+    if (world.getBlockState(pos).canBeReplaced(blockContext)) {
+      world.playSound(context.getPlayer(), pos, SoundEvents.FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0F, world.random.nextFloat() * 0.4F + 0.8F);
+      world.setBlock(pos, state, Constants.BlockFlags.DEFAULT_AND_RERENDER);
+      redstoneCharge.setPlacedBy(world, pos, state, null, ItemStack.EMPTY);
     }
 
     // mark we used the item
-    ItemStack stack = context.getItem();
+    ItemStack stack = context.getItemInHand();
     if (context.getPlayer() instanceof ServerPlayerEntity) {
       CriteriaTriggers.PLACED_BLOCK.trigger((ServerPlayerEntity)context.getPlayer(), pos, stack);
     }
 
     // damage it and return
-    stack.damageItem(1, context.getPlayer(), cPlayer -> cPlayer.sendBreakAnimation(context.getHand()));
+    stack.hurtAndBreak(1, context.getPlayer(), cPlayer -> cPlayer.broadcastBreakEvent(context.getHand()));
     return ActionResultType.SUCCESS;
   }
 
   @Override
-  public boolean getIsRepairable(ItemStack toRepair, ItemStack repair) {
+  public boolean isValidRepairItem(ItemStack toRepair, ItemStack repair) {
     return repair.getItem() == Items.REDSTONE;
   }
 }

@@ -23,19 +23,19 @@ public class SmashingAnvilBlock extends AnvilBlock {
   public static BlockState damage(BlockState state) {
     Block block = state.getBlock();
     if (block == Blocks.ANVIL || block == InspirationsRecipes.fullAnvil) {
-      return InspirationsRecipes.chippedAnvil.getDefaultState().with(FACING, state.get(FACING));
+      return InspirationsRecipes.chippedAnvil.defaultBlockState().setValue(FACING, state.getValue(FACING));
     } else {
       if (block == Blocks.CHIPPED_ANVIL || block == InspirationsRecipes.chippedAnvil)
-        return InspirationsRecipes.damagedAnvil.getDefaultState().with(FACING, state.get(FACING));
+        return InspirationsRecipes.damagedAnvil.defaultBlockState().setValue(FACING, state.getValue(FACING));
       else return null;
     }
   }
 
   @Override
-  public void onEndFalling(World world, BlockPos pos, BlockState anvil, BlockState target, FallingBlockEntity entity) {
-    BlockPos down = pos.down();
+  public void onLand(World world, BlockPos pos, BlockState anvil, BlockState target, FallingBlockEntity entity) {
+    BlockPos down = pos.below();
     if (!smashBlock(world, down, world.getBlockState(down))) {
-      super.onEndFalling(world, pos, anvil, target, entity);
+      super.onLand(world, pos, anvil, target, entity);
     }
   }
 
@@ -53,7 +53,7 @@ public class SmashingAnvilBlock extends AnvilBlock {
       return true;
     }
     // if the block is unbreakable, leave it
-    if (state.getBlockHardness(world, pos) == -1) {
+    if (state.getDestroySpeed(world, pos) == -1) {
       return false;
     }
 
@@ -67,8 +67,8 @@ public class SmashingAnvilBlock extends AnvilBlock {
       world.destroyBlock(pos, true);
     } else {
       // breaking particles
-      world.playEvent(Constants.WorldEvents.BREAK_BLOCK_EFFECTS, pos, Block.getStateId(state));
-      world.setBlockState(pos, transformation);
+      world.levelEvent(Constants.WorldEvents.BREAK_BLOCK_EFFECTS, pos, Block.getId(state));
+      world.setBlockAndUpdate(pos, transformation);
     }
     return true;
   }

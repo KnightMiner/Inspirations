@@ -55,12 +55,12 @@ public class PipeTileEntity extends InventoryTileEntity implements ITickableTile
 
   @Override
   public void tick() {
-    if (world == null || world.isRemote) {
+    if (level == null || level.isClientSide) {
       return;
     }
 
     // do not function if facing up when disallowed
-    Direction facing = this.getBlockState().get(PipeBlock.FACING);
+    Direction facing = this.getBlockState().getValue(PipeBlock.FACING);
     if (!Config.pipeUpwards.get() && facing == Direction.UP) {
       return;
     }
@@ -93,8 +93,8 @@ public class PipeTileEntity extends InventoryTileEntity implements ITickableTile
     }
 
     // fetch TE and capability
-    assert world != null;
-    TileEntity te = world.getTileEntity(pos.offset(facing));
+    assert level != null;
+    TileEntity te = level.getBlockEntity(worldPosition.relative(facing));
     if (te != null) {
       LazyOptional<IItemHandler> handler = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing.getOpposite());
       if (handler.isPresent()) {
@@ -117,7 +117,7 @@ public class PipeTileEntity extends InventoryTileEntity implements ITickableTile
    * @param neighbor  Neighbor to transfer items into
    */
   private void transferItem(IItemHandler neighbor) {
-    ItemStack stack = getStackInSlot(0);
+    ItemStack stack = getItem(0);
     if (stack.isEmpty()) {
       return;
     }
@@ -130,18 +130,18 @@ public class PipeTileEntity extends InventoryTileEntity implements ITickableTile
       if (hopper != null) {
         HopperTileEntity hop = this.hopper.get();
         if (hop != null) {
-          hop.setTransferCooldown(8);
+          hop.setCooldown(8);
         }
       }
 
       // remove the stack if empty
       stack.shrink(1);
       if (stack.isEmpty()) {
-        this.setInventorySlotContents(0, ItemStack.EMPTY);
+        this.setItem(0, ItemStack.EMPTY);
       }
       cooldown = 8;
 
-      this.markDirty();
+      this.setChanged();
     }
   }
 
@@ -154,15 +154,15 @@ public class PipeTileEntity extends InventoryTileEntity implements ITickableTile
   }
 
   @Override
-  public void updateContainingBlockInfo() {
-    super.updateContainingBlockInfo();
+  public void clearCache() {
+    super.clearCache();
     // if the block changed and this TE is intact, remove cache. likely we were rotated
     this.clearCachedInventories();
   }
 
   @Override
-  public void setInventorySlotContents(int slot, ItemStack itemstack) {
-    super.setInventorySlotContents(slot, itemstack);
+  public void setItem(int slot, ItemStack itemstack) {
+    super.setItem(slot, itemstack);
     cooldown = 7; // set the cooldown to prevent instant retransfer
   }
 
@@ -180,14 +180,14 @@ public class PipeTileEntity extends InventoryTileEntity implements ITickableTile
   private static final String TAG_COOLDOWN = "cooldown";
 
   @Override
-  public void read(BlockState state, CompoundNBT tags) {
-    super.read(state, tags);
+  public void load(BlockState state, CompoundNBT tags) {
+    super.load(state, tags);
     this.cooldown = tags.getShort(TAG_COOLDOWN);
   }
 
   @Override
-  public CompoundNBT write(CompoundNBT tags) {
-    super.write(tags);
+  public CompoundNBT save(CompoundNBT tags) {
+    super.save(tags);
     tags.putShort(TAG_COOLDOWN, this.cooldown);
 
     return tags;

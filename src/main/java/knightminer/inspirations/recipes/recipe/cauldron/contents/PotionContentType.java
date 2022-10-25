@@ -38,7 +38,7 @@ public class PotionContentType extends RegistryContentType<Potion> {
     super(ForgeRegistries.POTION_TYPES);
     this.textureName = textureName;
     if (wrapName) {
-      this.wrapName = Util.makeTranslationKey("cauldron_contents", textureName);
+      this.wrapName = Util.makeDescriptionId("cauldron_contents", textureName);
     } else {
       this.wrapName = null;
     }
@@ -51,12 +51,12 @@ public class PotionContentType extends RegistryContentType<Potion> {
 
   @Override
   public int getColor(Potion value) {
-    return PotionUtils.getPotionColor(value);
+    return PotionUtils.getColor(value);
   }
 
   @Override
   public ITextComponent getDisplayName(Potion value) {
-    ITextComponent component = new TranslationTextComponent(value.getNamePrefixed(PREFIX));
+    ITextComponent component = new TranslationTextComponent(value.getName(PREFIX));
     if (wrapName != null) {
       return new TranslationTextComponent(wrapName, component);
     }
@@ -67,21 +67,21 @@ public class PotionContentType extends RegistryContentType<Potion> {
   public void addInformation(Potion potion, List<ITextComponent> tooltip, ITooltipFlag tooltipFlag) {
     // strongly based on PotionUtil version, but takes a potion instead of a stack. main difference is it skips the no effects tooltip
     for (EffectInstance instance : potion.getEffects()) {
-      IFormattableTextComponent effectString = new TranslationTextComponent(instance.getPotion().getName());
-      Effect effect = instance.getPotion();
+      IFormattableTextComponent effectString = new TranslationTextComponent(instance.getEffect().getDescriptionId());
+      Effect effect = instance.getEffect();
       if (instance.getAmplifier() > 0) {
-        effectString.appendString(" ");
+        effectString.append(" ");
         effectString.append(new TranslationTextComponent("potion.potency." + instance.getAmplifier()));
       }
       if (instance.getDuration() > 20) {
-        effectString.append(new StringTextComponent(" (" + EffectUtils.getPotionDurationString(instance, 1.0f) + ")"));
+        effectString.append(new StringTextComponent(" (" + EffectUtils.formatDuration(instance, 1.0f) + ")"));
       }
-      effectString.mergeStyle(effect.isBeneficial() ? TextFormatting.BLUE : TextFormatting.RED);
+      effectString.withStyle(effect.isBeneficial() ? TextFormatting.BLUE : TextFormatting.RED);
       tooltip.add(effectString);
     }
     // add tooltip for unfermented
     if (wrapName != null) {
-      tooltip.add(new TranslationTextComponent(wrapName + ".tooltip").mergeStyle(TextFormatting.GRAY, TextFormatting.ITALIC));
+      tooltip.add(new TranslationTextComponent(wrapName + ".tooltip").withStyle(TextFormatting.GRAY, TextFormatting.ITALIC));
     }
   }
 }

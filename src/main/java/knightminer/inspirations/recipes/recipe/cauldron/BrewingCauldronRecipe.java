@@ -94,7 +94,7 @@ public abstract class BrewingCauldronRecipe implements ICauldronRecipe, IMultiRe
         inventory.setOrGiveStack(container);
 
         // play sound
-        inventory.playSound(SoundEvents.ENTITY_GENERIC_SPLASH);
+        inventory.playSound(SoundEvents.GENERIC_SPLASH);
       }
     });
   }
@@ -122,7 +122,7 @@ public abstract class BrewingCauldronRecipe implements ICauldronRecipe, IMultiRe
   protected DisplayCauldronRecipe makeRecipe(Potion input, Ingredient reagent, Potion output) {
     return DisplayCauldronRecipe.builder(MAX)
                                 .setTemperature(TemperaturePredicate.BOILING)
-                                .setItemInputs(Arrays.asList(reagent.getMatchingStacks()))
+                                .setItemInputs(Arrays.asList(reagent.getItems()))
                                 .setContentInputs(CauldronContentTypes.POTION.of(input))
                                 .setContentOutput((instant ? CauldronContentTypes.POTION : CauldronContentTypes.UNFERMENTED_POTION).of(output))
                                 .build();
@@ -187,7 +187,7 @@ public abstract class BrewingCauldronRecipe implements ICauldronRecipe, IMultiRe
       }
 
       // try to find a new predicate among the list
-      for (Object mix : PotionBrewing.POTION_TYPE_CONVERSIONS) {
+      for (Object mix : PotionBrewing.POTION_MIXES) {
         Potion output = tryMix(mix, potion, stack);
         if (output != Potions.EMPTY) {
           lastMix = mix;
@@ -200,12 +200,12 @@ public abstract class BrewingCauldronRecipe implements ICauldronRecipe, IMultiRe
     @Override
     protected List<DisplayCauldronRecipe> getDisplayRecipes() {
       // map all potion type conversions to a recipe if possible
-      return ((List<?>)PotionBrewing.POTION_TYPE_CONVERSIONS).stream().flatMap(mix -> {
+      return ((List<?>)PotionBrewing.POTION_MIXES).stream().flatMap(mix -> {
         Potion input = ReflectionUtil.getMixPredicateInput(mix);
         Potion output = ReflectionUtil.getMixPredicateOutput(mix);
         Ingredient reagent = ReflectionUtil.getMixPredicateReagent(mix);
         // ensure the reflection worked and the recipe is valid
-        if (input != null && output != null && reagent != null && !reagent.hasNoMatchingItems()) {
+        if (input != null && output != null && reagent != null && !reagent.isEmpty()) {
           return Stream.of(makeRecipe(input, reagent, output));
         }
         return Stream.empty();
@@ -221,7 +221,7 @@ public abstract class BrewingCauldronRecipe implements ICauldronRecipe, IMultiRe
   /** Potion brewing logic using {@link BrewingRecipeRegistry} */
   public static class Forge extends BrewingCauldronRecipe {
     /** Function to make a stack from a potion */
-    private static final Function<Potion, ItemStack> POTION_ITEM_MAPPER = potion -> PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), potion);
+    private static final Function<Potion, ItemStack> POTION_ITEM_MAPPER = potion -> PotionUtils.setPotion(new ItemStack(Items.POTION), potion);
     /** Cached map of items for each potion */
     private final Map<Potion,ItemStack> potionItemLookup = new IdentityHashMap<>();
 
@@ -247,7 +247,7 @@ public abstract class BrewingCauldronRecipe implements ICauldronRecipe, IMultiRe
     private static Potion tryRecipe(IBrewingRecipe recipe, ItemStack potion, ItemStack stack) {
       ItemStack outputStack = recipe.getOutput(potion, stack);
       if (!outputStack.isEmpty()) {
-        return PotionUtils.getPotionFromItem(outputStack);
+        return PotionUtils.getPotion(outputStack);
       }
       return Potions.EMPTY;
     }
@@ -288,12 +288,12 @@ public abstract class BrewingCauldronRecipe implements ICauldronRecipe, IMultiRe
                  .filter(r -> r.getOutput().getItem() == Items.POTION)
                  .flatMap(recipe -> {
                    // output must be a potion
-                   Potion output = PotionUtils.getPotionFromItem(recipe.getOutput());
+                   Potion output = PotionUtils.getPotion(recipe.getOutput());
                    if (output != Potions.EMPTY) {
                      // get all potion inputs and return recipes
-                     return Arrays.stream(recipe.getInput().getMatchingStacks())
+                     return Arrays.stream(recipe.getInput().getItems())
                                   .filter(s -> s.getItem() == Items.POTION)
-                                  .map(PotionUtils::getPotionFromItem)
+                                  .map(PotionUtils::getPotion)
                                   .filter(pot -> pot != Potions.EMPTY)
                                   .map(input -> makeRecipe(input, recipe.getIngredient(), output));
                    }
@@ -326,19 +326,19 @@ public abstract class BrewingCauldronRecipe implements ICauldronRecipe, IMultiRe
     }
 
     @Override
-    public BrewingCauldronRecipe read(ResourceLocation id, JsonObject json) {
-      boolean instant = JSONUtils.getBoolean(json, "instant");
+    public BrewingCauldronRecipe fromJson(ResourceLocation id, JsonObject json) {
+      boolean instant = JSONUtils.getAsBoolean(json, "instant");
       return factory.apply(id, instant);
     }
 
     @Nullable
     @Override
-    public BrewingCauldronRecipe read(ResourceLocation id, PacketBuffer buffer) {
+    public BrewingCauldronRecipe fromNetwork(ResourceLocation id, PacketBuffer buffer) {
       return factory.apply(id, buffer.readBoolean());
     }
 
     @Override
-    public void write(PacketBuffer buffer, BrewingCauldronRecipe recipe) {
+    public void toNetwork(PacketBuffer buffer, BrewingCauldronRecipe recipe) {
       buffer.writeBoolean(recipe.instant);
     }
   }
@@ -352,7 +352,7 @@ public abstract class BrewingCauldronRecipe implements ICauldronRecipe, IMultiRe
     }
 
     @Override
-    public void serialize(JsonObject json) {
+    public void serializeRecipeData(JsonObject json) {
       json.addProperty("instant", instant);
     }
   }

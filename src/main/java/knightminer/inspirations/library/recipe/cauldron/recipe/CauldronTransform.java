@@ -121,48 +121,48 @@ public class CauldronTransform extends AbstractCauldronRecipe implements ICauldr
    */
   public static class Serializer extends RecipeSerializer<CauldronTransform> {
     @Override
-    public CauldronTransform read(ResourceLocation id, JsonObject json) {
-      String group = JSONUtils.getString(json, "group", "");
+    public CauldronTransform fromJson(ResourceLocation id, JsonObject json) {
+      String group = JSONUtils.getAsString(json, "group", "");
       // input
-      ICauldronIngredient ingredient = CauldronIngredients.read(JSONUtils.getJsonObject(json, "input"));
+      ICauldronIngredient ingredient = CauldronIngredients.read(JSONUtils.getAsJsonObject(json, "input"));
       TemperaturePredicate temperature = getBoiling(json, "temperature");
       LevelPredicate level;
       if (json.has("level")) {
-        level = LevelPredicate.read(JSONUtils.getJsonObject(json, "level"));
+        level = LevelPredicate.read(JSONUtils.getAsJsonObject(json, "level"));
       } else {
         level = LevelPredicate.range(1, ICauldronRecipe.MAX);
       }
 
       // output
-      ICauldronContents output = CauldronContentTypes.read(JSONUtils.getJsonObject(json, "output"));
-      int time = JSONUtils.getInt(json, "time");
+      ICauldronContents output = CauldronContentTypes.read(JSONUtils.getAsJsonObject(json, "output"));
+      int time = JSONUtils.getAsInt(json, "time");
 
       // sound
-      SoundEvent sound = SoundEvents.BLOCK_BREWING_STAND_BREW;
+      SoundEvent sound = SoundEvents.BREWING_STAND_BREW;
       if (json.has("sound")) {
-        sound = CauldronRecipe.Serializer.getSound(new ResourceLocation(JSONUtils.getString(json, "sound")), sound);
+        sound = CauldronRecipe.Serializer.getSound(new ResourceLocation(JSONUtils.getAsString(json, "sound")), sound);
       }
       return new CauldronTransform(id, group, ingredient, level, temperature, output, time, sound);
     }
 
     @Nullable
     @Override
-    public CauldronTransform read(ResourceLocation id, PacketBuffer buffer) {
-      String group = buffer.readString(Short.MAX_VALUE);
+    public CauldronTransform fromNetwork(ResourceLocation id, PacketBuffer buffer) {
+      String group = buffer.readUtf(Short.MAX_VALUE);
       ICauldronIngredient ingredient = CauldronIngredients.read(buffer);
-      TemperaturePredicate temperature = buffer.readEnumValue(TemperaturePredicate.class);
+      TemperaturePredicate temperature = buffer.readEnum(TemperaturePredicate.class);
       LevelPredicate level = LevelPredicate.read(buffer);
       ICauldronContents output = CauldronContentTypes.read(buffer);
       int time = buffer.readVarInt();
-      SoundEvent sound = CauldronRecipe.Serializer.getSound(buffer.readResourceLocation(), SoundEvents.BLOCK_BREWING_STAND_BREW);
+      SoundEvent sound = CauldronRecipe.Serializer.getSound(buffer.readResourceLocation(), SoundEvents.BREWING_STAND_BREW);
       return new CauldronTransform(id, group, ingredient, level, temperature, output, time, sound);
     }
 
     @Override
-    public void write(PacketBuffer buffer, CauldronTransform recipe) {
-      buffer.writeString(recipe.group);
+    public void toNetwork(PacketBuffer buffer, CauldronTransform recipe) {
+      buffer.writeUtf(recipe.group);
       CauldronIngredients.write(recipe.ingredient, buffer);
-      buffer.writeEnumValue(recipe.temperature);
+      buffer.writeEnum(recipe.temperature);
       recipe.level.write(buffer);
       ICauldronContents contents = recipe.outputContents == null ? CauldronContentTypes.DEFAULT.get() : recipe.outputContents;
       contents.write(buffer);

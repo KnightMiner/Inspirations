@@ -43,7 +43,7 @@ import java.util.List;
 public class TweaksClientEvents extends ClientEvents {
   @SubscribeEvent
   static void clientSetup(FMLClientSetupEvent event) {
-    RenderType cutout = RenderType.getCutout();
+    RenderType cutout = RenderType.cutout();
     RenderTypeLookup.setRenderLayer(InspirationsTweaks.cactus, cutout);
     RenderTypeLookup.setRenderLayer(InspirationsTweaks.sugarCane, cutout);
 
@@ -73,7 +73,7 @@ public class TweaksClientEvents extends ClientEvents {
       if (world == null || pos == null) {
         return -1;
       }
-      return BiomeColors.getGrassColor(world, pos);
+      return BiomeColors.getAverageGrassColor(world, pos);
     }, InspirationsTweaks.sugarCane);
 
     // portal tinting
@@ -121,7 +121,7 @@ public class TweaksClientEvents extends ClientEvents {
       if (!Config.coloredFireworkItems.get()) {
         return -1;
       }
-      CompoundNBT nbt = stack.getChildTag("Fireworks");
+      CompoundNBT nbt = stack.getTagElement("Fireworks");
       // string is darker with more gunpowder
       if (tintIndex == 2) {
         if (nbt != null && nbt.contains("Flight", Constants.NBT.TAG_ANY_NUMERIC)) {
@@ -175,7 +175,7 @@ public class TweaksClientEvents extends ClientEvents {
     if (stack.getItem() != Items.SHIELD) return;
 
     // only need to run if it has patterns and is enchanted
-    CompoundNBT tags = stack.getChildTag("BlockEntityTag");
+    CompoundNBT tags = stack.getTagElement("BlockEntityTag");
     if (tags != null && tags.contains("Patterns") && stack.isEnchanted()) {
       // find the last banner pattern line in the tooltip
       List<ITextComponent> text = event.getToolTip();

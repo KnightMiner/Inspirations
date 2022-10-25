@@ -15,6 +15,8 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.SoundEvents;
 import net.minecraftforge.items.ItemHandlerHelper;
 
+import net.minecraft.item.Item.Properties;
+
 /**
  * Item for a dye item that is also a bottle.
  */
@@ -26,7 +28,7 @@ public class SimpleDyedBottleItem extends DyeItem implements IHidable {
    */
   public SimpleDyedBottleItem(Properties props, DyeItem vanilla) {
     super(vanilla.getDyeColor(), props);
-    COLOR_DYE_ITEM_MAP.put(vanilla.getDyeColor(), vanilla);
+    ITEM_BY_COLOR.put(vanilla.getDyeColor(), vanilla);
   }
 
   @Override
@@ -35,23 +37,23 @@ public class SimpleDyedBottleItem extends DyeItem implements IHidable {
   }
 
   @Override
-  public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
+  public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items) {
     if (shouldAddtoItemGroup(group)) {
-      super.fillItemGroup(group, items);
+      super.fillItemCategory(group, items);
     }
   }
 
   @Override
-  public ActionResultType itemInteractionForEntity(ItemStack stack, PlayerEntity player, LivingEntity target, Hand hand) {
+  public ActionResultType interactLivingEntity(ItemStack stack, PlayerEntity player, LivingEntity target, Hand hand) {
     // this method reimplements many entity dye behaviors to properly return bottles
     DyeColor color = getDyeColor();
 
     // dye sheep
     if (target instanceof SheepEntity) {
       SheepEntity sheep = (SheepEntity)target;
-      if (!sheep.getSheared() && sheep.getFleeceColor() != color) {
-        sheep.setFleeceColor(color);
-        player.playSound(SoundEvents.ITEM_BOTTLE_EMPTY, 1.0F, 1.0F);
+      if (!sheep.isSheared() && sheep.getColor() != color) {
+        sheep.setColor(color);
+        player.playSound(SoundEvents.BOTTLE_EMPTY, 1.0F, 1.0F);
 
         // give back bottle;
         consumeItem(player, hand, stack);
@@ -72,7 +74,7 @@ public class SimpleDyedBottleItem extends DyeItem implements IHidable {
     if (!player.isCreative()) {
       ItemStack bottle = stack.getContainerItem().copy();
       if (stack.getCount() == 1) {
-        player.setHeldItem(hand, bottle);
+        player.setItemInHand(hand, bottle);
       } else {
         stack.shrink(1);
         ItemHandlerHelper.giveItemToPlayer(player, bottle);

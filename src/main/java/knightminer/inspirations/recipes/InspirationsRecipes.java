@@ -175,22 +175,22 @@ public class InspirationsRecipes extends ModuleBase {
 
     // potato soup
     potatoSoupItem = registry.register(
-        new SoupItem(new Item.Properties().maxStackSize(1)
-                                          .group(ItemGroup.FOOD)
-                                          .food(new Food.Builder().hunger(8).saturation(0.6F).build())),
+        new SoupItem(new Item.Properties().stacksTo(1)
+                                          .tab(ItemGroup.TAB_FOOD)
+                                          .food(new Food.Builder().nutrition(8).saturationMod(0.6F).build())),
         "potato_soup");
 
     // empty bottles
-    Item.Properties brewingProps = new Item.Properties().group(ItemGroup.BREWING);
+    Item.Properties brewingProps = new Item.Properties().tab(ItemGroup.TAB_BREWING);
     splashBottle = registry.register(new EmptyBottleItem(brewingProps, Items.SPLASH_POTION.delegate), "splash_bottle");
     lingeringBottle = registry.register(new EmptyBottleItem(brewingProps, Items.LINGERING_POTION.delegate), "lingering_bottle");
 
     // dyed bottles
     Item.Properties bottleProps = new Item.Properties()
-        .group(ItemGroup.MATERIALS)
-        .maxStackSize(16)
-        .containerItem(Items.GLASS_BOTTLE);
-    simpleDyedWaterBottle = registry.registerEnum(color -> new SimpleDyedBottleItem(bottleProps, DyeItem.getItem(color)), DyeColor.values(), "dyed_bottle");
+        .tab(ItemGroup.TAB_MATERIALS)
+        .stacksTo(16)
+        .craftRemainder(Items.GLASS_BOTTLE);
+    simpleDyedWaterBottle = registry.registerEnum(color -> new SimpleDyedBottleItem(bottleProps, DyeItem.byColor(color)), DyeColor.values(), "dyed_bottle");
     mixedDyedWaterBottle = registry.register(new MixedDyedBottleItem(bottleProps), "mixed_dyed_bottle");
 
     // cauldron item
@@ -259,12 +259,12 @@ public class InspirationsRecipes extends ModuleBase {
       // it should be as simple as injecting it into the map, but people keep reporting issues with this so just over do it
       Map<BlockState, PointOfInterestType> map = GameData.getBlockStatePointOfInterestTypeMap();
       synchronized (map) {
-        ImmutableList<BlockState> newStates = cauldron.getStateContainer().getValidStates();
+        ImmutableList<BlockState> newStates = cauldron.getStateDefinition().getPossibleStates();
         synchronized (PointOfInterestType.LEATHERWORKER) {
           ImmutableSet.Builder<BlockState> builder = ImmutableSet.builder();
-          builder.addAll(PointOfInterestType.LEATHERWORKER.blockStates);
+          builder.addAll(PointOfInterestType.LEATHERWORKER.matchingStates);
           builder.addAll(newStates);
-          PointOfInterestType.LEATHERWORKER.blockStates = builder.build();
+          PointOfInterestType.LEATHERWORKER.matchingStates = builder.build();
         }
         newStates.forEach(state -> map.put(state, PointOfInterestType.LEATHERWORKER));
       }

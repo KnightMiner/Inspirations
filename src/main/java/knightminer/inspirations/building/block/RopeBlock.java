@@ -37,6 +37,8 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 import java.util.Locale;
 
+import net.minecraft.block.AbstractBlock.Properties;
+
 @SuppressWarnings("WeakerAccess")
 public class RopeBlock extends HidableBlock implements IWaterLoggable {
   public static final EnumProperty<Rungs> RUNGS = EnumProperty.create("rungs", Rungs.class);
@@ -50,16 +52,16 @@ public class RopeBlock extends HidableBlock implements IWaterLoggable {
 
   public RopeBlock(Item rungsItem, Properties props) {
     super(props, Config.enableRope);
-    this.setDefaultState(this.stateContainer.getBaseState()
-                                            .with(BOTTOM, false)
-                                            .with(RUNGS, Rungs.NONE)
-                                            .with(WATERLOGGED, false)
+    this.registerDefaultState(this.stateDefinition.any()
+                                            .setValue(BOTTOM, false)
+                                            .setValue(RUNGS, Rungs.NONE)
+                                            .setValue(WATERLOGGED, false)
                         );
     this.rungsItem = rungsItem;
   }
 
   @Override
-  protected void fillStateContainer(StateContainer.Builder<Block,BlockState> builder) {
+  protected void createBlockStateDefinition(StateContainer.Builder<Block,BlockState> builder) {
     builder.add(BOTTOM, RUNGS, WATERLOGGED);
   }
 
@@ -67,7 +69,7 @@ public class RopeBlock extends HidableBlock implements IWaterLoggable {
   @Deprecated
   @Override
   public FluidState getFluidState(BlockState state) {
-    return state.get(WATERLOGGED) ? Fluids.WATER.getStillFluidState(false) : super.getFluidState(state);
+    return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
   }
 
   public Item getRungsItem() {
@@ -77,15 +79,15 @@ public class RopeBlock extends HidableBlock implements IWaterLoggable {
   @Nullable
   @Override
   public BlockState getStateForPlacement(BlockItemUseContext context) {
-    BlockPos down = context.getPos().down();
-    return getDefaultState()
-        .with(BOTTOM, isBottom(context.getWorld().getBlockState(down), context.getWorld(), down))
-        .with(RUNGS, Rungs.NONE)
-        .with(WATERLOGGED, context.getWorld().getFluidState(context.getPos()).getFluid() == Fluids.WATER);
+    BlockPos down = context.getClickedPos().below();
+    return defaultBlockState()
+        .setValue(BOTTOM, isBottom(context.getLevel().getBlockState(down), context.getLevel(), down))
+        .setValue(RUNGS, Rungs.NONE)
+        .setValue(WATERLOGGED, context.getLevel().getFluidState(context.getClickedPos()).getType() == Fluids.WATER);
   }
 
-  private static final VoxelShape ATTACH_TOP = Block.makeCuboidShape(7, 15, 7, 9, 16, 9);
-  private static final VoxelShape ATTACH_BOTTOM = Block.makeCuboidShape(7, 0, 7, 9, 1, 9);
+  private static final VoxelShape ATTACH_TOP = Block.box(7, 15, 7, 9, 16, 9);
+  private static final VoxelShape ATTACH_BOTTOM = Block.box(7, 0, 7, 9, 1, 9);
 
   private boolean isBottom(BlockState state, IBlockReader world, BlockPos pos) {
     if (state.getBlock() == this) {
@@ -93,8 +95,8 @@ public class RopeBlock extends HidableBlock implements IWaterLoggable {
     }
     // Check if the top of the block is able to attach to the rope - the center 2x2 must
     // all be present.
-    return state.isIn(BlockTags.LEAVES)
-           || VoxelShapes.compare(state.getCollisionShape(world, pos).project(Direction.UP), ATTACH_TOP, IBooleanFunction.ONLY_SECOND);
+    return state.is(BlockTags.LEAVES)
+           || VoxelShapes.joinIsNotEmpty(state.getCollisionShape(world, pos).getFaceShape(Direction.UP), ATTACH_TOP, IBooleanFunction.ONLY_SECOND);
   }
 
   /* Ropey logic */
@@ -102,34 +104,34 @@ public class RopeBlock extends HidableBlock implements IWaterLoggable {
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public boolean isValidPosition(BlockState state, IWorldReader world, BlockPos pos) {
-    return super.isValidPosition(state, world, pos) && isValidRope(world, pos);
+  public boolean canSurvive(BlockState state, IWorldReader world, BlockPos pos) {
+    return super.canSurvive(state, world, pos) && isValidRope(world, pos);
   }
 
   private boolean isValidRope(IWorldReader world, BlockPos pos) {
-    BlockPos up = pos.up();
+    BlockPos up = pos.above();
     BlockState state = world.getBlockState(up);
     if (state.getBlock() == this) {
       return true;
     }
     // Check if the bottom of the block is able to attach to the rope - the center 4x4 must
     // all be present.
-    return !state.isIn(BlockTags.LEAVES) && !VoxelShapes.compare(
-        state.getCollisionShape(world, pos).project(Direction.DOWN), ATTACH_BOTTOM, IBooleanFunction.ONLY_SECOND
+    return !state.is(BlockTags.LEAVES) && !VoxelShapes.joinIsNotEmpty(
+        state.getCollisionShape(world, pos).getFaceShape(Direction.DOWN), ATTACH_BOTTOM, IBooleanFunction.ONLY_SECOND
                                                                 );
   }
 
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public BlockState updatePostPlacement(BlockState state, Direction facing, BlockState facingState, IWorld world, BlockPos pos, BlockPos facingPos) {
+  public BlockState updateShape(BlockState state, Direction facing, BlockState facingState, IWorld world, BlockPos pos, BlockPos facingPos) {
     // if the rope is not valid, break it
     if (!this.isValidRope(world, pos)) {
-      return Blocks.AIR.getDefaultState();
+      return Blocks.AIR.defaultBlockState();
     }
     if (facing == Direction.DOWN) {
-      BlockPos down = pos.down();
-      return state.with(BOTTOM, isBottom(world.getBlockState(down), world, down));
+      BlockPos down = pos.below();
+      return state.setValue(BOTTOM, isBottom(world.getBlockState(down), world, down));
     }
     return state;
   }
@@ -137,62 +139,62 @@ public class RopeBlock extends HidableBlock implements IWaterLoggable {
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+  public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
     // no need to check verticals, one is not possible and the other normal block placement
-    if (hit.getFace().getAxis().isVertical()) {
+    if (hit.getDirection().getAxis().isVertical()) {
       return ActionResultType.PASS;
     }
 
     // right click with a rope to extend downwards
-    ItemStack stack = player.getHeldItem(hand);
+    ItemStack stack = player.getItemInHand(hand);
     // check if the item is the same type as us
-    if (Block.getBlockFromItem(stack.getItem()) != this) {
+    if (Block.byItem(stack.getItem()) != this) {
       return ActionResultType.PASS;
     }
 
     // find the first block at the bottom of the rope
-    BlockPos next = pos.down();
+    BlockPos next = pos.below();
     while (world.getBlockState(next).getBlock() == this) {
-      next = next.down();
+      next = next.below();
     }
-    if (this.isValidPosition(state, world, next)) {
-      ((BlockItem)stack.getItem()).tryPlace(new BlockItemUseContext(player, hand, stack, new BlockRayTraceResult(Vector3d.copyCenteredHorizontally(next), Direction.UP, next, false)));
+    if (this.canSurvive(state, world, next)) {
+      ((BlockItem)stack.getItem()).place(new BlockItemUseContext(player, hand, stack, new BlockRayTraceResult(Vector3d.atBottomCenterOf(next), Direction.UP, next, false)));
     }
 
     return ActionResultType.SUCCESS;
   }
 
   @Override
-  public void onBlockHarvested(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+  public void playerWillDestroy(World world, BlockPos pos, BlockState state, PlayerEntity player) {
     // when breaking, place all items from ropes below at the position of this rope
     // break all blocks below that are ropes
-    BlockPos next = pos.down();
+    BlockPos next = pos.below();
     int count = 0;
     int rungs = 0;
     // go down to the bottom
     BlockState below = world.getBlockState(next);
     while (below.getBlock() == this) {
       count++;
-      if (below.get(RUNGS) != Rungs.NONE) {
+      if (below.getValue(RUNGS) != Rungs.NONE) {
         rungs++;
       }
-      next = next.down();
+      next = next.below();
       below = world.getBlockState(next);
     }
     // then break them coming back up
     for (int i = 0; i < count; i++) {
-      next = next.up();
+      next = next.above();
       world.destroyBlock(next, false);
     }
 
     // then spawn their items up here
     ItemStack drops = new ItemStack(this, count);
-    spawnAsEntity(world, pos, drops);
+    popResource(world, pos, drops);
     if (rungs > 0) {
-      spawnAsEntity(world, pos, new ItemStack(rungsItem, rungs * RUNG_ITEM_COUNT));
+      popResource(world, pos, new ItemStack(rungsItem, rungs * RUNG_ITEM_COUNT));
     }
 
-    super.onBlockHarvested(world, pos, state, player);
+    super.playerWillDestroy(world, pos, state, player);
   }
 
 
@@ -203,33 +205,33 @@ public class RopeBlock extends HidableBlock implements IWaterLoggable {
   private static final VoxelShape[] SHAPE_BOTTOM = new VoxelShape[3];
 
   static {
-    VoxelShape rope_core = Block.makeCuboidShape(7, 0, 7, 9, 16, 9);
+    VoxelShape rope_core = Block.box(7, 0, 7, 9, 16, 9);
     VoxelShape rope_core_bottom = VoxelShapes.or(
-        Block.makeCuboidShape(7, 7, 7, 9, 16, 9),
-        Block.makeCuboidShape(6.5, 4, 6.5, 9.5, 7, 9.5)
+        Block.box(7, 7, 7, 9, 16, 9),
+        Block.box(6.5, 4, 6.5, 9.5, 7, 9.5)
                                                 );
 
     VoxelShape rope_rungs_x = VoxelShapes.or(
-        Block.makeCuboidShape(1, 5, 7, 15, 7, 9),
-        Block.makeCuboidShape(1, 9, 7, 15, 11, 9),
-        Block.makeCuboidShape(1, 13, 7, 15, 15, 9)
+        Block.box(1, 5, 7, 15, 7, 9),
+        Block.box(1, 9, 7, 15, 11, 9),
+        Block.box(1, 13, 7, 15, 15, 9)
                                             );
     VoxelShape rope_rungs_z = VoxelShapes.or(
-        Block.makeCuboidShape(7, 5, 1, 9, 7, 15),
-        Block.makeCuboidShape(7, 9, 1, 9, 11, 15),
-        Block.makeCuboidShape(7, 13, 1, 9, 15, 15)
+        Block.box(7, 5, 1, 9, 7, 15),
+        Block.box(7, 9, 1, 9, 11, 15),
+        Block.box(7, 13, 1, 9, 15, 15)
                                             );
 
     SHAPE[Rungs.NONE.ordinal()] = rope_core;
     SHAPE_BOTTOM[Rungs.NONE.ordinal()] = rope_core_bottom;
 
     SHAPE[Rungs.X.ordinal()] = VoxelShapes.or(rope_core, rope_rungs_x,
-                                              Block.makeCuboidShape(1, 1, 7, 15, 3, 9)
+                                              Block.box(1, 1, 7, 15, 3, 9)
                                              );
     SHAPE_BOTTOM[Rungs.X.ordinal()] = VoxelShapes.or(rope_core_bottom, rope_rungs_x);
 
     SHAPE[Rungs.Z.ordinal()] = VoxelShapes.or(rope_core, rope_rungs_z,
-                                              Block.makeCuboidShape(7, 1, 1, 9, 3, 15)
+                                              Block.box(7, 1, 1, 9, 3, 15)
                                              );
     SHAPE_BOTTOM[Rungs.Z.ordinal()] = VoxelShapes.or(rope_core_bottom, rope_rungs_z);
   }
@@ -238,7 +240,7 @@ public class RopeBlock extends HidableBlock implements IWaterLoggable {
   @Deprecated
   @Override
   public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-    return (state.get(BOTTOM) ? SHAPE_BOTTOM : SHAPE)[state.get(RUNGS).ordinal()];
+    return (state.getValue(BOTTOM) ? SHAPE_BOTTOM : SHAPE)[state.getValue(RUNGS).ordinal()];
   }
 
   @Override
@@ -246,7 +248,7 @@ public class RopeBlock extends HidableBlock implements IWaterLoggable {
   @Deprecated
   public VoxelShape getCollisionShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
     // if no rungs, no collision
-    return state.get(RUNGS) != Rungs.NONE ? state.getShape(worldIn, pos) : VoxelShapes.empty();
+    return state.getValue(RUNGS) != Rungs.NONE ? state.getShape(worldIn, pos) : VoxelShapes.empty();
   }
 
   public enum Rungs implements IStringSerializable {
@@ -255,7 +257,7 @@ public class RopeBlock extends HidableBlock implements IWaterLoggable {
     Z;
 
     @Override
-    public String getString() {
+    public String getSerializedName() {
       return this.name().toLowerCase(Locale.US);
     }
 

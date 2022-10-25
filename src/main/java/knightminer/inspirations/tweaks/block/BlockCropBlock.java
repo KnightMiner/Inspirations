@@ -19,6 +19,8 @@ import net.minecraftforge.common.PlantType;
 import java.util.Random;
 import java.util.function.Supplier;
 
+import net.minecraft.block.AbstractBlock.Properties;
+
 @SuppressWarnings("WeakerAccess")
 public abstract class BlockCropBlock extends CropsBlock implements IHidable, IPlantable {
   public static final IntegerProperty LARGE_AGE = IntegerProperty.create("age", 0, 14);
@@ -32,13 +34,13 @@ public abstract class BlockCropBlock extends CropsBlock implements IHidable, IPl
   }
 
   protected BlockCropBlock(Block block, PlantType type) {
-    this(block.delegate, type, Properties.from(block));
+    this(block.delegate, type, Properties.copy(block));
   }
 
   /* Age logic */
 
   @Override
-  protected void fillStateContainer(StateContainer.Builder<Block,BlockState> builder) {
+  protected void createBlockStateDefinition(StateContainer.Builder<Block,BlockState> builder) {
     builder.add(getAgeProperty());
     // No super, we want a different age size!
   }
@@ -54,11 +56,11 @@ public abstract class BlockCropBlock extends CropsBlock implements IHidable, IPl
   }
 
   @Override
-  public BlockState withAge(int age) {
+  public BlockState getStateForAge(int age) {
     if (age == getMaxAge()) {
-      return block.get().getDefaultState();
+      return block.get().defaultBlockState();
     }
-    return super.withAge(age);
+    return super.getStateForAge(age);
   }
 
   @Override
@@ -77,15 +79,15 @@ public abstract class BlockCropBlock extends CropsBlock implements IHidable, IPl
     if (age < max) {
       if (ForgeHooks.onCropsGrowPre(world, pos, state, true)) {
         age++;
-        BlockState newState = this.withAge(age);
+        BlockState newState = this.getStateForAge(age);
         // update again if max age, for the sake of cactus placement
         if (age == max) {
-          world.setBlockState(pos, newState, 3);
-          if (!newState.isValidPosition(world, pos)) {
-            world.getPendingBlockTicks().scheduleTick(pos, block.get(), 1);
+          world.setBlock(pos, newState, 3);
+          if (!newState.canSurvive(world, pos)) {
+            world.getBlockTicks().scheduleTick(pos, block.get(), 1);
           }
         } else {
-          world.setBlockState(pos, newState, 2);
+          world.setBlock(pos, newState, 2);
         }
         ForgeHooks.onCropsGrowPost(world, pos, state);
       }
@@ -100,20 +102,20 @@ public abstract class BlockCropBlock extends CropsBlock implements IHidable, IPl
 
   @Deprecated
   @Override
-  public boolean isValidPosition(BlockState state, IWorldReader world, BlockPos pos) {
-    return block.get().isValidPosition(block.get().getDefaultState(), world, pos);
+  public boolean canSurvive(BlockState state, IWorldReader world, BlockPos pos) {
+    return block.get().canSurvive(block.get().defaultBlockState(), world, pos);
   }
 
 
   /* Bonemeal */
 
   @Override
-  public boolean canGrow(IBlockReader worldIn, BlockPos pos, BlockState state, boolean isClient) {
+  public boolean isValidBonemealTarget(IBlockReader worldIn, BlockPos pos, BlockState state, boolean isClient) {
     return Config.bonemealBlockCrop.get();
   }
 
   @Override
-  public boolean canUseBonemeal(World worldIn, Random rand, BlockPos pos, BlockState state) {
+  public boolean isBonemealSuccess(World worldIn, Random rand, BlockPos pos, BlockState state) {
     return Config.bonemealBlockCrop.get();
   }
 

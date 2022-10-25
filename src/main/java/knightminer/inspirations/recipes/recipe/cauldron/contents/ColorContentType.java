@@ -23,7 +23,7 @@ import java.util.List;
  */
 public class ColorContentType extends CauldronContentType<Integer> {
   private static final ResourceLocation TEXTURE_NAME = Inspirations.getResource("color");
-  private static final String TRANSLATION_KEY = Util.makeTranslationKey("cauldron_contents", Inspirations.getResource("color"));
+  private static final String TRANSLATION_KEY = Util.makeDescriptionId("cauldron_contents", Inspirations.getResource("color"));
 
   /**
    * Gets the color as a hex string
@@ -40,7 +40,7 @@ public class ColorContentType extends CauldronContentType<Integer> {
    * @return  Tooltip text component
    */
   public static ITextComponent getColorTooltip(int color) {
-    return new TranslationTextComponent("item.color", "#" + getColorString(color)).mergeStyle(TextFormatting.GRAY);
+    return new TranslationTextComponent("item.color", "#" + getColorString(color)).withStyle(TextFormatting.GRAY);
   }
 
 
@@ -73,7 +73,7 @@ public class ColorContentType extends CauldronContentType<Integer> {
 
   @Override
   public Integer getValue(JsonElement element, String key) {
-    String text = JSONUtils.getString(element, key);
+    String text = JSONUtils.convertToString(element, key);
     Integer value = getValue(text);
     if (value != null) {
       return value;

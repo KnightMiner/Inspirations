@@ -48,7 +48,7 @@ public class NormalBrewingRecipe implements IHidable, IBrewingRecipe {
   public boolean isInput(ItemStack input) {
     Item item = input.getItem();
     if (item == Items.POTION || item == Items.SPLASH_POTION || item == Items.LINGERING_POTION) {
-      return PotionUtils.getPotionFromItem(input) == start;
+      return PotionUtils.getPotion(input) == start;
     }
     return false;
   }
@@ -68,7 +68,7 @@ public class NormalBrewingRecipe implements IHidable, IBrewingRecipe {
     }
     Item item = input.getItem();
     if (isInput(input)) {
-      return PotionUtils.addPotionToItemStack(new ItemStack(item), output);
+      return PotionUtils.setPotion(new ItemStack(item), output);
     }
     return ItemStack.EMPTY;
   }

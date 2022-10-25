@@ -40,53 +40,53 @@ public class BricksButtonBlock extends HidableBlock {
 
   public BricksButtonBlock(ImmutableMap<Direction,AxisAlignedBB> buttonBounds) {
     super(Block.Properties
-              .create(Material.ROCK)
-              .hardnessAndResistance(1.5F, 10.0F)
+              .of(Material.STONE)
+              .strength(1.5F, 10.0F)
               .sound(SoundType.STONE)
-              .tickRandomly(),
+              .randomTicks(),
           () -> false
          );
     this.buttonBounds = buttonBounds;
 
-    this.setDefaultState(this.getStateContainer().getBaseState()
-                             .with(FACING, Direction.NORTH)
-                             .with(POWERED, false));
+    this.registerDefaultState(this.getStateDefinition().any()
+                             .setValue(FACING, Direction.NORTH)
+                             .setValue(POWERED, false));
   }
 
 
   /* Blockstate */
 
   @Override
-  protected void fillStateContainer(StateContainer.Builder<Block,BlockState> builder) {
+  protected void createBlockStateDefinition(StateContainer.Builder<Block,BlockState> builder) {
     builder.add(FACING, POWERED);
-    super.fillStateContainer(builder);
+    super.createBlockStateDefinition(builder);
   }
 
   @Override
   public BlockState getStateForPlacement(BlockItemUseContext context) {
-    return getDefaultState().with(FACING, context.getPlacementHorizontalFacing().getOpposite());
+    return defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
   }
 
   @Override
-  public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, @Nullable LivingEntity player, ItemStack stack) {
+  public void setPlacedBy(World world, BlockPos pos, BlockState state, @Nullable LivingEntity player, ItemStack stack) {
     if (player != null) {
-      world.setBlockState(pos, state.with(FACING, player.getAdjustedHorizontalFacing().getOpposite()));
+      world.setBlockAndUpdate(pos, state.setValue(FACING, player.getMotionDirection().getOpposite()));
     }
-    super.onBlockPlacedBy(world, pos, state, player, stack);
+    super.setPlacedBy(world, pos, state, player, stack);
   }
 
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public BlockState rotate(BlockState state, Rotation rot) {
-    return state.with(FACING, rot.rotate(state.get(FACING)));
+    return state.setValue(FACING, rot.rotate(state.getValue(FACING)));
   }
 
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public BlockState mirror(BlockState state, Mirror mirror) {
-    return state.with(FACING, mirror.mirror(state.get(FACING)));
+    return state.setValue(FACING, mirror.mirror(state.getValue(FACING)));
   }
 
   /* Pressing the button */
@@ -94,21 +94,21 @@ public class BricksButtonBlock extends HidableBlock {
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) {
+  public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) {
     // if you did not click the secret button, no button for you
-    if (!getButtonBox(state).contains(trace.getHitVec().subtract(pos.getX(), pos.getY(), pos.getZ()))) {
+    if (!getButtonBox(state).contains(trace.getLocation().subtract(pos.getX(), pos.getY(), pos.getZ()))) {
       return ActionResultType.PASS;
     }
 
     // if already powered, we done here
-    if (state.get(POWERED)) {
+    if (state.getValue(POWERED)) {
       return ActionResultType.SUCCESS;
     }
 
-    world.setBlockState(pos, state.with(POWERED, true), 3);
-    world.playSound(player, pos, SoundEvents.BLOCK_STONE_BUTTON_CLICK_ON, SoundCategory.BLOCKS, 0.3F, 0.6F);
-    world.notifyNeighborsOfStateChange(pos, this);
-    world.getPendingBlockTicks().scheduleTick(pos, this, 20);
+    world.setBlock(pos, state.setValue(POWERED, true), 3);
+    world.playSound(player, pos, SoundEvents.STONE_BUTTON_CLICK_ON, SoundCategory.BLOCKS, 0.3F, 0.6F);
+    world.updateNeighborsAt(pos, this);
+    world.getBlockTicks().scheduleTick(pos, this, 20);
     return ActionResultType.SUCCESS;
   }
 
@@ -116,13 +116,13 @@ public class BricksButtonBlock extends HidableBlock {
   @Deprecated
   @Override
   public void tick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-    if (world.isRemote) {
+    if (world.isClientSide) {
       return;
     }
-    if ((state.get(POWERED))) {
-      world.setBlockState(pos, state.with(POWERED, false));
-      world.notifyNeighborsOfStateChange(pos, this);
-      world.playSound(null, pos, SoundEvents.BLOCK_STONE_BUTTON_CLICK_OFF, SoundCategory.BLOCKS, 0.3F, 0.5F);
+    if ((state.getValue(POWERED))) {
+      world.setBlockAndUpdate(pos, state.setValue(POWERED, false));
+      world.updateNeighborsAt(pos, this);
+      world.playSound(null, pos, SoundEvents.STONE_BUTTON_CLICK_OFF, SoundCategory.BLOCKS, 0.3F, 0.5F);
     }
   }
 
@@ -146,7 +146,7 @@ public class BricksButtonBlock extends HidableBlock {
   }
 
   private AxisAlignedBB getButtonBox(BlockState state) {
-    return buttonBounds.get(state.get(FACING));
+    return buttonBounds.get(state.getValue(FACING));
   }
 
 
@@ -155,25 +155,25 @@ public class BricksButtonBlock extends HidableBlock {
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
-    if (state.getBlock() != newState.getBlock() && state.get(POWERED)) {
-      world.notifyNeighborsOfStateChange(pos, this);
+  public void onRemove(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
+    if (state.getBlock() != newState.getBlock() && state.getValue(POWERED)) {
+      world.updateNeighborsAt(pos, this);
     }
 
-    super.onReplaced(state, world, pos, newState, isMoving);
+    super.onRemove(state, world, pos, newState, isMoving);
   }
 
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public int getWeakPower(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
-    return state.get(POWERED) ? 15 : 0;
+  public int getSignal(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
+    return state.getValue(POWERED) ? 15 : 0;
   }
 
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public int getStrongPower(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
+  public int getDirectSignal(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
     // we may be a button, but we act as though ourself is the block that is powered
     return 0;
   }
@@ -181,7 +181,7 @@ public class BricksButtonBlock extends HidableBlock {
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public boolean canProvidePower(BlockState state) {
+  public boolean isSignalSource(BlockState state) {
     return true;
   }
 

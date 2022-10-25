@@ -24,7 +24,7 @@ public interface IHidable {
     if (Config.isLoaded()) {
       return isEnabled();
     } else {
-      return group == ItemGroup.SEARCH;
+      return group == ItemGroup.TAB_SEARCH;
     }
   }
 }

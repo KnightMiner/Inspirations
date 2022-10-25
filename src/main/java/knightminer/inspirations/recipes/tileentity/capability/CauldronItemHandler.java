@@ -137,7 +137,7 @@ public class CauldronItemHandler implements IItemHandler {
 
     // validate the cached recipe as we are about to extract
     if (needsValidation) {
-      World world = te.getWorld();
+      World world = te.getLevel();
       if (world == null || !currentRecipe.matches(inventory, world)) {
         clearCache();
         Inspirations.log.error("Attempted to extract items from a recipe that does not match the cauldron.");

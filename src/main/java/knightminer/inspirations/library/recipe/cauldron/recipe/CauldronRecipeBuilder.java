@@ -339,7 +339,7 @@ public class CauldronRecipeBuilder extends AbstractRecipeBuilder<CauldronRecipeB
     }
 
     @Override
-    public void serialize(JsonObject json) {
+    public void serializeRecipeData(JsonObject json) {
       if (!group.isEmpty()) {
         json.addProperty("group", group);
       }
@@ -387,24 +387,24 @@ public class CauldronRecipeBuilder extends AbstractRecipeBuilder<CauldronRecipeB
     }
 
     @Override
-    public ResourceLocation getID() {
+    public ResourceLocation getId() {
       return id;
     }
 
     @Override
-    public IRecipeSerializer<?> getSerializer() {
+    public IRecipeSerializer<?> getType() {
       return RecipeSerializers.CAULDRON;
     }
 
     @Nullable
     @Override
-    public JsonObject getAdvancementJson() {
-      return advancementBuilder.serialize();
+    public JsonObject serializeAdvancement() {
+      return advancementBuilder.serializeToJson();
     }
 
     @Nullable
     @Override
-    public ResourceLocation getAdvancementID() {
+    public ResourceLocation getAdvancementId() {
       return advancementId;
     }
   }

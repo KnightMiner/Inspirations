@@ -12,6 +12,8 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import static knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe.MAX;
 import static knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe.QUARTER;
 
+import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
+
 /**
  * Logic to treat the cauldron as a fluid tank
  */
@@ -40,7 +42,7 @@ public class CauldronFluidHandler implements IFluidHandler {
     }
 
     // if more than 3 quarters, block
-    int level = cauldron.getLevel();
+    int level = cauldron.getFluidLevel();
     if (level < QUARTER * 3) {
       // if the fluid is different, prevent insertion
       Fluid fluid = stack.getFluid();
@@ -70,7 +72,7 @@ public class CauldronFluidHandler implements IFluidHandler {
    */
   private FluidStack drain(Fluid fluid, int maxDrain, FluidAction action) {
     // minimum of a quarter to drain
-    int level = cauldron.getLevel();
+    int level = cauldron.getFluidLevel();
     if (level >= QUARTER) {
       // check if they are draining enough
       int toDrain = Math.min(getLevels(maxDrain), level);
@@ -149,7 +151,7 @@ public class CauldronFluidHandler implements IFluidHandler {
     if (currentContents == null) {
       currentContents = cauldron.getContents()
                                 .get(CauldronContentTypes.FLUID)
-                                .map(fluid -> new FluidStack(fluid, getAmount(cauldron.getLevel())))
+                                .map(fluid -> new FluidStack(fluid, getAmount(cauldron.getFluidLevel())))
                                 .orElse(FluidStack.EMPTY);
     }
     return currentContents;

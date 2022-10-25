@@ -12,6 +12,6 @@ public class EnchantableShieldItem extends ShieldItem {
   @Override
   public int getItemEnchantability(ItemStack stack) {
     // small boost to enchantability if it has a banner
-    return stack.getChildTag("BlockEntityTag") != null ? 16 : 12;
+    return stack.getTagElement("BlockEntityTag") != null ? 16 : 12;
   }
 }

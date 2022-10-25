@@ -50,7 +50,7 @@ public class ToolsEvents {
 
     // first, ensure we have a valid item to use
     PlayerEntity player = event.getPlayer();
-    ItemStack stack = player.getHeldItem(event.getHand());
+    ItemStack stack = player.getItemInHand(event.getHand());
 
     boolean isKey = stack.getItem() == InspirationsTools.key;
     boolean isLock = stack.getItem() == InspirationsTools.lock;
@@ -58,49 +58,49 @@ public class ToolsEvents {
     if (!isKey && !isLock) {
       return;
     }
-    TileEntity te = event.getWorld().getTileEntity(event.getPos());
+    TileEntity te = event.getWorld().getBlockEntity(event.getPos());
 
     if (te instanceof LockableTileEntity) {
       LockableTileEntity lockable = (LockableTileEntity)te;
 
-      LockCode heldCode = new LockCode(stack.getDisplayName().getUnformattedComponentText());
+      LockCode heldCode = new LockCode(stack.getHoverName().getContents());
 
       // lock code
       if (isLock) {
         // already locked: display message
-        if (lockable.code != LockCode.EMPTY_CODE) {
-          player.sendStatusMessage(new TranslationTextComponent(Inspirations.prefix("lock.fail.locked")), true);
-        } else if (!stack.hasDisplayName()) {
-          player.sendStatusMessage(new TranslationTextComponent(Inspirations.prefix("lock.fail.blank")), true);
+        if (lockable.lockKey != LockCode.NO_LOCK) {
+          player.displayClientMessage(new TranslationTextComponent(Inspirations.prefix("lock.fail.locked")), true);
+        } else if (!stack.hasCustomHoverName()) {
+          player.displayClientMessage(new TranslationTextComponent(Inspirations.prefix("lock.fail.blank")), true);
         } else {
           // lock the container
-          lockable.code = heldCode;
-          lockable.markDirty();
+          lockable.lockKey = heldCode;
+          lockable.setChanged();
           if (!player.isCreative()) {
             stack.shrink(1);
           }
-          player.sendStatusMessage(new TranslationTextComponent(Inspirations.prefix("lock.success")), true);
+          player.displayClientMessage(new TranslationTextComponent(Inspirations.prefix("lock.success")), true);
         }
 
         event.setCanceled(true);
         event.setCancellationResult(ActionResultType.SUCCESS);
         // if the player is not sneaking, just open the chest as normal with the key
       } else if (player.isCrouching()) {
-        if (lockable.code != LockCode.EMPTY_CODE) {
+        if (lockable.lockKey != LockCode.NO_LOCK) {
           // if the key matches the lock, take off the lock and give it to the player
-          if (lockable.code.func_219964_a(stack)) {
-            LockCode code = lockable.code;
-            lockable.code = LockCode.EMPTY_CODE;
-            lockable.markDirty();
+          if (lockable.lockKey.unlocksWith(stack)) {
+            LockCode code = lockable.lockKey;
+            lockable.lockKey = LockCode.NO_LOCK;
+            lockable.setChanged();
             ItemHandlerHelper.giveItemToPlayer(player,
-                                               new ItemStack(InspirationsTools.lock).setDisplayName(new StringTextComponent(code.lock))
+                                               new ItemStack(InspirationsTools.lock).setHoverName(new StringTextComponent(code.key))
                                               );
-            player.sendStatusMessage(new TranslationTextComponent(Inspirations.prefix("unlock.success")), true);
+            player.displayClientMessage(new TranslationTextComponent(Inspirations.prefix("unlock.success")), true);
           } else {
-            player.sendStatusMessage(new TranslationTextComponent(Inspirations.prefix("unlock.fail.no_match")), true);
+            player.displayClientMessage(new TranslationTextComponent(Inspirations.prefix("unlock.fail.no_match")), true);
           }
         } else {
-          player.sendStatusMessage(new TranslationTextComponent(Inspirations.prefix("unlock.fail.unlocked")), true);
+          player.displayClientMessage(new TranslationTextComponent(Inspirations.prefix("unlock.fail.unlocked")), true);
         }
 
         event.setCanceled(true);
@@ -119,7 +119,7 @@ public class ToolsEvents {
     if (event.isCanceled()) {
       return;
     }
-    if (event.getWorld().isRemote() || !(event.getWorld() instanceof ServerWorld)) {
+    if (event.getWorld().isClientSide() || !(event.getWorld() instanceof ServerWorld)) {
       return;
     }
     ServerWorld world = (ServerWorld)event.getWorld();
@@ -133,13 +133,13 @@ public class ToolsEvents {
     if (!(block instanceof VineBlock)) {
       return;
     }
-    ItemStack shears = player.getHeldItemMainhand();
+    ItemStack shears = player.getMainHandItem();
     Item item = shears.getItem();
     if (!(item instanceof ShearsItem || item.getToolTypes(shears).contains(InspirationsRegistry.SHEAR_TYPE))) {
       return;
     }
 
-    BlockPos pos = event.getPos().down();
+    BlockPos pos = event.getPos().below();
     VineBlock vine = (VineBlock)block;
     BlockState state = world.getBlockState(pos);
 
@@ -149,18 +149,18 @@ public class ToolsEvents {
       count++;
       for (ItemStack stack : state.getDrops(new LootContext.Builder(world)
                                                 .withParameter(LootParameters.TOOL, shears)
-                                                .withParameter(LootParameters.field_237457_g_, Vector3d.copyCentered(pos))
+                                                .withParameter(LootParameters.ORIGIN, Vector3d.atCenterOf(pos))
                                                 .withParameter(LootParameters.THIS_ENTITY, player)
                                            )) {
-        Block.spawnAsEntity(world, pos, stack);
+        Block.popResource(world, pos, stack);
       }
-      pos = pos.down();
+      pos = pos.below();
       state = world.getBlockState(pos);
     }
     // break all the vines we dropped as items,
     // mainly for safety even though vines should break it themselves
     for (int i = 0; i < count; i++) {
-      pos = pos.up();
+      pos = pos.above();
       world.removeBlock(pos, false);
     }
   }
@@ -168,7 +168,7 @@ public class ToolsEvents {
   private static boolean vineCanStay(World world, BlockState state, BlockPos pos) {
     // check if any of the four sides allows the vine to stay
     for (Direction side : Direction.Plane.HORIZONTAL) {
-      if (state.get(VineBlock.getPropertyFor(side)) && VineBlock.canAttachTo(world, pos.offset(side), side)) {
+      if (state.getValue(VineBlock.getPropertyForFace(side)) && VineBlock.isAcceptableNeighbour(world, pos.relative(side), side)) {
         return true;
       }
     }
@@ -218,37 +218,37 @@ public class ToolsEvents {
       return;
     }
     LivingEntity target = event.getEntityLiving();
-    if (target.world.isRemote || !target.isActiveItemStackBlocking()) {
+    if (target.level.isClientSide || !target.isBlocking()) {
       return;
     }
-    ItemStack stack = target.getActiveItemStack();
-    int thorns = EnchantmentHelper.getEnchantmentLevel(Enchantments.THORNS, stack);
-    int fire = EnchantmentHelper.getEnchantmentLevel(Enchantments.FIRE_ASPECT, stack);
-    int knockback = EnchantmentHelper.getEnchantmentLevel(Enchantments.KNOCKBACK, stack);
+    ItemStack stack = target.getUseItem();
+    int thorns = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.THORNS, stack);
+    int fire = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.FIRE_ASPECT, stack);
+    int knockback = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.KNOCKBACK, stack);
     if (thorns == 0 && fire == 0 && knockback == 0) {
       return;
     }
 
     DamageSource source = event.getSource();
-    Entity attacker = source.getImmediateSource();
+    Entity attacker = source.getDirectEntity();
     // Apply shield enchantments if the player can be hurt by the source,
     // and they are have blocked it.
-    if (attacker != null && !target.isInvulnerableTo(source) && target.canBlockDamageSource(source)) {
-      if (thorns > 0 && ThornsEnchantment.shouldHit(thorns, target.world.rand)) {
-        attacker.attackEntityFrom(DamageSource.causeThornsDamage(target), ThornsEnchantment.getDamage(thorns, target.world.rand));
-        stack.damageItem(1, target, (play) -> play.sendBreakAnimation(target.getActiveHand()));
+    if (attacker != null && !target.isInvulnerableTo(source) && target.isDamageSourceBlocked(source)) {
+      if (thorns > 0 && ThornsEnchantment.shouldHit(thorns, target.level.random)) {
+        attacker.hurt(DamageSource.thorns(target), ThornsEnchantment.getDamage(thorns, target.level.random));
+        stack.hurtAndBreak(1, target, (play) -> play.broadcastBreakEvent(target.getUsedItemHand()));
       }
       if (fire > 0) {
-        attacker.setFire(fire * 4);
+        attacker.setSecondsOnFire(fire * 4);
       }
       if (knockback > 0) {
         if (attacker instanceof LivingEntity) {
-          ((LivingEntity)attacker).applyKnockback(knockback * 0.5F, MathHelper.sin(target.rotationYaw * 0.017453292F), -MathHelper.cos(target.rotationYaw * 0.017453292F));
+          ((LivingEntity)attacker).knockback(knockback * 0.5F, MathHelper.sin(target.yRot * 0.017453292F), -MathHelper.cos(target.yRot * 0.017453292F));
           if (attacker instanceof ServerPlayerEntity) {
             InspirationsNetwork.sendPacket(attacker, new SEntityVelocityPacket(attacker));
           }
         } else {
-          attacker.addVelocity(-MathHelper.sin(target.rotationYaw * 0.017453292F) * knockback * 0.5f, 0.1D, MathHelper.cos(target.rotationYaw * 0.017453292F) * knockback * 0.5f);
+          attacker.push(-MathHelper.sin(target.yRot * 0.017453292F) * knockback * 0.5f, 0.1D, MathHelper.cos(target.yRot * 0.017453292F) * knockback * 0.5f);
         }
       }
     }

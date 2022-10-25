@@ -18,7 +18,7 @@ public class UtilityClientEvents extends ClientEvents {
 
   @SubscribeEvent
   static void clientSetup(FMLClientSetupEvent event) {
-    RenderType cutout = RenderType.getCutout();
+    RenderType cutout = RenderType.cutout();
     setRenderLayer(InspirationsUtility.torchLeverFloor, cutout);
     setRenderLayer(InspirationsUtility.torchLeverWall, cutout);
     setRenderLayer(InspirationsUtility.soulLeverFloor, cutout);

@@ -52,7 +52,7 @@ public class CollectorTileEntity extends InventoryTileEntity {
    * Called on redstone pulse to collect items from the world
    */
   public void collect() {
-    if (world == null) {
+    if (level == null) {
       return;
     }
 
@@ -63,7 +63,7 @@ public class CollectorTileEntity extends InventoryTileEntity {
     } else {
       // collect items from world
       boolean collected = false;
-      for (ItemEntity entity : world.getEntitiesWithinAABB(ItemEntity.class, getItemBounds())) {
+      for (ItemEntity entity : level.getEntitiesOfClass(ItemEntity.class, getItemBounds())) {
         ItemStack insert = entity.getItem();
         // no need to simulate, if successful we have to modify the stack regardless
         ItemStack remainder = ItemHandlerHelper.insertItemStacked(itemHandler, insert, false);
@@ -79,7 +79,7 @@ public class CollectorTileEntity extends InventoryTileEntity {
         }
       }
       // play sound. Plays dispenser dispense if success and dispenser fail if not
-      world.playEvent(collected ? WorldEvents.DISPENSER_DISPENSE_SOUND : WorldEvents.DISPENSER_FAIL_SOUND, pos, 0);
+      level.levelEvent(collected ? WorldEvents.DISPENSER_DISPENSE_SOUND : WorldEvents.DISPENSER_FAIL_SOUND, worldPosition, 0);
     }
   }
 
@@ -93,9 +93,9 @@ public class CollectorTileEntity extends InventoryTileEntity {
     }
 
     // if no inventory cached yet, find a new one
-    Direction facing = getBlockState().get(BlockStateProperties.FACING);
-    assert world != null;
-    TileEntity te = world.getTileEntity(pos.offset(facing));
+    Direction facing = getBlockState().getValue(BlockStateProperties.FACING);
+    assert level != null;
+    TileEntity te = level.getBlockEntity(worldPosition.relative(facing));
     // if we have a TE and its an item handler, try extracting from that
     if (te != null) {
       LazyOptional<IItemHandler> handler = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing.getOpposite());
@@ -116,7 +116,7 @@ public class CollectorTileEntity extends InventoryTileEntity {
    */
   private AxisAlignedBB getItemBounds() {
     if (itemBounds == null) {
-      BlockPos offset = pos.offset(getBlockState().get(BlockStateProperties.FACING));
+      BlockPos offset = worldPosition.relative(getBlockState().getValue(BlockStateProperties.FACING));
       itemBounds = new AxisAlignedBB(offset.getX(), offset.getY(), offset.getZ(), offset.getX() + 1, offset.getY() + 1, offset.getZ() + 1);
     }
     return itemBounds;
@@ -149,16 +149,16 @@ public class CollectorTileEntity extends InventoryTileEntity {
   }
 
   @Override
-  public void updateContainingBlockInfo() {
-    super.updateContainingBlockInfo();
+  public void clearCache() {
+    super.clearCache();
     // if the block changed and this TE is intact, remove cache. likely we were rotated
     this.clearCachedInventories();
   }
 
   @Override
-  public boolean isItemValidForSlot(int slot, ItemStack itemstack) {
+  public boolean canPlaceItem(int slot, ItemStack itemstack) {
     // mantle checks stack size which breaks some things when using stacks bigger than 1
-    return slot < getSizeInventory();
+    return slot < getContainerSize();
   }
 
   /*

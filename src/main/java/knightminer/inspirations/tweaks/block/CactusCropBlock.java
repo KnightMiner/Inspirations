@@ -22,7 +22,7 @@ import java.util.stream.IntStream;
 
 public class CactusCropBlock extends BlockCropBlock {
 
-  private static final VoxelShape[] BOUNDS = IntStream.range(1, 16).mapToObj(i -> makeCuboidShape(1, 0, 1, 15, i, 15)).toArray(VoxelShape[]::new);
+  private static final VoxelShape[] BOUNDS = IntStream.range(1, 16).mapToObj(i -> box(1, 0, 1, 15, i, 15)).toArray(VoxelShape[]::new);
   public CactusCropBlock(Block base, PlantType plant) {
     super(base, plant);
   }
@@ -32,7 +32,7 @@ public class CactusCropBlock extends BlockCropBlock {
   }
 
   @Override
-  protected IItemProvider getSeedsItem() {
+  protected IItemProvider getBaseSeedId() {
     return InspirationsTweaks.cactusSeeds;
   }
 
@@ -43,28 +43,28 @@ public class CactusCropBlock extends BlockCropBlock {
 
   /* spiky! */
   @Override
-  public void onEntityCollision(BlockState state, World worldIn, BlockPos pos, Entity entity) {
-    entity.attackEntityFrom(DamageSource.CACTUS, 1.0F);
+  public void entityInside(BlockState state, World worldIn, BlockPos pos, Entity entity) {
+    entity.hurt(DamageSource.CACTUS, 1.0F);
   }
 
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public boolean isValidPosition(BlockState state, IWorldReader world, BlockPos pos) {
+  public boolean canSurvive(BlockState state, IWorldReader world, BlockPos pos) {
     // if true, vanilla cactus farms will now produce cactus seeds rather than full blocks
     if (Config.nerfCactusFarms.get()) {
-      return super.isValidPosition(state, world, pos);
+      return super.canSurvive(state, world, pos);
     }
 
     // if not above cactus, also use base block logic
     // prevents planting seeds in spots where they will break on growth
-    BlockPos down = pos.down();
+    BlockPos down = pos.below();
     BlockState soil = world.getBlockState(down);
     if (soil.getBlock() != Blocks.CACTUS) {
-      return super.isValidPosition(state, world, pos);
+      return super.canSurvive(state, world, pos);
     }
 
     // otherwise, do cactus logic, but without the horizontal checks
-    return soil.canSustainPlant(world, down, Direction.UP, getPlant()) && !world.getBlockState(pos.up()).getMaterial().isLiquid();
+    return soil.canSustainPlant(world, down, Direction.UP, getPlant()) && !world.getBlockState(pos.above()).getMaterial().isLiquid();
   }
 }

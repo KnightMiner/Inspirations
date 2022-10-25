@@ -72,7 +72,7 @@ public abstract class DyeableCauldronRecipe implements ICauldronRecipe, IMultiRe
     inventory.addLevel(-THIRD);
 
     // play sound
-    inventory.playSound(SoundEvents.ENTITY_GENERIC_SPLASH);
+    inventory.playSound(SoundEvents.GENERIC_SPLASH);
   }
 
   /**
@@ -100,7 +100,7 @@ public abstract class DyeableCauldronRecipe implements ICauldronRecipe, IMultiRe
   @Override
   public List<DisplayCauldronRecipe> getRecipes() {
     if (displayRecipes == null) {
-      displayRecipes = Arrays.stream(ingredient.getMatchingStacks()).flatMap(this::getDisplayRecipes).collect(Collectors.toList());
+      displayRecipes = Arrays.stream(ingredient.getItems()).flatMap(this::getDisplayRecipes).collect(Collectors.toList());
     }
     return displayRecipes;
   }
@@ -186,19 +186,19 @@ public abstract class DyeableCauldronRecipe implements ICauldronRecipe, IMultiRe
     }
 
     @Override
-    public DyeableCauldronRecipe read(ResourceLocation id, JsonObject json) {
-      return factory.apply(id, Ingredient.deserialize(JsonHelper.getElement(json, "ingredient")));
+    public DyeableCauldronRecipe fromJson(ResourceLocation id, JsonObject json) {
+      return factory.apply(id, Ingredient.fromJson(JsonHelper.getElement(json, "ingredient")));
     }
 
     @Nullable
     @Override
-    public DyeableCauldronRecipe read(ResourceLocation id, PacketBuffer buffer) {
-      return factory.apply(id, Ingredient.read(buffer));
+    public DyeableCauldronRecipe fromNetwork(ResourceLocation id, PacketBuffer buffer) {
+      return factory.apply(id, Ingredient.fromNetwork(buffer));
     }
 
     @Override
-    public void write(PacketBuffer buffer, DyeableCauldronRecipe recipe) {
-      recipe.ingredient.write(buffer);
+    public void toNetwork(PacketBuffer buffer, DyeableCauldronRecipe recipe) {
+      recipe.ingredient.toNetwork(buffer);
     }
   }
 
@@ -244,8 +244,8 @@ public abstract class DyeableCauldronRecipe implements ICauldronRecipe, IMultiRe
     }
 
     @Override
-    public void serialize(JsonObject json) {
-      json.add("ingredient", ingredient.serialize());
+    public void serializeRecipeData(JsonObject json) {
+      json.add("ingredient", ingredient.toJson());
     }
   }
 }

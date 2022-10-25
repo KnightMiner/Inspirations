@@ -20,6 +20,8 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 // Hopper block with waterlogged=False.
+import net.minecraft.block.AbstractBlock.Properties;
+
 public class DryHopperBlock extends HopperBlock implements IWaterLoggable {
   public DryHopperBlock(Properties props) {
     super(props);
@@ -27,46 +29,46 @@ public class DryHopperBlock extends HopperBlock implements IWaterLoggable {
 
   @Override
   public BlockState getStateForPlacement(BlockItemUseContext context) {
-    Direction side = context.getFace().getOpposite();
-    Block block = context.getWorld().getFluidState(context.getPos()).getFluid() == Fluids.WATER
+    Direction side = context.getClickedFace().getOpposite();
+    Block block = context.getLevel().getFluidState(context.getClickedPos()).getType() == Fluids.WATER
                   ? InspirationsTweaks.wetHopper : InspirationsTweaks.dryHopper;
-    return block.getDefaultState()
-                .with(FACING, side.getAxis() == Axis.Y ? Direction.DOWN : side)
-                .with(ENABLED, true);
+    return block.defaultBlockState()
+                .setValue(FACING, side.getAxis() == Axis.Y ? Direction.DOWN : side)
+                .setValue(ENABLED, true);
   }
 
   @Override
-  public void onReplaced(BlockState state1, World world, BlockPos pos, BlockState state2, boolean moving) {
+  public void onRemove(BlockState state1, World world, BlockPos pos, BlockState state2, boolean moving) {
     if (state2.getBlock() != state1.getBlock() &&
         state2.getBlock() != InspirationsTweaks.dryHopper &&
         state2.getBlock() != InspirationsTweaks.wetHopper
     ) {
-      TileEntity te = world.getTileEntity(pos);
+      TileEntity te = world.getBlockEntity(pos);
       if (te instanceof HopperTileEntity) {
-        InventoryHelper.dropInventoryItems(world, pos, (HopperTileEntity)te);
-        world.updateComparatorOutputLevel(pos, this);
+        InventoryHelper.dropContents(world, pos, (HopperTileEntity)te);
+        world.updateNeighbourForOutputSignal(pos, this);
       }
 
-      super.onReplaced(state1, world, pos, state2, moving);
+      super.onRemove(state1, world, pos, state2, moving);
     }
   }
 
   // Duplicate IWaterLoggable's code, but don't use the property.
   @Override
-  public boolean canContainFluid(IBlockReader world, BlockPos pos, BlockState state, Fluid fluid) {
+  public boolean canPlaceLiquid(IBlockReader world, BlockPos pos, BlockState state, Fluid fluid) {
     return fluid == Fluids.WATER;
   }
 
   @Override
-  public boolean receiveFluid(IWorld world, BlockPos pos, BlockState state, FluidState fluid) {
-    if (fluid.getFluid() == Fluids.WATER) {
-      if (!world.isRemote()) {
+  public boolean placeLiquid(IWorld world, BlockPos pos, BlockState state, FluidState fluid) {
+    if (fluid.getType() == Fluids.WATER) {
+      if (!world.isClientSide()) {
         // Swap the block but don't alter the properties itself.
-        world.setBlockState(pos, InspirationsTweaks.wetHopper.getDefaultState()
-                                                             .with(FACING, state.get(FACING))
-                                                             .with(ENABLED, state.get(ENABLED))
+        world.setBlock(pos, InspirationsTweaks.wetHopper.defaultBlockState()
+                                                             .setValue(FACING, state.getValue(FACING))
+                                                             .setValue(ENABLED, state.getValue(ENABLED))
             , 3);
-        world.getPendingFluidTicks().scheduleTick(pos, fluid.getFluid(), fluid.getFluid().getTickRate(world));
+        world.getLiquidTicks().scheduleTick(pos, fluid.getType(), fluid.getType().getTickDelay(world));
       }
       return true;
     } else {
@@ -75,7 +77,7 @@ public class DryHopperBlock extends HopperBlock implements IWaterLoggable {
   }
 
   @Override
-  public Fluid pickupFluid(IWorld world, BlockPos pos, BlockState state) {
+  public Fluid takeLiquid(IWorld world, BlockPos pos, BlockState state) {
     return Fluids.EMPTY;
   }
 }

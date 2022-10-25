@@ -72,7 +72,7 @@ public abstract class RegistryContentType<T extends IForgeRegistryEntry<T>> exte
 
   @Override
   public T getValue(JsonElement element, String key) {
-    return getValue(new ResourceLocation(JSONUtils.getString(element, key)), JsonSyntaxException::new);
+    return getValue(new ResourceLocation(JSONUtils.convertToString(element, key)), JsonSyntaxException::new);
   }
 
   @Nullable

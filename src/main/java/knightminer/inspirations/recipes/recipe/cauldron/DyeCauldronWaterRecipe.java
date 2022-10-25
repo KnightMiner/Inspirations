@@ -72,7 +72,7 @@ public class DyeCauldronWaterRecipe implements ICauldronRecipe, ICauldronRecipeD
       inv.setContents(CauldronContentTypes.DYE.of(dye));
 
       // play sound
-      inv.playSound(SoundEvents.ENTITY_FISHING_BOBBER_SPLASH);
+      inv.playSound(SoundEvents.FISHING_BOBBER_SPLASH);
     } else {
       contents.get(CauldronContentTypes.COLOR).ifPresent(color -> {
         // update dye stack
@@ -82,7 +82,7 @@ public class DyeCauldronWaterRecipe implements ICauldronRecipe, ICauldronRecipeD
         inv.setContents(CauldronContentTypes.COLOR.of(addColors(dye.getColorValue(), 1, color, 1)));
 
         // play sound
-        inv.playSound(SoundEvents.ENTITY_GENERIC_SPLASH);
+        inv.playSound(SoundEvents.GENERIC_SPLASH);
       });
     }
   }
@@ -171,14 +171,14 @@ public class DyeCauldronWaterRecipe implements ICauldronRecipe, ICauldronRecipeD
   public List<ItemStack> getItemInputs() {
     if (inputs == null) {
       inputs = dye.getTag()
-                  .getAllElements()
+                  .getValues()
                   .stream()
                   .map(ItemStack::new)
                   .filter(stack -> !stack.hasContainerItem())
                   .collect(Collectors.toList());
       // empty on a server when this is called typically
       if (inputs.isEmpty()) {
-        inputs = Collections.singletonList(new ItemStack(DyeItem.getItem(dye)));
+        inputs = Collections.singletonList(new ItemStack(DyeItem.byColor(dye)));
       }
     }
     return inputs;
@@ -224,9 +224,9 @@ public class DyeCauldronWaterRecipe implements ICauldronRecipe, ICauldronRecipeD
   public static class Serializer extends RecipeSerializer<DyeCauldronWaterRecipe> {
     @SuppressWarnings("ConstantConditions")
     @Override
-    public DyeCauldronWaterRecipe read(ResourceLocation id, JsonObject json) {
-      String name = JSONUtils.getString(json, "dye");
-      DyeColor dye = DyeColor.byTranslationKey(name, null);
+    public DyeCauldronWaterRecipe fromJson(ResourceLocation id, JsonObject json) {
+      String name = JSONUtils.getAsString(json, "dye");
+      DyeColor dye = DyeColor.byName(name, null);
       if (dye == null) {
         throw new JsonSyntaxException("Invalid color " + name);
       }
@@ -235,13 +235,13 @@ public class DyeCauldronWaterRecipe implements ICauldronRecipe, ICauldronRecipeD
 
     @Nullable
     @Override
-    public DyeCauldronWaterRecipe read(ResourceLocation id, PacketBuffer buffer) {
-      return new DyeCauldronWaterRecipe(id, buffer.readEnumValue(DyeColor.class));
+    public DyeCauldronWaterRecipe fromNetwork(ResourceLocation id, PacketBuffer buffer) {
+      return new DyeCauldronWaterRecipe(id, buffer.readEnum(DyeColor.class));
     }
 
     @Override
-    public void write(PacketBuffer buffer, DyeCauldronWaterRecipe recipe) {
-      buffer.writeEnumValue(recipe.dye);
+    public void toNetwork(PacketBuffer buffer, DyeCauldronWaterRecipe recipe) {
+      buffer.writeEnum(recipe.dye);
     }
   }
 
@@ -256,8 +256,8 @@ public class DyeCauldronWaterRecipe implements ICauldronRecipe, ICauldronRecipeD
     }
 
     @Override
-    public void serialize(JsonObject json) {
-      json.addProperty("dye", dye.getString());
+    public void serializeRecipeData(JsonObject json) {
+      json.addProperty("dye", dye.getSerializedName());
     }
   }
 }

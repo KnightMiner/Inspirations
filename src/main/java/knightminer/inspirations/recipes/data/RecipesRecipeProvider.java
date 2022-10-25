@@ -90,7 +90,7 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
   }
 
   @Override
-  protected void registerRecipes(Consumer<IFinishedRecipe> consumer) {
+  protected void buildShapelessRecipes(Consumer<IFinishedRecipe> consumer) {
     this.consumer = consumer;
     this.addCauldronRecipes();
   }
@@ -105,22 +105,22 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
 
     // fill containers
     // bucket
-    CustomRecipeBuilder.customRecipe(RecipeSerializers.CAULDRON_FILL_BUCKET)
-                       .build(withCondition(ConfigEnabledCondition.CAULDRON_RECIPES), resourceName(folder + "fill_bucket"));
+    CustomRecipeBuilder.special(RecipeSerializers.CAULDRON_FILL_BUCKET)
+                       .save(withCondition(ConfigEnabledCondition.CAULDRON_RECIPES), resourceName(folder + "fill_bucket"));
     // glass bottles
-    ItemStack waterBottle = PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), Potions.WATER);
+    ItemStack waterBottle = PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.WATER);
     CauldronRecipeBuilder.cauldron(SizedIngredient.fromItems(Items.GLASS_BOTTLE), waterIngredient)
                          .minLevels(THIRD)
                          .addLevels(-THIRD)
                          .setOutput(waterBottle.copy())
-                         .setSound(SoundEvents.ITEM_BOTTLE_FILL)
-                         .addCriterion("has_item", hasItem(Items.GLASS_BOTTLE))
+                         .setSound(SoundEvents.BOTTLE_FILL)
+                         .addCriterion("has_item", has(Items.GLASS_BOTTLE))
                          .build(cauldronRecipes, resource(folder + "fill_water_bottle"));
 
     // empty container
     // bucket
-    CustomRecipeBuilder.customRecipe(RecipeSerializers.CAULDRON_EMPTY_BUCKET)
-                       .build(cauldronRecipes, resourceName(folder + "empty_bucket"));
+    CustomRecipeBuilder.special(RecipeSerializers.CAULDRON_EMPTY_BUCKET)
+                       .save(cauldronRecipes, resourceName(folder + "empty_bucket"));
     // water bottle
     CauldronRecipeBuilder.cauldron(SizedIngredient.of(new NBTIngredient(waterBottle)), waterIngredient)
                          .maxLevels(MAX - 1)
@@ -128,11 +128,11 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
                          .setOutput(Items.GLASS_BOTTLE)
                          .setOutput(CauldronContentTypes.FLUID.of(Fluids.WATER))
                          .noContainer()
-                         .setSound(SoundEvents.ITEM_BOTTLE_EMPTY)
-                         .addCriterion("has_item", hasItem(
-                             ItemPredicate.Builder.create()
-                                                  .item(Items.POTION)
-                                                  .nbt(Objects.requireNonNull(waterBottle.getTag()))
+                         .setSound(SoundEvents.BOTTLE_EMPTY)
+                         .addCriterion("has_item", inventoryTrigger(
+                             ItemPredicate.Builder.item()
+                                                  .of(Items.POTION)
+                                                  .hasNbt(Objects.requireNonNull(waterBottle.getTag()))
                                                   .build()))
                          .build(cauldronRecipes, resource(folder + "empty_water_bottle"));
 
@@ -144,8 +144,8 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
                          .matchFull()
                          .setEmpty()
                          .setOutput(Blocks.WET_SPONGE)
-                         .addCriterion("has_item", hasItem(Blocks.SPONGE))
-                         .setSound(SoundType.PLANT.getPlaceSound())
+                         .addCriterion("has_item", has(Blocks.SPONGE))
+                         .setSound(SoundType.GRASS.getPlaceSound())
                          .build(cauldronRecipes, resource(folder + "dry_cauldron"));
 
     // melt ice if boiling, use fancier recipe if cauldron ice is enabled
@@ -155,8 +155,8 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
                          .setFull()
                          .setTemperature(TemperaturePredicate.BOILING)
                          .setOutput(CauldronContentTypes.FLUID.of(Fluids.WATER))
-                         .setSound(SoundEvents.ITEM_BUCKET_FILL)
-                         .addCriterion("has_item", hasItem(Blocks.ICE))
+                         .setSound(SoundEvents.BUCKET_FILL)
+                         .addCriterion("has_item", has(Blocks.ICE))
                          .build(withCondition(ConfigEnabledCondition.CAULDRON_RECIPES, not(ConfigEnabledCondition.CAULDRON_ICE)), wrapE(Fluids.WATER, iceFolder, "_from_ice"));
 
     // freeze water into ice when cold
@@ -164,7 +164,7 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
     ResourceLocation ice = Objects.requireNonNull(Blocks.ICE.getRegistryName());
     CauldronTransformBuilder.transform(CauldronIngredients.FLUID.of(Fluids.WATER), CauldronContentTypes.CUSTOM.of(ice), 500)
                             .setTemperature(TemperaturePredicate.FREEZING)
-                            .addCriterion("has_item", hasItem(Items.ICE))
+                            .addCriterion("has_item", has(Items.ICE))
                             .setSound(SoundType.GLASS.getPlaceSound())
                             .build(cauldronIce, resource(iceFolder + "ice_from_water"));
     // freeze wet ice into packed ice
@@ -172,23 +172,23 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
     ResourceLocation packedIce = Objects.requireNonNull(Blocks.PACKED_ICE.getRegistryName());
     CauldronTransformBuilder.transform(CauldronIngredients.CUSTOM.of(wetIce), CauldronContentTypes.CUSTOM.of(packedIce), 2000)
                             .setTemperature(TemperaturePredicate.FREEZING)
-                            .addCriterion("has_item", hasItem(Items.PACKED_ICE))
+                            .addCriterion("has_item", has(Items.PACKED_ICE))
                             .setSound(SoundType.GLASS.getPlaceSound())
                             .build(cauldronIce, resource(iceFolder + "packed_ice_from_wet_ice"));
     // melt back again when hot
     CauldronTransformBuilder.transform(CauldronIngredients.CUSTOM.of(ice), CauldronContentTypes.FLUID.of(Fluids.WATER), 500)
                             .setTemperature(TemperaturePredicate.BOILING)
-                            .addCriterion("has_item", hasItem(Items.ICE))
-                            .setSound(SoundEvents.ITEM_BUCKET_EMPTY)
+                            .addCriterion("has_item", has(Items.ICE))
+                            .setSound(SoundEvents.BUCKET_EMPTY)
                             .build(cauldronIce, resource(iceFolder + "water_from_ice_melting"));
     CauldronTransformBuilder.transform(CauldronIngredients.CUSTOM.of(wetIce), CauldronContentTypes.FLUID.of(Fluids.WATER), 500)
                             .setTemperature(TemperaturePredicate.BOILING)
-                            .addCriterion("has_item", hasItem(Items.ICE))
+                            .addCriterion("has_item", has(Items.ICE))
                             .setSound(SoundType.GLASS.getPlaceSound())
                             .build(cauldronIce, resource(iceFolder + "water_from_wet_ice"));
     CauldronTransformBuilder.transform(CauldronIngredients.CUSTOM.of(packedIce), CauldronContentTypes.CUSTOM.of(wetIce), 2000)
                             .setTemperature(TemperaturePredicate.BOILING)
-                            .addCriterion("has_item", hasItem(Items.PACKED_ICE))
+                            .addCriterion("has_item", has(Items.PACKED_ICE))
                             .setSound(SoundType.GLASS.getPlaceSound())
                             .build(cauldronIce, resource(iceFolder + "wet_ice_from_packed_ice"));
 
@@ -198,14 +198,14 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
                          .setEmpty()
                          .setOutput(Blocks.ICE)
                          .setSound(SoundType.GLASS.getBreakSound())
-                         .addCriterion("has_item", hasItem(Items.ICE))
+                         .addCriterion("has_item", has(Items.ICE))
                          .build(cauldronIce, resource(iceFolder + "pickup_ice"));
     CauldronRecipeBuilder.cauldron(SizedIngredient.fromItems(Blocks.ICE), CauldronIngredients.CUSTOM.of(ice))
                          .matchEmpty()
                          .setFull()
                          .setOutput(CauldronContentTypes.CUSTOM.of(ice))
                          .setSound(SoundType.GLASS.getPlaceSound())
-                         .addCriterion("has_item", hasItem(Items.ICE))
+                         .addCriterion("has_item", has(Items.ICE))
                          .build(cauldronIce, resource(iceFolder + "place_ice"));
     // fill and empty wet ice
     CauldronRecipeBuilder.cauldron(CauldronIngredients.CUSTOM.of(wetIce))
@@ -213,13 +213,13 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
                          .setOutput(Blocks.ICE)
                          .setOutput(CauldronContentTypes.FLUID.of(Fluids.WATER))
                          .setSound(SoundType.GLASS.getBreakSound())
-                         .addCriterion("has_item", hasItem(Items.ICE))
+                         .addCriterion("has_item", has(Items.ICE))
                          .build(cauldronIce, resource(iceFolder + "pickup_wet_ice"));
     CauldronRecipeBuilder.cauldron(SizedIngredient.fromItems(Blocks.ICE), CauldronIngredients.FLUID.of(Fluids.WATER))
                          .matchFull()
                          .setOutput(CauldronContentTypes.CUSTOM.of(wetIce))
                          .setSound(SoundType.GLASS.getPlaceSound())
-                         .addCriterion("has_item", hasItem(Items.ICE))
+                         .addCriterion("has_item", has(Items.ICE))
                          .build(cauldronIce, resource(iceFolder + "place_wet_ice"));
     // fill and empty packed ice
     CauldronRecipeBuilder.cauldron(CauldronIngredients.CUSTOM.of(packedIce))
@@ -227,14 +227,14 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
                          .setEmpty()
                          .setOutput(Blocks.PACKED_ICE)
                          .setSound(SoundType.GLASS.getBreakSound())
-                         .addCriterion("has_item", hasItem(Items.PACKED_ICE))
+                         .addCriterion("has_item", has(Items.PACKED_ICE))
                          .build(cauldronIce, resource(iceFolder + "pickup_packed_ice"));
     CauldronRecipeBuilder.cauldron(SizedIngredient.fromItems(Blocks.PACKED_ICE), CauldronIngredients.CUSTOM.of(packedIce))
                          .matchEmpty()
                          .setFull()
                          .setOutput(CauldronContentTypes.CUSTOM.of(packedIce))
                          .setSound(SoundType.GLASS.getPlaceSound())
-                         .addCriterion("has_item", hasItem(Items.ICE))
+                         .addCriterion("has_item", has(Items.ICE))
                          .build(cauldronIce, resource(iceFolder + "place_packed_ice"));
 
 
@@ -244,7 +244,7 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
                          .minLevels(THIRD)
                          .addLevels(-THIRD)
                          .setOutput(Blocks.PISTON)
-                         .addCriterion("has_item", hasItem(Blocks.STICKY_PISTON))
+                         .addCriterion("has_item", has(Blocks.STICKY_PISTON))
                          .build(cauldronRecipes, wrap(Blocks.STICKY_PISTON, folder, "_cleaning"));
 
     // concrete powder
@@ -255,8 +255,8 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
                            .minLevels(THIRD)
                            .addLevels(-THIRD)
                            .setOutput(VanillaEnum.CONCRETE.get(color))
-                           .addCriterion("has_item", hasItem(powder))
-                           .build(concrete, resource(concreteFolder + color.getString()))
+                           .addCriterion("has_item", has(powder))
+                           .build(concrete, resource(concreteFolder + color.getSerializedName()))
     );
 
     Consumer<IFinishedRecipe> fluidConsumer = withCondition(ConfigEnabledCondition.CAULDRON_FLUIDS);
@@ -270,15 +270,15 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
                          .setOutput(Items.GLASS_BOTTLE)
                          .noContainer()
                          .setOutput(CauldronContentTypes.FLUID.of(InspirationsRecipes.honey))
-                         .setSound(SoundEvents.ITEM_BOTTLE_EMPTY)
-                         .addCriterion("has_item", hasItem(Items.HONEY_BOTTLE))
+                         .setSound(SoundEvents.BOTTLE_EMPTY)
+                         .addCriterion("has_item", has(Items.HONEY_BOTTLE))
                          .build(fluidConsumer, resource(honeyFolder + "empty_bottle"));
     CauldronRecipeBuilder.cauldron(SizedIngredient.fromItems(Items.GLASS_BOTTLE), CauldronIngredients.FLUID.of(InspirationsRecipes.honey))
                          .minLevels(QUARTER)
                          .addLevels(-QUARTER)
                          .setOutput(Items.HONEY_BOTTLE)
-                         .setSound(SoundEvents.ITEM_BUCKET_FILL)
-                         .addCriterion("has_item", hasItem(Items.HONEY_BOTTLE))
+                         .setSound(SoundEvents.BUCKET_FILL)
+                         .addCriterion("has_item", has(Items.HONEY_BOTTLE))
                          .build(fluidConsumer, resource(honeyFolder + "fill_bottle"));
     // add and remove honey block
     ResourceLocation honeyBlock = new ResourceLocation("honey_block");
@@ -286,15 +286,15 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
                          .matchEmpty()
                          .setFull()
                          .setOutput(CauldronContentTypes.CUSTOM.of(honeyBlock))
-                         .setSound(SoundType.HONEY.getPlaceSound())
-                         .addCriterion("has_item", hasItem(Blocks.HONEY_BLOCK))
+                         .setSound(SoundType.HONEY_BLOCK.getPlaceSound())
+                         .addCriterion("has_item", has(Blocks.HONEY_BLOCK))
                          .build(fluidConsumer, resource(honeyFolder + "place_block"));
     CauldronRecipeBuilder.cauldron(CauldronIngredients.CUSTOM.of(honeyBlock))
                          .matchFull()
                          .setEmpty()
                          .setOutput(Blocks.HONEY_BLOCK)
-                         .setSound(SoundType.HONEY.getBreakSound())
-                         .addCriterion("has_item", hasItem(Blocks.HONEY_BLOCK))
+                         .setSound(SoundType.HONEY_BLOCK.getBreakSound())
+                         .addCriterion("has_item", has(Blocks.HONEY_BLOCK))
                          .build(fluidConsumer, resource(honeyFolder + "pickup_block"));
     // can grab 1 layer of honey for 1 sugar. Same rate as crafting table, but uses solid honey
     // if full block, gives block instead
@@ -303,18 +303,18 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
                          .addLevels(-TWELFTH)
                          .setOutput(Items.SUGAR)
                          .setSound(SoundType.SAND.getBreakSound())
-                         .addCriterion("has_item", hasItem(Items.HONEY_BOTTLE))
+                         .addCriterion("has_item", has(Items.HONEY_BOTTLE))
                          .build(fluidConsumer, resource(honeyFolder + "pickup_sugar"));
     // solidifies at room temp, melts under heat
     CauldronTransformBuilder.transform(CauldronIngredients.FLUID.of(InspirationsRecipes.honey), CauldronContentTypes.CUSTOM.of(honeyBlock), 300)
                             .setTemperature(TemperaturePredicate.COOL)
-                            .setSound(SoundType.HONEY.getPlaceSound())
-                            .addCriterion("has_item", hasItem(Blocks.HONEY_BLOCK))
+                            .setSound(SoundType.HONEY_BLOCK.getPlaceSound())
+                            .addCriterion("has_item", has(Blocks.HONEY_BLOCK))
                             .build(fluidConsumer, resource(honeyFolder + "solidify"));
     CauldronTransformBuilder.transform(CauldronIngredients.CUSTOM.of(honeyBlock), CauldronContentTypes.FLUID.of(InspirationsRecipes.honey), 300)
                             .setTemperature(TemperaturePredicate.BOILING)
-                            .setSound(SoundType.HONEY.getBreakSound())
-                            .addCriterion("has_item", hasItem(Blocks.HONEY_BLOCK))
+                            .setSound(SoundType.HONEY_BLOCK.getBreakSound())
+                            .addCriterion("has_item", has(Blocks.HONEY_BLOCK))
                             .build(fluidConsumer, resource(honeyFolder + "melt"));
 
     // dyes //
@@ -324,17 +324,17 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
     Consumer<IFinishedRecipe> dyeConsumer = withCondition(ConfigEnabledCondition.CAULDRON_DYEING);
     for (DyeColor color : DyeColor.values()) {
       // normal dye to set color
-      dyeConsumer.accept(new DyeCauldronWaterRecipe.FinishedRecipe(resource(dyeFolder + "dye_" + color.getString()), color));
+      dyeConsumer.accept(new DyeCauldronWaterRecipe.FinishedRecipe(resource(dyeFolder + "dye_" + color.getSerializedName()), color));
       // dyed bottle to mix color
       dyeConsumer.accept(new MixCauldronDyeRecipe.FinishedRecipe(
-          resource(dyeFolder + "bottle/" + color.getString()),
-          Ingredient.fromItems(InspirationsRecipes.simpleDyedWaterBottle.get(color)),
+          resource(dyeFolder + "bottle/" + color.getSerializedName()),
+          Ingredient.of(InspirationsRecipes.simpleDyedWaterBottle.get(color)),
           color.getColorValue()));
     }
     // mixed dyed bottle
-    dyeConsumer.accept(new MixCauldronDyeRecipe.FinishedRecipe(resource(dyeFolder + "bottle/mixed"), Ingredient.fromItems(InspirationsRecipes.mixedDyedWaterBottle)));
+    dyeConsumer.accept(new MixCauldronDyeRecipe.FinishedRecipe(resource(dyeFolder + "bottle/mixed"), Ingredient.of(InspirationsRecipes.mixedDyedWaterBottle)));
     // fill dyed bottle
-    CustomRecipeBuilder.customRecipe(RecipeSerializers.CAULDRON_FILL_DYED_BOTTLE).build(dyeConsumer, resourceName(dyeFolder + "bottle/fill"));
+    CustomRecipeBuilder.special(RecipeSerializers.CAULDRON_FILL_DYED_BOTTLE).save(dyeConsumer, resourceName(dyeFolder + "bottle/fill"));
 
     // mix dyed bottles
     String mixFolder = dyeFolder + "bottle/mix/";
@@ -369,8 +369,8 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
     Consumer<IFinishedRecipe> bottleConsumer = withCondition(ConfigEnabledCondition.CAULDRON_DYEING);
     String bottleFolder = folder + "bottle/";
     InspirationsRecipes.simpleDyedWaterBottle.forEach((dye, bottle) -> {
-      String name = dye.getString();
-      ICriterionInstance hasBottle = hasItem(bottle);
+      String name = dye.getSerializedName();
+      ICriterionInstance hasBottle = has(bottle);
 
       // wool
       addComboRecipe(bottleConsumer, VanillaEnum.WOOL.get(dye), "wool", ItemTags.WOOL, bottle, resource(bottleFolder + "wool/" + name));
@@ -383,30 +383,30 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
       // terracotta
       addSurroundRecipe(bottleConsumer, VanillaEnum.TERRACOTTA.get(dye), "stained_terracotta", InspirationsTags.Items.TERRACOTTA, bottle, resource(bottleFolder + "terracotta/" + name));
       // concrete powder
-      ShapelessRecipeBuilder.shapelessRecipe(VanillaEnum.CONCRETE_POWDER.get(dye), 8)
-                            .setGroup("concrete_powder")
-                            .addIngredient(bottle)
-                            .addIngredient(ItemTags.SAND)
-                            .addIngredient(ItemTags.SAND)
-                            .addIngredient(ItemTags.SAND)
-                            .addIngredient(ItemTags.SAND)
-                            .addIngredient(Tags.Items.GRAVEL)
-                            .addIngredient(Tags.Items.GRAVEL)
-                            .addIngredient(Tags.Items.GRAVEL)
-                            .addIngredient(Tags.Items.GRAVEL)
-                            .addCriterion("has_item", hasBottle)
-                            .build(bottleConsumer, resource(bottleFolder + "concrete_powder/" + name));
+      ShapelessRecipeBuilder.shapeless(VanillaEnum.CONCRETE_POWDER.get(dye), 8)
+                            .group("concrete_powder")
+                            .requires(bottle)
+                            .requires(ItemTags.SAND)
+                            .requires(ItemTags.SAND)
+                            .requires(ItemTags.SAND)
+                            .requires(ItemTags.SAND)
+                            .requires(Tags.Items.GRAVEL)
+                            .requires(Tags.Items.GRAVEL)
+                            .requires(Tags.Items.GRAVEL)
+                            .requires(Tags.Items.GRAVEL)
+                            .unlockedBy("has_item", hasBottle)
+                            .save(bottleConsumer, resource(bottleFolder + "concrete_powder/" + name));
     });
 
     // use ink bottle for book and quill
     IItemProvider blackBottle = InspirationsRecipes.simpleDyedWaterBottle.get(DyeColor.BLACK);
-    ShapelessRecipeBuilder.shapelessRecipe(Items.WRITABLE_BOOK)
-                          .setGroup(Objects.requireNonNull(Items.WRITABLE_BOOK.getRegistryName()).getPath())
-                          .addIngredient(blackBottle)
-                          .addIngredient(Tags.Items.FEATHERS)
-                          .addIngredient(Items.BOOK)
-                          .addCriterion("has_item", hasItem(blackBottle))
-                          .build(bottleConsumer, resource(bottleFolder + "writable_book"));
+    ShapelessRecipeBuilder.shapeless(Items.WRITABLE_BOOK)
+                          .group(Objects.requireNonNull(Items.WRITABLE_BOOK.getRegistryName()).getPath())
+                          .requires(blackBottle)
+                          .requires(Tags.Items.FEATHERS)
+                          .requires(Items.BOOK)
+                          .unlockedBy("has_item", has(blackBottle))
+                          .save(bottleConsumer, resource(bottleFolder + "writable_book"));
 
     // leather dyeing and clearing
     addDyeableRecipes(Items.LEATHER_HELMET, folder, null);
@@ -417,7 +417,7 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
     addDyeableRecipes(InspirationsTools.dimensionCompass, folder, ConfigEnabledCondition.DIMENSION_COMPASS);
 
     // banner pattern removing
-    CustomRecipeBuilder.customRecipe(RecipeSerializers.CAULDRON_REMOVE_BANNER_PATTERN).build(cauldronRecipes, resourceName(folder + "remove_banner_pattern"));
+    CustomRecipeBuilder.special(RecipeSerializers.CAULDRON_REMOVE_BANNER_PATTERN).save(cauldronRecipes, resourceName(folder + "remove_banner_pattern"));
 
 
     // potions //
@@ -446,20 +446,20 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
         new FillPotionCauldronRecipe.FinishedRecipe(resource(potionFolder + "tipped_arrow"), SizedIngredient.fromItems(16, Items.ARROW), Items.TIPPED_ARROW));
 
     // craft the bottles
-    ShapelessRecipeBuilder.shapelessRecipe(InspirationsRecipes.splashBottle)
-                          .addIngredient(Items.GLASS_BOTTLE)
-                          .addIngredient(Items.GLASS_BOTTLE)
-                          .addIngredient(Items.GLASS_BOTTLE)
-                          .addIngredient(Tags.Items.GUNPOWDER)
-                          .addCriterion("has_item", hasItem(Tags.Items.GUNPOWDER))
-                          .build(potionConsumer, prefix(InspirationsRecipes.splashBottle, potionFolder));
-    ShapelessRecipeBuilder.shapelessRecipe(InspirationsRecipes.lingeringBottle)
-                          .addIngredient(InspirationsTags.Items.SPLASH_BOTTLES)
-                          .addIngredient(InspirationsTags.Items.SPLASH_BOTTLES)
-                          .addIngredient(InspirationsTags.Items.SPLASH_BOTTLES)
-                          .addIngredient(Items.DRAGON_BREATH)
-                          .addCriterion("has_item", hasItem(Items.DRAGON_BREATH))
-                          .build(potionConsumer, prefix(InspirationsRecipes.lingeringBottle, potionFolder));
+    ShapelessRecipeBuilder.shapeless(InspirationsRecipes.splashBottle)
+                          .requires(Items.GLASS_BOTTLE)
+                          .requires(Items.GLASS_BOTTLE)
+                          .requires(Items.GLASS_BOTTLE)
+                          .requires(Tags.Items.GUNPOWDER)
+                          .unlockedBy("has_item", has(Tags.Items.GUNPOWDER))
+                          .save(potionConsumer, prefix(InspirationsRecipes.splashBottle, potionFolder));
+    ShapelessRecipeBuilder.shapeless(InspirationsRecipes.lingeringBottle)
+                          .requires(InspirationsTags.Items.SPLASH_BOTTLES)
+                          .requires(InspirationsTags.Items.SPLASH_BOTTLES)
+                          .requires(InspirationsTags.Items.SPLASH_BOTTLES)
+                          .requires(Items.DRAGON_BREATH)
+                          .unlockedBy("has_item", has(Items.DRAGON_BREATH))
+                          .save(potionConsumer, prefix(InspirationsRecipes.lingeringBottle, potionFolder));
 
     // brew the potions
     Consumer<IFinishedRecipe> brewingConsumer = withCondition(ConfigEnabledCondition.CAULDRON_BREWING);
@@ -469,22 +469,22 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
 
     // fluid recipes //
     // beetroot is just water based
-    addStewRecipe(Items.BEETROOT_SOUP, Ingredient.fromTag(Tags.Items.CROPS_BEETROOT), 6, InspirationsRecipes.beetrootSoup, waterIngredient, folder + "beetroot_soup/");
+    addStewRecipe(Items.BEETROOT_SOUP, Ingredient.of(Tags.Items.CROPS_BEETROOT), 6, InspirationsRecipes.beetrootSoup, waterIngredient, folder + "beetroot_soup/");
     // mushroom water based
-    addStewRecipe(Items.MUSHROOM_STEW, Ingredient.fromTag(Tags.Items.MUSHROOMS), 2, InspirationsRecipes.mushroomStew, waterIngredient, folder + "mushroom_stew/");
+    addStewRecipe(Items.MUSHROOM_STEW, Ingredient.of(Tags.Items.MUSHROOMS), 2, InspirationsRecipes.mushroomStew, waterIngredient, folder + "mushroom_stew/");
     // potato comes from mushroom
-    addStewRecipe(InspirationsRecipes.potatoSoupItem, Ingredient.fromItems(Items.BAKED_POTATO), 2, InspirationsRecipes.potatoSoup, CauldronIngredients.FLUID.of(InspirationsRecipes.mushroomStew), folder + "potato_soup/");
+    addStewRecipe(InspirationsRecipes.potatoSoupItem, Ingredient.of(Items.BAKED_POTATO), 2, InspirationsRecipes.potatoSoup, CauldronIngredients.FLUID.of(InspirationsRecipes.mushroomStew), folder + "potato_soup/");
     // add in some rabbit for rabbit stew
-    addStewRecipe(Items.RABBIT_STEW, Ingredient.fromItems(Items.COOKED_RABBIT), 1, InspirationsRecipes.rabbitStew, CauldronIngredients.FLUID.of(InspirationsRecipes.potatoSoup), folder + "rabbit_stew/");
+    addStewRecipe(Items.RABBIT_STEW, Ingredient.of(Items.COOKED_RABBIT), 1, InspirationsRecipes.rabbitStew, CauldronIngredients.FLUID.of(InspirationsRecipes.potatoSoup), folder + "rabbit_stew/");
 
     // normal potato soup crafting
-    ShapelessRecipeBuilder.shapelessRecipe(InspirationsRecipes.potatoSoupItem)
-                          .addIngredient(Items.BOWL)
-                          .addIngredient(Items.BAKED_POTATO)
-                          .addIngredient(Items.BAKED_POTATO)
-                          .addIngredient(Tags.Items.MUSHROOMS)
-                          .addCriterion("has_item", hasItem(Items.BAKED_POTATO))
-                          .build(withCondition(), resource(folder + "potato_soup/item"));
+    ShapelessRecipeBuilder.shapeless(InspirationsRecipes.potatoSoupItem)
+                          .requires(Items.BOWL)
+                          .requires(Items.BAKED_POTATO)
+                          .requires(Items.BAKED_POTATO)
+                          .requires(Tags.Items.MUSHROOMS)
+                          .unlockedBy("has_item", has(Items.BAKED_POTATO))
+                          .save(withCondition(), resource(folder + "potato_soup/item"));
   }
 
   /**
@@ -520,7 +520,7 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
 
     // undyed
     SizedIngredient ingredient = SizedIngredient.fromTag(tag);
-    ICriterionInstance criteria = hasItem(tag);
+    ICriterionInstance criteria = has(tag);
     CauldronRecipeBuilder undyedBuilder = CauldronRecipeBuilder
         .cauldron(ingredient, CauldronIngredients.FLUID.of(Fluids.WATER))
         .minLevels(THIRD)
@@ -543,7 +543,7 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
       if (copyNBT) {
         coloredBuilder.setCopyNBT();
       }
-      coloredBuilder.build(dyed, resource(folder + color.getString()));
+      coloredBuilder.build(dyed, resource(folder + color.getSerializedName()));
     });
   }
 
@@ -553,7 +553,7 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
    * @param folder   Folder for recipes
    */
   private void addDyeableRecipes(IItemProvider dyeable, String folder, @Nullable ICondition extraCondition) {
-    Ingredient ingredient = Ingredient.fromItems(dyeable);
+    Ingredient ingredient = Ingredient.of(dyeable);
     (extraCondition == null ? withCondition(ConfigEnabledCondition.CAULDRON_RECIPES) : withCondition(ConfigEnabledCondition.CAULDRON_RECIPES, extraCondition))
         .accept(DyeableCauldronRecipe.FinishedRecipe.clear(prefix(dyeable, folder + "dyeable/clear_"), ingredient));
     (extraCondition == null ? withCondition(ConfigEnabledCondition.CAULDRON_DYEING) : withCondition(ConfigEnabledCondition.CAULDRON_DYEING, extraCondition))
@@ -579,8 +579,8 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
                          .minLevels(THIRD)
                          .addLevels(-THIRD)
                          .setOutput(stewItem)
-                         .setSound(SoundEvents.ITEM_BOTTLE_FILL)
-                         .addCriterion("has_item", hasItem(Items.BOWL))
+                         .setSound(SoundEvents.BOTTLE_FILL)
+                         .addCriterion("has_item", has(Items.BOWL))
                          .build(consumer, resource(folder + "fill_bowl"));
 
     // empty the bowl
@@ -590,12 +590,12 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
                          .setOutput(Items.BOWL)
                          .setOutput(stewContents)
                          .noContainer()
-                         .setSound(SoundEvents.ITEM_BOTTLE_EMPTY)
-                         .addCriterion("has_item", hasItem(stewItem))
+                         .setSound(SoundEvents.BOTTLE_EMPTY)
+                         .addCriterion("has_item", has(stewItem))
                          .build(consumer, resource(folder + "empty_bowl"));
 
     // if the cauldron has 1 level, takes 1 item. If it has 2 or 3, take twice as many
-    ICriterionInstance criteria = hasItem(Blocks.CAULDRON);
+    ICriterionInstance criteria = has(Blocks.CAULDRON);
     CauldronRecipeBuilder.cauldron(SizedIngredient.of(ingredient, amount), base)
                          .levelRange(1, THIRD)
                          .setTemperature(TemperaturePredicate.BOILING)
@@ -638,23 +638,23 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
     Consumer<IFinishedRecipe> consumer = consumerBuilder.build(getConsumer());
 
     // build recipe name
-    StringBuilder name = new StringBuilder(folder + output.getString() + "_from");
+    StringBuilder name = new StringBuilder(folder + output.getSerializedName() + "_from");
     Item outputItem = InspirationsRecipes.simpleDyedWaterBottle.get(output);
-    ShapelessRecipeBuilder builder = ShapelessRecipeBuilder.shapelessRecipe(outputItem, inputs.length)
-        .setGroup(Objects.requireNonNull(outputItem.getRegistryName()).toString());
+    ShapelessRecipeBuilder builder = ShapelessRecipeBuilder.shapeless(outputItem, inputs.length)
+        .group(Objects.requireNonNull(outputItem.getRegistryName()).toString());
     Set<DyeColor> seen = EnumSet.noneOf(DyeColor.class);
     for (DyeColor input : inputs) {
       IItemProvider bottle = InspirationsRecipes.simpleDyedWaterBottle.get(input);
-      builder.addIngredient(bottle);
+      builder.requires(bottle);
       // only add each color to the name and criteria once
       if (!seen.contains(input)) {
-        builder.addCriterion("has_" + input.getString(), hasItem(bottle));
-        name.append("_").append(input.getString());
+        builder.unlockedBy("has_" + input.getSerializedName(), has(bottle));
+        name.append("_").append(input.getSerializedName());
         seen.add(input);
       }
     }
     // build the recipe with the built name
-    builder.build(consumer, resourceName(name.toString()));
+    builder.save(consumer, resourceName(name.toString()));
   }
 
   /**
@@ -667,15 +667,15 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
    * @param location  Recipe output location
    */
   private void addSurroundRecipe(Consumer<IFinishedRecipe> consumer, IItemProvider output, String group, ITag<Item> surround, IItemProvider center, ResourceLocation location) {
-    ShapedRecipeBuilder.shapedRecipe(output, 8)
-                       .setGroup(group)
-                       .key('#', surround)
-                       .key('x', center)
-                       .patternLine("###")
-                       .patternLine("#x#")
-                       .patternLine("###")
-                       .addCriterion("has_item", hasItem(center))
-                       .build(consumer, location);
+    ShapedRecipeBuilder.shaped(output, 8)
+                       .group(group)
+                       .define('#', surround)
+                       .define('x', center)
+                       .pattern("###")
+                       .pattern("#x#")
+                       .pattern("###")
+                       .unlockedBy("has_item", has(center))
+                       .save(consumer, location);
   }
 
   /**
@@ -688,12 +688,12 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
    * @param location  Recipe output location
    */
   private void addComboRecipe(Consumer<IFinishedRecipe> consumer, IItemProvider output, String group, ITag<Item> input, IItemProvider modifier, ResourceLocation location) {
-    ShapelessRecipeBuilder.shapelessRecipe(output)
-                          .setGroup(group)
-                          .addIngredient(input)
-                          .addIngredient(modifier)
-                          .addCriterion("has_item", hasItem(modifier))
-                          .build(consumer, location);
+    ShapelessRecipeBuilder.shapeless(output)
+                          .group(group)
+                          .requires(input)
+                          .requires(modifier)
+                          .unlockedBy("has_item", has(modifier))
+                          .save(consumer, location);
   }
 
   private ResourceLocation prefixE(IForgeRegistryEntry<?> entry, String prefix) {

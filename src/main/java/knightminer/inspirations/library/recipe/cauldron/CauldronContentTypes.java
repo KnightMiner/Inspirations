@@ -125,7 +125,7 @@ public class CauldronContentTypes {
    * @throws JsonSyntaxException  If the type is missing or the data invalid
    */
   public static ICauldronContents read(JsonObject json) {
-    ResourceLocation location = new ResourceLocation(JSONUtils.getString(json, KEY_TYPE));
+    ResourceLocation location = new ResourceLocation(JSONUtils.getAsString(json, KEY_TYPE));
     CauldronContentType<?> type = get(location);
     if (type != null) {
       return read(type, json, CauldronContentType::read);

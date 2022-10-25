@@ -70,13 +70,13 @@ public class VanillaCauldronInventory extends CauldronItemInventory {
 
   @Override
   public int getLevel() {
-    return state.get(CauldronBlock.LEVEL) * 4;
+    return state.getValue(CauldronBlock.LEVEL) * 4;
   }
 
   @Override
   public void setLevel(int level) {
     level = MathHelper.clamp(level, 0, ICauldronRecipe.MAX) / 4;
-    if (state.get(CauldronBlock.LEVEL) != level) {
+    if (state.getValue(CauldronBlock.LEVEL) != level) {
       ((CauldronBlock) Blocks.CAULDRON).setWaterLevel(world, pos, state, level);
     }
   }
@@ -100,7 +100,7 @@ public class VanillaCauldronInventory extends CauldronItemInventory {
   public CauldronTemperature getTemperature() {
     if (temperature == null) {
       temperature = CauldronTileEntity.calcTemperature(world, pos,
-        CauldronTileEntity.isCauldronFire(world.getBlockState(pos.down())),
+        CauldronTileEntity.isCauldronFire(world.getBlockState(pos.below())),
         CauldronTileEntity.isFreezing(world, pos));
     }
     return temperature;
@@ -114,7 +114,7 @@ public class VanillaCauldronInventory extends CauldronItemInventory {
    * @return  True if a recipe happened, false otherwise
    */
   public boolean handleRecipe() {
-    Optional<ICauldronRecipe> recipe = world.getRecipeManager().getRecipe(RecipeTypes.CAULDRON, this, world);
+    Optional<ICauldronRecipe> recipe = world.getRecipeManager().getRecipeFor(RecipeTypes.CAULDRON, this, world);
     if (recipe.isPresent()) {
       recipe.get().handleRecipe(this);
       return true;

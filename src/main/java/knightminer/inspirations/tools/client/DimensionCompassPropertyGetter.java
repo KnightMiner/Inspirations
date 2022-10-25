@@ -30,7 +30,7 @@ public class DimensionCompassPropertyGetter implements IItemPropertyGetter {
 
 	@Override
 	public float call(ItemStack stack, @Nullable ClientWorld clientWorld, @Nullable LivingEntity living) {
-		Entity entity = living != null ? living : stack.getAttachedEntity();
+		Entity entity = living != null ? living : stack.getEntityRepresentation();
 		if (entity == null) {
 			return 0.0F;
 		}
@@ -38,38 +38,38 @@ public class DimensionCompassPropertyGetter implements IItemPropertyGetter {
 		// ensure we have a world
 		World world = clientWorld;
 		if (world == null) {
-			if (entity.world == null) {
+			if (entity.level == null) {
 				return 0.0f;
 			}
-			world = entity.world;
+			world = entity.level;
 		}
 
 		// start by selecting our target position
-		BlockPos pos = CompassItem.func_234670_d_(stack)
+		BlockPos pos = CompassItem.isLodestoneCompass(stack)
 									 ? getLodestonePosition(world, stack.getOrCreateTag())
 									 : getDimensionEntered(entity);
 		long time = world.getGameTime();
-		Vector3d entityPos = entity.getPositionVec();
+		Vector3d entityPos = entity.position();
 
 		// if the position is valid and we are not exactly on the position
-		if (pos != null && entityPos.squareDistanceTo(pos.getX() + 0.5D, entityPos.getY(), pos.getZ() + 0.5D) >= 9.999999747378752E-6D) {
-			boolean isPlayer = living instanceof PlayerEntity && ((PlayerEntity)living).isUser();
+		if (pos != null && entityPos.distanceToSqr(pos.getX() + 0.5D, entityPos.y(), pos.getZ() + 0.5D) >= 9.999999747378752E-6D) {
+			boolean isPlayer = living instanceof PlayerEntity && ((PlayerEntity)living).isLocalPlayer();
 
 			// angle is based on holder
 			double holderAngle = 0.0D;
 			if (isPlayer) {
-				holderAngle = living.rotationYaw;
+				holderAngle = living.yRot;
 			} else if (entity instanceof ItemFrameEntity) {
 				holderAngle = Angle.getFrameRotation((ItemFrameEntity)entity);
 			} else if (entity instanceof ItemEntity) {
-				holderAngle = (180.0F - ((ItemEntity)entity).getItemHover(0.5F) / 6.2831855F * 360.0F);
+				holderAngle = (180.0F - ((ItemEntity)entity).getSpin(0.5F) / 6.2831855F * 360.0F);
 			} else if (living != null) {
-				holderAngle = living.renderYawOffset;
+				holderAngle = living.yBodyRot;
 			}
 
 			// wobble it a little
 			holderAngle = MathHelper.positiveModulo(holderAngle / 360.0D, 1.0D);
-			double exactRotation = getAngleToPosition(Vector3d.copyCentered(pos), entity) / 6.2831854820251465D;
+			double exactRotation = getAngleToPosition(Vector3d.atCenterOf(pos), entity) / 6.2831854820251465D;
 			double wobbleRotation;
 			if (isPlayer) {
 				if (this.positionWobble.shouldUpdate(time)) {
@@ -113,19 +113,19 @@ public class DimensionCompassPropertyGetter implements IItemPropertyGetter {
 		boolean hasPos = nbt.contains("LodestonePos");
 		boolean hasDim = nbt.contains("LodestoneDimension");
 		if (hasPos && hasDim) {
-			Optional<RegistryKey<World>> optional = CompassItem.func_234667_a_(nbt);
+			Optional<RegistryKey<World>> optional = CompassItem.getLodestoneDimension(nbt);
 			if (optional.isPresent()) {
 				RegistryKey<World> storedDimension = optional.get();
-				RegistryKey<World> currentDimension = world.getDimensionKey();
+				RegistryKey<World> currentDimension = world.dimension();
 				BlockPos pos = NBTUtil.readBlockPos(nbt.getCompound("LodestonePos"));
 
 				if (storedDimension != currentDimension) {
 					// from nether coords
-					if (storedDimension == World.THE_NETHER) {
+					if (storedDimension == World.NETHER) {
 						return new BlockPos(pos.getX() * 8, pos.getY(), pos.getZ() * 8);
 					}
 					// to nether coords
-					if (currentDimension == World.THE_NETHER) {
+					if (currentDimension == World.NETHER) {
 						return new BlockPos(Math.round(pos.getX() / 8f), pos.getY(), Math.round(pos.getZ() / 8f));
 					}
 				}
@@ -140,6 +140,6 @@ public class DimensionCompassPropertyGetter implements IItemPropertyGetter {
 	 * Gets the angle from the position to the entity
 	 */
 	private static double getAngleToPosition(Vector3d target, Entity entity) {
-		return Math.atan2(target.getZ() - entity.getPosZ(), target.getX() - entity.getPosX());
+		return Math.atan2(target.z() - entity.getZ(), target.x() - entity.getX());
 	}
 }

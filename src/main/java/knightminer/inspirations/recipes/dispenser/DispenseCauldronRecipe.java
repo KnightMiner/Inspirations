@@ -35,23 +35,23 @@ public class DispenseCauldronRecipe extends DefaultDispenseItemBehavior {
   }
 
   @Override
-  protected ItemStack dispenseStack(IBlockSource source, ItemStack stack) {
-    if (!stack.getItem().isIn(InspirationsTags.Items.DISP_CAULDRON_RECIPES)) {
+  protected ItemStack execute(IBlockSource source, ItemStack stack) {
+    if (!stack.getItem().is(InspirationsTags.Items.DISP_CAULDRON_RECIPES)) {
       return fallback.dispense(source, stack);
     }
 
     // find cauldron, quit if missing
-    World world = source.getWorld();
-    BlockPos pos = source.getBlockPos().offset(source.getBlockState().get(DispenserBlock.FACING));
+    World world = source.getLevel();
+    BlockPos pos = source.getPos().relative(source.getBlockState().getValue(DispenserBlock.FACING));
     BlockState state = world.getBlockState(pos);
     if (!(state.getBlock() instanceof CauldronBlock)) {
       return fallback.dispense(source, stack);
     }
 
     // create consumer to add items
-    DispenserTileEntity dispenser = source.getBlockTileEntity();
+    DispenserTileEntity dispenser = source.getEntity();
     Consumer<ItemStack> addItems = item -> {
-      if (dispenser.addItemStack(stack) < 0) {
+      if (dispenser.addItem(stack) < 0) {
         DEFAULT.dispense(source, stack);
       }
     };

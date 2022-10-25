@@ -19,6 +19,10 @@ import static net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 import static net.minecraftforge.common.ForgeConfigSpec.Builder;
 import static net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
 
+import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
+import net.minecraftforge.common.ForgeConfigSpec.Builder;
+import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
+
 @SuppressWarnings("WeakerAccess")
 public class Config {
   /** List of all cached config values, for cache clearing */
@@ -716,7 +720,7 @@ public class Config {
 
         // If we have JEI, this will be set. It needs to run on the main thread...
         if (updateJEI != null) {
-          DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> Minecraft.getInstance().deferTask(updateJEI));
+          DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> Minecraft.getInstance().submitAsync(updateJEI));
         }
       } else if (spec == CLIENT_SPEC) {
         CLIENT_VALUES.forEach(CachedValue::invalidate);

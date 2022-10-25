@@ -10,6 +10,8 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.common.util.Constants;
 
+import net.minecraft.item.Item.Properties;
+
 public class MixedDyedBottleItem extends Item {
   private static final String TAG_COLOR = "color";
   public MixedDyedBottleItem(Properties props) {
@@ -17,7 +19,7 @@ public class MixedDyedBottleItem extends Item {
   }
 
   @Override
-  public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
+  public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items) {
     // hide from creative as means nothing without NBT, and the simple ones do the NBT
   }
 

@@ -20,7 +20,7 @@ public enum ShelfType implements IStringSerializable {
   private final String name = name().toLowerCase(Locale.ROOT);
 
   @Override
-  public String getString() {
+  public String getSerializedName() {
     return name;
   }
 

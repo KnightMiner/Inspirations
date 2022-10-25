@@ -23,6 +23,8 @@ import net.minecraft.world.World;
 
 import java.util.function.Supplier;
 
+import net.minecraft.item.Item.Properties;
+
 /**
  * Item representing an empty potion bottle. Can be filled with water from a source block
  */
@@ -45,31 +47,31 @@ public class EmptyBottleItem extends GlassBottleItem implements IHidable {
   }
 
   @Override
-  public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
+  public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items) {
     if (shouldAddtoItemGroup(group)) {
-      super.fillItemGroup(group, items);
+      super.fillItemCategory(group, items);
     }
   }
 
   @Override
-  public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand hand) {
-    ItemStack stack = player.getHeldItem(hand);
+  public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+    ItemStack stack = player.getItemInHand(hand);
 
     // must hit a block
-    BlockRayTraceResult trace = rayTrace(world, player, RayTraceContext.FluidMode.SOURCE_ONLY);
+    BlockRayTraceResult trace = getPlayerPOVHitResult(world, player, RayTraceContext.FluidMode.SOURCE_ONLY);
     if (trace.getType() == RayTraceResult.Type.BLOCK) {
-      BlockPos pos = trace.getPos();
-      if (!world.isBlockModifiable(player, pos)) {
-        return ActionResult.resultPass(stack);
+      BlockPos pos = trace.getBlockPos();
+      if (!world.mayInteract(player, pos)) {
+        return ActionResult.pass(stack);
       }
 
       // if the block contains water, give filled stack
-      if (world.getFluidState(pos).isTagged(FluidTags.WATER)) {
-        world.playSound(player, player.getPosX(), player.getPosY(), player.getPosZ(), SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.NEUTRAL, 1.0F, 1.0F);
-        return ActionResult.func_233538_a_(this.turnBottleIntoItem(stack, player, PotionUtils.addPotionToItemStack(new ItemStack(filled.get()), Potions.WATER)), world.isRemote());
+      if (world.getFluidState(pos).is(FluidTags.WATER)) {
+        world.playSound(player, player.getX(), player.getY(), player.getZ(), SoundEvents.BOTTLE_FILL, SoundCategory.NEUTRAL, 1.0F, 1.0F);
+        return ActionResult.sidedSuccess(this.turnBottleIntoItem(stack, player, PotionUtils.setPotion(new ItemStack(filled.get()), Potions.WATER)), world.isClientSide());
       }
     }
 
-    return ActionResult.resultPass(stack);
+    return ActionResult.pass(stack);
   }
 }

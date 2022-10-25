@@ -114,7 +114,7 @@ public abstract class AbstractCauldronRecipe implements ICauldronRecipeDisplay {
    * @throws JsonSyntaxException  If the value is invalid
    */
   public static TemperaturePredicate getBoiling(JsonObject json, String key) {
-    String name = JSONUtils.getString(json, key, "any");
+    String name = JSONUtils.getAsString(json, key, "any");
     TemperaturePredicate boiling = TemperaturePredicate.byName(name);
     if (boiling == null) {
       throw new JsonSyntaxException("Invalid boiling predicate '" + name + "'");

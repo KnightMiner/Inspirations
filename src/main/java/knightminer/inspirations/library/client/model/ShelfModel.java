@@ -102,7 +102,7 @@ public class ShelfModel implements IModelGeometry<ShelfModel> {
       Set<String> retextured = RetexturedModel.Loader.getRetextured(json);
 
       // books
-      JsonArray bookArray = JSONUtils.getJsonArray(json, "books");
+      JsonArray bookArray = JSONUtils.getAsJsonArray(json, "books");
       if (bookArray.size() == 0) {
         throw new JsonSyntaxException("Must have at least one book element");
       }
@@ -300,7 +300,7 @@ public class ShelfModel implements IModelGeometry<ShelfModel> {
 
     @Nullable
     @Override
-    public IBakedModel getOverrideModel(IBakedModel originalModel, ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
+    public IBakedModel resolve(IBakedModel originalModel, ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
       if (stack.isEmpty() || !stack.hasTag()) {
         return originalModel;
       }

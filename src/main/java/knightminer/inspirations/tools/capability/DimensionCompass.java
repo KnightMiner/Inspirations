@@ -133,7 +133,7 @@ public class DimensionCompass implements ICapabilitySerializable<CompoundNBT>, I
 	 */
 	private static void dimensionChange(PlayerChangedDimensionEvent event) {
 		PlayerEntity player = event.getPlayer();
-		BlockPos pos = player.getPosition();
+		BlockPos pos = player.blockPosition();
 		sync(player, pos);
 		player.getCapability(CAPABILITY).ifPresent(compass -> {
 			compass.setEnteredPosition(pos);
@@ -147,7 +147,7 @@ public class DimensionCompass implements ICapabilitySerializable<CompoundNBT>, I
 	private static void dimensionTravel(EntityTravelToDimensionEvent event) {
 		if (event.getDimension() == World.OVERWORLD) {
 			Entity entity = event.getEntity();
-			if (entity.getEntityWorld().getDimensionKey() == World.THE_END) {
+			if (entity.getCommandSenderWorld().dimension() == World.END) {
 				if (entity instanceof ServerPlayerEntity) {
 					// probably not needed as the client reset in my experience, but might as well
 					entity.getCapability(CAPABILITY).ifPresent(compass -> compass.setEnteredPosition(null));

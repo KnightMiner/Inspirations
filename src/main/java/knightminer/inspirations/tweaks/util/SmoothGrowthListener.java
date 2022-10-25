@@ -49,18 +49,18 @@ public class SmoothGrowthListener implements Consumer<Pre> {
     BlockPos pos = event.getPos();
     if (world.getBlockState(pos).getBlock() == crop) {
       source = pos;
-      dest = pos.up();
+      dest = pos.above();
     } else {
       // we probably have air at the position, so the crop is one block down
-      source = pos.down();
+      source = pos.below();
       dest = pos;
     }
-    BlockState state = seed.get().getDefaultState();
-    world.setBlockState(dest, state, 3);
+    BlockState state = seed.get().defaultBlockState();
+    world.setBlock(dest, state, 3);
 
     // clear age on the block below
     if (world.getBlockState(source).getBlock() == crop) {
-      world.setBlockState(source, crop.getDefaultState(), 4);
+      world.setBlock(source, crop.defaultBlockState(), 4);
     }
 
     // prevent normal growth logic

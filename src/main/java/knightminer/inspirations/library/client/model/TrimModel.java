@@ -72,10 +72,10 @@ public class TrimModel implements IModelGeometry<TrimModel> {
     Map<Pair<Float,Float>, BlockPartFace> topFaces = new HashMap<>();
     for (BlockPart part : originalElements){
       // xz position
-      Pair<Float,Float> xz = Pair.of(part.positionFrom.getX(), part.positionFrom.getZ());
-      float height = part.positionTo.getY();
+      Pair<Float,Float> xz = Pair.of(part.from.x(), part.from.z());
+      float height = part.to.y();
       // if we found an element at this location, keep the largest
-      BlockPartFace face = part.mapFaces.get(Direction.UP);
+      BlockPartFace face = part.faces.get(Direction.UP);
       if (highest.containsKey(xz)) {
         // replace if the highest
         boolean isHighest = height > highest.get(xz);
@@ -99,27 +99,27 @@ public class TrimModel implements IModelGeometry<TrimModel> {
     List<BlockPart> elements = new ArrayList<>();
     for (BlockPart part : originalElements) {
       // determine how tall this element can be
-      Pair<Float, Float> xz = Pair.of(part.positionFrom.getX(), part.positionFrom.getZ());
+      Pair<Float, Float> xz = Pair.of(part.from.x(), part.from.z());
       float newHeight = highest.get(xz) - trim;
       if (newHeight == 0) {
         newHeight = 0.05f;
       }
       // if the max height is taller than us, no work to do
-      float oldHeight = part.positionTo.getY();
+      float oldHeight = part.to.y();
       if (newHeight > oldHeight) {
         elements.add(part);
       } else {
         // update the part
-        Vector3f to = new Vector3f(part.positionTo.getX(), newHeight, part.positionTo.getZ());
+        Vector3f to = new Vector3f(part.to.x(), newHeight, part.to.z());
         float trimAmount = oldHeight - newHeight;
 
         // if the element now has a height of less than 0, remove it
-        if (to.getY() >= part.positionFrom.getY()) {
+        if (to.y() >= part.from.y()) {
           // if the element has a height of exactly 0, remove side faces
-          boolean zeroHeight = to.getY() == part.positionFrom.getY();
+          boolean zeroHeight = to.y() == part.from.y();
           // trim UVs on each face
           Map<Direction,BlockPartFace> faces = new EnumMap<>(Direction.class);
-          for (Entry<Direction, BlockPartFace> entry : part.mapFaces.entrySet()) {
+          for (Entry<Direction, BlockPartFace> entry : part.faces.entrySet()) {
             Direction side = entry.getKey();
             boolean isY = side.getAxis() == Axis.Y;
             if (!zeroHeight || isY) {
@@ -141,7 +141,7 @@ public class TrimModel implements IModelGeometry<TrimModel> {
           }
 
           // add the updated element
-          elements.add(new BlockPart(part.positionFrom, to, faces, part.partRotation, part.shade));
+          elements.add(new BlockPart(part.from, to, faces, part.rotation, part.shade));
         }
       }
     }
@@ -156,7 +156,7 @@ public class TrimModel implements IModelGeometry<TrimModel> {
    */
   private static BlockPartFace trimUV(BlockPartFace face, float amount) {
     // if no UV is set, we can return the original face, auto UV will handle it
-    BlockFaceUV uv = face.blockFaceUV;
+    BlockFaceUV uv = face.uv;
     if (uv.uvs == null) {
       return face;
     }
@@ -176,7 +176,7 @@ public class TrimModel implements IModelGeometry<TrimModel> {
         trim(uvs, amount, 2, 0);
         break;
     }
-    return new BlockPartFace(face.cullFace, face.tintIndex, face.texture, new BlockFaceUV(uvs, uv.rotation));
+    return new BlockPartFace(face.cullForDirection, face.tintIndex, face.texture, new BlockFaceUV(uvs, uv.rotation));
   }
 
   /**
@@ -202,7 +202,7 @@ public class TrimModel implements IModelGeometry<TrimModel> {
     @Override
     public TrimModel read(JsonDeserializationContext context, JsonObject json) {
       SimpleBlockModel model = SimpleBlockModel.deserialize(context, json);
-      float trim = JSONUtils.getFloat(json, "trim");
+      float trim = JSONUtils.getAsFloat(json, "trim");
       if (trim <= 0) {
         throw new JsonSyntaxException("trim must be greater than 0");
       }

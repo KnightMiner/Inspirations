@@ -8,6 +8,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.TallBlockItem;
 import net.minecraft.util.NonNullList;
 
+import net.minecraft.item.Item.Properties;
+
 /**
  * Extension of a door item to make it hidable and not burnable
  */
@@ -27,9 +29,9 @@ public class GlassDoorBlockItem extends TallBlockItem implements IHidable {
   }
 
   @Override
-  public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
+  public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items) {
     if (shouldAddtoItemGroup(group)) {
-      super.fillItemGroup(group, items);
+      super.fillItemCategory(group, items);
     }
   }
 }

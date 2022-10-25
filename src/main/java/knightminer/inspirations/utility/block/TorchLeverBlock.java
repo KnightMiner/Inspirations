@@ -26,34 +26,34 @@ public class TorchLeverBlock extends TorchBlock {
 
   public TorchLeverBlock(AbstractBlock.Properties props, IParticleData particles) {
     super(props, particles);
-    setDefaultState(getDefaultState().with(SWING, Direction.UP));
+    registerDefaultState(defaultBlockState().setValue(SWING, Direction.UP));
   }
 
   @Override
-  protected void fillStateContainer(StateContainer.Builder<Block,BlockState> builder) {
+  protected void createBlockStateDefinition(StateContainer.Builder<Block,BlockState> builder) {
     builder.add(SWING);
   }
 
   private boolean isPowered(BlockState state) {
-    return state.get(SWING) != Direction.UP;
+    return state.getValue(SWING) != Direction.UP;
   }
 
   @Override
   public void animateTick(BlockState state, World world, BlockPos pos, Random rand) {
-    Direction swing = state.get(SWING);
+    Direction swing = state.getValue(SWING);
     double x = pos.getX() + 0.5D;
     double y = pos.getY() + 0.7D;
     double z = pos.getZ() + 0.5D;
 
     // particleData is the appropriate flame particle passed to the constructor.
     if (isPowered(state)) {
-      int offsetX = swing.getXOffset();
-      int offsetZ = swing.getZOffset();
+      int offsetX = swing.getStepX();
+      int offsetZ = swing.getStepZ();
       world.addParticle(ParticleTypes.SMOKE, x + 0.23D * offsetX, y - 0.05D, z + 0.23D * offsetZ, 0.0D, 0.0D, 0.0D);
-      world.addParticle(particleData, x + 0.23D * offsetX, y - 0.05D, z + 0.23D * offsetZ, 0.0D, 0.0D, 0.0D);
+      world.addParticle(flameParticle, x + 0.23D * offsetX, y - 0.05D, z + 0.23D * offsetZ, 0.0D, 0.0D, 0.0D);
     } else {
       world.addParticle(ParticleTypes.SMOKE, x, y, z, 0.0D, 0.0D, 0.0D);
-      world.addParticle(particleData, x, y, z, 0.0D, 0.0D, 0.0D);
+      world.addParticle(flameParticle, x, y, z, 0.0D, 0.0D, 0.0D);
     }
   }
 
@@ -64,26 +64,26 @@ public class TorchLeverBlock extends TorchBlock {
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) {
-    if (world.isRemote) {
+  public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) {
+    if (world.isClientSide) {
       return ActionResultType.SUCCESS;
     }
 
     float pitch;
     if (isPowered(state)) {
-      state = state.with(SWING, Direction.UP);
+      state = state.setValue(SWING, Direction.UP);
       pitch = 0.5f;
     } else {
-      state = state.with(SWING, player.getHorizontalFacing());
+      state = state.setValue(SWING, player.getDirection());
       pitch = 0.6f;
     }
 
-    world.setBlockState(pos, state, 3);
+    world.setBlock(pos, state, 3);
     // play sound
-    world.playSound(null, pos, SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.3F, pitch);
+    world.playSound(null, pos, SoundEvents.LEVER_CLICK, SoundCategory.BLOCKS, 0.3F, pitch);
     // notify update
-    world.notifyNeighborsOfStateChange(pos, this);
-    world.notifyNeighborsOfStateChange(pos.down(), this);
+    world.updateNeighborsAt(pos, this);
+    world.updateNeighborsAt(pos.below(), this);
 
     return ActionResultType.SUCCESS;
   }
@@ -96,26 +96,26 @@ public class TorchLeverBlock extends TorchBlock {
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
+  public void onRemove(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
     // if powered, send updates for power
     if (state.getBlock() != newState.getBlock() && !isMoving && isPowered(state)) {
-      world.notifyNeighborsOfStateChange(pos, this);
-      world.notifyNeighborsOfStateChange(pos.down(), this);
+      world.updateNeighborsAt(pos, this);
+      world.updateNeighborsAt(pos.below(), this);
     }
-    super.onReplaced(state, world, pos, newState, isMoving);
+    super.onRemove(state, world, pos, newState, isMoving);
   }
 
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public int getWeakPower(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
+  public int getSignal(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
     return isPowered(state) ? 15 : 0;
   }
 
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public int getStrongPower(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
+  public int getDirectSignal(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
     if (!isPowered(state)) {
       return 0;
     }
@@ -125,7 +125,7 @@ public class TorchLeverBlock extends TorchBlock {
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public boolean canProvidePower(BlockState state) {
+  public boolean isSignalSource(BlockState state) {
     return true;
   }
 }

@@ -56,13 +56,13 @@ public class FillPotionCauldronRecipe implements ICauldronRecipe {
       // give player potion, removing a bottle
       int amount = bottle.getAmountNeeded();
       inv.shrinkStack(amount);
-      inv.setOrGiveStack(PotionUtils.addPotionToItemStack(new ItemStack(potionItem, amount), potion));
+      inv.setOrGiveStack(PotionUtils.setPotion(new ItemStack(potionItem, amount), potion));
 
       // update level
       inv.addLevel(-THIRD);
 
       // play sound
-      inv.playSound(SoundEvents.ITEM_BOTTLE_FILL);
+      inv.playSound(SoundEvents.BOTTLE_FILL);
     });
   }
 
@@ -78,22 +78,22 @@ public class FillPotionCauldronRecipe implements ICauldronRecipe {
 
   public static class Serializer extends RecipeSerializer<FillPotionCauldronRecipe> {
     @Override
-    public FillPotionCauldronRecipe read(ResourceLocation id, JsonObject json) {
-      SizedIngredient bottle = SizedIngredient.deserialize(JSONUtils.getJsonObject(json, "bottle"));
+    public FillPotionCauldronRecipe fromJson(ResourceLocation id, JsonObject json) {
+      SizedIngredient bottle = SizedIngredient.deserialize(JSONUtils.getAsJsonObject(json, "bottle"));
       Item potion = Util.deserializeItem(json, "potion");
       return new FillPotionCauldronRecipe(id, bottle, potion);
     }
 
     @Nullable
     @Override
-    public FillPotionCauldronRecipe read(ResourceLocation id, PacketBuffer buffer) {
+    public FillPotionCauldronRecipe fromNetwork(ResourceLocation id, PacketBuffer buffer) {
       SizedIngredient bottle = SizedIngredient.read(buffer);
       Item potion = RecipeHelper.readItem(buffer);
       return new FillPotionCauldronRecipe(id, bottle, potion);
     }
 
     @Override
-    public void write(PacketBuffer buffer, FillPotionCauldronRecipe recipe) {
+    public void toNetwork(PacketBuffer buffer, FillPotionCauldronRecipe recipe) {
       recipe.bottle.write(buffer);
       RecipeHelper.writeItem(buffer, recipe.potionItem);
     }
@@ -110,7 +110,7 @@ public class FillPotionCauldronRecipe implements ICauldronRecipe {
     }
 
     @Override
-    public void serialize(JsonObject json) {
+    public void serializeRecipeData(JsonObject json) {
       json.add("bottle", bottle.serialize());
       json.addProperty("potion", Objects.requireNonNull(potionItem.getRegistryName()).toString());
     }

@@ -8,6 +8,8 @@ import net.minecraft.util.NonNullList;
 
 import java.util.function.Supplier;
 
+import net.minecraft.block.AbstractBlock.Properties;
+
 public class HidableBlock extends Block implements IHidable {
   private final Supplier<Boolean> enabled;
 
@@ -22,9 +24,9 @@ public class HidableBlock extends Block implements IHidable {
   }
 
   @Override
-  public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
+  public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items) {
     if (shouldAddtoItemGroup(group)) {
-      super.fillItemGroup(group, items);
+      super.fillItemCategory(group, items);
     }
   }
 }

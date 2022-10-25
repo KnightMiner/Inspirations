@@ -28,7 +28,7 @@ public class BuildingEvents {
    */
   @SubscribeEvent
   static void toggleRopeLadder(PlayerInteractEvent.RightClickBlock event) {
-    if (!Config.enableRopeLadder.get() || event.getWorld().isRemote()) {
+    if (!Config.enableRopeLadder.get() || event.getWorld().isClientSide()) {
       return;
     }
 
@@ -40,7 +40,7 @@ public class BuildingEvents {
     }
 
     PlayerEntity player = event.getPlayer();
-    if (state.get(RopeBlock.RUNGS) != RopeBlock.Rungs.NONE) {
+    if (state.getValue(RopeBlock.RUNGS) != RopeBlock.Rungs.NONE) {
       if (removeRopeLadder(world, pos, state, player)) {
         event.setCanceled(true);
         event.setCancellationResult(ActionResultType.SUCCESS);
@@ -64,12 +64,12 @@ public class BuildingEvents {
     }
 
     // remove rungs
-    world.setBlockState(pos, state.with(RopeBlock.RUNGS, RopeBlock.Rungs.NONE));
+    world.setBlockAndUpdate(pos, state.setValue(RopeBlock.RUNGS, RopeBlock.Rungs.NONE));
     RopeBlock rope = (RopeBlock)state.getBlock();
     SoundType soundtype = rope.getSoundType(state, world, pos, player);
     world.playSound(player, pos, soundtype.getBreakSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
-    ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(rope.getRungsItem(), RopeBlock.RUNG_ITEM_COUNT), player.inventory.currentItem);
-    player.resetActiveHand();
+    ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(rope.getRungsItem(), RopeBlock.RUNG_ITEM_COUNT), player.inventory.selected);
+    player.stopUsingItem();
 
     return true;
   }
@@ -90,7 +90,7 @@ public class BuildingEvents {
     }
 
     // add rungs
-    world.setBlockState(pos, state.with(RopeBlock.RUNGS, RopeBlock.Rungs.fromAxis(side.rotateY().getAxis())));
+    world.setBlockAndUpdate(pos, state.setValue(RopeBlock.RUNGS, RopeBlock.Rungs.fromAxis(side.getClockWise().getAxis())));
     SoundType soundtype = state.getBlock().getSoundType(state, world, pos, player);
     world.playSound(player, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
     if (!player.isCreative()) {

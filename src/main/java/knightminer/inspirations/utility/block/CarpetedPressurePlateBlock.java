@@ -17,34 +17,36 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 
+import net.minecraft.block.PressurePlateBlock.Sensitivity;
+
 public class CarpetedPressurePlateBlock extends PressurePlateBlock {
   private static final VoxelShape PRESSED_AABB = VoxelShapes.or(
-      Block.makeCuboidShape(0, 0, 0, 16, 1, 16),
-      Block.makeCuboidShape(1, 1, 1, 15, 1.25, 15));
+      Block.box(0, 0, 0, 16, 1, 16),
+      Block.box(1, 1, 1, 15, 1.25, 15));
   private static final VoxelShape UNPRESSED_AABB = VoxelShapes.or(
-      Block.makeCuboidShape(0, 0, 0, 16, 1, 16),
-      Block.makeCuboidShape(1, 1, 1, 15, 1.5, 15));
+      Block.box(0, 0, 0, 16, 1, 16),
+      Block.box(1, 1, 1, 15, 1.5, 15));
 
   private final DyeColor color;
   private final String transKey;
 
   public CarpetedPressurePlateBlock(DyeColor color) {
-    super(Sensitivity.MOBS, Block.Properties.create(Material.CARPET, color)
-                                            .hardnessAndResistance(0.5F)
-                                            .sound(SoundType.CLOTH)
+    super(Sensitivity.MOBS, Block.Properties.of(Material.CLOTH_DECORATION, color)
+                                            .strength(0.5F)
+                                            .sound(SoundType.WOOL)
          );
     this.color = color;
-    this.transKey = String.format("block.minecraft.%s_carpet", color.getTranslationKey());
+    this.transKey = String.format("block.minecraft.%s_carpet", color.getName());
   }
 
   @Override
   public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-    boolean flag = this.getRedstoneStrength(state) > 0;
+    boolean flag = this.getSignalForState(state) > 0;
     return flag ? PRESSED_AABB : UNPRESSED_AABB;
   }
 
   @Override
-  public String getTranslationKey() {
+  public String getDescriptionId() {
     // Use the name of the carpet on top for the translation key.
     // This should never be seen normally, but other mods might display it
     // so ensure it's a valid value.

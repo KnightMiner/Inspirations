@@ -41,26 +41,26 @@ public class RedstoneArrow extends AbstractArrowEntity implements IEntityAdditio
   }
 
   @Override
-  public IPacket<?> createSpawnPacket() {
+  public IPacket<?> getAddEntityPacket() {
     return NetworkHooks.getEntitySpawningPacket(this);
   }
 
   @Override
   public void writeSpawnData(PacketBuffer buffer) {
-    Entity shooter = this.func_234616_v_();
-    buffer.writeInt(shooter != null ? shooter.getEntityId() : 0);
+    Entity shooter = this.getOwner();
+    buffer.writeInt(shooter != null ? shooter.getId() : 0);
   }
 
   @Override
   public void readSpawnData(PacketBuffer buffer) {
-    Entity shooter = this.world.getEntityByID(buffer.readInt());
+    Entity shooter = this.level.getEntity(buffer.readInt());
     if (shooter != null) {
-      this.setShooter(shooter);
+      this.setOwner(shooter);
     }
   }
 
   private void init() {
-    this.setDamage(0.25);
+    this.setBaseDamage(0.25);
   }
 
   private static TranslationTextComponent NAME = new TranslationTextComponent("item.inspirations.charged_arrow");
@@ -75,7 +75,7 @@ public class RedstoneArrow extends AbstractArrowEntity implements IEntityAdditio
   }
 
   @Override
-  protected ItemStack getArrowStack() {
+  protected ItemStack getPickupItem() {
     return new ItemStack(InspirationsTools.redstoneArrow, 1);
   }
 
@@ -83,24 +83,24 @@ public class RedstoneArrow extends AbstractArrowEntity implements IEntityAdditio
    * Called when the arrow hits a block or an entity
    */
   @Override
-  protected void func_230299_a_(BlockRayTraceResult raytrace) {
+  protected void onHitBlock(BlockRayTraceResult raytrace) {
     // get to the block the arrow is on
-    Direction sideHit = raytrace.getFace();
-    BlockPos pos = raytrace.getPos().offset(sideHit);
+    Direction sideHit = raytrace.getDirection();
+    BlockPos pos = raytrace.getBlockPos().relative(sideHit);
 
     // if there is a block there, try the block next to that
-    if (!world.getBlockState(pos).isReplaceable(new DirectionalPlaceContext(world, pos, sideHit, ItemStack.EMPTY, sideHit))) {
-      pos = pos.offset(sideHit);
-      if (!world.getBlockState(pos).isReplaceable(new DirectionalPlaceContext(world, pos, sideHit, ItemStack.EMPTY, sideHit))) {
-        super.func_230299_a_(raytrace);
+    if (!level.getBlockState(pos).canBeReplaced(new DirectionalPlaceContext(level, pos, sideHit, ItemStack.EMPTY, sideHit))) {
+      pos = pos.relative(sideHit);
+      if (!level.getBlockState(pos).canBeReplaced(new DirectionalPlaceContext(level, pos, sideHit, ItemStack.EMPTY, sideHit))) {
+        super.onHitBlock(raytrace);
         return;
       }
     }
 
-    world.playSound(null, pos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0F, world.rand.nextFloat() * 0.4F + 0.8F);
-    BlockState state = redstoneCharge.getDefaultState().with(RedstoneChargeBlock.FACING, sideHit.getOpposite());
-    world.setBlockState(pos, state, Constants.BlockFlags.DEFAULT_AND_RERENDER);
-    redstoneCharge.onBlockPlacedBy(world, pos, state, null, ItemStack.EMPTY);
+    level.playSound(null, pos, SoundEvents.FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0F, level.random.nextFloat() * 0.4F + 0.8F);
+    BlockState state = redstoneCharge.defaultBlockState().setValue(RedstoneChargeBlock.FACING, sideHit.getOpposite());
+    level.setBlock(pos, state, Constants.BlockFlags.DEFAULT_AND_RERENDER);
+    redstoneCharge.setPlacedBy(level, pos, state, null, ItemStack.EMPTY);
 
 
     this.remove();

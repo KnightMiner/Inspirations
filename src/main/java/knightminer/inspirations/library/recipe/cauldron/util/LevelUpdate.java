@@ -30,7 +30,7 @@ public abstract class LevelUpdate implements IntUnaryOperator {
   public static final LevelUpdate IDENTITY = new LevelUpdate() {
     @Override
     public void write(PacketBuffer buffer) {
-      buffer.writeEnumValue(Type.IDENTITY);
+      buffer.writeEnum(Type.IDENTITY);
     }
 
     @Override
@@ -92,10 +92,10 @@ public abstract class LevelUpdate implements IntUnaryOperator {
    */
   public static LevelUpdate read(JsonObject json) {
     if (json.has(KEY_ADD)) {
-      return new Add(JSONUtils.getInt(json, KEY_ADD));
+      return new Add(JSONUtils.getAsInt(json, KEY_ADD));
     }
     if (json.has(KEY_SET)) {
-      return new Set(JSONUtils.getInt(json, KEY_SET));
+      return new Set(JSONUtils.getAsInt(json, KEY_SET));
     }
 
     // neither? means identity
@@ -108,7 +108,7 @@ public abstract class LevelUpdate implements IntUnaryOperator {
    * @return  Level predicate
    */
   public static LevelUpdate read(PacketBuffer buffer) {
-    Type type = buffer.readEnumValue(Type.class);
+    Type type = buffer.readEnum(Type.class);
     switch (type) {
       case IDENTITY: return IDENTITY;
       case SET: return new Set(buffer.readVarInt());
@@ -154,7 +154,7 @@ public abstract class LevelUpdate implements IntUnaryOperator {
 
     @Override
     public void write(PacketBuffer buffer) {
-      buffer.writeEnumValue(Type.SET);
+      buffer.writeEnum(Type.SET);
       buffer.writeVarInt(amount);
     }
 
@@ -185,7 +185,7 @@ public abstract class LevelUpdate implements IntUnaryOperator {
 
     @Override
     public void write(PacketBuffer buffer) {
-      buffer.writeEnumValue(Type.ADD);
+      buffer.writeEnum(Type.ADD);
       buffer.writeVarInt(amount);
     }
 

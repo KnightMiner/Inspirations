@@ -32,16 +32,16 @@ public class ShelfScreen extends BackgroundContainerScreen<ShelfContainer> {
 	private void checkBookIcon(MatrixStack matrixStack, ShelfInventory inventory, int index) {
 		// draw icon if the slot is empty and the next is filled, means books only
 		if (inventory.getStackInSlot(index).isEmpty() && ((index % 8 == 7) || !inventory.getStackInSlot(index + 1).isEmpty())) {
-			Slot slot = getContainer().getSlot(index);
-			BOOK_SLOT_ICON.draw(matrixStack, this.guiLeft + slot.xPos, this.guiTop + slot.yPos);
+			Slot slot = getMenu().getSlot(index);
+			BOOK_SLOT_ICON.draw(matrixStack, this.leftPos + slot.x, this.topPos + slot.y);
 		}
 	}
 
 	@Override
-	protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
-		super.drawGuiContainerBackgroundLayer(matrixStack, partialTicks, mouseX, mouseY);
+	protected void renderBg(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
+		super.renderBg(matrixStack, partialTicks, mouseX, mouseY);
 		// draw book icon in slots that can only hold a book
-		ShelfTileEntity shelf = getContainer().getTile();
+		ShelfTileEntity shelf = getMenu().getTile();
 		if (shelf != null) {
 			ShelfInventory inventory = shelf.getInventory();
 			for (int i = 0; i < 16; i++) {
@@ -56,21 +56,21 @@ public class ShelfScreen extends BackgroundContainerScreen<ShelfContainer> {
 		if (inventory.getStackInSlot(index).isEmpty()) {
 			ItemStack previous = inventory.getStackInSlot(index - 1);
 			if (!previous.isEmpty() && !InspirationsRegistry.isBook(previous)) {
-				Slot slot = getContainer().getSlot(index);
-				SLOT_COVER.draw(matrixStack, slot.xPos - 1, slot.yPos - 1);
+				Slot slot = getMenu().getSlot(index);
+				SLOT_COVER.draw(matrixStack, slot.x - 1, slot.y - 1);
 			}
 		}
 	}
 
 	@Override
-	protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y) {
-		super.drawGuiContainerForegroundLayer(matrixStack, x, y);
+	protected void renderLabels(MatrixStack matrixStack, int x, int y) {
+		super.renderLabels(matrixStack, x, y);
 		// draw cover to block invalid slots, drawn in foreground to cover the slot highlight
-		ShelfTileEntity shelf = getContainer().getTile();
+		ShelfTileEntity shelf = getMenu().getTile();
 		if (shelf != null) {
 			ShelfInventory inventory = shelf.getInventory();
 			assert this.minecraft != null;
-			this.minecraft.getTextureManager().bindTexture(this.background);
+			this.minecraft.getTextureManager().bind(this.background);
 			// draw each of the two rows, skipping the first slot
 			for (int i = 1; i < 8; i++) {
 				checkCoverSlot(matrixStack, inventory, i);

@@ -93,7 +93,7 @@ public class EmptyBucketCauldronRecipe implements ICauldronRecipe {
         // play sound
         SoundEvent sound = drained.getFluid().getAttributes().getEmptySound(drained);
         if (sound == null) {
-          sound = fluid.isIn(FluidTags.LAVA) ? SoundEvents.ITEM_BUCKET_EMPTY_LAVA : SoundEvents.ITEM_BUCKET_EMPTY;
+          sound = fluid.is(FluidTags.LAVA) ? SoundEvents.BUCKET_EMPTY_LAVA : SoundEvents.BUCKET_EMPTY;
         }
         inv.playSound(sound);
       }

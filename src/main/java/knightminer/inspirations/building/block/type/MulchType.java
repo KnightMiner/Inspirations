@@ -11,11 +11,11 @@ import java.util.Locale;
  * Variants for each of the mulch types
  */
 public enum MulchType implements IStringSerializable {
-  PLAIN(null, MaterialColor.LIGHT_GRAY),
+  PLAIN(null, MaterialColor.COLOR_LIGHT_GRAY),
   BROWN(DyeColor.BROWN, MaterialColor.DIRT),
-  RED(DyeColor.RED, MaterialColor.NETHERRACK),
-  BLACK(DyeColor.BLACK, MaterialColor.GRAY),
-  BLUE(DyeColor.BLUE, MaterialColor.BLUE);
+  RED(DyeColor.RED, MaterialColor.NETHER),
+  BLACK(DyeColor.BLACK, MaterialColor.COLOR_GRAY),
+  BLUE(DyeColor.BLUE, MaterialColor.COLOR_BLUE);
 
   private final String name = name().toLowerCase(Locale.ROOT);
   @Nullable
@@ -45,7 +45,7 @@ public enum MulchType implements IStringSerializable {
   }
 
   @Override
-  public String getString() {
+  public String getSerializedName() {
     return name;
   }
 

@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class DyeContentType extends NamedContentType<DyeColor> {
   private static final ResourceLocation TEXTURE_NAME = Inspirations.getResource("dye");
-  private static final String TRANSLATION_KEY = Util.makeTranslationKey("cauldron_contents", TEXTURE_NAME);
+  private static final String TRANSLATION_KEY = Util.makeDescriptionId("cauldron_contents", TEXTURE_NAME);
 
   @Override
   public ResourceLocation getTexture(DyeColor value) {
@@ -32,7 +32,7 @@ public class DyeContentType extends NamedContentType<DyeColor> {
 
   @Override
   public ITextComponent getDisplayName(DyeColor value) {
-    return new TranslationTextComponent(TRANSLATION_KEY, new TranslationTextComponent("color.minecraft." + value.getString()));
+    return new TranslationTextComponent(TRANSLATION_KEY, new TranslationTextComponent("color.minecraft." + value.getSerializedName()));
   }
 
   @Override
@@ -49,16 +49,16 @@ public class DyeContentType extends NamedContentType<DyeColor> {
   @Nullable
   @Override
   protected DyeColor getValue(String name) {
-    return DyeColor.byTranslationKey(name, null);
+    return DyeColor.byName(name, null);
   }
 
   @Override
   public DyeColor read(PacketBuffer buffer) {
-    return buffer.readEnumValue(DyeColor.class);
+    return buffer.readEnum(DyeColor.class);
   }
 
   @Override
   public void write(DyeColor value, PacketBuffer buffer) {
-    buffer.writeEnumValue(value);
+    buffer.writeEnum(value);
   }
 }

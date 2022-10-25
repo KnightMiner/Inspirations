@@ -5,6 +5,8 @@ import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.AxeItem;
 import net.minecraft.item.ItemStack;
 
+import net.minecraft.enchantment.Enchantment.Rarity;
+
 public class AxeDamageEnchantment extends DamageEnchantment {
   public AxeDamageEnchantment(Rarity rarityIn, int damageTypeIn, EquipmentSlotType... slots) {
     super(rarityIn, damageTypeIn, slots);

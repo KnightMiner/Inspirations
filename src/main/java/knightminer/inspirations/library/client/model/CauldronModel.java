@@ -92,34 +92,34 @@ public class CauldronModel implements IModelGeometry<CauldronModel> {
       Map<Direction, BlockPartFace> warmFaces = new EnumMap<>(Direction.class);
       Map<Direction, BlockPartFace> frostFaces = new EnumMap<>(Direction.class);
       Map<Direction, BlockPartFace> liquidFaces = new EnumMap<>(Direction.class);
-      for (Entry<Direction,BlockPartFace> entry : part.mapFaces.entrySet()) {
+      for (Entry<Direction,BlockPartFace> entry : part.faces.entrySet()) {
         BlockPartFace face = entry.getValue();
         // if the texture is liquid, update the tint index and insert into the liquid list
         if (retextured.contains(face.texture.substring(1))) {
-          liquidFaces.put(entry.getKey(), new BlockPartFace(face.cullFace, 1, face.texture, face.blockFaceUV));
+          liquidFaces.put(entry.getKey(), new BlockPartFace(face.cullForDirection, 1, face.texture, face.uv));
         } else {
           // otherwise use original face and make a copy for frost
           warmFaces.put(entry.getKey(), face);
-          frostFaces.put(entry.getKey(), new BlockPartFace(face.cullFace, -1, "frost", face.blockFaceUV));
+          frostFaces.put(entry.getKey(), new BlockPartFace(face.cullForDirection, -1, "frost", face.uv));
         }
       }
       // if we had a liquid face, make a new part for the warm elements and add a liquid element
       BlockPart newPart = part;
       if (!liquidFaces.isEmpty()) {
-        newPart = new BlockPart(part.positionFrom, part.positionTo, warmFaces, part.partRotation, part.shade);
-        Vector3f newTo = part.positionTo;
+        newPart = new BlockPart(part.from, part.to, warmFaces, part.rotation, part.shade);
+        Vector3f newTo = part.to;
         if (liquidOffset != 0) {
-          newTo = part.positionTo.copy();
+          newTo = part.to.copy();
           newTo.add(0, liquidOffset, 0);
         }
-        liquidElements.add(new BlockPart(part.positionFrom, newTo, liquidFaces, part.partRotation, part.shade));
+        liquidElements.add(new BlockPart(part.from, newTo, liquidFaces, part.rotation, part.shade));
       }
       // frosted has all elements of normal, plus an overlay when relevant
       warmElements.add(newPart);
       frostElements.add(newPart);
       // add frost element if anything is frosted
       if (!frostFaces.isEmpty()) {
-        frostElements.add(new BlockPart(part.positionFrom, part.positionTo, frostFaces, part.partRotation, part.shade));
+        frostElements.add(new BlockPart(part.from, part.to, frostFaces, part.rotation, part.shade));
       }
     }
 
@@ -181,9 +181,9 @@ public class CauldronModel implements IModelGeometry<CauldronModel> {
         // offset each element. Note -3 is moved up slightly to prevent z-fighting, its only used when the cauldron is level 1
         float offset = MathHelper.clamp(pair.offset, -2.95f, 3f);
         liquidElements.stream().map(part -> {
-          Vector3f newTo = part.positionTo.copy();
+          Vector3f newTo = part.to.copy();
           newTo.add(0, offset, 0);
-          return new BlockPart(part.positionFrom, newTo, part.mapFaces, part.partRotation, part.shade);
+          return new BlockPart(part.from, newTo, part.faces, part.rotation, part.shade);
         }).forEach(elements::add);
       }
       // bake the new model
@@ -270,7 +270,7 @@ public class CauldronModel implements IModelGeometry<CauldronModel> {
     public CauldronModel read(JsonDeserializationContext context, JsonObject json) {
       SimpleBlockModel model = SimpleBlockModel.deserialize(context, json);
       Set<String> retextured = json.has("retextured") ? RetexturedModel.Loader.getRetextured(json) : Collections.emptySet();
-      float offset = JSONUtils.getFloat(json, "liquid_offset", 0);
+      float offset = JSONUtils.getAsFloat(json, "liquid_offset", 0);
       return new CauldronModel(model, retextured, offset);
     }
   }

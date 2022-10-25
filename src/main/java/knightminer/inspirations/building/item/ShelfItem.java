@@ -12,7 +12,7 @@ import net.minecraft.tags.ItemTags;
  */
 public class ShelfItem extends HidableRetexturedBlockItem {
   public ShelfItem(Block block) {
-    super(block, ItemTags.WOODEN_SLABS, new Item.Properties().group(ItemGroup.DECORATIONS));
+    super(block, ItemTags.WOODEN_SLABS, new Item.Properties().tab(ItemGroup.TAB_DECORATIONS));
   }
 
   @Override
