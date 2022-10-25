@@ -7,15 +7,17 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'maven'
+apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
 group = "knightminer"
 archivesBaseName = "Inspirations"
+// Mojang ships Java 17 to end users in 1.18+, so your mod should target Java 17.
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 configurations {
     deployerJars
@@ -96,11 +98,6 @@ minecraft {
      }
 }
 
-sourceCompatibility = targetCompatibility = "1.8" // Need this here so eclipse task generates correctly.
-compileJava {
-    sourceCompatibility = targetCompatibility = "1.8"
-}
-
 repositories {
     mavenCentral()
     mavenLocal()
@@ -133,7 +130,7 @@ dependencies {
     // at runtime, use the full JEI jar
     runtimeOnly fg.deobf("mezz.jei:jei-${jei_version}")
 
-    compile fg.deobf("slimeknights.mantle:Mantle:${minecraft_version}-${mantle_version}")
+    implementation fg.deobf("slimeknights.mantle:Mantle:${minecraft_version}-${mantle_version}")
 
     // rats plugin
     //runtimeOnly fg.deobf("curse.maven:citadel:2992577")
