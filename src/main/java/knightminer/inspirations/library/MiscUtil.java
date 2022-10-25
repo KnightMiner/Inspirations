@@ -41,12 +41,11 @@ public class MiscUtil {
    */
   public static VoxelShape makeRotatedShape(Direction side, int x1, int y1, int z1, int x2, int y2, int z2) {
     float yaw = -(float)Math.PI / 2F * side.get2DDataValue();
-    Vec3 min = new Vec3(x1 - 8, y1 - 8, z1 - 8).yRot(yaw);
-    Vec3 max = new Vec3(x2 - 8, y2 - 8, z2 - 8).yRot(yaw);
+    Vec3 first = new Vec3(x1 - 8, y1 - 8, z1 - 8).yRot(yaw);
+    Vec3 second = new Vec3(x2 - 8, y2 - 8, z2 - 8).yRot(yaw);
     return Shapes.box(
-        0.5 + min.x / 16.0, 0.5 + min.y / 16.0, 0.5 + min.z / 16.0,
-        0.5 + max.x / 16.0, 0.5 + max.y / 16.0, 0.5 + max.z / 16.0
-                             );
+        0.5 + Math.min(first.x, second.x) / 16.0, 0.5 + Math.min(first.y, second.y) / 16.0, 0.5 + Math.min(first.z, second.z) / 16.0,
+        0.5 + Math.max(first.x, second.x) / 16.0, 0.5 + Math.max(first.y, second.y) / 16.0, 0.5 + Math.max(first.z, second.z) / 16.0);
   }
 
   // An item with Silk Touch, to make blocks drop their silk touch items if they have any.

@@ -44,7 +44,6 @@ import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.SimpleRecipeSerializer;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -158,9 +157,10 @@ public class InspirationsRecipes extends ModuleBase {
       registry.registerOverride(SmashingAnvilBlock::new, Blocks.DAMAGED_ANVIL);
     }
     */
-    if (Config.extendedCauldron.get()) {
-      cauldron = registry.registerOverride(EnhancedCauldronBlock::new, Blocks.CAULDRON);
-    }
+    // TODO: violates rules, probably would just want our own cauldron(s)
+//    if (Config.extendedCauldron.get()) {
+//      cauldron = registry.registerOverride(EnhancedCauldronBlock::new, Blocks.CAULDRON);
+//    }
   }
 
   @SubscribeEvent
@@ -195,18 +195,18 @@ public class InspirationsRecipes extends ModuleBase {
     mixedDyedWaterBottle = registry.register(new MixedDyedBottleItem(bottleProps), "mixed_dyed_bottle");
 
     // cauldron item
-    if (Config.extendedCauldron.get()) {
-      registry.registerBlockItem(cauldron, brewingProps);
-    }
+//    if (Config.extendedCauldron.get()) {
+//      registry.registerBlockItem(cauldron, brewingProps);
+//    }
   }
 
   @SubscribeEvent
   void registerTileEntities(Register<BlockEntityType<?>> event) {
     BlockEntityTypeRegistryAdapter registry = new BlockEntityTypeRegistryAdapter(event.getRegistry());
 
-    if (Config.extendedCauldron.get()) {
-      tileCauldron = registry.register(CauldronTileEntity::new, cauldron, "cauldron");
-    }
+//    if (Config.extendedCauldron.get()) {
+//      tileCauldron = registry.register(CauldronTileEntity::new, cauldron, "cauldron");
+//    }
   }
 
   @SubscribeEvent

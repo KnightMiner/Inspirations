@@ -1,14 +1,14 @@
 package knightminer.inspirations.tweaks.block;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.phys.shapes.Shapes;
-import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class FittedCarpetBlock extends FlatCarpetBlock {
   public FittedCarpetBlock(DyeColor color, Block.Properties props) {
@@ -42,7 +42,7 @@ public class FittedCarpetBlock extends FlatCarpetBlock {
       if (!NW && !NE && !SW && !SE) {
         // Fully lowered, bit of a special case, but should never happen in world.
         BOUNDS[i] = Shapes.or(
-            box( 0,  -7,  0, 17, -8, 17),
+            box( 0,  -8,  0, 17, -7, 17),
             box(-1, -16, -1,  0, -7, 17),
             box(-1, -16, -1, 16, -7,  0),
             box(16, -16, -1, 17, -7, 17),

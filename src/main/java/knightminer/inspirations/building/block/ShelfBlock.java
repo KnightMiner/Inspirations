@@ -169,15 +169,19 @@ public class ShelfBlock extends InventoryBlock implements IHidable {
       double z2 = offZ == 1 ? 0.5 : 1;
 
       // Rotate the 2 X-Z points correctly for the inset shelves.
-      Vec3 min = new Vec3(-0.5, 0, -7 / 16.0).yRot(-(float)Math.PI / 2F * side.get2DDataValue());
-      Vec3 max = new Vec3( 0.5, 1, 0).yRot(-(float)Math.PI / 2F * side.get2DDataValue());
+      Vec3 first = new Vec3(-0.5, 0, -7 / 16.0).yRot(-(float)Math.PI / 2F * side.get2DDataValue());
+      Vec3 second = new Vec3( 0.5, 1, 0).yRot(-(float)Math.PI / 2F * side.get2DDataValue());
 
       // Then assemble.
+      double minX = Math.min(first.x, second.x);
+      double minZ = Math.min(first.z, second.z);
+      double maxX = Math.max(first.x, second.x);
+      double maxZ = Math.max(first.z, second.z);
       builder.put(side, Shapes.join(
           Shapes.box(x1, 0, z1, x2, 1, z2), // Full half slab
           Shapes.or( // Then the two shelves.
-                          Shapes.box(0.5 + min.x, 1 / 16.0, 0.5 + min.z, 0.5 + max.x, 7 / 16.0, 0.5 + max.z),
-                          Shapes.box(0.5 + min.x, 9 / 16.0, 0.5 + min.z, 0.5 + max.x, 15 / 16.0, 0.5 + max.z)
+                          Shapes.box(0.5 + minX, 1 / 16.0, 0.5 + minZ, 0.5 + maxX,  7 / 16.0, 0.5 + maxZ),
+                          Shapes.box(0.5 + minX, 9 / 16.0, 0.5 + minZ, 0.5 + maxX, 15 / 16.0, 0.5 + maxZ)
                         ), BooleanOp.ONLY_FIRST));
     }
     BOUNDS = builder.build();

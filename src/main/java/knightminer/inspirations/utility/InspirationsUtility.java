@@ -15,21 +15,17 @@ import knightminer.inspirations.utility.inventory.PipeContainer;
 import knightminer.inspirations.utility.item.TorchLeverItem;
 import knightminer.inspirations.utility.tileentity.CollectorTileEntity;
 import knightminer.inspirations.utility.tileentity.PipeTileEntity;
-import net.minecraft.core.dispenser.DispenseItemBehavior;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.material.Material;
 import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -147,15 +143,15 @@ public class InspirationsUtility extends ModuleBase {
   }
 
   // Get access to the existing behaviours.
-  private static class DispenserRegAccess extends DispenserBlock {
-    DispenserRegAccess() { super(Block.Properties.of(Material.AIR));}
-
-    DispenseItemBehavior getRegisteredBehaviour(Item item) {
-      return super.getDispenseMethod(new ItemStack(item));
-    }
-  }
-
-  private final DispenserRegAccess dispenserReg = new DispenserRegAccess();
+//  private static class DispenserRegAccess extends DispenserBlock {
+//    DispenserRegAccess() { super(Block.Properties.of(Material.AIR));}
+//
+//    DispenseItemBehavior getRegisteredBehaviour(Item item) {
+//      return super.getDispenseMethod(new ItemStack(item));
+//    }
+//  }
+//
+//  private final Lazy<DispenserRegAccess> dispenserReg = Lazy.of(DispenserRegAccess::new);
 
   private void registerDispenserBehavior() {
     //		if(Config.enableDispenserFluidTanks.get()) {
