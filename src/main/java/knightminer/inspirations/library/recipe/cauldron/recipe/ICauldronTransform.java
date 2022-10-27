@@ -3,8 +3,8 @@ package knightminer.inspirations.library.recipe.cauldron.recipe;
 import knightminer.inspirations.library.recipe.RecipeTypes;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.inventory.ICauldronState;
-import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.item.crafting.RecipeType;
 import slimeknights.mantle.recipe.ICustomOutputRecipe;
 
 /**
@@ -32,6 +32,6 @@ public interface ICauldronTransform extends ICustomOutputRecipe<ICauldronState> 
 
   @Override
   default RecipeType<?> getType() {
-    return RecipeTypes.CAULDRON_TRANSFORM;
+    return RecipeTypes.CAULDRON_TRANSFORM.get();
   }
 }

@@ -424,7 +424,7 @@ public class CauldronTileEntity extends MantleBlockEntity {
       return lastRecipe;
     }
     // fall back to finding a new recipe
-    ICauldronRecipe recipe = level.getRecipeManager().getRecipeFor(RecipeTypes.CAULDRON, craftingInventory, level).orElse(null);
+    ICauldronRecipe recipe = level.getRecipeManager().getRecipeFor(RecipeTypes.CAULDRON.get(), craftingInventory, level).orElse(null);
     if (recipe != null) {
       lastRecipe = recipe;
       return recipe;
@@ -650,7 +650,7 @@ public class CauldronTileEntity extends MantleBlockEntity {
       if (lastTransform != null && lastTransform.matches(craftingInventory, level)) {
         transform = lastTransform;
       } else {
-        Optional<ICauldronTransform> newTransform = level.getRecipeManager().getRecipeFor(RecipeTypes.CAULDRON_TRANSFORM, craftingInventory, level);
+        Optional<ICauldronTransform> newTransform = level.getRecipeManager().getRecipeFor(RecipeTypes.CAULDRON_TRANSFORM.get(), craftingInventory, level);
         if (newTransform.isPresent()) {
           transform = lastTransform = newTransform.get();
         }

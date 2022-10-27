@@ -1,9 +1,6 @@
 package knightminer.inspirations.recipes;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import knightminer.inspirations.Inspirations;
-import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.ModuleBase;
 import knightminer.inspirations.library.MiscUtil;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
@@ -31,7 +28,6 @@ import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.ai.village.poi.PoiType;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.BowlFoodItem;
 import net.minecraft.world.item.BucketItem;
@@ -46,7 +42,6 @@ import net.minecraft.world.item.crafting.SimpleRecipeSerializer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.Material;
@@ -57,7 +52,6 @@ import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
-import net.minecraftforge.registries.GameData;
 import slimeknights.mantle.registration.FluidBuilder;
 import slimeknights.mantle.registration.adapter.BlockEntityTypeRegistryAdapter;
 import slimeknights.mantle.registration.adapter.BlockRegistryAdapter;
@@ -65,8 +59,6 @@ import slimeknights.mantle.registration.adapter.FluidRegistryAdapter;
 import slimeknights.mantle.registration.adapter.ItemRegistryAdapter;
 import slimeknights.mantle.registration.adapter.RegistryAdapter;
 import slimeknights.mantle.registration.object.EnumObject;
-
-import java.util.Map;
 
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class InspirationsRecipes extends ModuleBase {
@@ -255,21 +247,22 @@ public class InspirationsRecipes extends ModuleBase {
 
   @SubscribeEvent
   void commonSetup(FMLCommonSetupEvent event) {
-    if (Config.extendedCauldron.get()) {
-      // inject new cauldron blocks into the leatherworker point of interest
-      // it should be as simple as injecting it into the map, but people keep reporting issues with this so just over do it
-      Map<BlockState, PoiType> map = GameData.getBlockStatePointOfInterestTypeMap();
-      synchronized (map) {
-        ImmutableList<BlockState> newStates = cauldron.getStateDefinition().getPossibleStates();
-        synchronized (PoiType.LEATHERWORKER) {
-          ImmutableSet.Builder<BlockState> builder = ImmutableSet.builder();
-          builder.addAll(PoiType.LEATHERWORKER.matchingStates);
-          builder.addAll(newStates);
-          PoiType.LEATHERWORKER.matchingStates = builder.build();
-        }
-        newStates.forEach(state -> map.put(state, PoiType.LEATHERWORKER));
-      }
-    }
+    // TODO: cauldrons
+//    if (Config.extendedCauldron.get()) {
+//      // inject new cauldron blocks into the leatherworker point of interest
+//      // it should be as simple as injecting it into the map, but people keep reporting issues with this so just over do it
+//      Map<BlockState, PoiType> map = GameData.getBlockStatePointOfInterestTypeMap();
+//      synchronized (map) {
+//        ImmutableList<BlockState> newStates = cauldron.getStateDefinition().getPossibleStates();
+//        synchronized (PoiType.LEATHERWORKER) {
+//          ImmutableSet.Builder<BlockState> builder = ImmutableSet.builder();
+//          builder.addAll(PoiType.LEATHERWORKER.matchingStates);
+//          builder.addAll(newStates);
+//          PoiType.LEATHERWORKER.matchingStates = builder.build();
+//        }
+//        newStates.forEach(state -> map.put(state, PoiType.LEATHERWORKER));
+//      }
+//    }
   }
 
   /**

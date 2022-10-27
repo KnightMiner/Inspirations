@@ -34,6 +34,6 @@ public interface ICauldronRecipe extends ICustomOutputRecipe<ICauldronInventory>
   @Nonnull
   @Override
   default RecipeType<?> getType() {
-    return RecipeTypes.CAULDRON;
+    return RecipeTypes.CAULDRON.get();
   }
 }

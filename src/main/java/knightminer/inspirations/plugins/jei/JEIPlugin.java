@@ -70,10 +70,10 @@ public class JEIPlugin implements IModPlugin {
     assert Minecraft.getInstance().level != null;
     RecipeManager manager = Minecraft.getInstance().level.getRecipeManager();
     boolean isExtended = Config.extendedCauldron.get();
-    Stream<? extends Recipe<?>> allRecipes = manager.byType(RecipeTypes.CAULDRON).values().stream();
+    Stream<? extends Recipe<?>> allRecipes = manager.byType(RecipeTypes.CAULDRON.get()).values().stream();
     // combine in transform recipes if extended
     if (isExtended) {
-      allRecipes = Stream.concat(allRecipes, manager.byType(RecipeTypes.CAULDRON_TRANSFORM).values().stream());
+      allRecipes = Stream.concat(allRecipes, manager.byType(RecipeTypes.CAULDRON_TRANSFORM.get()).values().stream());
     }
     // sort recipes, and filter
     Stream<ICauldronRecipeDisplay> recipes = allRecipes

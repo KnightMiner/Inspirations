@@ -113,7 +113,7 @@ public class VanillaCauldronInventory extends CauldronItemInventory {
    * @return  True if a recipe happened, false otherwise
    */
   public boolean handleRecipe() {
-    Optional<ICauldronRecipe> recipe = world.getRecipeManager().getRecipeFor(RecipeTypes.CAULDRON, this, world);
+    Optional<ICauldronRecipe> recipe = world.getRecipeManager().getRecipeFor(RecipeTypes.CAULDRON.get(), this, world);
     if (recipe.isPresent()) {
       recipe.get().handleRecipe(this);
       return true;

@@ -10,6 +10,7 @@ import knightminer.inspirations.common.datagen.InspirationsFluidTagsProvider;
 import knightminer.inspirations.common.datagen.InspirationsItemTagsProvider;
 import knightminer.inspirations.common.datagen.InspirationsLootTableProvider;
 import knightminer.inspirations.common.network.InspirationsNetwork;
+import knightminer.inspirations.library.recipe.RecipeTypes;
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.shared.InspirationsShared;
 import knightminer.inspirations.shared.SharedClientEvents;
@@ -79,6 +80,7 @@ public class Inspirations {
     MinecraftForge.EVENT_BUS.register(Inspirations.class);
 
     InspirationsNetwork.INSTANCE.setup();
+    RecipeTypes.init();
 
     DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> SharedClientEvents::onConstruct);
   }
