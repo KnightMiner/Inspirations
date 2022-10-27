@@ -878,6 +878,10 @@ ed609d879b511fc63075a70306670eca432041c0 data/inspirations/tags/items/small_flow
 de86ddaf84d20985b4cce5e7df18a2fff7832076 data/minecraft/tags/blocks/doors.json
 00df993619a2f7d35c51e653f41bc1cda4577e0f data/minecraft/tags/blocks/flower_pots.json
 031a33f8bd31ca3b0aed413bbef3598d57bb741e data/minecraft/tags/blocks/leaves.json
+7b65b7b6d841737224ef42cfd4e42f5b6708ec5e data/minecraft/tags/blocks/mineable/axe.json
+95d837f6af69df10a76771afd7b8295cf36eab3b data/minecraft/tags/blocks/mineable/hoe.json
+d9064c35902b3201b75843206c33b52da2214ab6 data/minecraft/tags/blocks/mineable/pickaxe.json
+150684de449bf92f1ee6c2b1edfcfbc9b73e31fe data/minecraft/tags/blocks/mineable/shovel.json
 17e58deb8a74e685174f428d6cf60daed404b9fc data/minecraft/tags/blocks/piglin_repellents.json
 4ae85a98269505c3bf170006ba9244d264567aeb data/minecraft/tags/blocks/trapdoors.json
 f4a657a3225368cad38165695fcc4ee35d97ff92 data/minecraft/tags/blocks/wall_post_override.json

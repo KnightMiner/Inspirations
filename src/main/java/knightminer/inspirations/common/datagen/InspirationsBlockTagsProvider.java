@@ -5,15 +5,13 @@ import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.library.InspirationsTags;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import knightminer.inspirations.utility.InspirationsUtility;
+import net.minecraft.data.DataGenerator;
+import net.minecraft.data.tags.BlockTagsProvider;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.data.tags.BlockTagsProvider;
-import net.minecraft.data.DataGenerator;
-import net.minecraft.tags.BlockTags;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import slimeknights.mantle.registration.object.EnumObject;
-
-import net.minecraft.data.tags.TagsProvider.TagAppender;
 
 public class InspirationsBlockTagsProvider extends BlockTagsProvider {
   public InspirationsBlockTagsProvider(DataGenerator gen, ExistingFileHelper existing) {
@@ -29,6 +27,7 @@ public class InspirationsBlockTagsProvider extends BlockTagsProvider {
   protected void addTags() {
     registerInspTags();
     registerVanillaTags();
+    registerHarvestTags();
   }
 
   private void registerInspTags() {
@@ -67,6 +66,25 @@ public class InspirationsBlockTagsProvider extends BlockTagsProvider {
             InspirationsUtility.torchLeverFloor, InspirationsUtility.torchLeverWall,
             InspirationsUtility.soulLeverFloor, InspirationsUtility.soulLeverWall
     );
+  }
+
+  private void registerHarvestTags() {
+    TagAppender<Block> hoeBlocks = this.tag(BlockTags.MINEABLE_WITH_HOE);
+    hoeBlocks.add(InspirationsBuilding.rope, InspirationsBuilding.vine);
+    InspirationsBuilding.enlightenedBush.forEach(block -> hoeBlocks.add(block));
+    // axe
+    TagAppender<Block> axeBlocks = this.tag(BlockTags.MINEABLE_WITH_AXE);
+    axeBlocks.add(InspirationsTweaks.sugarCane);
+    InspirationsBuilding.shelf.forEach(block -> axeBlocks.add(block));
+    InspirationsBuilding.flower.forEach(block -> axeBlocks.add(block));
+    // shovel
+    TagAppender<Block> shovelBlocks = this.tag(BlockTags.MINEABLE_WITH_SHOVEL);
+    InspirationsBuilding.mulch.forEach(block -> shovelBlocks.add(block));
+    // pick
+    TagAppender<Block> pickBlocks = this.tag(BlockTags.MINEABLE_WITH_PICKAXE);
+    pickBlocks.add(InspirationsTweaks.wetHopper, InspirationsUtility.collector, InspirationsUtility.pipe);
+    InspirationsBuilding.path.forEach(block -> pickBlocks.add(block));
+    InspirationsUtility.carpetedPressurePlates.forEach(block -> pickBlocks.add(block));
   }
 
   /**
