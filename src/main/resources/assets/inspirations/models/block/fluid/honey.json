@@ -1,0 +1,9 @@
+{
+  "loader": "mantle:fluid_texture",
+  "textures": {
+    "still": "inspirations:block/fluid/transparent",
+    "flowing": "inspirations:block/fluid/transparent_flow"
+  },
+  "color": "FFFF9116"
+}
+

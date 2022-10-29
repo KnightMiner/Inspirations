@@ -1,6 +1,5 @@
 package knightminer.inspirations.recipes;
 
-import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.ModuleBase;
 import knightminer.inspirations.library.MiscUtil;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
@@ -27,7 +26,6 @@ import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.BowlFoodItem;
 import net.minecraft.world.item.BucketItem;
@@ -53,6 +51,7 @@ import net.minecraftforge.fluids.ForgeFlowingFluid;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 import slimeknights.mantle.registration.FluidBuilder;
+import slimeknights.mantle.registration.ModelFluidAttributes;
 import slimeknights.mantle.registration.adapter.BlockEntityTypeRegistryAdapter;
 import slimeknights.mantle.registration.adapter.BlockRegistryAdapter;
 import slimeknights.mantle.registration.adapter.FluidRegistryAdapter;
@@ -62,10 +61,6 @@ import slimeknights.mantle.registration.object.EnumObject;
 
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class InspirationsRecipes extends ModuleBase {
-  public static final ResourceLocation STILL_FLUID = Inspirations.getResource("block/fluid/colorless");
-  public static final ResourceLocation FLOWING_FLUID = Inspirations.getResource("block/fluid/colorless_flow");
-  public static final ResourceLocation STILL_TRANSPARENT = Inspirations.getResource("block/fluid/transparent");
-  public static final ResourceLocation FLOWING_TRANSPARENT = Inspirations.getResource("block/fluid/transparent_flow");
 
   // blocks
   public static Block fullAnvil;
@@ -115,19 +110,19 @@ public class InspirationsRecipes extends ModuleBase {
   void registerFluids(Register<Fluid> event) {
     FluidRegistryAdapter adapter = new FluidRegistryAdapter(event.getRegistry());
 
-    mushroomStew = adapter.register(new FluidBuilder(coloredFluid().color(0xFFCD8C6F).temperature(373).viscosity(1200))
+    mushroomStew = adapter.register(new FluidBuilder(fluidBuilder().temperature(373).viscosity(1200))
                                         .block(() -> mushroomStewBlock)
                                         .bucket(() -> mushroomStewBucket), "mushroom_stew");
-    beetrootSoup = adapter.register(new FluidBuilder(coloredFluid().color(0xFF84160D).temperature(373).viscosity(1100))
+    beetrootSoup = adapter.register(new FluidBuilder(fluidBuilder().temperature(373).viscosity(1100))
                                         .block(() -> beetrootSoupBlock)
                                         .bucket(() -> beetrootSoupBucket), "beetroot_soup");
-    rabbitStew = adapter.register(new FluidBuilder(coloredFluid().color(0xFF984A2C).temperature(373).viscosity(1400))
+    rabbitStew = adapter.register(new FluidBuilder(fluidBuilder().temperature(373).viscosity(1400))
                                       .block(() -> rabbitStewBlock)
                                       .bucket(() -> rabbitStewBucket), "rabbit_stew");
-    potatoSoup = adapter.register(new FluidBuilder(coloredFluid().color(0xFFF2DA9F).temperature(373).viscosity(1300))
+    potatoSoup = adapter.register(new FluidBuilder(fluidBuilder().temperature(373).viscosity(1300))
                                       .block(() -> potatoSoupBlock)
                                       .bucket(() -> potatoSoupBucket), "potato_soup");
-    honey = adapter.register(new FluidBuilder(FluidAttributes.builder(STILL_TRANSPARENT, FLOWING_TRANSPARENT).color(0xFFFF9116).viscosity(4000).temperature(373))
+    honey = adapter.register(new FluidBuilder(fluidBuilder().viscosity(4000).temperature(373))
                                       .block(() -> honeyFluidBlock)
                                       .bucket(() -> honeyBucket), "honey");
   }
@@ -265,11 +260,11 @@ public class InspirationsRecipes extends ModuleBase {
 //    }
   }
 
-  /**
-   * Creates a fluid attribute for the generic colorless fluid
-   * @return  Fluid attributes builder
-   */
-  private static FluidAttributes.Builder coloredFluid() {
-    return FluidAttributes.builder(STILL_FLUID, FLOWING_FLUID);
+
+  /* Helpers */
+
+  /** Creates a fluid builder */
+  private static FluidAttributes.Builder fluidBuilder() {
+    return ModelFluidAttributes.builder().sound(SoundEvents.BUCKET_FILL, SoundEvents.BUCKET_EMPTY);
   }
 }

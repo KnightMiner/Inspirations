@@ -28,7 +28,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
-import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -106,13 +105,5 @@ public class RecipesClientEvents extends ClientEvents {
     // dyed water bottles
     InspirationsRecipes.simpleDyedWaterBottle.forEach((color, bottle) -> itemColors.register((stack, index) -> index == 0 ? MiscUtil.getColor(color) : -1, bottle));
     registerItemColors(itemColors, (stack, index) -> index == 0 ? MixedDyedBottleItem.dyeFromBottle(stack) : -1, InspirationsRecipes.mixedDyedWaterBottle);
-  }
-
-  @SubscribeEvent
-  static void registerTextures(TextureStitchEvent.Pre event) {
-    if (InventoryMenu.BLOCK_ATLAS.equals(event.getAtlas().location())) {
-      event.addSprite(InspirationsRecipes.STILL_FLUID);
-      event.addSprite(InspirationsRecipes.FLOWING_FLUID);
-    }
   }
 }
