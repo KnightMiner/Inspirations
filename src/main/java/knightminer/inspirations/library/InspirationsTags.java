@@ -88,7 +88,10 @@ public class InspirationsTags {
   }
 
   public static class Fluids {
-    public static final TagKey<Fluid> MILK = forgeTag("milk");
+    public static final TagKey<Fluid> HONEY = forgeTag("honey");
+    public static final TagKey<Fluid> BEETROOT_SOUP = forgeTag("beetroot_soup");
+    public static final TagKey<Fluid> MUSHROOM_STEW = forgeTag("mushroom_stew");
+    public static final TagKey<Fluid> RABBIT_STEW = forgeTag("rabbit_stew");
 
     private static TagKey<Fluid> forgeTag(String name) {
       return FluidTags.create(new ResourceLocation("forge", name));

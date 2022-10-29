@@ -1,7 +1,0 @@
-{
-  "loader": "inspirations:cauldron",
-  "parent": "block/cauldron",
-  "textures": {
-    "frost": "inspirations:block/cauldron_frost"
-  }
-}

@@ -1,9 +1,0 @@
-{
-  "loader": "inspirations:cauldron",
-  "parent": "block/cauldron_level1",
-  "retextured": ["water"],
-  "liquid_offset": -2,
-  "textures": {
-    "frost": "inspirations:block/cauldron_frost"
-  }
-}

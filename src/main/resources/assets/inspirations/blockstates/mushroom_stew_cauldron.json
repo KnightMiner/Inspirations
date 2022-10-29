@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "level=1": { "model": "inspirations:block/cauldron/mushroom_stew/level_1_of_4" },
+    "level=2": { "model": "inspirations:block/cauldron/mushroom_stew/level_2_of_4" },
+    "level=3": { "model": "inspirations:block/cauldron/mushroom_stew/level_3_of_4" },
+    "level=4": { "model": "inspirations:block/cauldron/mushroom_stew/level_4_of_4" }
+  }
+}

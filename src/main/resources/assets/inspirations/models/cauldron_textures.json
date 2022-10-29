@@ -1,7 +1,6 @@
 {
   "minecraft:ice": "minecraft:block/ice",
   "minecraft:packed_ice": "minecraft:block/packed_ice",
-  "minecraft:honey_block": "minecraft:block/honey_block_top",
   "inspirations:wet_ice": "inspirations:block/wet_ice",
   
   "inspirations:color": "inspirations:block/fluid/colorless",

@@ -3,6 +3,7 @@ package knightminer.inspirations.common.datagen;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.library.InspirationsTags;
+import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraft.data.DataGenerator;
@@ -31,7 +32,6 @@ public class InspirationsBlockTagsProvider extends BlockTagsProvider {
   }
 
   private void registerInspTags() {
-
     // building
     this.tag(InspirationsTags.Blocks.MULCH).add(toArray(InspirationsBuilding.mulch));
     this.tag(InspirationsTags.Blocks.SMALL_FLOWERS).add(toArray(InspirationsBuilding.flower));
@@ -66,6 +66,9 @@ public class InspirationsBlockTagsProvider extends BlockTagsProvider {
             InspirationsUtility.torchLeverFloor, InspirationsUtility.torchLeverWall,
             InspirationsUtility.soulLeverFloor, InspirationsUtility.soulLeverWall
     );
+    this.tag(BlockTags.CAULDRONS).add(InspirationsRecipes.beetrootSoupCauldron, InspirationsRecipes.mushroomStewCauldron,
+                                      InspirationsRecipes.potatoSoupCauldron, InspirationsRecipes.rabbitStewCauldron,
+                                      InspirationsRecipes.honeyCauldron);
   }
 
   private void registerHarvestTags() {

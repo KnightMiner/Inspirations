@@ -66,9 +66,6 @@ public class Config {
   public static final BooleanSupplier enableCollector;
   public static final BooleanSupplier enablePipe;
   public static final BooleanValue pipeUpwards;
-  //public static BooleanValue enableDispenserFluidTanks;
-  //public static BooleanValue milkSquids;
-  //public static IntValue milkSquidCooldown;
 
   // recipes
 
@@ -138,15 +135,6 @@ public class Config {
   public static final BooleanSupplier bonemealBlockCrop;
 
   public static final BooleanValue nerfCactusFarms;
-  //  public static BooleanValue enableMoreSeeds;
-  //	private static BooleanValue addGrassDrops;
-  //	private static BooleanValue nerfCarrotPotatoDrops;
-  //	public static boolean addGrassDrops() {
-  //		return addGrassDrops.get() && enableMoreSeeds.get();
-  //	}
-  //	public static boolean nerfCarrotPotatoDrops() {
-  //		return nerfCarrotPotatoDrops.get() && enableMoreSeeds.get();
-  //	}
   // bonemeal
   public static final BooleanSupplier bonemealMushrooms;
   public static final BooleanSupplier bonemealDeadBush;

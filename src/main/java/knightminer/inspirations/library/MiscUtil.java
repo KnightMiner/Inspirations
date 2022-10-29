@@ -9,6 +9,8 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.GsonHelper;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.DyeableLeatherItem;
 import net.minecraft.world.item.Item;
@@ -278,6 +280,23 @@ public class MiscUtil {
       te.requestModelDataUpdate();
       BlockState state = te.getBlockState();
       world.sendBlockUpdated(te.getBlockPos(), state, state, Block.UPDATE_NONE | Block.UPDATE_SUPPRESS_DROPS);
+    }
+  }
+
+  /** Shrinks the held item */
+  public static void shrinkHeldItem(Player player, InteractionHand hand, ItemStack held, int count) {
+    if (!player.getAbilities().instabuild) {
+      held.shrink(count);
+      if (held.isEmpty()) {
+        player.setItemInHand(hand, ItemStack.EMPTY);
+      }
+    }
+  }
+
+  /** Gives the given item to the player */
+  public static void givePlayerItem(Player player, ItemStack stack) {
+    if (!player.getInventory().add(stack)) {
+      player.drop(stack, false);
     }
   }
 }

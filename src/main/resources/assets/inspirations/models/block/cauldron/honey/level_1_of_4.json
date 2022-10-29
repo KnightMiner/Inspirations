@@ -1,0 +1,6 @@
+{
+  "parent": "inspirations:block/cauldron/level_1_of_4",
+  "textures": {
+    "content": "minecraft:block/honey_block_top"
+  }
+}

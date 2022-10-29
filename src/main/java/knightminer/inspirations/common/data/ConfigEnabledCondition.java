@@ -155,11 +155,7 @@ public class ConfigEnabledCondition implements ICondition, LootItemCondition {
 
   // recipes
   public static final ConfigEnabledCondition CAULDRON_RECIPES = add("cauldron_recipes", Config.cauldronRecipes);
-  public static final ConfigEnabledCondition CAULDRON_CONCRETE = add("cauldron_concrete", Config.cauldronConcrete);
   public static final ConfigEnabledCondition CAULDRON_ICE = add("cauldron_ice", Config.cauldronIce);
-  public static final ConfigEnabledCondition EXTENDED_CAULDRON = add("extended_cauldron_recipes", Config.extendedCauldronRecipes);
-  // fluids
-  public static final ConfigEnabledCondition CAULDRON_FLUIDS = add("cauldron_fluids", Config.enableCauldronFluids);
   // dyes
   public static final ConfigEnabledCondition CAULDRON_DYEING = add("cauldron_dyeing", Config.enableCauldronDyeing);
   public static final ConfigEnabledCondition EXTRA_BOTTLE_RECIPES = add("extra_bottle_recipes", Config.extraBottleRecipes);

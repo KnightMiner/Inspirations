@@ -4,6 +4,7 @@ import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.building.block.RopeBlock;
 import knightminer.inspirations.common.Config;
+import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import knightminer.inspirations.utility.InspirationsUtility;
@@ -12,6 +13,7 @@ import net.minecraft.data.loot.BlockLoot;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.storage.loot.LootPool;
@@ -47,6 +49,7 @@ public class InspirationsBlockLootTable extends BlockLoot {
     super.addTables();
 
     this.addBuilding();
+    this.addRecipes();
     this.addTools();
     this.addTweaks();
     this.addUtility();
@@ -80,6 +83,14 @@ public class InspirationsBlockLootTable extends BlockLoot {
     // ropes
     this.add(InspirationsBuilding.rope, this::rope);
     this.add(InspirationsBuilding.vine, this::rope);
+  }
+
+  private void addRecipes() {
+    this.dropOther(InspirationsRecipes.beetrootSoupCauldron, Blocks.CAULDRON);
+    this.dropOther(InspirationsRecipes.mushroomStewCauldron, Blocks.CAULDRON);
+    this.dropOther(InspirationsRecipes.potatoSoupCauldron, Blocks.CAULDRON);
+    this.dropOther(InspirationsRecipes.rabbitStewCauldron, Blocks.CAULDRON);
+    this.dropOther(InspirationsRecipes.honeyCauldron, Blocks.CAULDRON);
   }
 
   private void addTools() {

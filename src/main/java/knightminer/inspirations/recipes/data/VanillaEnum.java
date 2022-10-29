@@ -1,9 +1,9 @@
 package knightminer.inspirations.recipes.data;
 
 import knightminer.inspirations.shared.InspirationsShared;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.item.DyeColor;
 import slimeknights.mantle.registration.object.EnumObject;
 
 /**
@@ -31,44 +31,6 @@ public class VanillaEnum {
       .build();
 
   public static final EnumObject<DyeColor,Block> CARPET = InspirationsShared.VANILLA_CARPETS;
-
-  public static final EnumObject<DyeColor,Block> CONCRETE = new EnumObject.Builder<DyeColor,Block>(DyeColor.class)
-      .put(DyeColor.WHITE, Blocks.WHITE_CONCRETE.delegate)
-      .put(DyeColor.ORANGE,     Blocks.ORANGE_CONCRETE.delegate)
-      .put(DyeColor.MAGENTA,    Blocks.MAGENTA_CONCRETE.delegate)
-      .put(DyeColor.LIGHT_BLUE, Blocks.LIGHT_BLUE_CONCRETE.delegate)
-      .put(DyeColor.YELLOW,     Blocks.YELLOW_CONCRETE.delegate)
-      .put(DyeColor.LIME,       Blocks.LIME_CONCRETE.delegate)
-      .put(DyeColor.PINK,       Blocks.PINK_CONCRETE.delegate)
-      .put(DyeColor.GRAY,       Blocks.GRAY_CONCRETE.delegate)
-      .put(DyeColor.LIGHT_GRAY, Blocks.LIGHT_GRAY_CONCRETE.delegate)
-      .put(DyeColor.CYAN,       Blocks.CYAN_CONCRETE.delegate)
-      .put(DyeColor.PURPLE,     Blocks.PURPLE_CONCRETE.delegate)
-      .put(DyeColor.BLUE,       Blocks.BLUE_CONCRETE.delegate)
-      .put(DyeColor.BROWN,      Blocks.BROWN_CONCRETE.delegate)
-      .put(DyeColor.GREEN,      Blocks.GREEN_CONCRETE.delegate)
-      .put(DyeColor.RED,        Blocks.RED_CONCRETE.delegate)
-      .put(DyeColor.BLACK,      Blocks.BLACK_CONCRETE.delegate)
-      .build();
-
-  public static final EnumObject<DyeColor,Block> CONCRETE_POWDER = new EnumObject.Builder<DyeColor,Block>(DyeColor.class)
-      .put(DyeColor.WHITE,      Blocks.WHITE_CONCRETE_POWDER.delegate)
-      .put(DyeColor.ORANGE,     Blocks.ORANGE_CONCRETE_POWDER.delegate)
-      .put(DyeColor.MAGENTA,    Blocks.MAGENTA_CONCRETE_POWDER.delegate)
-      .put(DyeColor.LIGHT_BLUE, Blocks.LIGHT_BLUE_CONCRETE_POWDER.delegate)
-      .put(DyeColor.YELLOW,     Blocks.YELLOW_CONCRETE_POWDER.delegate)
-      .put(DyeColor.LIME,       Blocks.LIME_CONCRETE_POWDER.delegate)
-      .put(DyeColor.PINK,       Blocks.PINK_CONCRETE_POWDER.delegate)
-      .put(DyeColor.GRAY,       Blocks.GRAY_CONCRETE_POWDER.delegate)
-      .put(DyeColor.LIGHT_GRAY, Blocks.LIGHT_GRAY_CONCRETE_POWDER.delegate)
-      .put(DyeColor.CYAN,       Blocks.CYAN_CONCRETE_POWDER.delegate)
-      .put(DyeColor.PURPLE,     Blocks.PURPLE_CONCRETE_POWDER.delegate)
-      .put(DyeColor.BLUE,       Blocks.BLUE_CONCRETE_POWDER.delegate)
-      .put(DyeColor.BROWN,      Blocks.BROWN_CONCRETE_POWDER.delegate)
-      .put(DyeColor.GREEN,      Blocks.GREEN_CONCRETE_POWDER.delegate)
-      .put(DyeColor.RED,        Blocks.RED_CONCRETE_POWDER.delegate)
-      .put(DyeColor.BLACK,      Blocks.BLACK_CONCRETE_POWDER.delegate)
-      .build();
 
   public static final EnumObject<DyeColor,Block> SHULKER_BOX = new EnumObject.Builder<DyeColor,Block>(DyeColor.class)
       .put(DyeColor.WHITE, Blocks.WHITE_SHULKER_BOX.delegate)
