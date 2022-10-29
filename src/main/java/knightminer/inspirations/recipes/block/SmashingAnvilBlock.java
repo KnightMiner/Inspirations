@@ -1,6 +1,5 @@
 package knightminer.inspirations.recipes.block;
 
-import knightminer.inspirations.recipes.InspirationsRecipes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.level.Level;
@@ -22,11 +21,11 @@ public class SmashingAnvilBlock extends AnvilBlock {
   @Nullable
   public static BlockState damage(BlockState state) {
     Block block = state.getBlock();
-    if (block == Blocks.ANVIL || block == InspirationsRecipes.fullAnvil) {
-      return InspirationsRecipes.chippedAnvil.defaultBlockState().setValue(FACING, state.getValue(FACING));
+    if (block == Blocks.ANVIL /*|| block == InspirationsRecipes.fullAnvil*/) {
+      return /*InspirationsRecipes.chippedAnvil*/Blocks.CHIPPED_ANVIL.defaultBlockState().setValue(FACING, state.getValue(FACING));
     } else {
-      if (block == Blocks.CHIPPED_ANVIL || block == InspirationsRecipes.chippedAnvil)
-        return InspirationsRecipes.damagedAnvil.defaultBlockState().setValue(FACING, state.getValue(FACING));
+      if (block == Blocks.CHIPPED_ANVIL /*|| block == InspirationsRecipes.chippedAnvil*/)
+        return /*InspirationsRecipes.damagedAnvil*/Blocks.DAMAGED_ANVIL.defaultBlockState().setValue(FACING, state.getValue(FACING));
       else return null;
     }
   }

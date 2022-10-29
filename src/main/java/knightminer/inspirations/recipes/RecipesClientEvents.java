@@ -6,24 +6,15 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.MiscUtil;
 import knightminer.inspirations.library.client.CustomTextureLoader;
 import knightminer.inspirations.library.client.model.CauldronModel;
-import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
-import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import knightminer.inspirations.recipes.client.BoilingParticle;
 import knightminer.inspirations.recipes.item.MixedDyedBottleItem;
-import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
-import knightminer.inspirations.shared.SharedClientEvents;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.color.item.ItemColors;
-import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
@@ -65,32 +56,6 @@ public class RecipesClientEvents extends ClientEvents {
   @SubscribeEvent
   static void registerModelLoaders(ModelRegistryEvent event) {
     ModelLoaderRegistry.registerLoader(Inspirations.getResource("cauldron"), CauldronModel.LOADER);
-    SharedClientEvents.configPack.addBlockstateReplacement(Config.extendedCauldron, Blocks.CAULDRON, "cauldron");
-  }
-
-  @SubscribeEvent
-  static void registerBlockColors(ColorHandlerEvent.Block event) {
-    BlockColors blockColors = event.getBlockColors();
-
-    // coloring of liquid inside, for fluids, potions, and dyes
-    registerBlockColors(blockColors, (state, world, pos, tintIndex) -> {
-      // skip tint index 0, that is particles
-      if (tintIndex > 0 && world != null && pos != null) {
-        // must be cauldron TE
-        BlockEntity te = world.getBlockEntity(pos);
-        if(te instanceof CauldronTileEntity) {
-          // if it contains water, run vanilla tinting
-          ICauldronContents contents = ((CauldronTileEntity) te).getContents();
-          if (!contents.matches(CauldronContentTypes.FLUID, Fluids.WATER)) {
-            return contents.getTintColor();
-          }
-        }
-        // water tinting if contains water or TE is missing
-        return BiomeColors.getAverageWaterColor(world, pos);
-      }
-
-      return -1;
-    }, InspirationsRecipes.cauldron);
   }
 
   @SubscribeEvent

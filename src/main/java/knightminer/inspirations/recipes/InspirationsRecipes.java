@@ -9,7 +9,6 @@ import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronTransform
 import knightminer.inspirations.library.recipe.cauldron.special.DyeableCauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.special.EmptyPotionCauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.special.FillPotionCauldronRecipe;
-import knightminer.inspirations.recipes.block.EnhancedCauldronBlock;
 import knightminer.inspirations.recipes.data.RecipesRecipeProvider;
 import knightminer.inspirations.recipes.item.EmptyBottleItem;
 import knightminer.inspirations.recipes.item.MixedDyedBottleItem;
@@ -22,7 +21,6 @@ import knightminer.inspirations.recipes.recipe.cauldron.FillDyedBottleRecipe;
 import knightminer.inspirations.recipes.recipe.cauldron.MixCauldronDyeRecipe;
 import knightminer.inspirations.recipes.recipe.cauldron.PotionFermentCauldronTransform;
 import knightminer.inspirations.recipes.recipe.cauldron.RemoveBannerPatternCauldronRecipe;
-import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.data.DataGenerator;
@@ -39,7 +37,6 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.SimpleRecipeSerializer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LiquidBlock;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.Material;
@@ -52,7 +49,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 import slimeknights.mantle.registration.FluidBuilder;
 import slimeknights.mantle.registration.ModelFluidAttributes;
-import slimeknights.mantle.registration.adapter.BlockEntityTypeRegistryAdapter;
 import slimeknights.mantle.registration.adapter.BlockRegistryAdapter;
 import slimeknights.mantle.registration.adapter.FluidRegistryAdapter;
 import slimeknights.mantle.registration.adapter.ItemRegistryAdapter;
@@ -63,12 +59,6 @@ import slimeknights.mantle.registration.object.EnumObject;
 public class InspirationsRecipes extends ModuleBase {
 
   // blocks
-  public static Block fullAnvil;
-  public static Block chippedAnvil;
-  public static Block damagedAnvil;
-
-  public static EnhancedCauldronBlock cauldron;
-  public static BlockEntityType<CauldronTileEntity> tileCauldron;
 
   // items
   public static Item splashBottle;
@@ -136,18 +126,6 @@ public class InspirationsRecipes extends ModuleBase {
     rabbitStewBlock = registry.registerFluidBlock(() -> rabbitStew, Material.WATER, 0, "rabbit_stew");
     potatoSoupBlock = registry.registerFluidBlock(() -> potatoSoup, Material.WATER, 0, "potato_soup");
     honeyFluidBlock = registry.registerFluidBlock(() -> honey, Material.WATER, 0, "honey");
-
-    /*
-    if (Config.enableAnvilSmashing.get()) {
-      registry.registerOverride(SmashingAnvilBlock::new, Blocks.ANVIL);
-      registry.registerOverride(SmashingAnvilBlock::new, Blocks.CHIPPED_ANVIL);
-      registry.registerOverride(SmashingAnvilBlock::new, Blocks.DAMAGED_ANVIL);
-    }
-    */
-    // TODO: violates rules, probably would just want our own cauldron(s)
-//    if (Config.extendedCauldron.get()) {
-//      cauldron = registry.registerOverride(EnhancedCauldronBlock::new, Blocks.CAULDRON);
-//    }
   }
 
   @SubscribeEvent
@@ -180,20 +158,6 @@ public class InspirationsRecipes extends ModuleBase {
         .craftRemainder(Items.GLASS_BOTTLE);
     simpleDyedWaterBottle = registry.registerEnum(color -> new SimpleDyedBottleItem(bottleProps, DyeItem.byColor(color)), DyeColor.values(), "dyed_bottle");
     mixedDyedWaterBottle = registry.register(new MixedDyedBottleItem(bottleProps), "mixed_dyed_bottle");
-
-    // cauldron item
-//    if (Config.extendedCauldron.get()) {
-//      registry.registerBlockItem(cauldron, brewingProps);
-//    }
-  }
-
-  @SubscribeEvent
-  void registerTileEntities(Register<BlockEntityType<?>> event) {
-    BlockEntityTypeRegistryAdapter registry = new BlockEntityTypeRegistryAdapter(event.getRegistry());
-
-//    if (Config.extendedCauldron.get()) {
-//      tileCauldron = registry.register(CauldronTileEntity::new, cauldron, "cauldron");
-//    }
   }
 
   @SubscribeEvent
@@ -242,22 +206,6 @@ public class InspirationsRecipes extends ModuleBase {
 
   @SubscribeEvent
   void commonSetup(FMLCommonSetupEvent event) {
-    // TODO: cauldrons
-//    if (Config.extendedCauldron.get()) {
-//      // inject new cauldron blocks into the leatherworker point of interest
-//      // it should be as simple as injecting it into the map, but people keep reporting issues with this so just over do it
-//      Map<BlockState, PoiType> map = GameData.getBlockStatePointOfInterestTypeMap();
-//      synchronized (map) {
-//        ImmutableList<BlockState> newStates = cauldron.getStateDefinition().getPossibleStates();
-//        synchronized (PoiType.LEATHERWORKER) {
-//          ImmutableSet.Builder<BlockState> builder = ImmutableSet.builder();
-//          builder.addAll(PoiType.LEATHERWORKER.matchingStates);
-//          builder.addAll(newStates);
-//          PoiType.LEATHERWORKER.matchingStates = builder.build();
-//        }
-//        newStates.forEach(state -> map.put(state, PoiType.LEATHERWORKER));
-//      }
-//    }
   }
 
 

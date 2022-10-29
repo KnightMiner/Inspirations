@@ -13,7 +13,6 @@ import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronConten
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronTransform;
 import knightminer.inspirations.library.recipe.cauldron.util.CauldronTemperature;
-import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.recipes.block.EnhancedCauldronBlock;
 import knightminer.inspirations.recipes.recipe.inventory.CauldronItemInventory;
 import knightminer.inspirations.recipes.recipe.inventory.TileCauldronInventory;
@@ -118,7 +117,7 @@ public class CauldronTileEntity extends MantleBlockEntity {
    * Creates a new cauldron with no block set
    */
   public CauldronTileEntity(BlockPos pos, BlockState state) {
-    this(pos, state, InspirationsRecipes.cauldron);
+    this(pos, state, null);//InspirationsRecipes.cauldron);
   }
 
   /**
@@ -126,7 +125,7 @@ public class CauldronTileEntity extends MantleBlockEntity {
    * @param block  Parent block
    */
   public CauldronTileEntity(BlockPos pos, BlockState state, EnhancedCauldronBlock block) {
-    this(InspirationsRecipes.tileCauldron, pos, state, block);
+    this(null/*InspirationsRecipes.tileCauldron*/, pos, state, block);
   }
 
   /**

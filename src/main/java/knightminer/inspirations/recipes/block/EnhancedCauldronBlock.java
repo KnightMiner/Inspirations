@@ -75,7 +75,7 @@ public class EnhancedCauldronBlock extends LayeredCauldronBlock implements Entit
   @Nullable
   @Override
   public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState pState, BlockEntityType<T> matchType) {
-    return BlockEntityHelper.castTicker(matchType, InspirationsRecipes.tileCauldron, level.isClientSide ? CauldronTileEntity.CLIENT_TICKER : CauldronTileEntity.SERVER_TICKER);
+    return BlockEntityHelper.castTicker(matchType, null/*InspirationsRecipes.tileCauldron*/, level.isClientSide ? CauldronTileEntity.CLIENT_TICKER : CauldronTileEntity.SERVER_TICKER);
   }
 
   /* TE behavior */
