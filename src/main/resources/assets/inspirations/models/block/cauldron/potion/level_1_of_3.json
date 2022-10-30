@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/template_cauldron_level1",
+  "textures": {
+    "content": "inspirations:block/fluid/potion"
+  }
+}

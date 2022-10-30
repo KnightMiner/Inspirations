@@ -31,7 +31,7 @@ public class MixDyeCauldronInteraction extends AbstractModifyCauldronInteraction
 
 	@Nullable
 	@Override
-	protected BlockState getNewState(BlockState oldState) {
+	protected BlockState getNewState(BlockState oldState, Level level, BlockPos pos, ItemStack filledStack) {
 		return oldState;
 	}
 

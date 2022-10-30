@@ -8,11 +8,11 @@ import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronTransform;
-import knightminer.inspirations.library.recipe.cauldron.special.EmptyPotionCauldronRecipe;
-import knightminer.inspirations.library.recipe.cauldron.special.FillPotionCauldronRecipe;
 import knightminer.inspirations.recipes.block.DyeCauldronBlock;
 import knightminer.inspirations.recipes.block.FourLayerCauldronBlock;
+import knightminer.inspirations.recipes.block.PotionCauldronBlock;
 import knightminer.inspirations.recipes.block.entity.DyeCauldronBlockEntity;
+import knightminer.inspirations.recipes.block.entity.PotionCauldronBlockEntity;
 import knightminer.inspirations.recipes.cauldron.DecreaseLayerCauldronInteraction;
 import knightminer.inspirations.recipes.cauldron.EmptyCauldronInteraction;
 import knightminer.inspirations.recipes.cauldron.FillCauldronInteraction;
@@ -27,6 +27,11 @@ import knightminer.inspirations.recipes.cauldron.dye.DyedBottleIntoEmptyCauldron
 import knightminer.inspirations.recipes.cauldron.dye.DyedBottleIntoWaterCauldronInteraction;
 import knightminer.inspirations.recipes.cauldron.dye.FillDyedBottleCauldronInteraction;
 import knightminer.inspirations.recipes.cauldron.dye.MixDyeCauldronInteraction;
+import knightminer.inspirations.recipes.cauldron.potion.FillPotionCauldronInteraction;
+import knightminer.inspirations.recipes.cauldron.potion.PotionIntoEmptyInteraction;
+import knightminer.inspirations.recipes.cauldron.potion.PotionIntoPotionCauldron;
+import knightminer.inspirations.recipes.cauldron.potion.TipArrowCauldronInteraction;
+import knightminer.inspirations.recipes.cauldron.potion.WaterBottleIntoWaterInteraction;
 import knightminer.inspirations.recipes.data.RecipesRecipeProvider;
 import knightminer.inspirations.recipes.item.EmptyBottleItem;
 import knightminer.inspirations.recipes.item.MixedDyedBottleItem;
@@ -51,6 +56,7 @@ import net.minecraft.world.item.DyeableLeatherItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.ItemLike;
@@ -105,12 +111,14 @@ public class InspirationsRecipes extends ModuleBase {
   public static final Map<Item,CauldronInteraction> HONEY_CAULDRON_INTERACTIONS = CauldronInteraction.newInteractionMap();
   /** Interactions for the dye cauldron */
   public static final Map<Item,CauldronInteraction> DYE_CAULDRON_INTERACTIONS = CauldronInteraction.newInteractionMap();
+  /** Interactions for the dye cauldron */
+  public static final Map<Item,CauldronInteraction> POTION_CAULDRON_INTERACTION = CauldronInteraction.newInteractionMap();
 
   // blocks
   public static FourLayerCauldronBlock mushroomStewCauldron, beetrootSoupCauldron, rabbitStewCauldron, potatoSoupCauldron, honeyCauldron;
-  public static LayeredCauldronBlock dyeCauldron;
+  public static LayeredCauldronBlock dyeCauldron, potionCauldron;
 
-  public static BlockEntityType<MantleBlockEntity> dyeCauldronEntity;
+  public static BlockEntityType<MantleBlockEntity> dyeCauldronEntity, potionCauldronEntity;
 
   // items
   public static Item splashBottle;
@@ -186,6 +194,7 @@ public class InspirationsRecipes extends ModuleBase {
     honeyFluidBlock = registry.registerFluidBlock(() -> honey, Material.WATER, 0, "honey");
 
     dyeCauldron = registry.register(new DyeCauldronBlock(Properties.copy(Blocks.CAULDRON)), "dye_cauldron");
+    potionCauldron = registry.register(new PotionCauldronBlock(Properties.copy(Blocks.CAULDRON)), "potion_cauldron");
   }
 
   @SubscribeEvent
@@ -193,6 +202,7 @@ public class InspirationsRecipes extends ModuleBase {
     BlockEntityTypeRegistryAdapter registry = new BlockEntityTypeRegistryAdapter(event.getRegistry());
 
     dyeCauldronEntity = registry.register(DyeCauldronBlockEntity::new, dyeCauldron, "dye_cauldron");
+    potionCauldronEntity = registry.register(PotionCauldronBlockEntity::new, potionCauldron, "potion_cauldron");
   }
 
   @SubscribeEvent
@@ -237,8 +247,6 @@ public class InspirationsRecipes extends ModuleBase {
   void registerSerializers(Register<RecipeSerializer<?>> event) {
     RegistryAdapter<RecipeSerializer<?>> registry = new RegistryAdapter<>(event.getRegistry());
     registry.register(new CauldronRecipe.Serializer(), "cauldron");
-    registry.register(new EmptyPotionCauldronRecipe.Serializer(), "cauldron_empty_potion");
-    registry.register(new FillPotionCauldronRecipe.Serializer(), "cauldron_fill_potion");
     registry.register(new CauldronTransform.Serializer(), "cauldron_transform");
     registry.register(new PotionFermentCauldronTransform.Serializer(), "cauldron_potion_ferment");
 
@@ -492,6 +500,25 @@ public class InspirationsRecipes extends ModuleBase {
 
       // wash the compass
       CauldronInteraction.WATER.put(InspirationsTools.dimensionCompass, CauldronInteraction.DYED_ITEM);
+
+      // fill the potion
+      POTION_CAULDRON_INTERACTION.put(Items.GLASS_BOTTLE, new FillPotionCauldronInteraction(Items.POTION));
+      POTION_CAULDRON_INTERACTION.put(splashBottle, new FillPotionCauldronInteraction(Items.SPLASH_POTION));
+      POTION_CAULDRON_INTERACTION.put(lingeringBottle, new FillPotionCauldronInteraction(Items.LINGERING_POTION));
+      POTION_CAULDRON_INTERACTION.put(Items.ARROW, TipArrowCauldronInteraction.INSTANCE);
+      // drain the potion
+      POTION_CAULDRON_INTERACTION.put(Items.POTION, new PotionIntoPotionCauldron(Items.GLASS_BOTTLE));
+      POTION_CAULDRON_INTERACTION.put(Items.SPLASH_POTION, new PotionIntoPotionCauldron(splashBottle));
+      POTION_CAULDRON_INTERACTION.put(Items.LINGERING_POTION, new PotionIntoPotionCauldron(lingeringBottle));
+      // drain the potion into empty, note this replaces the vanilla one, but it's okay as we still make water cauldrons
+      CauldronInteraction.EMPTY.put(Items.POTION, new PotionIntoEmptyInteraction(Items.GLASS_BOTTLE));
+      CauldronInteraction.EMPTY.put(Items.SPLASH_POTION, new PotionIntoEmptyInteraction(splashBottle));
+      CauldronInteraction.EMPTY.put(Items.LINGERING_POTION, new PotionIntoEmptyInteraction(lingeringBottle));
+      // water cauldrons work with potions, but not splash or lingering
+      CauldronInteraction.WATER.put(Items.SPLASH_POTION, new WaterBottleIntoWaterInteraction(splashBottle));
+      CauldronInteraction.WATER.put(Items.LINGERING_POTION, new WaterBottleIntoWaterInteraction(lingeringBottle));
+      CauldronInteraction.WATER.put(splashBottle, new DecreaseLayerCauldronInteraction(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.WATER), LayeredCauldronBlock.LEVEL, true, SoundEvents.BOTTLE_FILL));
+      CauldronInteraction.WATER.put(lingeringBottle, new DecreaseLayerCauldronInteraction(PotionUtils.setPotion(new ItemStack(Items.LINGERING_POTION), Potions.WATER), LayeredCauldronBlock.LEVEL, true, SoundEvents.BOTTLE_FILL));
     });
 
     // inject new cauldron blocks into the leatherworker point of interest

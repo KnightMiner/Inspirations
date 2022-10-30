@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-package knightminer.inspirations.library.recipe.cauldron.special;
+package knightminer.inspirations.recipes.cauldron.potion;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 

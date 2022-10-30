@@ -33,7 +33,7 @@ public class DyeWaterCauldronInteraction extends AbstractModifyCauldronInteracti
 
 	@Nullable
 	@Override
-	protected BlockState getNewState(BlockState oldState) {
+	protected BlockState getNewState(BlockState oldState, Level level, BlockPos pos, ItemStack filledStack) {
 		return InspirationsRecipes.dyeCauldron.defaultBlockState().setValue(LEVEL, oldState.getValue(LEVEL));
 	}
 

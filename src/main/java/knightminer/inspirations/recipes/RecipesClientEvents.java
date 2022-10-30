@@ -7,14 +7,19 @@ import knightminer.inspirations.library.MiscUtil;
 import knightminer.inspirations.library.client.CustomTextureLoader;
 import knightminer.inspirations.library.client.model.CauldronModel;
 import knightminer.inspirations.recipes.block.entity.DyeCauldronBlockEntity;
+import knightminer.inspirations.recipes.block.entity.PotionCauldronBlockEntity;
 import knightminer.inspirations.recipes.client.BoilingParticle;
 import knightminer.inspirations.recipes.item.MixedDyedBottleItem;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.api.distmarker.Dist;
@@ -57,7 +62,8 @@ public class RecipesClientEvents extends ClientEvents {
 
   @SubscribeEvent
   static void registerBlockColors(ColorHandlerEvent.Block event) {
-    event.getBlockColors().register((state, level, pos, index) -> {
+    BlockColors colors = event.getBlockColors();
+    colors.register((state, level, pos, index) -> {
       if (index == 0 && level != null && pos != null) {
         BlockEntity be = level.getBlockEntity(pos);
         if (be != null && be.getType() == InspirationsRecipes.dyeCauldronEntity) {
@@ -66,6 +72,16 @@ public class RecipesClientEvents extends ClientEvents {
       }
       return -1;
     }, InspirationsRecipes.dyeCauldron);
+    colors.register((state, level, pos, index) -> {
+      if (index == 0 && level != null && pos != null) {
+        BlockEntity be = level.getBlockEntity(pos);
+        if (be != null && be.getType() == InspirationsRecipes.potionCauldronEntity) {
+          Potion potion = ((PotionCauldronBlockEntity) be).getPotion();
+          return potion == Potions.EMPTY ? -1 : PotionUtils.getColor(potion);
+        }
+      }
+      return -1;
+    }, InspirationsRecipes.potionCauldron);
   }
 
   @SubscribeEvent

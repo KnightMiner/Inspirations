@@ -36,11 +36,11 @@ public abstract class AbstractModifyCauldronInteraction implements CauldronInter
 
 	/** Gets the new block state based on the old block state, or null if unable to change */
 	@Nullable
-	protected abstract BlockState getNewState(BlockState oldState);
+	protected abstract BlockState getNewState(BlockState oldState, Level level, BlockPos pos, ItemStack filledStack);
 
 	@Override
 	public InteractionResult interact(BlockState oldState, Level level, BlockPos pos, Player player, InteractionHand hand, ItemStack filledStack) {
-		BlockState newState = getNewState(oldState);
+		BlockState newState = getNewState(oldState, level, pos, filledStack);
 		if (newState == null) {
 			return InteractionResult.PASS;
 		}

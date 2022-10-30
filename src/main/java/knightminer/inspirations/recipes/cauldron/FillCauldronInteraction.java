@@ -1,11 +1,14 @@
 package knightminer.inspirations.recipes.cauldron;
 
 import knightminer.inspirations.recipes.block.FourLayerCauldronBlock;
+import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.stats.Stats;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nullable;
@@ -32,7 +35,7 @@ public class FillCauldronInteraction extends AbstractModifyCauldronInteraction {
 
 	@Nullable
 	@Override
-	protected BlockState getNewState(BlockState oldState) {
+	protected BlockState getNewState(BlockState oldState, Level level, BlockPos pos, ItemStack filledStack) {
 		return newState;
 	}
 }

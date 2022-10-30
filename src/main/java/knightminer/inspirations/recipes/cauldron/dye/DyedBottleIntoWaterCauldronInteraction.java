@@ -28,7 +28,7 @@ public class DyedBottleIntoWaterCauldronInteraction extends AbstractModifyCauldr
 
 	@Nullable
 	@Override
-	protected BlockState getNewState(BlockState oldState) {
+	protected BlockState getNewState(BlockState oldState, Level level, BlockPos pos, ItemStack filledStack) {
 		int contentLevel = oldState.getValue(LEVEL);
 		if (contentLevel == 3) {
 			return null;

@@ -68,7 +68,8 @@ public class InspirationsBlockTagsProvider extends BlockTagsProvider {
     );
     this.tag(BlockTags.CAULDRONS).add(InspirationsRecipes.beetrootSoupCauldron, InspirationsRecipes.mushroomStewCauldron,
                                       InspirationsRecipes.potatoSoupCauldron, InspirationsRecipes.rabbitStewCauldron,
-                                      InspirationsRecipes.honeyCauldron, InspirationsRecipes.dyeCauldron);
+                                      InspirationsRecipes.honeyCauldron,
+                                      InspirationsRecipes.dyeCauldron, InspirationsRecipes.potionCauldron);
   }
 
   private void registerHarvestTags() {

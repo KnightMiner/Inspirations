@@ -9,8 +9,6 @@ import knightminer.inspirations.library.recipe.cauldron.CauldronIngredients;
 import knightminer.inspirations.library.recipe.cauldron.ingredient.ICauldronIngredient;
 import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronRecipeBuilder;
 import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronTransformBuilder;
-import knightminer.inspirations.library.recipe.cauldron.special.EmptyPotionCauldronRecipe;
-import knightminer.inspirations.library.recipe.cauldron.special.FillPotionCauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.util.TemperaturePredicate;
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.recipes.recipe.cauldron.BrewingCauldronRecipe;
@@ -242,29 +240,9 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
     // potions //
     String potionFolder = folder + "potion/";
     Consumer<FinishedRecipe> potionConsumer = withCondition(ConfigEnabledCondition.CAULDRON_POTIONS);
-    // normal
-    potionConsumer.accept(new EmptyPotionCauldronRecipe.FinishedRecipe(
-        resource(potionFolder + "normal_empty"), Items.POTION, Items.GLASS_BOTTLE));
-    potionConsumer.accept(new FillPotionCauldronRecipe.FinishedRecipe(
-        resource(potionFolder + "normal_fill"), SizedIngredient.fromItems(Items.GLASS_BOTTLE), Items.POTION));
-
-    // splash
-    potionConsumer.accept(new EmptyPotionCauldronRecipe.FinishedRecipe(
-        resource(potionFolder + "splash_empty"), Items.SPLASH_POTION, InspirationsRecipes.splashBottle));
-    potionConsumer.accept(new FillPotionCauldronRecipe.FinishedRecipe(
-        resource(potionFolder + "splash_fill"), SizedIngredient.fromTag(InspirationsTags.Items.SPLASH_BOTTLES), Items.SPLASH_POTION));
-
-    // lingering
-    potionConsumer.accept(new EmptyPotionCauldronRecipe.FinishedRecipe(
-        resource(potionFolder + "lingering_empty"), Items.LINGERING_POTION, InspirationsRecipes.lingeringBottle));
-    potionConsumer.accept(new FillPotionCauldronRecipe.FinishedRecipe(
-        resource(potionFolder + "lingering_fill"), SizedIngredient.fromTag(InspirationsTags.Items.LINGERING_BOTTLES), Items.LINGERING_POTION));
-
-    // tipped arrows
-    withCondition(ConfigEnabledCondition.CAULDRON_TIP_ARROWS).accept(
-        new FillPotionCauldronRecipe.FinishedRecipe(resource(potionFolder + "tipped_arrow"), SizedIngredient.fromItems(16, Items.ARROW), Items.TIPPED_ARROW));
 
     // craft the bottles
+    // TODO: brew the bottles
     ShapelessRecipeBuilder.shapeless(InspirationsRecipes.splashBottle)
                           .requires(Items.GLASS_BOTTLE)
                           .requires(Items.GLASS_BOTTLE)
