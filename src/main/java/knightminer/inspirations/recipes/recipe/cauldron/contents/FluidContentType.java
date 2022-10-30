@@ -1,15 +1,16 @@
 package knightminer.inspirations.recipes.recipe.cauldron.contents;
 
 import knightminer.inspirations.library.recipe.cauldron.contents.RegistryContentType;
-import net.minecraft.world.level.material.Fluid;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.registries.ForgeRegistries;
 
 /**
  * Content type for a fluid
  */
+@Deprecated
 public class FluidContentType extends RegistryContentType<Fluid> {
   /**
    * Creates a new instance

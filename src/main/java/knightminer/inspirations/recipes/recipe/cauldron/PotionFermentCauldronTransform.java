@@ -22,6 +22,7 @@ import javax.annotation.Nullable;
 /**
  * Recipe to transform a potion from the "brewing" form to the usable potion
  */
+@Deprecated
 public class PotionFermentCauldronTransform implements ICauldronTransform {
   private final ResourceLocation id;
   private final int time;

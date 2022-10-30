@@ -10,6 +10,7 @@ import java.util.function.Consumer;
 /**
  * Base logic for handling items in the cauldron, as it almost never actually contains the items
  */
+@Deprecated
 public abstract class CauldronItemInventory implements IModifyableCauldronInventory {
   protected static final Consumer<ItemStack> EMPTY_CONSUMER = s -> {};
   protected ItemStack stack = ItemStack.EMPTY;

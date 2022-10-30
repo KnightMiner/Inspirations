@@ -4,10 +4,10 @@ import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronConten
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.util.CauldronTemperature;
 import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
@@ -16,6 +16,7 @@ import java.util.function.Consumer;
 /**
  * Inventory used in a cauldron tile entity that supports generic contexts for interaction
  */
+@Deprecated
 public class TileCauldronInventory extends CauldronItemInventory {
   private final CauldronTileEntity tile;
 

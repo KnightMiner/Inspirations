@@ -4,10 +4,10 @@ import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipeDisplay;
-import net.minecraft.world.level.material.Fluids;
+import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
-import net.minecraft.util.Mth;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.common.util.Lazy;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
@@ -20,7 +20,9 @@ import java.util.stream.Stream;
 
 /**
  * Helper class to build a JEI display recipe for use in {@link slimeknights.mantle.recipe.IMultiRecipe}
+ * @deprecated Need to rework JEI recipes
  */
+@Deprecated
 public class DisplayCauldronRecipe implements ICauldronRecipeDisplay {
   /** Lazy getter for water */
   public static final Lazy<List<ICauldronContents>> WATER_CONTENTS = Lazy.of(() -> Collections.singletonList(CauldronContentTypes.DEFAULT.get()));

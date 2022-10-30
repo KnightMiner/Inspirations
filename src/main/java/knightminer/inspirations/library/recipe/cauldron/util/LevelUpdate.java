@@ -14,7 +14,9 @@ import static knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronR
 
 /**
  * Logic to update the level to a new value
+ * @deprecated Will need a lot of rethinking to work with variable levels
  */
+@Deprecated
 public abstract class LevelUpdate implements IntUnaryOperator {
   private static final String KEY_ADD = "add";
   private static final String KEY_SET = "set";

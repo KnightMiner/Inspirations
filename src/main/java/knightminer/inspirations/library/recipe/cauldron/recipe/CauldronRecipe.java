@@ -31,7 +31,9 @@ import java.util.Objects;
 
 /**
  * Base cauldron recipe implementation
+ * @deprecated Needs rewrite to work with the new cauldron behavior
  */
+@Deprecated
 public class CauldronRecipe extends AbstractCauldronRecipe implements ICauldronRecipe {
   private final ResourceLocation id;
   private final String group;

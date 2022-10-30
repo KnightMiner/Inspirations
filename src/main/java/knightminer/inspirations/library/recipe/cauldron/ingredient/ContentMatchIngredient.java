@@ -20,7 +20,9 @@ import java.util.stream.Collectors;
 /**
  * Type that can match a value or list of values.
  * @param <T>  Value type
+ * @deprecated Block predicates are sufficient
  */
+@Deprecated
 public abstract class ContentMatchIngredient<T> implements ICauldronIngredient {
   protected final Serializer<T> serializer;
 

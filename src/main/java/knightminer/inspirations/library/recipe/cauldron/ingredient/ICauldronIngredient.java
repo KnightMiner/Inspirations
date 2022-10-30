@@ -7,7 +7,9 @@ import java.util.function.Predicate;
 
 /**
  * Ingredient for matching cauldron contents
+ * @deprecated Block predicates are sufficient
  */
+@Deprecated
 public interface ICauldronIngredient extends Predicate<ICauldronContents> {
   /**
    * Gets the serializer for this ingredient

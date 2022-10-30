@@ -32,7 +32,9 @@ import java.util.Random;
 
 /**
  * Cauldron block exteneded to have a tile entity
+ * @deprecated Replaced by cauldron type having its own block
  */
+@Deprecated
 @SuppressWarnings("WeakerAccess")
 public class EnhancedCauldronBlock extends LayeredCauldronBlock implements EntityBlock {
   public EnhancedCauldronBlock(Block.Properties props) {

@@ -10,7 +10,9 @@ import javax.annotation.Nonnull;
 
 /**
  * Base interface for all cauldron recipes based on direct interaction
+ * @deprecated Needs rewrite to work with the new cauldron behavior
  */
+@Deprecated
 public interface ICauldronRecipe extends ICustomOutputRecipe<ICauldronInventory> {
   /** Maximum fill level of the cauldron */
   int MAX = 12;

@@ -17,6 +17,7 @@ import java.util.List;
 /**
  * Content type for the 16 dye enum values
  */
+@Deprecated
 public class DyeContentType extends NamedContentType<DyeColor> {
   private static final ResourceLocation TEXTURE_NAME = Inspirations.getResource("dye");
   private static final String TRANSLATION_KEY = Util.makeDescriptionId("cauldron_contents", TEXTURE_NAME);

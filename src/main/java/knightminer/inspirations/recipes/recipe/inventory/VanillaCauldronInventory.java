@@ -19,6 +19,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+@Deprecated
 public class VanillaCauldronInventory extends CauldronItemInventory {
   private final Level world;
   private final BlockPos pos;

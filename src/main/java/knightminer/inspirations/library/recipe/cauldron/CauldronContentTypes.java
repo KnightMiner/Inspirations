@@ -29,7 +29,9 @@ import java.util.function.BiFunction;
 
 /**
  * Registry that helps with registering, serializing, and deserializing cauldron properties
+ * @deprecated Replaced by each cauldron being its own block
  */
+@Deprecated
 public class CauldronContentTypes {
   private static final ResourceLocation UNREGISTERED = Inspirations.getResource("null");
   public static final String KEY_TYPE = "type";

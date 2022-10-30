@@ -2,12 +2,12 @@ package knightminer.inspirations.library.recipe.cauldron.contents;
 
 import com.google.gson.JsonObject;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.material.Fluids;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.material.Fluids;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -15,7 +15,9 @@ import java.util.Optional;
 
 /**
  * Base interface for all cauldron contents
+ * @deprecated Replaced by {@link net.minecraft.world.level.block.AbstractCauldronBlock}
  */
+@Deprecated
 public interface ICauldronContents {
   /**
    * Gets this value as the given type

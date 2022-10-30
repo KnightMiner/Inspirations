@@ -4,11 +4,11 @@ import com.google.gson.JsonObject;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.contents.CauldronContentType;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.TooltipFlag;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -18,6 +18,7 @@ import java.util.Optional;
  * Content type implementation. Mainly out of the library as no one should be directly constructing this class
  * @param <C>  Content value type
  */
+@Deprecated
 public class CauldronContents<C> implements ICauldronContents {
   private final CauldronContentType<C> type;
   private final C value;

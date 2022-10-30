@@ -12,7 +12,9 @@ import javax.annotation.Nullable;
 /**
  * Cauldron content type based on {@link StringRepresentable}, typically an enum
  * @param <T>  Type class
+ * @deprecated Replaced by {@link net.minecraft.world.level.block.AbstractCauldronBlock}
  */
+@Deprecated
 public abstract class NamedContentType<T extends StringRepresentable> extends CauldronContentType<T> {
   /**
    * Gets the name of the given value for writing to JSON and NBT

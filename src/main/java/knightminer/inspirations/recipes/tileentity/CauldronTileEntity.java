@@ -56,7 +56,9 @@ import java.util.function.Consumer;
 
 /**
  * Tile entity logic for the cauldron, handles more complex content types
+ * @deprecated Replaced by cauldron type having its own block
  */
+@Deprecated
 public class CauldronTileEntity extends MantleBlockEntity {
   /** Ticking on the server side */
   public static final BlockEntityTicker<CauldronTileEntity> SERVER_TICKER = (level, pos, state, be) -> be.serverTick(level);

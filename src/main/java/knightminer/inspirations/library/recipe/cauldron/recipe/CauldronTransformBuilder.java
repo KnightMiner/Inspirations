@@ -21,7 +21,9 @@ import java.util.function.Consumer;
 
 /**
  * Builds a recipe that converts one fluid in the cauldron to another over time
+ * @deprecated Needs rewrite to work with the new cauldron behavior
  */
+@Deprecated
 public class CauldronTransformBuilder extends AbstractRecipeBuilder<CauldronTransformBuilder> {
   private final ICauldronIngredient ingredient;
   private final ICauldronContents output;

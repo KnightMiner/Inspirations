@@ -7,7 +7,9 @@ import slimeknights.mantle.recipe.container.IEmptyContainer;
 /**
  * Interface representing the current cauldron state with no outside item context.
  * Use {@link ICauldronInventory} for item context.
+ * @deprecated Will be recreated once recipe format is decided upon
  */
+@Deprecated
 public interface ICauldronState extends IEmptyContainer {
   /**
    * Gets the contents of the cauldron.

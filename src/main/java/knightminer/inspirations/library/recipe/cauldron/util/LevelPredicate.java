@@ -10,7 +10,9 @@ import static knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronR
 
 /**
  * Predicate to match a cauldron level
+ * @deprecated Most likely migrate to a block state predicate
  */
+@Deprecated
 public class LevelPredicate implements IntPredicate {
   private static final String KEY_MIN = "min";
   private static final String KEY_MAX = "max";

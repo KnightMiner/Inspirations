@@ -45,6 +45,7 @@ import java.util.stream.Stream;
 /**
  * Shared logic for both potion brewing recipe types
  */
+@Deprecated
 public abstract class BrewingCauldronRecipe implements ICauldronRecipe, IMultiRecipe<DisplayCauldronRecipe> {
   private final ResourceLocation id;
   private final boolean instant;

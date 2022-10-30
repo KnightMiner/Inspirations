@@ -12,15 +12,17 @@ import knightminer.inspirations.library.recipe.cauldron.ingredient.ContentMatchI
 import knightminer.inspirations.library.recipe.cauldron.ingredient.FluidCauldronIngredient;
 import knightminer.inspirations.library.recipe.cauldron.ingredient.ICauldronIngredient;
 import knightminer.inspirations.library.recipe.cauldron.ingredient.ICauldronIngredientSerializer;
-import net.minecraft.world.item.DyeColor;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.item.alchemy.Potion;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.alchemy.Potion;
 
 /**
  * Registry that helps with registering, serializing, and deserializing cauldron properties
+ * @deprecated Replace by block predicates
  */
+@Deprecated
 public class CauldronIngredients {
   private static final String KEY_TYPE = "type";
   private static final BiMap<ResourceLocation, ICauldronIngredientSerializer<?>> INGREDIENTS = HashBiMap.create();

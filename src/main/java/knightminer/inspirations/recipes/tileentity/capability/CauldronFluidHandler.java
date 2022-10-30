@@ -3,8 +3,8 @@ package knightminer.inspirations.recipes.tileentity.capability;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe;
 import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
-import net.minecraft.world.level.material.Fluid;
 import net.minecraft.util.Mth;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -12,11 +12,10 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import static knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe.MAX;
 import static knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe.QUARTER;
 
-import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
-
 /**
  * Logic to treat the cauldron as a fluid tank
  */
+@Deprecated
 public class CauldronFluidHandler implements IFluidHandler {
   private final CauldronTileEntity cauldron;
   /** Cache of current contents. Null when not yet calculated */

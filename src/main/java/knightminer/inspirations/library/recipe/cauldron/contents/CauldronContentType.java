@@ -7,11 +7,11 @@ import io.netty.handler.codec.DecoderException;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.recipes.recipe.cauldron.contents.CauldronContents;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.TooltipFlag;
 import slimeknights.mantle.util.JsonHelper;
 
 import javax.annotation.Nullable;
@@ -24,7 +24,9 @@ import java.util.function.Function;
 /**
  * Represents a type of contents that can be stored in the cauldron
  * @param <T> Type of values contained in this type
+ * @deprecated Replaced by each cauldron being its own block
  */
+@Deprecated
 public abstract class CauldronContentType<T> {
   /** Resource location meaning no texture exists. Basically a copy of {@link net.minecraft.client.renderer.texture.MissingTextureSprite#getLocation()} that is server safe */
   public static final ResourceLocation NO_TEXTURE = Inspirations.getResource("missingno");

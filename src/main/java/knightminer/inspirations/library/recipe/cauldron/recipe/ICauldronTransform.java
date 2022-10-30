@@ -9,7 +9,9 @@ import slimeknights.mantle.recipe.ICustomOutputRecipe;
 
 /**
  * Recipe that transforms contents in a cauldron given time and temperature
+ * @deprecated Needs rewrite to work with the new cauldron behavior
  */
+@Deprecated
 public interface ICauldronTransform extends ICustomOutputRecipe<ICauldronState> {
   /**
    * Gets the output contents for this recipe based on the input contents

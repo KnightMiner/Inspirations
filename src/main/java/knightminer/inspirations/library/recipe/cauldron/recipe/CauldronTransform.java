@@ -26,7 +26,9 @@ import java.util.Objects;
 
 /**
  * Base cauldron transform implementation
+ * @deprecated Needs rewrite to work with the new cauldron behavior
  */
+@Deprecated
 public class CauldronTransform extends AbstractCauldronRecipe implements ICauldronTransform {
   private final ResourceLocation id;
   private final String group;

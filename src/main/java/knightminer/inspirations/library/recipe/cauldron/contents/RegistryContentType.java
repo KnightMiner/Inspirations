@@ -18,7 +18,9 @@ import java.util.function.Function;
 /**
  * Content type that mirrors a Forge registry
  * @param <T>  Value type
+ * @deprecated Hopefully will be replaced by a forge thing in the future, for now just have heuristics
  */
+@Deprecated
 public abstract class RegistryContentType<T extends IForgeRegistryEntry<T>> extends CauldronContentType<T> {
   private final IForgeRegistry<T> registry;
 

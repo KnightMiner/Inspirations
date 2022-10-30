@@ -10,7 +10,9 @@ import java.util.List;
 
 /**
  * Interface for recipes to display in JEI
+ * @deprecated Needs rewrite to work with the new cauldron behavior
  */
+@Deprecated
 public interface ICauldronRecipeDisplay {
   /* Inputs */
 

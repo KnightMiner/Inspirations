@@ -21,6 +21,7 @@ import java.util.List;
 /**
  * Content type for colors in the cauldron
  */
+@Deprecated
 public class ColorContentType extends CauldronContentType<Integer> {
   private static final ResourceLocation TEXTURE_NAME = Inspirations.getResource("color");
   private static final String TRANSLATION_KEY = Util.makeDescriptionId("cauldron_contents", Inspirations.getResource("color"));

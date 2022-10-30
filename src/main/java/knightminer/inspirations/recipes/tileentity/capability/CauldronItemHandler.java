@@ -13,6 +13,7 @@ import java.util.function.Consumer;
 /**
  * Item handler capability for the cauldron. Allows hoppers to perform recipes that do not require an item input (removing ice for instance)
  */
+@Deprecated
 public class CauldronItemHandler implements IItemHandler {
   // properties from the TE
   private final CauldronTileEntity te;

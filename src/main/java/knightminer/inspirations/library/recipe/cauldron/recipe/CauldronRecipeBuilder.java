@@ -29,7 +29,9 @@ import java.util.function.Consumer;
 
 /**
  * Builder for a standard cauldron recipe
+ * @deprecated Needs rewrite to work with the new cauldron behavior
  */
+@Deprecated
 @SuppressWarnings("UnusedReturnValue")
 public class CauldronRecipeBuilder extends AbstractRecipeBuilder<CauldronRecipeBuilder> {
   private final SizedIngredient input;

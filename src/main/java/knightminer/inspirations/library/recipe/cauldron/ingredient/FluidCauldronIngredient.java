@@ -19,7 +19,9 @@ import java.util.stream.Collectors;
 
 /**
  * Cauldron ingredient type for fluid contents, mostly an extension of {@link ContentMatchIngredient}, but also includes tags
+ * @deprecated Block predicates are sufficient
  */
+@Deprecated
 public class FluidCauldronIngredient extends ContentMatchIngredient<Fluid> {
   private final TagKey<Fluid> tag;
   private List<ICauldronContents> displayValues;

@@ -2,7 +2,9 @@ package knightminer.inspirations.library.recipe.cauldron.util;
 
 /**
  * Enum containing valid cauldron temperatures
+ * @deprecated No idea if temperature will still be possible, perhaps dedicated cauldrons?
  */
+@Deprecated
 public enum CauldronTemperature {
   /** Cauldron is at room temperature */
   NORMAL,

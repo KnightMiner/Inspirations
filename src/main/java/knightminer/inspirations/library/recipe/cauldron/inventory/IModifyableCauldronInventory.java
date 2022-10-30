@@ -8,7 +8,9 @@ import java.util.function.IntUnaryOperator;
 
 /**
  * Inventory for handling the results of a cauldron recipe
+ * @deprecated Will be recreated once recipe format is decided upon
  */
+@Deprecated
 public interface IModifyableCauldronInventory extends ICauldronInventory {
   /**
    * Updates the held item stack used to interact with the cauldron

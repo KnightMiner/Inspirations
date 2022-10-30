@@ -22,6 +22,7 @@ import java.util.List;
 /**
  * Potion content type
  */
+@Deprecated
 public class PotionContentType extends RegistryContentType<Potion> {
   private static final String PREFIX = "item.minecraft.potion.effect.";
 

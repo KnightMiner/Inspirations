@@ -17,6 +17,7 @@ import javax.annotation.Nullable;
 /**
  * Content type that supports arbitrary resource location names
  */
+@Deprecated
 public class CustomContentType extends CauldronContentType<ResourceLocation> {
   @Override
   public ResourceLocation getTexture(ResourceLocation value) {

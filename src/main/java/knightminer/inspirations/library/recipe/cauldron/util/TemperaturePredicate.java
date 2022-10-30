@@ -6,7 +6,9 @@ import java.util.function.Predicate;
 
 /**
  * Predicate to check cauldron boiling state
+ * @deprecated No idea if temperature will still be possible, perhaps dedicated cauldrons?
  */
+@Deprecated
 public enum TemperaturePredicate implements Predicate<CauldronTemperature> {
   /** Any temperature matches */
   ANY {

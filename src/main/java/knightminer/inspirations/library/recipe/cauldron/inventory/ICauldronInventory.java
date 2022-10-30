@@ -4,7 +4,9 @@ import net.minecraft.world.item.ItemStack;
 
 /**
  * Inventory representing contents of the cauldron
+ * @deprecated Will be recreated once recipe format is decided upon
  */
+@Deprecated
 public interface ICauldronInventory extends ICauldronState {
   /**
    * Gets the stack held by the player interacting with the cauldron

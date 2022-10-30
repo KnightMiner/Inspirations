@@ -20,7 +20,9 @@ import java.util.stream.Stream;
 
 /**
  * Shared base logic between {@link CauldronRecipe} and {@link CauldronTransform}
+ * @deprecated Needs rewrite to work with the new cauldron behavior
  */
+@Deprecated
 public abstract class AbstractCauldronRecipe implements ICauldronRecipeDisplay {
   protected final ICauldronIngredient ingredient;
   protected final LevelPredicate level;

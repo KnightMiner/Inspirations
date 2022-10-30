@@ -6,7 +6,9 @@ import net.minecraft.network.FriendlyByteBuf;
 /**
  * Serializer for a cauldron ingredient type
  * @param <T>  Ingredient class
+ * @deprecated Block predicates are sufficient
  */
+@Deprecated
 public interface ICauldronIngredientSerializer<T extends ICauldronIngredient> {
   /**
    * Reads the ingredient from JSON
