@@ -3,6 +3,7 @@ package knightminer.inspirations.recipes;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import knightminer.inspirations.common.ModuleBase;
+import knightminer.inspirations.library.InspirationsTags;
 import knightminer.inspirations.library.MiscUtil;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
@@ -36,6 +37,7 @@ import knightminer.inspirations.recipes.data.RecipesRecipeProvider;
 import knightminer.inspirations.recipes.item.EmptyBottleItem;
 import knightminer.inspirations.recipes.item.MixedDyedBottleItem;
 import knightminer.inspirations.recipes.item.SimpleDyedBottleItem;
+import knightminer.inspirations.recipes.recipe.BottleBrewingRecipe;
 import knightminer.inspirations.recipes.recipe.cauldron.BrewingCauldronRecipe;
 import knightminer.inspirations.recipes.recipe.cauldron.PotionFermentCauldronTransform;
 import knightminer.inspirations.tools.InspirationsTools;
@@ -58,6 +60,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.AbstractCauldronBlock;
@@ -72,6 +75,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.Material;
 import net.minecraftforge.common.ForgeMod;
+import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fluids.FluidAttributes;
@@ -284,6 +288,9 @@ public class InspirationsRecipes extends ModuleBase {
 
     // add cauldron interactions
     event.enqueueWork(() -> {
+      BrewingRecipeRegistry.addRecipe(new BottleBrewingRecipe(Ingredient.of(Items.GLASS_BOTTLE), Items.POTION, Items.SPLASH_POTION, new ItemStack(splashBottle)));
+      BrewingRecipeRegistry.addRecipe(new BottleBrewingRecipe(Ingredient.of(InspirationsTags.Items.SPLASH_BOTTLES), Items.SPLASH_POTION, Items.LINGERING_POTION, new ItemStack(lingeringBottle)));
+
       // helper to add to all cauldrons
       BiConsumer<Item,CauldronInteraction> addToAll = (item, interaction) -> {
         for (AbstractCauldronBlock cauldron : allCauldrons) {

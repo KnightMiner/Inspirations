@@ -4,6 +4,8 @@
 9ed3a5b56246c804f18a38ba6d45806d742f6239 data/forge/tags/fluids/rabbit_stew.json
 505007799cf85694a9dc84bdfdd94ce5a51489cc data/forge/tags/items/books.json
 eaf9ea781f5220889d762b91e1267309994f1634 data/forge/tags/items/bookshelves.json
+3088ccc19c30daf124b3795ff65ba77605a95cea data/forge/tags/items/bottles/lingering.json
+f5dc7e8c8dd318fce50ee36315076b34ecaf4d07 data/forge/tags/items/bottles/splash.json
 310fd9b17f2286a204c0552bd9b8c1c5769c5a70 data/forge/tags/items/dyes/black.json
 d62d9549d00dfb79731abd7d3622a4a8efbac828 data/forge/tags/items/dyes/blue.json
 dd537e1b0ddb649d6336d79776aca78f2b5d8caa data/forge/tags/items/dyes/brown.json
@@ -20,10 +22,8 @@ b8e51208fc984331f78b962aaed0151800dbad5f data/forge/tags/items/dyes/light_gray.j
 8320986d160f4a2d859fb07ca860559a6ac17438 data/forge/tags/items/dyes/red.json
 4536c595d68a0d5beec2d6c4d3706a6d32004e62 data/forge/tags/items/dyes/white.json
 d6ad30fecfbb1061d23cd7395ada8140ba621201 data/forge/tags/items/dyes/yellow.json
-3088ccc19c30daf124b3795ff65ba77605a95cea data/forge/tags/items/lingering_bottles.json
-f5dc7e8c8dd318fce50ee36315076b34ecaf4d07 data/forge/tags/items/splash_bottles.json
-60f1492210dcc242e0d12d1b9a93c617b412856b data/inspirations/advancements/recipes/brewing/cauldron/potion/lingering_bottle.json
-0caf56805c92b5af31ffa72f5074c8d9deb1dd0c data/inspirations/advancements/recipes/brewing/cauldron/potion/splash_bottle.json
+9278fd16c6b56ff3cfe22c230f4a962985d47071 data/inspirations/advancements/recipes/brewing/cauldron/bottle/lingering_bottle.json
+624a5718e3aa5ea293ab41f6dfd34ff68f9f181f data/inspirations/advancements/recipes/brewing/cauldron/bottle/splash_bottle.json
 6abc29b740ce5bb654864a2ff828f30f01658a4f data/inspirations/advancements/recipes/building_blocks/building/mulch/black.json
 46a3fca3932d93673fadd3415fb1a355f90cd95e data/inspirations/advancements/recipes/building_blocks/building/mulch/blue.json
 697dafa26cacf029d03d05c5fa704b1bcbc93a89 data/inspirations/advancements/recipes/building_blocks/building/mulch/brown.json
@@ -427,6 +427,7 @@ ef0d88c3c74a7a4e71511bfd74259728ffea29f1 data/inspirations/recipes/cauldron/bott
 cf5c2260c193b2b488d98a2b9c516a499f8e13f8 data/inspirations/recipes/cauldron/bottle/concrete_powder/red.json
 8e5d4bbe47d0b6b5641039129ed27331dc2d8bc7 data/inspirations/recipes/cauldron/bottle/concrete_powder/white.json
 53ddd7a036910754b4e23b004fdaa56c5950eeb2 data/inspirations/recipes/cauldron/bottle/concrete_powder/yellow.json
+9411be8c199ccd370595b0068401bd2db768e62c data/inspirations/recipes/cauldron/bottle/lingering_bottle.json
 fc61bfdb569c24c4ff7d80579b53d5572bc4c36f data/inspirations/recipes/cauldron/bottle/mix/cyan_from_blue_green.json
 3c144218babeea5772d01db19c6956ee15c2a958 data/inspirations/recipes/cauldron/bottle/mix/gray_from_black_white.json
 59b467718b66c55c9f5960b4844356034fdd8a29 data/inspirations/recipes/cauldron/bottle/mix/light_blue_from_blue_white.json
@@ -439,6 +440,7 @@ cea5521c4a32f16039dacdad69d96057f6af0527 data/inspirations/recipes/cauldron/bott
 8073b7ec1867c507a8004c1f77090df67ecf0327 data/inspirations/recipes/cauldron/bottle/mix/orange_from_red_yellow.json
 512e66849e615f56b0bcd6095ab46ecc8eef1c9f data/inspirations/recipes/cauldron/bottle/mix/pink_from_red_white.json
 eac46afbbe030f9b2f74a3c0f0866cacc63b3d66 data/inspirations/recipes/cauldron/bottle/mix/purple_from_blue_red.json
+44aab2ca967050b5ae2e0c9e66ddb7ab4e1b2894 data/inspirations/recipes/cauldron/bottle/splash_bottle.json
 d446b0080842c1a8235f0511b950b1319285eb8f data/inspirations/recipes/cauldron/bottle/stained_glass/black.json
 f5c9dcb0f94aabad60cc9435330f218c0463ead9 data/inspirations/recipes/cauldron/bottle/stained_glass/blue.json
 f7a146cc4943c23d34c94c69af7fc947b119ebcc data/inspirations/recipes/cauldron/bottle/stained_glass/brown.json
@@ -518,10 +520,8 @@ a5dbcf365ff37b5617a28a057f057ec6ffa6eca1 data/inspirations/recipes/cauldron/ice/
 91bbc3a7bcadd5060e156a60daf6b7753d07aabb data/inspirations/recipes/cauldron/ice/wet_ice_from_packed_ice.json
 55b751b5237c3c8dbe171f55604e7c7a94df5923 data/inspirations/recipes/cauldron/potato_soup/item.json
 4bc0c49d46ca8634ad03920ad3fc73aa655f3db1 data/inspirations/recipes/cauldron/potion/forge_brewing.json
-c9de2e3800af3d019d81be1eace6d08e6deb7195 data/inspirations/recipes/cauldron/potion/lingering_bottle.json
 386ad3be1ee2b6d03ad0b8ea9024e7eab367f389 data/inspirations/recipes/cauldron/potion/potion_brewing.json
 d7c18d79d56bd1d40532e86276130c76809f56af data/inspirations/recipes/cauldron/potion/potion_ferment.json
-f8323b474fafb97b99f72e735540059420e4daf3 data/inspirations/recipes/cauldron/potion/splash_bottle.json
 16a719f79bdc48f49c973b2ccd36073b4601d990 data/inspirations/recipes/tools/barometer.json
 fcb024c548dc92aa8e9f95e9a558faa00b0a629b data/inspirations/recipes/tools/charged_arrow.json
 22d286d6b42e779b94afc402e616f6c1d0bfe320 data/inspirations/recipes/tools/dimension_compass.json

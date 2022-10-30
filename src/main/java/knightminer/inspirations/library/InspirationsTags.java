@@ -73,8 +73,8 @@ public class InspirationsTags {
     public static final TagKey<Item> DYE_BOTTLES = tag("dyed_water_bottles");
 
     /* Inputs for potion cauldron recipes */
-    public static final TagKey<Item> SPLASH_BOTTLES = forgeTag("splash_bottles");
-    public static final TagKey<Item> LINGERING_BOTTLES = forgeTag("lingering_bottles");
+    public static final TagKey<Item> SPLASH_BOTTLES = forgeTag("bottles/splash");
+    public static final TagKey<Item> LINGERING_BOTTLES = forgeTag("bottles/lingering");
 
     /**
      * Creates an item tag for Inspirations

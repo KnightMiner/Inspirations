@@ -19,6 +19,7 @@ import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
+import net.minecraft.data.recipes.UpgradeRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.ItemTags;
@@ -26,6 +27,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
@@ -241,22 +243,13 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
     String potionFolder = folder + "potion/";
     Consumer<FinishedRecipe> potionConsumer = withCondition(ConfigEnabledCondition.CAULDRON_POTIONS);
 
-    // craft the bottles
-    // TODO: brew the bottles
-    ShapelessRecipeBuilder.shapeless(InspirationsRecipes.splashBottle)
-                          .requires(Items.GLASS_BOTTLE)
-                          .requires(Items.GLASS_BOTTLE)
-                          .requires(Items.GLASS_BOTTLE)
-                          .requires(Tags.Items.GUNPOWDER)
-                          .unlockedBy("has_item", has(Tags.Items.GUNPOWDER))
-                          .save(potionConsumer, prefix(InspirationsRecipes.splashBottle, potionFolder));
-    ShapelessRecipeBuilder.shapeless(InspirationsRecipes.lingeringBottle)
-                          .requires(InspirationsTags.Items.SPLASH_BOTTLES)
-                          .requires(InspirationsTags.Items.SPLASH_BOTTLES)
-                          .requires(InspirationsTags.Items.SPLASH_BOTTLES)
-                          .requires(Items.DRAGON_BREATH)
-                          .unlockedBy("has_item", has(Items.DRAGON_BREATH))
-                          .save(potionConsumer, prefix(InspirationsRecipes.lingeringBottle, potionFolder));
+    // smith the bottle
+    UpgradeRecipeBuilder.smithing(Ingredient.of(Items.GLASS_BOTTLE), Ingredient.of(Tags.Items.GUNPOWDER), InspirationsRecipes.splashBottle)
+                        .unlocks("has_gunpowder", has(Tags.Items.GUNPOWDER))
+                        .save(potionConsumer, resourceName(bottleFolder + "splash_bottle"));
+    UpgradeRecipeBuilder.smithing(Ingredient.of(InspirationsTags.Items.SPLASH_BOTTLES), Ingredient.of(Items.DRAGON_BREATH), InspirationsRecipes.lingeringBottle)
+                        .unlocks("has_the_dragon", has(Items.DRAGON_BREATH))
+                        .save(potionConsumer, resourceName(bottleFolder + "lingering_bottle"));
 
     // brew the potions
     Consumer<FinishedRecipe> brewingConsumer = withCondition(ConfigEnabledCondition.CAULDRON_BREWING);
