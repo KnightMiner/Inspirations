@@ -6,6 +6,7 @@ import knightminer.inspirations.common.ModuleBase;
 import knightminer.inspirations.library.InspirationsTags;
 import knightminer.inspirations.library.MiscUtil;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
+import knightminer.inspirations.library.recipe.cauldron.CauldronRegistry;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
 import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronTransform;
@@ -75,6 +76,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.Material;
 import net.minecraftforge.common.ForgeMod;
+import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -100,6 +102,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+
+import static knightminer.inspirations.library.recipe.cauldron.CauldronRegistry.ALL_CAULDRONS;
+import static knightminer.inspirations.library.recipe.cauldron.CauldronRegistry.exactBlock;
+import static knightminer.inspirations.library.recipe.cauldron.CauldronRegistry.fluidTag;
+import static knightminer.inspirations.library.recipe.cauldron.CauldronRegistry.itemTag;
 
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class InspirationsRecipes extends ModuleBase {
@@ -298,13 +305,25 @@ public class InspirationsRecipes extends ModuleBase {
         }
       };
 
-      // any cauldron can be filled
-      // TODO: tags?
-      addToAll.accept(mushroomStewBucket, new FillCauldronInteraction(mushroomStewCauldron));
-      addToAll.accept(potatoSoupBucket,   new FillCauldronInteraction(potatoSoupCauldron));
-      addToAll.accept(rabbitStewBucket,   new FillCauldronInteraction(rabbitStewCauldron));
-      addToAll.accept(beetrootSoupBucket, new FillCauldronInteraction(beetrootSoupCauldron));
-      addToAll.accept(honeyBucket,        new FillCauldronInteraction(honeyCauldron));
+      // any cauldron can be filled, using the fluid tags on the bucket for matches
+      // mushroom
+      CauldronInteraction fillMushroomStew = new FillCauldronInteraction(mushroomStewCauldron);
+      addToAll.accept(mushroomStewBucket, fillMushroomStew);
+      CauldronRegistry.register(ALL_CAULDRONS, fluidTag(InspirationsTags.Fluids.MUSHROOM_STEW), fillMushroomStew);
+      // rabbit
+      CauldronInteraction fillRabbitStew = new FillCauldronInteraction(rabbitStewCauldron);
+      addToAll.accept(rabbitStewBucket, fillRabbitStew);
+      CauldronRegistry.register(ALL_CAULDRONS, fluidTag(InspirationsTags.Fluids.RABBIT_STEW), fillRabbitStew);
+      // beetroot
+      CauldronInteraction fillBeetrootSoup = new FillCauldronInteraction(beetrootSoupCauldron);
+      addToAll.accept(beetrootSoupBucket, fillBeetrootSoup);
+      CauldronRegistry.register(ALL_CAULDRONS, fluidTag(InspirationsTags.Fluids.BEETROOT_SOUP), fillBeetrootSoup);
+      // honey
+      CauldronInteraction fillHoney = new FillCauldronInteraction(honeyCauldron);
+      addToAll.accept(honeyBucket, fillHoney);
+      CauldronRegistry.register(ALL_CAULDRONS, fluidTag(InspirationsTags.Fluids.HONEY), fillHoney);
+      // not bothering adding potato soup to the event, its our own concept
+      addToAll.accept(potatoSoupBucket, new FillCauldronInteraction(potatoSoupCauldron));
       // empty buckets
       MUSHROOM_STEW_CAULDRON_INTERACTIONS.put(Items.BUCKET, new EmptyCauldronInteraction(mushroomStewBucket, SoundEvents.BUCKET_FILL));
       POTATO_SOUP_CAULDRON_INTERACTIONS  .put(Items.BUCKET, new EmptyCauldronInteraction(potatoSoupBucket,   SoundEvents.BUCKET_FILL));
@@ -334,6 +353,7 @@ public class InspirationsRecipes extends ModuleBase {
       CauldronInteraction mushroomTransform = new TransformCauldronInteraction(2, LayeredCauldronBlock.LEVEL, mushroomStewCauldron);
       CauldronInteraction.WATER.put(Items.BROWN_MUSHROOM, mushroomTransform);
       CauldronInteraction.WATER.put(Items.RED_MUSHROOM, mushroomTransform);
+      CauldronRegistry.register(exactBlock(Blocks.WATER_CAULDRON), itemTag(Tags.Items.MUSHROOMS), mushroomTransform);
       // potato: slight discount, 4 bowls only costs 6 potatoes instead of 8. Uses 2 more mushrooms
       MUSHROOM_STEW_CAULDRON_INTERACTIONS.put(Items.BAKED_POTATO, new TransformCauldronInteraction(2, FourLayerCauldronBlock.LEVEL, potatoSoupCauldron));
       // rabbit: slight discount, 4 bowls only costs 3 rabbit instead of 4 and does not need carrot. Uses 2 more mushroom
@@ -510,9 +530,15 @@ public class InspirationsRecipes extends ModuleBase {
 
       // fill the potion
       POTION_CAULDRON_INTERACTION.put(Items.GLASS_BOTTLE, new FillPotionCauldronInteraction(Items.POTION));
-      POTION_CAULDRON_INTERACTION.put(splashBottle, new FillPotionCauldronInteraction(Items.SPLASH_POTION));
-      POTION_CAULDRON_INTERACTION.put(lingeringBottle, new FillPotionCauldronInteraction(Items.LINGERING_POTION));
       POTION_CAULDRON_INTERACTION.put(Items.ARROW, TipArrowCauldronInteraction.INSTANCE);
+      // splash
+      CauldronInteraction fillSplashPotion = new FillPotionCauldronInteraction(Items.SPLASH_POTION);
+      POTION_CAULDRON_INTERACTION.put(splashBottle, fillSplashPotion);
+      CauldronRegistry.register(exactBlock(potionCauldron), itemTag(InspirationsTags.Items.SPLASH_BOTTLES), fillSplashPotion);
+      // lingering
+      CauldronInteraction fillLingeringBottle = new FillPotionCauldronInteraction(Items.LINGERING_POTION);
+      POTION_CAULDRON_INTERACTION.put(lingeringBottle, fillLingeringBottle);
+      CauldronRegistry.register(exactBlock(potionCauldron), itemTag(InspirationsTags.Items.LINGERING_BOTTLES), fillLingeringBottle);
       // drain the potion
       POTION_CAULDRON_INTERACTION.put(Items.POTION, new PotionIntoPotionCauldron(Items.GLASS_BOTTLE));
       POTION_CAULDRON_INTERACTION.put(Items.SPLASH_POTION, new PotionIntoPotionCauldron(splashBottle));
@@ -530,7 +556,7 @@ public class InspirationsRecipes extends ModuleBase {
 
     // inject new cauldron blocks into the leatherworker point of interest
     // it should be as simple as injecting it into the map, but people keep reporting issues with this so just over do it
-    List<AbstractCauldronBlock> newCauldrons = ImmutableList.of(honeyCauldron, mushroomStewCauldron, potatoSoupCauldron, beetrootSoupCauldron, rabbitStewCauldron);
+    List<AbstractCauldronBlock> newCauldrons = ImmutableList.of(honeyCauldron, mushroomStewCauldron, potatoSoupCauldron, beetrootSoupCauldron, rabbitStewCauldron, dyeCauldron, potionCauldron);
     Map<BlockState, PoiType> map = GameData.getBlockStatePointOfInterestTypeMap();
     synchronized (map) {
       Consumer<BlockState> consumer = state -> map.put(state, PoiType.LEATHERWORKER);
