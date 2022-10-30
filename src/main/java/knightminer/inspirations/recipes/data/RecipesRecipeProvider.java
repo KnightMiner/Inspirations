@@ -3,32 +3,24 @@ package knightminer.inspirations.recipes.data;
 import knightminer.inspirations.common.data.ConfigEnabledCondition;
 import knightminer.inspirations.common.datagen.IInspirationsRecipeBuilder;
 import knightminer.inspirations.library.InspirationsTags;
-import knightminer.inspirations.library.MiscUtil;
 import knightminer.inspirations.library.recipe.RecipeSerializers;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.CauldronIngredients;
 import knightminer.inspirations.library.recipe.cauldron.ingredient.ICauldronIngredient;
 import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronRecipeBuilder;
 import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronTransformBuilder;
-import knightminer.inspirations.library.recipe.cauldron.special.DyeableCauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.special.EmptyPotionCauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.special.FillPotionCauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.util.TemperaturePredicate;
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.recipes.recipe.cauldron.BrewingCauldronRecipe;
-import knightminer.inspirations.recipes.recipe.cauldron.DyeCauldronWaterRecipe;
-import knightminer.inspirations.recipes.recipe.cauldron.MixCauldronDyeRecipe;
 import knightminer.inspirations.recipes.recipe.cauldron.PotionFermentCauldronTransform;
-import knightminer.inspirations.shared.InspirationsShared;
-import knightminer.inspirations.tools.InspirationsTools;
-import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraft.advancements.CriterionTriggerInstance;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
-import net.minecraft.data.recipes.SpecialRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.ItemTags;
@@ -36,7 +28,6 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
@@ -47,7 +38,6 @@ import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 import slimeknights.mantle.recipe.data.ConsumerWrapperBuilder;
 import slimeknights.mantle.recipe.ingredient.SizedIngredient;
-import slimeknights.mantle.registration.object.EnumObject;
 
 import javax.annotation.Nullable;
 import java.util.EnumSet;
@@ -56,7 +46,6 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import static knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe.MAX;
-import static knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe.THIRD;
 
 public class RecipesRecipeProvider extends RecipeProvider implements IConditionBuilder, IInspirationsRecipeBuilder {
   private Consumer<FinishedRecipe> consumer;
@@ -186,25 +175,8 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
 
     // dyes //
 
-    // dye cauldron water
-    String dyeFolder = folder + "dye/";
-    Consumer<FinishedRecipe> dyeConsumer = withCondition(ConfigEnabledCondition.CAULDRON_DYEING);
-    for (DyeColor color : DyeColor.values()) {
-      // normal dye to set color
-      dyeConsumer.accept(new DyeCauldronWaterRecipe.FinishedRecipe(resource(dyeFolder + "dye_" + color.getSerializedName()), color));
-      // dyed bottle to mix color
-      dyeConsumer.accept(new MixCauldronDyeRecipe.FinishedRecipe(
-          resource(dyeFolder + "bottle/" + color.getSerializedName()),
-          Ingredient.of(InspirationsRecipes.simpleDyedWaterBottle.get(color)),
-          MiscUtil.getColor(color)));
-    }
-    // mixed dyed bottle
-    dyeConsumer.accept(new MixCauldronDyeRecipe.FinishedRecipe(resource(dyeFolder + "bottle/mixed"), Ingredient.of(InspirationsRecipes.mixedDyedWaterBottle)));
-    // fill dyed bottle
-    SpecialRecipeBuilder.special(RecipeSerializers.CAULDRON_FILL_DYED_BOTTLE).save(dyeConsumer, resourceName(dyeFolder + "bottle/fill"));
-
     // mix dyed bottles
-    String mixFolder = dyeFolder + "bottle/mix/";
+    String mixFolder = folder + "bottle/mix/";
     addDyedBottleMix(mixFolder, DyeColor.CYAN, DyeColor.BLUE, DyeColor.GREEN);
     addDyedBottleMix(mixFolder, DyeColor.GRAY, DyeColor.BLACK, DyeColor.WHITE);
     addDyedBottleMix(mixFolder, DyeColor.LIGHT_BLUE, DyeColor.BLUE, DyeColor.WHITE);
@@ -222,14 +194,6 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
     // extra color mixes not supported by vanilla
     //addDyedBottleMix(mixFolder, DyeColor.GREEN, ConfigEnabledCondition.EXTRA_DYE_RECIPES, DyeColor.BLUE, DyeColor.YELLOW);
     //addDyedBottleMix(mixFolder, DyeColor.GREEN, ConfigEnabledCondition.EXTRA_DYE_RECIPES, DyeColor.BLUE, DyeColor.YELLOW);
-
-    // undye and dye vanilla blocks
-    addColoredRecipes(ItemTags.WOOL, VanillaEnum.WOOL, folder + "wool/", null);
-    addColoredRecipes(ItemTags.BEDS, VanillaEnum.BED, folder + "bed/", null);
-    addColoredRecipes(ItemTags.CARPETS, InspirationsShared.VANILLA_CARPETS, folder + "carpet/", null);
-    addColoredRecipes(InspirationsTags.Items.SHULKER_BOXES, VanillaEnum.SHULKER_BOX, Items.SHULKER_BOX, folder + "shulker_box/", true, null);
-    // Inspirations blocks
-    addColoredRecipes(InspirationsTags.Items.CARPETED_TRAPDOORS, InspirationsUtility.carpetedTrapdoors, folder + "carpeted_trapdoor/", ConfigEnabledCondition.CARPETED_TRAPDOOR);
 
     // craft vanilla blocks using dyed bottles, as Forge did not reimplement the tags
     // since I have to add recipes, a little more generous with them
@@ -274,15 +238,6 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
                           .requires(Items.BOOK)
                           .unlockedBy("has_item", has(blackBottle))
                           .save(bottleConsumer, resource(bottleFolder + "writable_book"));
-
-    // leather dyeing and clearing
-    addDyeableRecipes(Items.LEATHER_HELMET, folder, null);
-    addDyeableRecipes(Items.LEATHER_CHESTPLATE, folder, null);
-    addDyeableRecipes(Items.LEATHER_LEGGINGS, folder, null);
-    addDyeableRecipes(Items.LEATHER_BOOTS, folder, null);
-    addDyeableRecipes(Items.LEATHER_HORSE_ARMOR, folder, null);
-    addDyeableRecipes(InspirationsTools.dimensionCompass, folder, ConfigEnabledCondition.DIMENSION_COMPASS);
-
 
     // potions //
     String potionFolder = folder + "potion/";
@@ -339,63 +294,6 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
                           .requires(Tags.Items.MUSHROOMS)
                           .unlockedBy("has_item", has(Items.BAKED_POTATO))
                           .save(withCondition(), resource(folder + "potato_soup/item"));
-  }
-
-  /**
-   * Adds cauldron recipes to dye and undye colored blocks
-   * @param tag         Tag for colored block
-   * @param enumObject  Object of items
-   * @param folder      Folder for output
-   * @param condition   Extra condition to add, if null uses base conditions
-   */
-  private void addColoredRecipes(TagKey<Item> tag, EnumObject<DyeColor,? extends ItemLike> enumObject, String folder, @Nullable ICondition condition) {
-    addColoredRecipes(tag, enumObject, enumObject.get(DyeColor.WHITE), folder, false, condition);
-  }
-
-  /**
-   * Adds cauldron recipes to dye and undye colored blocks
-   * @param tag         Tag for colored block
-   * @param enumObject  Object of items
-   * @param folder      Folder for output
-   * @param undyedItem  Undyed variant
-   * @param copyNBT     If true, copies NBT
-   * @param condition   Extra condition to add, if null uses base conditions
-   */
-  private void addColoredRecipes(TagKey<Item> tag, EnumObject<DyeColor,? extends ItemLike> enumObject, ItemLike undyedItem, String folder, boolean copyNBT, @Nullable ICondition condition) {
-    // add condition if present
-    Consumer<FinishedRecipe> dyed;
-    if (condition == null) {
-      dyed = withCondition(ConfigEnabledCondition.CAULDRON_DYEING);
-    } else {
-      dyed = withCondition(ConfigEnabledCondition.CAULDRON_DYEING, condition);
-    }
-
-    // dyed recipes need one more condition
-    enumObject.forEach((color, block) -> {
-      CauldronRecipeBuilder coloredBuilder = CauldronRecipeBuilder
-          .cauldron(SizedIngredient.fromTag(tag), CauldronIngredients.DYE.of(color))
-          .minLevels(THIRD)
-          .addLevels(-THIRD)
-          .setOutput(block)
-          .unlockedBy("has_item", has(tag));
-      if (copyNBT) {
-        coloredBuilder.setCopyNBT();
-      }
-      coloredBuilder.save(dyed, resource(folder + color.getSerializedName()));
-    });
-  }
-
-  /**
-   * Adds recipes to dye and clear a dyeable item
-   * @param dyeable  Dyeable item
-   * @param folder   Folder for recipes
-   */
-  private void addDyeableRecipes(ItemLike dyeable, String folder, @Nullable ICondition extraCondition) {
-    Ingredient ingredient = Ingredient.of(dyeable);
-    (extraCondition == null ? withCondition(ConfigEnabledCondition.CAULDRON_RECIPES) : withCondition(ConfigEnabledCondition.CAULDRON_RECIPES, extraCondition))
-        .accept(DyeableCauldronRecipe.FinishedRecipe.clear(prefix(dyeable, folder + "dyeable/clear_"), ingredient));
-    (extraCondition == null ? withCondition(ConfigEnabledCondition.CAULDRON_DYEING) : withCondition(ConfigEnabledCondition.CAULDRON_DYEING, extraCondition))
-        .accept(DyeableCauldronRecipe.FinishedRecipe.dye(prefix(dyeable, folder + "dyeable/dye_"), ingredient));
   }
 
   /**

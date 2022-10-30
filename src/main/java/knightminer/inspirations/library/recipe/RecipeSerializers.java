@@ -3,19 +3,11 @@ package knightminer.inspirations.library.recipe;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronTransform;
-import knightminer.inspirations.library.recipe.cauldron.special.DyeableCauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.special.EmptyPotionCauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.special.FillPotionCauldronRecipe;
 import knightminer.inspirations.library.recipe.crafting.ShapelessNoContainerRecipe;
 import knightminer.inspirations.recipes.recipe.cauldron.BrewingCauldronRecipe;
-import knightminer.inspirations.recipes.recipe.cauldron.DyeCauldronWaterRecipe;
-import knightminer.inspirations.recipes.recipe.cauldron.EmptyBucketCauldronRecipe;
-import knightminer.inspirations.recipes.recipe.cauldron.FillBucketCauldronRecipe;
-import knightminer.inspirations.recipes.recipe.cauldron.FillDyedBottleRecipe;
-import knightminer.inspirations.recipes.recipe.cauldron.MixCauldronDyeRecipe;
 import knightminer.inspirations.recipes.recipe.cauldron.PotionFermentCauldronTransform;
-import knightminer.inspirations.recipes.recipe.cauldron.RemoveBannerPatternCauldronRecipe;
-import net.minecraft.world.item.crafting.SimpleRecipeSerializer;
 import net.minecraftforge.registries.ObjectHolder;
 
 import static slimeknights.mantle.registration.RegistrationHelper.injected;
@@ -36,15 +28,7 @@ public class RecipeSerializers {
   // advanced recipes
   public static final EmptyPotionCauldronRecipe.Serializer CAULDRON_EMPTY_POTION = injected();
   public static final FillPotionCauldronRecipe.Serializer CAULDRON_FILL_POTION = injected();
-  public static final DyeCauldronWaterRecipe.Serializer CAULDRON_DYE_WATER = injected();
-  public static final MixCauldronDyeRecipe.Serializer CAULDRON_MIX_DYE = injected();
-  public static final DyeableCauldronRecipe.Serializer CAULDRON_DYE_DYEABLE = injected();
-  public static final DyeableCauldronRecipe.Serializer CAULDRON_CLEAR_DYEABLE = injected();
   // special recipes
-  public static final SimpleRecipeSerializer<EmptyBucketCauldronRecipe> CAULDRON_EMPTY_BUCKET = injected();
-  public static final SimpleRecipeSerializer<FillBucketCauldronRecipe> CAULDRON_FILL_BUCKET = injected();
-  public static final SimpleRecipeSerializer<FillDyedBottleRecipe> CAULDRON_FILL_DYED_BOTTLE = injected();
-  public static final SimpleRecipeSerializer<RemoveBannerPatternCauldronRecipe> CAULDRON_REMOVE_BANNER_PATTERN = injected();
   public static final BrewingCauldronRecipe.Serializer CAULDRON_POTION_BREWING = injected();
   public static final BrewingCauldronRecipe.Serializer CAULDRON_FORGE_BREWING = injected();
   public static final PotionFermentCauldronTransform.Serializer CAULDRON_POTION_FERMENT = injected();

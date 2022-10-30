@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "level=1": { "model": "inspirations:block/cauldron/dye/level_1_of_3" },
+    "level=2": { "model": "inspirations:block/cauldron/dye/level_2_of_3" },
+    "level=3": { "model": "inspirations:block/cauldron/dye/level_3_of_3" }
+  }
+}

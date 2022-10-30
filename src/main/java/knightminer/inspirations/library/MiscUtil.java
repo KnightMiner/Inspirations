@@ -299,4 +299,71 @@ public class MiscUtil {
       player.drop(stack, false);
     }
   }
+
+	/**
+	 * Divides a sum of colors, favoring pref if the remainder is non-zero
+	 * @param sum      Color sum
+	 * @param pref     Preferred component
+	 * @param divisor  Number to divide by
+	 * @return Divided sum
+	 */
+	private static int divide(int sum, int pref, int divisor) {
+		int color = sum / divisor;
+		// if there was a remainder, favor the original color
+		if (sum % divisor != 0 && pref > color) {
+			color++;
+		}
+		return color;
+	}
+
+	/**
+	 * Gets the red value of a color
+	 * @param color  Color
+	 * @return Red value
+	 */
+	private static int getRed(int color) {
+		return (color & 0xFF0000) >> 16;
+	}
+
+	/**
+	 * Gets the green value of a color
+	 * @param color  Color
+	 * @return Green value
+	 */
+	private static int getGreen(int color) {
+		return (color & 0xFF00) >> 8;
+	}
+
+	/**
+	 * Gets the blue value of a color
+	 * @param color  Color
+	 * @return Blue value
+	 */
+	private static int getBlue(int color) {
+		return (color & 0xFF);
+	}
+
+	/**
+	 * Adds two colors
+	 * @param newColor    New color added
+	 * @param newLevels   Amount of new color added
+	 * @param original    Color in cauldron
+	 * @param origLevels  Number of levels in the cauldron
+	 * @return  Added colors
+	 */
+	public static int addColors(int newColor, int newLevels, int original, int origLevels) {
+		// keep original components as we average towards them
+		int nr = getRed(newColor);
+		int ng = getGreen(newColor);
+		int nb = getBlue(newColor);
+		// sum color components, add in 4 copies as a bottle is 4 levels
+		// add in one copy per level of the original color
+		int r = (nr * newLevels) + (getRed(original)   * origLevels);
+		int g = (ng * newLevels) + (getGreen(original) * origLevels);
+		int b = (nb * newLevels) + (getBlue(original)  * origLevels);
+		// base acts as preference
+		// divide per component, tending towards base
+		int c = origLevels + newLevels;
+		return divide(r, nr, c) << 16 | divide(g, ng, c) << 8 | divide(b, nb, c);
+	}
 }

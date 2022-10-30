@@ -6,6 +6,7 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.MiscUtil;
 import knightminer.inspirations.library.client.CustomTextureLoader;
 import knightminer.inspirations.library.client.model.CauldronModel;
+import knightminer.inspirations.recipes.block.entity.DyeCauldronBlockEntity;
 import knightminer.inspirations.recipes.client.BoilingParticle;
 import knightminer.inspirations.recipes.item.MixedDyedBottleItem;
 import net.minecraft.client.Minecraft;
@@ -15,6 +16,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
@@ -51,6 +53,19 @@ public class RecipesClientEvents extends ClientEvents {
     if (Config.extendedCauldron.get()) {
       ItemBlockRenderTypes.setRenderLayer(Blocks.CAULDRON, RenderType.cutout());
     }
+  }
+
+  @SubscribeEvent
+  static void registerBlockColors(ColorHandlerEvent.Block event) {
+    event.getBlockColors().register((state, level, pos, index) -> {
+      if (index == 0 && level != null && pos != null) {
+        BlockEntity be = level.getBlockEntity(pos);
+        if (be != null && be.getType() == InspirationsRecipes.dyeCauldronEntity) {
+          return ((DyeCauldronBlockEntity) be).getColor();
+        }
+      }
+      return -1;
+    }, InspirationsRecipes.dyeCauldron);
   }
 
   @SubscribeEvent

@@ -26,6 +26,7 @@ public class InspirationsNetwork extends NetworkWrapper {
     registerPacket(InventorySlotSyncPacket.class, InventorySlotSyncPacket::new, NetworkDirection.PLAY_TO_CLIENT);
     registerPacket(MilkablePacket.class, MilkablePacket::new, NetworkDirection.PLAY_TO_CLIENT);
     registerPacket(CauldronStateUpdatePacket.class, CauldronStateUpdatePacket::new, NetworkDirection.PLAY_TO_CLIENT);
+    registerPacket(CauldronColorUpdatePacket.class, CauldronColorUpdatePacket::new, NetworkDirection.PLAY_TO_CLIENT);
     registerPacket(CauldronTransformUpatePacket.class, CauldronTransformUpatePacket::new, NetworkDirection.PLAY_TO_CLIENT);
     registerPacket(DimensionCompassPositionPacket.class, DimensionCompassPositionPacket::new, NetworkDirection.PLAY_TO_CLIENT);
   }
