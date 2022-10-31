@@ -50,6 +50,7 @@ public class DyeCauldronBlockEntity extends MantleBlockEntity {
 			if (level != null && !level.isClientSide) {
 				InspirationsNetwork.sendToClients(level, worldPosition, new CauldronColorUpdatePacket(worldPosition, color));
 			}
+			this.setChangedFast();
 			return true;
 		}
 		return false;

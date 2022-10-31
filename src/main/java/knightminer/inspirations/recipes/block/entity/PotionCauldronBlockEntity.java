@@ -39,6 +39,7 @@ public class PotionCauldronBlockEntity extends MantleBlockEntity {
 			if (level != null && !level.isClientSide) {
 				InspirationsNetwork.sendToClients(level, worldPosition, new CauldronPotionUpdatePacket(worldPosition, potion));
 			}
+			this.setChangedFast();
 			return true;
 		}
 		return false;
