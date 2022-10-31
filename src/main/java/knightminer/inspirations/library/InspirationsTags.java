@@ -13,8 +13,6 @@ import net.minecraft.world.level.material.Fluid;
 public class InspirationsTags {
   public static class Blocks {
     public static final TagKey<Block> MULCH = tag("mulch");
-    public static final TagKey<Block> SMALL_FLOWERS = tag("small_flowers");
-    public static final TagKey<Block> FLOWER_POTS = tag("flower_pots");
     public static final TagKey<Block> CARPETED_TRAPDOORS = tag("carpeted_trapdoors");
     public static final TagKey<Block> CARPETED_PRESSURE_PLATES = tag("carpeted_pressure_plates");
     public static final TagKey<Block> SHELVES = tag("shelves");
@@ -36,7 +34,6 @@ public class InspirationsTags {
   public static class Items {
     // Duplicates of above. Flower pots and pressure plates have no item form.
     public static final TagKey<Item> MULCH = tag("mulch");
-    public static final TagKey<Item> SMALL_FLOWERS = tag("small_flowers");
     public static final TagKey<Item> CARPETED_TRAPDOORS = tag("carpeted_trapdoors");
     public static final TagKey<Item> BOOKSHELVES = tag("bookshelves");
     public static final TagKey<Item> ENLIGHTENED_BUSHES = tag("enlightened_bushes");

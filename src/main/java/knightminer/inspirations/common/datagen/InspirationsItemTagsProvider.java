@@ -8,17 +8,15 @@ import knightminer.inspirations.recipes.data.VanillaEnum;
 import knightminer.inspirations.shared.InspirationsShared;
 import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.utility.InspirationsUtility;
-import net.minecraft.data.tags.BlockTagsProvider;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.tags.BlockTagsProvider;
 import net.minecraft.data.tags.ItemTagsProvider;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.data.ExistingFileHelper;
-
-import net.minecraft.data.tags.TagsProvider.TagAppender;
 
 public class InspirationsItemTagsProvider extends ItemTagsProvider {
 
@@ -40,7 +38,7 @@ public class InspirationsItemTagsProvider extends ItemTagsProvider {
 
   private void registerInspTags() {
     this.copy(InspirationsTags.Blocks.MULCH, InspirationsTags.Items.MULCH);
-    this.copy(InspirationsTags.Blocks.SMALL_FLOWERS, InspirationsTags.Items.SMALL_FLOWERS);
+    this.copy(BlockTags.SMALL_FLOWERS, ItemTags.SMALL_FLOWERS);
     this.copy(InspirationsTags.Blocks.CARPETED_TRAPDOORS, InspirationsTags.Items.CARPETED_TRAPDOORS);
     this.copy(InspirationsTags.Blocks.SHELVES, InspirationsTags.Items.BOOKSHELVES);
     this.copy(InspirationsTags.Blocks.ENLIGHTENED_BUSHES, InspirationsTags.Items.ENLIGHTENED_BUSHES);

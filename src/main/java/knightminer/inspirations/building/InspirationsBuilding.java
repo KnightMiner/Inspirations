@@ -2,9 +2,9 @@ package knightminer.inspirations.building;
 
 import knightminer.inspirations.building.block.ClimbablePaneBlock;
 import knightminer.inspirations.building.block.EnlightenedBushBlock;
-import knightminer.inspirations.building.block.FlowerBlock;
 import knightminer.inspirations.building.block.GlassDoorBlock;
 import knightminer.inspirations.building.block.GlassTrapdoorBlock;
+import knightminer.inspirations.building.block.GrowableFlowerBlock;
 import knightminer.inspirations.building.block.MulchBlock;
 import knightminer.inspirations.building.block.PathBlock;
 import knightminer.inspirations.building.block.RopeBlock;
@@ -28,6 +28,7 @@ import knightminer.inspirations.common.item.HidableRetexturedBlockItem;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.DyeColor;
@@ -74,7 +75,7 @@ public class InspirationsBuilding extends ModuleBase {
   public static EnumObject<PathType,PathBlock> path = EnumObject.empty();
   public static EnumObject<BushType,EnlightenedBushBlock> enlightenedBush = EnumObject.empty();
   // flowers
-  public static EnumObject<FlowerType,FlowerBlock> flower = EnumObject.empty();
+  public static EnumObject<FlowerType,GrowableFlowerBlock> flower = EnumObject.empty();
   public static EnumObject<FlowerType,FlowerPotBlock> flowerPot = EnumObject.empty();
   // overrides
   public static Block ironBars;
@@ -142,11 +143,12 @@ public class InspirationsBuilding extends ModuleBase {
     enlightenedBush = registry.registerEnum(type -> new EnlightenedBushBlock(type.getColor()), BushType.values(), "enlightened_bush");
 
     // flowers, have no base name
-    flower = new EnumObject.Builder<FlowerType,FlowerBlock>(FlowerType.class)
-        .putDelegate(FlowerType.CYAN, registry.register(new FlowerBlock(null), "cyan_flower").delegate)
-        .putDelegate(FlowerType.SYRINGA, registry.register(new FlowerBlock((DoublePlantBlock)Blocks.LILAC), "syringa").delegate)
-        .putDelegate(FlowerType.PAEONIA, registry.register(new FlowerBlock((DoublePlantBlock)Blocks.PEONY), "paeonia").delegate)
-        .putDelegate(FlowerType.ROSE, registry.register(new FlowerBlock((DoublePlantBlock)Blocks.ROSE_BUSH), "rose").delegate)
+    BlockBehaviour.Properties flowerProps = Block.Properties.of(Material.PLANT).strength(0F).sound(SoundType.GRASS).noCollission();
+    flower = new EnumObject.Builder<FlowerType,GrowableFlowerBlock>(FlowerType.class)
+        .putDelegate(FlowerType.CYAN, registry.register(new GrowableFlowerBlock(MobEffects.SLOW_FALLING, 4, null, flowerProps), "cyan_flower").delegate)
+        .putDelegate(FlowerType.SYRINGA, registry.register(new GrowableFlowerBlock(MobEffects.HUNGER, 8, (DoublePlantBlock)Blocks.LILAC, flowerProps), "syringa").delegate)
+        .putDelegate(FlowerType.PAEONIA, registry.register(new GrowableFlowerBlock(MobEffects.WATER_BREATHING, 5, (DoublePlantBlock)Blocks.PEONY, flowerProps), "paeonia").delegate)
+        .putDelegate(FlowerType.ROSE, registry.register(new GrowableFlowerBlock(MobEffects.DIG_SPEED, 7, (DoublePlantBlock)Blocks.ROSE_BUSH, flowerProps), "rose").delegate)
         .build();
     // flower pots
     Supplier<FlowerPotBlock> emptyPot = () -> (FlowerPotBlock)Blocks.FLOWER_POT.delegate.get();

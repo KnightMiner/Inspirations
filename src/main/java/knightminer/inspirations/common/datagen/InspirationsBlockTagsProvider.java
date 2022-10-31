@@ -34,8 +34,8 @@ public class InspirationsBlockTagsProvider extends BlockTagsProvider {
   private void registerInspTags() {
     // building
     this.tag(InspirationsTags.Blocks.MULCH).add(toArray(InspirationsBuilding.mulch));
-    this.tag(InspirationsTags.Blocks.SMALL_FLOWERS).add(toArray(InspirationsBuilding.flower));
-    this.tag(InspirationsTags.Blocks.FLOWER_POTS).add(toArray(InspirationsBuilding.flowerPot));
+    this.tag(BlockTags.SMALL_FLOWERS).add(toArray(InspirationsBuilding.flower));
+    this.tag(BlockTags.FLOWER_POTS).add(toArray(InspirationsBuilding.flowerPot));
     this.tag(InspirationsTags.Blocks.ENLIGHTENED_BUSHES).add(toArray(InspirationsBuilding.enlightenedBush));
     this.tag(InspirationsTags.Blocks.SHELVES).add(toArray(InspirationsBuilding.shelf));
     this.tag(BlockTags.CLIMBABLE).add(InspirationsBuilding.rope, InspirationsBuilding.vine);
@@ -58,7 +58,6 @@ public class InspirationsBlockTagsProvider extends BlockTagsProvider {
     //this.getBuilder(BlockTags.DIRT_LIKE).add(InspirationsTags.Blocks.MULCH);
     this.tag(BlockTags.BAMBOO_PLANTABLE_ON).addTag(InspirationsTags.Blocks.MULCH);
     this.tag(BlockTags.WOODEN_TRAPDOORS).addTag(InspirationsTags.Blocks.CARPETED_TRAPDOORS);
-    this.tag(BlockTags.FLOWER_POTS).addTag(InspirationsTags.Blocks.FLOWER_POTS);
     TagAppender<Block> carpets = this.tag(BlockTags.CARPETS);
     InspirationsTweaks.fitCarpets.forEach(block -> carpets.add(block));
     this.tag(BlockTags.PIGLIN_REPELLENTS).add(InspirationsUtility.soulLeverWall, InspirationsUtility.soulLeverFloor);

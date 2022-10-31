@@ -7,38 +7,30 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.BonemealableBlock;
-import net.minecraft.world.level.block.BushBlock;
 import net.minecraft.world.level.block.DoublePlantBlock;
-import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.FlowerBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootTableReference;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
-import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
-import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.event.LootTableLoadEvent;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.Random;
 
-public class FlowerBlock extends BushBlock implements BonemealableBlock, IHidable {
-  private static final VoxelShape SHAPE = Block.box(5.0D, 0.0D, 5.0D, 11.0D, 10.0D, 11.0D);
+public class GrowableFlowerBlock extends FlowerBlock implements BonemealableBlock, IHidable {
   private final DoublePlantBlock largePlant;
 
-
-  public FlowerBlock(@Nullable DoublePlantBlock largePlant) {
-    super(Block.Properties.of(Material.PLANT).strength(0F).sound(SoundType.GRASS));
+  public GrowableFlowerBlock(MobEffect effect, int duration, @Nullable DoublePlantBlock largePlant, Properties props) {
+    super(effect, duration, props);
     this.largePlant = largePlant;
   }
 
@@ -52,28 +44,6 @@ public class FlowerBlock extends BushBlock implements BonemealableBlock, IHidabl
     if (shouldAddtoItemGroup(group)) {
       super.fillItemCategory(group, items);
     }
-  }
-
-  /* Planty stuff */
-
-  @SuppressWarnings("deprecation")
-  @Deprecated
-  @Override
-  public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
-    Vec3 off = state.getOffset(world, pos);
-    return SHAPE.move(off.x, off.y, off.z);
-  }
-
-  @SuppressWarnings("deprecation")
-  @Deprecated
-  @Override
-  public VoxelShape getCollisionShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
-    return Shapes.empty();
-  }
-
-  @Override
-  public OffsetType getOffsetType() {
-    return OffsetType.XZ;
   }
 
 
