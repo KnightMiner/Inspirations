@@ -13,7 +13,7 @@ import javax.annotation.Nullable;
 /** Cauldron that contains a data instance for the potion */
 public class PotionCauldronBlock extends LayeredCauldronBlock implements EntityBlock {
 	public PotionCauldronBlock(Properties props) {
-		super(props, precipitation -> false, InspirationsRecipes.POTION_CAULDRON_INTERACTION);
+		super(props, precipitation -> false, InspirationsRecipes.POTION_CAULDRON_INTERACTIONS);
 	}
 
 	@Nullable

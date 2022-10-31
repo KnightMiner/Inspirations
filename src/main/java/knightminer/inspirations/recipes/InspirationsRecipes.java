@@ -115,7 +115,7 @@ public class InspirationsRecipes extends ModuleBase {
   /** Interactions for the beetroot soup cauldron */
   public static final Map<Item,CauldronInteraction> BEETROOT_SOUP_CAULDRON_INTERACTIONS = CauldronInteraction.newInteractionMap();
   /** Interactions for the rabbit stew cauldron */
-  public static final Map<Item,CauldronInteraction> RABBIT_STEW_CAULDRON_INTERACTION = CauldronInteraction.newInteractionMap();
+  public static final Map<Item,CauldronInteraction> RABBIT_STEW_CAULDRON_INTERACTIONS = CauldronInteraction.newInteractionMap();
   /** Interactions for the potato soup cauldron */
   public static final Map<Item,CauldronInteraction> POTATO_SOUP_CAULDRON_INTERACTIONS = CauldronInteraction.newInteractionMap();
   /** Interactions for the honey cauldron */
@@ -123,7 +123,7 @@ public class InspirationsRecipes extends ModuleBase {
   /** Interactions for the dye cauldron */
   public static final Map<Item,CauldronInteraction> DYE_CAULDRON_INTERACTIONS = CauldronInteraction.newInteractionMap();
   /** Interactions for the dye cauldron */
-  public static final Map<Item,CauldronInteraction> POTION_CAULDRON_INTERACTION = CauldronInteraction.newInteractionMap();
+  public static final Map<Item,CauldronInteraction> POTION_CAULDRON_INTERACTIONS = CauldronInteraction.newInteractionMap();
 
   // blocks
   public static FourLayerCauldronBlock mushroomStewCauldron, beetrootSoupCauldron, rabbitStewCauldron, potatoSoupCauldron, honeyCauldron;
@@ -195,7 +195,7 @@ public class InspirationsRecipes extends ModuleBase {
 
     mushroomStewCauldron = registry.register(new FourLayerCauldronBlock(Properties.copy(Blocks.CAULDRON), MUSHROOM_STEW_CAULDRON_INTERACTIONS), "mushroom_stew_cauldron");
     beetrootSoupCauldron = registry.register(new FourLayerCauldronBlock(Properties.copy(Blocks.CAULDRON), BEETROOT_SOUP_CAULDRON_INTERACTIONS), "beetroot_soup_cauldron");
-    rabbitStewCauldron   = registry.register(new FourLayerCauldronBlock(Properties.copy(Blocks.CAULDRON), RABBIT_STEW_CAULDRON_INTERACTION), "rabbit_stew_cauldron");
+    rabbitStewCauldron   = registry.register(new FourLayerCauldronBlock(Properties.copy(Blocks.CAULDRON), RABBIT_STEW_CAULDRON_INTERACTIONS), "rabbit_stew_cauldron");
     potatoSoupCauldron   = registry.register(new FourLayerCauldronBlock(Properties.copy(Blocks.CAULDRON), POTATO_SOUP_CAULDRON_INTERACTIONS), "potato_soup_cauldron");
     honeyCauldron        = registry.register(new FourLayerCauldronBlock(Properties.copy(Blocks.CAULDRON), HONEY_CAULDRON_INTERACTIONS), "honey_cauldron");
 
@@ -325,7 +325,7 @@ public class InspirationsRecipes extends ModuleBase {
       // empty buckets
       MUSHROOM_STEW_CAULDRON_INTERACTIONS.put(Items.BUCKET, new EmptyCauldronInteraction(mushroomStewBucket, SoundEvents.BUCKET_FILL));
       POTATO_SOUP_CAULDRON_INTERACTIONS  .put(Items.BUCKET, new EmptyCauldronInteraction(potatoSoupBucket,   SoundEvents.BUCKET_FILL));
-      RABBIT_STEW_CAULDRON_INTERACTION   .put(Items.BUCKET, new EmptyCauldronInteraction(rabbitStewBucket,   SoundEvents.BUCKET_FILL));
+      RABBIT_STEW_CAULDRON_INTERACTIONS  .put(Items.BUCKET, new EmptyCauldronInteraction(rabbitStewBucket,   SoundEvents.BUCKET_FILL));
       BEETROOT_SOUP_CAULDRON_INTERACTIONS.put(Items.BUCKET, new EmptyCauldronInteraction(beetrootSoupBucket, SoundEvents.BUCKET_FILL));
       HONEY_CAULDRON_INTERACTIONS        .put(Items.BUCKET, new EmptyCauldronInteraction(honeyBucket,        SoundEvents.BUCKET_FILL));
 
@@ -337,13 +337,13 @@ public class InspirationsRecipes extends ModuleBase {
       IncreaseLayerCauldronInteraction increaseIntoBowl = IncreaseLayerCauldronInteraction.fourLevel(Items.BOWL);
       MUSHROOM_STEW_CAULDRON_INTERACTIONS.put(Items.MUSHROOM_STEW, increaseIntoBowl);
       POTATO_SOUP_CAULDRON_INTERACTIONS  .put(potatoSoupItem,      increaseIntoBowl);
-      RABBIT_STEW_CAULDRON_INTERACTION   .put(Items.RABBIT_STEW,   increaseIntoBowl);
+      RABBIT_STEW_CAULDRON_INTERACTIONS  .put(Items.RABBIT_STEW, increaseIntoBowl);
       BEETROOT_SOUP_CAULDRON_INTERACTIONS.put(Items.BEETROOT_SOUP, increaseIntoBowl);
 
       // fill bowls
       MUSHROOM_STEW_CAULDRON_INTERACTIONS.put(Items.BOWL, new DecreaseLayerCauldronInteraction(Items.MUSHROOM_STEW, FourLayerCauldronBlock.LEVEL));
       POTATO_SOUP_CAULDRON_INTERACTIONS  .put(Items.BOWL, new DecreaseLayerCauldronInteraction(potatoSoupItem,      FourLayerCauldronBlock.LEVEL));
-      RABBIT_STEW_CAULDRON_INTERACTION   .put(Items.BOWL, new DecreaseLayerCauldronInteraction(Items.RABBIT_STEW,   FourLayerCauldronBlock.LEVEL));
+      RABBIT_STEW_CAULDRON_INTERACTIONS  .put(Items.BOWL, new DecreaseLayerCauldronInteraction(Items.RABBIT_STEW,   FourLayerCauldronBlock.LEVEL));
       BEETROOT_SOUP_CAULDRON_INTERACTIONS.put(Items.BOWL, new DecreaseLayerCauldronInteraction(Items.BEETROOT_SOUP, FourLayerCauldronBlock.LEVEL));
 
       // making the soup
@@ -532,20 +532,20 @@ public class InspirationsRecipes extends ModuleBase {
       CauldronInteraction.WATER.put(InspirationsTools.dimensionCompass, CauldronInteraction.DYED_ITEM);
 
       // fill the potion
-      POTION_CAULDRON_INTERACTION.put(Items.GLASS_BOTTLE, new FillPotionCauldronInteraction(Items.POTION));
-      POTION_CAULDRON_INTERACTION.put(Items.ARROW, TipArrowCauldronInteraction.INSTANCE);
+      POTION_CAULDRON_INTERACTIONS.put(Items.GLASS_BOTTLE, new FillPotionCauldronInteraction(Items.POTION));
+      POTION_CAULDRON_INTERACTIONS.put(Items.ARROW, TipArrowCauldronInteraction.INSTANCE);
       // splash
       CauldronInteraction fillSplashPotion = new FillPotionCauldronInteraction(Items.SPLASH_POTION);
-      POTION_CAULDRON_INTERACTION.put(splashBottle, fillSplashPotion);
+      POTION_CAULDRON_INTERACTIONS.put(splashBottle, fillSplashPotion);
       CauldronRegistry.register(exactBlock(potionCauldron), itemTag(InspirationsTags.Items.SPLASH_BOTTLES), fillSplashPotion);
       // lingering
       CauldronInteraction fillLingeringBottle = new FillPotionCauldronInteraction(Items.LINGERING_POTION);
-      POTION_CAULDRON_INTERACTION.put(lingeringBottle, fillLingeringBottle);
+      POTION_CAULDRON_INTERACTIONS.put(lingeringBottle, fillLingeringBottle);
       CauldronRegistry.register(exactBlock(potionCauldron), itemTag(InspirationsTags.Items.LINGERING_BOTTLES), fillLingeringBottle);
       // drain the potion
-      POTION_CAULDRON_INTERACTION.put(Items.POTION, new PotionIntoPotionCauldron(Items.GLASS_BOTTLE));
-      POTION_CAULDRON_INTERACTION.put(Items.SPLASH_POTION, new PotionIntoPotionCauldron(splashBottle));
-      POTION_CAULDRON_INTERACTION.put(Items.LINGERING_POTION, new PotionIntoPotionCauldron(lingeringBottle));
+      POTION_CAULDRON_INTERACTIONS.put(Items.POTION, new PotionIntoPotionCauldron(Items.GLASS_BOTTLE));
+      POTION_CAULDRON_INTERACTIONS.put(Items.SPLASH_POTION, new PotionIntoPotionCauldron(splashBottle));
+      POTION_CAULDRON_INTERACTIONS.put(Items.LINGERING_POTION, new PotionIntoPotionCauldron(lingeringBottle));
       // drain the potion into empty, note this replaces the vanilla one, but it's okay as we still make water cauldrons
       CauldronInteraction.EMPTY.put(Items.POTION, new PotionIntoEmptyInteraction(Items.GLASS_BOTTLE));
       CauldronInteraction.EMPTY.put(Items.SPLASH_POTION, new PotionIntoEmptyInteraction(splashBottle));
