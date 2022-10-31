@@ -348,16 +348,16 @@ public class InspirationsRecipes extends ModuleBase {
 
       // making the soup
       // mushroom: slight discount (6 mushrooms for 4 bowls) and can use either mushroom (but not both)
-      CauldronInteraction mushroomTransform = new TransformCauldronInteraction(2, LayeredCauldronBlock.LEVEL, mushroomStewCauldron);
+      CauldronInteraction mushroomTransform = new TransformCauldronInteraction(true, 2, LayeredCauldronBlock.LEVEL, mushroomStewCauldron);
       CauldronInteraction.WATER.put(Items.BROWN_MUSHROOM, mushroomTransform);
       CauldronInteraction.WATER.put(Items.RED_MUSHROOM, mushroomTransform);
       CauldronRegistry.register(exactBlock(Blocks.WATER_CAULDRON), itemTag(Tags.Items.MUSHROOMS), mushroomTransform);
       // potato: slight discount, 4 bowls only costs 6 potatoes instead of 8. Uses 2 more mushrooms
-      MUSHROOM_STEW_CAULDRON_INTERACTIONS.put(Items.BAKED_POTATO, new TransformCauldronInteraction(2, FourLayerCauldronBlock.LEVEL, potatoSoupCauldron));
+      MUSHROOM_STEW_CAULDRON_INTERACTIONS.put(Items.BAKED_POTATO, new TransformCauldronInteraction(true, 2, FourLayerCauldronBlock.LEVEL, potatoSoupCauldron));
       // rabbit: slight discount, 4 bowls only costs 3 rabbit instead of 4 and does not need carrot. Uses 2 more mushroom
-      POTATO_SOUP_CAULDRON_INTERACTIONS.put(Items.COOKED_RABBIT, new TransformCauldronInteraction(1, FourLayerCauldronBlock.LEVEL, rabbitStewCauldron));
+      POTATO_SOUP_CAULDRON_INTERACTIONS.put(Items.COOKED_RABBIT, new TransformCauldronInteraction(true, 1, FourLayerCauldronBlock.LEVEL, rabbitStewCauldron));
       // rabbit: slight discount, 4 bowls only costs 18 beetroot instead of 24
-      CauldronInteraction.WATER.put(Items.BEETROOT, new TransformCauldronInteraction(6, LayeredCauldronBlock.LEVEL, beetrootSoupCauldron));
+      CauldronInteraction.WATER.put(Items.BEETROOT, new TransformCauldronInteraction(true, 6, LayeredCauldronBlock.LEVEL, beetrootSoupCauldron));
 
       // honey bottles
       CauldronInteraction.EMPTY.put(Items.HONEY_BOTTLE,   new FillCauldronInteraction(honeyCauldron, 1, Items.GLASS_BOTTLE));

@@ -1,5 +1,6 @@
 package knightminer.inspirations.recipes.cauldron.potion;
 
+import knightminer.inspirations.library.InspirationsTags;
 import knightminer.inspirations.library.MiscUtil;
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.recipes.block.entity.PotionCauldronBlockEntity;
@@ -42,49 +43,52 @@ public class BrewingCauldronInteraction implements CauldronInteraction {
 
 	@Override
 	public InteractionResult interact(BlockState oldState, Level level, BlockPos pos, Player player, InteractionHand hand, ItemStack stack) {
-		// if given a fixed input, use that
-		PotionCauldronBlockEntity cauldron = null;
-		Potion oldPotion = this.fixedInput;
-		if (oldPotion == null) {
-			cauldron = InspirationsRecipes.potionCauldronEntity.getBlockEntity(level, pos);
-			if (cauldron == null) {
-				return InteractionResult.PASS;
+		// cauldron needs to be above fire
+		if (level.getBlockState(pos.below()).is(InspirationsTags.Blocks.CAULDRON_FIRE)) {
+			// if given a fixed input, use that
+			PotionCauldronBlockEntity cauldron = null;
+			Potion oldPotion = this.fixedInput;
+			if (oldPotion == null) {
+				cauldron = InspirationsRecipes.potionCauldronEntity.getBlockEntity(level, pos);
+				if (cauldron == null) {
+					return InteractionResult.PASS;
+				}
+				oldPotion = cauldron.getPotion();
 			}
-			oldPotion = cauldron.getPotion();
-		}
 
-		// try both forge and vanilla for result
-		Potion newPotion = getVanillaResult(oldPotion, stack);
-		if (newPotion == Potions.EMPTY) {
-			newPotion = getForgeResult(oldPotion, stack);
-		}
-		// found either?
-		if (newPotion != Potions.EMPTY) {
-			if (!level.isClientSide) {
-				// if we have a fixed input, update the cauldron then fetch the BE
-				if (fixedInput != null) {
-					// update the block, if already a potion cauldron it will remain one, but it may be water before
-					level.setBlockAndUpdate(pos, InspirationsRecipes.potionCauldron.defaultBlockState().setValue(LEVEL, oldState.getValue(LEVEL)));
-					cauldron = InspirationsRecipes.potionCauldronEntity.getBlockEntity(level, pos);
-					if (cauldron == null) {
-						return InteractionResult.CONSUME;
+			// try both forge and vanilla for result
+			Potion newPotion = getVanillaResult(oldPotion, stack);
+			if (newPotion == Potions.EMPTY) {
+				newPotion = getForgeResult(oldPotion, stack);
+			}
+			// found either?
+			if (newPotion != Potions.EMPTY) {
+				if (!level.isClientSide) {
+					// if we have a fixed input, update the cauldron then fetch the BE
+					if (fixedInput != null) {
+						// update the block, if already a potion cauldron it will remain one, but it may be water before
+						level.setBlockAndUpdate(pos, InspirationsRecipes.potionCauldron.defaultBlockState().setValue(LEVEL, oldState.getValue(LEVEL)));
+						cauldron = InspirationsRecipes.potionCauldronEntity.getBlockEntity(level, pos);
+						if (cauldron == null) {
+							return InteractionResult.CONSUME;
+						}
 					}
+
+					// update potion
+					cauldron.setPotion(newPotion);
+
+					// consume items
+					ItemStack container = stack.getContainerItem();
+					MiscUtil.shrinkHeldItem(player, hand, stack, 1);
+					if (!container.isEmpty()) {
+						MiscUtil.givePlayerItem(player, container.copy());
+					}
+
+					player.awardStat(Stats.USE_CAULDRON);
+					level.playSound(null, pos, SoundEvents.BREWING_STAND_BREW, SoundSource.BLOCKS, 1.0F, 1.0F);
 				}
-
-				// update potion
-				cauldron.setPotion(newPotion);
-
-				// consume items
-				ItemStack container = stack.getContainerItem();
-				MiscUtil.shrinkHeldItem(player, hand, stack, 1);
-				if (!container.isEmpty()) {
-					MiscUtil.givePlayerItem(player, container.copy());
-				}
-
-				player.awardStat(Stats.USE_CAULDRON);
-				level.playSound(null, pos, SoundEvents.BREWING_STAND_BREW, SoundSource.BLOCKS, 1.0F, 1.0F);
+				return InteractionResult.sidedSuccess(level.isClientSide);
 			}
-			return InteractionResult.sidedSuccess(level.isClientSide);
 		}
 		return InteractionResult.PASS;
 	}

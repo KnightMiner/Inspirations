@@ -1,5 +1,6 @@
 package knightminer.inspirations.recipes.cauldron;
 
+import knightminer.inspirations.library.InspirationsTags;
 import knightminer.inspirations.library.MiscUtil;
 import knightminer.inspirations.recipes.block.FourLayerCauldronBlock;
 import net.minecraft.core.BlockPos;
@@ -18,13 +19,16 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 
 /** Transforms a cauldron into another cauldron */
-public record TransformCauldronInteraction(int needed, IntegerProperty oldProp, FourLayerCauldronBlock block, SoundEvent sound) implements CauldronInteraction {
-	public TransformCauldronInteraction(int needed, IntegerProperty oldProp, FourLayerCauldronBlock block) {
-		this(needed, oldProp, block, SoundEvents.BREWING_STAND_BREW);
+public record TransformCauldronInteraction(boolean requireFire, int needed, IntegerProperty oldProp, FourLayerCauldronBlock block, SoundEvent sound) implements CauldronInteraction {
+	public TransformCauldronInteraction(boolean requireFire, int needed, IntegerProperty oldProp, FourLayerCauldronBlock block) {
+		this(requireFire, needed, oldProp, block, SoundEvents.BREWING_STAND_BREW);
 	}
 
 	@Override
 	public InteractionResult interact(BlockState state, Level level, BlockPos pos, Player player, InteractionHand pHand, ItemStack stack) {
+		if (requireFire && !level.getBlockState(pos.below()).is(InspirationsTags.Blocks.CAULDRON_FIRE)) {
+			return InteractionResult.PASS;
+		}
 		if (!level.isClientSide) {
 			int contentLevel = state.getValue(oldProp);
 			int needed = this.needed * contentLevel;
