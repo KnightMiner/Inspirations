@@ -7,6 +7,7 @@ import knightminer.inspirations.recipes.cauldron.IncreaseLayerCauldronInteractio
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.LayeredCauldronBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -17,9 +18,13 @@ import javax.annotation.Nullable;
 public class DyedBottleIntoDyeCauldronInteraction extends IncreaseLayerCauldronInteraction {
 	@Nullable
 	private final Integer color;
-	public DyedBottleIntoDyeCauldronInteraction(@Nullable Integer color) {
-		super(Items.GLASS_BOTTLE, LayeredCauldronBlock.LEVEL, 3);
+	protected DyedBottleIntoDyeCauldronInteraction(ItemLike bottle, @Nullable Integer color) {
+		super(bottle, LayeredCauldronBlock.LEVEL, 3);
 		this.color = color;
+	}
+
+	public DyedBottleIntoDyeCauldronInteraction(@Nullable Integer color) {
+		this(Items.GLASS_BOTTLE, color);
 	}
 
 	@Override

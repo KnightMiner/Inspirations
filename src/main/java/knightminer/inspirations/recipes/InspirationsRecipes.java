@@ -29,6 +29,7 @@ import knightminer.inspirations.recipes.cauldron.dye.DyedBottleIntoEmptyCauldron
 import knightminer.inspirations.recipes.cauldron.dye.DyedBottleIntoWaterCauldronInteraction;
 import knightminer.inspirations.recipes.cauldron.dye.FillDyedBottleCauldronInteraction;
 import knightminer.inspirations.recipes.cauldron.dye.MixDyeCauldronInteraction;
+import knightminer.inspirations.recipes.cauldron.dye.WaterBottleIntoDyeCauldronInteraction;
 import knightminer.inspirations.recipes.cauldron.potion.BrewingCauldronInteraction;
 import knightminer.inspirations.recipes.cauldron.potion.FillPotionCauldronInteraction;
 import knightminer.inspirations.recipes.cauldron.potion.PotionIntoEmptyInteraction;
@@ -413,6 +414,11 @@ public class InspirationsRecipes extends ModuleBase {
       CauldronInteraction.EMPTY.put(mixedDyedWaterBottle, new DyedBottleIntoEmptyCauldronInteraction(null));
       CauldronInteraction.WATER.put(mixedDyedWaterBottle, new DyedBottleIntoWaterCauldronInteraction(null));
       DYE_CAULDRON_INTERACTIONS.put(mixedDyedWaterBottle, new DyedBottleIntoDyeCauldronInteraction(null));
+
+      // water into dyed cauldrons
+      DYE_CAULDRON_INTERACTIONS.put(Items.POTION, new WaterBottleIntoDyeCauldronInteraction(Items.GLASS_BOTTLE, 0x808080));
+      DYE_CAULDRON_INTERACTIONS.put(Items.SPLASH_POTION, new WaterBottleIntoDyeCauldronInteraction(splashBottle, 0x808080));
+      DYE_CAULDRON_INTERACTIONS.put(Items.LINGERING_POTION, new WaterBottleIntoDyeCauldronInteraction(lingeringBottle, 0x808080));
 
       // fill the bottle
       DYE_CAULDRON_INTERACTIONS.put(Items.GLASS_BOTTLE, FillDyedBottleCauldronInteraction.INSTANCE);
