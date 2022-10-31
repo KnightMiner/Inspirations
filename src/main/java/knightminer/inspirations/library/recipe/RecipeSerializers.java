@@ -4,7 +4,6 @@ import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronTransform;
 import knightminer.inspirations.library.recipe.crafting.ShapelessNoContainerRecipe;
-import knightminer.inspirations.recipes.recipe.cauldron.BrewingCauldronRecipe;
 import knightminer.inspirations.recipes.recipe.cauldron.PotionFermentCauldronTransform;
 import net.minecraftforge.registries.ObjectHolder;
 
@@ -24,7 +23,5 @@ public class RecipeSerializers {
   public static final CauldronRecipe.Serializer CAULDRON = injected();
   public static final CauldronTransform.Serializer CAULDRON_TRANSFORM = injected();
   // special recipes
-  public static final BrewingCauldronRecipe.Serializer CAULDRON_POTION_BREWING = injected();
-  public static final BrewingCauldronRecipe.Serializer CAULDRON_FORGE_BREWING = injected();
   public static final PotionFermentCauldronTransform.Serializer CAULDRON_POTION_FERMENT = injected();
 }

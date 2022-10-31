@@ -25,6 +25,8 @@ public class CauldronRegistry {
 
 	/** Matches all cauldrons */
 	public static final Predicate<Block> ALL_CAULDRONS = block -> true;
+	/** Matches all items */
+	public static final Predicate<Item> ALL_ITEMS = block -> true;
 
 	/**
 	 * Registers a cauldron override

@@ -29,6 +29,7 @@ import knightminer.inspirations.recipes.cauldron.dye.DyedBottleIntoEmptyCauldron
 import knightminer.inspirations.recipes.cauldron.dye.DyedBottleIntoWaterCauldronInteraction;
 import knightminer.inspirations.recipes.cauldron.dye.FillDyedBottleCauldronInteraction;
 import knightminer.inspirations.recipes.cauldron.dye.MixDyeCauldronInteraction;
+import knightminer.inspirations.recipes.cauldron.potion.BrewingCauldronInteraction;
 import knightminer.inspirations.recipes.cauldron.potion.FillPotionCauldronInteraction;
 import knightminer.inspirations.recipes.cauldron.potion.PotionIntoEmptyInteraction;
 import knightminer.inspirations.recipes.cauldron.potion.PotionIntoPotionCauldron;
@@ -39,7 +40,6 @@ import knightminer.inspirations.recipes.item.EmptyBottleItem;
 import knightminer.inspirations.recipes.item.MixedDyedBottleItem;
 import knightminer.inspirations.recipes.item.SimpleDyedBottleItem;
 import knightminer.inspirations.recipes.recipe.BottleBrewingRecipe;
-import knightminer.inspirations.recipes.recipe.cauldron.BrewingCauldronRecipe;
 import knightminer.inspirations.recipes.recipe.cauldron.PotionFermentCauldronTransform;
 import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.utility.InspirationsUtility;
@@ -86,7 +86,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.GameData;
-import slimeknights.mantle.block.entity.MantleBlockEntity;
 import slimeknights.mantle.registration.FluidBuilder;
 import slimeknights.mantle.registration.ModelFluidAttributes;
 import slimeknights.mantle.registration.adapter.BlockEntityTypeRegistryAdapter;
@@ -129,7 +128,8 @@ public class InspirationsRecipes extends ModuleBase {
   public static FourLayerCauldronBlock mushroomStewCauldron, beetrootSoupCauldron, rabbitStewCauldron, potatoSoupCauldron, honeyCauldron;
   public static LayeredCauldronBlock dyeCauldron, potionCauldron;
 
-  public static BlockEntityType<MantleBlockEntity> dyeCauldronEntity, potionCauldronEntity;
+  public static BlockEntityType<DyeCauldronBlockEntity> dyeCauldronEntity;
+  public static BlockEntityType<PotionCauldronBlockEntity> potionCauldronEntity;
 
   // items
   public static Item splashBottle;
@@ -260,9 +260,6 @@ public class InspirationsRecipes extends ModuleBase {
     registry.register(new CauldronRecipe.Serializer(), "cauldron");
     registry.register(new CauldronTransform.Serializer(), "cauldron_transform");
     registry.register(new PotionFermentCauldronTransform.Serializer(), "cauldron_potion_ferment");
-
-    registry.register(new BrewingCauldronRecipe.Serializer(BrewingCauldronRecipe.Vanilla::new), "cauldron_potion_brewing");
-    registry.register(new BrewingCauldronRecipe.Serializer(BrewingCauldronRecipe.Forge::new), "cauldron_forge_brewing");
 
     // add water as an override to potions
     ICauldronContents water = CauldronContentTypes.FLUID.of(Fluids.WATER);
@@ -552,6 +549,10 @@ public class InspirationsRecipes extends ModuleBase {
       CauldronInteraction.WATER.put(Items.LINGERING_POTION, new WaterBottleIntoWaterInteraction(lingeringBottle));
       CauldronInteraction.WATER.put(splashBottle, new DecreaseLayerCauldronInteraction(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.WATER), LayeredCauldronBlock.LEVEL, true, SoundEvents.BOTTLE_FILL));
       CauldronInteraction.WATER.put(lingeringBottle, new DecreaseLayerCauldronInteraction(PotionUtils.setPotion(new ItemStack(Items.LINGERING_POTION), Potions.WATER), LayeredCauldronBlock.LEVEL, true, SoundEvents.BOTTLE_FILL));
+
+      // potion brewing
+      CauldronRegistry.register(exactBlock(Blocks.WATER_CAULDRON), CauldronRegistry.ALL_ITEMS, new BrewingCauldronInteraction(Potions.WATER));
+      CauldronRegistry.register(exactBlock(potionCauldron), CauldronRegistry.ALL_ITEMS, new BrewingCauldronInteraction(null));
     });
 
     // inject new cauldron blocks into the leatherworker point of interest

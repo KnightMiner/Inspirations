@@ -11,7 +11,6 @@ import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronRecipeBui
 import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronTransformBuilder;
 import knightminer.inspirations.library.recipe.cauldron.util.TemperaturePredicate;
 import knightminer.inspirations.recipes.InspirationsRecipes;
-import knightminer.inspirations.recipes.recipe.cauldron.BrewingCauldronRecipe;
 import knightminer.inspirations.recipes.recipe.cauldron.PotionFermentCauldronTransform;
 import net.minecraft.advancements.CriterionTriggerInstance;
 import net.minecraft.data.DataGenerator;
@@ -253,8 +252,6 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
 
     // brew the potions
     Consumer<FinishedRecipe> brewingConsumer = withCondition(ConfigEnabledCondition.CAULDRON_BREWING);
-    brewingConsumer.accept(new BrewingCauldronRecipe.FinishedRecipe(resource(potionFolder + "potion_brewing"), RecipeSerializers.CAULDRON_POTION_BREWING, false));
-    brewingConsumer.accept(new BrewingCauldronRecipe.FinishedRecipe(resource(potionFolder + "forge_brewing"), RecipeSerializers.CAULDRON_FORGE_BREWING, false));
     brewingConsumer.accept(new PotionFermentCauldronTransform.FinishedRecipe(resource(potionFolder + "potion_ferment"), 600));
 
     // normal potato soup crafting
