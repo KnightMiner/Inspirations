@@ -15,7 +15,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LayeredCauldronBlock;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nullable;
@@ -37,9 +36,9 @@ public class PotionIntoEmptyInteraction extends AbstractModifyCauldronInteractio
 	protected void afterSetBlock(BlockState oldState, Level level, BlockPos pos, ItemStack stack) {
 		Potion potion = PotionUtils.getPotion(stack);
 		if (potion != Potions.WATER) {
-			BlockEntity be = level.getBlockEntity(pos);
-			if (be != null && be.getType() == InspirationsRecipes.potionCauldronEntity) {
-				((PotionCauldronBlockEntity)be).setPotion(potion);
+			PotionCauldronBlockEntity cauldron = InspirationsRecipes.potionCauldronEntity.getBlockEntity(level, pos);
+			if (cauldron != null) {
+				cauldron.setPotion(potion);
 			}
 		}
 	}

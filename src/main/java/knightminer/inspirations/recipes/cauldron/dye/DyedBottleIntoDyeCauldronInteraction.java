@@ -9,7 +9,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.LayeredCauldronBlock;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nullable;
@@ -25,10 +24,9 @@ public class DyedBottleIntoDyeCauldronInteraction extends IncreaseLayerCauldronI
 
 	@Override
 	protected void afterSetBlock(BlockState state, Level level, BlockPos pos, ItemStack stack) {
-		BlockEntity be = level.getBlockEntity(pos);
-		if (be != null && be.getType() == InspirationsRecipes.dyeCauldronEntity) {
+		DyeCauldronBlockEntity cauldron = InspirationsRecipes.dyeCauldronEntity.getBlockEntity(level, pos);
+		if (cauldron != null) {
 			int newColor = this.color != null ? this.color : MiscUtil.getColor(stack);
-			DyeCauldronBlockEntity cauldron = (DyeCauldronBlockEntity)be;
 			cauldron.setColor(MiscUtil.addColors(newColor, 1, cauldron.getColor(), state.getValue(this.prop)));
 		}
 	}

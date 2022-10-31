@@ -10,7 +10,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.LayeredCauldronBlock;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nullable;
@@ -26,9 +25,9 @@ public class DyedBottleIntoEmptyCauldronInteraction extends FillCauldronInteract
 
 	@Override
 	protected void afterSetBlock(BlockState oldState, Level level, BlockPos pos, ItemStack stack) {
-		BlockEntity be = level.getBlockEntity(pos);
-		if (be != null && be.getType() == InspirationsRecipes.dyeCauldronEntity) {
-			((DyeCauldronBlockEntity) be).setColor(this.color != null ? this.color : MiscUtil.getColor(stack));
+		DyeCauldronBlockEntity cauldron = InspirationsRecipes.dyeCauldronEntity.getBlockEntity(level, pos);
+		if (cauldron != null) {
+			cauldron.setColor(this.color != null ? this.color : MiscUtil.getColor(stack));
 		}
 	}
 }

@@ -11,7 +11,6 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nullable;
@@ -39,9 +38,9 @@ public class DyeWaterCauldronInteraction extends AbstractModifyCauldronInteracti
 
 	@Override
 	protected void afterSetBlock(BlockState oldState, Level level, BlockPos pos, ItemStack stack) {
-		BlockEntity be = level.getBlockEntity(pos);
-		if (be != null && be.getType() == InspirationsRecipes.dyeCauldronEntity) {
-			((DyeCauldronBlockEntity) be).setColor(this.color);
+		DyeCauldronBlockEntity cauldron = InspirationsRecipes.dyeCauldronEntity.getBlockEntity(level, pos);
+		if (cauldron != null) {
+			cauldron.setColor(this.color);
 		}
 	}
 }

@@ -10,7 +10,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nullable;
@@ -28,8 +27,8 @@ public class PotionIntoPotionCauldron extends AbstractModifyCauldronInteraction 
 	protected BlockState getNewState(BlockState oldState, Level level, BlockPos pos, ItemStack filledStack) {
 		int potionLevel = oldState.getValue(LEVEL);
 		if (potionLevel < 4) {
-			BlockEntity be = level.getBlockEntity(pos);
-			if (be != null && be.getType() == InspirationsRecipes.potionCauldronEntity && ((PotionCauldronBlockEntity) be).getPotion() == PotionUtils.getPotion(filledStack)) {
+			PotionCauldronBlockEntity cauldron = InspirationsRecipes.potionCauldronEntity.getBlockEntity(level, pos);
+			if (cauldron != null && cauldron.getPotion() == PotionUtils.getPotion(filledStack)) {
 				return oldState.setValue(LEVEL, potionLevel + 1);
 			}
 		}

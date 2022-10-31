@@ -11,7 +11,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.LayeredCauldronBlock;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.function.Function;
@@ -32,9 +31,9 @@ public class DyeItemCauldronInteraction extends AbstractDecreaseLayerCauldronInt
 
 	@Override
 	protected ItemStack getResult(BlockState state, Level level, BlockPos pos, ItemStack stack) {
-		BlockEntity be = level.getBlockEntity(pos);
-		if (be != null && be.getType() == InspirationsRecipes.dyeCauldronEntity) {
-			DyeColor dye = ((DyeCauldronBlockEntity) be).getDye();
+		DyeCauldronBlockEntity cauldron = InspirationsRecipes.dyeCauldronEntity.getBlockEntity(level, pos);
+		if (cauldron != null) {
+			DyeColor dye = cauldron.getDye();
 			if (dye != null) {
 				ItemStack result = new ItemStack(mapper.apply(dye));
 				if (copyNBT) {

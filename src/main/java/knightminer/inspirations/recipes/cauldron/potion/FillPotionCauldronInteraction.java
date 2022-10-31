@@ -10,7 +10,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.LayeredCauldronBlock;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 /** Fills a potion from the potion cauldron */
@@ -23,9 +22,9 @@ public class FillPotionCauldronInteraction extends AbstractDecreaseLayerCauldron
 
 	@Override
 	protected ItemStack getResult(BlockState state, Level level, BlockPos pos, ItemStack stack) {
-		BlockEntity be = level.getBlockEntity(pos);
-		if (be != null && be.getType() == InspirationsRecipes.potionCauldronEntity) {
-			return PotionUtils.setPotion(new ItemStack(potionItem), ((PotionCauldronBlockEntity) be).getPotion());
+		PotionCauldronBlockEntity cauldron = InspirationsRecipes.potionCauldronEntity.getBlockEntity(level, pos);
+		if (cauldron != null) {
+			return PotionUtils.setPotion(new ItemStack(potionItem), cauldron.getPotion());
 		}
 		return ItemStack.EMPTY;
 	}

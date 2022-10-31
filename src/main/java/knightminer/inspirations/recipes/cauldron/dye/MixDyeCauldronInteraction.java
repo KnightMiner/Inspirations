@@ -11,7 +11,6 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nullable;
@@ -37,9 +36,8 @@ public class MixDyeCauldronInteraction extends AbstractModifyCauldronInteraction
 
 	@Override
 	protected void afterSetBlock(BlockState oldState, Level level, BlockPos pos, ItemStack stack) {
-		BlockEntity be = level.getBlockEntity(pos);
-		if (be != null && be.getType() == InspirationsRecipes.dyeCauldronEntity) {
-			DyeCauldronBlockEntity cauldron = (DyeCauldronBlockEntity)be;
+		DyeCauldronBlockEntity cauldron = InspirationsRecipes.dyeCauldronEntity.getBlockEntity(level, pos);
+		if (cauldron != null) {
 			cauldron.setColor(MiscUtil.addColors(this.color, 1, cauldron.getColor(), 1));
 		}
 	}

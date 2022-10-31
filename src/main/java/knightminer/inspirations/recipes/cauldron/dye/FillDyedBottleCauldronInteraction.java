@@ -10,7 +10,6 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.LayeredCauldronBlock;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 /** Logic to fill a glass bottle with dyed water */
@@ -22,9 +21,8 @@ public class FillDyedBottleCauldronInteraction extends AbstractDecreaseLayerCaul
 
 	@Override
 	protected ItemStack getResult(BlockState state, Level level, BlockPos pos, ItemStack stack) {
-		BlockEntity be = level.getBlockEntity(pos);
-		if (be != null && be.getType() == InspirationsRecipes.dyeCauldronEntity) {
-			DyeCauldronBlockEntity cauldron = (DyeCauldronBlockEntity) be;
+		DyeCauldronBlockEntity cauldron = InspirationsRecipes.dyeCauldronEntity.getBlockEntity(level, pos);
+		if (cauldron != null) {
 			DyeColor dye = cauldron.getDye();
 			if (dye != null) {
 				return new ItemStack(InspirationsRecipes.simpleDyedWaterBottle.get(dye));
