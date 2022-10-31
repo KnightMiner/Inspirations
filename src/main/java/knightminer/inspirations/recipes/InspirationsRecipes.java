@@ -13,8 +13,10 @@ import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronTransform
 import knightminer.inspirations.recipes.block.DyeCauldronBlock;
 import knightminer.inspirations.recipes.block.FourLayerCauldronBlock;
 import knightminer.inspirations.recipes.block.PotionCauldronBlock;
+import knightminer.inspirations.recipes.block.SuspiciousStewCauldronBlock;
 import knightminer.inspirations.recipes.block.entity.DyeCauldronBlockEntity;
 import knightminer.inspirations.recipes.block.entity.PotionCauldronBlockEntity;
+import knightminer.inspirations.recipes.block.entity.SuspiciousStewCauldronBlockEntity;
 import knightminer.inspirations.recipes.cauldron.DecreaseLayerCauldronInteraction;
 import knightminer.inspirations.recipes.cauldron.EmptyCauldronInteraction;
 import knightminer.inspirations.recipes.cauldron.FillCauldronInteraction;
@@ -36,6 +38,10 @@ import knightminer.inspirations.recipes.cauldron.potion.PotionIntoEmptyInteracti
 import knightminer.inspirations.recipes.cauldron.potion.PotionIntoPotionCauldron;
 import knightminer.inspirations.recipes.cauldron.potion.TipArrowCauldronInteraction;
 import knightminer.inspirations.recipes.cauldron.potion.WaterBottleIntoWaterInteraction;
+import knightminer.inspirations.recipes.cauldron.stew.DecreaseSuspiciousStewCauldronInteraction;
+import knightminer.inspirations.recipes.cauldron.stew.MixSuspiciousStewCauldronInteraction;
+import knightminer.inspirations.recipes.cauldron.stew.SuspiciousStewIntoEmptyCauldronInteraction;
+import knightminer.inspirations.recipes.cauldron.stew.SuspiciousStewingCauldronInteraction;
 import knightminer.inspirations.recipes.data.RecipesRecipeProvider;
 import knightminer.inspirations.recipes.item.EmptyBottleItem;
 import knightminer.inspirations.recipes.item.MixedDyedBottleItem;
@@ -49,6 +55,7 @@ import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.BowlFoodItem;
@@ -124,13 +131,17 @@ public class InspirationsRecipes extends ModuleBase {
   public static final Map<Item,CauldronInteraction> DYE_CAULDRON_INTERACTIONS = CauldronInteraction.newInteractionMap();
   /** Interactions for the dye cauldron */
   public static final Map<Item,CauldronInteraction> POTION_CAULDRON_INTERACTIONS = CauldronInteraction.newInteractionMap();
+  /** Interactions for the suspicious stew cauldron */
+  public static final Map<Item,CauldronInteraction> SUSPICIOUS_STEW_CAULDRON_INTERACTIONS = CauldronInteraction.newInteractionMap();
 
   // blocks
-  public static FourLayerCauldronBlock mushroomStewCauldron, beetrootSoupCauldron, rabbitStewCauldron, potatoSoupCauldron, honeyCauldron;
+  public static FourLayerCauldronBlock mushroomStewCauldron, beetrootSoupCauldron, rabbitStewCauldron, potatoSoupCauldron;
+  public static FourLayerCauldronBlock honeyCauldron, suspiciousStewCauldron;
   public static LayeredCauldronBlock dyeCauldron, potionCauldron;
 
   public static BlockEntityType<DyeCauldronBlockEntity> dyeCauldronEntity;
   public static BlockEntityType<PotionCauldronBlockEntity> potionCauldronEntity;
+  public static BlockEntityType<SuspiciousStewCauldronBlockEntity> suspiciousStewCauldronEntity;
 
   // items
   public static Item splashBottle;
@@ -207,6 +218,7 @@ public class InspirationsRecipes extends ModuleBase {
 
     dyeCauldron = registry.register(new DyeCauldronBlock(Properties.copy(Blocks.CAULDRON)), "dye_cauldron");
     potionCauldron = registry.register(new PotionCauldronBlock(Properties.copy(Blocks.CAULDRON)), "potion_cauldron");
+    suspiciousStewCauldron = registry.register(new SuspiciousStewCauldronBlock(Properties.copy(Blocks.CAULDRON)), "suspicious_stew_cauldron");
   }
 
   @SubscribeEvent
@@ -215,6 +227,7 @@ public class InspirationsRecipes extends ModuleBase {
 
     dyeCauldronEntity = registry.register(DyeCauldronBlockEntity::new, dyeCauldron, "dye_cauldron");
     potionCauldronEntity = registry.register(PotionCauldronBlockEntity::new, potionCauldron, "potion_cauldron");
+    suspiciousStewCauldronEntity = registry.register(SuspiciousStewCauldronBlockEntity::new, suspiciousStewCauldron, "suspicious_stew_cauldron");
   }
 
   @SubscribeEvent
@@ -559,11 +572,19 @@ public class InspirationsRecipes extends ModuleBase {
       // potion brewing
       CauldronRegistry.register(exactBlock(Blocks.WATER_CAULDRON), CauldronRegistry.ALL_ITEMS, new BrewingCauldronInteraction(Potions.WATER));
       CauldronRegistry.register(exactBlock(potionCauldron), CauldronRegistry.ALL_ITEMS, new BrewingCauldronInteraction(null));
+
+      // suspicious stew
+      CauldronInteraction.EMPTY.put(Items.SUSPICIOUS_STEW, SuspiciousStewIntoEmptyCauldronInteraction.INSTANCE);
+      SUSPICIOUS_STEW_CAULDRON_INTERACTIONS.put(Items.BOWL, DecreaseSuspiciousStewCauldronInteraction.INSTANCE);
+      SUSPICIOUS_STEW_CAULDRON_INTERACTIONS.put(Items.SUSPICIOUS_STEW, MixSuspiciousStewCauldronInteraction.INSTANCE);
+      CauldronRegistry.register(exactBlock(mushroomStewCauldron), itemTag(ItemTags.SMALL_FLOWERS), SuspiciousStewingCauldronInteraction.INSTANCE);
     });
 
     // inject new cauldron blocks into the leatherworker point of interest
     // it should be as simple as injecting it into the map, but people keep reporting issues with this so just over do it
-    List<AbstractCauldronBlock> newCauldrons = ImmutableList.of(honeyCauldron, mushroomStewCauldron, potatoSoupCauldron, beetrootSoupCauldron, rabbitStewCauldron, dyeCauldron, potionCauldron);
+    List<AbstractCauldronBlock> newCauldrons = ImmutableList.of(
+        honeyCauldron, mushroomStewCauldron, potatoSoupCauldron, beetrootSoupCauldron, rabbitStewCauldron,
+        dyeCauldron, potionCauldron, suspiciousStewCauldron);
     Map<BlockState, PoiType> map = GameData.getBlockStatePointOfInterestTypeMap();
     synchronized (map) {
       Consumer<BlockState> consumer = state -> map.put(state, PoiType.LEATHERWORKER);

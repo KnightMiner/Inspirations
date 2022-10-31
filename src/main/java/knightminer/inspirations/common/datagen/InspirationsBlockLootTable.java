@@ -93,6 +93,7 @@ public class InspirationsBlockLootTable extends BlockLoot {
     this.dropOther(InspirationsRecipes.honeyCauldron, Blocks.CAULDRON);
     this.dropOther(InspirationsRecipes.dyeCauldron, Blocks.CAULDRON);
     this.dropOther(InspirationsRecipes.potionCauldron, Blocks.CAULDRON);
+    this.dropOther(InspirationsRecipes.suspiciousStewCauldron, Blocks.CAULDRON);
   }
 
   private void addTools() {

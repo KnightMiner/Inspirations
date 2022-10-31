@@ -1,0 +1,6 @@
+{
+  "parent": "inspirations:block/cauldron/level_4_of_4",
+  "textures": {
+    "content": "inspirations:block/fluid/suspicious_stew"
+  }
+}

@@ -24,6 +24,12 @@ public record TransformCauldronInteraction(boolean requireFire, int needed, Inte
 		this(requireFire, needed, oldProp, block, SoundEvents.BREWING_STAND_BREW);
 	}
 
+	/** Scales the amount needed */
+	public static int scaleAmountNeeded(int needed) {
+		// charge for a 4 layer cauldron as if it were 3 layer, that is 75% of cost, ceiling
+		return (needed + 1) * 3 / 4;
+	}
+
 	@Override
 	public InteractionResult interact(BlockState state, Level level, BlockPos pos, Player player, InteractionHand pHand, ItemStack stack) {
 		if (requireFire && !level.getBlockState(pos.below()).is(InspirationsTags.Blocks.CAULDRON_FIRE)) {
@@ -38,8 +44,7 @@ public record TransformCauldronInteraction(boolean requireFire, int needed, Inte
 					contentLevel = 4;
 				}
 			} else {
-				// charge for a 4 layer cauldron as if it were 3 layer, that is 75% of cost, ceiling
-				needed = (needed + 1) * 3 / 4;
+				needed = scaleAmountNeeded(needed);
 			}
 			if (stack.getCount() >= needed) {
 				player.awardStat(Stats.ITEM_USED.get(stack.getItem()));

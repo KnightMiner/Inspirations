@@ -65,10 +65,10 @@ public class InspirationsBlockTagsProvider extends BlockTagsProvider {
             InspirationsUtility.torchLeverFloor, InspirationsUtility.torchLeverWall,
             InspirationsUtility.soulLeverFloor, InspirationsUtility.soulLeverWall
     );
-    this.tag(BlockTags.CAULDRONS).add(InspirationsRecipes.beetrootSoupCauldron, InspirationsRecipes.mushroomStewCauldron,
-                                      InspirationsRecipes.potatoSoupCauldron, InspirationsRecipes.rabbitStewCauldron,
-                                      InspirationsRecipes.honeyCauldron,
-                                      InspirationsRecipes.dyeCauldron, InspirationsRecipes.potionCauldron);
+    this.tag(BlockTags.CAULDRONS).add(
+        InspirationsRecipes.beetrootSoupCauldron, InspirationsRecipes.mushroomStewCauldron, InspirationsRecipes.potatoSoupCauldron,
+        InspirationsRecipes.rabbitStewCauldron, InspirationsRecipes.honeyCauldron,
+        InspirationsRecipes.dyeCauldron, InspirationsRecipes.potionCauldron, InspirationsRecipes.suspiciousStewCauldron);
   }
 
   private void registerHarvestTags() {
