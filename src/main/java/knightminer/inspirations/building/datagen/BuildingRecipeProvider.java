@@ -139,15 +139,6 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
                             .requires(flower)
                             .save(flowerConditions, resource("building/flower/" + Objects.requireNonNull(dye.getRegistryName()).getPath()));
     });
-    // add temporary cyan dye crafting recipe
-    Consumer<FinishedRecipe> cyanFlowerConditions = withCondition(ConfigEnabledCondition.FLOWERS, not(ConfigEnabledCondition.CAULDRON_DYEING));
-    ItemLike rose = InspirationsBuilding.flower.get(FlowerType.ROSE);
-    ShapelessRecipeBuilder.shapeless(InspirationsBuilding.flower.get(FlowerType.CYAN))
-                          .unlockedBy("has_dye", has(Tags.Items.DYES_CYAN))
-                          .unlockedBy("has_flower", has(rose))
-                          .requires(Tags.Items.DYES_CYAN)
-                          .requires(rose)
-                          .save(cyanFlowerConditions, resource("building/flower/cyan_flower"));
 
     // bookshelves
     Consumer<FinishedRecipe> bookshelfConditions = withCondition(ConfigEnabledCondition.BOOKSHELF);

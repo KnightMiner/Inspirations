@@ -1,10 +1,7 @@
 package knightminer.inspirations.library.recipe;
 
 import knightminer.inspirations.Inspirations;
-import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronRecipe;
-import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronTransform;
 import knightminer.inspirations.library.recipe.crafting.ShapelessNoContainerRecipe;
-import knightminer.inspirations.recipes.recipe.cauldron.PotionFermentCauldronTransform;
 import net.minecraftforge.registries.ObjectHolder;
 
 import static slimeknights.mantle.registration.RegistrationHelper.injected;
@@ -16,12 +13,4 @@ public class RecipeSerializers {
    * Crafting Table
    */
   public static final ShapelessNoContainerRecipe.Serializer SHAPELESS_NO_CONTAINER = injected();
-
-  /*
-   * Cauldron
-   */
-  public static final CauldronRecipe.Serializer CAULDRON = injected();
-  public static final CauldronTransform.Serializer CAULDRON_TRANSFORM = injected();
-  // special recipes
-  public static final PotionFermentCauldronTransform.Serializer CAULDRON_POTION_FERMENT = injected();
 }

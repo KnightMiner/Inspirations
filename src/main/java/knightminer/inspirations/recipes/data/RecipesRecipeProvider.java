@@ -4,14 +4,7 @@ import knightminer.inspirations.common.data.ConfigEnabledCondition;
 import knightminer.inspirations.common.datagen.IInspirationsRecipeBuilder;
 import knightminer.inspirations.library.InspirationsTags;
 import knightminer.inspirations.library.recipe.RecipeSerializers;
-import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
-import knightminer.inspirations.library.recipe.cauldron.CauldronIngredients;
-import knightminer.inspirations.library.recipe.cauldron.ingredient.ICauldronIngredient;
-import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronRecipeBuilder;
-import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronTransformBuilder;
-import knightminer.inspirations.library.recipe.cauldron.util.TemperaturePredicate;
 import knightminer.inspirations.recipes.InspirationsRecipes;
-import knightminer.inspirations.recipes.recipe.cauldron.PotionFermentCauldronTransform;
 import net.minecraft.advancements.CriterionTriggerInstance;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.recipes.FinishedRecipe;
@@ -36,15 +29,12 @@ import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 import slimeknights.mantle.recipe.data.ConsumerWrapperBuilder;
-import slimeknights.mantle.recipe.ingredient.SizedIngredient;
 
 import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
-
-import static knightminer.inspirations.library.recipe.cauldron.recipe.ICauldronRecipe.MAX;
 
 public class RecipesRecipeProvider extends RecipeProvider implements IConditionBuilder, IInspirationsRecipeBuilder {
   private Consumer<FinishedRecipe> consumer;
@@ -77,100 +67,6 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
 
   private void addCauldronRecipes() {
     String folder = "cauldron/";
-
-    ICauldronIngredient waterIngredient = CauldronIngredients.FLUID.of(Fluids.WATER);
-
-    // custom recipes //
-
-    // melt ice if boiling, use fancier recipe if cauldron ice is enabled
-    String iceFolder = folder + "ice/";
-    CauldronRecipeBuilder.cauldron(SizedIngredient.fromItems(Blocks.ICE), waterIngredient)
-                         .maxLevels(MAX - 1)
-                         .setFull()
-                         .setTemperature(TemperaturePredicate.BOILING)
-                         .setOutput(CauldronContentTypes.FLUID.of(Fluids.WATER))
-                         .setSound(SoundEvents.BUCKET_FILL)
-                         .unlockedBy("has_item", has(Blocks.ICE))
-                         .save(withCondition(ConfigEnabledCondition.CAULDRON_RECIPES, not(ConfigEnabledCondition.CAULDRON_ICE)), wrapE(Fluids.WATER, iceFolder, "_from_ice"));
-
-    // freeze water into ice when cold
-    Consumer<FinishedRecipe> cauldronIce = withCondition(ConfigEnabledCondition.CAULDRON_ICE);
-    ResourceLocation ice = Objects.requireNonNull(Blocks.ICE.getRegistryName());
-    CauldronTransformBuilder.transform(CauldronIngredients.FLUID.of(Fluids.WATER), CauldronContentTypes.CUSTOM.of(ice), 500)
-                            .setTemperature(TemperaturePredicate.FREEZING)
-                            .unlockedBy("has_item", has(Items.ICE))
-                            .setSound(SoundType.GLASS.getPlaceSound())
-                            .save(cauldronIce, resource(iceFolder + "ice_from_water"));
-    // freeze wet ice into packed ice
-    ResourceLocation wetIce = Objects.requireNonNull(resource("wet_ice"));
-    ResourceLocation packedIce = Objects.requireNonNull(Blocks.PACKED_ICE.getRegistryName());
-    CauldronTransformBuilder.transform(CauldronIngredients.CUSTOM.of(wetIce), CauldronContentTypes.CUSTOM.of(packedIce), 2000)
-                            .setTemperature(TemperaturePredicate.FREEZING)
-                            .unlockedBy("has_item", has(Items.PACKED_ICE))
-                            .setSound(SoundType.GLASS.getPlaceSound())
-                            .save(cauldronIce, resource(iceFolder + "packed_ice_from_wet_ice"));
-    // melt back again when hot
-    CauldronTransformBuilder.transform(CauldronIngredients.CUSTOM.of(ice), CauldronContentTypes.FLUID.of(Fluids.WATER), 500)
-                            .setTemperature(TemperaturePredicate.BOILING)
-                            .unlockedBy("has_item", has(Items.ICE))
-                            .setSound(SoundEvents.BUCKET_EMPTY)
-                            .save(cauldronIce, resource(iceFolder + "water_from_ice_melting"));
-    CauldronTransformBuilder.transform(CauldronIngredients.CUSTOM.of(wetIce), CauldronContentTypes.FLUID.of(Fluids.WATER), 500)
-                            .setTemperature(TemperaturePredicate.BOILING)
-                            .unlockedBy("has_item", has(Items.ICE))
-                            .setSound(SoundType.GLASS.getPlaceSound())
-                            .save(cauldronIce, resource(iceFolder + "water_from_wet_ice"));
-    CauldronTransformBuilder.transform(CauldronIngredients.CUSTOM.of(packedIce), CauldronContentTypes.CUSTOM.of(wetIce), 2000)
-                            .setTemperature(TemperaturePredicate.BOILING)
-                            .unlockedBy("has_item", has(Items.PACKED_ICE))
-                            .setSound(SoundType.GLASS.getPlaceSound())
-                            .save(cauldronIce, resource(iceFolder + "wet_ice_from_packed_ice"));
-
-    // fill and empty ice
-    CauldronRecipeBuilder.cauldron(CauldronIngredients.CUSTOM.of(ice))
-                         .matchFull()
-                         .setEmpty()
-                         .setOutput(Blocks.ICE)
-                         .setSound(SoundType.GLASS.getBreakSound())
-                         .unlockedBy("has_item", has(Items.ICE))
-                         .save(cauldronIce, resource(iceFolder + "pickup_ice"));
-    CauldronRecipeBuilder.cauldron(SizedIngredient.fromItems(Blocks.ICE), CauldronIngredients.CUSTOM.of(ice))
-                         .matchEmpty()
-                         .setFull()
-                         .setOutput(CauldronContentTypes.CUSTOM.of(ice))
-                         .setSound(SoundType.GLASS.getPlaceSound())
-                         .unlockedBy("has_item", has(Items.ICE))
-                         .save(cauldronIce, resource(iceFolder + "place_ice"));
-    // fill and empty wet ice
-    CauldronRecipeBuilder.cauldron(CauldronIngredients.CUSTOM.of(wetIce))
-                         .matchFull()
-                         .setOutput(Blocks.ICE)
-                         .setOutput(CauldronContentTypes.FLUID.of(Fluids.WATER))
-                         .setSound(SoundType.GLASS.getBreakSound())
-                         .unlockedBy("has_item", has(Items.ICE))
-                         .save(cauldronIce, resource(iceFolder + "pickup_wet_ice"));
-    CauldronRecipeBuilder.cauldron(SizedIngredient.fromItems(Blocks.ICE), CauldronIngredients.FLUID.of(Fluids.WATER))
-                         .matchFull()
-                         .setOutput(CauldronContentTypes.CUSTOM.of(wetIce))
-                         .setSound(SoundType.GLASS.getPlaceSound())
-                         .unlockedBy("has_item", has(Items.ICE))
-                         .save(cauldronIce, resource(iceFolder + "place_wet_ice"));
-    // fill and empty packed ice
-    CauldronRecipeBuilder.cauldron(CauldronIngredients.CUSTOM.of(packedIce))
-                         .matchFull()
-                         .setEmpty()
-                         .setOutput(Blocks.PACKED_ICE)
-                         .setSound(SoundType.GLASS.getBreakSound())
-                         .unlockedBy("has_item", has(Items.PACKED_ICE))
-                         .save(cauldronIce, resource(iceFolder + "pickup_packed_ice"));
-    CauldronRecipeBuilder.cauldron(SizedIngredient.fromItems(Blocks.PACKED_ICE), CauldronIngredients.CUSTOM.of(packedIce))
-                         .matchEmpty()
-                         .setFull()
-                         .setOutput(CauldronContentTypes.CUSTOM.of(packedIce))
-                         .setSound(SoundType.GLASS.getPlaceSound())
-                         .unlockedBy("has_item", has(Items.ICE))
-                         .save(cauldronIce, resource(iceFolder + "place_packed_ice"));
-
 
     // dyes //
 
@@ -249,10 +145,6 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
     UpgradeRecipeBuilder.smithing(Ingredient.of(InspirationsTags.Items.SPLASH_BOTTLES), Ingredient.of(Items.DRAGON_BREATH), InspirationsRecipes.lingeringBottle)
                         .unlocks("has_the_dragon", has(Items.DRAGON_BREATH))
                         .save(potionConsumer, resourceName(bottleFolder + "lingering_bottle"));
-
-    // brew the potions
-    Consumer<FinishedRecipe> brewingConsumer = withCondition(ConfigEnabledCondition.CAULDRON_BREWING);
-    brewingConsumer.accept(new PotionFermentCauldronTransform.FinishedRecipe(resource(potionFolder + "potion_ferment"), 600));
 
     // normal potato soup crafting
     ShapelessRecipeBuilder.shapeless(InspirationsRecipes.potatoSoupItem)

@@ -5,11 +5,7 @@ import com.google.common.collect.ImmutableSet;
 import knightminer.inspirations.common.ModuleBase;
 import knightminer.inspirations.library.InspirationsTags;
 import knightminer.inspirations.library.MiscUtil;
-import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.CauldronRegistry;
-import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
-import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronRecipe;
-import knightminer.inspirations.library.recipe.cauldron.recipe.CauldronTransform;
 import knightminer.inspirations.recipes.block.DyeCauldronBlock;
 import knightminer.inspirations.recipes.block.FourLayerCauldronBlock;
 import knightminer.inspirations.recipes.block.PotionCauldronBlock;
@@ -48,7 +44,6 @@ import knightminer.inspirations.recipes.item.MilkBottleItem;
 import knightminer.inspirations.recipes.item.MixedDyedBottleItem;
 import knightminer.inspirations.recipes.item.SimpleDyedBottleItem;
 import knightminer.inspirations.recipes.recipe.BottleBrewingRecipe;
-import knightminer.inspirations.recipes.recipe.cauldron.PotionFermentCauldronTransform;
 import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraft.core.cauldron.CauldronInteraction;
@@ -71,7 +66,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.AbstractCauldronBlock;
 import net.minecraft.world.level.block.Block;
@@ -82,7 +76,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.Material;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.Tags;
@@ -271,23 +264,6 @@ public class InspirationsRecipes extends ModuleBase {
   void registerParticleTypes(Register<ParticleType<?>> event) {
     RegistryAdapter<ParticleType<?>> registry = new RegistryAdapter<>(event.getRegistry());
     boilingParticle = registry.register(new SimpleParticleType(false), "boiling");
-  }
-
-  @SubscribeEvent
-  void registerSerializers(Register<RecipeSerializer<?>> event) {
-    RegistryAdapter<RecipeSerializer<?>> registry = new RegistryAdapter<>(event.getRegistry());
-    registry.register(new CauldronRecipe.Serializer(), "cauldron");
-    registry.register(new CauldronTransform.Serializer(), "cauldron_transform");
-    registry.register(new PotionFermentCauldronTransform.Serializer(), "cauldron_potion_ferment");
-
-    // add water as an override to potions
-    ICauldronContents water = CauldronContentTypes.FLUID.of(Fluids.WATER);
-    CauldronContentTypes.POTION.setResult(Potions.WATER, water);
-
-    // add all dyes as overrides into color
-    for (DyeColor color : DyeColor.values()) {
-      CauldronContentTypes.COLOR.setResult(MiscUtil.getColor(color), CauldronContentTypes.DYE.of(color));
-    }
   }
 
   @SubscribeEvent
