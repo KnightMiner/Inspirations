@@ -1,0 +1,16 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:bucket",
+    "minecraft:glass_bottle",
+    "minecraft:bowl",
+    {
+      "id": "ceramics:clay_bucket",
+      "required": false
+    },
+    {
+      "id": "simplytea:teapot",
+      "required": false
+    }
+  ]
+}

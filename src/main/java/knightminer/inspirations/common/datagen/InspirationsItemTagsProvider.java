@@ -11,6 +11,7 @@ import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.tags.BlockTagsProvider;
 import net.minecraft.data.tags.ItemTagsProvider;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Item;
@@ -66,7 +67,9 @@ public class InspirationsItemTagsProvider extends ItemTagsProvider {
     terracottaBuilder.add(Items.TERRACOTTA);
     VanillaEnum.TERRACOTTA.forEach(block -> terracottaBuilder.add(block.asItem()));
 
-    this.tag(InspirationsTags.Items.MILK_CONTAINERS).add(Items.BUCKET, Items.GLASS_BOTTLE);
+    this.tag(InspirationsTags.Items.MILK_CONTAINERS).add(Items.BUCKET, Items.GLASS_BOTTLE, Items.BOWL)
+        .addOptional(new ResourceLocation("ceramics:clay_bucket"))
+        .addOptional(new ResourceLocation("simplytea:teapot"));
   }
 
   private void registerForgeTags() {
