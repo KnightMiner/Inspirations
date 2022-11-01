@@ -44,6 +44,7 @@ import knightminer.inspirations.recipes.cauldron.stew.SuspiciousStewIntoEmptyCau
 import knightminer.inspirations.recipes.cauldron.stew.SuspiciousStewingCauldronInteraction;
 import knightminer.inspirations.recipes.data.RecipesRecipeProvider;
 import knightminer.inspirations.recipes.item.EmptyBottleItem;
+import knightminer.inspirations.recipes.item.MilkBottleItem;
 import knightminer.inspirations.recipes.item.MixedDyedBottleItem;
 import knightminer.inspirations.recipes.item.SimpleDyedBottleItem;
 import knightminer.inspirations.recipes.recipe.BottleBrewingRecipe;
@@ -127,6 +128,8 @@ public class InspirationsRecipes extends ModuleBase {
   public static final Map<Item,CauldronInteraction> POTATO_SOUP_CAULDRON_INTERACTIONS = CauldronInteraction.newInteractionMap();
   /** Interactions for the honey cauldron */
   public static final Map<Item,CauldronInteraction> HONEY_CAULDRON_INTERACTIONS = CauldronInteraction.newInteractionMap();
+  /** Interactions for the milk cauldron */
+  public static final Map<Item,CauldronInteraction> MILK_CAULDRON_INTERACTIONS = CauldronInteraction.newInteractionMap();
   /** Interactions for the dye cauldron */
   public static final Map<Item,CauldronInteraction> DYE_CAULDRON_INTERACTIONS = CauldronInteraction.newInteractionMap();
   /** Interactions for the dye cauldron */
@@ -136,7 +139,7 @@ public class InspirationsRecipes extends ModuleBase {
 
   // blocks
   public static FourLayerCauldronBlock mushroomStewCauldron, beetrootSoupCauldron, rabbitStewCauldron, potatoSoupCauldron;
-  public static FourLayerCauldronBlock honeyCauldron, suspiciousStewCauldron;
+  public static FourLayerCauldronBlock honeyCauldron, milkCauldron, suspiciousStewCauldron;
   public static LayeredCauldronBlock dyeCauldron, potionCauldron;
 
   public static BlockEntityType<DyeCauldronBlockEntity> dyeCauldronEntity;
@@ -149,9 +152,9 @@ public class InspirationsRecipes extends ModuleBase {
   public static EnumObject<DyeColor,SimpleDyedBottleItem> simpleDyedWaterBottle = EnumObject.empty();
   public static MixedDyedBottleItem mixedDyedWaterBottle;
   public static BowlFoodItem potatoSoupItem;
+  public static Item milkBottle;
 
   // fluids
-  public static ForgeFlowingFluid milk;
   // mushroom
   public static ForgeFlowingFluid mushroomStew;
   public static BucketItem mushroomStewBucket;
@@ -209,6 +212,7 @@ public class InspirationsRecipes extends ModuleBase {
     rabbitStewCauldron   = registry.register(new FourLayerCauldronBlock(Properties.copy(Blocks.CAULDRON), RABBIT_STEW_CAULDRON_INTERACTIONS), "rabbit_stew_cauldron");
     potatoSoupCauldron   = registry.register(new FourLayerCauldronBlock(Properties.copy(Blocks.CAULDRON), POTATO_SOUP_CAULDRON_INTERACTIONS), "potato_soup_cauldron");
     honeyCauldron        = registry.register(new FourLayerCauldronBlock(Properties.copy(Blocks.CAULDRON), HONEY_CAULDRON_INTERACTIONS), "honey_cauldron");
+    milkCauldron         = registry.register(new FourLayerCauldronBlock(Properties.copy(Blocks.CAULDRON), MILK_CAULDRON_INTERACTIONS), "milk_cauldron");
 
     mushroomStewBlock = registry.registerFluidBlock(() -> mushroomStew, Material.WATER, 0, "mushroom_stew");
     beetrootSoupBlock = registry.registerFluidBlock(() -> beetrootSoup, Material.WATER, 0, "beetroot_soup");
@@ -252,6 +256,7 @@ public class InspirationsRecipes extends ModuleBase {
     Item.Properties brewingProps = new Item.Properties().tab(CreativeModeTab.TAB_BREWING);
     splashBottle = registry.register(new EmptyBottleItem(brewingProps, Items.SPLASH_POTION.delegate), "splash_bottle");
     lingeringBottle = registry.register(new EmptyBottleItem(brewingProps, Items.LINGERING_POTION.delegate), "lingering_bottle");
+    milkBottle = registry.register(new MilkBottleItem((new Item.Properties()).craftRemainder(Items.GLASS_BOTTLE).tab(CreativeModeTab.TAB_FOOD).stacksTo(16)), "milk_bottle");
 
     // dyed bottles
     Item.Properties bottleProps = new Item.Properties()
@@ -335,12 +340,15 @@ public class InspirationsRecipes extends ModuleBase {
       CauldronRegistry.register(ALL_CAULDRONS, fluidTag(InspirationsTags.Fluids.HONEY), fillHoney);
       // not bothering adding potato soup to the event, its our own concept
       addToAll.accept(potatoSoupBucket, new FillCauldronInteraction(potatoSoupCauldron));
+      // milk is vanilla, so no need for the event either
+      addToAll.accept(Items.MILK_BUCKET, new FillCauldronInteraction(milkCauldron));
       // empty buckets
       MUSHROOM_STEW_CAULDRON_INTERACTIONS.put(Items.BUCKET, new EmptyCauldronInteraction(mushroomStewBucket, SoundEvents.BUCKET_FILL));
       POTATO_SOUP_CAULDRON_INTERACTIONS  .put(Items.BUCKET, new EmptyCauldronInteraction(potatoSoupBucket,   SoundEvents.BUCKET_FILL));
       RABBIT_STEW_CAULDRON_INTERACTIONS  .put(Items.BUCKET, new EmptyCauldronInteraction(rabbitStewBucket,   SoundEvents.BUCKET_FILL));
       BEETROOT_SOUP_CAULDRON_INTERACTIONS.put(Items.BUCKET, new EmptyCauldronInteraction(beetrootSoupBucket, SoundEvents.BUCKET_FILL));
       HONEY_CAULDRON_INTERACTIONS        .put(Items.BUCKET, new EmptyCauldronInteraction(honeyBucket,        SoundEvents.BUCKET_FILL));
+      MILK_CAULDRON_INTERACTIONS         .put(Items.BUCKET, new EmptyCauldronInteraction(Items.MILK_BUCKET,  SoundEvents.BUCKET_FILL));
 
       // empty bowls
       CauldronInteraction.EMPTY.put(Items.MUSHROOM_STEW, new FillCauldronInteraction(mushroomStewCauldron, 1, Items.BOWL));
@@ -361,10 +369,10 @@ public class InspirationsRecipes extends ModuleBase {
 
       // making the soup
       // mushroom: slight discount (6 mushrooms for 4 bowls) and can use either mushroom (but not both)
-      CauldronInteraction mushroomTransform = new TransformCauldronInteraction(true, 2, LayeredCauldronBlock.LEVEL, mushroomStewCauldron);
-      CauldronInteraction.WATER.put(Items.BROWN_MUSHROOM, mushroomTransform);
-      CauldronInteraction.WATER.put(Items.RED_MUSHROOM, mushroomTransform);
-      CauldronRegistry.register(exactBlock(Blocks.WATER_CAULDRON), itemTag(Tags.Items.MUSHROOMS), mushroomTransform);
+      CauldronInteraction mushroomTransform = new TransformCauldronInteraction(true, 2, FourLayerCauldronBlock.LEVEL, mushroomStewCauldron);
+      MILK_CAULDRON_INTERACTIONS.put(Items.BROWN_MUSHROOM, mushroomTransform);
+      MILK_CAULDRON_INTERACTIONS.put(Items.RED_MUSHROOM, mushroomTransform);
+      CauldronRegistry.register(exactBlock(milkCauldron), itemTag(Tags.Items.MUSHROOMS), mushroomTransform);
       // potato: slight discount, 4 bowls only costs 6 potatoes instead of 8. Uses 2 more mushrooms
       MUSHROOM_STEW_CAULDRON_INTERACTIONS.put(Items.BAKED_POTATO, new TransformCauldronInteraction(true, 2, FourLayerCauldronBlock.LEVEL, potatoSoupCauldron));
       // rabbit: slight discount, 4 bowls only costs 3 rabbit instead of 4 and does not need carrot. Uses 2 more mushroom
@@ -383,6 +391,11 @@ public class InspirationsRecipes extends ModuleBase {
       HONEY_CAULDRON_INTERACTIONS.put(Items.HONEY_BLOCK, honeyToBlock);
       HONEY_CAULDRON_INTERACTIONS.put(Items.SUGAR, honeyToSugar);
       CauldronInteraction.EMPTY.put(Items.HONEY_BLOCK, new FillCauldronInteraction(honeyCauldron, 4, Items.AIR, SoundEvents.HONEY_BLOCK_PLACE));
+
+      // milk bottles
+      CauldronInteraction.EMPTY.put(milkBottle, new FillCauldronInteraction(milkCauldron, 1, Items.GLASS_BOTTLE));
+      MILK_CAULDRON_INTERACTIONS.put(milkBottle, IncreaseLayerCauldronInteraction.fourLevel(Items.GLASS_BOTTLE));
+      MILK_CAULDRON_INTERACTIONS.put(Items.GLASS_BOTTLE, new DecreaseLayerCauldronInteraction(milkBottle, FourLayerCauldronBlock.LEVEL));
 
       // wet the sponge
       CauldronInteraction spongeWet = new EmptyCauldronInteraction(Blocks.WET_SPONGE, SoundEvents.GRASS_PLACE);

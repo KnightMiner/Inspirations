@@ -65,6 +65,8 @@ public class InspirationsItemTagsProvider extends ItemTagsProvider {
     TagAppender<Item> terracottaBuilder = this.tag(InspirationsTags.Items.TERRACOTTA);
     terracottaBuilder.add(Items.TERRACOTTA);
     VanillaEnum.TERRACOTTA.forEach(block -> terracottaBuilder.add(block.asItem()));
+
+    this.tag(InspirationsTags.Items.MILK_CONTAINERS).add(Items.BUCKET, Items.GLASS_BOTTLE);
   }
 
   private void registerForgeTags() {

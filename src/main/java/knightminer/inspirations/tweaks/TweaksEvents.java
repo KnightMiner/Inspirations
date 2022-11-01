@@ -5,6 +5,7 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.common.network.MilkablePacket;
 import knightminer.inspirations.library.InspirationsTags;
+import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.shared.SharedEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -12,6 +13,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -19,6 +21,7 @@ import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.entity.animal.Pig;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -331,20 +334,21 @@ public class TweaksEvents {
 
   @SubscribeEvent
   static void milkCow(EntityInteract event) {
-    if (!Config.milkCooldown.get()) {
+    if (!Config.milkCooldown.get() && !Config.cauldronRecipes.getAsBoolean()) {
       return;
     }
 
     // only care about cows
     Entity target = event.getTarget();
-    if (!(target instanceof Cow) || ((Cow)target).isBaby()) {
+    if (!(target instanceof Cow cow) || cow.isBaby()) {
       return;
     }
 
     // must be holding a milk container
-    ItemStack stack = event.getPlayer().getItemInHand(event.getHand());
-    if (stack.is(InspirationsTags.Items.MILK_CONTAINERS)) {
-      // if has tag, cannot be milked
+    Player player = event.getPlayer();
+    InteractionHand hand = event.getHand();
+    ItemStack stack = player.getItemInHand(hand);
+    if (Config.milkCooldown.get() && stack.is(InspirationsTags.Items.MILK_CONTAINERS)) {
       CompoundTag tags = target.getPersistentData();
       if (tags.getShort(SharedEvents.TAG_MILKCOOLDOWN) > 0) {
         event.setCancellationResult(InteractionResult.PASS);
@@ -356,6 +360,13 @@ public class TweaksEvents {
           InspirationsNetwork.sendToClients(event.getWorld(), target.blockPosition(), new MilkablePacket(target, false));
         }
       }
+    }
+
+    // milk the cow with the bottle
+    if (stack.is(Items.GLASS_BOTTLE) && Config.cauldronRecipes.getAsBoolean()) {
+      player.setItemInHand(hand, ItemUtils.createFilledResult(stack, player, new ItemStack(InspirationsRecipes.milkBottle)));
+      event.setCancellationResult(InteractionResult.SUCCESS);
+      event.setCanceled(true);
     }
   }
 }

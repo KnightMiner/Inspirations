@@ -166,8 +166,8 @@
     "item.inspirations.honey_bucket": "Honey Bucket",
     "block.inspirations.honey_cauldron": "Honey Cauldron",
     
-    "fluid.inspirations.milk": "Milk",
-    "fluid.inspirations.flowing_milk": "Flowing Milk",
+    "block.inspirations.milk_cauldron": "Milk Cauldron",
+    "item.inspirations.milk_bottle": "Milk Bottle",
 
     "death.attack.inspirations.boiling": "%s was boiled alive",
     

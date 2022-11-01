@@ -1,0 +1,6 @@
+{
+  "parent": "inspirations:block/cauldron/level_2_of_4",
+  "textures": {
+    "content": "forge:block/milk_still"
+  }
+}
