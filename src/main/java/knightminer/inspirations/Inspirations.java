@@ -3,7 +3,6 @@ package knightminer.inspirations;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.electronwill.nightconfig.core.io.WritingMode;
 import knightminer.inspirations.building.InspirationsBuilding;
-import knightminer.inspirations.building.block.type.ShelfType;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.datagen.InspirationsBlockTagsProvider;
 import knightminer.inspirations.common.datagen.InspirationsFluidTagsProvider;
@@ -20,14 +19,9 @@ import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.tags.BlockTagsProvider;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.event.RegistryEvent.MissingMappings;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
@@ -39,9 +33,7 @@ import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import slimeknights.mantle.registration.RegistrationHelper;
 
-import javax.annotation.Nullable;
 import java.util.Locale;
 
 //import knightminer.inspirations.recipes.InspirationsRecipes;
@@ -96,63 +88,6 @@ public class Inspirations {
       gen.addProvider(new InspirationsFluidTagsProvider(gen, existing));
       gen.addProvider(new InspirationsLootTableProvider(gen));
     }
-  }
-
-  /** Shared missing mapping handler for blocks and items */
-  @Nullable
-  private static Block missingBlock(String name) {
-    switch (name) {
-      case "bookshelf": return InspirationsBuilding.shelf.get(ShelfType.NORMAL);
-      case "ancient_bookshelf":  return InspirationsBuilding.shelf.get(ShelfType.ANCIENT);
-      case "rainbow_bookshelf":  return InspirationsBuilding.shelf.get(ShelfType.RAINBOW);
-      case "tomes_bookshelf":  return InspirationsBuilding.shelf.get(ShelfType.TOMES);
-    }
-    return null;
-  }
-
-  @SubscribeEvent
-  static void missingBlockMappings(MissingMappings<Block> event) {
-    RegistrationHelper.handleMissingMappings(event, modID, Inspirations::missingBlock);
-  }
-
-  @SubscribeEvent
-  static void missingItemMappings(MissingMappings<Item> event) {
-    RegistrationHelper.handleMissingMappings(event, modID, name -> {
-      switch (name) {
-        case "white_waypoint_compass":
-        case "orange_waypoint_compass":
-        case "magenta_waypoint_compass":
-        case "light_blue_waypoint_compass":
-        case "yellow_waypoint_compass":
-        case "lime_waypoint_compass":
-        case "pink_waypoint_compass":
-        case "gray_waypoint_compass":
-        case "light_gray_waypoint_compass":
-        case "cyan_waypoint_compass":
-        case "purple_waypoint_compass":
-        case "blue_waypoint_compass":
-        case "brown_waypoint_compass":
-        case "green_waypoint_compass":
-        case "red_waypoint_compass":
-        case "black_waypoint_compass":
-          return InspirationsTools.dimensionCompass;
-      }
-      Block block = missingBlock(name);
-      return block != null ? block.asItem() : null;
-    });
-  }
-
-  @SubscribeEvent
-  static void missingFluidMappings(MissingMappings<Fluid> event) {
-    RegistrationHelper.handleMissingMappings(event, modID, name -> {
-      switch (name) {
-        case "milk":
-          return ForgeMod.MILK.get();
-        case "flowing_milk":
-          return ForgeMod.FLOWING_MILK.get();
-      }
-      return null;
-    });
   }
 
 
