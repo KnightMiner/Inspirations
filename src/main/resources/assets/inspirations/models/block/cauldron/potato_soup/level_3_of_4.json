@@ -5,7 +5,6 @@
     "content": "inspirations:block/fluid/colorless"
   },
   "colors": [
-    { "color": "FFF2DA9F" },
-    {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
+    { "color": "FFF2DA9F" }
   ]
 }
