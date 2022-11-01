@@ -2,7 +2,7 @@ package knightminer.inspirations.utility.block;
 
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.IHidable;
-import knightminer.inspirations.utility.tileentity.CollectorTileEntity;
+import knightminer.inspirations.utility.block.entity.CollectorBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -112,7 +112,7 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
   @Nullable
   @Override
   public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-    return new CollectorTileEntity(pos, state);
+    return new CollectorBlockEntity(pos, state);
   }
 
   @Override
@@ -121,7 +121,7 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
       throw new AssertionError("Needs to be server!");
     }
     BlockEntity te = world.getBlockEntity(pos);
-    if (te instanceof CollectorTileEntity) {
+    if (te instanceof CollectorBlockEntity) {
       NetworkHooks.openGui((ServerPlayer)player, (MenuProvider)te, pos);
       return true;
     }
@@ -161,8 +161,8 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
     // clear inventory cache
     if (pos.relative(state.getValue(FACING)).equals(neighbor)) {
       BlockEntity te = world.getBlockEntity(pos);
-      if (te instanceof CollectorTileEntity) {
-        ((CollectorTileEntity) te).clearCachedInventories();
+      if (te instanceof CollectorBlockEntity) {
+        ((CollectorBlockEntity) te).clearCachedInventories();
       }
     }
 
@@ -185,8 +185,8 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
       return;
     }
     BlockEntity te = world.getBlockEntity(pos);
-    if (te instanceof CollectorTileEntity) {
-      ((CollectorTileEntity)te).collect();
+    if (te instanceof CollectorBlockEntity) {
+      ((CollectorBlockEntity)te).collect();
     }
   }
 }

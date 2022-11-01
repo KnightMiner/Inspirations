@@ -10,7 +10,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.datafixers.util.Pair;
 import knightminer.inspirations.Inspirations;
-import knightminer.inspirations.building.tileentity.ShelfTileEntity;
+import knightminer.inspirations.building.block.entity.ShelfBlockEntity;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.BlockElement;
@@ -268,7 +268,7 @@ public class ShelfModel implements IModelGeometry<ShelfModel> {
       }
 
       // if books unset, default to 0 (no books)
-      Integer books = data.getData(ShelfTileEntity.BOOKS);
+      Integer books = data.getData(ShelfBlockEntity.BOOKS);
       if (books == null) {
         books = 0;
       }

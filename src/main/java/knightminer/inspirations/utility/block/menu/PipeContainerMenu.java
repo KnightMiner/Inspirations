@@ -1,7 +1,7 @@
-package knightminer.inspirations.utility.inventory;
+package knightminer.inspirations.utility.block.menu;
 
 import knightminer.inspirations.utility.InspirationsUtility;
-import knightminer.inspirations.utility.tileentity.PipeTileEntity;
+import knightminer.inspirations.utility.block.entity.PipeBlockEntity;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
@@ -9,8 +9,8 @@ import slimeknights.mantle.inventory.BaseContainerMenu;
 
 import javax.annotation.Nullable;
 
-public class PipeContainer extends BaseContainerMenu<PipeTileEntity> {
-  public PipeContainer(int winId, Inventory inventoryPlayer, @Nullable PipeTileEntity tile) {
+public class PipeContainerMenu extends BaseContainerMenu<PipeBlockEntity> {
+  public PipeContainerMenu(int winId, Inventory inventoryPlayer, @Nullable PipeBlockEntity tile) {
     super(InspirationsUtility.contPipe, winId, inventoryPlayer, tile);
     if (tile != null) {
       this.addSlot(new Slot(tile, 0, 80, 20));
@@ -18,8 +18,8 @@ public class PipeContainer extends BaseContainerMenu<PipeTileEntity> {
     addInventorySlots();
   }
 
-  public PipeContainer(int windowId, Inventory inv, FriendlyByteBuf data) {
-    this(windowId, inv, getTileEntityFromBuf(data, PipeTileEntity.class));
+  public PipeContainerMenu(int windowId, Inventory inv, FriendlyByteBuf data) {
+    this(windowId, inv, getTileEntityFromBuf(data, PipeBlockEntity.class));
   }
 
   @Override

@@ -1,8 +1,8 @@
-package knightminer.inspirations.building.inventory;
+package knightminer.inspirations.building.block.menu;
 
 import knightminer.inspirations.building.InspirationsBuilding;
-import knightminer.inspirations.building.tileentity.ShelfInventory;
-import knightminer.inspirations.building.tileentity.ShelfTileEntity;
+import knightminer.inspirations.building.block.entity.ShelfBlockEntity;
+import knightminer.inspirations.building.block.entity.ShelfInventory;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -11,14 +11,14 @@ import slimeknights.mantle.inventory.SmartItemHandlerSlot;
 
 import javax.annotation.Nullable;
 
-public class ShelfContainer extends BaseContainerMenu<ShelfTileEntity> {
+public class ShelfContainerMenu extends BaseContainerMenu<ShelfBlockEntity> {
   /**
    * Standard constructor
    * @param id    Window ID
    * @param inv   Player inventory instance
    * @param shelf Bookshelf tile entity
    */
-  public ShelfContainer(int id, Inventory inv, @Nullable ShelfTileEntity shelf) {
+  public ShelfContainerMenu(int id, Inventory inv, @Nullable ShelfBlockEntity shelf) {
     super(InspirationsBuilding.shelfContainer, id, inv, shelf);
     if (tile != null) {
       // two rows of slots
@@ -39,8 +39,8 @@ public class ShelfContainer extends BaseContainerMenu<ShelfTileEntity> {
    * @param inv Player inventory
    * @param buf Packet buffer instance
    */
-  public ShelfContainer(int id, Inventory inv, FriendlyByteBuf buf) {
-    this(id, inv, getTileEntityFromBuf(buf, ShelfTileEntity.class));
+  public ShelfContainerMenu(int id, Inventory inv, FriendlyByteBuf buf) {
+    this(id, inv, getTileEntityFromBuf(buf, ShelfBlockEntity.class));
   }
 
   @Override

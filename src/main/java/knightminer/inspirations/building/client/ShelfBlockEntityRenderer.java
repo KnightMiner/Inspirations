@@ -1,7 +1,7 @@
 package knightminer.inspirations.building.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import knightminer.inspirations.building.tileentity.ShelfTileEntity;
+import knightminer.inspirations.building.block.entity.ShelfBlockEntity;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.client.model.ShelfModel;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -16,11 +16,11 @@ import slimeknights.mantle.client.render.RenderingHelper;
 
 import java.util.List;
 
-public class ShelfTileEntityRenderer implements BlockEntityRenderer<ShelfTileEntity> {
-	public ShelfTileEntityRenderer(BlockEntityRendererProvider.Context context) {}
+public class ShelfBlockEntityRenderer implements BlockEntityRenderer<ShelfBlockEntity> {
+	public ShelfBlockEntityRenderer(BlockEntityRendererProvider.Context context) {}
 
 	@Override
-	public void render(ShelfTileEntity shelf, float partialTicks, PoseStack matrices, MultiBufferSource buffer, int light, int combinedOverlay) {
+	public void render(ShelfBlockEntity shelf, float partialTicks, PoseStack matrices, MultiBufferSource buffer, int light, int combinedOverlay) {
 		// first, find the model for item display locations
 		BlockState state = shelf.getBlockState();
 		ShelfModel.Baked model = ModelHelper.getBakedModel(state, ShelfModel.Baked.class);

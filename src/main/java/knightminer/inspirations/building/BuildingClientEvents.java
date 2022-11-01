@@ -1,11 +1,11 @@
 package knightminer.inspirations.building;
 
 import knightminer.inspirations.Inspirations;
+import knightminer.inspirations.building.block.entity.ShelfBlockEntity;
 import knightminer.inspirations.building.block.type.BushType;
 import knightminer.inspirations.building.block.type.ShelfType;
-import knightminer.inspirations.building.client.ShelfScreen;
-import knightminer.inspirations.building.client.ShelfTileEntityRenderer;
-import knightminer.inspirations.building.tileentity.ShelfTileEntity;
+import knightminer.inspirations.building.client.ShelfBlockEntityRenderer;
+import knightminer.inspirations.building.client.ShelfContainerScreen;
 import knightminer.inspirations.common.ClientEvents;
 import knightminer.inspirations.library.MiscUtil;
 import knightminer.inspirations.library.client.ClientUtil;
@@ -71,7 +71,7 @@ public class BuildingClientEvents extends ClientEvents {
 
   @SubscribeEvent
   static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
-    event.registerBlockEntityRenderer(InspirationsBuilding.shelfTileEntity, ShelfTileEntityRenderer::new);
+    event.registerBlockEntityRenderer(InspirationsBuilding.shelfTileEntity, ShelfBlockEntityRenderer::new);
   }
 
   @SubscribeEvent
@@ -82,7 +82,7 @@ public class BuildingClientEvents extends ClientEvents {
   @SubscribeEvent
   static void commonSetup(FMLCommonSetupEvent event) {
     // Register GUIs.
-    registerScreenFactory(InspirationsBuilding.shelfContainer, ShelfScreen::new);
+    registerScreenFactory(InspirationsBuilding.shelfContainer, ShelfContainerScreen::new);
   }
 
   @SubscribeEvent
@@ -93,8 +93,8 @@ public class BuildingClientEvents extends ClientEvents {
     registerBlockColors(blockColors, (state, world, pos, tintIndex) -> {
       if (tintIndex > 0 && tintIndex <= 16 && world != null && pos != null) {
         BlockEntity te = world.getBlockEntity(pos);
-        if (te instanceof ShelfTileEntity) {
-          ItemStack stack = ((ShelfTileEntity)te).getInventory().getStackInSlot(tintIndex - 1);
+        if (te instanceof ShelfBlockEntity) {
+          ItemStack stack = ((ShelfBlockEntity)te).getInventory().getStackInSlot(tintIndex - 1);
           if (!stack.isEmpty()) {
             int color = ClientUtil.getItemColor(stack.getItem());
             int itemColors = mc.getItemColors().getColor(stack, 0);

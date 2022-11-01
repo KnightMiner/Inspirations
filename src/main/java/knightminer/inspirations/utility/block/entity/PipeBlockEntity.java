@@ -1,9 +1,9 @@
-package knightminer.inspirations.utility.tileentity;
+package knightminer.inspirations.utility.block.entity;
 
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.utility.InspirationsUtility;
 import knightminer.inspirations.utility.block.PipeBlock;
-import knightminer.inspirations.utility.inventory.PipeContainer;
+import knightminer.inspirations.utility.block.menu.PipeContainerMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -28,9 +28,9 @@ import slimeknights.mantle.util.WeakConsumerWrapper;
 import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 
-public class PipeTileEntity extends InventoryBlockEntity {
+public class PipeBlockEntity extends InventoryBlockEntity {
   /** Server tick logic */
-  public static final BlockEntityTicker<PipeTileEntity> SERVER_TICKER = (level, pos, state, te) -> te.tick();
+  public static final BlockEntityTicker<PipeBlockEntity> SERVER_TICKER = (level, pos, state, te) -> te.tick();
   private static final Component TITLE = new TranslatableComponent("gui.inspirations.pipe");
 
   /* Number of ticks before transfer is allowed again */
@@ -52,7 +52,7 @@ public class PipeTileEntity extends InventoryBlockEntity {
     }
   });
 
-  public PipeTileEntity(BlockPos pos, BlockState state) {
+  public PipeBlockEntity(BlockPos pos, BlockState state) {
     super(InspirationsUtility.tilePipe, pos, state, TITLE, false, 1);
   }
 
@@ -170,7 +170,7 @@ public class PipeTileEntity extends InventoryBlockEntity {
 
   @Override
   public AbstractContainerMenu createMenu(int winId, Inventory inv, Player entity) {
-    return new PipeContainer(winId, inv, this);
+    return new PipeContainerMenu(winId, inv, this);
   }
 
 

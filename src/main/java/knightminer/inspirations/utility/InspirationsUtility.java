@@ -9,12 +9,12 @@ import knightminer.inspirations.utility.block.CollectorBlock;
 import knightminer.inspirations.utility.block.PipeBlock;
 import knightminer.inspirations.utility.block.TorchLeverBlock;
 import knightminer.inspirations.utility.block.TorchLeverWallBlock;
+import knightminer.inspirations.utility.block.entity.CollectorBlockEntity;
+import knightminer.inspirations.utility.block.entity.PipeBlockEntity;
+import knightminer.inspirations.utility.block.menu.CollectorContainerMenu;
+import knightminer.inspirations.utility.block.menu.PipeContainerMenu;
 import knightminer.inspirations.utility.datagen.UtilityRecipeProvider;
-import knightminer.inspirations.utility.inventory.CollectorContainer;
-import knightminer.inspirations.utility.inventory.PipeContainer;
 import knightminer.inspirations.utility.item.TorchLeverItem;
-import knightminer.inspirations.utility.tileentity.CollectorTileEntity;
-import knightminer.inspirations.utility.tileentity.PipeTileEntity;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.world.inventory.MenuType;
@@ -56,12 +56,12 @@ public class InspirationsUtility extends ModuleBase {
   public static Item soulLeverItem;
 
   // Tile entities
-  public static BlockEntityType<CollectorTileEntity> tileCollector;
-  public static BlockEntityType<PipeTileEntity> tilePipe;
+  public static BlockEntityType<CollectorBlockEntity> tileCollector;
+  public static BlockEntityType<PipeBlockEntity> tilePipe;
 
   // Inventory containers
-  public static MenuType<CollectorContainer> contCollector;
-  public static MenuType<PipeContainer> contPipe;
+  public static MenuType<CollectorContainerMenu> contCollector;
+  public static MenuType<PipeContainerMenu> contPipe;
 
   @SubscribeEvent
   public void registerBlocks(Register<Block> event) {
@@ -100,8 +100,8 @@ public class InspirationsUtility extends ModuleBase {
   public void registerTEs(Register<BlockEntityType<?>> event) {
     BlockEntityTypeRegistryAdapter registry = new BlockEntityTypeRegistryAdapter(event.getRegistry());
 
-    tileCollector = registry.register(CollectorTileEntity::new, collector, "collector");
-    tilePipe = registry.register(PipeTileEntity::new, pipe, "pipe");
+    tileCollector = registry.register(CollectorBlockEntity::new, collector, "collector");
+    tilePipe = registry.register(PipeBlockEntity::new, pipe, "pipe");
   }
 
   @SubscribeEvent
@@ -109,8 +109,8 @@ public class InspirationsUtility extends ModuleBase {
     ContainerTypeRegistryAdapter registry = new ContainerTypeRegistryAdapter(event.getRegistry());
     IForgeRegistry<MenuType<?>> r = event.getRegistry();
 
-    contCollector = registry.registerType(CollectorContainer::new, "collector");
-    contPipe = registry.registerType(PipeContainer::new, "pipe");
+    contCollector = registry.registerType(CollectorContainerMenu::new, "collector");
+    contPipe = registry.registerType(PipeContainerMenu::new, "pipe");
   }
 
   @SubscribeEvent

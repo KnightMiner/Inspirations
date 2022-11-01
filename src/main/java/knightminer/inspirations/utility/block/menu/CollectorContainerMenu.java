@@ -1,7 +1,7 @@
-package knightminer.inspirations.utility.inventory;
+package knightminer.inspirations.utility.block.menu;
 
 import knightminer.inspirations.utility.InspirationsUtility;
-import knightminer.inspirations.utility.tileentity.CollectorTileEntity;
+import knightminer.inspirations.utility.block.entity.CollectorBlockEntity;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
@@ -9,8 +9,8 @@ import slimeknights.mantle.inventory.BaseContainerMenu;
 
 import javax.annotation.Nullable;
 
-public class CollectorContainer extends BaseContainerMenu<CollectorTileEntity> {
-  public CollectorContainer(int winId, Inventory inventoryPlayer, @Nullable CollectorTileEntity tile) {
+public class CollectorContainerMenu extends BaseContainerMenu<CollectorBlockEntity> {
+  public CollectorContainerMenu(int winId, Inventory inventoryPlayer, @Nullable CollectorBlockEntity tile) {
     super(InspirationsUtility.contCollector, winId, inventoryPlayer, tile);
     if (tile != null) {
       for (int y = 0; y < 3; y++) {
@@ -22,7 +22,7 @@ public class CollectorContainer extends BaseContainerMenu<CollectorTileEntity> {
     addInventorySlots();
   }
 
-  public CollectorContainer(int windowId, Inventory inv, FriendlyByteBuf data) {
-    this(windowId, inv, getTileEntityFromBuf(data, CollectorTileEntity.class));
+  public CollectorContainerMenu(int windowId, Inventory inv, FriendlyByteBuf data) {
+    this(windowId, inv, getTileEntityFromBuf(data, CollectorBlockEntity.class));
   }
 }

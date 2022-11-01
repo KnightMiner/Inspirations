@@ -9,17 +9,17 @@ import knightminer.inspirations.building.block.MulchBlock;
 import knightminer.inspirations.building.block.PathBlock;
 import knightminer.inspirations.building.block.RopeBlock;
 import knightminer.inspirations.building.block.ShelfBlock;
+import knightminer.inspirations.building.block.entity.EnlightenedBushBlockEntity;
+import knightminer.inspirations.building.block.entity.ShelfBlockEntity;
+import knightminer.inspirations.building.block.menu.ShelfContainerMenu;
 import knightminer.inspirations.building.block.type.BushType;
 import knightminer.inspirations.building.block.type.FlowerType;
 import knightminer.inspirations.building.block.type.MulchType;
 import knightminer.inspirations.building.block.type.PathType;
 import knightminer.inspirations.building.block.type.ShelfType;
 import knightminer.inspirations.building.datagen.BuildingRecipeProvider;
-import knightminer.inspirations.building.inventory.ShelfContainer;
 import knightminer.inspirations.building.item.GlassDoorBlockItem;
 import knightminer.inspirations.building.item.ShelfItem;
-import knightminer.inspirations.building.tileentity.EnlightenedBushTileEntity;
-import knightminer.inspirations.building.tileentity.ShelfTileEntity;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.ModuleBase;
 import knightminer.inspirations.common.item.HidableBlockItem;
@@ -87,24 +87,24 @@ public class InspirationsBuilding extends ModuleBase {
   public static EnumObject<DyeColor,Item> coloredBooks;
 
   // Tile Entities
-  public static BlockEntityType<ShelfTileEntity> shelfTileEntity;
-  public static BlockEntityType<EnlightenedBushTileEntity> enlightenedBushTileEntity;
+  public static BlockEntityType<ShelfBlockEntity> shelfTileEntity;
+  public static BlockEntityType<EnlightenedBushBlockEntity> enlightenedBushTileEntity;
 
   // Container Types
-  public static MenuType<ShelfContainer> shelfContainer;
+  public static MenuType<ShelfContainerMenu> shelfContainer;
 
   @SubscribeEvent
   void registerTE(Register<BlockEntityType<?>> event) {
     BlockEntityTypeRegistryAdapter registry = new BlockEntityTypeRegistryAdapter(event.getRegistry());
 
-    shelfTileEntity = registry.register(ShelfTileEntity::new, shelf, "bookshelf");
-    enlightenedBushTileEntity = registry.register(EnlightenedBushTileEntity::new, enlightenedBush, "enlightened_bush");
+    shelfTileEntity = registry.register(ShelfBlockEntity::new, shelf, "bookshelf");
+    enlightenedBushTileEntity = registry.register(EnlightenedBushBlockEntity::new, enlightenedBush, "enlightened_bush");
   }
 
   @SubscribeEvent
   void registerContainers(Register<MenuType<?>> event) {
     ContainerTypeRegistryAdapter registry = new ContainerTypeRegistryAdapter(event.getRegistry());
-    shelfContainer = registry.registerType(ShelfContainer::new, "shelf");
+    shelfContainer = registry.registerType(ShelfContainerMenu::new, "shelf");
   }
 
   @SubscribeEvent

@@ -2,9 +2,9 @@ package knightminer.inspirations.building.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import knightminer.inspirations.Inspirations;
-import knightminer.inspirations.building.inventory.ShelfContainer;
-import knightminer.inspirations.building.tileentity.ShelfInventory;
-import knightminer.inspirations.building.tileentity.ShelfTileEntity;
+import knightminer.inspirations.building.block.entity.ShelfBlockEntity;
+import knightminer.inspirations.building.block.entity.ShelfInventory;
+import knightminer.inspirations.building.block.menu.ShelfContainerMenu;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.client.ClientUtil;
 import knightminer.inspirations.shared.client.BackgroundContainerScreen;
@@ -15,7 +15,7 @@ import net.minecraft.world.item.ItemStack;
 import slimeknights.mantle.client.screen.ElementScreen;
 
 /** Screen for bookshelves */
-public class ShelfScreen extends BackgroundContainerScreen<ShelfContainer> {
+public class ShelfContainerScreen extends BackgroundContainerScreen<ShelfContainerMenu> {
 	private static final ElementScreen SLOT_COVER = new ElementScreen(176, 0, 18, 18, 256, 256);
 	private static final ElementScreen BOOK_SLOT_ICON = new ElementScreen(176, 18, 16, 16, 256, 256);
 
@@ -25,7 +25,7 @@ public class ShelfScreen extends BackgroundContainerScreen<ShelfContainer> {
 	 * @param inventory  Player inventory
 	 * @param name       Container name
 	 */
-	public ShelfScreen(ShelfContainer container, Inventory inventory, Component name) {
+	public ShelfContainerScreen(ShelfContainerMenu container, Inventory inventory, Component name) {
 		super(container, inventory, name, 156, Inspirations.getResource("textures/gui/shelf.png"));
 	}
 
@@ -42,7 +42,7 @@ public class ShelfScreen extends BackgroundContainerScreen<ShelfContainer> {
 	protected void renderBg(PoseStack matrixStack, float partialTicks, int mouseX, int mouseY) {
 		super.renderBg(matrixStack, partialTicks, mouseX, mouseY);
 		// draw book icon in slots that can only hold a book
-		ShelfTileEntity shelf = getMenu().getTile();
+		ShelfBlockEntity shelf = getMenu().getTile();
 		if (shelf != null) {
 			ShelfInventory inventory = shelf.getInventory();
 			for (int i = 0; i < 16; i++) {
@@ -67,7 +67,7 @@ public class ShelfScreen extends BackgroundContainerScreen<ShelfContainer> {
 	protected void renderLabels(PoseStack matrixStack, int x, int y) {
 		super.renderLabels(matrixStack, x, y);
 		// draw cover to block invalid slots, drawn in foreground to cover the slot highlight
-		ShelfTileEntity shelf = getMenu().getTile();
+		ShelfBlockEntity shelf = getMenu().getTile();
 		if (shelf != null) {
 			ShelfInventory inventory = shelf.getInventory();
 			ClientUtil.bindTexture(this.background);

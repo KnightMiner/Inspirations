@@ -1,7 +1,7 @@
 package knightminer.inspirations.building.block;
 
 import com.google.common.collect.ImmutableMap;
-import knightminer.inspirations.building.tileentity.ShelfTileEntity;
+import knightminer.inspirations.building.block.entity.ShelfBlockEntity;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.IHidable;
 import net.minecraft.core.BlockPos;
@@ -55,7 +55,7 @@ public class ShelfBlock extends InventoryBlock implements IHidable {
   @Nullable
   @Override
   public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-    return new ShelfTileEntity(pos, state);
+    return new ShelfBlockEntity(pos, state);
   }
 
   @Nullable
@@ -111,9 +111,9 @@ public class ShelfBlock extends InventoryBlock implements IHidable {
       return (world.isClientSide || openGui(player, world, pos)) ? InteractionResult.SUCCESS : InteractionResult.PASS;
     }
     BlockEntity te = world.getBlockEntity(pos);
-    if (te instanceof ShelfTileEntity) {
+    if (te instanceof ShelfBlockEntity) {
       // try interacting
-      if (((ShelfTileEntity)te).interact(player, hand, click)) {
+      if (((ShelfBlockEntity)te).interact(player, hand, click)) {
         return InteractionResult.SUCCESS;
       }
       // if we failed to place an item on the shelf, pass if the offhand might try
@@ -210,8 +210,8 @@ public class ShelfBlock extends InventoryBlock implements IHidable {
   @Override
   public int getAnalogOutputSignal(BlockState state, Level world, BlockPos pos) {
     BlockEntity te = world.getBlockEntity(pos);
-    if (te instanceof ShelfTileEntity) {
-      return ((ShelfTileEntity)te).getComparatorPower();
+    if (te instanceof ShelfBlockEntity) {
+      return ((ShelfBlockEntity)te).getComparatorPower();
     }
     return 0;
   }
@@ -245,8 +245,8 @@ public class ShelfBlock extends InventoryBlock implements IHidable {
       return 0;
     }
     BlockEntity te = world.getBlockEntity(pos);
-    if (te instanceof ShelfTileEntity) {
-      return ((ShelfTileEntity)te).getEnchantPower();
+    if (te instanceof ShelfBlockEntity) {
+      return ((ShelfBlockEntity)te).getEnchantPower();
     }
     return 0;
   }

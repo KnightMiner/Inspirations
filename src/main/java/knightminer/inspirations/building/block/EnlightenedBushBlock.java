@@ -1,6 +1,6 @@
 package knightminer.inspirations.building.block;
 
-import knightminer.inspirations.building.tileentity.EnlightenedBushTileEntity;
+import knightminer.inspirations.building.block.entity.EnlightenedBushBlockEntity;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.IHidable;
 import net.minecraft.core.BlockPos;
@@ -41,7 +41,7 @@ public class EnlightenedBushBlock extends RetexturedBlock implements IHidable {
   @Nullable
   @Override
   public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-    return new EnlightenedBushTileEntity(pos, state);
+    return new EnlightenedBushBlockEntity(pos, state);
   }
 
   @Override

@@ -1,10 +1,10 @@
-package knightminer.inspirations.building.tileentity;
+package knightminer.inspirations.building.block.entity;
 
 import knightminer.inspirations.library.InspirationsRegistry;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.core.NonNullList;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
@@ -15,11 +15,11 @@ public class ShelfInventory implements IItemHandler, IItemHandlerModifiable, INB
 	public static final int MAX_ITEMS = 16;
 
 	/** Tile entity holding this inventory */
-	private final ShelfTileEntity parent;
+	private final ShelfBlockEntity parent;
 	/** List of items in this inventory */
 	private final NonNullList<ItemStack> stacks = NonNullList.withSize(MAX_ITEMS, ItemStack.EMPTY);
 
-	public ShelfInventory(ShelfTileEntity parent) {
+	public ShelfInventory(ShelfBlockEntity parent) {
 		this.parent = parent;
 	}
 

@@ -1,7 +1,7 @@
-package knightminer.inspirations.utility.tileentity;
+package knightminer.inspirations.utility.block.entity;
 
 import knightminer.inspirations.utility.InspirationsUtility;
-import knightminer.inspirations.utility.inventory.CollectorContainer;
+import knightminer.inspirations.utility.block.menu.CollectorContainerMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -26,7 +26,7 @@ import slimeknights.mantle.util.WeakConsumerWrapper;
 
 import javax.annotation.Nullable;
 
-public class CollectorTileEntity extends InventoryBlockEntity {
+public class CollectorBlockEntity extends InventoryBlockEntity {
   private static final Component TITLE = new TranslatableComponent("gui.inspirations.collector");
 
   /** Cache of the current TE we are facing */
@@ -45,7 +45,7 @@ public class CollectorTileEntity extends InventoryBlockEntity {
     }
   });
 
-  public CollectorTileEntity(BlockPos pos, BlockState state) {
+  public CollectorBlockEntity(BlockPos pos, BlockState state) {
     super(InspirationsUtility.tileCollector, pos, state, TITLE, false, 9);
   }
 
@@ -169,6 +169,6 @@ public class CollectorTileEntity extends InventoryBlockEntity {
   @Nullable
   @Override
   public AbstractContainerMenu createMenu(int winId, Inventory playerInv, Player player) {
-    return new CollectorContainer(winId, playerInv, this);
+    return new CollectorContainerMenu(winId, playerInv, this);
   }
 }

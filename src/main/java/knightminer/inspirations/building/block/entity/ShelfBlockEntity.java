@@ -1,8 +1,8 @@
-package knightminer.inspirations.building.tileentity;
+package knightminer.inspirations.building.block.entity;
 
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.building.block.ShelfBlock;
-import knightminer.inspirations.building.inventory.ShelfContainer;
+import knightminer.inspirations.building.block.menu.ShelfContainerMenu;
 import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.common.network.InventorySlotSyncPacket;
 import knightminer.inspirations.library.InspirationsRegistry;
@@ -39,7 +39,7 @@ import slimeknights.mantle.util.RetexturedHelper;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class ShelfTileEntity extends NameableBlockEntity implements IRetexturedBlockEntity {
+public class ShelfBlockEntity extends NameableBlockEntity implements IRetexturedBlockEntity {
   public static final ModelProperty<Integer> BOOKS = new ModelProperty<>();
   private static final Component TITLE = new TranslatableComponent("gui.inspirations.shelf.name");
 
@@ -51,7 +51,7 @@ public class ShelfTileEntity extends NameableBlockEntity implements IRetexturedB
   private final ShelfInventory inventory = new ShelfInventory(this);
   private final LazyOptional<IItemHandler> itemCapability = LazyOptional.of(() -> inventory);
   private final IModelData data = new ModelDataMap.Builder().withProperty(BOOKS).withProperty(RetexturedHelper.BLOCK_PROPERTY).build();
-  public ShelfTileEntity(BlockPos pos, BlockState state) {
+  public ShelfBlockEntity(BlockPos pos, BlockState state) {
     super(InspirationsBuilding.shelfTileEntity, pos, state, TITLE);
   }
 
@@ -210,7 +210,7 @@ public class ShelfTileEntity extends NameableBlockEntity implements IRetexturedB
   @Nullable
   @Override
   public AbstractContainerMenu createMenu(int winId, Inventory playerInv, Player player) {
-    return new ShelfContainer(winId, playerInv, this);
+    return new ShelfContainerMenu(winId, playerInv, this);
   }
 
 

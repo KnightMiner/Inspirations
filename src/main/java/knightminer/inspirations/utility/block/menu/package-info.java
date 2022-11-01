@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-package knightminer.inspirations.building.inventory;
+package knightminer.inspirations.utility.block.menu;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 

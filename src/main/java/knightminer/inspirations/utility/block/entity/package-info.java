@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-package knightminer.inspirations.building.tileentity;
+package knightminer.inspirations.utility.block.entity;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 

@@ -3,7 +3,7 @@ package knightminer.inspirations.utility.block;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.IHidable;
 import knightminer.inspirations.utility.InspirationsUtility;
-import knightminer.inspirations.utility.tileentity.PipeTileEntity;
+import knightminer.inspirations.utility.block.entity.PipeBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -223,13 +223,13 @@ public class PipeBlock extends InventoryBlock implements IHidable, SimpleWaterlo
   @Nullable
   @Override
   public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-    return new PipeTileEntity(pos, state);
+    return new PipeBlockEntity(pos, state);
   }
 
   @Nullable
   @Override
   public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> matchType) {
-    return BlockEntityHelper.serverTicker(level, matchType, InspirationsUtility.tilePipe, PipeTileEntity.SERVER_TICKER);
+    return BlockEntityHelper.serverTicker(level, matchType, InspirationsUtility.tilePipe, PipeBlockEntity.SERVER_TICKER);
   }
 
   @Override
@@ -238,7 +238,7 @@ public class PipeBlock extends InventoryBlock implements IHidable, SimpleWaterlo
       throw new AssertionError("Needs to be server!");
     }
     BlockEntity te = world.getBlockEntity(pos);
-    if (te instanceof PipeTileEntity) {
+    if (te instanceof PipeBlockEntity) {
       NetworkHooks.openGui((ServerPlayer)player, (MenuProvider)te, pos);
       return true;
     }
@@ -249,8 +249,8 @@ public class PipeBlock extends InventoryBlock implements IHidable, SimpleWaterlo
   public void neighborChanged(BlockState state, Level world, BlockPos pos, Block blockIn, BlockPos neighbor, boolean isMoving) {
     if (pos.relative(state.getValue(FACING)).equals(neighbor)) {
       BlockEntity te = world.getBlockEntity(pos);
-      if (te instanceof PipeTileEntity) {
-        ((PipeTileEntity) te).clearCachedInventories();
+      if (te instanceof PipeBlockEntity) {
+        ((PipeBlockEntity) te).clearCachedInventories();
       }
     }
     super.neighborChanged(state, world, pos, blockIn, neighbor, isMoving);
