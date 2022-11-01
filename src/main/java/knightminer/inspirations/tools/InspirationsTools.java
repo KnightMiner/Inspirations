@@ -137,7 +137,7 @@ public class InspirationsTools extends ModuleBase {
   public void registerEnchantments(Register<Enchantment> event) {
     RegistryAdapter<Enchantment> registry = new RegistryAdapter<>(event.getRegistry());
 
-    if (Config.moreShieldEnchantments.get()) {
+    if (Config.moreShieldEnchantments.getAsBoolean()) {
       EquipmentSlot[] slots = new EquipmentSlot[]{
           EquipmentSlot.HEAD,
           EquipmentSlot.CHEST,
@@ -155,16 +155,16 @@ public class InspirationsTools extends ModuleBase {
       registry.register(new ShieldThornsEnchantment(Enchantments.THORNS.getRarity(), slots), Enchantments.THORNS);
     }
 
-    if (Config.moreShieldEnchantments.get() || Config.axeWeaponEnchants.get()) {
+    if (Config.moreShieldEnchantments.getAsBoolean() || Config.axeWeaponEnchants.getAsBoolean()) {
       EquipmentSlot[] slots = new EquipmentSlot[]{EquipmentSlot.MAINHAND};
       registry.register(new ExtendedKnockbackEnchantment(Enchantment.Rarity.UNCOMMON, slots), Enchantments.KNOCKBACK);
       registry.register(new ExtendedFireAspectEnchantment(Enchantment.Rarity.RARE, slots), Enchantments.FIRE_ASPECT);
-      if (Config.axeWeaponEnchants.get()) {
+      if (Config.axeWeaponEnchants.getAsBoolean()) {
         registry.register(new AxeLootBonusEnchantment(Enchantment.Rarity.RARE, EnchantmentCategory.WEAPON, slots), Enchantments.MOB_LOOTING);
       }
     }
 
-    if (Config.axeEnchantmentTable.get()) {
+    if (Config.axeEnchantmentTable.getAsBoolean()) {
       EquipmentSlot[] slots = new EquipmentSlot[]{EquipmentSlot.MAINHAND};
       registry.register(new AxeDamageEnchantment(Enchantment.Rarity.COMMON, 0, slots), Enchantments.SHARPNESS);
       registry.register(new AxeDamageEnchantment(Enchantment.Rarity.UNCOMMON, 1, slots), Enchantments.SMITE);

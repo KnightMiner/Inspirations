@@ -56,16 +56,16 @@ public class Inspirations {
     ModLoadingContext.get().registerConfig(Type.SERVER, Config.SERVER_SPEC);
     ModLoadingContext.get().registerConfig(Type.CLIENT, Config.CLIENT_SPEC);
 
-    log.info("Loading replacements config file...");
-    CommentedFileConfig replacementConfig = CommentedFileConfig
-        .builder(FMLPaths.CONFIGDIR.get().resolve(modID + "-replacements.toml"))
+    log.info("Loading early config file...");
+    CommentedFileConfig earlyConfig = CommentedFileConfig
+        .builder(FMLPaths.CONFIGDIR.get().resolve(modID + "-common.toml"))
         .sync()
         .preserveInsertionOrder()
         .writingMode(WritingMode.REPLACE)
         .build();
-    replacementConfig.load();
-    replacementConfig.save();
-    Config.OVERRIDE_SPEC.setConfig(replacementConfig);
+    earlyConfig.load();
+    earlyConfig.save();
+    Config.COMMON_SPEC.setConfig(earlyConfig);
     log.info("Config loaded.");
 
     IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();

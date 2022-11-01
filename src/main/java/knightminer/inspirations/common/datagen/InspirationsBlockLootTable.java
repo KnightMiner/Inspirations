@@ -102,12 +102,11 @@ public class InspirationsBlockLootTable extends BlockLoot {
   }
 
   private void addTweaks() {
-    if (Config.enableFittedCarpets.get()) {
+    if (Config.enableFittedCarpets.getAsBoolean()) {
       for (DyeColor color : DyeColor.values()) {
         this.registerRedirect(
             InspirationsTweaks.fitCarpets.get(color),
-            InspirationsTweaks.flatCarpets.get(color)
-                             );
+            InspirationsTweaks.flatCarpets.get(color));
       }
     }
     this.add(InspirationsTweaks.wetHopper, createNameableBlockEntityTable(InspirationsTweaks.dryHopper));

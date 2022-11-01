@@ -14,14 +14,11 @@ import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
 
 import java.util.function.Consumer;
 
 public class UtilityRecipeProvider extends RecipeProvider implements IConditionBuilder, IInspirationsRecipeBuilder {
-  private Consumer<FinishedRecipe> consumer;
-
   public UtilityRecipeProvider(DataGenerator gen) {
     super(gen);
   }
@@ -32,19 +29,7 @@ public class UtilityRecipeProvider extends RecipeProvider implements IConditionB
   }
 
   @Override
-  public ICondition baseCondition() {
-    return ConfigEnabledCondition.MODULE_UTILITY;
-  }
-
-  @Override
-  public Consumer<FinishedRecipe> getConsumer() {
-    return consumer;
-  }
-
-  @Override
   protected void buildCraftingRecipes(Consumer<FinishedRecipe> consumer) {
-    this.consumer = consumer;
-
     // collector
     ShapedRecipeBuilder.shaped(InspirationsUtility.collector)
                        .unlockedBy("has_rod", has(Items.FISHING_ROD))
@@ -54,7 +39,7 @@ public class UtilityRecipeProvider extends RecipeProvider implements IConditionB
                        .pattern("CCC")
                        .pattern("CFC")
                        .pattern("CRC")
-                       .save(withCondition(ConfigEnabledCondition.COLLECTOR), prefix(InspirationsUtility.collector, "utility/"));
+                       .save(withCondition(consumer, ConfigEnabledCondition.COLLECTOR), prefix(InspirationsUtility.collector, "utility/"));
 
     // pipe
     ShapedRecipeBuilder.shaped(InspirationsUtility.pipe, 4)
@@ -62,7 +47,7 @@ public class UtilityRecipeProvider extends RecipeProvider implements IConditionB
                        .define('I', Tags.Items.INGOTS_IRON)
                        .define('P', ItemTags.PLANKS)
                        .pattern("IPI")
-                       .save(withCondition(ConfigEnabledCondition.PIPE), prefix(InspirationsUtility.pipe, "utility/"));
+                       .save(withCondition(consumer, ConfigEnabledCondition.PIPE), prefix(InspirationsUtility.pipe, "utility/"));
 
     // redstone book
     ShapelessRecipeBuilder.shapeless(InspirationsBuilding.redstoneBook)
@@ -70,10 +55,7 @@ public class UtilityRecipeProvider extends RecipeProvider implements IConditionB
                           .requires(Tags.Items.LEATHER)
                           .requires(Items.PAPER).requires(Items.PAPER)
                           .requires(Tags.Items.DUSTS_REDSTONE)
-                          .save(
-                              withCondition(ConfigEnabledCondition.MODULE_BUILDING, ConfigEnabledCondition.REDSTONE_BOOK),
-                              prefix(InspirationsBuilding.redstoneBook, "utility/")
-                                );
+                          .save(withCondition(consumer, ConfigEnabledCondition.BOOKSHELF, ConfigEnabledCondition.REDSTONE_BOOK), prefix(InspirationsBuilding.redstoneBook, "utility/"));
 
     // torch lever
     ShapedRecipeBuilder.shaped(InspirationsUtility.torchLeverItem)
@@ -83,7 +65,7 @@ public class UtilityRecipeProvider extends RecipeProvider implements IConditionB
             .define('T', Items.TORCH)
             .pattern("T")
             .pattern("S")
-            .save(withCondition(ConfigEnabledCondition.TORCH_LEVER), prefix(InspirationsUtility.torchLeverItem, "utility/"));
+            .save(withCondition(consumer, ConfigEnabledCondition.TORCH_LEVER), prefix(InspirationsUtility.torchLeverItem, "utility/"));
 
     // soul torch lever
     ShapedRecipeBuilder.shaped(InspirationsUtility.soulLeverItem)
@@ -93,11 +75,11 @@ public class UtilityRecipeProvider extends RecipeProvider implements IConditionB
             .define('T', Items.SOUL_TORCH)
             .pattern("T")
             .pattern("S")
-            .save(withCondition(ConfigEnabledCondition.TORCH_LEVER), prefix(InspirationsUtility.soulLeverItem, "utility/"));
+            .save(withCondition(consumer, ConfigEnabledCondition.TORCH_LEVER), prefix(InspirationsUtility.soulLeverItem, "utility/"));
 
     // carpeted trapdoor.
-    Consumer<FinishedRecipe> trapdoorConfig = withCondition(ConfigEnabledCondition.CARPETED_TRAPDOOR);
-    String carpetedGroup = resourceName("carpeted_trapdoor");
+    Consumer<FinishedRecipe> trapdoorConfig = withCondition(consumer, ConfigEnabledCondition.CARPETED_TRAPDOOR);
+    String carpetedGroup = modPrefix("carpeted_trapdoor");
     InspirationsUtility.carpetedTrapdoors.forEach((color, trapdoor) ->
                                                       ShapedRecipeBuilder.shaped(trapdoor)
                                                                          .unlockedBy("has_carpet", has(InspirationsTags.Items.CARPETS))
@@ -106,7 +88,7 @@ public class UtilityRecipeProvider extends RecipeProvider implements IConditionB
                                                                          .define('T', ItemTags.WOODEN_TRAPDOORS)
                                                                          .pattern("C")
                                                                          .pattern("T")
-                                                                         .save(trapdoorConfig, resource("utility/carpeted_trapdoor/" + color.getSerializedName()))
+                                                                         .save(trapdoorConfig, modResource("utility/carpeted_trapdoor/" + color.getSerializedName()))
                                                  );
   }
 }

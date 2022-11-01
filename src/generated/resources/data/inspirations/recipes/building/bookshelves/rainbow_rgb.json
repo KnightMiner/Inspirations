@@ -2,10 +2,6 @@
   "type": "mantle:crafting_shaped_retextured",
   "conditions": [
     {
-      "prop": "building_module",
-      "type": "inspirations:config"
-    },
-    {
       "prop": "bookshelf",
       "type": "inspirations:config"
     }

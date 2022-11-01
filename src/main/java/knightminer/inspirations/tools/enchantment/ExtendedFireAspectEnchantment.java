@@ -21,15 +21,15 @@ public class ExtendedFireAspectEnchantment extends FireAspectEnchantment {
   @Override
   public boolean canApplyAtEnchantingTable(ItemStack stack) {
     Item item = stack.getItem();
-    return (Config.moreShieldEnchantments.get() && stack.canPerformAction(ToolActions.SHIELD_BLOCK))
-           || (Config.axeEnchantmentTable.get() && Config.axeWeaponEnchants.get() && item instanceof AxeItem)
+    return (Config.moreShieldEnchantments.getAsBoolean() && stack.canPerformAction(ToolActions.SHIELD_BLOCK))
+           || (Config.axeEnchantmentTable.getAsBoolean() && Config.axeWeaponEnchants.getAsBoolean() && item instanceof AxeItem)
            || super.canApplyAtEnchantingTable(stack);
   }
 
   @Override
   public boolean canEnchant(ItemStack stack) {
     // fallback in case axes cannot be enchanted at the table, but can receive from books
-    return (Config.axeWeaponEnchants.get() && stack.getItem() instanceof AxeItem) || super.canEnchant(stack);
+    return (Config.axeWeaponEnchants.getAsBoolean() && stack.getItem() instanceof AxeItem) || super.canEnchant(stack);
   }
 
   @Override

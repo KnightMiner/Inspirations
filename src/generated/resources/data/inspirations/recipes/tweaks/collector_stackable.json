@@ -2,14 +2,6 @@
   "type": "minecraft:crafting_shaped",
   "conditions": [
     {
-      "prop": "tweaks_module",
-      "type": "inspirations:config"
-    },
-    {
-      "prop": "utility_module",
-      "type": "inspirations:config"
-    },
-    {
       "prop": "collector",
       "type": "inspirations:config"
     },

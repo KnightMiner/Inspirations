@@ -109,12 +109,12 @@ public abstract class BlockCropBlock extends CropBlock implements IHidable, IPla
 
   @Override
   public boolean isValidBonemealTarget(BlockGetter worldIn, BlockPos pos, BlockState state, boolean isClient) {
-    return Config.bonemealBlockCrop.getAsBoolean();
+    return Config.bonemealBlockCrop.get();
   }
 
   @Override
   public boolean isBonemealSuccess(Level worldIn, Random rand, BlockPos pos, BlockState state) {
-    return Config.bonemealBlockCrop.getAsBoolean();
+    return Config.bonemealBlockCrop.get();
   }
 
 
@@ -133,6 +133,6 @@ public abstract class BlockCropBlock extends CropBlock implements IHidable, IPla
   /* Hidable */
   @Override
   public boolean isEnabled() {
-    return Config.enableBlockCrops.getAsBoolean();
+    return Config.smoothBlockCropGrowth.getAsBoolean();
   }
 }

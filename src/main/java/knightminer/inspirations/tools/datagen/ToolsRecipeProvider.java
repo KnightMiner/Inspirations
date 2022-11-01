@@ -18,15 +18,12 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
 
 import java.util.Collections;
 import java.util.function.Consumer;
 
 public class ToolsRecipeProvider extends RecipeProvider implements IConditionBuilder, IInspirationsRecipeBuilder {
-  private Consumer<FinishedRecipe> consumer;
-
   public ToolsRecipeProvider(DataGenerator gen) {
     super(gen);
   }
@@ -37,20 +34,7 @@ public class ToolsRecipeProvider extends RecipeProvider implements IConditionBui
   }
 
   @Override
-  public ICondition baseCondition() {
-    return ConfigEnabledCondition.MODULE_TOOLS;
-  }
-
-  @Override
-  public Consumer<FinishedRecipe> getConsumer() {
-    return consumer;
-  }
-
-  @Override
   protected void buildCraftingRecipes(Consumer<FinishedRecipe> consumer) {
-    // set for the util
-    this.consumer = consumer;
-
     // photometer
     ShapedRecipeBuilder.shaped(InspirationsTools.photometer)
                        .unlockedBy("has_glowstone", has(Tags.Items.DUSTS_GLOWSTONE))
@@ -61,7 +45,7 @@ public class ToolsRecipeProvider extends RecipeProvider implements IConditionBui
                        .define('I', Tags.Items.INGOTS_IRON)
                        .pattern("RBG")
                        .pattern(" I ")
-                       .save(withCondition(ConfigEnabledCondition.PHOTOMETER), prefix(InspirationsTools.photometer, "tools/"));
+                       .save(withCondition(consumer, ConfigEnabledCondition.PHOTOMETER), prefix(InspirationsTools.photometer, "tools/"));
 
     // barometer
     // not using the builder because it lacks potion
@@ -82,10 +66,10 @@ public class ToolsRecipeProvider extends RecipeProvider implements IConditionBui
                        .define('R', Tags.Items.DUSTS_REDSTONE)
                        .pattern(" W")
                        .pattern("BR")
-                       .save(withCondition(ConfigEnabledCondition.BAROMETER), prefix(InspirationsTools.barometer, "tools/"));
+                       .save(withCondition(consumer, ConfigEnabledCondition.BAROMETER), prefix(InspirationsTools.barometer, "tools/"));
 
     // lock and key
-    Consumer<FinishedRecipe> lockCondition = withCondition(ConfigEnabledCondition.LOCK);
+    Consumer<FinishedRecipe> lockCondition = withCondition(consumer, ConfigEnabledCondition.LOCK);
     ShapedRecipeBuilder.shaped(InspirationsTools.lock)
                        .unlockedBy("has_iron", has(Tags.Items.INGOTS_IRON))
                        .define('I', Tags.Items.INGOTS_IRON)
@@ -108,7 +92,7 @@ public class ToolsRecipeProvider extends RecipeProvider implements IConditionBui
                        .pattern(" I ")
                        .pattern("INI")
                        .pattern(" I ")
-                       .save(withCondition(ConfigEnabledCondition.NORTH_COMPASS), prefix(InspirationsTools.northCompass, "tools/"));
+                       .save(withCondition(consumer, ConfigEnabledCondition.NORTH_COMPASS), prefix(InspirationsTools.northCompass, "tools/"));
 
     // waypoint compasses
     // white
@@ -119,7 +103,7 @@ public class ToolsRecipeProvider extends RecipeProvider implements IConditionBui
                        .pattern(" G ")
                        .pattern("GEG")
                        .pattern(" G ")
-                       .save(withCondition(ConfigEnabledCondition.DIMENSION_COMPASS), resource("tools/dimension_compass"));
+                       .save(withCondition(consumer, ConfigEnabledCondition.DIMENSION_COMPASS), modResource("tools/dimension_compass"));
 
     // redstone arrow
     ShapedRecipeBuilder.shaped(InspirationsTools.redstoneArrow, 8)
@@ -130,7 +114,7 @@ public class ToolsRecipeProvider extends RecipeProvider implements IConditionBui
                        .pattern("R")
                        .pattern("S")
                        .pattern("F")
-                       .save(withCondition(ConfigEnabledCondition.CHARGED_ARROW), prefix(InspirationsTools.redstoneArrow, "tools/"));
+                       .save(withCondition(consumer, ConfigEnabledCondition.CHARGED_ARROW), prefix(InspirationsTools.redstoneArrow, "tools/"));
 
     // redstone charger
     ShapelessRecipeBuilder.shapeless(InspirationsTools.redstoneCharger)
@@ -138,7 +122,7 @@ public class ToolsRecipeProvider extends RecipeProvider implements IConditionBui
                           .unlockedBy("has_gold", has(Tags.Items.INGOTS_GOLD))
                           .requires(Tags.Items.DUSTS_REDSTONE)
                           .requires(Tags.Items.INGOTS_GOLD)
-                          .save(withCondition(ConfigEnabledCondition.REDSTONE_CHARGER), prefix(InspirationsTools.redstoneCharger, "tools/"));
+                          .save(withCondition(consumer, ConfigEnabledCondition.REDSTONE_CHARGER), prefix(InspirationsTools.redstoneCharger, "tools/"));
 
   }
 }

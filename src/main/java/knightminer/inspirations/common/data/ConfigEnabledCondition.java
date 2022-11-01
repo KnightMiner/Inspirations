@@ -130,7 +130,7 @@ public class ConfigEnabledCondition implements ICondition, LootItemCondition {
   public static final ConfigEnabledCondition ROPE = add("rope", Config.enableRope);
 
   // utility
-  public static final ConfigEnabledCondition BRICKS_BUTTON = add("bricks_button", () -> false/*TODO: Config.enableBricksButton*/);
+//  public static final ConfigEnabledCondition BRICKS_BUTTON = add("bricks_button", () -> false/*TODO: Config.enableBricksButton*/);
   public static final ConfigEnabledCondition CARPETED_TRAPDOOR = add("carpeted_trapdoor", Config.enableCarpetedTrapdoor);
   public static final ConfigEnabledCondition COLLECTOR = add("collector", Config.enableCollector);
   public static final ConfigEnabledCondition PIPE = add("pipe", Config.enablePipe);
@@ -147,21 +147,19 @@ public class ConfigEnabledCondition implements ICondition, LootItemCondition {
   public static final ConfigEnabledCondition REDSTONE_CHARGER = add("redstone_charger", Config.enableRedstoneCharger);
 
   // tweaks
-  public static final ConfigEnabledCondition CROP_BLOCKS = add("block_crops", Config.enableBlockCrops);
   public static final ConfigEnabledCondition UNSTACKABLE_ALTS = add("unstackable_alts", Config.unstackableRecipeAlts);
+  @SuppressWarnings("unused") // used in non-generated JSON
   public static final ConfigEnabledCondition SKELETON_SKULL = add("skeleton_skull", Config.skeletonSkull);
+  @SuppressWarnings("unused") // used in non-generated JSON
   public static final ConfigEnabledCondition CAVE_SPIDER_WEB = add("cave_spider_web", Config.caveSpiderDrops);
+  @SuppressWarnings("unused") // used in non-generated JSON
   public static final ConfigEnabledCondition HEARTBEETS = add("heartbeets", Config.enableHeartbeet);
 
-  // recipes
-  public static final ConfigEnabledCondition CAULDRON_RECIPES = add("cauldron_recipes", Config.cauldronRecipes);
-  public static final ConfigEnabledCondition CAULDRON_ICE = add("cauldron_ice", Config.cauldronIce);
+  public static final ConfigEnabledCondition CAULDRON_SOUPS = add("cauldron_soups", Config.enableCauldronSoups);
   // dyes
   public static final ConfigEnabledCondition CAULDRON_DYEING = add("cauldron_dyeing", Config.enableCauldronDyeing);
   public static final ConfigEnabledCondition EXTRA_BOTTLE_RECIPES = add("extra_bottle_recipes", Config.extraBottleRecipes);
   // potions
   public static final ConfigEnabledCondition CAULDRON_POTIONS = add("cauldron_potions", Config.enableCauldronPotions);
-  public static final ConfigEnabledCondition CAULDRON_BREWING = add("cauldron_brewing", Config.enableCauldronBrewing);
-  public static final ConfigEnabledCondition CAULDRON_TIP_ARROWS = add("cauldron_tip_arrows", Config.cauldronTipArrows);
-
+  public static final ConfigEnabledCondition CAULDRON_BREWING = add("cauldron_brewing", Config.cauldronBrewing);
 }

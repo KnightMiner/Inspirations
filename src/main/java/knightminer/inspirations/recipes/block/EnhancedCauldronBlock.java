@@ -1,6 +1,5 @@
 package knightminer.inspirations.recipes.block;
 
-import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.recipe.cauldron.util.CauldronTemperature;
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.recipes.tileentity.CauldronTileEntity;
@@ -65,8 +64,8 @@ public class EnhancedCauldronBlock extends LayeredCauldronBlock implements Entit
       return;
     }
 
-    // allow disabling the random 1/20 chance
-    if ((Config.fasterCauldronRain.getAsBoolean() || world.random.nextInt(20) == 0) && world.getBiome(pos).value().getTemperature(pos) >= 0.15F) {
+    // disable the random 1/20 chance
+    if (world.getBiome(pos).value().getTemperature(pos) >= 0.15F) {
       int level = getLevel(state);
       if (level < 3) {
         setWaterLevel(world, pos, state, level + 1);
@@ -84,11 +83,7 @@ public class EnhancedCauldronBlock extends LayeredCauldronBlock implements Entit
 
   @Override
   public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult ray) {
-    if (Config.cauldronRecipes.getAsBoolean()) {
-      // all moved to the cauldron registry
-      return InteractionResult.SUCCESS;
-    }
-    return super.use(state, world, pos, player, hand, ray);
+    return InteractionResult.SUCCESS;
   }
 
   @Nullable

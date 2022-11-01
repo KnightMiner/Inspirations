@@ -1,7 +1,6 @@
 package knightminer.inspirations.recipes.tileentity;
 
 import knightminer.inspirations.Inspirations;
-import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.network.CauldronStateUpdatePacket;
 import knightminer.inspirations.common.network.CauldronTransformUpatePacket;
 import knightminer.inspirations.common.network.InspirationsNetwork;
@@ -518,7 +517,7 @@ public class CauldronTileEntity extends MantleBlockEntity {
     }
 
     // if an entity item, try crafting with it
-    if (entity instanceof ItemEntity entityItem && Config.cauldronRecipes.getAsBoolean()) {
+    if (entity instanceof ItemEntity entityItem) {
       // skip items that we have already processed
       CompoundTag entityTags = entity.getPersistentData();
       // if it was tagged, skip it

@@ -80,7 +80,7 @@ public class InspirationsTweaks extends ModuleBase {
     BlockRegistryAdapter registry = new BlockRegistryAdapter(event.getRegistry());
     IForgeRegistry<Block> r = event.getRegistry();
 
-    boolean replaceVanilla = Config.enableFittedCarpets.get();
+    boolean replaceVanilla = Config.enableFittedCarpets.getAsBoolean();
     EnumObject.Builder<DyeColor,FlatCarpetBlock> flatBuilder = new EnumObject.Builder<>(DyeColor.class);
     EnumObject.Builder<DyeColor,FittedCarpetBlock> fittedBuilder = new EnumObject.Builder<>(DyeColor.class);
     for (DyeColor color : DyeColor.values()) {
@@ -97,7 +97,7 @@ public class InspirationsTweaks extends ModuleBase {
     flatCarpets = flatBuilder.build();
     fitCarpets = fittedBuilder.build();
 
-    if (Config.waterlogHopper.get()) {
+    if (Config.waterlogHopper.getAsBoolean()) {
       dryHopper = registry.registerOverride(DryHopperBlock::new, Blocks.HOPPER);
       wetHopper = registry.register(new WetHopperBlock(Block.Properties.copy(Blocks.HOPPER)), "wet_hopper");
     }
@@ -112,7 +112,7 @@ public class InspirationsTweaks extends ModuleBase {
     Item.Properties decorationProps = new Item.Properties().tab(CreativeModeTab.TAB_DECORATIONS);
     IForgeRegistry<Item> r = event.getRegistry();
 
-    if (Config.enableFittedCarpets.get()) {
+    if (Config.enableFittedCarpets.getAsBoolean()) {
       for (DyeColor color : DyeColor.values()) {
         Block carpet = InspirationsShared.VANILLA_CARPETS.get(color);
         BlockItem item = registry.registerBlockItem(carpet, decorationProps);
@@ -121,7 +121,7 @@ public class InspirationsTweaks extends ModuleBase {
       }
     }
 
-    if (Config.waterlogHopper.get()) {
+    if (Config.waterlogHopper.getAsBoolean()) {
       registry.register(new BlockItem(dryHopper, new Item.Properties().tab(CreativeModeTab.TAB_REDSTONE)), Items.HOPPER);
     }
 
@@ -140,7 +140,7 @@ public class InspirationsTweaks extends ModuleBase {
 
   @SubscribeEvent
   public void registerTileEntities(Register<BlockEntityType<?>> event) {
-    if (Config.waterlogHopper.get()) {
+    if (Config.waterlogHopper.getAsBoolean()) {
       // We need to inject our replacement hopper blocks into the valid ones for the TE type.
       // It's an immutable set, so we need to replace it entirely.
       synchronized (BlockEntityType.HOPPER) {

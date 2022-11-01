@@ -13,15 +13,12 @@ import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
 
 import java.util.Collections;
 import java.util.function.Consumer;
 
 public class TweaksRecipeProvider extends RecipeProvider implements IConditionBuilder, IInspirationsRecipeBuilder {
-  private Consumer<FinishedRecipe> consumer;
-
   public TweaksRecipeProvider(DataGenerator gen) {
     super(gen);
   }
@@ -32,19 +29,7 @@ public class TweaksRecipeProvider extends RecipeProvider implements IConditionBu
   }
 
   @Override
-  public ICondition baseCondition() {
-    return ConfigEnabledCondition.MODULE_TWEAKS;
-  }
-
-  @Override
-  public Consumer<FinishedRecipe> getConsumer() {
-    return consumer;
-  }
-
-  @Override
   protected void buildCraftingRecipes(Consumer<FinishedRecipe> consumer) {
-    this.consumer = consumer;
-
     // Since these are mass-production recipes, show them after the user makes
     // several of the original.
 
@@ -67,10 +52,7 @@ public class TweaksRecipeProvider extends RecipeProvider implements IConditionBu
                        .pattern("  T")
                        .pattern(" TS")
                        .pattern("TDS")
-                       .save(
-                           withCondition(ConfigEnabledCondition.MODULE_UTILITY, ConfigEnabledCondition.COLLECTOR, ConfigEnabledCondition.UNSTACKABLE_ALTS),
-                           resource("tweaks/collector_stackable")
-                             );
+                       .save(withCondition(consumer, ConfigEnabledCondition.COLLECTOR, ConfigEnabledCondition.UNSTACKABLE_ALTS), modResource("tweaks/collector_stackable"));
 
     // stackable dispenser
     ShapedRecipeBuilder.shaped(Items.DISPENSER)
@@ -91,6 +73,6 @@ public class TweaksRecipeProvider extends RecipeProvider implements IConditionBu
                        .pattern(" TS")
                        .pattern("TDS")
                        .pattern(" TS")
-                       .save(withCondition(ConfigEnabledCondition.UNSTACKABLE_ALTS), resource("tweaks/dispenser_stackable"));
+                       .save(withCondition(consumer, ConfigEnabledCondition.UNSTACKABLE_ALTS), modResource("tweaks/dispenser_stackable"));
   }
 }

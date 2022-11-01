@@ -72,7 +72,7 @@ public class FlatCarpetBlock extends WoolCarpetBlock {
    * @return SHAPE_FLAT if flat, or a value to pass to withShape().
    */
   private static int getStairShape(BlockState stairs) {
-    if (!Config.enableFittedCarpets.get()) {
+    if (!Config.enableFittedCarpets.getAsBoolean()) {
       return SHAPE_FLAT;
       // } else if(stairs instanceof BlockSlab && !((BlockSlab)stairs).isDouble() && stairs.getValue(BlockSlab.HALF) == EnumBlockHalf.BOTTOM) {
       //	return 0b1111;

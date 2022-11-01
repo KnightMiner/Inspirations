@@ -24,7 +24,7 @@ public class RecipesEvents {
    */
   @SubscribeEvent(priority = EventPriority.HIGH)
   static void clickCauldron(RightClickBlock event) {
-    if(!Config.cauldronRecipes.getAsBoolean()) {
+    if(!Config.moreCauldronBehavior.getAsBoolean()) {
       return;
     }
     Player player = event.getPlayer();

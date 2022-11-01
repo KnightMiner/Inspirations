@@ -2,10 +2,6 @@
   "type": "minecraft:crafting_shaped",
   "conditions": [
     {
-      "prop": "tools_module",
-      "type": "inspirations:config"
-    },
-    {
       "prop": "photometer",
       "type": "inspirations:config"
     }

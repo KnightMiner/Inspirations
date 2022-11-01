@@ -1,7 +1,6 @@
 package knightminer.inspirations.library.recipe.cauldron.recipe;
 
 import com.google.gson.JsonObject;
-import knightminer.inspirations.library.recipe.RecipeSerializers;
 import knightminer.inspirations.library.recipe.cauldron.CauldronContentTypes;
 import knightminer.inspirations.library.recipe.cauldron.CauldronIngredients;
 import knightminer.inspirations.library.recipe.cauldron.contents.ICauldronContents;
@@ -167,7 +166,8 @@ public class CauldronRecipe extends AbstractCauldronRecipe implements ICauldronR
 
   @Override
   public RecipeSerializer<?> getSerializer() {
-    return RecipeSerializers.CAULDRON;
+    throw new UnsupportedOperationException();
+//    return RecipeSerializers.CAULDRON;
   }
 
   /**

@@ -4,10 +4,6 @@
         "conditions": [
             {
                 "condition": "inspirations:config",
-                "prop": "tweaks_module"
-            },
-            {
-                "condition": "inspirations:config",
                 "prop": "cave_spider_web"
             },
             { "condition": "killed_by_player" },

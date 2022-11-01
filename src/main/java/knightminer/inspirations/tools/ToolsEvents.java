@@ -208,7 +208,7 @@ public class ToolsEvents {
 
   @SubscribeEvent
   static void onShieldHit(LivingAttackEvent event) {
-    if (!Config.moreShieldEnchantments.get()) {
+    if (!Config.moreShieldEnchantments.getAsBoolean()) {
       return;
     }
     LivingEntity target = event.getEntityLiving();

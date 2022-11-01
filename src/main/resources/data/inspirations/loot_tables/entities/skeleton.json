@@ -4,10 +4,6 @@
         "conditions": [
             {
                 "condition": "inspirations:config",
-                "prop": "tweaks_module"
-            },
-            {
-                "condition": "inspirations:config",
                 "prop": "skeleton_skull"
             },
             { "condition": "killed_by_player" },

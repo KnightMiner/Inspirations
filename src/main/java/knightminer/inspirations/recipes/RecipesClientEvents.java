@@ -2,7 +2,6 @@ package knightminer.inspirations.recipes;
 
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.ClientEvents;
-import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.MiscUtil;
 import knightminer.inspirations.library.client.CustomTextureLoader;
 import knightminer.inspirations.library.client.model.CauldronModel;
@@ -20,7 +19,6 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ColorHandlerEvent;
@@ -55,9 +53,6 @@ public class RecipesClientEvents extends ClientEvents {
   static void clientSetup(FMLClientSetupEvent event) {
     ItemBlockRenderTypes.setRenderLayer(InspirationsRecipes.honey, RenderType.translucent());
     ItemBlockRenderTypes.setRenderLayer(InspirationsRecipes.honey.getFlowing(), RenderType.translucent());
-    if (Config.extendedCauldron.get()) {
-      ItemBlockRenderTypes.setRenderLayer(Blocks.CAULDRON, RenderType.cutout());
-    }
   }
 
   @SubscribeEvent

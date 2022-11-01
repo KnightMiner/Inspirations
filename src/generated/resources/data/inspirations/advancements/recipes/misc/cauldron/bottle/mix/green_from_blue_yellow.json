@@ -1,0 +1,47 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "inspirations:cauldron/bottle/mix/green_from_blue_yellow"
+    ]
+  },
+  "criteria": {
+    "has_blue": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "inspirations:blue_dyed_bottle"
+            ]
+          }
+        ]
+      }
+    },
+    "has_yellow": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "inspirations:yellow_dyed_bottle"
+            ]
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "inspirations:cauldron/bottle/mix/green_from_blue_yellow"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_blue",
+      "has_yellow",
+      "has_the_recipe"
+    ]
+  ]
+}

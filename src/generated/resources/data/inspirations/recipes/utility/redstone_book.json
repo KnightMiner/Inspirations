@@ -2,11 +2,7 @@
   "type": "minecraft:crafting_shapeless",
   "conditions": [
     {
-      "prop": "utility_module",
-      "type": "inspirations:config"
-    },
-    {
-      "prop": "building_module",
+      "prop": "bookshelf",
       "type": "inspirations:config"
     },
     {

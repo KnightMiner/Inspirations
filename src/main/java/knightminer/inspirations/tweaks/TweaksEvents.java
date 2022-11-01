@@ -334,7 +334,7 @@ public class TweaksEvents {
 
   @SubscribeEvent
   static void milkCow(EntityInteract event) {
-    if (!Config.milkCooldown.get() && !Config.cauldronRecipes.getAsBoolean()) {
+    if (!Config.milkCooldown.get() && !Config.enableMilkBottles.getAsBoolean()) {
       return;
     }
 
@@ -363,7 +363,7 @@ public class TweaksEvents {
     }
 
     // milk the cow with the bottle
-    if (stack.is(Items.GLASS_BOTTLE) && Config.cauldronRecipes.getAsBoolean()) {
+    if (stack.is(Items.GLASS_BOTTLE) && Config.enableMilkBottles.getAsBoolean()) {
       player.setItemInHand(hand, ItemUtils.createFilledResult(stack, player, new ItemStack(InspirationsRecipes.milkBottle)));
       event.setCancellationResult(InteractionResult.SUCCESS);
       event.setCanceled(true);
