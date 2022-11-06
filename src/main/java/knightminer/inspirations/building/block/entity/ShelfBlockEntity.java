@@ -28,6 +28,7 @@ import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelDataMap;
 import net.minecraftforge.client.model.data.ModelProperty;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.Lazy;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
@@ -38,6 +39,9 @@ import slimeknights.mantle.util.RetexturedHelper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Objects;
+
+import static slimeknights.mantle.util.RetexturedHelper.TAG_TEXTURE;
 
 public class ShelfBlockEntity extends NameableBlockEntity implements IRetexturedBlockEntity {
   public static final ModelProperty<Integer> BOOKS = new ModelProperty<>();
@@ -48,9 +52,14 @@ public class ShelfBlockEntity extends NameableBlockEntity implements IRetextured
    */
   private float enchantBonus = Float.NaN;
 
+  // inventory
   private final ShelfInventory inventory = new ShelfInventory(this);
   private final LazyOptional<IItemHandler> itemCapability = LazyOptional.of(() -> inventory);
-  private final IModelData data = new ModelDataMap.Builder().withProperty(BOOKS).withProperty(RetexturedHelper.BLOCK_PROPERTY).build();
+
+  // display
+  private final Lazy<IModelData> data = Lazy.of(this::getRetexturedModelData);
+  private Block texture = Blocks.AIR;
+
   public ShelfBlockEntity(BlockPos pos, BlockState state) {
     super(InspirationsBuilding.shelfTileEntity, pos, state, TITLE);
   }
@@ -159,13 +168,24 @@ public class ShelfBlockEntity extends NameableBlockEntity implements IRetextured
   public void onSlotChanged(int slot, ItemStack oldStack, ItemStack newStack) {
     // slot update
     Level world = getLevel();
-    if (world != null && !world.isClientSide) {
-      InspirationsNetwork.sendToClients(world, this.worldPosition, new InventorySlotSyncPacket(newStack, slot, worldPosition));
-    }
     if (world != null) {
-      // update for rendering
-      if (world.isClientSide) {
-        ModelDataManager.requestModelDataRefresh(this);
+      if (!world.isClientSide) {
+        InspirationsNetwork.sendToClients(world, this.worldPosition, new InventorySlotSyncPacket(newStack, slot, worldPosition));
+      }
+      else {
+        // update displayed book
+        IModelData data = this.data.get();
+        int oldBooks = Objects.requireNonNullElse(data.getData(BOOKS), 0);
+        int books;
+        if (InspirationsRegistry.isBook(newStack)) {
+          books = oldBooks | 1 << slot;
+        } else {
+          books = oldBooks & ~(1 << slot);
+        }
+        if (books != oldBooks) {
+          data.setData(BOOKS, books);
+          ModelDataManager.requestModelDataRefresh(this);
+        }
       }
 
       // if we have redstone books and either the old stack xor the new one is a book, update
@@ -252,12 +272,40 @@ public class ShelfBlockEntity extends NameableBlockEntity implements IRetextured
     return enchantBonus;
   }
 
+
   /*
    * Rendering
    */
+
+  @Override
+  public Block getTexture() {
+    return texture;
+  }
+
+  @Override
+  public String getTextureName() {
+    return RetexturedHelper.getTextureName(texture);
+  }
+
+  @Override
+  public void updateTexture(String name) {
+    Block oldTexture = texture;
+    texture = RetexturedHelper.getBlock(name);
+    if (oldTexture != texture) {
+      setChangedFast();
+      RetexturedHelper.onTextureUpdated(this);
+    }
+  }
+
   @Nonnull
   @Override
   public IModelData getModelData() {
+    return this.data.get();
+  }
+
+  @Override
+  public IModelData getRetexturedModelData() {
+    IModelData data = new ModelDataMap.Builder().withProperty(BOOKS).withProperty(RetexturedHelper.BLOCK_PROPERTY).build();
     // pack books into integer
     int books = 0;
     for (int i = 0; i < ShelfInventory.MAX_ITEMS; i++) {
@@ -293,6 +341,9 @@ public class ShelfBlockEntity extends NameableBlockEntity implements IRetextured
   public void saveSynced(CompoundTag tags) {
     super.saveSynced(tags);
     tags.put(TAG_ITEMS, inventory.serializeNBT());
+    if (texture != Blocks.AIR) {
+      tags.putString(TAG_TEXTURE, getTextureName());
+    }
   }
 
   @Override
@@ -305,6 +356,10 @@ public class ShelfBlockEntity extends NameableBlockEntity implements IRetextured
         BlockState state = getBlockState();
         level.sendBlockUpdated(worldPosition, state, state, 0);
       }
+    }
+    if (tags.contains(TAG_TEXTURE, Tag.TAG_STRING)) {
+      texture = RetexturedHelper.getBlock(tags.getString(TAG_TEXTURE));
+      RetexturedHelper.onTextureUpdated(this);
     }
   }
 }
