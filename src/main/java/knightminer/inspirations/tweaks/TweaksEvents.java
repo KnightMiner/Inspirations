@@ -15,6 +15,7 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.entity.animal.Pig;
@@ -354,6 +355,7 @@ public class TweaksEvents {
       if (tags.getShort(TAG_MILKCOOLDOWN) > 0) {
         event.setCancellationResult(InteractionResult.PASS);
         event.setCanceled(true);
+        return;
       } else {
         // no tag means we add it as part of milking
         tags.putShort(TAG_MILKCOOLDOWN, Config.milkCooldownTime.get().shortValue());
@@ -364,7 +366,7 @@ public class TweaksEvents {
     }
 
     // milk the cow with the bottle
-    if (stack.is(Items.GLASS_BOTTLE) && Config.enableMilkBottles.getAsBoolean()) {
+    if (stack.is(Items.GLASS_BOTTLE) && Config.enableMilkBottles.getAsBoolean() && cow.getType() == EntityType.COW) {
       player.setItemInHand(hand, ItemUtils.createFilledResult(stack, player, new ItemStack(InspirationsCaudrons.milkBottle)));
       event.setCancellationResult(InteractionResult.SUCCESS);
       event.setCanceled(true);
