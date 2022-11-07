@@ -7,7 +7,7 @@ import knightminer.inspirations.building.block.entity.ShelfInventory;
 import knightminer.inspirations.building.block.menu.ShelfContainerMenu;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.client.ClientUtil;
-import knightminer.inspirations.shared.client.BackgroundContainerScreen;
+import knightminer.inspirations.common.client.BackgroundContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;

@@ -1,10 +1,10 @@
 package knightminer.inspirations.utility.datagen;
 
 import knightminer.inspirations.building.InspirationsBuilding;
+import knightminer.inspirations.common.InspirationsCommons;
 import knightminer.inspirations.common.data.ConfigEnabledCondition;
 import knightminer.inspirations.common.datagen.IInspirationsRecipeBuilder;
 import knightminer.inspirations.library.InspirationsTags;
-import knightminer.inspirations.shared.InspirationsShared;
 import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.recipes.FinishedRecipe;
@@ -84,7 +84,7 @@ public class UtilityRecipeProvider extends RecipeProvider implements IConditionB
                                                       ShapedRecipeBuilder.shaped(trapdoor)
                                                                          .unlockedBy("has_carpet", has(InspirationsTags.Items.CARPETS))
                                                                          .group(carpetedGroup)
-                                                                         .define('C', InspirationsShared.VANILLA_CARPETS.get(color))
+                                                                         .define('C', InspirationsCommons.VANILLA_CARPETS.get(color))
                                                                          .define('T', ItemTags.WOODEN_TRAPDOORS)
                                                                          .pattern("C")
                                                                          .pattern("T")

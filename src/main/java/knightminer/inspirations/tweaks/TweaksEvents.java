@@ -1,12 +1,11 @@
 package knightminer.inspirations.tweaks;
 
 import knightminer.inspirations.Inspirations;
+import knightminer.inspirations.cauldrons.InspirationsCaudrons;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.common.network.MilkablePacket;
 import knightminer.inspirations.library.InspirationsTags;
-import knightminer.inspirations.cauldrons.InspirationsCaudrons;
-import knightminer.inspirations.shared.SharedEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -29,6 +28,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BushBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract;
@@ -43,6 +43,7 @@ import slimeknights.mantle.util.RegistryHelper;
 @SuppressWarnings({"unused"})
 @EventBusSubscriber(modid = Inspirations.modID, bus = Bus.FORGE)
 public class TweaksEvents {
+  private static final String TAG_MILKCOOLDOWN = "milk_cooldown";
 
   @SubscribeEvent
   static void unsaddlePig(EntityInteract event) {
@@ -350,12 +351,12 @@ public class TweaksEvents {
     ItemStack stack = player.getItemInHand(hand);
     if (Config.milkCooldown.get() && stack.is(InspirationsTags.Items.MILK_CONTAINERS)) {
       CompoundTag tags = target.getPersistentData();
-      if (tags.getShort(SharedEvents.TAG_MILKCOOLDOWN) > 0) {
+      if (tags.getShort(TAG_MILKCOOLDOWN) > 0) {
         event.setCancellationResult(InteractionResult.PASS);
         event.setCanceled(true);
       } else {
         // no tag means we add it as part of milking
-        tags.putShort(SharedEvents.TAG_MILKCOOLDOWN, Config.milkCooldownTime.get().shortValue());
+        tags.putShort(TAG_MILKCOOLDOWN, Config.milkCooldownTime.get().shortValue());
         if (!event.getWorld().isClientSide) {
           InspirationsNetwork.sendToClients(event.getWorld(), target.blockPosition(), new MilkablePacket(target, false));
         }
@@ -367,6 +368,31 @@ public class TweaksEvents {
       player.setItemInHand(hand, ItemUtils.createFilledResult(stack, player, new ItemStack(InspirationsCaudrons.milkBottle)));
       event.setCancellationResult(InteractionResult.SUCCESS);
       event.setCanceled(true);
+    }
+  }
+
+  @SubscribeEvent
+  static void updateMilkCooldown(LivingUpdateEvent event) {
+    LivingEntity entity = event.getEntityLiving();
+    Level world = entity.getCommandSenderWorld();
+    // only run every 20 ticks on serverside
+    if (world.isClientSide || (world.getGameTime() % 20) != 0) {
+      return;
+    }
+
+    // runs for both adult cows and squids, based on config
+    if ((Config.milkCooldown.get() && entity instanceof Cow && !entity.isBaby())) {
+      // if not already cooled down, cool down
+      CompoundTag tags = entity.getPersistentData();
+      short cooldown = tags.getShort(TAG_MILKCOOLDOWN);
+      if (cooldown > 0) {
+        tags.putShort(TAG_MILKCOOLDOWN, (short)(cooldown - 1));
+
+        // reached 0, send pack so client knows
+        if (cooldown == 1) {
+          InspirationsNetwork.sendToClients(world, entity.blockPosition(), new MilkablePacket(entity, true));
+        }
+      }
     }
   }
 }

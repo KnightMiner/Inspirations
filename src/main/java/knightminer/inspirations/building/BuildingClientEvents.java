@@ -6,7 +6,7 @@ import knightminer.inspirations.building.block.type.BushType;
 import knightminer.inspirations.building.block.type.ShelfType;
 import knightminer.inspirations.building.client.ShelfBlockEntityRenderer;
 import knightminer.inspirations.building.client.ShelfContainerScreen;
-import knightminer.inspirations.common.ClientEvents;
+import knightminer.inspirations.common.AbstractClientEvents;
 import knightminer.inspirations.library.MiscUtil;
 import knightminer.inspirations.library.client.ClientUtil;
 import knightminer.inspirations.library.client.model.ShelfModel;
@@ -40,7 +40,7 @@ import java.util.function.Consumer;
 
 @SuppressWarnings("unused")
 @EventBusSubscriber(modid = Inspirations.modID, value = Dist.CLIENT, bus = Bus.MOD)
-public class BuildingClientEvents extends ClientEvents {
+public class BuildingClientEvents extends AbstractClientEvents {
   private static final Minecraft mc = Minecraft.getInstance();
 
   @SubscribeEvent

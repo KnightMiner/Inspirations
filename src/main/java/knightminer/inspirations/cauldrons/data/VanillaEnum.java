@@ -1,6 +1,6 @@
 package knightminer.inspirations.cauldrons.data;
 
-import knightminer.inspirations.shared.InspirationsShared;
+import knightminer.inspirations.common.InspirationsCommons;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -8,7 +8,7 @@ import slimeknights.mantle.registration.object.EnumObject;
 
 /**
  * Class containing {@link EnumObject} instances for many colored vanilla blocks.
- * This class is currently only used in datagen. To prevent wasted memory, any objects used outside data gen should be called via {@link InspirationsShared}
+ * This class is currently only used in datagen. To prevent wasted memory, any objects used outside data gen should be called via {@link InspirationsCommons}
  */
 public class VanillaEnum {
   public static final EnumObject<DyeColor,Block> BED = new EnumObject.Builder<DyeColor,Block>(DyeColor.class)
@@ -30,7 +30,7 @@ public class VanillaEnum {
       .put(DyeColor.BLACK,      Blocks.BLACK_BED.delegate)
       .build();
 
-  public static final EnumObject<DyeColor,Block> CARPET = InspirationsShared.VANILLA_CARPETS;
+  public static final EnumObject<DyeColor,Block> CARPET = InspirationsCommons.VANILLA_CARPETS;
 
   public static final EnumObject<DyeColor,Block> SHULKER_BOX = new EnumObject.Builder<DyeColor,Block>(DyeColor.class)
       .put(DyeColor.WHITE, Blocks.WHITE_SHULKER_BOX.delegate)

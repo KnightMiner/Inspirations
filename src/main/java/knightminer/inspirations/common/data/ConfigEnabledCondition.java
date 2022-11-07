@@ -6,7 +6,7 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSyntaxException;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.Config;
-import knightminer.inspirations.shared.InspirationsShared;
+import knightminer.inspirations.common.InspirationsCommons;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.level.storage.loot.LootContext;
@@ -53,7 +53,7 @@ public class ConfigEnabledCondition implements ICondition, LootItemCondition {
 
   @Override
   public LootItemConditionType getType() {
-    return InspirationsShared.lootConfig;
+    return InspirationsCommons.lootConfig;
   }
 
   public static class ConditionSerializer implements Serializer<ConfigEnabledCondition>, IConditionSerializer<ConfigEnabledCondition> {

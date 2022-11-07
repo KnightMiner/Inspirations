@@ -1,6 +1,6 @@
 package knightminer.inspirations.utility.block;
 
-import knightminer.inspirations.shared.InspirationsShared;
+import knightminer.inspirations.common.InspirationsCommons;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
@@ -56,7 +56,7 @@ public class CarpetedPressurePlateBlock extends PressurePlateBlock {
    * @return Carpet block
    */
   public ItemLike getCarpet() {
-    return InspirationsShared.VANILLA_CARPETS.get(color);
+    return InspirationsCommons.VANILLA_CARPETS.get(color);
   }
 
   @Override

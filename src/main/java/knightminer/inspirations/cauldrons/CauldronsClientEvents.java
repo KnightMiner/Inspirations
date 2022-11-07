@@ -5,7 +5,7 @@ import knightminer.inspirations.cauldrons.block.entity.DyeCauldronBlockEntity;
 import knightminer.inspirations.cauldrons.block.entity.PotionCauldronBlockEntity;
 import knightminer.inspirations.cauldrons.client.BoilingParticle;
 import knightminer.inspirations.cauldrons.item.MixedDyedBottleItem;
-import knightminer.inspirations.common.ClientEvents;
+import knightminer.inspirations.common.AbstractClientEvents;
 import knightminer.inspirations.library.MiscUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockColors;
@@ -26,7 +26,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 @SuppressWarnings("unused")
 @EventBusSubscriber(modid = Inspirations.modID, value = Dist.CLIENT, bus = Bus.MOD)
-public class CauldronsClientEvents extends ClientEvents {
+public class CauldronsClientEvents extends AbstractClientEvents {
   @SubscribeEvent
   static void clientSetup(FMLClientSetupEvent event) {
     ItemBlockRenderTypes.setRenderLayer(InspirationsCaudrons.honey, RenderType.translucent());

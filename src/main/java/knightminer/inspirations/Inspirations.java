@@ -4,14 +4,14 @@ import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.electronwill.nightconfig.core.io.WritingMode;
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.cauldrons.InspirationsCaudrons;
+import knightminer.inspirations.common.CommonsClientEvents;
 import knightminer.inspirations.common.Config;
+import knightminer.inspirations.common.InspirationsCommons;
 import knightminer.inspirations.common.datagen.InspirationsBlockTagsProvider;
 import knightminer.inspirations.common.datagen.InspirationsFluidTagsProvider;
 import knightminer.inspirations.common.datagen.InspirationsItemTagsProvider;
 import knightminer.inspirations.common.datagen.InspirationsLootTableProvider;
 import knightminer.inspirations.common.network.InspirationsNetwork;
-import knightminer.inspirations.shared.InspirationsShared;
-import knightminer.inspirations.shared.SharedClientEvents;
 import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import knightminer.inspirations.utility.InspirationsUtility;
@@ -61,7 +61,7 @@ public class Inspirations {
 
     IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
     modBus.register(this);
-    modBus.register(new InspirationsShared());
+    modBus.register(new InspirationsCommons());
     modBus.register(new InspirationsBuilding());
     modBus.register(new InspirationsUtility());
     modBus.register(new InspirationsTools());
@@ -72,7 +72,7 @@ public class Inspirations {
 
     InspirationsNetwork.INSTANCE.setup();
 
-    DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> SharedClientEvents::onConstruct);
+    DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> CommonsClientEvents::onConstruct);
   }
 
   @SubscribeEvent

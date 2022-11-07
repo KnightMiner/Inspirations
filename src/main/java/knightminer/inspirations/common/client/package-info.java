@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-package knightminer.inspirations.shared.client;
+package knightminer.inspirations.common.client;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 

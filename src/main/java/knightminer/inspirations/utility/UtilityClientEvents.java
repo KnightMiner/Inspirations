@@ -1,8 +1,8 @@
 package knightminer.inspirations.utility;
 
 import knightminer.inspirations.Inspirations;
-import knightminer.inspirations.common.ClientEvents;
-import knightminer.inspirations.shared.client.BackgroundContainerScreen;
+import knightminer.inspirations.common.AbstractClientEvents;
+import knightminer.inspirations.common.client.BackgroundContainerScreen;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
@@ -14,7 +14,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 @SuppressWarnings("unused")
 @EventBusSubscriber(modid = Inspirations.modID, value = Dist.CLIENT, bus = Bus.MOD)
-public class UtilityClientEvents extends ClientEvents {
+public class UtilityClientEvents extends AbstractClientEvents {
 
   @SubscribeEvent
   static void clientSetup(FMLClientSetupEvent event) {

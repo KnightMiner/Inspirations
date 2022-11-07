@@ -1,7 +1,7 @@
 package knightminer.inspirations.tools;
 
 import knightminer.inspirations.Inspirations;
-import knightminer.inspirations.common.ClientEvents;
+import knightminer.inspirations.common.AbstractClientEvents;
 import knightminer.inspirations.library.MiscUtil;
 import knightminer.inspirations.tools.client.BarometerPropertyGetter;
 import knightminer.inspirations.tools.client.DimensionCompassPropertyGetter;
@@ -21,7 +21,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 @SuppressWarnings("unused")
 @EventBusSubscriber(modid = Inspirations.modID, value = Dist.CLIENT, bus = Bus.MOD)
-public class ToolsClientEvents extends ClientEvents {
+public class ToolsClientEvents extends AbstractClientEvents {
 
   @SubscribeEvent
   static void clientSetup(FMLClientSetupEvent event) {

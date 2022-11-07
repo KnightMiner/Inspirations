@@ -2,9 +2,9 @@ package knightminer.inspirations.tweaks;
 
 import com.google.common.collect.ImmutableSet;
 import knightminer.inspirations.common.Config;
+import knightminer.inspirations.common.InspirationsCommons;
 import knightminer.inspirations.common.ModuleBase;
 import knightminer.inspirations.common.item.HidableItem;
-import knightminer.inspirations.shared.InspirationsShared;
 import knightminer.inspirations.tweaks.block.BlockCropBlock;
 import knightminer.inspirations.tweaks.block.CactusCropBlock;
 import knightminer.inspirations.tweaks.block.DryHopperBlock;
@@ -84,7 +84,7 @@ public class InspirationsTweaks extends ModuleBase {
     EnumObject.Builder<DyeColor,FlatCarpetBlock> flatBuilder = new EnumObject.Builder<>(DyeColor.class);
     EnumObject.Builder<DyeColor,FittedCarpetBlock> fittedBuilder = new EnumObject.Builder<>(DyeColor.class);
     for (DyeColor color : DyeColor.values()) {
-      Block original = InspirationsShared.VANILLA_CARPETS.get(color);
+      Block original = InspirationsCommons.VANILLA_CARPETS.get(color);
       Block.Properties props = Block.Properties.copy(original);
       if (replaceVanilla) {
         flatBuilder.putDelegate(color, registry.register(new FlatCarpetBlock(color, props), original).delegate);
@@ -114,7 +114,7 @@ public class InspirationsTweaks extends ModuleBase {
 
     if (Config.enableFittedCarpets.getAsBoolean()) {
       for (DyeColor color : DyeColor.values()) {
-        Block carpet = InspirationsShared.VANILLA_CARPETS.get(color);
+        Block carpet = InspirationsCommons.VANILLA_CARPETS.get(color);
         BlockItem item = registry.registerBlockItem(carpet, decorationProps);
         Item.BY_BLOCK.put(carpet, item);
         Item.BY_BLOCK.put(Objects.requireNonNull(flatCarpets.get(color)), item);

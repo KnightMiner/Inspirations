@@ -1,6 +1,6 @@
 package knightminer.inspirations.common.network;
 
-import knightminer.inspirations.shared.SharedEvents;
+import knightminer.inspirations.common.CommonsEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
@@ -46,7 +46,7 @@ public class MilkablePacket implements IThreadsafePacket {
       }
 
       // value for not milkable does not matter as long as its greater than 0
-      entity.getPersistentData().putShort(SharedEvents.TAG_MILKCOOLDOWN, (short)(packet.milkable ? 0 : 100));
+      entity.getPersistentData().putShort(CommonsEvents.TAG_MILKCOOLDOWN, (short)(packet.milkable ? 0 : 100));
     }
   }
 }

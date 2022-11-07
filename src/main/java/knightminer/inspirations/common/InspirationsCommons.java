@@ -1,7 +1,6 @@
-package knightminer.inspirations.shared;
+package knightminer.inspirations.common;
 
 import knightminer.inspirations.Inspirations;
-import knightminer.inspirations.common.ModuleBase;
 import knightminer.inspirations.common.data.ConfigEnabledCondition;
 import knightminer.inspirations.library.recipe.ModItemList;
 import knightminer.inspirations.library.recipe.crafting.ShapelessNoContainerRecipe;
@@ -22,7 +21,7 @@ import slimeknights.mantle.registration.object.EnumObject;
  * Base module for common code between the modules
  */
 @SuppressWarnings("unused")
-public class InspirationsShared extends ModuleBase {
+public class InspirationsCommons extends ModuleBase {
   public static LootItemConditionType lootConfig;
   public static LootItemFunctionType textureFunction;
 

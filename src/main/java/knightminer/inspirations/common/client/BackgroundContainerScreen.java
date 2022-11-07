@@ -1,4 +1,4 @@
-package knightminer.inspirations.shared.client;
+package knightminer.inspirations.common.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import knightminer.inspirations.Inspirations;

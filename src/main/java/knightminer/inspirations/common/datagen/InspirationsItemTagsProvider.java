@@ -2,10 +2,10 @@ package knightminer.inspirations.common.datagen;
 
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.InspirationsBuilding;
-import knightminer.inspirations.library.InspirationsTags;
 import knightminer.inspirations.cauldrons.InspirationsCaudrons;
 import knightminer.inspirations.cauldrons.data.VanillaEnum;
-import knightminer.inspirations.shared.InspirationsShared;
+import knightminer.inspirations.common.InspirationsCommons;
+import knightminer.inspirations.library.InspirationsTags;
 import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraft.data.DataGenerator;
@@ -55,7 +55,7 @@ public class InspirationsItemTagsProvider extends ItemTagsProvider {
 
     // item list of all relevant carpets
     TagAppender<Item> carpetBuilder = this.tag(InspirationsTags.Items.CARPETS);
-    InspirationsShared.VANILLA_CARPETS.forEach(block -> carpetBuilder.add(block.asItem()));
+    InspirationsCommons.VANILLA_CARPETS.forEach(block -> carpetBuilder.add(block.asItem()));
 
     // item list of all relevant shulker boxes
     TagAppender<Item> shulkerBoxBuilder = this.tag(InspirationsTags.Items.SHULKER_BOXES);

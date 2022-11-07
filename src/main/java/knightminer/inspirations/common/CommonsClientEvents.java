@@ -1,8 +1,7 @@
-package knightminer.inspirations.shared;
+package knightminer.inspirations.common;
 
 import com.google.common.collect.ImmutableSet;
 import knightminer.inspirations.Inspirations;
-import knightminer.inspirations.common.ClientEvents;
 import knightminer.inspirations.library.client.ClientUtil;
 import knightminer.inspirations.library.client.ConfigurableResourcePack;
 import net.minecraft.client.Minecraft;
@@ -18,7 +17,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 @SuppressWarnings("unused")
 @EventBusSubscriber(modid = Inspirations.modID, value = Dist.CLIENT, bus = Bus.MOD)
-public class SharedClientEvents extends ClientEvents {
+public class CommonsClientEvents extends AbstractClientEvents {
   public static ConfigurableResourcePack configPack;
 
   /**
