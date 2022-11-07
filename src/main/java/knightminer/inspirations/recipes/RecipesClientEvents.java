@@ -3,7 +3,6 @@ package knightminer.inspirations.recipes;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.ClientEvents;
 import knightminer.inspirations.library.MiscUtil;
-import knightminer.inspirations.library.client.CustomTextureLoader;
 import knightminer.inspirations.recipes.block.entity.DyeCauldronBlockEntity;
 import knightminer.inspirations.recipes.block.entity.PotionCauldronBlockEntity;
 import knightminer.inspirations.recipes.client.BoilingParticle;
@@ -13,8 +12,6 @@ import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.server.packs.resources.ReloadableResourceManager;
-import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
@@ -30,22 +27,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 @SuppressWarnings("unused")
 @EventBusSubscriber(modid = Inspirations.modID, value = Dist.CLIENT, bus = Bus.MOD)
 public class RecipesClientEvents extends ClientEvents {
-  /**
-   * Listener handling custom cauldron textures
-   */
-  public static CustomTextureLoader cauldronTextures = new CustomTextureLoader(Inspirations.getResource("cauldron_textures"));
-
-  /** Called during mod construct to register early listeners */
-  public static void onConstruct() {
-    // listener to clear color cache from client utils
-    ResourceManager manager = Minecraft.getInstance().getResourceManager();
-    if (manager instanceof ReloadableResourceManager) {
-      ((ReloadableResourceManager)manager).registerReloadListener(cauldronTextures);
-    } else {
-      Inspirations.log.error("Failed to register resource reload listener, expected instance of IReloadableResourceManager but got {}", manager.getClass());
-    }
-  }
-
   @SubscribeEvent
   static void clientSetup(FMLClientSetupEvent event) {
     ItemBlockRenderTypes.setRenderLayer(InspirationsRecipes.honey, RenderType.translucent());

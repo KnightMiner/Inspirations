@@ -5,7 +5,6 @@ import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.ClientEvents;
 import knightminer.inspirations.library.client.ClientUtil;
 import knightminer.inspirations.library.client.ConfigurableResourcePack;
-import knightminer.inspirations.recipes.RecipesClientEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
@@ -31,7 +30,6 @@ public class SharedClientEvents extends ClientEvents {
     if (minecraft != null) {
       configPack = new ConfigurableResourcePack(Inspirations.class, Inspirations.getResource("config_resources"), "Inspirations Config", ImmutableSet.of("minecraft"));
       minecraft.getResourcePackRepository().addPackFinder(configPack);
-      RecipesClientEvents.onConstruct();
     }
   }
 
