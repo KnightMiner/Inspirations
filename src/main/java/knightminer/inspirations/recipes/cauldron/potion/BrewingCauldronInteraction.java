@@ -1,6 +1,5 @@
 package knightminer.inspirations.recipes.cauldron.potion;
 
-import knightminer.inspirations.library.InspirationsTags;
 import knightminer.inspirations.library.MiscUtil;
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.recipes.block.entity.PotionCauldronBlockEntity;
@@ -30,6 +29,7 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import static knightminer.inspirations.recipes.block.BoilingFourLayerCauldronBlock.isBoiling;
 import static net.minecraft.world.level.block.LayeredCauldronBlock.LEVEL;
 
 /** Cauldron interaction for brewing in a cauldron */
@@ -44,7 +44,7 @@ public class BrewingCauldronInteraction implements CauldronInteraction {
 	@Override
 	public InteractionResult interact(BlockState oldState, Level level, BlockPos pos, Player player, InteractionHand hand, ItemStack stack) {
 		// cauldron needs to be above fire
-		if (level.getBlockState(pos.below()).is(InspirationsTags.Blocks.CAULDRON_FIRE)) {
+		if (isBoiling(level, pos)) {
 			// if given a fixed input, use that
 			PotionCauldronBlockEntity cauldron = null;
 			Potion oldPotion = this.fixedInput;

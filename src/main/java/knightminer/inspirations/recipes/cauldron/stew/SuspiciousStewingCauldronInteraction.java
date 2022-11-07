@@ -1,6 +1,5 @@
 package knightminer.inspirations.recipes.cauldron.stew;
 
-import knightminer.inspirations.library.InspirationsTags;
 import knightminer.inspirations.library.MiscUtil;
 import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.recipes.block.entity.SuspiciousStewCauldronBlockEntity;
@@ -19,6 +18,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.FlowerBlock;
 import net.minecraft.world.level.block.state.BlockState;
 
+import static knightminer.inspirations.recipes.block.BoilingFourLayerCauldronBlock.isBoiling;
 import static knightminer.inspirations.recipes.block.FourLayerCauldronBlock.LEVEL;
 
 /** Cauldron interaction for brewing in a cauldron */
@@ -31,7 +31,7 @@ public enum SuspiciousStewingCauldronInteraction implements CauldronInteraction 
 		int itemsNeeded = TransformCauldronInteraction.scaleAmountNeeded(soupLevel);
 
 		// find the flower
-		if (stack.getCount() >= itemsNeeded && level.getBlockState(pos.below()).is(InspirationsTags.Blocks.CAULDRON_FIRE)
+		if (stack.getCount() >= itemsNeeded && isBoiling(level, pos)
 				&& stack.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof FlowerBlock flower) {
 
 			if (!level.isClientSide) {

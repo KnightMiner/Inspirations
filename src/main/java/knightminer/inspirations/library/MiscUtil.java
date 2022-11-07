@@ -2,8 +2,10 @@ package knightminer.inspirations.library;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
@@ -32,6 +34,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 @SuppressWarnings("deprecation")
 public class MiscUtil {
@@ -365,5 +368,22 @@ public class MiscUtil {
 		// divide per component, tending towards base
 		int c = origLevels + newLevels;
 		return divide(r, nr, c) << 16 | divide(g, ng, c) << 8 | divide(b, nb, c);
+	}
+
+	/**
+	 * Adds particles
+	 * @param type   Particle type
+	 * @param world  World instance
+	 * @param pos    Block position
+	 * @param offset Current fluid height
+	 * @param rand   Random instance
+	 */
+	public static void addParticles(ParticleOptions type, Level world, BlockPos pos, int count, double offset, Random rand) {
+		for (int i = 0; i < count; i++) {
+			double x = pos.getX() + 0.1875D + (rand.nextFloat() * 0.625D);
+			double y = pos.getY() + offset;
+			double z = pos.getZ() + 0.1875D + (rand.nextFloat() * 0.625D);
+			world.addParticle(type, x, y, z, 0, 0, 0);
+		}
 	}
 }

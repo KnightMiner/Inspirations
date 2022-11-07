@@ -69,6 +69,7 @@ public class Config {
   public static final BooleanSupplier cauldronCleanStickyPiston;
   public static final BooleanSupplier cauldronWetSponge;
   public static final BooleanSupplier cauldronWashWool;
+  public static final BooleanSupplier replaceVanillaCauldrons;
   // contents
   public static final BooleanSupplier enableCauldronMilk;
   public static final BooleanSupplier enableCauldronHoney;
@@ -244,6 +245,7 @@ public class Config {
       {
         // global switch
         moreCauldronBehavior = and(recipesModule, common.comment("Main disable for the cauldron, will disable most functionality").worldRestart().define("enable", true));
+        replaceVanillaCauldrons = and(moreCauldronBehavior, common.comment("If true, improves vanilla water cauldrons by including boiling particles, requires a block substitution on water cauldrons. More functionality coming to this option later.").worldRestart().define("replaceWaterCauldron", true));
 
         // vanilla recipes
         common.push("vanilla");

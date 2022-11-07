@@ -7,6 +7,8 @@ import knightminer.inspirations.common.ModuleBase;
 import knightminer.inspirations.library.InspirationsTags;
 import knightminer.inspirations.library.MiscUtil;
 import knightminer.inspirations.library.recipe.cauldron.CauldronRegistry;
+import knightminer.inspirations.recipes.block.BoilingFourLayerCauldronBlock;
+import knightminer.inspirations.recipes.block.BoilingThreeLayerCauldronBlock;
 import knightminer.inspirations.recipes.block.DyeCauldronBlock;
 import knightminer.inspirations.recipes.block.FourLayerCauldronBlock;
 import knightminer.inspirations.recipes.block.PotionCauldronBlock;
@@ -74,6 +76,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LayeredCauldronBlock;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
@@ -98,6 +101,7 @@ import slimeknights.mantle.registration.adapter.ItemRegistryAdapter;
 import slimeknights.mantle.registration.adapter.RegistryAdapter;
 import slimeknights.mantle.registration.object.EnumObject;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -135,6 +139,8 @@ public class InspirationsRecipes extends ModuleBase {
   public static FourLayerCauldronBlock mushroomStewCauldron, beetrootSoupCauldron, rabbitStewCauldron, potatoSoupCauldron;
   public static FourLayerCauldronBlock honeyCauldron, milkCauldron, suspiciousStewCauldron;
   public static LayeredCauldronBlock dyeCauldron, potionCauldron;
+  @Nullable
+  private static LayeredCauldronBlock waterCauldron;
 
   public static BlockEntityType<DyeCauldronBlockEntity> dyeCauldronEntity;
   public static BlockEntityType<PotionCauldronBlockEntity> potionCauldronEntity;
@@ -201,12 +207,13 @@ public class InspirationsRecipes extends ModuleBase {
   void registerBlocks(Register<Block> event) {
     BlockRegistryAdapter registry = new BlockRegistryAdapter(event.getRegistry());
 
-    mushroomStewCauldron = registry.register(new FourLayerCauldronBlock(Properties.copy(Blocks.CAULDRON), MUSHROOM_STEW_CAULDRON_INTERACTIONS), "mushroom_stew_cauldron");
-    beetrootSoupCauldron = registry.register(new FourLayerCauldronBlock(Properties.copy(Blocks.CAULDRON), BEETROOT_SOUP_CAULDRON_INTERACTIONS), "beetroot_soup_cauldron");
-    rabbitStewCauldron   = registry.register(new FourLayerCauldronBlock(Properties.copy(Blocks.CAULDRON), RABBIT_STEW_CAULDRON_INTERACTIONS), "rabbit_stew_cauldron");
-    potatoSoupCauldron   = registry.register(new FourLayerCauldronBlock(Properties.copy(Blocks.CAULDRON), POTATO_SOUP_CAULDRON_INTERACTIONS), "potato_soup_cauldron");
-    honeyCauldron        = registry.register(new FourLayerCauldronBlock(Properties.copy(Blocks.CAULDRON), HONEY_CAULDRON_INTERACTIONS), "honey_cauldron");
-    milkCauldron         = registry.register(new FourLayerCauldronBlock(Properties.copy(Blocks.CAULDRON), MILK_CAULDRON_INTERACTIONS), "milk_cauldron");
+    BlockBehaviour.Properties cauldronProps = Properties.copy(Blocks.CAULDRON);
+    mushroomStewCauldron = registry.register(new BoilingFourLayerCauldronBlock(cauldronProps, MUSHROOM_STEW_CAULDRON_INTERACTIONS), "mushroom_stew_cauldron");
+    beetrootSoupCauldron = registry.register(new BoilingFourLayerCauldronBlock(cauldronProps, BEETROOT_SOUP_CAULDRON_INTERACTIONS), "beetroot_soup_cauldron");
+    rabbitStewCauldron   = registry.register(new BoilingFourLayerCauldronBlock(cauldronProps, RABBIT_STEW_CAULDRON_INTERACTIONS), "rabbit_stew_cauldron");
+    potatoSoupCauldron   = registry.register(new BoilingFourLayerCauldronBlock(cauldronProps, POTATO_SOUP_CAULDRON_INTERACTIONS), "potato_soup_cauldron");
+    honeyCauldron        = registry.register(new FourLayerCauldronBlock(cauldronProps, HONEY_CAULDRON_INTERACTIONS), "honey_cauldron");
+    milkCauldron         = registry.register(new BoilingFourLayerCauldronBlock(cauldronProps, MILK_CAULDRON_INTERACTIONS), "milk_cauldron");
 
     mushroomStewBlock = registry.registerFluidBlock(() -> mushroomStew, Material.WATER, 0, "mushroom_stew");
     beetrootSoupBlock = registry.registerFluidBlock(() -> beetrootSoup, Material.WATER, 0, "beetroot_soup");
@@ -214,9 +221,13 @@ public class InspirationsRecipes extends ModuleBase {
     potatoSoupBlock = registry.registerFluidBlock(() -> potatoSoup, Material.WATER, 0, "potato_soup");
     honeyFluidBlock = registry.registerFluidBlock(() -> honey, Material.WATER, 0, "honey");
 
-    dyeCauldron = registry.register(new DyeCauldronBlock(Properties.copy(Blocks.CAULDRON)), "dye_cauldron");
-    potionCauldron = registry.register(new PotionCauldronBlock(Properties.copy(Blocks.CAULDRON)), "potion_cauldron");
-    suspiciousStewCauldron = registry.register(new SuspiciousStewCauldronBlock(Properties.copy(Blocks.CAULDRON)), "suspicious_stew_cauldron");
+    dyeCauldron = registry.register(new DyeCauldronBlock(cauldronProps), "dye_cauldron");
+    potionCauldron = registry.register(new PotionCauldronBlock(cauldronProps), "potion_cauldron");
+    suspiciousStewCauldron = registry.register(new SuspiciousStewCauldronBlock(cauldronProps), "suspicious_stew_cauldron");
+
+    if (Config.replaceVanillaCauldrons.getAsBoolean()) {
+      waterCauldron = registry.registerOverride(props -> new BoilingThreeLayerCauldronBlock(props, LayeredCauldronBlock.RAIN, CauldronInteraction.WATER), Blocks.WATER_CAULDRON);
+    }
   }
 
   @SubscribeEvent
@@ -629,12 +640,18 @@ public class InspirationsRecipes extends ModuleBase {
       for (AbstractCauldronBlock cauldron : newCauldrons) {
         cauldron.getStateDefinition().getPossibleStates().forEach(consumer);
       }
+      if (waterCauldron != null) {
+        waterCauldron.getStateDefinition().getPossibleStates().forEach(consumer);
+      }
     }
     synchronized (PoiType.LEATHERWORKER) {
       ImmutableSet.Builder<BlockState> builder = ImmutableSet.builder();
       builder.addAll(PoiType.LEATHERWORKER.matchingStates);
       for (AbstractCauldronBlock cauldron : newCauldrons) {
         builder.addAll(cauldron.getStateDefinition().getPossibleStates());
+      }
+      if (waterCauldron != null) {
+        builder.addAll(waterCauldron.getStateDefinition().getPossibleStates());
       }
       PoiType.LEATHERWORKER.matchingStates = builder.build();
     }

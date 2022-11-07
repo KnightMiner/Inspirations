@@ -10,7 +10,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import javax.annotation.Nullable;
 
 /** Cauldron that contains suspicious stew effects */
-public class SuspiciousStewCauldronBlock extends FourLayerCauldronBlock implements EntityBlock {
+public class SuspiciousStewCauldronBlock extends BoilingFourLayerCauldronBlock implements EntityBlock {
 	public SuspiciousStewCauldronBlock(Properties props) {
 		super(props, InspirationsRecipes.SUSPICIOUS_STEW_CAULDRON_INTERACTIONS);
 	}
