@@ -15,10 +15,10 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.entity.animal.Pig;
+import net.minecraft.world.entity.animal.goat.Goat;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUtils;
@@ -342,7 +342,7 @@ public class TweaksEvents {
 
     // only care about cows
     Entity target = event.getTarget();
-    if (!(target instanceof Cow cow) || cow.isBaby()) {
+    if (!(((target instanceof Cow cow && !cow.isBaby()) || (target instanceof Goat goat && !goat.isBaby())))) {
       return;
     }
 
@@ -366,7 +366,7 @@ public class TweaksEvents {
     }
 
     // milk the cow with the bottle
-    if (stack.is(Items.GLASS_BOTTLE) && Config.enableMilkBottles.getAsBoolean() && cow.getType() == EntityType.COW) {
+    if (stack.is(Items.GLASS_BOTTLE) && Config.enableMilkBottles.getAsBoolean()) {
       player.setItemInHand(hand, ItemUtils.createFilledResult(stack, player, new ItemStack(InspirationsCaudrons.milkBottle)));
       event.setCancellationResult(InteractionResult.SUCCESS);
       event.setCanceled(true);
@@ -383,7 +383,7 @@ public class TweaksEvents {
     }
 
     // runs for both adult cows and squids, based on config
-    if ((Config.milkCooldown.get() && entity instanceof Cow && !entity.isBaby())) {
+    if ((Config.milkCooldown.get() && (entity instanceof Cow || entity instanceof Goat) && !entity.isBaby())) {
       // if not already cooled down, cool down
       CompoundTag tags = entity.getPersistentData();
       short cooldown = tags.getShort(TAG_MILKCOOLDOWN);
