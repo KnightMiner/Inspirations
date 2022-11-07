@@ -28,7 +28,7 @@ public class Config {
   public static final BooleanValue utilityModule;
   public static final BooleanValue toolsModule;
   public static final BooleanValue tweaksModule;
-  public static final BooleanValue recipesModule;
+  public static final BooleanValue cauldronsModule;
 
   // general
   public static final BooleanValue showAllVariants;
@@ -62,8 +62,6 @@ public class Config {
 
   // recipes
   public static final BooleanSupplier enableMilkBottles;
-  // cauldron
-  public static final BooleanSupplier moreCauldronBehavior;
   // vanilla
   public static final BooleanSupplier cauldronConcrete;
   public static final BooleanSupplier cauldronCleanStickyPiston;
@@ -149,7 +147,7 @@ public class Config {
       utilityModule = common.comment("Adds tools for automation and redstone interaction").worldRestart().define("utility", true);
       tweaksModule = common.comment("Contains tweaks to vanilla features").worldRestart().define("tweaks", true);
       toolsModule = common.comment("Includes new tools to reduce dependency on debug features").worldRestart().define("tools", true);
-      recipesModule = common.comment("Includes new blocks that add new types of recipes").worldRestart().define("tools", true);
+      cauldronsModule = common.comment("Expands interactions available to the cauldron and adds new variants").worldRestart().define("cauldrons", true);
     }
     common.pop();
 
@@ -234,55 +232,46 @@ public class Config {
     server.pop();
     common.pop();
 
-    // recipes
-    common.push("recipes");
+    // cauldron
+    common.push("cauldron");
 		{
-      enableMilkBottles = and(recipesModule, common.comment("Allows filling glass bottles with milk from a cow. Note moving milk from bucket to bottles requires milk cauldrons").define("milkBottles", true));
+      enableMilkBottles = and(cauldronsModule, common.comment("Allows filling glass bottles with milk from a cow. Note moving milk from bucket to bottles requires milk cauldrons").define("milkBottles", true));
+      replaceVanillaCauldrons = and(cauldronsModule, common.comment("If true, improves vanilla water cauldrons by including boiling particles, requires a block substitution on water cauldrons. More functionality coming to this option later.").worldRestart().define("replaceWaterCauldron", true));
 
-			// cauldron //
-
-      common.push("cauldron");
+      // vanilla recipes
+      common.push("vanilla");
       {
-        // global switch
-        moreCauldronBehavior = and(recipesModule, common.comment("Main disable for the cauldron, will disable most functionality").worldRestart().define("enable", true));
-        replaceVanillaCauldrons = and(moreCauldronBehavior, common.comment("If true, improves vanilla water cauldrons by including boiling particles, requires a block substitution on water cauldrons. More functionality coming to this option later.").worldRestart().define("replaceWaterCauldron", true));
+        cauldronConcrete          = and(cauldronsModule, common.comment("Allows concrete to be made a cauldron filled with water").worldRestart().define("concrete", true));
+        cauldronCleanStickyPiston = and(cauldronsModule, common.comment("Lets you clean sticky pistons in the cauldron").worldRestart().define("cleanStickyPiston", true));
+        cauldronWetSponge         = and(cauldronsModule, common.comment("Lets you wet sponges in the cauldron").worldRestart().define("wetSponge", true));
+        cauldronWashWool          = and(cauldronsModule, common.comment("Lets you wash various wool created items in a water filled cauldron to turn it white").worldRestart().define("washWool", true));
+      }
+      common.pop();
 
-        // vanilla recipes
-        common.push("vanilla");
-        {
-          cauldronConcrete          = and(moreCauldronBehavior, common.comment("Allows concrete to be made a cauldron filled with water").worldRestart().define("concrete", true));
-          cauldronCleanStickyPiston = and(moreCauldronBehavior, common.comment("Lets you clean sticky pistons in the cauldron").worldRestart().define("cleanStickyPiston", true));
-          cauldronWetSponge         = and(moreCauldronBehavior, common.comment("Lets you wet sponges in the cauldron").worldRestart().define("wetSponge", true));
-          cauldronWashWool          = and(moreCauldronBehavior, common.comment("Lets you wash various wool created items in a water filled cauldron to turn it white").worldRestart().define("washWool", true));
-        }
-        common.pop();
+      // potions
+      common.push("contents");
+      {
+        enableCauldronMilk  = and(cauldronsModule, common.comment("Allows the cauldron to be filled with milk").define("milk", true));
+        enableCauldronHoney = and(cauldronsModule, common.comment("Allows the cauldron to be filled with honey").define("honey", true));
+        enableCauldronSoups = and(cauldronsModule, common.comment("Allows the cauldron to be filled with soups, including mushroom, potato, rabbit, suspicious, and beetroot").define("soup", true));
+      }
+      common.pop();
 
-        // potions
-        common.push("contents");
-        {
-          enableCauldronMilk  = and(moreCauldronBehavior, common.comment("Allows the cauldron to be filled with milk").define("milk", true));
-          enableCauldronHoney = and(moreCauldronBehavior, common.comment("Allows the cauldron to be filled with honey").define("honey", true));
-          enableCauldronSoups = and(moreCauldronBehavior, common.comment("Allows the cauldron to be filled with soups, including mushroom, potato, rabbit, suspicious, and beetroot").define("soup", true));
-        }
-        common.pop();
+      // potions
+      common.push("dyes");
+      {
+        enableCauldronDyeing = and(cauldronsModule, common.comment("Allows cauldrons to be filled with dyes and dye items using cauldrons").define("enable", true));
+        extraBottleRecipes   = and(enableCauldronDyeing, common.comment("Adds extra dyed bottle recipes to craft green and brown").define("extraBottleRecipes", true));
+      }
+      common.pop();
 
-        // potions
-        common.push("dyes");
-        {
-          enableCauldronDyeing = and(moreCauldronBehavior, common.comment("Allows cauldrons to be filled with dyes and dye items using cauldrons").define("enable", true));
-          extraBottleRecipes   = and(enableCauldronDyeing, common.comment("Adds extra dyed bottle recipes to craft green and brown").define("extraBottleRecipes", true));
-        }
-        common.pop();
-
-        // potions
-        common.push("potions");
-        {
-          enableCauldronPotions = and(moreCauldronBehavior,  common.comment("Allows cauldrons to be filled with potions").define("enable", true));
-          brewPotionBottles     = and(enableCauldronPotions, common.comment("Allows brewing glass bottles into splash and lingering bottles in a brewing stand").define("brewBottles", true));
-          cauldronTipArrows     = and(enableCauldronPotions, common.comment("Allows cauldrons to tip arrows with potions").define("tipArrows", true));
-          cauldronBrewing       = and(enableCauldronPotions, common.comment("Allows cauldrons to perform brewing recipes").define("brewing", true));
-        }
-        common.pop();
+      // potions
+      common.push("potions");
+      {
+        enableCauldronPotions = and(cauldronsModule,  common.comment("Allows cauldrons to be filled with potions").define("enable", true));
+        brewPotionBottles     = and(enableCauldronPotions, common.comment("Allows brewing glass bottles into splash and lingering bottles in a brewing stand").define("brewBottles", true));
+        cauldronTipArrows     = and(enableCauldronPotions, common.comment("Allows cauldrons to tip arrows with potions").define("tipArrows", true));
+        cauldronBrewing       = and(enableCauldronPotions, common.comment("Allows cauldrons to perform brewing recipes").define("brewing", true));
       }
       common.pop();
 		}

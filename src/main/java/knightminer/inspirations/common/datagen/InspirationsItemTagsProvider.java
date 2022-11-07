@@ -3,8 +3,8 @@ package knightminer.inspirations.common.datagen;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.library.InspirationsTags;
-import knightminer.inspirations.recipes.InspirationsRecipes;
-import knightminer.inspirations.recipes.data.VanillaEnum;
+import knightminer.inspirations.cauldrons.InspirationsCaudrons;
+import knightminer.inspirations.cauldrons.data.VanillaEnum;
 import knightminer.inspirations.shared.InspirationsShared;
 import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.utility.InspirationsUtility;
@@ -75,11 +75,11 @@ public class InspirationsItemTagsProvider extends ItemTagsProvider {
   private void registerForgeTags() {
     this.tag(Tags.Items.BOOKSHELVES).addTag(InspirationsTags.Items.BOOKSHELVES);
 
-    this.tag(InspirationsTags.Items.SPLASH_BOTTLES).add(InspirationsRecipes.splashBottle);
-    this.tag(InspirationsTags.Items.LINGERING_BOTTLES).add(InspirationsRecipes.lingeringBottle);
+    this.tag(InspirationsTags.Items.SPLASH_BOTTLES).add(InspirationsCaudrons.splashBottle);
+    this.tag(InspirationsTags.Items.LINGERING_BOTTLES).add(InspirationsCaudrons.lingeringBottle);
 
     // add dyed bottles to dye tag, forge tag are always INamedTag
-    InspirationsRecipes.simpleDyedWaterBottle.forEach((color, bottle) -> this.tag(color.getTag()).add(bottle));
+    InspirationsCaudrons.simpleDyedWaterBottle.forEach((color, bottle) -> this.tag(color.getTag()).add(bottle));
   }
 
   private void registerVanillaTags() {

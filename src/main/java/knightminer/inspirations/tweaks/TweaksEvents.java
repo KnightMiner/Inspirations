@@ -5,7 +5,7 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.common.network.MilkablePacket;
 import knightminer.inspirations.library.InspirationsTags;
-import knightminer.inspirations.recipes.InspirationsRecipes;
+import knightminer.inspirations.cauldrons.InspirationsCaudrons;
 import knightminer.inspirations.shared.SharedEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -364,7 +364,7 @@ public class TweaksEvents {
 
     // milk the cow with the bottle
     if (stack.is(Items.GLASS_BOTTLE) && Config.enableMilkBottles.getAsBoolean()) {
-      player.setItemInHand(hand, ItemUtils.createFilledResult(stack, player, new ItemStack(InspirationsRecipes.milkBottle)));
+      player.setItemInHand(hand, ItemUtils.createFilledResult(stack, player, new ItemStack(InspirationsCaudrons.milkBottle)));
       event.setCancellationResult(InteractionResult.SUCCESS);
       event.setCanceled(true);
     }

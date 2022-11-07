@@ -4,7 +4,7 @@ import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.building.block.RopeBlock;
 import knightminer.inspirations.common.Config;
-import knightminer.inspirations.recipes.InspirationsRecipes;
+import knightminer.inspirations.cauldrons.InspirationsCaudrons;
 import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import knightminer.inspirations.utility.InspirationsUtility;
@@ -86,15 +86,15 @@ public class InspirationsBlockLootTable extends BlockLoot {
   }
 
   private void addRecipes() {
-    this.dropOther(InspirationsRecipes.beetrootSoupCauldron, Blocks.CAULDRON);
-    this.dropOther(InspirationsRecipes.mushroomStewCauldron, Blocks.CAULDRON);
-    this.dropOther(InspirationsRecipes.potatoSoupCauldron, Blocks.CAULDRON);
-    this.dropOther(InspirationsRecipes.rabbitStewCauldron, Blocks.CAULDRON);
-    this.dropOther(InspirationsRecipes.honeyCauldron, Blocks.CAULDRON);
-    this.dropOther(InspirationsRecipes.milkCauldron, Blocks.CAULDRON);
-    this.dropOther(InspirationsRecipes.dyeCauldron, Blocks.CAULDRON);
-    this.dropOther(InspirationsRecipes.potionCauldron, Blocks.CAULDRON);
-    this.dropOther(InspirationsRecipes.suspiciousStewCauldron, Blocks.CAULDRON);
+    this.dropOther(InspirationsCaudrons.beetrootSoupCauldron, Blocks.CAULDRON);
+    this.dropOther(InspirationsCaudrons.mushroomStewCauldron, Blocks.CAULDRON);
+    this.dropOther(InspirationsCaudrons.potatoSoupCauldron, Blocks.CAULDRON);
+    this.dropOther(InspirationsCaudrons.rabbitStewCauldron, Blocks.CAULDRON);
+    this.dropOther(InspirationsCaudrons.honeyCauldron, Blocks.CAULDRON);
+    this.dropOther(InspirationsCaudrons.milkCauldron, Blocks.CAULDRON);
+    this.dropOther(InspirationsCaudrons.dyeCauldron, Blocks.CAULDRON);
+    this.dropOther(InspirationsCaudrons.potionCauldron, Blocks.CAULDRON);
+    this.dropOther(InspirationsCaudrons.suspiciousStewCauldron, Blocks.CAULDRON);
   }
 
   private void addTools() {

@@ -1,7 +1,7 @@
 package knightminer.inspirations.common.network;
 
 import knightminer.inspirations.library.MiscUtil;
-import knightminer.inspirations.recipes.block.entity.DyeCauldronBlockEntity;
+import knightminer.inspirations.cauldrons.block.entity.DyeCauldronBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;

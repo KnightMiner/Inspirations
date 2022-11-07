@@ -1,7 +1,7 @@
 package knightminer.inspirations.common.network;
 
 import knightminer.inspirations.library.MiscUtil;
-import knightminer.inspirations.recipes.block.entity.PotionCauldronBlockEntity;
+import knightminer.inspirations.cauldrons.block.entity.PotionCauldronBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;

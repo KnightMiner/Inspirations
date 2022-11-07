@@ -117,7 +117,7 @@ public class ConfigEnabledCondition implements ICondition, LootItemCondition {
   public static final ConfigEnabledCondition MODULE_UTILITY = add("utility_module", Config.utilityModule);
   public static final ConfigEnabledCondition MODULE_TOOLS = add("tools_module", Config.toolsModule);
   public static final ConfigEnabledCondition MODULE_TWEAKS = add("tweaks_module", Config.tweaksModule);
-  public static final ConfigEnabledCondition MODULE_RECIPES = add("recipes_module", Config.recipesModule);
+  public static final ConfigEnabledCondition MODULE_RECIPES = add("recipes_module", Config.cauldronsModule);
 
   // building
   public static final ConfigEnabledCondition BOOKSHELF = add("bookshelf", Config.enableBookshelf);

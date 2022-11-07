@@ -3,13 +3,13 @@ package knightminer.inspirations;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.electronwill.nightconfig.core.io.WritingMode;
 import knightminer.inspirations.building.InspirationsBuilding;
+import knightminer.inspirations.cauldrons.InspirationsCaudrons;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.datagen.InspirationsBlockTagsProvider;
 import knightminer.inspirations.common.datagen.InspirationsFluidTagsProvider;
 import knightminer.inspirations.common.datagen.InspirationsItemTagsProvider;
 import knightminer.inspirations.common.datagen.InspirationsLootTableProvider;
 import knightminer.inspirations.common.network.InspirationsNetwork;
-import knightminer.inspirations.recipes.InspirationsRecipes;
 import knightminer.inspirations.shared.InspirationsShared;
 import knightminer.inspirations.shared.SharedClientEvents;
 import knightminer.inspirations.tools.InspirationsTools;
@@ -66,7 +66,7 @@ public class Inspirations {
     modBus.register(new InspirationsUtility());
     modBus.register(new InspirationsTools());
     modBus.register(new InspirationsTweaks());
-    modBus.register(new InspirationsRecipes());
+    modBus.register(new InspirationsCaudrons());
     modBus.addListener(Config::configChanged);
     MinecraftForge.EVENT_BUS.register(Inspirations.class);
 

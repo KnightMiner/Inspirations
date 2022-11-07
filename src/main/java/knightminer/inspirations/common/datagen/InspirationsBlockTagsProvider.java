@@ -3,7 +3,7 @@ package knightminer.inspirations.common.datagen;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.library.InspirationsTags;
-import knightminer.inspirations.recipes.InspirationsRecipes;
+import knightminer.inspirations.cauldrons.InspirationsCaudrons;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraft.data.DataGenerator;
@@ -66,9 +66,9 @@ public class InspirationsBlockTagsProvider extends BlockTagsProvider {
             InspirationsUtility.soulLeverFloor, InspirationsUtility.soulLeverWall
     );
     this.tag(BlockTags.CAULDRONS).add(
-        InspirationsRecipes.beetrootSoupCauldron, InspirationsRecipes.mushroomStewCauldron, InspirationsRecipes.potatoSoupCauldron,
-        InspirationsRecipes.rabbitStewCauldron, InspirationsRecipes.honeyCauldron, InspirationsRecipes.milkCauldron,
-        InspirationsRecipes.dyeCauldron, InspirationsRecipes.potionCauldron, InspirationsRecipes.suspiciousStewCauldron);
+        InspirationsCaudrons.beetrootSoupCauldron, InspirationsCaudrons.mushroomStewCauldron, InspirationsCaudrons.potatoSoupCauldron,
+        InspirationsCaudrons.rabbitStewCauldron, InspirationsCaudrons.honeyCauldron, InspirationsCaudrons.milkCauldron,
+        InspirationsCaudrons.dyeCauldron, InspirationsCaudrons.potionCauldron, InspirationsCaudrons.suspiciousStewCauldron);
   }
 
   private void registerHarvestTags() {
