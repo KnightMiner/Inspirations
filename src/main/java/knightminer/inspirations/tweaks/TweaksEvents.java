@@ -44,7 +44,7 @@ import slimeknights.mantle.util.RegistryHelper;
 @SuppressWarnings({"unused"})
 @EventBusSubscriber(modid = Inspirations.modID, bus = Bus.FORGE)
 public class TweaksEvents {
-  private static final String TAG_MILKCOOLDOWN = "milk_cooldown";
+  public static final String TAG_MILKCOOLDOWN = "milk_cooldown";
 
   @SubscribeEvent
   static void unsaddlePig(EntityInteract event) {
