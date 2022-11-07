@@ -4,7 +4,6 @@ import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.ClientEvents;
 import knightminer.inspirations.library.MiscUtil;
 import knightminer.inspirations.library.client.CustomTextureLoader;
-import knightminer.inspirations.library.client.model.CauldronModel;
 import knightminer.inspirations.recipes.block.entity.DyeCauldronBlockEntity;
 import knightminer.inspirations.recipes.block.entity.PotionCauldronBlockEntity;
 import knightminer.inspirations.recipes.client.BoilingParticle;
@@ -22,9 +21,7 @@ import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ColorHandlerEvent;
-import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
-import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
@@ -77,11 +74,6 @@ public class RecipesClientEvents extends ClientEvents {
       }
       return -1;
     }, InspirationsRecipes.potionCauldron);
-  }
-
-  @SubscribeEvent
-  static void registerModelLoaders(ModelRegistryEvent event) {
-    ModelLoaderRegistry.registerLoader(Inspirations.getResource("cauldron"), CauldronModel.LOADER);
   }
 
   @SubscribeEvent
