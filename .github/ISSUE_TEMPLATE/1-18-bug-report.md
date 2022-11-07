@@ -1,8 +1,8 @@
 ---
-name: 1.15 Bug report
-about: Create a report to help us improve
+name: 1.18 Bug report
+about: Create an issue for Minecraft 1.18
 title: ''
-labels: 1.15, bug
+labels: 1.18, bug
 assignees: ''
 
 ---
@@ -14,9 +14,9 @@ A clear and concise description of what the bug is, including expected behavior.
 If applicable, add screenshots to help explain your problem.
 
 **Versions (please complete the following information):**
- - Minecraft: 1.15.2
+ - Minecraft: 1.18.2
  - Mantle: 
- - Inspirations 
+ - Inspirations: 
 
 **Other mods required**
 

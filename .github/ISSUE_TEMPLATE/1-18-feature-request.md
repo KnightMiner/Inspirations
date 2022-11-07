@@ -1,8 +1,8 @@
 ---
-name: 1.16 Feature request
-about: Suggest a new feature for this mod
+name: 1.18 Feature request
+about: Suggest a new feature for this mod. Only accepting suggestions for 1.18+
 title: ''
-labels: 1.16, enhancement
+labels: 1.18, enhancement
 assignees: ''
 
 ---
