@@ -36,7 +36,7 @@ public class JEIPlugin implements IModPlugin {
   @Override
   public void registerItemSubtypes(ISubtypeRegistration registry) {
     IIngredientSubtypeInterpreter<ItemStack> texture = (ingredient, content) -> RetexturedBlockItem.getTextureName(ingredient);
-    Consumer<ItemLike> setTextureSubtype = item -> registry.registerSubtypeInterpreter(item.asItem(), texture);
+    Consumer<ItemLike> setTextureSubtype = item -> registry.registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, item.asItem(), texture);
 
     // building
     InspirationsBuilding.shelf.values().forEach(setTextureSubtype);
@@ -47,7 +47,7 @@ public class JEIPlugin implements IModPlugin {
   public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
     ingedientManager = jeiRuntime.getIngredientManager();
     HIDABLE_ITEMS.clear();
-    for (ItemStack item : ingedientManager.getAllIngredients(VanillaTypes.ITEM)) {
+    for (ItemStack item : ingedientManager.getAllIngredients(VanillaTypes.ITEM_STACK)) {
       if (item.getItem() instanceof IHidable) {
         HIDABLE_ITEMS.add(new HideState(item));
       }
@@ -72,10 +72,10 @@ public class JEIPlugin implements IModPlugin {
       }
     }
     if (hidden.size() > 0) {
-      ingedientManager.removeIngredientsAtRuntime(VanillaTypes.ITEM, hidden);
+      ingedientManager.removeIngredientsAtRuntime(VanillaTypes.ITEM_STACK, hidden);
     }
     if (visible.size() > 0) {
-      ingedientManager.addIngredientsAtRuntime(VanillaTypes.ITEM, visible);
+      ingedientManager.addIngredientsAtRuntime(VanillaTypes.ITEM_STACK, visible);
     }
   }
 
