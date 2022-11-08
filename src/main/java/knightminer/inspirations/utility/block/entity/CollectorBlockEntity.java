@@ -6,6 +6,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -64,7 +65,7 @@ public class CollectorBlockEntity extends InventoryBlockEntity {
     } else {
       // collect items from world
       boolean collected = false;
-      for (ItemEntity entity : level.getEntitiesOfClass(ItemEntity.class, getItemBounds())) {
+      for (ItemEntity entity : level.getEntitiesOfClass(ItemEntity.class, getItemBounds(), EntitySelector.ENTITY_STILL_ALIVE)) {
         ItemStack insert = entity.getItem();
         // no need to simulate, if successful we have to modify the stack regardless
         ItemStack remainder = ItemHandlerHelper.insertItemStacked(itemHandler, insert, false);
