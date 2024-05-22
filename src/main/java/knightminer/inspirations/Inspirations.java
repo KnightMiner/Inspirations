@@ -7,6 +7,7 @@ import knightminer.inspirations.cauldrons.InspirationsCaudrons;
 import knightminer.inspirations.common.CommonsClientEvents;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.InspirationsCommons;
+import knightminer.inspirations.common.data.GlobalLootProvider;
 import knightminer.inspirations.common.datagen.InspirationsBlockTagsProvider;
 import knightminer.inspirations.common.datagen.InspirationsFluidTagsProvider;
 import knightminer.inspirations.common.datagen.InspirationsItemTagsProvider;
@@ -88,6 +89,7 @@ public class Inspirations {
     gen.addProvider(server, new InspirationsItemTagsProvider(gen, existing, blockTags));
     gen.addProvider(server, new InspirationsFluidTagsProvider(gen, existing));
     gen.addProvider(server, new InspirationsLootTableProvider(gen));
+    gen.addProvider(server, new GlobalLootProvider(gen));
   }
 
   /** Handles missing mappings of all types */
