@@ -43,23 +43,7 @@
     "block.inspirations.green_enlightened_bush": "Green Enlightened Bush",
     "block.inspirations.blue_enlightened_bush": "Blue Enlightened Bush",
 
-    "item.inspirations.white_book": "White Book",
-    "item.inspirations.orange_book": "Orange Book",
-    "item.inspirations.magenta_book": "Magenta Book",
-    "item.inspirations.light_blue_book": "Light Blue Book",
-    "item.inspirations.yellow_book": "Yellow Book",
-    "item.inspirations.lime_book": "Lime Book",
-    "item.inspirations.pink_book": "Pink Book",
-    "item.inspirations.gray_book": "Gray Book",
-    "item.inspirations.light_gray_book": "Light Gray Book",
-    "item.inspirations.cyan_book": "Cyan Book",
-    "item.inspirations.purple_book": "Purple Book",
-    "item.inspirations.blue_book": "Blue Book",
-    "item.inspirations.brown_book": "Brown Book",
-    "item.inspirations.green_book": "Green Book",
-    "item.inspirations.red_book": "Red Book",
-    "item.inspirations.black_book": "Black Book",
-
+    "item.inspirations.colored_book": "Book",
     "gui.inspirations.shelf.name": "Shelf",
 
 

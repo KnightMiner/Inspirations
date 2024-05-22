@@ -16,6 +16,11 @@
     }
   ],
   "result": {
-    "item": "inspirations:lime_book"
+    "item": "inspirations:colored_book",
+    "nbt": {
+      "display": {
+        "color": 8439583
+      }
+    }
   }
 }

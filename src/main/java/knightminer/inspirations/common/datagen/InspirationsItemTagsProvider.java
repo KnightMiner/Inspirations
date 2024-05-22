@@ -49,8 +49,7 @@ public class InspirationsItemTagsProvider extends ItemTagsProvider {
     TagAppender<Item> bookBuilder = this.tag(InspirationsTags.Items.FORGE_BOOKS)
         .add(InspirationsBuilding.redstoneBook)
         .add(Items.BOOK, Items.WRITABLE_BOOK, Items.WRITTEN_BOOK)
-        .add(Items.ENCHANTED_BOOK, Items.KNOWLEDGE_BOOK);
-    InspirationsBuilding.coloredBooks.values().forEach(bookBuilder::add);
+        .add(Items.ENCHANTED_BOOK, Items.KNOWLEDGE_BOOK, InspirationsBuilding.coloredBook);
     this.tag(InspirationsTags.Items.BOOKS).addTag(InspirationsTags.Items.FORGE_BOOKS);
 
     // item list of all relevant carpets

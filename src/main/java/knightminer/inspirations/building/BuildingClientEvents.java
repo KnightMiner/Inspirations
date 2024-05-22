@@ -16,6 +16,7 @@ import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.world.item.DyeableLeatherItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.FoliageColor;
 import net.minecraft.world.level.block.Block;
@@ -155,10 +156,7 @@ public class BuildingClientEvents extends AbstractClientEvents {
     }, InspirationsBuilding.shelf.getOrNull(ShelfType.NORMAL));
 
     // book covers, too lazy to make 16 cover textures
-    InspirationsBuilding.coloredBooks.forEach((color, book) -> {
-      int hexColor = MiscUtil.getColor(color);
-      event.register((stack, tintIndex) -> (tintIndex == 0) ? hexColor : -1, book);
-    });
+    event.register((stack, index) -> index == 0 ? ((DyeableLeatherItem)stack.getItem()).getColor(stack) : -1, InspirationsBuilding.coloredBook);
 
     // bush block colors
     // First the three blocks which never change tint.

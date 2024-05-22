@@ -22,6 +22,7 @@ import knightminer.inspirations.building.item.GlassDoorBlockItem;
 import knightminer.inspirations.building.item.ShelfItem;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.ModuleBase;
+import knightminer.inspirations.common.item.DyeableItem;
 import knightminer.inspirations.common.item.HidableBlockItem;
 import knightminer.inspirations.common.item.HidableItem;
 import knightminer.inspirations.common.item.HidableRetexturedBlockItem;
@@ -33,7 +34,6 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
@@ -85,7 +85,7 @@ public class InspirationsBuilding extends ModuleBase {
   public static Item glassDoorItem;
   public static Item redstoneBook;
   // emum
-  public static EnumObject<DyeColor,Item> coloredBooks;
+  public static Item coloredBook;
 
   // Tile Entities
   public static BlockEntityType<ShelfBlockEntity> shelfTileEntity;
@@ -169,7 +169,7 @@ public class InspirationsBuilding extends ModuleBase {
       Item.Properties buildingProps = new Item.Properties().tab(CreativeModeTab.TAB_BUILDING_BLOCKS);
       Item.Properties redstoneProps = new Item.Properties().tab(CreativeModeTab.TAB_REDSTONE);
 
-      coloredBooks = registry.registerEnum(color -> new HidableItem(materialProps, Config.enableColoredBooks), DyeColor.values(), "book");
+      coloredBook = registry.register(new DyeableItem(materialProps, Config.enableColoredBooks), "colored_book");
       redstoneBook = registry.register(new HidableItem(materialProps, Config.enableRedstoneBook), "redstone_book");
 
       // item blocks

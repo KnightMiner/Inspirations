@@ -5,8 +5,10 @@ import knightminer.inspirations.building.block.type.MulchType;
 import knightminer.inspirations.building.block.type.PathType;
 import knightminer.inspirations.building.block.type.ShelfType;
 import knightminer.inspirations.common.data.ConfigEnabledCondition;
+import knightminer.inspirations.common.data.FinishedNBTRecipe;
 import knightminer.inspirations.common.datagen.IInspirationsRecipeBuilder;
 import knightminer.inspirations.library.InspirationsTags;
+import knightminer.inspirations.library.MiscUtil;
 import net.minecraft.advancements.CriterionTriggerInstance;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.recipes.FinishedRecipe;
@@ -14,6 +16,7 @@ import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.data.recipes.SingleItemRecipeBuilder;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
@@ -103,14 +106,18 @@ public class BuildingRecipeProvider extends RecipeProvider implements ICondition
     // colored books
     Consumer<FinishedRecipe> bookConditions = withCondition(consumer, ConfigEnabledCondition.COLORED_BOOKS);
     String bookGroup = prefix("colored_book");
-    InspirationsBuilding.coloredBooks.forEach((color, book) ->
-      ShapelessRecipeBuilder.shapeless(book)
+    for (DyeColor color : DyeColor.values()) {
+      CompoundTag tag = new CompoundTag();
+      CompoundTag display = new CompoundTag();
+      tag.put("display", display);
+      display.putInt("color", MiscUtil.getColor(color));
+      ShapelessRecipeBuilder.shapeless(InspirationsBuilding.coloredBook)
                             .unlockedBy("has_bookshelf", has(InspirationsTags.Items.BOOKSHELVES))
                             .group(bookGroup)
                             .requires(Items.BOOK)
                             .requires(color.getTag())
-                            .save(bookConditions, location("building/books/" + color.getSerializedName()))
-    );
+                            .save(FinishedNBTRecipe.withNBT(bookConditions, tag), location("building/books/" + color.getSerializedName()));
+    }
 
     // flowers
     // add dye crafting recipes

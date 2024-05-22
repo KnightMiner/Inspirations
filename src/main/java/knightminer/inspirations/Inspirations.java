@@ -15,6 +15,7 @@ import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import knightminer.inspirations.utility.InspirationsUtility;
+import net.minecraft.core.Registry;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.tags.BlockTagsProvider;
 import net.minecraft.resources.ResourceLocation;
@@ -30,8 +31,10 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig.Type;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
+import net.minecraftforge.registries.MissingMappingsEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import slimeknights.mantle.registration.RegistrationHelper;
 
 import java.util.Locale;
 
@@ -68,6 +71,7 @@ public class Inspirations {
     modBus.register(new InspirationsCaudrons());
     modBus.addListener(Config::configChanged);
     MinecraftForge.EVENT_BUS.register(Inspirations.class);
+    MinecraftForge.EVENT_BUS.addListener(Inspirations::missingMappings);
 
     InspirationsNetwork.INSTANCE.setup();
 
@@ -84,6 +88,20 @@ public class Inspirations {
     gen.addProvider(server, new InspirationsItemTagsProvider(gen, existing, blockTags));
     gen.addProvider(server, new InspirationsFluidTagsProvider(gen, existing));
     gen.addProvider(server, new InspirationsLootTableProvider(gen));
+  }
+
+  /** Handles missing mappings of all types */
+  private static void missingMappings(MissingMappingsEvent event) {
+    RegistrationHelper.handleMissingMappings(event, modID, Registry.ITEM_REGISTRY, name -> {
+      return switch (name) {
+        // combined colored books into one item
+        case "white_book",     "orange_book", "magenta_book", "light_blue_book",
+            "yellow_book",     "lime_book",   "pink_book",    "gray_book",
+            "light_gray_book", "cyan_book",   "purple_book",  "blue_book",
+            "brown_book",      "green_book",  "red_book",     "black_book" -> InspirationsBuilding.coloredBook;
+        default -> null;
+      };
+    });
   }
 
 
