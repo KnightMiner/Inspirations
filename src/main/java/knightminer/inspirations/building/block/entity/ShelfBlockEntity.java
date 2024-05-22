@@ -163,6 +163,7 @@ public class ShelfBlockEntity extends NameableBlockEntity implements IRetextured
    */
   public void onSlotChanged(int slot, ItemStack oldStack, ItemStack newStack) {
     // slot update
+    setChangedFast();
     Level world = getLevel();
     if (world != null) {
       if (!world.isClientSide) {
