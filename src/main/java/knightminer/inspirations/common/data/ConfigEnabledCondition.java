@@ -43,7 +43,12 @@ public class ConfigEnabledCondition implements ICondition, LootItemCondition {
 
   @Override
   public boolean test(ICondition.IContext context) {
-    return supplier.getAsBoolean();
+    try {
+      return supplier.getAsBoolean();
+    } catch (Exception e) {
+      Inspirations.log.error("Caught exception evaluating config condition {}", this.configName, e);
+      throw e;
+    }
   }
 
   @Override

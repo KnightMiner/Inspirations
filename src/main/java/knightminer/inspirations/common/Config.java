@@ -14,7 +14,6 @@ import net.minecraftforge.fml.event.config.ModConfigEvent;
 
 import java.util.function.BooleanSupplier;
 
-@SuppressWarnings("WeakerAccess")
 public class Config {
   /** Config for anything that affects gameplay */
   public static final ForgeConfigSpec SERVER_SPEC;
@@ -298,7 +297,7 @@ public class Config {
       enableNorthCompass = and(toolsModule, common.comment("Enables the north compass: a cheaper compass that always points north. Intended to either allow packs to replace the compass or as an alternative for F3 navigation").worldRestart().define("northCompass", true));
       enableBarometer    = and(toolsModule, common.comment("Enables the barometer: a tool to measure the player's height in world.").worldRestart().define("barometer", true));
       enablePhotometer   = and(toolsModule, common.comment("Enables the photometer: a tool to measure light in world. Can be pointed at a block to measure the light level of that block.").worldRestart().define("photometer", true));
-      enableDimensionCompass = and(toolsModule, server.comment("Enables the dimension compass: a compass which points towards the place you entered a dimension.", "When used on a lodestone, works across dimensions taking nether coordinates into account").worldRestart().define("dimensionCompass", true));
+      enableDimensionCompass = and(toolsModule, common.comment("Enables the dimension compass: a compass which points towards the place you entered a dimension.", "When used on a lodestone, works across dimensions taking nether coordinates into account").worldRestart().define("dimensionCompass", true));
 
       // enchantments
       fixShieldTooltip = and(toolsModule, server.comment("If true, fixes the tooltip on shield items so it looks better with both patterns and enchantments").worldRestart().define("fixShieldTooltip", true));
