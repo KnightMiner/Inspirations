@@ -8,7 +8,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -17,9 +16,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.HopperBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.common.util.NonNullConsumer;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import slimeknights.mantle.block.entity.InventoryBlockEntity;
@@ -31,7 +30,7 @@ import java.lang.ref.WeakReference;
 public class PipeBlockEntity extends InventoryBlockEntity {
   /** Server tick logic */
   public static final BlockEntityTicker<PipeBlockEntity> SERVER_TICKER = (level, pos, state, te) -> te.tick();
-  private static final Component TITLE = new TranslatableComponent("gui.inspirations.pipe");
+  private static final Component TITLE = Component.translatable("gui.inspirations.pipe");
 
   /* Number of ticks before transfer is allowed again */
   private short cooldown = 0;
@@ -94,7 +93,7 @@ public class PipeBlockEntity extends InventoryBlockEntity {
     assert level != null;
     BlockEntity te = level.getBlockEntity(worldPosition.relative(facing));
     if (te != null) {
-      LazyOptional<IItemHandler> handler = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing.getOpposite());
+      LazyOptional<IItemHandler> handler = te.getCapability(ForgeCapabilities.ITEM_HANDLER, facing.getOpposite());
       if (handler.isPresent()) {
         // add the invalidator
         handler.addListener(facingInvalidator);
@@ -151,7 +150,6 @@ public class PipeBlockEntity extends InventoryBlockEntity {
     this.hopper = null;
   }
 
-  @SuppressWarnings("deprecation")
   @Override
   public void setBlockState(BlockState pBlockState) {
     super.setBlockState(pBlockState);

@@ -6,6 +6,7 @@ import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -27,7 +28,6 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
-import java.util.Random;
 
 public class RedstoneChargeBlock extends Block {
 
@@ -50,14 +50,12 @@ public class RedstoneChargeBlock extends Block {
     return true;
   }
 
-  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public boolean canBeReplaced(BlockState p_196253_1_, BlockPlaceContext p_196253_2_) {
     return true;
   }
 
-  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public PushReaction getPistonPushReaction(BlockState p_149656_1_) {
@@ -82,7 +80,6 @@ public class RedstoneChargeBlock extends Block {
     super.setPlacedBy(world, pos, state, entity, stack);
   }
 
-  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
@@ -93,10 +90,9 @@ public class RedstoneChargeBlock extends Block {
     }
   }
 
-  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public void tick(BlockState state, ServerLevel world, BlockPos pos, Random random) {
+  public void tick(BlockState state, ServerLevel world, BlockPos pos, RandomSource random) {
     if (!world.isClientSide) {
       world.removeBlock(pos, false);
       world.playSound(null, pos, SoundEvents.REDSTONE_TORCH_BURNOUT, SoundSource.BLOCKS, 0.5F, 2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F);
@@ -106,21 +102,18 @@ public class RedstoneChargeBlock extends Block {
 
   /* Powering */
 
-  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public int getSignal(BlockState state, BlockGetter world, BlockPos pos, Direction side) {
     return 15;
   }
 
-  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public int getDirectSignal(BlockState state, BlockGetter world, BlockPos pos, Direction side) {
     return state.getValue(FACING).getOpposite() == side ? 15 : 0;
   }
 
-  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public boolean isSignalSource(BlockState state) {
@@ -136,14 +129,12 @@ public class RedstoneChargeBlock extends Block {
   /* Bounds */
   private static final VoxelShape BOUNDS = Block.box(6, 6, 6, 10, 10, 10);
 
-  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
     return BOUNDS;
   }
 
-  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public VoxelShape getCollisionShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
@@ -153,7 +144,6 @@ public class RedstoneChargeBlock extends Block {
 
   /* Properties */
 
-  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public boolean canSurvive(BlockState state, LevelReader world, BlockPos pos) {
@@ -168,7 +158,7 @@ public class RedstoneChargeBlock extends Block {
   }
 
   @Override
-  public void animateTick(BlockState stateIn, Level worldIn, BlockPos pos, Random rand) {
+  public void animateTick(BlockState stateIn, Level worldIn, BlockPos pos, RandomSource rand) {
     Direction facing = stateIn.getValue(FACING);
 
     int offX = facing.getStepX();
@@ -183,7 +173,6 @@ public class RedstoneChargeBlock extends Block {
     }
   }
 
-  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public RenderShape getRenderShape(BlockState state) {

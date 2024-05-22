@@ -5,6 +5,7 @@ import knightminer.inspirations.common.network.CauldronPotionUpdatePacket;
 import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.library.MiscUtil;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.alchemy.Potion;
@@ -54,7 +55,7 @@ public class PotionCauldronBlockEntity extends MantleBlockEntity {
 	protected void saveSynced(CompoundTag nbt) {
 		super.saveSynced(nbt);
 
-		nbt.putString(TAG_POTION, Objects.requireNonNull(potion.getRegistryName()).toString());
+		nbt.putString(TAG_POTION, Registry.POTION.getKey(potion).toString());
 	}
 
 	/** Parses a potion from the key */

@@ -70,7 +70,7 @@ public class SimpleDyedBottleItem extends DyeItem implements IHidable {
    */
   private static void consumeItem(Player player, InteractionHand hand, ItemStack stack) {
     if (!player.isCreative()) {
-      ItemStack bottle = stack.getContainerItem().copy();
+      ItemStack bottle = stack.getCraftingRemainingItem().copy();
       if (stack.getCount() == 1) {
         player.setItemInHand(hand, bottle);
       } else {

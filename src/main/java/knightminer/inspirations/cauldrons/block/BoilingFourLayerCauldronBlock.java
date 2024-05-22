@@ -6,6 +6,7 @@ import knightminer.inspirations.library.InspirationsTags;
 import knightminer.inspirations.library.MiscUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.cauldron.CauldronInteraction;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
@@ -14,7 +15,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
 import java.util.Map;
-import java.util.Random;
 
 /** Cauldron block that has four layers and emits boiling particles when over fire */
 public class BoilingFourLayerCauldronBlock extends FourLayerCauldronBlock {
@@ -32,7 +32,7 @@ public class BoilingFourLayerCauldronBlock extends FourLayerCauldronBlock {
 	}
 
 	@Override
-	public void animateTick(BlockState state, Level level, BlockPos pos, Random rand) {
+	public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource rand) {
 		if (isBoiling(level, pos)) {
 			MiscUtil.addParticles(InspirationsCaudrons.boilingParticle, level, pos, 2, getContentHeight(state), rand);
 		}

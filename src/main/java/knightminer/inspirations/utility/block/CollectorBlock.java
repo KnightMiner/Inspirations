@@ -8,6 +8,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.Container;
 import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
@@ -28,13 +29,12 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.material.Material;
-import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.network.NetworkHooks;
 import slimeknights.mantle.block.InventoryBlock;
 
 import javax.annotation.Nullable;
-import java.util.Random;
 
 public class CollectorBlock extends InventoryBlock implements IHidable {
 
@@ -77,7 +77,6 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
     return state.setValue(FACING, direction.rotate(state.getValue(FACING)));
   }
 
-  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public BlockState mirror(BlockState state, Mirror mirror) {
@@ -122,7 +121,7 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
     }
     BlockEntity te = world.getBlockEntity(pos);
     if (te instanceof CollectorBlockEntity) {
-      NetworkHooks.openGui((ServerPlayer)player, (MenuProvider)te, pos);
+      NetworkHooks.openScreen((ServerPlayer)player, (MenuProvider)te, pos);
       return true;
     }
     return false;
@@ -131,20 +130,18 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
 
   /* Comparator logic */
 
-  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public int getAnalogOutputSignal(BlockState blockState, Level world, BlockPos pos) {
     BlockEntity te = world.getBlockEntity(pos);
     if (te != null) {
-      return te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).map(
+      return te.getCapability(ForgeCapabilities.ITEM_HANDLER, null).map(
           ItemHandlerHelper::calcRedstoneFromInventory
-                                                                                      ).orElse(0);
+                                                                       ).orElse(0);
     }
     return 0;
   }
 
-  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public boolean hasAnalogOutputSignal(BlockState state) {
@@ -154,7 +151,6 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
 
   /* Collecting logic */
 
-  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, BlockPos neighbor, boolean isMoving) {
@@ -177,10 +173,9 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
     }
   }
 
-  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public void tick(BlockState state, ServerLevel world, BlockPos pos, Random random) {
+  public void tick(BlockState state, ServerLevel world, BlockPos pos, RandomSource random) {
     if (world.isClientSide) {
       return;
     }

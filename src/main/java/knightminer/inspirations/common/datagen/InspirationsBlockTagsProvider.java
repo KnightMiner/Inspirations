@@ -2,8 +2,8 @@ package knightminer.inspirations.common.datagen;
 
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.InspirationsBuilding;
-import knightminer.inspirations.library.InspirationsTags;
 import knightminer.inspirations.cauldrons.InspirationsCaudrons;
+import knightminer.inspirations.library.InspirationsTags;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraft.data.DataGenerator;
@@ -58,7 +58,7 @@ public class InspirationsBlockTagsProvider extends BlockTagsProvider {
     //this.getBuilder(BlockTags.DIRT_LIKE).add(InspirationsTags.Blocks.MULCH);
     this.tag(BlockTags.BAMBOO_PLANTABLE_ON).addTag(InspirationsTags.Blocks.MULCH);
     this.tag(BlockTags.WOODEN_TRAPDOORS).addTag(InspirationsTags.Blocks.CARPETED_TRAPDOORS);
-    TagAppender<Block> carpets = this.tag(BlockTags.CARPETS);
+    TagAppender<Block> carpets = this.tag(BlockTags.WOOL_CARPETS);
     InspirationsTweaks.fitCarpets.forEach(block -> carpets.add(block));
     this.tag(BlockTags.PIGLIN_REPELLENTS).add(InspirationsUtility.soulLeverWall, InspirationsUtility.soulLeverFloor);
     this.tag(BlockTags.WALL_POST_OVERRIDE).add(

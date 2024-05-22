@@ -29,7 +29,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BushBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
+import net.minecraftforge.event.entity.living.LivingEvent.LivingTickEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract;
@@ -52,7 +52,7 @@ public class TweaksEvents {
       return;
     }
 
-    Player player = event.getPlayer();
+    Player player = event.getEntity();
     ItemStack stack = player.getItemInHand(event.getHand());
     // must be sneaking and holding nothing
     if (player.isCrouching() && stack.isEmpty()) {
@@ -75,7 +75,7 @@ public class TweaksEvents {
     }
 
     // running client side acts weird
-    Level world = event.getWorld();
+    Level world = event.getLevel();
     if (world.isClientSide) {
       return;
     }
@@ -275,7 +275,7 @@ public class TweaksEvents {
     }
 
     // ensure client world
-    LivingEntity entity = event.getEntityLiving();
+    LivingEntity entity = event.getEntity();
     Level world = entity.getCommandSenderWorld();
     if (world.isClientSide) {
       return;
@@ -347,7 +347,7 @@ public class TweaksEvents {
     }
 
     // must be holding a milk container
-    Player player = event.getPlayer();
+    Player player = event.getEntity();
     InteractionHand hand = event.getHand();
     ItemStack stack = player.getItemInHand(hand);
     if (Config.milkCooldown.get() && stack.is(InspirationsTags.Items.MILK_CONTAINERS)) {
@@ -359,8 +359,8 @@ public class TweaksEvents {
       } else {
         // no tag means we add it as part of milking
         tags.putShort(TAG_MILKCOOLDOWN, Config.milkCooldownTime.get().shortValue());
-        if (!event.getWorld().isClientSide) {
-          InspirationsNetwork.sendToClients(event.getWorld(), target.blockPosition(), new MilkablePacket(target, false));
+        if (!event.getLevel().isClientSide) {
+          InspirationsNetwork.sendToClients(event.getLevel(), target.blockPosition(), new MilkablePacket(target, false));
         }
       }
     }
@@ -374,8 +374,8 @@ public class TweaksEvents {
   }
 
   @SubscribeEvent
-  static void updateMilkCooldown(LivingUpdateEvent event) {
-    LivingEntity entity = event.getEntityLiving();
+  static void updateMilkCooldown(LivingTickEvent event) {
+    LivingEntity entity = event.getEntity();
     Level world = entity.getCommandSenderWorld();
     // only run every 20 ticks on serverside
     if (world.isClientSide || (world.getGameTime() % 20) != 0) {

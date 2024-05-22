@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.world.inventory.InventoryMenu;
@@ -22,7 +23,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.model.data.EmptyModelData;
+import net.minecraftforge.client.model.data.ModelData;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.text.WordUtils;
 
@@ -33,7 +34,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-@SuppressWarnings("WeakerAccess")
 public final class ClientUtil {
   private static final Minecraft mc = Minecraft.getInstance();
 
@@ -61,7 +61,7 @@ public final class ClientUtil {
     if (model == mc.getModelManager().getMissingModel()) {
       return -1;
     }
-    TextureAtlasSprite sprite = model.getParticleIcon(EmptyModelData.INSTANCE);
+    TextureAtlasSprite sprite = model.getParticleIcon(ModelData.EMPTY);
     if (sprite == null) {
       return -1;
     }
@@ -89,7 +89,7 @@ public final class ClientUtil {
     } catch (Exception e) {
       // there is a random bug where models do not properly load, leading to a null frame data
       // so just catch that and treat it as another error state
-      InspirationsRegistry.log.error("Caught exception reading sprite for " + key.getRegistryName(), e);
+      InspirationsRegistry.log.error("Caught exception reading sprite for " + Registry.ITEM.getKey(key), e);
       return -1;
     }
     if (count > 0) {
@@ -163,7 +163,7 @@ public final class ClientUtil {
         return getStackBlockColors(stack, world, pos, index);
       } catch (Exception e) {
         // catch and log possible exceptions. Most likely exception is ClassCastException if they do not perform safety checks
-        Inspirations.log.error(String.format("Caught exception getting block colors for %s", item.getRegistryName()), e);
+        Inspirations.log.error(String.format("Caught exception getting block colors for %s", Registry.ITEM.getKey(item)), e);
         UNSAFE_COLORS.add(item);
       }
     }

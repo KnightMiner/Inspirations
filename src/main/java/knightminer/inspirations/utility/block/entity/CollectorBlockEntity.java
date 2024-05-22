@@ -5,7 +5,6 @@ import knightminer.inspirations.utility.block.menu.CollectorContainerMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
@@ -17,9 +16,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.AABB;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.common.util.NonNullConsumer;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import slimeknights.mantle.block.entity.InventoryBlockEntity;
@@ -28,7 +27,7 @@ import slimeknights.mantle.util.WeakConsumerWrapper;
 import javax.annotation.Nullable;
 
 public class CollectorBlockEntity extends InventoryBlockEntity {
-  private static final Component TITLE = new TranslatableComponent("gui.inspirations.collector");
+  private static final Component TITLE = Component.translatable("gui.inspirations.collector");
 
   /** Cache of the current TE we are facing */
   @Nullable
@@ -100,7 +99,7 @@ public class CollectorBlockEntity extends InventoryBlockEntity {
     BlockEntity te = level.getBlockEntity(worldPosition.relative(facing));
     // if we have a TE and its an item handler, try extracting from that
     if (te != null) {
-      LazyOptional<IItemHandler> handler = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing.getOpposite());
+      LazyOptional<IItemHandler> handler = te.getCapability(ForgeCapabilities.ITEM_HANDLER, facing.getOpposite());
       if (handler.isPresent()) {
         // add the invalidator
         handler.addListener(facingInvalidator);

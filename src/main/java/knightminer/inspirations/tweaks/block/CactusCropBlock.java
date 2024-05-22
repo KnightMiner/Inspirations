@@ -2,19 +2,19 @@ package knightminer.inspirations.tweaks.block;
 
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.core.Direction;
-import net.minecraft.world.level.ItemLike;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.Level;
 import net.minecraftforge.common.PlantType;
 
 import java.util.function.Supplier;
@@ -23,9 +23,6 @@ import java.util.stream.IntStream;
 public class CactusCropBlock extends BlockCropBlock {
 
   private static final VoxelShape[] BOUNDS = IntStream.range(1, 16).mapToObj(i -> box(1, 0, 1, 15, i, 15)).toArray(VoxelShape[]::new);
-  public CactusCropBlock(Block base, PlantType plant) {
-    super(base, plant);
-  }
 
   public CactusCropBlock(Supplier<Block> base, PlantType plant, Block.Properties properties) {
     super(base, plant, properties);
@@ -47,7 +44,6 @@ public class CactusCropBlock extends BlockCropBlock {
     entity.hurt(DamageSource.CACTUS, 1.0F);
   }
 
-  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public boolean canSurvive(BlockState state, LevelReader world, BlockPos pos) {

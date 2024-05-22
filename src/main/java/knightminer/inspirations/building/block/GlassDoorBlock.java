@@ -27,9 +27,8 @@ public class GlassDoorBlock extends DoorBlock implements IHidable {
     super(props);
   }
 
-  @Nullable
   @Override
-  public BlockPathTypes getAiPathNodeType(BlockState state, BlockGetter world, BlockPos pos, @Nullable Mob entity) {
+  public BlockPathTypes getBlockPathType(BlockState state, BlockGetter level, BlockPos pos, @Nullable Mob mob) {
     return state.getValue(OPEN) ? BlockPathTypes.DOOR_OPEN : BlockPathTypes.DOOR_WOOD_CLOSED;
   }
 

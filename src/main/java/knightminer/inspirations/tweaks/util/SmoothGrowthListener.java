@@ -7,16 +7,15 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.event.world.BlockEvent;
-import net.minecraftforge.event.world.BlockEvent.CropGrowEvent.Pre;
+import net.minecraftforge.event.level.BlockEvent;
+import net.minecraftforge.event.level.BlockEvent.CropGrowEvent.Pre;
 import net.minecraftforge.eventbus.api.Event.Result;
 
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 public class SmoothGrowthListener implements Consumer<Pre> {
 
-  private final Supplier<Block> crop, seed;
+  private final Block crop, seed;
 
   /**
    * Creates a new event listener for smooth growth
@@ -24,8 +23,8 @@ public class SmoothGrowthListener implements Consumer<Pre> {
    * @param seed   Seed to replace for crop growth
    */
   public SmoothGrowthListener(Block crop, Block seed) {
-    this.crop = crop.delegate;
-    this.seed = seed.delegate;
+    this.crop = crop;
+    this.seed = seed;
   }
 
   @Override
@@ -35,13 +34,12 @@ public class SmoothGrowthListener implements Consumer<Pre> {
     }
 
     // at half growth place the seed, gives us 8 ticks on the block, 8 on the seed instead of 16 on the block
-    Block crop = this.crop.get();
     if (event.getState().getBlock() != crop) {
       return;
     }
 
     // first, place the seed
-    LevelAccessor world = event.getWorld();
+    LevelAccessor world = event.getLevel();
     BlockPos dest, source;
 
     // sugar cane fires the event at the source, cactus at the destination
@@ -55,7 +53,7 @@ public class SmoothGrowthListener implements Consumer<Pre> {
       source = pos.below();
       dest = pos;
     }
-    BlockState state = seed.get().defaultBlockState();
+    BlockState state = seed.defaultBlockState();
     world.setBlock(dest, state, 3);
 
     // clear age on the block below
@@ -68,7 +66,7 @@ public class SmoothGrowthListener implements Consumer<Pre> {
 
     // update the block above and fire relevant events
     if (world instanceof Level casted) {
-      state.neighborChanged(casted, dest, seed.get(), source, false);
+      state.neighborChanged(casted, dest, seed, source, false);
       ForgeHooks.onCropsGrowPost(casted, source, state);
     }
   }

@@ -1,7 +1,6 @@
 package knightminer.inspirations.cauldrons;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
+import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.cauldrons.block.BoilingFourLayerCauldronBlock;
 import knightminer.inspirations.cauldrons.block.BoilingThreeLayerCauldronBlock;
 import knightminer.inspirations.cauldrons.block.DyeCauldronBlock;
@@ -49,13 +48,15 @@ import knightminer.inspirations.library.MiscUtil;
 import knightminer.inspirations.library.recipe.cauldron.CauldronRegistry;
 import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.utility.InspirationsUtility;
+import net.minecraft.Util;
+import net.minecraft.core.Registry;
 import net.minecraft.core.cauldron.CauldronInteraction;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.world.entity.ai.village.poi.PoiType;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.BowlFoodItem;
 import net.minecraft.world.item.BucketItem;
@@ -78,22 +79,20 @@ import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Material;
 import net.minecraftforge.common.ForgeMod;
+import net.minecraftforge.common.SoundActions;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
-import net.minecraftforge.event.RegistryEvent.Register;
+import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fluids.FluidAttributes;
+import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.GameData;
+import net.minecraftforge.registries.RegisterEvent;
+import slimeknights.mantle.fluid.TextureFluidType;
 import slimeknights.mantle.registration.FluidBuilder;
-import slimeknights.mantle.registration.ModelFluidAttributes;
 import slimeknights.mantle.registration.adapter.BlockEntityTypeRegistryAdapter;
 import slimeknights.mantle.registration.adapter.BlockRegistryAdapter;
 import slimeknights.mantle.registration.adapter.FluidRegistryAdapter;
@@ -107,14 +106,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 import static knightminer.inspirations.library.recipe.cauldron.CauldronRegistry.ALL_CAULDRONS;
 import static knightminer.inspirations.library.recipe.cauldron.CauldronRegistry.exactBlock;
 import static knightminer.inspirations.library.recipe.cauldron.CauldronRegistry.fluidTag;
 import static knightminer.inspirations.library.recipe.cauldron.CauldronRegistry.itemTag;
 
-@SuppressWarnings({"WeakerAccess", "unused"})
 public class InspirationsCaudrons extends ModuleBase {
   /** Interactions for the mushroom stew cauldron */
   public static final Map<Item,CauldronInteraction> MUSHROOM_STEW_CAULDRON_INTERACTIONS = CauldronInteraction.newInteractionMap();
@@ -156,22 +153,27 @@ public class InspirationsCaudrons extends ModuleBase {
 
   // fluids
   // mushroom
+  public static FluidType mushroomStewType;
   public static ForgeFlowingFluid mushroomStew;
   public static BucketItem mushroomStewBucket;
   public static LiquidBlock mushroomStewBlock;
   // beetroot
+  public static FluidType beetrootSoupType;
   public static ForgeFlowingFluid beetrootSoup;
   public static BucketItem beetrootSoupBucket;
   public static LiquidBlock beetrootSoupBlock;
   // rabbit
+  public static FluidType rabbitStewType;
   public static ForgeFlowingFluid rabbitStew;
   public static BucketItem rabbitStewBucket;
   public static LiquidBlock rabbitStewBlock;
   // potato
+  public static FluidType potatoSoupType;
   public static ForgeFlowingFluid potatoSoup;
   public static BucketItem potatoSoupBucket;
   public static LiquidBlock potatoSoupBlock;
   // honey
+  public static FluidType honeyType;
   public static ForgeFlowingFluid honey;
   public static BucketItem honeyBucket;
   public static LiquidBlock honeyFluidBlock;
@@ -183,110 +185,101 @@ public class InspirationsCaudrons extends ModuleBase {
   }
 
   @SubscribeEvent
-  void registerFluids(Register<Fluid> event) {
-    FluidRegistryAdapter adapter = new FluidRegistryAdapter(event.getRegistry());
+  void register(RegisterEvent event) {
+    ResourceKey<? extends Registry<?>> registryKey = event.getRegistryKey();
+    if (registryKey == ForgeRegistries.FLUID_TYPES) {
+      RegistryAdapter<FluidType> adapter = new RegistryAdapter<>(ForgeRegistries.FLUID_TYPES.get());
 
-    mushroomStew = adapter.register(new FluidBuilder(fluidBuilder().temperature(373).viscosity(1200))
-                                        .block(() -> mushroomStewBlock)
-                                        .bucket(() -> mushroomStewBucket), "mushroom_stew");
-    beetrootSoup = adapter.register(new FluidBuilder(fluidBuilder().temperature(373).viscosity(1100))
-                                        .block(() -> beetrootSoupBlock)
-                                        .bucket(() -> beetrootSoupBucket), "beetroot_soup");
-    rabbitStew = adapter.register(new FluidBuilder(fluidBuilder().temperature(373).viscosity(1400))
-                                      .block(() -> rabbitStewBlock)
-                                      .bucket(() -> rabbitStewBucket), "rabbit_stew");
-    potatoSoup = adapter.register(new FluidBuilder(fluidBuilder().temperature(373).viscosity(1300))
-                                      .block(() -> potatoSoupBlock)
-                                      .bucket(() -> potatoSoupBucket), "potato_soup");
-    honey = adapter.register(new FluidBuilder(fluidBuilder().viscosity(4000).temperature(373))
-                                      .block(() -> honeyFluidBlock)
-                                      .bucket(() -> honeyBucket), "honey");
-  }
-
-  @SubscribeEvent
-  void registerBlocks(Register<Block> event) {
-    BlockRegistryAdapter registry = new BlockRegistryAdapter(event.getRegistry());
-
-    BlockBehaviour.Properties cauldronProps = Properties.copy(Blocks.CAULDRON);
-    mushroomStewCauldron = registry.register(new BoilingFourLayerCauldronBlock(cauldronProps, MUSHROOM_STEW_CAULDRON_INTERACTIONS), "mushroom_stew_cauldron");
-    beetrootSoupCauldron = registry.register(new BoilingFourLayerCauldronBlock(cauldronProps, BEETROOT_SOUP_CAULDRON_INTERACTIONS), "beetroot_soup_cauldron");
-    rabbitStewCauldron   = registry.register(new BoilingFourLayerCauldronBlock(cauldronProps, RABBIT_STEW_CAULDRON_INTERACTIONS), "rabbit_stew_cauldron");
-    potatoSoupCauldron   = registry.register(new BoilingFourLayerCauldronBlock(cauldronProps, POTATO_SOUP_CAULDRON_INTERACTIONS), "potato_soup_cauldron");
-    honeyCauldron        = registry.register(new FourLayerCauldronBlock(cauldronProps, HONEY_CAULDRON_INTERACTIONS), "honey_cauldron");
-    milkCauldron         = registry.register(new BoilingFourLayerCauldronBlock(cauldronProps, MILK_CAULDRON_INTERACTIONS), "milk_cauldron");
-
-    mushroomStewBlock = registry.registerFluidBlock(() -> mushroomStew, Material.WATER, 0, "mushroom_stew");
-    beetrootSoupBlock = registry.registerFluidBlock(() -> beetrootSoup, Material.WATER, 0, "beetroot_soup");
-    rabbitStewBlock = registry.registerFluidBlock(() -> rabbitStew, Material.WATER, 0, "rabbit_stew");
-    potatoSoupBlock = registry.registerFluidBlock(() -> potatoSoup, Material.WATER, 0, "potato_soup");
-    honeyFluidBlock = registry.registerFluidBlock(() -> honey, Material.WATER, 0, "honey");
-
-    dyeCauldron = registry.register(new DyeCauldronBlock(cauldronProps), "dye_cauldron");
-    potionCauldron = registry.register(new PotionCauldronBlock(cauldronProps), "potion_cauldron");
-    suspiciousStewCauldron = registry.register(new SuspiciousStewCauldronBlock(cauldronProps), "suspicious_stew_cauldron");
-
-    if (Config.replaceVanillaCauldrons.getAsBoolean()) {
-      waterCauldron = registry.registerOverride(props -> new BoilingThreeLayerCauldronBlock(props, LayeredCauldronBlock.RAIN, CauldronInteraction.WATER), Blocks.WATER_CAULDRON);
+      mushroomStewType = adapter.register(new TextureFluidType(fluidBuilder("mushroom_stew").temperature(373).viscosity(1200)), "mushroom_stew");
+      beetrootSoupType = adapter.register(new TextureFluidType(fluidBuilder("beetroot_soup").temperature(373).viscosity(1100)), "beetroot_soup");
+      rabbitStewType = adapter.register(new TextureFluidType(fluidBuilder("rabbit_stew").temperature(373).viscosity(1400)), "rabbit_stew");
+      potatoSoupType = adapter.register(new TextureFluidType(fluidBuilder("potato_soup").temperature(373).viscosity(4000)), "potato_soup");
+      potatoSoupType = adapter.register(new TextureFluidType(fluidBuilder("honey").temperature(373).viscosity(4000)), "honey");
     }
-  }
+    else if (registryKey == Registry.FLUID_REGISTRY) {
+      FluidRegistryAdapter adapter = new FluidRegistryAdapter(ForgeRegistries.FLUIDS);
 
-  @SubscribeEvent
-  void registerBlockEntity(Register<BlockEntityType<?>> event) {
-    BlockEntityTypeRegistryAdapter registry = new BlockEntityTypeRegistryAdapter(event.getRegistry());
+      mushroomStew = adapter.register(FluidBuilder.create(() -> mushroomStewType).block(() -> mushroomStewBlock).bucket(() -> mushroomStewBucket), "mushroom_stew");
+      beetrootSoup = adapter.register(FluidBuilder.create(() -> beetrootSoupType).block(() -> beetrootSoupBlock).bucket(() -> beetrootSoupBucket), "beetroot_soup");
+      rabbitStew = adapter.register(FluidBuilder.create(() -> rabbitStewType).block(() -> rabbitStewBlock).bucket(() -> rabbitStewBucket), "rabbit_stew");
+      potatoSoup = adapter.register(FluidBuilder.create(() -> potatoSoupType).block(() -> potatoSoupBlock).bucket(() -> potatoSoupBucket), "potato_soup");
+      honey = adapter.register(FluidBuilder.create(() -> honeyType).block(() -> honeyFluidBlock).bucket(() -> honeyBucket), "honey");
+    }
+    else if (registryKey == Registry.BLOCK_REGISTRY) {
+      BlockRegistryAdapter registry = new BlockRegistryAdapter(ForgeRegistries.BLOCKS);
 
-    dyeCauldronEntity = registry.register(DyeCauldronBlockEntity::new, dyeCauldron, "dye_cauldron");
-    potionCauldronEntity = registry.register(PotionCauldronBlockEntity::new, potionCauldron, "potion_cauldron");
-    suspiciousStewCauldronEntity = registry.register(SuspiciousStewCauldronBlockEntity::new, suspiciousStewCauldron, "suspicious_stew_cauldron");
-  }
+      BlockBehaviour.Properties cauldronProps = Properties.copy(Blocks.CAULDRON);
+      mushroomStewCauldron = registry.register(new BoilingFourLayerCauldronBlock(cauldronProps, MUSHROOM_STEW_CAULDRON_INTERACTIONS), "mushroom_stew_cauldron");
+      beetrootSoupCauldron = registry.register(new BoilingFourLayerCauldronBlock(cauldronProps, BEETROOT_SOUP_CAULDRON_INTERACTIONS), "beetroot_soup_cauldron");
+      rabbitStewCauldron = registry.register(new BoilingFourLayerCauldronBlock(cauldronProps, RABBIT_STEW_CAULDRON_INTERACTIONS), "rabbit_stew_cauldron");
+      potatoSoupCauldron = registry.register(new BoilingFourLayerCauldronBlock(cauldronProps, POTATO_SOUP_CAULDRON_INTERACTIONS), "potato_soup_cauldron");
+      honeyCauldron = registry.register(new FourLayerCauldronBlock(cauldronProps, HONEY_CAULDRON_INTERACTIONS), "honey_cauldron");
+      milkCauldron = registry.register(new BoilingFourLayerCauldronBlock(cauldronProps, MILK_CAULDRON_INTERACTIONS), "milk_cauldron");
 
-  @SubscribeEvent
-  void registerItems(Register<Item> event) {
-    ItemRegistryAdapter registry = new ItemRegistryAdapter(event.getRegistry());
+      mushroomStewBlock = registry.registerFluidBlock(() -> mushroomStew, Material.WATER, 0, "mushroom_stew");
+      beetrootSoupBlock = registry.registerFluidBlock(() -> beetrootSoup, Material.WATER, 0, "beetroot_soup");
+      rabbitStewBlock = registry.registerFluidBlock(() -> rabbitStew, Material.WATER, 0, "rabbit_stew");
+      potatoSoupBlock = registry.registerFluidBlock(() -> potatoSoup, Material.WATER, 0, "potato_soup");
+      honeyFluidBlock = registry.registerFluidBlock(() -> honey, Material.WATER, 0, "honey");
 
-    // buckets
-    mushroomStewBucket = registry.registerBucket(() -> mushroomStew, "mushroom_stew");
-    beetrootSoupBucket = registry.registerBucket(() -> beetrootSoup, "beetroot_soup");
-    rabbitStewBucket = registry.registerBucket(() -> rabbitStew, "rabbit_stew");
-    potatoSoupBucket = registry.registerBucket(() -> potatoSoup, "potato_soup");
-    honeyBucket = registry.registerBucket(() -> honey, "honey");
+      dyeCauldron = registry.register(new DyeCauldronBlock(cauldronProps), "dye_cauldron");
+      potionCauldron = registry.register(new PotionCauldronBlock(cauldronProps), "potion_cauldron");
+      suspiciousStewCauldron = registry.register(new SuspiciousStewCauldronBlock(cauldronProps), "suspicious_stew_cauldron");
 
-    // potato soup
-    potatoSoupItem = registry.register(
-        new BowlFoodItem(new Item.Properties().stacksTo(1)
-                                          .tab(CreativeModeTab.TAB_FOOD)
-                                          .food(new FoodProperties.Builder().nutrition(8).saturationMod(0.6F).build())),
-        "potato_soup");
+      if (Config.replaceVanillaCauldrons.getAsBoolean()) {
+        waterCauldron = registry.registerOverride(props -> new BoilingThreeLayerCauldronBlock(props, LayeredCauldronBlock.RAIN, CauldronInteraction.WATER), Blocks.WATER_CAULDRON);
+      }
+    }
+    else if (registryKey == Registry.BLOCK_ENTITY_TYPE_REGISTRY) {
+      BlockEntityTypeRegistryAdapter registry = new BlockEntityTypeRegistryAdapter(ForgeRegistries.BLOCK_ENTITY_TYPES);
 
-    // empty bottles
-    Item.Properties brewingProps = new Item.Properties().tab(CreativeModeTab.TAB_BREWING);
-    splashBottle = registry.register(new EmptyBottleItem(brewingProps, Items.SPLASH_POTION.delegate), "splash_bottle");
-    lingeringBottle = registry.register(new EmptyBottleItem(brewingProps, Items.LINGERING_POTION.delegate), "lingering_bottle");
-    milkBottle = registry.register(new MilkBottleItem((new Item.Properties()).craftRemainder(Items.GLASS_BOTTLE).tab(CreativeModeTab.TAB_FOOD).stacksTo(16)), "milk_bottle");
+      dyeCauldronEntity = registry.register(DyeCauldronBlockEntity::new, dyeCauldron, "dye_cauldron");
+      potionCauldronEntity = registry.register(PotionCauldronBlockEntity::new, potionCauldron, "potion_cauldron");
+      suspiciousStewCauldronEntity = registry.register(SuspiciousStewCauldronBlockEntity::new, suspiciousStewCauldron, "suspicious_stew_cauldron");
+    }
+    else if (registryKey == Registry.ITEM_REGISTRY) {
+      ItemRegistryAdapter registry = new ItemRegistryAdapter(ForgeRegistries.ITEMS);
 
-    // dyed bottles
-    Item.Properties bottleProps = new Item.Properties()
-        .tab(CreativeModeTab.TAB_MATERIALS)
-        .stacksTo(16)
-        .craftRemainder(Items.GLASS_BOTTLE);
-    simpleDyedWaterBottle = registry.registerEnum(color -> new SimpleDyedBottleItem(bottleProps, DyeItem.byColor(color)), DyeColor.values(), "dyed_bottle");
-    mixedDyedWaterBottle = registry.register(new MixedDyedBottleItem(bottleProps), "mixed_dyed_bottle");
-  }
+      // buckets
+      mushroomStewBucket = registry.registerBucket(() -> mushroomStew, "mushroom_stew");
+      beetrootSoupBucket = registry.registerBucket(() -> beetrootSoup, "beetroot_soup");
+      rabbitStewBucket = registry.registerBucket(() -> rabbitStew, "rabbit_stew");
+      potatoSoupBucket = registry.registerBucket(() -> potatoSoup, "potato_soup");
+      honeyBucket = registry.registerBucket(() -> honey, "honey");
 
-  @SubscribeEvent
-  void registerParticleTypes(Register<ParticleType<?>> event) {
-    RegistryAdapter<ParticleType<?>> registry = new RegistryAdapter<>(event.getRegistry());
-    boilingParticle = registry.register(new SimpleParticleType(false), "boiling");
+      // potato soup
+      potatoSoupItem = registry.register(
+          new BowlFoodItem(new Item.Properties().stacksTo(1)
+                                                .tab(CreativeModeTab.TAB_FOOD)
+                                                .food(new FoodProperties.Builder().nutrition(8).saturationMod(0.6F).build())),
+          "potato_soup");
+
+      // empty bottles
+      Item.Properties brewingProps = new Item.Properties().tab(CreativeModeTab.TAB_BREWING);
+      splashBottle = registry.register(new EmptyBottleItem(brewingProps, () -> Items.SPLASH_POTION), "splash_bottle");
+      lingeringBottle = registry.register(new EmptyBottleItem(brewingProps, () -> Items.LINGERING_POTION), "lingering_bottle");
+      milkBottle = registry.register(new MilkBottleItem((new Item.Properties()).craftRemainder(Items.GLASS_BOTTLE).tab(CreativeModeTab.TAB_FOOD).stacksTo(16)), "milk_bottle");
+
+      // dyed bottles
+      Item.Properties bottleProps = new Item.Properties()
+          .tab(CreativeModeTab.TAB_MATERIALS)
+          .stacksTo(16)
+          .craftRemainder(Items.GLASS_BOTTLE);
+      simpleDyedWaterBottle = registry.registerEnum(color -> new SimpleDyedBottleItem(bottleProps, DyeItem.byColor(color)), DyeColor.values(), "dyed_bottle");
+      mixedDyedWaterBottle = registry.register(new MixedDyedBottleItem(bottleProps), "mixed_dyed_bottle");
+    }
+    else if (registryKey == Registry.PARTICLE_TYPE_REGISTRY) {
+      RegistryAdapter<ParticleType<?>> registry = new RegistryAdapter<>(ForgeRegistries.PARTICLE_TYPES);
+      boilingParticle = registry.register(new SimpleParticleType(false), "boiling");
+    }
   }
 
   @SubscribeEvent
   void gatherData(GatherDataEvent event) {
     DataGenerator gen = event.getGenerator();
-    if (event.includeServer()) {
-      gen.addProvider(new RecipesRecipeProvider(gen));
-    }
+    gen.addProvider(event.includeServer(), new RecipesRecipeProvider(gen));
   }
 
-  @SuppressWarnings("SuspiciousToArrayCall")
   @SubscribeEvent
   void commonSetup(FMLCommonSetupEvent event) {
     // get a list of all cauldrons
@@ -631,6 +624,7 @@ public class InspirationsCaudrons extends ModuleBase {
 
     // inject new cauldron blocks into the leatherworker point of interest
     // it should be as simple as injecting it into the map, but people keep reporting issues with this so just over do it
+    /* TODO: not sure this still works
     List<AbstractCauldronBlock> newCauldrons = ImmutableList.of(
         honeyCauldron, mushroomStewCauldron, potatoSoupCauldron, beetrootSoupCauldron, rabbitStewCauldron,
         dyeCauldron, potionCauldron, suspiciousStewCauldron);
@@ -655,14 +649,20 @@ public class InspirationsCaudrons extends ModuleBase {
       }
       PoiType.LEATHERWORKER.matchingStates = builder.build();
     }
+    */
   }
 
 
   /* Helpers */
 
   /** Creates a fluid builder */
-  private static FluidAttributes.Builder fluidBuilder() {
-    return ModelFluidAttributes.builder().sound(SoundEvents.BUCKET_FILL, SoundEvents.BUCKET_EMPTY);
+  private static FluidType.Properties fluidBuilder(String name) {
+    return FluidType.Properties.create()
+                               .descriptionId(Util.makeDescriptionId("fluid", Inspirations.getResource(name)))
+                               .sound(SoundActions.BUCKET_FILL, SoundEvents.BUCKET_FILL)
+                               .sound(SoundActions.BUCKET_EMPTY, SoundEvents.BUCKET_EMPTY)
+                               .motionScale(0.0023333333333333335D)
+                               .canExtinguish(true);
   }
 
   /** Gets concrete powder for the given color */

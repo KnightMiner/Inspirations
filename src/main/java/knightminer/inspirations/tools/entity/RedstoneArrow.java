@@ -6,7 +6,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -63,7 +62,7 @@ public class RedstoneArrow extends AbstractArrow implements IEntityAdditionalSpa
     this.setBaseDamage(0.25);
   }
 
-  private static final TranslatableComponent NAME = new TranslatableComponent("item.inspirations.charged_arrow");
+  private static final Component NAME = Component.translatable("item.inspirations.charged_arrow");
 
   @Override
   public Component getName() {

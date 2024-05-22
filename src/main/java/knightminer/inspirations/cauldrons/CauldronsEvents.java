@@ -27,13 +27,13 @@ public class CauldronsEvents {
     if(!Config.cauldronsModule.get()) {
       return;
     }
-    Player player = event.getPlayer();
+    Player player = event.getEntity();
     if (player.isCrouching()) {
       return;
     }
 
     // ignore non-cauldrons
-    Level world = event.getWorld();
+    Level world = event.getLevel();
     BlockPos pos = event.getPos();
     BlockState state = world.getBlockState(pos);
     if (!(state.getBlock() instanceof AbstractCauldronBlock)) {

@@ -11,6 +11,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.GsonHelper;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
@@ -34,9 +35,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 
-@SuppressWarnings("deprecation")
 public class MiscUtil {
   private static final String TAG_DISPLAY = "display";
   private static final String TAG_COLOR = "color";
@@ -378,7 +377,7 @@ public class MiscUtil {
 	 * @param offset Current fluid height
 	 * @param rand   Random instance
 	 */
-	public static void addParticles(ParticleOptions type, Level world, BlockPos pos, int count, double offset, Random rand) {
+	public static void addParticles(ParticleOptions type, Level world, BlockPos pos, int count, double offset, RandomSource rand) {
 		for (int i = 0; i < count; i++) {
 			double x = pos.getX() + 0.1875D + (rand.nextFloat() * 0.625D);
 			double y = pos.getY() + offset;

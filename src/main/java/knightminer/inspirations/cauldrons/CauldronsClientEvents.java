@@ -17,8 +17,8 @@ import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ColorHandlerEvent;
-import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
+import net.minecraftforge.client.event.RegisterColorHandlersEvent;
+import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
@@ -34,7 +34,7 @@ public class CauldronsClientEvents extends AbstractClientEvents {
   }
 
   @SubscribeEvent
-  static void registerBlockColors(ColorHandlerEvent.Block event) {
+  static void registerBlockColors(RegisterColorHandlersEvent.Block event) {
     BlockColors colors = event.getBlockColors();
     colors.register((state, level, pos, index) -> {
       if (index == 0 && level != null && pos != null) {
@@ -58,12 +58,12 @@ public class CauldronsClientEvents extends AbstractClientEvents {
   }
 
   @SubscribeEvent
-  static void registerParticleFactories(ParticleFactoryRegisterEvent event) {
+  static void registerParticleFactories(RegisterParticleProvidersEvent event) {
     Minecraft.getInstance().particleEngine.register(InspirationsCaudrons.boilingParticle, BoilingParticle.Factory::new);
   }
 
   @SubscribeEvent
-  static void registerItemColors(ColorHandlerEvent.Item event) {
+  static void registerItemColors(RegisterColorHandlersEvent.Item event) {
     ItemColors itemColors = event.getItemColors();
 
     // dyed water bottles

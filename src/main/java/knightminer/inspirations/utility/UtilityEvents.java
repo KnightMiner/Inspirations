@@ -41,7 +41,7 @@ public class UtilityEvents {
     }
 
     // must be clicking a stone pressure plate or the block below one
-    Level world = event.getWorld();
+    Level world = event.getLevel();
     BlockPos pos = event.getPos();
     BlockState current = world.getBlockState(pos);
     if (current.getBlock() != Blocks.STONE_PRESSURE_PLATE) {
@@ -58,7 +58,7 @@ public class UtilityEvents {
     state = state.updateShape(Direction.DOWN, world.getBlockState(pos.below()), world, pos, pos.below());
 
     // play sound
-    Player player = event.getPlayer();
+    Player player = event.getEntity();
     SoundType sound = state.getBlock().getSoundType(state, world, pos, player);
     world.playSound(player, pos, sound.getPlaceSound(), SoundSource.BLOCKS, (sound.getVolume() + 1.0F) / 2.0F, sound.getPitch() * 0.8F);
 
@@ -89,7 +89,7 @@ public class UtilityEvents {
     if (!Config.enablePipe.getAsBoolean() || event.getItemStack().getItem() != InspirationsUtility.pipe.asItem()) {
       return;
     }
-    Level world = event.getWorld();
+    Level world = event.getLevel();
     if (world.isClientSide || !(world.getBlockState(event.getPos()).getBlock() instanceof HopperBlock)) {
       return;
     }

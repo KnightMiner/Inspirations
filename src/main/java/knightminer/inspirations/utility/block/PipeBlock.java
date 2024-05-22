@@ -12,7 +12,6 @@ import net.minecraft.world.Container;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -50,7 +49,6 @@ import slimeknights.mantle.util.BlockEntityHelper;
 
 import javax.annotation.Nullable;
 
-@SuppressWarnings("WeakerAccess")
 public class PipeBlock extends InventoryBlock implements IHidable, SimpleWaterloggedBlock {
   // Facing is the direction we output to.
   public static final DirectionProperty FACING = BlockStateProperties.FACING;
@@ -111,21 +109,18 @@ public class PipeBlock extends InventoryBlock implements IHidable, SimpleWaterlo
     builder.add(WATERLOGGED, FACING, NORTH, EAST, SOUTH, WEST, UP, DOWN, HOPPER);
   }
 
-  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public BlockState rotate(BlockState state, Rotation rot) {
     return state.setValue(FACING, rot.rotate(state.getValue(FACING)));
   }
 
-  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public BlockState mirror(BlockState state, Mirror mirror) {
     return state.setValue(FACING, mirror.mirror(state.getValue(FACING)));
   }
 
-  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public BlockState updateShape(BlockState state, Direction neighFacing, BlockState neighState, LevelAccessor world, BlockPos pos, BlockPos neighPos) {
@@ -171,14 +166,12 @@ public class PipeBlock extends InventoryBlock implements IHidable, SimpleWaterlo
                .setValue(WEST, canConnectTo(world, pos, facing, Direction.WEST));
   }
 
-  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public FluidState getFluidState(BlockState state) {
     return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
   }
 
-  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult trace) {
@@ -195,8 +188,8 @@ public class PipeBlock extends InventoryBlock implements IHidable, SimpleWaterlo
     // If destroyed, drop contents.
     if (state.getBlock() != newState.getBlock()) {
       BlockEntity te = world.getBlockEntity(pos);
-      if (te instanceof Container) {
-        Containers.dropContents(world, pos, (Container)te);
+      if (te instanceof Container container) {
+        Containers.dropContents(world, pos, container);
       }
     }
     super.onRemove(state, world, pos, newState, isMoving);
@@ -234,12 +227,12 @@ public class PipeBlock extends InventoryBlock implements IHidable, SimpleWaterlo
 
   @Override
   protected boolean openGui(Player player, Level world, BlockPos pos) {
-    if (!(player instanceof ServerPlayer)) {
+    if (!(player instanceof ServerPlayer serverPlayer)) {
       throw new AssertionError("Needs to be server!");
     }
     BlockEntity te = world.getBlockEntity(pos);
-    if (te instanceof PipeBlockEntity) {
-      NetworkHooks.openGui((ServerPlayer)player, (MenuProvider)te, pos);
+    if (te instanceof PipeBlockEntity pipe) {
+      NetworkHooks.openScreen(serverPlayer, pipe, pos);
       return true;
     }
     return false;
@@ -302,7 +295,6 @@ public class PipeBlock extends InventoryBlock implements IHidable, SimpleWaterlo
     }
   }
 
-  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {

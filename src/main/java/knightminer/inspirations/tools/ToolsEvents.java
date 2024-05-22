@@ -5,8 +5,7 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.network.InspirationsNetwork;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -18,7 +17,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.item.enchantment.ThornsEnchantment;
 import net.minecraft.world.level.Level;
@@ -33,12 +31,11 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ToolActions;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
-import net.minecraftforge.event.world.BlockEvent.BreakEvent;
+import net.minecraftforge.event.level.BlockEvent.BreakEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.items.ItemHandlerHelper;
 
-@SuppressWarnings("unused")
 public class ToolsEvents {
   @SubscribeEvent
   public static void lockAndUnlock(RightClickBlock event) {
@@ -47,7 +44,7 @@ public class ToolsEvents {
     }
 
     // first, ensure we have a valid item to use
-    Player player = event.getPlayer();
+    Player player = event.getEntity();
     ItemStack stack = player.getItemInHand(event.getHand());
 
     boolean isKey = stack.getItem() == InspirationsTools.key;
@@ -56,19 +53,19 @@ public class ToolsEvents {
     if (!isKey && !isLock) {
       return;
     }
-    BlockEntity te = event.getWorld().getBlockEntity(event.getPos());
+    BlockEntity te = event.getLevel().getBlockEntity(event.getPos());
 
     if (te instanceof BaseContainerBlockEntity lockable) {
 
-      LockCode heldCode = new LockCode(stack.getHoverName().getContents());
+      LockCode heldCode = new LockCode(stack.getHoverName().getString());
 
       // lock code
       if (isLock) {
         // already locked: display message
         if (lockable.lockKey != LockCode.NO_LOCK) {
-          player.displayClientMessage(new TranslatableComponent(Inspirations.prefix("lock.fail.locked")), true);
+          player.displayClientMessage(Component.translatable(Inspirations.prefix("lock.fail.locked")), true);
         } else if (!stack.hasCustomHoverName()) {
-          player.displayClientMessage(new TranslatableComponent(Inspirations.prefix("lock.fail.blank")), true);
+          player.displayClientMessage(Component.translatable(Inspirations.prefix("lock.fail.blank")), true);
         } else {
           // lock the container
           lockable.lockKey = heldCode;
@@ -76,7 +73,7 @@ public class ToolsEvents {
           if (!player.isCreative()) {
             stack.shrink(1);
           }
-          player.displayClientMessage(new TranslatableComponent(Inspirations.prefix("lock.success")), true);
+          player.displayClientMessage(Component.translatable(Inspirations.prefix("lock.success")), true);
         }
 
         event.setCanceled(true);
@@ -89,15 +86,13 @@ public class ToolsEvents {
             LockCode code = lockable.lockKey;
             lockable.lockKey = LockCode.NO_LOCK;
             lockable.setChanged();
-            ItemHandlerHelper.giveItemToPlayer(player,
-                                               new ItemStack(InspirationsTools.lock).setHoverName(new TextComponent(code.key))
-                                              );
-            player.displayClientMessage(new TranslatableComponent(Inspirations.prefix("unlock.success")), true);
+            ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(InspirationsTools.lock).setHoverName(Component.literal(code.key)));
+            player.displayClientMessage(Component.translatable(Inspirations.prefix("unlock.success")), true);
           } else {
-            player.displayClientMessage(new TranslatableComponent(Inspirations.prefix("unlock.fail.no_match")), true);
+            player.displayClientMessage(Component.translatable(Inspirations.prefix("unlock.fail.no_match")), true);
           }
         } else {
-          player.displayClientMessage(new TranslatableComponent(Inspirations.prefix("unlock.fail.unlocked")), true);
+          player.displayClientMessage(Component.translatable(Inspirations.prefix("unlock.fail.unlocked")), true);
         }
 
         event.setCanceled(true);
@@ -116,7 +111,7 @@ public class ToolsEvents {
     if (event.isCanceled()) {
       return;
     }
-    if (event.getWorld().isClientSide() || !(event.getWorld() instanceof ServerLevel world)) {
+    if (event.getLevel().isClientSide() || !(event.getLevel() instanceof ServerLevel world)) {
       return;
     }
 
@@ -211,14 +206,14 @@ public class ToolsEvents {
     if (!Config.moreShieldEnchantments.getAsBoolean()) {
       return;
     }
-    LivingEntity target = event.getEntityLiving();
+    LivingEntity target = event.getEntity();
     if (target.level.isClientSide || !target.isBlocking()) {
       return;
     }
     ItemStack stack = target.getUseItem();
-    int thorns = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.THORNS, stack);
-    int fire = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.FIRE_ASPECT, stack);
-    int knockback = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.KNOCKBACK, stack);
+    int thorns = stack.getEnchantmentLevel(Enchantments.THORNS);
+    int fire = stack.getEnchantmentLevel(Enchantments.FIRE_ASPECT);
+    int knockback = stack.getEnchantmentLevel(Enchantments.KNOCKBACK);
     if (thorns == 0 && fire == 0 && knockback == 0) {
       return;
     }

@@ -2,30 +2,21 @@ package knightminer.inspirations.library.client;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 import knightminer.inspirations.Inspirations;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import slimeknights.mantle.data.IEarlyReloadListener;
+import slimeknights.mantle.data.listener.IEarlyReloadListener;
+import slimeknights.mantle.util.JsonHelper;
 
-import javax.annotation.Nullable;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * Class that will load a list of textures from a JSON file
@@ -49,17 +40,9 @@ public class CustomTextureLoader implements IEarlyReloadListener {
   public void onResourceManagerReload(ResourceManager manager) {
     // model type as the TESR is linked to the blockstate models
     // first, get a list of all json files
-    List<JsonObject> jsonFiles;
-    try {
-      // get all files
-      jsonFiles = manager.getResources(file).stream()
-                         .map(CustomTextureLoader::getJson)
-                         .filter(Objects::nonNull)
-                         .collect(Collectors.toList());
-    } catch(IOException e) {
-      jsonFiles = Collections.emptyList();
-      Inspirations.log.error("Failed to load model settings file", e);
-    }
+    List<JsonObject> jsonFiles = manager.getResourceStack(file).stream()
+                                       .map(resource -> JsonHelper.getJson(resource, file))
+                                       .filter(Objects::nonNull).toList();
 
     // first object is bottom most pack, so upper resource packs will replace it
     for (JsonObject json : jsonFiles) {
@@ -99,25 +82,6 @@ public class CustomTextureLoader implements IEarlyReloadListener {
   private void onTextureStitch(TextureStitchEvent.Pre event) {
     if (InventoryMenu.BLOCK_ATLAS.equals(event.getAtlas().location())) {
       textures.values().forEach(event::addSprite);
-    }
-  }
-
-
-  /* Helpers */
-
-  /**
-   * Converts the resource into a JSON file
-   * @param resource  Resource to read. Closed when done
-   * @return  JSON object, or null if failed to parse
-   */
-  @Nullable
-  private static JsonObject getJson(Resource resource) {
-    // this code is heavily based on ResourcePack::getResourceMetadata
-    try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8))) {
-      return GsonHelper.parse(reader);
-    } catch (JsonParseException | IOException e) {
-      Inspirations.log.error("Failed to load texture JSON " + resource.getLocation(), e);
-      return null;
     }
   }
 

@@ -7,6 +7,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
@@ -30,7 +31,6 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 
 import javax.annotation.Nullable;
-import java.util.Random;
 
 public class BricksButtonBlock extends HidableBlock {
 
@@ -75,14 +75,12 @@ public class BricksButtonBlock extends HidableBlock {
     super.setPlacedBy(world, pos, state, player, stack);
   }
 
-  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public BlockState rotate(BlockState state, Rotation rot) {
     return state.setValue(FACING, rot.rotate(state.getValue(FACING)));
   }
 
-  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public BlockState mirror(BlockState state, Mirror mirror) {
@@ -91,7 +89,6 @@ public class BricksButtonBlock extends HidableBlock {
 
   /* Pressing the button */
 
-  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult trace) {
@@ -112,10 +109,9 @@ public class BricksButtonBlock extends HidableBlock {
     return InteractionResult.SUCCESS;
   }
 
-  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public void tick(BlockState state, ServerLevel world, BlockPos pos, Random random) {
+  public void tick(BlockState state, ServerLevel world, BlockPos pos, RandomSource random) {
     if (world.isClientSide) {
       return;
     }
@@ -152,7 +148,6 @@ public class BricksButtonBlock extends HidableBlock {
 
   /* Redstone logic */
 
-  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
@@ -163,14 +158,12 @@ public class BricksButtonBlock extends HidableBlock {
     super.onRemove(state, world, pos, newState, isMoving);
   }
 
-  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public int getSignal(BlockState state, BlockGetter world, BlockPos pos, Direction side) {
     return state.getValue(POWERED) ? 15 : 0;
   }
 
-  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public int getDirectSignal(BlockState state, BlockGetter world, BlockPos pos, Direction side) {
@@ -178,7 +171,6 @@ public class BricksButtonBlock extends HidableBlock {
     return 0;
   }
 
-  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public boolean isSignalSource(BlockState state) {

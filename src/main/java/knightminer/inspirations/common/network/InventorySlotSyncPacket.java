@@ -5,14 +5,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.model.ModelDataManager;
-import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.network.NetworkEvent.Context;
 import slimeknights.mantle.network.packet.IThreadsafePacket;
 
-@SuppressWarnings("WeakerAccess")
 public class InventorySlotSyncPacket implements IThreadsafePacket {
 
   private final ItemStack itemStack;
@@ -53,15 +50,15 @@ public class InventorySlotSyncPacket implements IThreadsafePacket {
       assert Minecraft.getInstance().level != null;
       BlockEntity tileEntity = Minecraft.getInstance().level.getBlockEntity(packet.pos);
       if (tileEntity != null) {
-        tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
-                  .filter(handler -> handler instanceof IItemHandlerModifiable)
-                  .ifPresent(handler -> {
-                    ((IItemHandlerModifiable) handler).setStackInSlot(packet.slot, packet.itemStack);
-                    Minecraft minecraft = Minecraft.getInstance();
-                    BlockState state = tileEntity.getBlockState();
-                    minecraft.levelRenderer.blockChanged(minecraft.level, packet.pos, state, state, 3);
-                    ModelDataManager.requestModelDataRefresh(tileEntity);
-                  });
+        tileEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {
+          if (handler instanceof IItemHandlerModifiable itemHandler) {
+            itemHandler.setStackInSlot(packet.slot, packet.itemStack);
+//            Minecraft minecraft = Minecraft.getInstance();
+//            tileEntity.requestModelDataUpdate();
+//            BlockState state = tileEntity.getBlockState();
+//            minecraft.levelRenderer.blockChanged(minecraft.level, packet.pos, state, state, 3);
+          }
+        });
       }
     }
   }

@@ -9,13 +9,12 @@ import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ModelBakeEvent;
+import net.minecraftforge.client.event.ModelEvent.BakingCompleted;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
-@SuppressWarnings("unused")
 @EventBusSubscriber(modid = Inspirations.modID, value = Dist.CLIENT, bus = Bus.MOD)
 public class CommonsClientEvents extends AbstractClientEvents {
   public static ConfigurableResourcePack configPack;
@@ -25,7 +24,6 @@ public class CommonsClientEvents extends AbstractClientEvents {
    */
   public static void onConstruct() {
     Minecraft minecraft = Minecraft.getInstance();
-    //noinspection ConstantConditions  Not constant as minecraft is null during datagen
     if (minecraft != null) {
       configPack = new ConfigurableResourcePack(Inspirations.class, Inspirations.getResource("config_resources"), "Inspirations Config", ImmutableSet.of("minecraft"));
       minecraft.getResourcePackRepository().addPackFinder(configPack);
@@ -48,7 +46,7 @@ public class CommonsClientEvents extends AbstractClientEvents {
   public static ModelBakery modelLoader;
 
   @SubscribeEvent
-  public void collectBakeParameters(ModelBakeEvent event) {
-    modelLoader = event.getModelLoader();
+  public void collectBakeParameters(BakingCompleted event) {
+    modelLoader = event.getModelBakery();
   }
 }

@@ -15,8 +15,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.ItemStack;
@@ -24,9 +23,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ColorHandlerEvent;
-import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.client.model.ModelLoaderRegistry;
+import net.minecraftforge.client.event.ModelEvent.RegisterGeometryLoaders;
+import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -37,7 +35,6 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
 
-@SuppressWarnings({"unused", "WeakerAccess"})
 @EventBusSubscriber(modid = Inspirations.modID, value = Dist.CLIENT, bus = Bus.MOD)
 public class TweaksClientEvents extends AbstractClientEvents {
   @SubscribeEvent
@@ -50,7 +47,7 @@ public class TweaksClientEvents extends AbstractClientEvents {
   }
 
   @SubscribeEvent
-  static void modelRegistry(ModelRegistryEvent event) {
+  static void modelRegistry(RegisterGeometryLoaders event) {
     // add model replacements to the config pack
     CommonsClientEvents.configPack.addBlockstateReplacement(Config.customPortalColor, Blocks.NETHER_PORTAL, "nether_portal");
     CommonsClientEvents.configPack.addItemModelReplacement(Config.coloredEnchantedRibbons, Items.ENCHANTED_BOOK, "enchanted_book");
@@ -59,12 +56,12 @@ public class TweaksClientEvents extends AbstractClientEvents {
   }
 
   @SubscribeEvent
-  static void registerModelLoaders(ModelRegistryEvent event) {
-    ModelLoaderRegistry.registerLoader(Inspirations.getResource("trim"), TrimModel.LOADER);
+  static void registerModelLoaders(RegisterGeometryLoaders event) {
+    event.register("trim", TrimModel.LOADER);
   }
 
   @SubscribeEvent
-  static void registerBlockColors(ColorHandlerEvent.Block event) {
+  static void registerBlockColors(RegisterColorHandlersEvent.Block event) {
     BlockColors colors = event.getBlockColors();
 
     // coloring on sugar cane crop to match reeds
@@ -80,7 +77,7 @@ public class TweaksClientEvents extends AbstractClientEvents {
   }
 
   @SubscribeEvent
-  static void registerItemColors(ColorHandlerEvent.Item event) {
+  static void registerItemColors(RegisterColorHandlersEvent.Item event) {
     ItemColors itemColors = event.getItemColors();
 
     // colored ribbons on enchanted books
@@ -177,8 +174,8 @@ public class TweaksClientEvents extends AbstractClientEvents {
       int i = text.size() - 1;
       for (; i >= 0; i--) {
         Component component = text.get(i);
-        if (component instanceof TranslatableComponent && ((TranslatableComponent)component).getKey().contains("banner")) {
-          text.add(i + 1, TextComponent.EMPTY);
+        if (component.getContents() instanceof TranslatableContents translatable && translatable.getKey().contains("banner")) {
+          text.add(i + 1, Component.empty());
           break;
         }
       }

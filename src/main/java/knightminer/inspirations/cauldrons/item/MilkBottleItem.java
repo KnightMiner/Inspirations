@@ -49,7 +49,7 @@ public class MilkBottleItem extends Item {
 		}
 
 		// shrink the stack and return the container
-		ItemStack container = stack.getContainerItem().copy();
+		ItemStack container = stack.getCraftingRemainingItem().copy();
 		if (living instanceof Player player) {
 			return ItemUtils.createFilledResult(stack, player, container);
 		} else {

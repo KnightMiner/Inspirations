@@ -4,25 +4,24 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.client.renderer.block.model.BlockFaceUV;
+import com.mojang.math.Vector3f;
 import net.minecraft.client.renderer.block.model.BlockElement;
 import net.minecraft.client.renderer.block.model.BlockElementFace;
+import net.minecraft.client.renderer.block.model.BlockFaceUV;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.Material;
+import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.client.resources.model.UnbakedModel;
-import net.minecraft.client.renderer.block.model.ItemOverrides;
-import net.minecraft.client.resources.model.ModelBakery;
-import net.minecraft.client.resources.model.Material;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.resources.ResourceLocation;
-import com.mojang.math.Vector3f;
-import net.minecraftforge.client.model.IModelConfiguration;
-import net.minecraftforge.client.model.IModelLoader;
-import net.minecraftforge.client.model.geometry.IModelGeometry;
+import net.minecraft.util.GsonHelper;
+import net.minecraftforge.client.model.geometry.IGeometryBakingContext;
+import net.minecraftforge.client.model.geometry.IGeometryLoader;
+import net.minecraftforge.client.model.geometry.IUnbakedGeometry;
 import slimeknights.mantle.client.model.util.SimpleBlockModel;
 
 import java.util.ArrayList;
@@ -39,9 +38,9 @@ import java.util.function.Function;
 /**
  * Model that trims the specified number of pixels off the top of all elements. Designed for use with a parent model in resource packs.
  */
-public class TrimModel implements IModelGeometry<TrimModel> {
+public class TrimModel implements IUnbakedGeometry<TrimModel> {
   /** Loader instance */
-  public static final Loader LOADER = new Loader();
+  public static final IGeometryLoader<TrimModel> LOADER = TrimModel::readModel;
 
   private final SimpleBlockModel model;
   private final float trim;
@@ -51,19 +50,18 @@ public class TrimModel implements IModelGeometry<TrimModel> {
    * @param model  Base model
    * @param trim   Number of pixels to trim off the top of all elements
    */
-  @SuppressWarnings("WeakerAccess")
   public TrimModel(SimpleBlockModel model, float trim) {
     this.model = model;
     this.trim = trim;
   }
 
   @Override
-  public Collection<Material> getTextures(IModelConfiguration owner, Function<ResourceLocation,UnbakedModel> modelGetter, Set<Pair<String,String>> missingTextureErrors) {
-    return model.getTextures(owner, modelGetter, missingTextureErrors);
+  public Collection<Material> getMaterials(IGeometryBakingContext owner, Function<ResourceLocation,UnbakedModel> modelGetter, Set<Pair<String,String>> missingTextureErrors) {
+    return model.getMaterials(owner, modelGetter, missingTextureErrors);
   }
 
   @Override
-  public BakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<Material,TextureAtlasSprite> spriteGetter, ModelState transform, ItemOverrides overrides, ResourceLocation location) {
+  public BakedModel bake(IGeometryBakingContext owner, ModelBakery bakery, Function<Material,TextureAtlasSprite> spriteGetter, ModelState transform, ItemOverrides overrides, ResourceLocation location) {
     // first, determine the highest pixel for each xz location, this is needed as there may be multiple elements in a column
     List<BlockElement> originalElements = model.getElements();
     // map of XZ to highest height
@@ -146,7 +144,7 @@ public class TrimModel implements IModelGeometry<TrimModel> {
       }
     }
     // bake the final model
-    return SimpleBlockModel.bakeModel(owner, elements, transform, overrides, spriteGetter, location);
+    return SimpleBlockModel.bakeModel(owner, elements, spriteGetter, transform, overrides, location);
   }
 
   /**
@@ -162,19 +160,11 @@ public class TrimModel implements IModelGeometry<TrimModel> {
     }
     // trim UVs based on rotation, have to add to smaller numbers, subtract from larger
     float[] uvs = Arrays.copyOf(uv.uvs, 4);
-    switch(uv.rotation) {
-      case 0:
-        trim(uvs, amount, 1, 3);
-        break;
-      case 180:
-        trim(uvs, amount, 3, 1);
-        break;
-      case 90:
-        trim(uvs, amount, 0, 2);
-        break;
-      case 270:
-        trim(uvs, amount, 2, 0);
-        break;
+    switch (uv.rotation) {
+      case 0 -> trim(uvs, amount, 1, 3);
+      case 180 -> trim(uvs, amount, 3, 1);
+      case 90 -> trim(uvs, amount, 0, 2);
+      case 270 -> trim(uvs, amount, 2, 0);
     }
     return new BlockElementFace(face.cullForDirection, face.tintIndex, face.texture, new BlockFaceUV(uvs, uv.rotation));
   }
@@ -194,19 +184,12 @@ public class TrimModel implements IModelGeometry<TrimModel> {
     }
   }
 
-  /** Loader logic */
-  private static class Loader implements IModelLoader<TrimModel> {
-    @Override
-    public void onResourceManagerReload(ResourceManager resourceManager) {}
-
-    @Override
-    public TrimModel read(JsonDeserializationContext context, JsonObject json) {
-      SimpleBlockModel model = SimpleBlockModel.deserialize(context, json);
-      float trim = GsonHelper.getAsFloat(json, "trim");
-      if (trim <= 0) {
-        throw new JsonSyntaxException("trim must be greater than 0");
-      }
-      return new TrimModel(model, trim);
+  public static TrimModel readModel(JsonObject json, JsonDeserializationContext context) {
+    SimpleBlockModel model = SimpleBlockModel.deserialize(json, context);
+    float trim = GsonHelper.getAsFloat(json, "trim");
+    if (trim <= 0) {
+      throw new JsonSyntaxException("trim must be greater than 0");
     }
+    return new TrimModel(model, trim);
   }
 }

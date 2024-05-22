@@ -120,7 +120,7 @@ public class DimensionCompass implements ICapabilitySerializable<CompoundTag>, I
 	 * @param event  Event
 	 */
 	private static void dimensionChange(PlayerChangedDimensionEvent event) {
-		Player player = event.getPlayer();
+		Player player = event.getEntity();
 		BlockPos pos = player.blockPosition();
 		sync(player, pos);
 		player.getCapability(CAPABILITY).ifPresent(compass -> compass.setEnteredPosition(pos));
@@ -148,7 +148,7 @@ public class DimensionCompass implements ICapabilitySerializable<CompoundTag>, I
 	 * @param event  Event
 	 */
 	private static void playerLoggedIn(PlayerLoggedInEvent event) {
-		Player player = event.getPlayer();
+		Player player = event.getEntity();
 		player.getCapability(CAPABILITY).ifPresent(compass -> {
 			BlockPos pos = compass.getEnteredPosition();
 			// defaults to null, so sync should not be needed

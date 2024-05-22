@@ -21,6 +21,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
@@ -29,7 +30,6 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig.Type;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
-import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -37,7 +37,6 @@ import java.util.Locale;
 
 //import knightminer.inspirations.recipes.InspirationsRecipes;
 
-@SuppressWarnings("unused")
 @Mod(Inspirations.modID)
 public class Inspirations {
   public static final String modID = "inspirations";
@@ -78,14 +77,13 @@ public class Inspirations {
   @SubscribeEvent
   void gatherData(GatherDataEvent event) {
     DataGenerator gen = event.getGenerator();
-    if (event.includeServer()) {
-      ExistingFileHelper existing = event.getExistingFileHelper();
-      BlockTagsProvider blockTags = new InspirationsBlockTagsProvider(gen, existing);
-      gen.addProvider(blockTags);
-      gen.addProvider(new InspirationsItemTagsProvider(gen, existing, blockTags));
-      gen.addProvider(new InspirationsFluidTagsProvider(gen, existing));
-      gen.addProvider(new InspirationsLootTableProvider(gen));
-    }
+    boolean server = event.includeServer();
+    ExistingFileHelper existing = event.getExistingFileHelper();
+    BlockTagsProvider blockTags = new InspirationsBlockTagsProvider(gen, existing);
+    gen.addProvider(server, blockTags);
+    gen.addProvider(server, new InspirationsItemTagsProvider(gen, existing, blockTags));
+    gen.addProvider(server, new InspirationsFluidTagsProvider(gen, existing));
+    gen.addProvider(server, new InspirationsLootTableProvider(gen));
   }
 
 

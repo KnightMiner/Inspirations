@@ -1,7 +1,8 @@
 package knightminer.inspirations.library.client;
 
 import knightminer.inspirations.Inspirations;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.core.Registry;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.AbstractPackResources;
 import net.minecraft.server.packs.PackType;
@@ -14,13 +15,13 @@ import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
@@ -86,8 +87,12 @@ public class ConfigurableResourcePack extends AbstractPackResources implements R
    * @param name  Default resource path
    * @return  Resource from the path, or null if missing
    */
-  private InputStream getPackResource(String name) {
-    return resourceLoader.getResourceAsStream(pathPrefix + name);
+  private InputStream getPackResource(String name) throws IOException {
+    InputStream stream = resourceLoader.getResourceAsStream(pathPrefix + name);
+    if (stream != null) {
+      return stream;
+    }
+    throw new FileNotFoundException("Failed to open resource at " + pathPrefix + name);
   }
 
   @Override
@@ -114,7 +119,7 @@ public class ConfigurableResourcePack extends AbstractPackResources implements R
   }
 
   @Override
-  public Collection<ResourceLocation> getResources(PackType type, String domain, String path, int maxDepth, Predicate<String> filter) {
+  public Collection<ResourceLocation> getResources(PackType type, String domain, String path, Predicate<ResourceLocation> filter) {
     // this method appears to only be called for fonts and GUIs, so just return an empty list as neither is used here
     return Collections.emptyList();
   }
@@ -127,7 +132,7 @@ public class ConfigurableResourcePack extends AbstractPackResources implements R
     // add a new always enabled pack. Config is how you disable the replacements
     consumer.accept(Pack.create(
         packId, true, () -> this, factory, Pack.Position.TOP,
-        name -> new TranslatableComponent("pack.nameAndSource", name, Inspirations.modID)));
+        name -> Component.translatable("pack.nameAndSource", name, Inspirations.modID)));
   }
 
   /* Replacement additions */
@@ -162,7 +167,7 @@ public class ConfigurableResourcePack extends AbstractPackResources implements R
    * @param resource   Name of blockstate replacement
    */
   public void addBlockstateReplacement(BooleanSupplier condition, Block block, String resource) {
-    addReplacement(condition, makePath(Objects.requireNonNull(block.getRegistryName()), "blockstates", "json"), "blockstates/" + resource + ".json");
+    addReplacement(condition, makePath(Registry.BLOCK.getKey(block), "blockstates", "json"), "blockstates/" + resource + ".json");
   }
 
   /**
@@ -182,7 +187,7 @@ public class ConfigurableResourcePack extends AbstractPackResources implements R
    * @param resource   New name supplier
    */
   public void addItemModelReplacement(BooleanSupplier condition, ItemLike item, String resource) {
-    addReplacement(condition, makePath(Objects.requireNonNull(item.asItem().getRegistryName()), "models/item", "json"), "item_models/" + resource + ".json");
+    addReplacement(condition, makePath(Registry.ITEM.getKey(item.asItem()), "models/item", "json"), "item_models/" + resource + ".json");
   }
 
   /**

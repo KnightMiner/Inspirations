@@ -7,15 +7,18 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
 import net.minecraft.core.dispenser.DispenseItemBehavior;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.entity.DispenserBlockEntity;
+import net.minecraftforge.common.SoundActions;
 import net.minecraftforge.fluids.FluidActionResult;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 
+import java.util.Objects;
 import java.util.Optional;
 
 public class DispenseFluidTank extends DefaultDispenseItemBehavior {
@@ -47,11 +50,10 @@ public class DispenseFluidTank extends DefaultDispenseItemBehavior {
       if (result.isSuccess()) {
         ItemStack resultStack = result.getResult();
         // play sound
-        SoundEvent sound = optFluid.map(
-            (fluid) -> fluid.getFluid().getAttributes().getEmptySound(fluid)
-                                       ).orElseGet(() -> {
+        SoundEvent sound = optFluid.map((fluid) -> Objects.requireNonNullElse(fluid.getFluid().getFluidType().getSound(fluid, SoundActions.BUCKET_EMPTY), SoundEvents.BUCKET_EMPTY))
+                                   .orElseGet(() -> {
           FluidStack resultFluid = FluidUtil.getFluidContained(resultStack).orElseThrow(AssertionError::new);
-          return resultFluid.getFluid().getAttributes().getFillSound(resultFluid);
+          return Objects.requireNonNullElse(resultFluid.getFluid().getFluidType().getSound(resultFluid, SoundActions.BUCKET_FILL), SoundEvents.BUCKET_FILL);
         });
 
         world.playSound(null, pos, sound, SoundSource.BLOCKS, 1.0F, 1.0F);

@@ -52,7 +52,7 @@ public class TweaksRecipeProvider extends RecipeProvider implements IConditionBu
                        .pattern("  T")
                        .pattern(" TS")
                        .pattern("TDS")
-                       .save(withCondition(consumer, ConfigEnabledCondition.COLLECTOR, ConfigEnabledCondition.UNSTACKABLE_ALTS), modResource("tweaks/collector_stackable"));
+                       .save(withCondition(consumer, ConfigEnabledCondition.COLLECTOR, ConfigEnabledCondition.UNSTACKABLE_ALTS), location("tweaks/collector_stackable"));
 
     // stackable dispenser
     ShapedRecipeBuilder.shaped(Items.DISPENSER)
@@ -73,6 +73,6 @@ public class TweaksRecipeProvider extends RecipeProvider implements IConditionBu
                        .pattern(" TS")
                        .pattern("TDS")
                        .pattern(" TS")
-                       .save(withCondition(consumer, ConfigEnabledCondition.UNSTACKABLE_ALTS), modResource("tweaks/dispenser_stackable"));
+                       .save(withCondition(consumer, ConfigEnabledCondition.UNSTACKABLE_ALTS), location("tweaks/dispenser_stackable"));
   }
 }

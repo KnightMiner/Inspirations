@@ -5,8 +5,10 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.IHidable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
@@ -23,8 +25,6 @@ import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraftforge.event.LootTableLoadEvent;
 
 import javax.annotation.Nullable;
-import java.util.Objects;
-import java.util.Random;
 
 public class GrowableFlowerBlock extends FlowerBlock implements BonemealableBlock, IHidable {
   private final DoublePlantBlock largePlant;
@@ -55,19 +55,19 @@ public class GrowableFlowerBlock extends FlowerBlock implements BonemealableBloc
   }
 
   @Override
-  public boolean isBonemealSuccess(Level worldIn, Random rand, BlockPos pos, BlockState state) {
+  public boolean isBonemealSuccess(Level pLevel, RandomSource pRandom, BlockPos pPos, BlockState pState) {
     return true;
   }
 
   @Override
-  public void performBonemeal(ServerLevel world, Random rand, BlockPos pos, BlockState state) {
+  public void performBonemeal(ServerLevel level, RandomSource pRandom, BlockPos pos, BlockState state) {
     // should not happen, but catch anyways
     if (largePlant == null) {
       return;
     }
 
-    if (world.isEmptyBlock(pos.above())) {
-      DoublePlantBlock.placeAt(world, largePlant.defaultBlockState(), pos, 2);
+    if (level.isEmptyBlock(pos.above())) {
+      DoublePlantBlock.placeAt(level, largePlant.defaultBlockState(), pos, 2);
     }
   }
 
@@ -75,7 +75,7 @@ public class GrowableFlowerBlock extends FlowerBlock implements BonemealableBloc
   public void injectLoot(LootTableLoadEvent event) {
     if (largePlant == null ||
         !event.getName().getNamespace().equals("minecraft") ||
-        !event.getName().getPath().equals("blocks/" + Objects.requireNonNull(largePlant.getRegistryName()).getPath())
+        !event.getName().getPath().equals("blocks/" + Registry.BLOCK.getKey(largePlant).getPath())
     ) {
       return;
     }
@@ -83,11 +83,10 @@ public class GrowableFlowerBlock extends FlowerBlock implements BonemealableBloc
     // replace it with an alternatives check to drop us if hit by shears.
     // If anything doesn't match what we expect, don't change anything.
     LootTable table = event.getTable();
-    //noinspection ConstantConditions  Annotations are wrong
     if (table.removePool("main") == null) {
       return; // Wasn't removed.
     }
-    ResourceLocation location = Inspirations.getResource("blocks/inject/" + Objects.requireNonNull(getRegistryName()).getPath());
+    ResourceLocation location = Inspirations.getResource("blocks/inject/" + Registry.BLOCK.getKey(this).getPath());
     table.addPool(new LootPool.Builder()
                       .name(location.toString())
                       .setRolls(ConstantValue.exactly(1))

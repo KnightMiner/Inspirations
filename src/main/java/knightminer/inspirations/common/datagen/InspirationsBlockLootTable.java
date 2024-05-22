@@ -3,8 +3,8 @@ package knightminer.inspirations.common.datagen;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.building.block.RopeBlock;
-import knightminer.inspirations.common.Config;
 import knightminer.inspirations.cauldrons.InspirationsCaudrons;
+import knightminer.inspirations.common.Config;
 import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import knightminer.inspirations.utility.InspirationsUtility;
@@ -28,20 +28,20 @@ import net.minecraftforge.registries.ForgeRegistries;
 import slimeknights.mantle.loot.function.RetexturedLootFunction;
 
 import javax.annotation.Nonnull;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.Map.Entry;
 
 public class InspirationsBlockLootTable extends BlockLoot {
   @Nonnull
   @Override
   protected Iterable<Block> getKnownBlocks() {
     // We only care about our blocks.
-    return ForgeRegistries.BLOCKS.getValues().stream()
-                                 .filter((block) -> {
-                                   String ns = Objects.requireNonNull(block.getRegistryName()).getNamespace();
+    return ForgeRegistries.BLOCKS.getEntries().stream()
+                                 .filter(entry -> {
+                                   String ns = entry.getKey().location().getNamespace();
                                    return ns.equals(Inspirations.modID) || ns.equals("minecraft");
                                  })
-                                 .collect(Collectors.toList());
+                                 .map(Entry::getValue)
+                                 .toList();
   }
 
   @Override

@@ -1,9 +1,8 @@
 package knightminer.inspirations.building.block.type;
 
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
-import net.minecraft.util.StringRepresentable;
-import net.minecraftforge.registries.IRegistryDelegate;
 
 import java.util.Locale;
 
@@ -17,10 +16,10 @@ public enum FlowerType implements StringRepresentable {
   ROSE(Items.RED_DYE);
 
   private final String name = name().toLowerCase(Locale.ROOT);
-  private final IRegistryDelegate<Item> dye;
+  private final Item dye;
 
   FlowerType(Item dye) {
-    this.dye = dye.delegate;
+    this.dye = dye;
   }
 
   /**
@@ -28,7 +27,7 @@ public enum FlowerType implements StringRepresentable {
    * @return Dye color
    */
   public Item getDye() {
-    return dye.get();
+    return dye;
   }
 
   @Override

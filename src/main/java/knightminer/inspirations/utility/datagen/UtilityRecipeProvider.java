@@ -39,7 +39,7 @@ public class UtilityRecipeProvider extends RecipeProvider implements IConditionB
                        .pattern("CCC")
                        .pattern("CFC")
                        .pattern("CRC")
-                       .save(withCondition(consumer, ConfigEnabledCondition.COLLECTOR), prefix(InspirationsUtility.collector, "utility/"));
+                       .save(withCondition(consumer, ConfigEnabledCondition.COLLECTOR), prefix(id(InspirationsUtility.collector), "utility/"));
 
     // pipe
     ShapedRecipeBuilder.shaped(InspirationsUtility.pipe, 4)
@@ -47,7 +47,7 @@ public class UtilityRecipeProvider extends RecipeProvider implements IConditionB
                        .define('I', Tags.Items.INGOTS_IRON)
                        .define('P', ItemTags.PLANKS)
                        .pattern("IPI")
-                       .save(withCondition(consumer, ConfigEnabledCondition.PIPE), prefix(InspirationsUtility.pipe, "utility/"));
+                       .save(withCondition(consumer, ConfigEnabledCondition.PIPE), prefix(id(InspirationsUtility.pipe), "utility/"));
 
     // redstone book
     ShapelessRecipeBuilder.shapeless(InspirationsBuilding.redstoneBook)
@@ -55,7 +55,7 @@ public class UtilityRecipeProvider extends RecipeProvider implements IConditionB
                           .requires(Tags.Items.LEATHER)
                           .requires(Items.PAPER).requires(Items.PAPER)
                           .requires(Tags.Items.DUSTS_REDSTONE)
-                          .save(withCondition(consumer, ConfigEnabledCondition.BOOKSHELF, ConfigEnabledCondition.REDSTONE_BOOK), prefix(InspirationsBuilding.redstoneBook, "utility/"));
+                          .save(withCondition(consumer, ConfigEnabledCondition.BOOKSHELF, ConfigEnabledCondition.REDSTONE_BOOK), prefix(id(InspirationsBuilding.redstoneBook), "utility/"));
 
     // torch lever
     ShapedRecipeBuilder.shaped(InspirationsUtility.torchLeverItem)
@@ -65,7 +65,7 @@ public class UtilityRecipeProvider extends RecipeProvider implements IConditionB
             .define('T', Items.TORCH)
             .pattern("T")
             .pattern("S")
-            .save(withCondition(consumer, ConfigEnabledCondition.TORCH_LEVER), prefix(InspirationsUtility.torchLeverItem, "utility/"));
+            .save(withCondition(consumer, ConfigEnabledCondition.TORCH_LEVER), prefix(id(InspirationsUtility.torchLeverItem), "utility/"));
 
     // soul torch lever
     ShapedRecipeBuilder.shaped(InspirationsUtility.soulLeverItem)
@@ -75,11 +75,11 @@ public class UtilityRecipeProvider extends RecipeProvider implements IConditionB
             .define('T', Items.SOUL_TORCH)
             .pattern("T")
             .pattern("S")
-            .save(withCondition(consumer, ConfigEnabledCondition.TORCH_LEVER), prefix(InspirationsUtility.soulLeverItem, "utility/"));
+            .save(withCondition(consumer, ConfigEnabledCondition.TORCH_LEVER), prefix(id(InspirationsUtility.soulLeverItem), "utility/"));
 
     // carpeted trapdoor.
     Consumer<FinishedRecipe> trapdoorConfig = withCondition(consumer, ConfigEnabledCondition.CARPETED_TRAPDOOR);
-    String carpetedGroup = modPrefix("carpeted_trapdoor");
+    String carpetedGroup = prefix("carpeted_trapdoor");
     InspirationsUtility.carpetedTrapdoors.forEach((color, trapdoor) ->
                                                       ShapedRecipeBuilder.shaped(trapdoor)
                                                                          .unlockedBy("has_carpet", has(InspirationsTags.Items.CARPETS))
@@ -88,7 +88,7 @@ public class UtilityRecipeProvider extends RecipeProvider implements IConditionB
                                                                          .define('T', ItemTags.WOODEN_TRAPDOORS)
                                                                          .pattern("C")
                                                                          .pattern("T")
-                                                                         .save(trapdoorConfig, modResource("utility/carpeted_trapdoor/" + color.getSerializedName()))
+                                                                         .save(trapdoorConfig, location("utility/carpeted_trapdoor/" + color.getSerializedName()))
                                                  );
   }
 }

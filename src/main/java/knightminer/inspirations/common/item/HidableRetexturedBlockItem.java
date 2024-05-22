@@ -26,7 +26,7 @@ public class HidableRetexturedBlockItem extends HidableBlockItem {
 
   @Override
   public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
-    if (shouldAddtoItemGroup(group) && allowdedIn(group)) {
+    if (shouldAddtoItemGroup(group) && allowedIn(group)) {
       RetexturedBlockItem.addTagVariants(this.getBlock(), textureTag, items, Config.showAllVariants.get());
     }
   }

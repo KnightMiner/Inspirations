@@ -28,18 +28,18 @@ public class BuildingEvents {
    */
   @SubscribeEvent
   static void toggleRopeLadder(PlayerInteractEvent.RightClickBlock event) {
-    if (!Config.enableRopeLadder.getAsBoolean() || event.getWorld().isClientSide()) {
+    if (!Config.enableRopeLadder.getAsBoolean() || event.getLevel().isClientSide()) {
       return;
     }
 
-    Level world = event.getWorld();
+    Level world = event.getLevel();
     BlockPos pos = event.getPos();
     BlockState state = world.getBlockState(pos);
     if (!(state.getBlock() instanceof RopeBlock)) {
       return;
     }
 
-    Player player = event.getPlayer();
+    Player player = event.getEntity();
     if (state.getValue(RopeBlock.RUNGS) != RopeBlock.Rungs.NONE) {
       if (removeRopeLadder(world, pos, state, player)) {
         event.setCanceled(true);

@@ -1,7 +1,7 @@
 package knightminer.inspirations.library.recipe.crafting;
 
 import com.google.gson.JsonObject;
-import knightminer.inspirations.library.recipe.RecipeSerializers;
+import knightminer.inspirations.common.InspirationsCommons;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -10,7 +10,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
-import slimeknights.mantle.recipe.helper.AbstractRecipeSerializer;
+import slimeknights.mantle.recipe.helper.LoggingRecipeSerializer;
 
 import javax.annotation.Nullable;
 
@@ -44,16 +44,16 @@ public class ShapelessNoContainerRecipe extends ShapelessRecipe {
 
   @Override
   public RecipeSerializer<?> getSerializer() {
-    return RecipeSerializers.SHAPELESS_NO_CONTAINER;
+    return InspirationsCommons.shapelessNoContainer;
   }
 
   /**
    * Serializer to redirect to the shapeless serializer
    */
-  public static class Serializer extends AbstractRecipeSerializer<ShapelessNoContainerRecipe> {
+  public static class Serializer implements LoggingRecipeSerializer<ShapelessNoContainerRecipe> {
     @Nullable
     @Override
-    public ShapelessNoContainerRecipe fromNetwork(ResourceLocation recipeID, FriendlyByteBuf buffer) {
+    public ShapelessNoContainerRecipe fromNetworkSafe(ResourceLocation recipeID, FriendlyByteBuf buffer) {
       ShapelessRecipe recipe = SHAPELESS_RECIPE.fromNetwork(recipeID, buffer);
       if (recipe != null) {
         return new ShapelessNoContainerRecipe(recipe);
@@ -67,7 +67,7 @@ public class ShapelessNoContainerRecipe extends ShapelessRecipe {
     }
 
     @Override
-    public void toNetwork(FriendlyByteBuf buffer, ShapelessNoContainerRecipe recipe) {
+    public void toNetworkSafe(FriendlyByteBuf buffer, ShapelessNoContainerRecipe recipe) {
       Serializer.SHAPELESS_RECIPE.toNetwork(buffer, recipe);
     }
   }

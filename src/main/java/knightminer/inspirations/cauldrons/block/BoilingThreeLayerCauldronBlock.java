@@ -4,6 +4,7 @@ import knightminer.inspirations.cauldrons.InspirationsCaudrons;
 import knightminer.inspirations.library.MiscUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.cauldron.CauldronInteraction;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
@@ -12,7 +13,6 @@ import net.minecraft.world.level.block.LayeredCauldronBlock;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.Map;
-import java.util.Random;
 import java.util.function.Predicate;
 
 import static knightminer.inspirations.cauldrons.block.BoilingFourLayerCauldronBlock.DAMAGE_BOIL;
@@ -40,7 +40,7 @@ public class BoilingThreeLayerCauldronBlock extends LayeredCauldronBlock {
 	}
 
 	@Override
-	public void animateTick(BlockState state, Level level, BlockPos pos, Random rand) {
+	public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource rand) {
 		if (isBoiling(level, pos)) {
 			MiscUtil.addParticles(InspirationsCaudrons.boilingParticle, level, pos, 2, getContentHeight(state), rand);
 		}

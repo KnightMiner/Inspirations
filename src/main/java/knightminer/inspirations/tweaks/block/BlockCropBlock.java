@@ -4,6 +4,7 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.IHidable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
@@ -16,24 +17,19 @@ import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.PlantType;
 
-import java.util.Random;
 import java.util.function.Supplier;
 
-@SuppressWarnings("WeakerAccess")
 public abstract class BlockCropBlock extends CropBlock implements IHidable, IPlantable {
   public static final IntegerProperty LARGE_AGE = IntegerProperty.create("age", 0, 14);
 
   protected Supplier<Block> block;
   protected PlantType type;
-  protected BlockCropBlock(Supplier<Block> block, PlantType type, Properties props) {
+  public BlockCropBlock(Supplier<Block> block, PlantType type, Properties props) {
     super(props);
     this.block = block;
     this.type = type;
   }
 
-  protected BlockCropBlock(Block block, PlantType type) {
-    this(block.delegate, type, Properties.copy(block));
-  }
 
   /* Age logic */
 
@@ -68,7 +64,7 @@ public abstract class BlockCropBlock extends CropBlock implements IHidable, IPla
   }
 
   @Override
-  public void randomTick(BlockState state, ServerLevel world, BlockPos pos, Random random) {
+  public void randomTick(BlockState state, ServerLevel world, BlockPos pos, RandomSource random) {
     // Forge: prevent loading unloaded chunks when checking neighbor's light
     if (!world.isAreaLoaded(pos, 1)) return;
     // age will always be less than max, but safe to check
@@ -113,7 +109,7 @@ public abstract class BlockCropBlock extends CropBlock implements IHidable, IPla
   }
 
   @Override
-  public boolean isBonemealSuccess(Level worldIn, Random rand, BlockPos pos, BlockState state) {
+  public boolean isBonemealSuccess(Level worldIn, RandomSource rand, BlockPos pos, BlockState state) {
     return Config.bonemealBlockCrop.get();
   }
 

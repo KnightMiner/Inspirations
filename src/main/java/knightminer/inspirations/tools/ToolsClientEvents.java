@@ -12,7 +12,7 @@ import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ColorHandlerEvent;
+import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -43,7 +43,7 @@ public class ToolsClientEvents extends AbstractClientEvents {
   }
 
   @SubscribeEvent
-  static void registerItemColors(ColorHandlerEvent.Item event) {
+  static void registerItemColors(RegisterColorHandlersEvent.Item event) {
     ItemColors itemColors = event.getItemColors();
 
     // coloring of books for normal bookshelf

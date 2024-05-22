@@ -11,7 +11,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Inventory;
@@ -23,14 +22,11 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.model.ModelDataManager;
-import net.minecraftforge.client.model.data.IModelData;
-import net.minecraftforge.client.model.data.ModelDataMap;
+import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.client.model.data.ModelProperty;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.Lazy;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import slimeknights.mantle.block.entity.IRetexturedBlockEntity;
@@ -39,13 +35,12 @@ import slimeknights.mantle.util.RetexturedHelper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Objects;
-
-import static slimeknights.mantle.util.RetexturedHelper.TAG_TEXTURE;
 
 public class ShelfBlockEntity extends NameableBlockEntity implements IRetexturedBlockEntity {
+  private static final String TAG_TEXTURE = "texture";
+
   public static final ModelProperty<Integer> BOOKS = new ModelProperty<>();
-  private static final Component TITLE = new TranslatableComponent("gui.inspirations.shelf.name");
+  private static final Component TITLE = Component.translatable("gui.inspirations.shelf.name");
 
   /**
    * Cached enchantment bonus, so we are not constantly digging the inventory
@@ -57,8 +52,9 @@ public class ShelfBlockEntity extends NameableBlockEntity implements IRetextured
   private final LazyOptional<IItemHandler> itemCapability = LazyOptional.of(() -> inventory);
 
   // display
-  private final Lazy<IModelData> data = Lazy.of(this::getRetexturedModelData);
   private Block texture = Blocks.AIR;
+
+  private int books = 0;
 
   public ShelfBlockEntity(BlockPos pos, BlockState state) {
     super(InspirationsBuilding.shelfTileEntity, pos, state, TITLE);
@@ -174,8 +170,7 @@ public class ShelfBlockEntity extends NameableBlockEntity implements IRetextured
       }
       else {
         // update displayed book
-        IModelData data = this.data.get();
-        int oldBooks = Objects.requireNonNullElse(data.getData(BOOKS), 0);
+        int oldBooks = this.books;
         int books;
         if (InspirationsRegistry.isBook(newStack)) {
           books = oldBooks | 1 << slot;
@@ -183,8 +178,8 @@ public class ShelfBlockEntity extends NameableBlockEntity implements IRetextured
           books = oldBooks & ~(1 << slot);
         }
         if (books != oldBooks) {
-          data.setData(BOOKS, books);
-          ModelDataManager.requestModelDataRefresh(this);
+          this.books = books;
+          RetexturedHelper.onTextureUpdated(this);
         }
       }
 
@@ -210,7 +205,7 @@ public class ShelfBlockEntity extends NameableBlockEntity implements IRetextured
   @Nonnull
   @Override
   public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
-    if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+    if (cap == ForgeCapabilities.ITEM_HANDLER) {
       return itemCapability.cast();
     }
     return super.getCapability(cap, side);
@@ -297,16 +292,8 @@ public class ShelfBlockEntity extends NameableBlockEntity implements IRetextured
     }
   }
 
-  @Nonnull
-  @Override
-  public IModelData getModelData() {
-    return this.data.get();
-  }
-
-  @Override
-  public IModelData getRetexturedModelData() {
-    IModelData data = new ModelDataMap.Builder().withProperty(BOOKS).withProperty(RetexturedHelper.BLOCK_PROPERTY).build();
-    // pack books into integer
+  /** Refreshes the book property */
+  private void refreshBooks() {
     int books = 0;
     for (int i = 0; i < ShelfInventory.MAX_ITEMS; i++) {
       // non books will render in the TESR
@@ -314,13 +301,13 @@ public class ShelfBlockEntity extends NameableBlockEntity implements IRetextured
         books |= 1 << i;
       }
     }
-    // get texture if present
-    data.setData(BOOKS, books);
-    Block texture = getTexture();
-    if (texture != Blocks.AIR) {
-      data.setData(RetexturedHelper.BLOCK_PROPERTY, texture);
-    }
-    return data;
+    this.books = books;
+  }
+
+  @Nonnull
+  @Override
+  public ModelData getModelData() {
+    return ModelData.builder().with(BOOKS, books).with(RetexturedHelper.BLOCK_PROPERTY, getTexture()).build();
   }
 
 
@@ -349,16 +336,17 @@ public class ShelfBlockEntity extends NameableBlockEntity implements IRetextured
   @Override
   public void load(CompoundTag tags) {
     super.load(tags);
+    boolean needsUpdate = false;
     if (tags.contains(TAG_ITEMS, Tag.TAG_LIST)) {
       inventory.deserializeNBT(tags.getList(TAG_ITEMS, Tag.TAG_COMPOUND));
-      if (level != null && level.isClientSide) {
-        requestModelDataUpdate();
-        BlockState state = getBlockState();
-        level.sendBlockUpdated(worldPosition, state, state, 0);
-      }
+      refreshBooks();
+      needsUpdate = true;
     }
     if (tags.contains(TAG_TEXTURE, Tag.TAG_STRING)) {
       texture = RetexturedHelper.getBlock(tags.getString(TAG_TEXTURE));
+      needsUpdate = true;
+    }
+    if (needsUpdate) {
       RetexturedHelper.onTextureUpdated(this);
     }
   }

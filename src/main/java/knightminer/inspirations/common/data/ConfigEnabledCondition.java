@@ -42,7 +42,7 @@ public class ConfigEnabledCondition implements ICondition, LootItemCondition {
   }
 
   @Override
-  public boolean test() {
+  public boolean test(ICondition.IContext context) {
     return supplier.getAsBoolean();
   }
 
@@ -148,11 +148,8 @@ public class ConfigEnabledCondition implements ICondition, LootItemCondition {
 
   // tweaks
   public static final ConfigEnabledCondition UNSTACKABLE_ALTS = add("unstackable_alts", Config.unstackableRecipeAlts);
-  @SuppressWarnings("unused") // used in non-generated JSON
   public static final ConfigEnabledCondition SKELETON_SKULL = add("skeleton_skull", Config.skeletonSkull);
-  @SuppressWarnings("unused") // used in non-generated JSON
   public static final ConfigEnabledCondition CAVE_SPIDER_WEB = add("cave_spider_web", Config.caveSpiderDrops);
-  @SuppressWarnings("unused") // used in non-generated JSON
   public static final ConfigEnabledCondition HEARTBEETS = add("heartbeets", Config.enableHeartbeet);
 
   public static final ConfigEnabledCondition CAULDRON_SOUPS = add("cauldron_soups", Config.enableCauldronSoups);

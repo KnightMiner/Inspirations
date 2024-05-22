@@ -5,6 +5,7 @@ import knightminer.inspirations.tools.capability.IDimensionCompass;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.item.ItemPropertyFunction;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.GlobalPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.resources.ResourceKey;
@@ -20,7 +21,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
-import java.util.Optional;
 
 public class DimensionCompassPropertyGetter implements ItemPropertyFunction {
 	/* Last rotation for a target position */
@@ -110,9 +110,9 @@ public class DimensionCompassPropertyGetter implements ItemPropertyFunction {
 		boolean hasPos = nbt.contains("LodestonePos");
 		boolean hasDim = nbt.contains("LodestoneDimension");
 		if (hasPos && hasDim) {
-			Optional<ResourceKey<Level>> optional = CompassItem.getLodestoneDimension(nbt);
-			if (optional.isPresent()) {
-				ResourceKey<Level> storedDimension = optional.get();
+			GlobalPos globalPos = CompassItem.getLodestonePosition(nbt);
+			if (globalPos != null) {
+				ResourceKey<Level> storedDimension = globalPos.dimension();
 				ResourceKey<Level> currentDimension = world.dimension();
 				BlockPos pos = NbtUtils.readBlockPos(nbt.getCompound("LodestonePos"));
 

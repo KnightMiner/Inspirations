@@ -6,6 +6,7 @@ import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -20,8 +21,6 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
-
-import java.util.Random;
 
 public class TorchLeverWallBlock extends WallTorchBlock {
   private static final BooleanProperty POWERED = BlockStateProperties.POWERED;
@@ -39,7 +38,7 @@ public class TorchLeverWallBlock extends WallTorchBlock {
 
 
   @Override
-  public void animateTick(BlockState state, Level world, BlockPos pos, Random rand) {
+  public void animateTick(BlockState state, Level world, BlockPos pos, RandomSource rand) {
     Direction facing = state.getValue(FACING);
     double x = pos.getX() + 0.5D;
     double y = pos.getY() + 0.7D;
@@ -62,7 +61,6 @@ public class TorchLeverWallBlock extends WallTorchBlock {
    * Powering
    */
 
-  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult trace) {
@@ -87,7 +85,6 @@ public class TorchLeverWallBlock extends WallTorchBlock {
    * Called serverside after this block is replaced with another in Chunk, but before the Tile Entity is updated
    */
 
-  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
@@ -99,14 +96,12 @@ public class TorchLeverWallBlock extends WallTorchBlock {
     super.onRemove(state, world, pos, newState, isMoving);
   }
 
-  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public int getSignal(BlockState state, BlockGetter world, BlockPos pos, Direction side) {
     return state.getValue(POWERED) ? 15 : 0;
   }
 
-  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public int getDirectSignal(BlockState state, BlockGetter world, BlockPos pos, Direction side) {
@@ -116,7 +111,6 @@ public class TorchLeverWallBlock extends WallTorchBlock {
     return state.getValue(FACING) == side ? 15 : 0;
   }
 
-  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public boolean isSignalSource(BlockState state) {

@@ -22,10 +22,9 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.client.model.ModelLoaderRegistry;
+import net.minecraftforge.client.event.ModelEvent.RegisterGeometryLoaders;
+import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
@@ -38,7 +37,6 @@ import slimeknights.mantle.util.BlockEntityHelper;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-@SuppressWarnings("unused")
 @EventBusSubscriber(modid = Inspirations.modID, value = Dist.CLIENT, bus = Bus.MOD)
 public class BuildingClientEvents extends AbstractClientEvents {
   private static final Minecraft mc = Minecraft.getInstance();
@@ -75,8 +73,8 @@ public class BuildingClientEvents extends AbstractClientEvents {
   }
 
   @SubscribeEvent
-  static void registerModelLoaders(ModelRegistryEvent event) {
-    ModelLoaderRegistry.registerLoader(Inspirations.getResource("shelf"), ShelfModel.LOADER);
+  static void registerModelLoaders(RegisterGeometryLoaders event) {
+    event.register("shelf", ShelfModel.LOADER);
   }
 
   @SubscribeEvent
@@ -86,7 +84,7 @@ public class BuildingClientEvents extends AbstractClientEvents {
   }
 
   @SubscribeEvent
-  static void registerBlockColors(ColorHandlerEvent.Block event) {
+  static void registerBlockColors(RegisterColorHandlersEvent.Block event) {
     BlockColors blockColors = event.getBlockColors();
 
     // coloring of books for normal bookshelf
@@ -123,7 +121,7 @@ public class BuildingClientEvents extends AbstractClientEvents {
     InspirationsBuilding.enlightenedBush.forEach((type, bush) -> {
       if (type != BushType.WHITE) {
         int color = type.getColor(); // Make closure capture just the int.
-        blockColors.register((state, world, pos, tintIndex) -> tintIndex == 0 ? color : -1, bush);
+        event.register((state, world, pos, tintIndex) -> tintIndex == 0 ? color : -1, bush);
       }
     });
 
@@ -145,7 +143,7 @@ public class BuildingClientEvents extends AbstractClientEvents {
   }
 
   @SubscribeEvent
-  static void registerItemColors(ColorHandlerEvent.Item event) {
+  static void registerItemColors(RegisterColorHandlersEvent.Item event) {
     ItemColors itemColors = event.getItemColors();
 
     // coloring of books for normal bookshelf
@@ -159,7 +157,7 @@ public class BuildingClientEvents extends AbstractClientEvents {
     // book covers, too lazy to make 16 cover textures
     InspirationsBuilding.coloredBooks.forEach((color, book) -> {
       int hexColor = MiscUtil.getColor(color);
-      itemColors.register((stack, tintIndex) -> (tintIndex == 0) ? hexColor : -1, book);
+      event.register((stack, tintIndex) -> (tintIndex == 0) ? hexColor : -1, book);
     });
 
     // bush block colors
@@ -167,7 +165,7 @@ public class BuildingClientEvents extends AbstractClientEvents {
     InspirationsBuilding.enlightenedBush.forEach((type, bush) -> {
       if (type != BushType.WHITE) {
         int color = type.getColor();
-        itemColors.register((stack, tintIndex) -> tintIndex == 0 ? color : -1, bush);
+        event.register((stack, tintIndex) -> tintIndex == 0 ? color : -1, bush);
       }
     });
 
