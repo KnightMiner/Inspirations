@@ -9,6 +9,7 @@ import knightminer.inspirations.common.AbstractClientEvents;
 import knightminer.inspirations.library.MiscUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockColors;
+import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
@@ -19,12 +20,13 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
+import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
-@SuppressWarnings("unused")
 @EventBusSubscriber(modid = Inspirations.modID, value = Dist.CLIENT, bus = Bus.MOD)
 public class CauldronsClientEvents extends AbstractClientEvents {
   @SubscribeEvent
@@ -69,5 +71,16 @@ public class CauldronsClientEvents extends AbstractClientEvents {
     // dyed water bottles
     InspirationsCaudrons.simpleDyedWaterBottle.forEach((color, bottle) -> itemColors.register((stack, index) -> index == 0 ? MiscUtil.getColor(color) : -1, bottle));
     registerItemColors(itemColors, (stack, index) -> index == 0 ? MixedDyedBottleItem.dyeFromBottle(stack) : -1, InspirationsCaudrons.mixedDyedWaterBottle);
+    event.register(fluidColor(InspirationsCaudrons.mushroomStewType), InspirationsCaudrons.mushroomStewBucket);
+    event.register(fluidColor(InspirationsCaudrons.potatoSoupType), InspirationsCaudrons.potatoSoupBucket);
+    event.register(fluidColor(InspirationsCaudrons.rabbitStewType), InspirationsCaudrons.rabbitStewBucket);
+    event.register(fluidColor(InspirationsCaudrons.beetrootSoupType), InspirationsCaudrons.beetrootSoupBucket);
+    event.register(fluidColor(InspirationsCaudrons.honeyType), InspirationsCaudrons.honeyBucket);
+  }
+
+  /** Gets the fluid color for a bucket */
+  private static ItemColor fluidColor(FluidType type) {
+    IClientFluidTypeExtensions extensions = IClientFluidTypeExtensions.of(type);
+    return (stack, index) -> index == 1 ? extensions.getTintColor() : -1;
   }
 }

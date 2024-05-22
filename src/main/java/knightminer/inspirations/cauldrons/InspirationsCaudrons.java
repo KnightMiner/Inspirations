@@ -10,6 +10,8 @@ import knightminer.inspirations.cauldrons.block.SuspiciousStewCauldronBlock;
 import knightminer.inspirations.cauldrons.block.entity.DyeCauldronBlockEntity;
 import knightminer.inspirations.cauldrons.block.entity.PotionCauldronBlockEntity;
 import knightminer.inspirations.cauldrons.block.entity.SuspiciousStewCauldronBlockEntity;
+import knightminer.inspirations.cauldrons.data.FluidBlockstateModelProvider;
+import knightminer.inspirations.cauldrons.data.FluidBucketModelProvider;
 import knightminer.inspirations.cauldrons.data.RecipesRecipeProvider;
 import knightminer.inspirations.cauldrons.interaction.DecreaseLayerCauldronInteraction;
 import knightminer.inspirations.cauldrons.interaction.EmptyCauldronInteraction;
@@ -187,14 +189,13 @@ public class InspirationsCaudrons extends ModuleBase {
   @SubscribeEvent
   void register(RegisterEvent event) {
     ResourceKey<? extends Registry<?>> registryKey = event.getRegistryKey();
-    if (registryKey == ForgeRegistries.FLUID_TYPES) {
+    if (registryKey == ForgeRegistries.Keys.FLUID_TYPES) {
       RegistryAdapter<FluidType> adapter = new RegistryAdapter<>(ForgeRegistries.FLUID_TYPES.get());
-
       mushroomStewType = adapter.register(new TextureFluidType(fluidBuilder("mushroom_stew").temperature(373).viscosity(1200)), "mushroom_stew");
       beetrootSoupType = adapter.register(new TextureFluidType(fluidBuilder("beetroot_soup").temperature(373).viscosity(1100)), "beetroot_soup");
       rabbitStewType = adapter.register(new TextureFluidType(fluidBuilder("rabbit_stew").temperature(373).viscosity(1400)), "rabbit_stew");
       potatoSoupType = adapter.register(new TextureFluidType(fluidBuilder("potato_soup").temperature(373).viscosity(4000)), "potato_soup");
-      potatoSoupType = adapter.register(new TextureFluidType(fluidBuilder("honey").temperature(373).viscosity(4000)), "honey");
+      honeyType = adapter.register(new TextureFluidType(fluidBuilder("honey").temperature(373).viscosity(4000)), "honey");
     }
     else if (registryKey == Registry.FLUID_REGISTRY) {
       FluidRegistryAdapter adapter = new FluidRegistryAdapter(ForgeRegistries.FLUIDS);
@@ -278,6 +279,10 @@ public class InspirationsCaudrons extends ModuleBase {
   void gatherData(GatherDataEvent event) {
     DataGenerator gen = event.getGenerator();
     gen.addProvider(event.includeServer(), new RecipesRecipeProvider(gen));
+    boolean client = event.includeClient();
+    gen.addProvider(client, new FluidBlockstateModelProvider(gen, Inspirations.modID));
+    gen.addProvider(client, new FluidBucketModelProvider(gen, Inspirations.modID));
+    gen.addProvider(client, new FluidTextureProvider(gen));
   }
 
   @SubscribeEvent

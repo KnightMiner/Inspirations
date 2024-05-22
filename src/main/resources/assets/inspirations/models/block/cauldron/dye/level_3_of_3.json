@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/template_cauldron_full",
   "textures": {
-    "content": "inspirations:block/fluid/colorless"
+    "content": "inspirations:fluid/colorless_still"
   }
 }

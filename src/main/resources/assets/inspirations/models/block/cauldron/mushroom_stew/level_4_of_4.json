@@ -2,7 +2,7 @@
   "loader": "mantle:colored_block",
   "parent": "inspirations:block/cauldron/level_4_of_4",
   "textures": {
-    "content": "inspirations:block/fluid/colorless"
+    "content": "inspirations:fluid/colorless_still"
   },
   "colors": [
     { "color": "FFCD8C6F" }

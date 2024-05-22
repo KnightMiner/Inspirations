@@ -1,0 +1,6 @@
+{
+  "parent": "forge:item/bucket_drip",
+  "flip_gas": false,
+  "fluid": "inspirations:potato_soup",
+  "loader": "forge:fluid_container"
+}
