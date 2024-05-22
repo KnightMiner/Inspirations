@@ -2,8 +2,8 @@
   "type": "minecraft:crafting_shapeless",
   "conditions": [
     {
-      "prop": "redstone_charger",
-      "type": "inspirations:config"
+      "type": "inspirations:config",
+      "prop": "redstone_charger"
     }
   ],
   "ingredients": [

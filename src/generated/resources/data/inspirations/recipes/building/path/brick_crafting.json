@@ -2,20 +2,20 @@
   "type": "minecraft:crafting_shaped",
   "conditions": [
     {
-      "prop": "path",
-      "type": "inspirations:config"
+      "type": "inspirations:config",
+      "prop": "path"
     }
-  ],
-  "pattern": [
-    "CC"
   ],
   "key": {
     "C": {
       "item": "minecraft:bricks"
     }
   },
+  "pattern": [
+    "CC"
+  ],
   "result": {
-    "item": "inspirations:brick_path",
-    "count": 6
+    "count": 6,
+    "item": "inspirations:brick_path"
   }
 }

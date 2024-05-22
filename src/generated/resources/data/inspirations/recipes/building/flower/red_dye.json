@@ -2,8 +2,8 @@
   "type": "minecraft:crafting_shapeless",
   "conditions": [
     {
-      "prop": "flowers",
-      "type": "inspirations:config"
+      "type": "inspirations:config",
+      "prop": "flowers"
     }
   ],
   "group": "red_dye",

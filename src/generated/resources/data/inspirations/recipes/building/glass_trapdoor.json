@@ -2,21 +2,21 @@
   "type": "minecraft:crafting_shaped",
   "conditions": [
     {
-      "prop": "glass_door",
-      "type": "inspirations:config"
+      "type": "inspirations:config",
+      "prop": "glass_door"
     }
-  ],
-  "pattern": [
-    "GGG",
-    "GGG"
   ],
   "key": {
     "G": {
       "item": "minecraft:glass_pane"
     }
   },
+  "pattern": [
+    "GGG",
+    "GGG"
+  ],
   "result": {
-    "item": "inspirations:glass_trapdoor",
-    "count": 2
+    "count": 2,
+    "item": "inspirations:glass_trapdoor"
   }
 }

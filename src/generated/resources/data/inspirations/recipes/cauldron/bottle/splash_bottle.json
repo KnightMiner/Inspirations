@@ -1,17 +1,17 @@
 {
   "type": "minecraft:smithing",
-  "conditions": [
-    {
-      "prop": "cauldron_potions",
-      "type": "inspirations:config"
-    }
-  ],
-  "base": {
-    "item": "minecraft:glass_bottle"
-  },
   "addition": {
     "tag": "forge:gunpowder"
   },
+  "base": {
+    "item": "minecraft:glass_bottle"
+  },
+  "conditions": [
+    {
+      "type": "inspirations:config",
+      "prop": "cauldron_potions"
+    }
+  ],
   "result": {
     "item": "inspirations:splash_bottle"
   }

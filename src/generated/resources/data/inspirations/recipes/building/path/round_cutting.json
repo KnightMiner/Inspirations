@@ -2,13 +2,13 @@
   "type": "minecraft:stonecutting",
   "conditions": [
     {
-      "prop": "path",
-      "type": "inspirations:config"
+      "type": "inspirations:config",
+      "prop": "path"
     }
   ],
+  "count": 6,
   "ingredient": {
     "item": "minecraft:stone"
   },
-  "result": "inspirations:round_path",
-  "count": 6
+  "result": "inspirations:round_path"
 }

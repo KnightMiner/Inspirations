@@ -2,12 +2,12 @@
   "type": "minecraft:crafting_shapeless",
   "conditions": [
     {
-      "prop": "bookshelf",
-      "type": "inspirations:config"
+      "type": "inspirations:config",
+      "prop": "bookshelf"
     },
     {
-      "prop": "redstone_book",
-      "type": "inspirations:config"
+      "type": "inspirations:config",
+      "prop": "redstone_book"
     }
   ],
   "ingredients": [

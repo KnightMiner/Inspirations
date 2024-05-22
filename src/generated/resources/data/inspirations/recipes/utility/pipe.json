@@ -2,12 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "conditions": [
     {
-      "prop": "pipe",
-      "type": "inspirations:config"
+      "type": "inspirations:config",
+      "prop": "pipe"
     }
-  ],
-  "pattern": [
-    "IPI"
   ],
   "key": {
     "I": {
@@ -17,8 +14,11 @@
       "tag": "minecraft:planks"
     }
   },
+  "pattern": [
+    "IPI"
+  ],
   "result": {
-    "item": "inspirations:pipe",
-    "count": 4
+    "count": 4,
+    "item": "inspirations:pipe"
   }
 }

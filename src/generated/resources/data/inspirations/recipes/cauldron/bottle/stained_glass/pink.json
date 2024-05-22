@@ -2,16 +2,11 @@
   "type": "minecraft:crafting_shaped",
   "conditions": [
     {
-      "prop": "cauldron_dyeing",
-      "type": "inspirations:config"
+      "type": "inspirations:config",
+      "prop": "cauldron_dyeing"
     }
   ],
   "group": "stained_glass",
-  "pattern": [
-    "###",
-    "#x#",
-    "###"
-  ],
   "key": {
     "#": {
       "tag": "forge:glass/colorless"
@@ -20,8 +15,13 @@
       "item": "inspirations:pink_dyed_bottle"
     }
   },
+  "pattern": [
+    "###",
+    "#x#",
+    "###"
+  ],
   "result": {
-    "item": "minecraft:pink_stained_glass",
-    "count": 8
+    "count": 8,
+    "item": "minecraft:pink_stained_glass"
   }
 }

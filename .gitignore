@@ -24,3 +24,4 @@ libs
 classes/
 logs/debug.log
 logs/latest.log
+src/generated/resources/.cache/

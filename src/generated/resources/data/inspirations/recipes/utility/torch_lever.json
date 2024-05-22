@@ -2,13 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "conditions": [
     {
-      "prop": "torch_lever",
-      "type": "inspirations:config"
+      "type": "inspirations:config",
+      "prop": "torch_lever"
     }
-  ],
-  "pattern": [
-    "T",
-    "S"
   ],
   "key": {
     "S": {
@@ -18,6 +14,10 @@
       "item": "minecraft:torch"
     }
   },
+  "pattern": [
+    "T",
+    "S"
+  ],
   "result": {
     "item": "inspirations:torch_lever"
   }

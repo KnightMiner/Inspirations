@@ -1,17 +1,17 @@
 {
   "type": "minecraft:smithing",
-  "conditions": [
-    {
-      "prop": "cauldron_potions",
-      "type": "inspirations:config"
-    }
-  ],
-  "base": {
-    "tag": "forge:bottles/splash"
-  },
   "addition": {
     "item": "minecraft:dragon_breath"
   },
+  "base": {
+    "tag": "forge:bottles/splash"
+  },
+  "conditions": [
+    {
+      "type": "inspirations:config",
+      "prop": "cauldron_potions"
+    }
+  ],
   "result": {
     "item": "inspirations:lingering_bottle"
   }

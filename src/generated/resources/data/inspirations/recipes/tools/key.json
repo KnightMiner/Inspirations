@@ -2,12 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "conditions": [
     {
-      "prop": "lock",
-      "type": "inspirations:config"
+      "type": "inspirations:config",
+      "prop": "lock"
     }
-  ],
-  "pattern": [
-    "IN"
   ],
   "key": {
     "I": {
@@ -17,6 +14,9 @@
       "tag": "forge:nuggets/iron"
     }
   },
+  "pattern": [
+    "IN"
+  ],
   "result": {
     "item": "inspirations:key"
   }

@@ -2,19 +2,7 @@
   "type": "minecraft:block",
   "pools": [
     {
-      "rolls": 1.0,
       "bonus_rolls": 0.0,
-      "entries": [
-        {
-          "type": "minecraft:item",
-          "functions": [
-            {
-              "function": "mantle:fill_retextured_block"
-            }
-          ],
-          "name": "inspirations:red_enlightened_bush"
-        }
-      ],
       "conditions": [
         {
           "condition": "minecraft:alternative",
@@ -42,7 +30,19 @@
             }
           ]
         }
-      ]
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "mantle:fill_retextured_block"
+            }
+          ],
+          "name": "inspirations:red_enlightened_bush"
+        }
+      ],
+      "rolls": 1.0
     }
   ]
 }

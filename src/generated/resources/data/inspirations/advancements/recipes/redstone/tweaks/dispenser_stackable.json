@@ -1,31 +1,26 @@
 {
   "parent": "minecraft:recipes/root",
-  "rewards": {
-    "recipes": [
-      "inspirations:tweaks/dispenser_stackable"
-    ]
-  },
   "criteria": {
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "inspirations:tweaks/dispenser_stackable"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    },
     "many_collectors": {
-      "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "items": [
-              "minecraft:dispenser"
-            ],
             "count": {
               "min": 5
-            }
+            },
+            "items": [
+              "minecraft:dispenser"
+            ]
           }
         ]
-      }
-    },
-    "has_the_recipe": {
-      "trigger": "minecraft:recipe_unlocked",
-      "conditions": {
-        "recipe": "inspirations:tweaks/dispenser_stackable"
-      }
+      },
+      "trigger": "minecraft:inventory_changed"
     }
   },
   "requirements": [
@@ -33,5 +28,10 @@
       "many_collectors",
       "has_the_recipe"
     ]
-  ]
+  ],
+  "rewards": {
+    "recipes": [
+      "inspirations:tweaks/dispenser_stackable"
+    ]
+  }
 }

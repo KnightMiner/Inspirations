@@ -2,27 +2,27 @@
   "type": "mantle:crafting_shaped_retextured",
   "conditions": [
     {
-      "prop": "enlightened_bush",
-      "type": "inspirations:config"
+      "type": "inspirations:config",
+      "prop": "enlightened_bush"
     }
   ],
   "group": "inspirations:enlightened_bush",
+  "key": {
+    "G": {
+      "tag": "forge:dusts/glowstone"
+    },
+    "L": {
+      "tag": "minecraft:leaves"
+    }
+  },
+  "match_all": false,
   "pattern": [
     "GLG"
   ],
-  "key": {
-    "L": {
-      "tag": "minecraft:leaves"
-    },
-    "G": {
-      "tag": "forge:dusts/glowstone"
-    }
-  },
   "result": {
     "item": "inspirations:white_enlightened_bush"
   },
   "texture": {
     "tag": "minecraft:leaves"
-  },
-  "match_all": false
+  }
 }

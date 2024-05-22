@@ -2,23 +2,23 @@
   "type": "minecraft:crafting_shaped",
   "conditions": [
     {
-      "prop": "dimension_compass",
-      "type": "inspirations:config"
+      "type": "inspirations:config",
+      "prop": "dimension_compass"
     }
   ],
+  "key": {
+    "E": {
+      "tag": "forge:ender_pearls"
+    },
+    "G": {
+      "tag": "forge:ingots/gold"
+    }
+  },
   "pattern": [
     " G ",
     "GEG",
     " G "
   ],
-  "key": {
-    "G": {
-      "tag": "forge:ingots/gold"
-    },
-    "E": {
-      "tag": "forge:ender_pearls"
-    }
-  },
   "result": {
     "item": "inspirations:dimension_compass"
   }

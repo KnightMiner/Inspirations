@@ -2,8 +2,8 @@
   "type": "inspirations:shapeless_no_container",
   "conditions": [
     {
-      "prop": "cauldron_dyeing",
-      "type": "inspirations:config"
+      "type": "inspirations:config",
+      "prop": "cauldron_dyeing"
     }
   ],
   "group": "inspirations:gray_dyed_bottle",
@@ -16,7 +16,7 @@
     }
   ],
   "result": {
-    "item": "inspirations:gray_dyed_bottle",
-    "count": 2
+    "count": 2,
+    "item": "inspirations:gray_dyed_bottle"
   }
 }

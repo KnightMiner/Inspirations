@@ -2,16 +2,11 @@
   "type": "minecraft:crafting_shaped",
   "conditions": [
     {
-      "prop": "cauldron_dyeing",
-      "type": "inspirations:config"
+      "type": "inspirations:config",
+      "prop": "cauldron_dyeing"
     }
   ],
   "group": "stained_terracotta",
-  "pattern": [
-    "###",
-    "#x#",
-    "###"
-  ],
   "key": {
     "#": {
       "tag": "inspirations:terracotta"
@@ -20,8 +15,13 @@
       "item": "inspirations:light_blue_dyed_bottle"
     }
   },
+  "pattern": [
+    "###",
+    "#x#",
+    "###"
+  ],
   "result": {
-    "item": "minecraft:light_blue_terracotta",
-    "count": 8
+    "count": 8,
+    "item": "minecraft:light_blue_terracotta"
   }
 }

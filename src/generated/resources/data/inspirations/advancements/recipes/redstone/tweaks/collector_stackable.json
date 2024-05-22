@@ -1,31 +1,26 @@
 {
   "parent": "minecraft:recipes/root",
-  "rewards": {
-    "recipes": [
-      "inspirations:tweaks/collector_stackable"
-    ]
-  },
   "criteria": {
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "inspirations:tweaks/collector_stackable"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    },
     "many_collectors": {
-      "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "items": [
-              "inspirations:collector"
-            ],
             "count": {
               "min": 5
-            }
+            },
+            "items": [
+              "inspirations:collector"
+            ]
           }
         ]
-      }
-    },
-    "has_the_recipe": {
-      "trigger": "minecraft:recipe_unlocked",
-      "conditions": {
-        "recipe": "inspirations:tweaks/collector_stackable"
-      }
+      },
+      "trigger": "minecraft:inventory_changed"
     }
   },
   "requirements": [
@@ -33,5 +28,10 @@
       "many_collectors",
       "has_the_recipe"
     ]
-  ]
+  ],
+  "rewards": {
+    "recipes": [
+      "inspirations:tweaks/collector_stackable"
+    ]
+  }
 }

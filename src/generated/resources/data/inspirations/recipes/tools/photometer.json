@@ -2,28 +2,28 @@
   "type": "minecraft:crafting_shaped",
   "conditions": [
     {
-      "prop": "photometer",
-      "type": "inspirations:config"
+      "type": "inspirations:config",
+      "prop": "photometer"
     }
-  ],
-  "pattern": [
-    "RBG",
-    " I "
   ],
   "key": {
     "B": {
       "item": "minecraft:glass_bottle"
-    },
-    "R": {
-      "tag": "forge:dusts/redstone"
     },
     "G": {
       "tag": "forge:dusts/glowstone"
     },
     "I": {
       "tag": "forge:ingots/iron"
+    },
+    "R": {
+      "tag": "forge:dusts/redstone"
     }
   },
+  "pattern": [
+    "RBG",
+    " I "
+  ],
   "result": {
     "item": "inspirations:photometer"
   }

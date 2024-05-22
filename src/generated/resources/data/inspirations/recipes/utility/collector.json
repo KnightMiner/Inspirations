@@ -2,26 +2,26 @@
   "type": "minecraft:crafting_shaped",
   "conditions": [
     {
-      "prop": "collector",
-      "type": "inspirations:config"
+      "type": "inspirations:config",
+      "prop": "collector"
     }
-  ],
-  "pattern": [
-    "CCC",
-    "CFC",
-    "CRC"
   ],
   "key": {
     "C": {
       "tag": "forge:cobblestone"
     },
-    "R": {
-      "tag": "forge:dusts/redstone"
-    },
     "F": {
       "item": "minecraft:fishing_rod"
+    },
+    "R": {
+      "tag": "forge:dusts/redstone"
     }
   },
+  "pattern": [
+    "CCC",
+    "CFC",
+    "CRC"
+  ],
   "result": {
     "item": "inspirations:collector"
   }

@@ -1,13 +1,7 @@
 {
   "parent": "minecraft:recipes/root",
-  "rewards": {
-    "recipes": [
-      "inspirations:cauldron/bottle/mix/magenta_from_blue_red_pink"
-    ]
-  },
   "criteria": {
     "has_blue": {
-      "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
@@ -16,22 +10,10 @@
             ]
           }
         ]
-      }
-    },
-    "has_red": {
-      "trigger": "minecraft:inventory_changed",
-      "conditions": {
-        "items": [
-          {
-            "items": [
-              "inspirations:red_dyed_bottle"
-            ]
-          }
-        ]
-      }
+      },
+      "trigger": "minecraft:inventory_changed"
     },
     "has_pink": {
-      "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
@@ -40,13 +22,26 @@
             ]
           }
         ]
-      }
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_red": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "inspirations:red_dyed_bottle"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
     },
     "has_the_recipe": {
-      "trigger": "minecraft:recipe_unlocked",
       "conditions": {
         "recipe": "inspirations:cauldron/bottle/mix/magenta_from_blue_red_pink"
-      }
+      },
+      "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
@@ -56,5 +51,10 @@
       "has_pink",
       "has_the_recipe"
     ]
-  ]
+  ],
+  "rewards": {
+    "recipes": [
+      "inspirations:cauldron/bottle/mix/magenta_from_blue_red_pink"
+    ]
+  }
 }

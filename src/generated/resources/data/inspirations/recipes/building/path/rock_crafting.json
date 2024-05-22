@@ -2,20 +2,20 @@
   "type": "minecraft:crafting_shaped",
   "conditions": [
     {
-      "prop": "path",
-      "type": "inspirations:config"
+      "type": "inspirations:config",
+      "prop": "path"
     }
-  ],
-  "pattern": [
-    "CC"
   ],
   "key": {
     "C": {
       "tag": "forge:cobblestone"
     }
   },
+  "pattern": [
+    "CC"
+  ],
   "result": {
-    "item": "inspirations:rock_path",
-    "count": 6
+    "count": 6,
+    "item": "inspirations:rock_path"
   }
 }

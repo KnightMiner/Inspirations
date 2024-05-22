@@ -2,8 +2,8 @@
   "type": "minecraft:crafting_shapeless",
   "conditions": [
     {
-      "prop": "cauldron_dyeing",
-      "type": "inspirations:config"
+      "type": "inspirations:config",
+      "prop": "cauldron_dyeing"
     }
   ],
   "group": "wool",

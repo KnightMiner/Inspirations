@@ -2,27 +2,27 @@
   "type": "mantle:crafting_shaped_retextured",
   "conditions": [
     {
-      "prop": "bookshelf",
-      "type": "inspirations:config"
+      "type": "inspirations:config",
+      "prop": "bookshelf"
     }
   ],
   "group": "inspirations:bookshelf",
-  "pattern": [
-    "SSS",
-    " S ",
-    "SSS"
-  ],
   "key": {
     "S": {
       "tag": "minecraft:wooden_slabs"
     }
   },
+  "match_all": true,
+  "pattern": [
+    "SSS",
+    " S ",
+    "SSS"
+  ],
   "result": {
-    "item": "inspirations:shelf",
-    "count": 2
+    "count": 2,
+    "item": "inspirations:shelf"
   },
   "texture": {
     "tag": "minecraft:wooden_slabs"
-  },
-  "match_all": true
+  }
 }

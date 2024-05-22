@@ -2,13 +2,13 @@
   "type": "minecraft:stonecutting",
   "conditions": [
     {
-      "prop": "mulch",
-      "type": "inspirations:config"
+      "type": "inspirations:config",
+      "prop": "mulch"
     }
   ],
+  "count": 1,
   "ingredient": {
     "tag": "minecraft:planks"
   },
-  "result": "inspirations:plain_mulch",
-  "count": 1
+  "result": "inspirations:plain_mulch"
 }

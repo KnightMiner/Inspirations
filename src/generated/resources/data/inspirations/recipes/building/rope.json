@@ -2,22 +2,22 @@
   "type": "minecraft:crafting_shaped",
   "conditions": [
     {
-      "prop": "rope",
-      "type": "inspirations:config"
+      "type": "inspirations:config",
+      "prop": "rope"
     }
-  ],
-  "pattern": [
-    "SS",
-    "SS",
-    "SS"
   ],
   "key": {
     "S": {
       "item": "minecraft:string"
     }
   },
+  "pattern": [
+    "SS",
+    "SS",
+    "SS"
+  ],
   "result": {
-    "item": "inspirations:rope",
-    "count": 3
+    "count": 3,
+    "item": "inspirations:rope"
   }
 }

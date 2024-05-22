@@ -2,8 +2,8 @@
   "type": "minecraft:crafting_shapeless",
   "conditions": [
     {
-      "prop": "mulch",
-      "type": "inspirations:config"
+      "type": "inspirations:config",
+      "prop": "mulch"
     }
   ],
   "ingredients": [
