@@ -12,6 +12,7 @@ import knightminer.inspirations.cauldrons.block.entity.PotionCauldronBlockEntity
 import knightminer.inspirations.cauldrons.block.entity.SuspiciousStewCauldronBlockEntity;
 import knightminer.inspirations.cauldrons.data.FluidBlockstateModelProvider;
 import knightminer.inspirations.cauldrons.data.FluidBucketModelProvider;
+import knightminer.inspirations.cauldrons.data.FluidTextureProvider;
 import knightminer.inspirations.cauldrons.data.RecipesRecipeProvider;
 import knightminer.inspirations.cauldrons.interaction.DecreaseLayerCauldronInteraction;
 import knightminer.inspirations.cauldrons.interaction.EmptyCauldronInteraction;
@@ -59,6 +60,8 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.world.entity.ai.village.poi.PoiType;
+import net.minecraft.world.entity.ai.village.poi.PoiTypes;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.BowlFoodItem;
 import net.minecraft.world.item.BucketItem;
@@ -81,6 +84,7 @@ import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Material;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.SoundActions;
@@ -92,6 +96,7 @@ import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.GameData;
 import net.minecraftforge.registries.RegisterEvent;
 import slimeknights.mantle.fluid.TextureFluidType;
 import slimeknights.mantle.registration.FluidBuilder;
@@ -625,40 +630,30 @@ public class InspirationsCaudrons extends ModuleBase {
           CauldronRegistry.register(exactBlock(potionCauldron), CauldronRegistry.ALL_ITEMS, new BrewingCauldronInteraction(null));
         }
       }
-    });
 
-    // inject new cauldron blocks into the leatherworker point of interest
-    // it should be as simple as injecting it into the map, but people keep reporting issues with this so just over do it
-    /* TODO: not sure this still works
-    List<AbstractCauldronBlock> newCauldrons = ImmutableList.of(
-        honeyCauldron, mushroomStewCauldron, potatoSoupCauldron, beetrootSoupCauldron, rabbitStewCauldron,
-        dyeCauldron, potionCauldron, suspiciousStewCauldron);
-    Map<BlockState, PoiType> map = GameData.getBlockStatePointOfInterestTypeMap();
-    synchronized (map) {
-      Consumer<BlockState> consumer = state -> map.put(state, PoiType.LEATHERWORKER);
-      for (AbstractCauldronBlock cauldron : newCauldrons) {
-        cauldron.getStateDefinition().getPossibleStates().forEach(consumer);
-      }
-      if (waterCauldron != null) {
-        waterCauldron.getStateDefinition().getPossibleStates().forEach(consumer);
-      }
-    }
-    synchronized (PoiType.LEATHERWORKER) {
-      ImmutableSet.Builder<BlockState> builder = ImmutableSet.builder();
-      builder.addAll(PoiType.LEATHERWORKER.matchingStates);
-      for (AbstractCauldronBlock cauldron : newCauldrons) {
-        builder.addAll(cauldron.getStateDefinition().getPossibleStates());
-      }
-      if (waterCauldron != null) {
-        builder.addAll(waterCauldron.getStateDefinition().getPossibleStates());
-      }
-      PoiType.LEATHERWORKER.matchingStates = builder.build();
-    }
-    */
+      Map<BlockState, PoiType> map = GameData.getBlockStatePointOfInterestTypeMap();
+      register(map, PoiTypes.LEATHERWORKER,
+               honeyCauldron, mushroomStewCauldron, potatoSoupCauldron, beetrootSoupCauldron, rabbitStewCauldron,
+               dyeCauldron, potionCauldron, suspiciousStewCauldron,
+               waterCauldron);
+    });
   }
 
 
   /* Helpers */
+
+  private static void register(Map<BlockState, PoiType> map, ResourceKey<PoiType> key, Block... blocks) {
+    PoiType poi = ForgeRegistries.POI_TYPES.getValue(key.location());
+    if (poi != null) {
+      for (Block block : blocks) {
+        if (block != null) {
+          for (BlockState state : block.getStateDefinition().getPossibleStates()) {
+            map.put(state, poi);
+          }
+        }
+      }
+    }
+  }
 
   /** Creates a fluid builder */
   private static FluidType.Properties fluidBuilder(String name) {
