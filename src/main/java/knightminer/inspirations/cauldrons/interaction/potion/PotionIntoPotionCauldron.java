@@ -26,7 +26,7 @@ public class PotionIntoPotionCauldron extends AbstractModifyCauldronInteraction 
 	@Override
 	protected BlockState getNewState(BlockState oldState, Level level, BlockPos pos, ItemStack filledStack) {
 		int potionLevel = oldState.getValue(LEVEL);
-		if (potionLevel < 4) {
+		if (potionLevel < 3) {
 			PotionCauldronBlockEntity cauldron = InspirationsCaudrons.potionCauldronEntity.getBlockEntity(level, pos);
 			if (cauldron != null && cauldron.getPotion() == PotionUtils.getPotion(filledStack)) {
 				return oldState.setValue(LEVEL, potionLevel + 1);
