@@ -144,10 +144,10 @@ public class ConfigurableResourcePack extends AbstractPackResources implements R
    * @param resource      Path to the replacement resource relative to the pack root
    */
   public void addReplacement(BooleanSupplier condition, String originalPath, String resource) {
-    if (replacements.containsKey(originalPath)) {
-      throw new IllegalArgumentException("Duplicate replacement '" + originalPath + "' for configurable pack " + packId);
+    Replacement original = this.replacements.putIfAbsent(originalPath, new Replacement(condition, resource));
+    if (original != null) {
+      Inspirations.log.warn("Duplicate replacement '{}' for configurable pack {}. This warning is harmless if its on pack reload", originalPath, packId);
     }
-    this.replacements.put(originalPath, new Replacement(condition, resource));
   }
 
   /**
