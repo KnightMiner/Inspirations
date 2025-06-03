@@ -1,5 +1,6 @@
 {
     "ambientocclusion": false,
+    "render_type": "minecraft:cutout",
     "textures": {
         "torch": "inspirations:block/torch_lever",
         "particle": "inspirations:block/torch_lever"

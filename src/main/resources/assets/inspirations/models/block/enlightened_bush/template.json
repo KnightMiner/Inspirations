@@ -1,5 +1,6 @@
 {
   "loader": "mantle:retextured",
+  "render_type": "minecraft:cutout_mipped",
   "parent": "minecraft:block/block",
   "textures": {
     "particle": "#leaves"

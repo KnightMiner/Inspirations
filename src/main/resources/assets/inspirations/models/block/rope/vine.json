@@ -1,4 +1,5 @@
 {
+    "render_type": "minecraft:cutout",
     "textures": {
         "texture": "inspirations:block/vine",
         "bottom":  "inspirations:block/vine_bottom",

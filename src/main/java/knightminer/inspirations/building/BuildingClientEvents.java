@@ -36,36 +36,18 @@ import slimeknights.mantle.item.RetexturedBlockItem;
 import slimeknights.mantle.util.BlockEntityHelper;
 
 import java.util.Optional;
-import java.util.function.Consumer;
 
 @EventBusSubscriber(modid = Inspirations.modID, value = Dist.CLIENT, bus = Bus.MOD)
 public class BuildingClientEvents extends AbstractClientEvents {
   private static final Minecraft mc = Minecraft.getInstance();
 
+  @SuppressWarnings("removal")  // not my block model, can't change easily
   @SubscribeEvent
   static void clientSetup(FMLClientSetupEvent event) {
-    // set render types
-    RenderType cutout = RenderType.cutout();
-    Consumer<Block> setCutout = (block) -> ItemBlockRenderTypes.setRenderLayer(block, cutout);
-    RenderType cutoutMipped = RenderType.cutoutMipped();
-    Consumer<Block> setCutoutMipped = (block) -> ItemBlockRenderTypes.setRenderLayer(block, cutoutMipped);
-
-    // general
-    InspirationsBuilding.shelf.forEach(setCutout);
-    InspirationsBuilding.enlightenedBush.forEach(setCutoutMipped);
-
     // ropes
-    setRenderLayer(InspirationsBuilding.rope, cutout);
-    setRenderLayer(InspirationsBuilding.vine, cutout);
-    setRenderLayer(InspirationsBuilding.ironBars, cutoutMipped);
-
-    // doors
-    setRenderLayer(InspirationsBuilding.glassDoor, cutoutMipped);
-    setRenderLayer(InspirationsBuilding.glassTrapdoor, cutoutMipped);
-
-    // flower
-    InspirationsBuilding.flower.forEach(setCutout);
-    InspirationsBuilding.flowerPot.forEach(setCutout);
+    if (InspirationsBuilding.ironBars != null) {
+      ItemBlockRenderTypes.setRenderLayer(InspirationsBuilding.ironBars, RenderType.cutoutMipped());
+    }
   }
 
   @SubscribeEvent

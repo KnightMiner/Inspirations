@@ -12,19 +12,8 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
-@SuppressWarnings("unused")
 @EventBusSubscriber(modid = Inspirations.modID, value = Dist.CLIENT, bus = Bus.MOD)
 public class UtilityClientEvents extends AbstractClientEvents {
-
-  @SubscribeEvent
-  static void clientSetup(FMLClientSetupEvent event) {
-    RenderType cutout = RenderType.cutout();
-    setRenderLayer(InspirationsUtility.torchLeverFloor, cutout);
-    setRenderLayer(InspirationsUtility.torchLeverWall, cutout);
-    setRenderLayer(InspirationsUtility.soulLeverFloor, cutout);
-    setRenderLayer(InspirationsUtility.soulLeverWall, cutout);
-  }
-
   @SubscribeEvent
   static void commonSetup(FMLCommonSetupEvent event) {
     // Register GUIs.

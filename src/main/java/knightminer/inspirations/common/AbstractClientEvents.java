@@ -8,8 +8,6 @@ import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.client.renderer.item.ItemPropertyFunction;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -62,17 +60,6 @@ public abstract class AbstractClientEvents {
   protected static void registerModelProperty(@Nullable ItemLike item, String name, ItemPropertyFunction prop) {
     if (item != null) {
       ItemProperties.register(item.asItem(), Inspirations.getResource(name), prop);
-    }
-  }
-
-  /**
-   * Null safe way to register a render layer. Works around an issue where registry events do not fire
-   * @param block       Block to register
-   * @param renderLayer Render layer
-   */
-  protected static void setRenderLayer(@Nullable Block block, RenderType renderLayer) {
-    if (block != null) {
-      ItemBlockRenderTypes.setRenderLayer(block, renderLayer);
     }
   }
 

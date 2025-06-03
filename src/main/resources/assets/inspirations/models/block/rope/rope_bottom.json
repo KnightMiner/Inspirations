@@ -1,4 +1,5 @@
 {
+    "render_type": "minecraft:cutout",
     "textures": {
         "bottom":   "inspirations:block/rope_bottom",
         "particle": "inspirations:block/rope_bottom"

@@ -39,10 +39,6 @@ import java.util.List;
 public class TweaksClientEvents extends AbstractClientEvents {
   @SubscribeEvent
   static void clientSetup(FMLClientSetupEvent event) {
-    RenderType cutout = RenderType.cutout();
-    ItemBlockRenderTypes.setRenderLayer(InspirationsTweaks.cactus, cutout);
-    ItemBlockRenderTypes.setRenderLayer(InspirationsTweaks.sugarCane, cutout);
-
     // add model replacements to the config pack
     CommonsClientEvents.configPack.addBlockstateReplacement(Config.customPortalColor, Blocks.NETHER_PORTAL, "nether_portal");
     CommonsClientEvents.configPack.addItemModelReplacement(Config.coloredEnchantedRibbons, Items.ENCHANTED_BOOK, "enchanted_book");
