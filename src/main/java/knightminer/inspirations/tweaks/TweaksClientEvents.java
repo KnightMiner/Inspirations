@@ -43,16 +43,13 @@ public class TweaksClientEvents extends AbstractClientEvents {
     ItemBlockRenderTypes.setRenderLayer(InspirationsTweaks.cactus, cutout);
     ItemBlockRenderTypes.setRenderLayer(InspirationsTweaks.sugarCane, cutout);
 
-    MinecraftForge.EVENT_BUS.addListener(TweaksClientEvents::fixShieldTooltip);
-  }
-
-  @SubscribeEvent
-  static void modelRegistry(RegisterGeometryLoaders event) {
     // add model replacements to the config pack
     CommonsClientEvents.configPack.addBlockstateReplacement(Config.customPortalColor, Blocks.NETHER_PORTAL, "nether_portal");
     CommonsClientEvents.configPack.addItemModelReplacement(Config.coloredEnchantedRibbons, Items.ENCHANTED_BOOK, "enchanted_book");
     CommonsClientEvents.configPack.addItemModelReplacement(Config.coloredFireworkItems, Items.FIREWORK_ROCKET, "fireworks");
     CommonsClientEvents.configPack.addItemModelReplacement(Config.betterCauldronItem, Items.CAULDRON, "cauldron");
+
+    MinecraftForge.EVENT_BUS.addListener(TweaksClientEvents::fixShieldTooltip);
   }
 
   @SubscribeEvent

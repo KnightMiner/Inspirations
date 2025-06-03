@@ -146,7 +146,7 @@ public class ConfigurableResourcePack extends AbstractPackResources implements R
   public void addReplacement(BooleanSupplier condition, String originalPath, String resource) {
     Replacement original = this.replacements.putIfAbsent(originalPath, new Replacement(condition, resource));
     if (original != null) {
-      Inspirations.log.warn("Duplicate replacement '{}' for configurable pack {}. This warning is harmless if its on pack reload", originalPath, packId);
+      Inspirations.log.warn("Duplicate replacement '{}' for configurable pack {}.", originalPath, packId);
     }
   }
 
