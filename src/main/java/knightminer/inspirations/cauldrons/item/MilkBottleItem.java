@@ -1,9 +1,8 @@
 package knightminer.inspirations.cauldrons.item;
 
 import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -17,6 +16,11 @@ import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.common.ForgeMod;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.fluids.FluidStack;
+import org.jetbrains.annotations.Nullable;
+import slimeknights.mantle.item.ConstantFluidContainerWrapper;
 
 import java.util.List;
 import java.util.Random;
@@ -74,17 +78,16 @@ public class MilkBottleItem extends Item {
 	}
 
 	@Override
-	public SoundEvent getDrinkingSound() {
-		return SoundEvents.GENERIC_DRINK;
-	}
-
-	@Override
-	public SoundEvent getEatingSound() {
-		return SoundEvents.GENERIC_DRINK;
-	}
-
-	@Override
 	public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pHand) {
 		return ItemUtils.startUsingInstantly(pLevel, pPlayer, pHand);
+	}
+
+	@Nullable
+	@Override
+	public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
+		if (ForgeMod.MILK.isPresent()) {
+			return new ConstantFluidContainerWrapper(new FluidStack(ForgeMod.MILK.get(), 250), stack);
+		}
+		return null;
 	}
 }
