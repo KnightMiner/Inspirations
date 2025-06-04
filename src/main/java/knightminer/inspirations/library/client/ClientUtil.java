@@ -1,6 +1,5 @@
 package knightminer.inspirations.library.client;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
@@ -8,13 +7,12 @@ import com.mojang.blaze3d.vertex.VertexFormat.Mode;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.InspirationsRegistry;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
+import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.world.inventory.InventoryMenu;
@@ -26,6 +24,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.data.ModelData;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.text.WordUtils;
+import slimeknights.mantle.data.loadable.Loadables;
 
 import javax.annotation.Nullable;
 import java.awt.Color;
@@ -51,7 +50,7 @@ public final class ClientUtil {
   }
 
   /**
-   * Gets the color for an item stack, used internally by colorCache. Licensed under http://www.apache.org/licenses/LICENSE-2.0
+   * Gets the color for an item stack, used internally by colorCache. Licensed under <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache 2.0</a>
    * @param key Item meta cache combination
    * @return Color for the item meta combination
    * @author InsomniaKitten
@@ -62,14 +61,16 @@ public final class ClientUtil {
       return -1;
     }
     TextureAtlasSprite sprite = model.getParticleIcon(ModelData.EMPTY);
-    if (sprite == null) {
+    //noinspection ConstantValue  eh, its better to be safe
+    if (sprite == null || sprite.contents().name() == MissingTextureAtlasSprite.getLocation()) {
       return -1;
     }
     float r = 0, g = 0, b = 0, count = 0;
     float[] hsb = new float[3];
     try {
-      for (int x = 0; x < sprite.getWidth(); x++) {
-        for (int y = 0; y < sprite.getHeight(); y++) {
+      SpriteContents contents = sprite.contents();
+      for (int x = 0; x < contents.width(); x++) {
+        for (int y = 0; y < contents.height(); y++) {
           int argb = sprite.getPixelRGBA(0, x, y);
           // integer is in format of 0xAABBGGRR
           int cr = argb & 0xFF;
@@ -89,7 +90,7 @@ public final class ClientUtil {
     } catch (Exception e) {
       // there is a random bug where models do not properly load, leading to a null frame data
       // so just catch that and treat it as another error state
-      InspirationsRegistry.log.error("Caught exception reading sprite for " + Registry.ITEM.getKey(key), e);
+      InspirationsRegistry.log.error("Caught exception reading sprite for {}", Loadables.ITEM.getKey(key), e);
       return -1;
     }
     if (count > 0) {
@@ -163,7 +164,7 @@ public final class ClientUtil {
         return getStackBlockColors(stack, world, pos, index);
       } catch (Exception e) {
         // catch and log possible exceptions. Most likely exception is ClassCastException if they do not perform safety checks
-        Inspirations.log.error(String.format("Caught exception getting block colors for %s", Registry.ITEM.getKey(item)), e);
+        Inspirations.log.error("Caught exception getting block colors for {}", Loadables.ITEM.getKey(item), e);
         UNSAFE_COLORS.add(item);
       }
     }
@@ -201,37 +202,4 @@ public final class ClientUtil {
 
   /** Reload listener for client utils */
   public static final ResourceManagerReloadListener RELOAD_LISTENER = manager -> COLOR_CACHE.clear();
-
-
-  /* GUI helpers */
-
-  /**
-   * Binds a texture for rendering
-   * @param texture  Texture
-   */
-  public static void bindTexture(ResourceLocation texture) {
-    RenderSystem.setShader(GameRenderer::getPositionTexShader);
-    RenderSystem.setShaderTexture(0, texture);
-  }
-
-  /**
-   * Sets up the shader for rendering
-   * @param texture  Texture
-   * @param red      Red tint
-   * @param green    Green tint
-   * @param blue     Blue tint
-   * @param alpha    Alpha tint
-   */
-  public static void setup(ResourceLocation texture, float red, float green, float blue, float alpha) {
-    bindTexture(texture);
-    RenderSystem.setShaderColor(red, green, blue, alpha);
-  }
-
-  /**
-   * Sets up the shader for rendering
-   * @param texture  Texture
-   */
-  public static void setup(ResourceLocation texture) {
-    setup(texture, 1.0f, 1.0f, 1.0f, 1.0f);
-  }
 }

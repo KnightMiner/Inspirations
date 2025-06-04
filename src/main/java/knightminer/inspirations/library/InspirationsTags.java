@@ -1,7 +1,6 @@
 package knightminer.inspirations.library;
 
 import knightminer.inspirations.Inspirations;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.ItemTags;
@@ -9,6 +8,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
+import slimeknights.mantle.Mantle;
 
 public class InspirationsTags {
   public static class Blocks {
@@ -53,12 +53,12 @@ public class InspirationsTags {
     /**
      * Forge tags for anything that is a book
      */
-    public static final TagKey<Item> FORGE_BOOKS = forgeTag("books");
+    public static final TagKey<Item> COMMON_BOOKS = commonTag("books");
 
     /**
      * Items which are valid to be placed on bookshelves.
      */
-    public static final TagKey<Item> BOOKS = tag("books");
+    public static final TagKey<Item> SHELF_BOOKS = tag("books");
 
     /**
      * Vanilla carpets and shulker boxes, for recipe use.
@@ -70,8 +70,8 @@ public class InspirationsTags {
     public static final TagKey<Item> DYE_BOTTLES = tag("dyed_water_bottles");
 
     /* Inputs for potion cauldron recipes */
-    public static final TagKey<Item> SPLASH_BOTTLES = forgeTag("bottles/splash");
-    public static final TagKey<Item> LINGERING_BOTTLES = forgeTag("bottles/lingering");
+    public static final TagKey<Item> SPLASH_BOTTLES = commonTag("bottles/splash");
+    public static final TagKey<Item> LINGERING_BOTTLES = commonTag("bottles/lingering");
 
     /**
      * Creates an item tag for Inspirations
@@ -79,19 +79,19 @@ public class InspirationsTags {
     private static TagKey<Item> tag(String name) {
       return ItemTags.create(Inspirations.getResource(name));
     }
-    private static TagKey<Item> forgeTag(String name) {
-      return ItemTags.create(new ResourceLocation("forge", name));
+    private static TagKey<Item> commonTag(String name) {
+      return ItemTags.create(Mantle.commonResource(name));
     }
   }
 
   public static class Fluids {
-    public static final TagKey<Fluid> HONEY = forgeTag("honey");
-    public static final TagKey<Fluid> BEETROOT_SOUP = forgeTag("beetroot_soup");
-    public static final TagKey<Fluid> MUSHROOM_STEW = forgeTag("mushroom_stew");
-    public static final TagKey<Fluid> RABBIT_STEW = forgeTag("rabbit_stew");
+    public static final TagKey<Fluid> HONEY = commonTag("honey");
+    public static final TagKey<Fluid> BEETROOT_SOUP = commonTag("beetroot_soup");
+    public static final TagKey<Fluid> MUSHROOM_STEW = commonTag("mushroom_stew");
+    public static final TagKey<Fluid> RABBIT_STEW = commonTag("rabbit_stew");
 
-    private static TagKey<Fluid> forgeTag(String name) {
-      return FluidTags.create(new ResourceLocation("forge", name));
+    private static TagKey<Fluid> commonTag(String name) {
+      return FluidTags.create(Mantle.commonResource(name));
     }
   }
 }

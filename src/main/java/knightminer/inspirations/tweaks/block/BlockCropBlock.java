@@ -1,7 +1,6 @@
 package knightminer.inspirations.tweaks.block;
 
 import knightminer.inspirations.common.Config;
-import knightminer.inspirations.common.IHidable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
@@ -19,7 +18,7 @@ import net.minecraftforge.common.PlantType;
 
 import java.util.function.Supplier;
 
-public abstract class BlockCropBlock extends CropBlock implements IHidable, IPlantable {
+public abstract class BlockCropBlock extends CropBlock implements IPlantable {
   public static final IntegerProperty LARGE_AGE = IntegerProperty.create("age", 0, 14);
 
   protected Supplier<Block> block;
@@ -89,6 +88,7 @@ public abstract class BlockCropBlock extends CropBlock implements IHidable, IPla
   }
 
   /* Crop logic */
+
   @Override
   public PlantType getPlantType(BlockGetter world, BlockPos pos) {
     return type;
@@ -104,7 +104,7 @@ public abstract class BlockCropBlock extends CropBlock implements IHidable, IPla
   /* Bonemeal */
 
   @Override
-  public boolean isValidBonemealTarget(BlockGetter worldIn, BlockPos pos, BlockState state, boolean isClient) {
+  public boolean isValidBonemealTarget(LevelReader pLevel, BlockPos pPos, BlockState pState, boolean pIsClient) {
     return Config.bonemealBlockCrop.get();
   }
 
@@ -120,15 +120,9 @@ public abstract class BlockCropBlock extends CropBlock implements IHidable, IPla
    */
   protected IPlantable getPlant() {
     Block block = this.block.get();
-    if (block instanceof IPlantable) {
-      return (IPlantable)block;
+    if (block instanceof IPlantable plantable) {
+      return plantable;
     }
     return this;
-  }
-
-  /* Hidable */
-  @Override
-  public boolean isEnabled() {
-    return Config.smoothBlockCropGrowth.getAsBoolean();
   }
 }

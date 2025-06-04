@@ -48,7 +48,7 @@ public class InspirationsRegistry {
    */
   private static Float bookPower(Item item) {
     // TODO: custom enchanting power
-    if (RegistryHelper.contains(InspirationsTags.Items.BOOKS, item)) {
+    if (RegistryHelper.contains(InspirationsTags.Items.SHELF_BOOKS, item)) {
       return Config.defaultEnchantingPower.get().floatValue();
     }
     return -1f;

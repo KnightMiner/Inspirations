@@ -1,13 +1,10 @@
 package knightminer.inspirations.common;
 
 import knightminer.inspirations.Inspirations;
-import net.minecraft.client.Minecraft;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 import net.minecraftforge.common.ForgeConfigSpec.Builder;
 import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.config.IConfigSpec;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
@@ -408,20 +405,6 @@ public class Config {
   private static boolean loaded = false;
 
   /**
-   * To avoid classloading, the function to call to update JEI for config changes.
-   * If non-null, this will be {@link knightminer.inspirations.plugins.jei.JEIPlugin updateHiddenItems()}.
-   */
-  private static Runnable updateJEI = null;
-
-  /**
-   * Sets the runnable used to update JEI
-   * @param runnable  JEI update runnable
-   */
-  public static void setJEIUpdateRunnable(Runnable runnable) {
-    updateJEI = runnable;
-  }
-
-  /**
    * Checks if the server config is loaded
    * @return  True if the config loaded
    */
@@ -439,10 +422,6 @@ public class Config {
       IConfigSpec<?> spec = config.getSpec();
       if (spec == Config.SERVER_SPEC) {
         loaded = true;
-        // If we have JEI, this will be set. It needs to run on the main thread...
-        if (updateJEI != null) {
-          DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> Minecraft.getInstance().submitAsync(updateJEI));
-        }
       }
     }
   }

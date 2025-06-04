@@ -25,9 +25,6 @@ import net.minecraft.world.level.block.VineBlock;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ToolActions;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
@@ -136,11 +133,7 @@ public class ToolsEvents {
     int count = 0;
     while (state.getBlock() == block && vine.isShearable(shears, world, pos) && !vineCanStay(world, state, pos)) {
       count++;
-      for (ItemStack stack : state.getDrops(new LootContext.Builder(world)
-                                                .withParameter(LootContextParams.TOOL, shears)
-                                                .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(pos))
-                                                .withParameter(LootContextParams.THIS_ENTITY, player)
-                                           )) {
+      for (ItemStack stack : Block.getDrops(state, world, pos, null, player, shears)) {
         Block.popResource(world, pos, stack);
       }
       pos = pos.below();
@@ -207,7 +200,7 @@ public class ToolsEvents {
       return;
     }
     LivingEntity target = event.getEntity();
-    if (target.level.isClientSide || !target.isBlocking()) {
+    if (target.level().isClientSide || !target.isBlocking()) {
       return;
     }
     ItemStack stack = target.getUseItem();
@@ -223,8 +216,9 @@ public class ToolsEvents {
     // Apply shield enchantments if the player can be hurt by the source,
     // and they are have blocked it.
     if (attacker != null && !target.isInvulnerableTo(source) && target.isDamageSourceBlocked(source)) {
-      if (thorns > 0 && ThornsEnchantment.shouldHit(thorns, target.level.random)) {
-        attacker.hurt(DamageSource.thorns(target), ThornsEnchantment.getDamage(thorns, target.level.random));
+      Level level = target.level();
+      if (thorns > 0 && ThornsEnchantment.shouldHit(thorns, level.random)) {
+        attacker.hurt(level.damageSources().thorns(target), ThornsEnchantment.getDamage(thorns, level.random));
         stack.hurtAndBreak(1, target, (play) -> play.broadcastBreakEvent(target.getUsedItemHand()));
       }
       if (fire > 0) {

@@ -1,7 +1,5 @@
 package knightminer.inspirations.building.block;
 
-import knightminer.inspirations.common.Config;
-import knightminer.inspirations.common.block.HidableBlock;
 import knightminer.inspirations.library.InspirationsTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -22,14 +20,14 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-public class PathBlock extends HidableBlock implements SimpleWaterloggedBlock {
+public class PathBlock extends Block implements SimpleWaterloggedBlock {
   private final static BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
   private final VoxelShape shape;
   private final VoxelShape collShape;
 
   public PathBlock(Properties properties, VoxelShape shape) {
-    super(properties, Config.enablePath::getAsBoolean);
+    super(properties);
     // Each path has a different shape, but use the bounding box for collisions.
     this.shape = shape;
     this.collShape = Shapes.create(shape.bounds());

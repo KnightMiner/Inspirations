@@ -15,7 +15,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import java.util.Map;
 import java.util.function.Predicate;
 
-import static knightminer.inspirations.cauldrons.block.BoilingFourLayerCauldronBlock.DAMAGE_BOIL;
 import static knightminer.inspirations.cauldrons.block.BoilingFourLayerCauldronBlock.isBoiling;
 
 /** Cauldron block that has four layers and emits boiling particles when over fire */
@@ -28,7 +27,7 @@ public class BoilingThreeLayerCauldronBlock extends LayeredCauldronBlock {
 	public void entityInside(BlockState state, Level world, BlockPos pos, Entity entity) {
 		if (!world.isClientSide && isEntityInsideContent(state, pos, entity)) {
 			if (isBoiling(world, pos)) {
-				entity.hurt(DAMAGE_BOIL, 2.0F);
+				BoilingFourLayerCauldronBlock.boil(entity);
 			}
 			if (entity.isOnFire()) {
 				entity.clearFire();

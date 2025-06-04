@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableSet;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.InspirationsCommons;
 import knightminer.inspirations.common.ModuleBase;
-import knightminer.inspirations.common.item.HidableItem;
 import knightminer.inspirations.tweaks.block.BlockCropBlock;
 import knightminer.inspirations.tweaks.block.CactusCropBlock;
 import knightminer.inspirations.tweaks.block.DryHopperBlock;
@@ -13,7 +12,6 @@ import knightminer.inspirations.tweaks.block.FlatCarpetBlock;
 import knightminer.inspirations.tweaks.block.SugarCaneCropBlock;
 import knightminer.inspirations.tweaks.block.WetHopperBlock;
 import knightminer.inspirations.tweaks.datagen.TweaksRecipeProvider;
-import knightminer.inspirations.tweaks.item.SeedItem;
 import knightminer.inspirations.tweaks.recipe.NormalBrewingRecipe;
 import knightminer.inspirations.tweaks.util.SmoothGrowthListener;
 import net.minecraft.core.BlockPos;
@@ -21,6 +19,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
 import net.minecraft.core.dispenser.DispenseItemBehavior;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.InteractionResult;
@@ -28,9 +27,9 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemNameBlockItem;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.context.DirectionalPlaceContext;
@@ -71,14 +70,13 @@ public class InspirationsTweaks extends ModuleBase {
   // items
   public static Item sugarCaneSeeds;
   public static Item cactusSeeds;
-  //public static Item silverfishPowder;
   public static Item heartbeet;
 
 
   @SubscribeEvent
   void register(RegisterEvent event) {
     ResourceKey<? extends Registry<?>> registryKey = event.getRegistryKey();
-    if (registryKey == Registry.BLOCK_REGISTRY) {
+    if (registryKey == Registries.BLOCK) {
       BlockRegistryAdapter registry = new BlockRegistryAdapter(ForgeRegistries.BLOCKS);
 
       boolean replaceVanilla = Config.enableFittedCarpets.getAsBoolean();
@@ -105,35 +103,30 @@ public class InspirationsTweaks extends ModuleBase {
 
       cactus = registry.register(new CactusCropBlock(() -> Blocks.CACTUS, PlantType.DESERT, BlockBehaviour.Properties.copy(Blocks.CACTUS)), "cactus");
       sugarCane = registry.register(new SugarCaneCropBlock(() -> Blocks.SUGAR_CANE, PlantType.BEACH, BlockBehaviour.Properties.copy(Blocks.SUGAR_CANE)), "sugar_cane");
-    } else if (registryKey == Registry.ITEM_REGISTRY) {
+    } else if (registryKey == Registries.ITEM) {
       ItemRegistryAdapter registry = new ItemRegistryAdapter(ForgeRegistries.ITEMS);
-      Item.Properties decorationProps = new Item.Properties().tab(CreativeModeTab.TAB_DECORATIONS);
+      Item.Properties props = new Item.Properties();
 
       if (Config.enableFittedCarpets.getAsBoolean()) {
         for (DyeColor color : DyeColor.values()) {
           Block carpet = InspirationsCommons.VANILLA_CARPETS.get(color);
-          BlockItem item = registry.registerBlockItem(carpet, decorationProps);
+          BlockItem item = registry.registerBlockItem(carpet, props);
           Item.BY_BLOCK.put(carpet, item);
           Item.BY_BLOCK.put(Objects.requireNonNull(flatCarpets.get(color)), item);
         }
       }
 
       if (Config.waterlogHopper.getAsBoolean()) {
-        registry.register(new BlockItem(dryHopper, new Item.Properties().tab(CreativeModeTab.TAB_REDSTONE)), Items.HOPPER);
+        registry.register(new BlockItem(dryHopper, props), Items.HOPPER);
       }
 
-      Item.Properties props = new Item.Properties().tab(CreativeModeTab.TAB_FOOD);
-      cactusSeeds = registry.register(new SeedItem(cactus, props), "cactus_seeds");
-      sugarCaneSeeds = registry.register(new SeedItem(sugarCane, props), "sugar_cane_seeds");
-      heartbeet = registry.register(new HidableItem(new Item.Properties().tab(CreativeModeTab.TAB_FOOD)
-                                                                         .food(new FoodProperties.Builder().nutrition(2).saturationMod(2.4f).effect(() -> new MobEffectInstance(MobEffects.REGENERATION, 100), 1).build()
-                                                                              ), Config.enableHeartbeet), "heartbeet");
+      cactusSeeds = registry.register(new ItemNameBlockItem(cactus, props), "cactus_seeds");
+      sugarCaneSeeds = registry.register(new ItemNameBlockItem(sugarCane, props), "sugar_cane_seeds");
+      heartbeet = registry.register(
+        new Item.Properties().food(new FoodProperties.Builder().nutrition(2).saturationMod(2.4f).effect(() -> new MobEffectInstance(MobEffects.REGENERATION, 100), 1).build()),
+        "heartbeet");
 
-      //		silverfishPowder = registerItem(r, new HidableItem(
-      //				new Item.Properties().group(ItemGroup.BREWING),
-      //				() -> false // TODO: Make this have a purpose...
-      //		),  "silverfish_powder");
-    } else if (registryKey == Registry.BLOCK_ENTITY_TYPE_REGISTRY) {
+    } else if (registryKey == Registries.BLOCK_ENTITY_TYPE) {
       if (Config.waterlogHopper.getAsBoolean()) {
         // We need to inject our replacement hopper blocks into the valid ones for the TE type.
         // It's an immutable set, so we need to replace it entirely.
@@ -165,7 +158,7 @@ public class InspirationsTweaks extends ModuleBase {
   @SubscribeEvent
   public void gatherData(GatherDataEvent event) {
     DataGenerator gen = event.getGenerator();
-    gen.addProvider(event.includeServer(), new TweaksRecipeProvider(gen));
+    gen.addProvider(event.includeServer(), new TweaksRecipeProvider(gen.getPackOutput()));
   }
 
 
@@ -206,6 +199,5 @@ public class InspirationsTweaks extends ModuleBase {
     DispenserBlock.registerBehavior(Blocks.ANVIL, behavior);
     DispenserBlock.registerBehavior(Blocks.CHIPPED_ANVIL, behavior);
     DispenserBlock.registerBehavior(Blocks.DAMAGED_ANVIL, behavior);
-
   }
 }

@@ -5,16 +5,14 @@ import knightminer.inspirations.common.network.CauldronPotionUpdatePacket;
 import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.library.MiscUtil;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.registries.ForgeRegistries;
 import slimeknights.mantle.block.entity.MantleBlockEntity;
-
-import java.util.Objects;
+import slimeknights.mantle.data.loadable.Loadables;
 
 /** Block entity for a cauldron that also holds a potion */
 public class PotionCauldronBlockEntity extends MantleBlockEntity {
@@ -54,15 +52,14 @@ public class PotionCauldronBlockEntity extends MantleBlockEntity {
 	@Override
 	protected void saveSynced(CompoundTag nbt) {
 		super.saveSynced(nbt);
-
-		nbt.putString(TAG_POTION, Registry.POTION.getKey(potion).toString());
+		nbt.putString(TAG_POTION, Loadables.POTION.getString(potion));
 	}
 
 	/** Parses a potion from the key */
 	private static Potion parsePotion(String key) {
 		ResourceLocation id = ResourceLocation.tryParse(key);
 		if (id != null) {
-			return Objects.requireNonNullElse(ForgeRegistries.POTIONS.getValue(id), Potions.EMPTY);
+			return BuiltInRegistries.POTION.get(id);
 		}
 		return Potions.EMPTY;
 	}

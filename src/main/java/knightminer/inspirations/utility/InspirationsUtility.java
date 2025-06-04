@@ -2,7 +2,6 @@ package knightminer.inspirations.utility;
 
 
 import knightminer.inspirations.common.ModuleBase;
-import knightminer.inspirations.common.item.HidableBlockItem;
 import knightminer.inspirations.utility.block.CarpetedPressurePlateBlock;
 import knightminer.inspirations.utility.block.CarpetedTrapdoorBlock;
 import knightminer.inspirations.utility.block.CollectorBlock;
@@ -14,20 +13,23 @@ import knightminer.inspirations.utility.block.entity.PipeBlockEntity;
 import knightminer.inspirations.utility.block.menu.CollectorContainerMenu;
 import knightminer.inspirations.utility.block.menu.PipeContainerMenu;
 import knightminer.inspirations.utility.datagen.UtilityRecipeProvider;
-import knightminer.inspirations.utility.item.TorchLeverItem;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.StandingAndWallBlockItem;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -66,7 +68,7 @@ public class InspirationsUtility extends ModuleBase {
   @SubscribeEvent
   public void register(RegisterEvent event) {
     ResourceKey<? extends Registry<?>> resourceKey = event.getRegistryKey();
-    if (resourceKey == Registry.BLOCK_REGISTRY) {
+    if (resourceKey == Registries.BLOCK) {
       BlockRegistryAdapter registry = new BlockRegistryAdapter(ForgeRegistries.BLOCKS);
 
       torchLeverFloor = registry.register(new TorchLeverBlock(
@@ -87,38 +89,46 @@ public class InspirationsUtility extends ModuleBase {
           ParticleTypes.SOUL_FIRE_FLAME
       ), "wall_soul_torch_lever");
 
+      //Block.Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).strength(1.5F, 10.0F).sound(SoundType.STONE).randomTicks()
       //bricksButton = registerBlock(r, new BricksButtonBlock(BricksButtonBlock.BRICK_BUTTON), "bricks_button");
       //netherBricksButton = registerBlock(r, new BricksButtonBlock(BricksButtonBlock.NETHER_BUTTON), "nether_bricks_button");
 
-      carpetedTrapdoors = registry.registerEnum((color) -> new CarpetedTrapdoorBlock(), DyeColor.values(), "carpeted_trapdoor");
-      carpetedPressurePlates = registry.registerEnum(CarpetedPressurePlateBlock::new, DyeColor.values(), "carpeted_pressure_plate");
+      carpetedTrapdoors = registry.registerEnum(color -> new CarpetedTrapdoorBlock(
+        Block.Properties.of().mapColor(color).ignitedByLava().instrument(NoteBlockInstrument.BASS).strength(3.0F).sound(SoundType.WOOL)
+      ), DyeColor.values(), "carpeted_trapdoor");
+      carpetedPressurePlates = registry.registerEnum(color -> new CarpetedPressurePlateBlock(
+        Block.Properties.of().mapColor(color).strength(0.5F).sound(SoundType.WOOL), color
+      ), DyeColor.values(), "carpeted_pressure_plate");
 
-      collector = registry.register(new CollectorBlock(), "collector");
-      pipe = registry.register(new PipeBlock(), "pipe");
+      collector = registry.register(new CollectorBlock(
+        Block.Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).strength(3.5F).sound(SoundType.STONE)
+      ), "collector");
+      pipe = registry.register(new PipeBlock(
+        Block.Properties.of().mapColor(MapColor.STONE).strength(3.0F, 8.0F).sound(SoundType.METAL)
+      ), "pipe");
     }
-    else if (resourceKey == Registry.BLOCK_ENTITY_TYPE_REGISTRY) {
+    else if (resourceKey == Registries.BLOCK_ENTITY_TYPE) {
       BlockEntityTypeRegistryAdapter registry = new BlockEntityTypeRegistryAdapter(ForgeRegistries.BLOCK_ENTITY_TYPES);
 
       tileCollector = registry.register(CollectorBlockEntity::new, collector, "collector");
       tilePipe = registry.register(PipeBlockEntity::new, pipe, "pipe");
     }
-    else if (resourceKey == Registry.MENU_REGISTRY) {
+    else if (resourceKey == Registries.MENU) {
       ContainerTypeRegistryAdapter registry = new ContainerTypeRegistryAdapter(ForgeRegistries.MENU_TYPES);
 
       contCollector = registry.registerType(CollectorContainerMenu::new, "collector");
       contPipe = registry.registerType(PipeContainerMenu::new, "pipe");
     }
-    else if (resourceKey == Registry.ITEM_REGISTRY) {
-      Item.Properties props = new Item.Properties().tab(CreativeModeTab.TAB_REDSTONE);
+    else if (resourceKey == Registries.ITEM) {
+      Item.Properties props = new Item.Properties();
       ItemRegistryAdapter registry = new ItemRegistryAdapter(ForgeRegistries.ITEMS, props);
 
       // itemblocks
-      torchLeverItem = registry.register(new TorchLeverItem(InspirationsUtility.torchLeverFloor, InspirationsUtility.torchLeverWall, props), "torch_lever");
-      soulLeverItem = registry.register(new TorchLeverItem(InspirationsUtility.soulLeverFloor, InspirationsUtility.soulLeverWall, props), "soul_torch_lever");
+      torchLeverItem = registry.register(new StandingAndWallBlockItem(InspirationsUtility.torchLeverFloor, InspirationsUtility.torchLeverWall, props, Direction.DOWN), "torch_lever");
+      soulLeverItem = registry.register(new StandingAndWallBlockItem(InspirationsUtility.soulLeverFloor, InspirationsUtility.soulLeverWall, props, Direction.DOWN), "soul_torch_lever");
       //registerBlockItem(r, bricksButton, ItemGroup.REDSTONE);
       //registerBlockItem(r, netherBricksButton, ItemGroup.REDSTONE);
-      // TODO: never made a bifunction variant
-      registry.registerBlockItem(carpetedTrapdoors, (block) -> new HidableBlockItem(block, props));
+      registry.registerDefaultBlockItem(carpetedTrapdoors);
       registry.registerDefaultBlockItem(collector);
       registry.registerDefaultBlockItem(pipe);
     }
@@ -127,34 +137,6 @@ public class InspirationsUtility extends ModuleBase {
   @SubscribeEvent
   public void gatherData(GatherDataEvent event) {
     DataGenerator gen = event.getGenerator();
-    gen.addProvider(event.includeServer(), new UtilityRecipeProvider(gen));
+    gen.addProvider(event.includeServer(), new UtilityRecipeProvider(gen.getPackOutput()));
   }
-
-  /*
-  @SubscribeEvent
-  public void setup(FMLCommonSetupEvent event) {
-    registerDispenserBehavior();
-  }
-
-  // Get access to the existing behaviours.
-//  private static class DispenserRegAccess extends DispenserBlock {
-//    DispenserRegAccess() { super(Block.Properties.of(Material.AIR));}
-//
-//    DispenseItemBehavior getRegisteredBehaviour(Item item) {
-//      return super.getDispenseMethod(new ItemStack(item));
-//    }
-//  }
-//
-//  private final Lazy<DispenserRegAccess> dispenserReg = Lazy.of(DispenserRegAccess::new);
-
-  private void registerDispenserBehavior() {
-    if(Config.enableDispenserFluidTanks.get()) {
-      for(Item item : InspirationsRegistry.TAG_DISP_FLUID_TANKS.getAllElements()) {
-        if(item != null) {
-          DispenserBlock.registerDispenseBehavior(item, new DispenseFluidTank(dispenserReg.getRegisteredBehaviour(item)));
-        }
-      }
-    }
-  }
-  */
 }

@@ -1,8 +1,6 @@
 package knightminer.inspirations.building.item;
 
-import knightminer.inspirations.common.item.HidableRetexturedBlockItem;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -13,9 +11,9 @@ import javax.annotation.Nullable;
 /**
  * Extension of a texture block item to make it burnable
  */
-public class ShelfItem extends HidableRetexturedBlockItem {
-  public ShelfItem(Block block) {
-    super(block, ItemTags.WOODEN_SLABS, new Item.Properties().tab(CreativeModeTab.TAB_DECORATIONS));
+public class ShelfItem extends BlockItem {
+  public ShelfItem(Block block, Item.Properties properties) {
+    super(block, properties);
   }
 
   @Override

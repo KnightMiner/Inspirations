@@ -8,7 +8,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
-import com.mojang.datafixers.util.Pair;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.block.entity.ShelfBlockEntity;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -19,7 +18,7 @@ import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.Material;
-import net.minecraft.client.resources.model.ModelBakery;
+import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.core.Direction;
@@ -37,16 +36,13 @@ import net.minecraftforge.client.model.geometry.IGeometryLoader;
 import net.minecraftforge.client.model.geometry.IUnbakedGeometry;
 import slimeknights.mantle.client.model.RetexturedModel;
 import slimeknights.mantle.client.model.RetexturedModel.RetexturedContext;
-import slimeknights.mantle.client.model.inventory.ModelItem;
 import slimeknights.mantle.client.model.util.DynamicBakedWrapper;
 import slimeknights.mantle.client.model.util.ModelHelper;
 import slimeknights.mantle.client.model.util.SimpleBlockModel;
-import slimeknights.mantle.item.RetexturedBlockItem;
 import slimeknights.mantle.util.RetexturedHelper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,28 +60,23 @@ public class ShelfModel implements IUnbakedGeometry<ShelfModel> {
   private final SimpleBlockModel model;
   private final Set<String> retextured;
   private final List<List<BlockElement>> books;
-  private final List<ModelItem> items;
 
-  protected ShelfModel(SimpleBlockModel model, Set<String> retextured, List<List<BlockElement>> books, List<ModelItem> items) {
+  protected ShelfModel(SimpleBlockModel model, Set<String> retextured, List<List<BlockElement>> books) {
     this.model = model;
     this.retextured = retextured;
     this.books = books;
-    this.items = items;
   }
 
   @Override
-  public Collection<Material> getMaterials(IGeometryBakingContext owner, Function<ResourceLocation,UnbakedModel> modelGetter, Set<Pair<String,String>> missingTextureErrors) {
-    model.fetchParent(owner, modelGetter);
-    List<BlockElement> elements = Lists.newArrayList(model.getElements());
-    books.forEach(elements::addAll);
-    return SimpleBlockModel.getTextures(owner, elements, missingTextureErrors);
+  public void resolveParents(Function<ResourceLocation, UnbakedModel> modelGetter, IGeometryBakingContext context) {
+    model.resolveParents(modelGetter, context);
   }
 
   @Override
-  public BakedModel bake(IGeometryBakingContext owner, ModelBakery bakery, Function<Material,TextureAtlasSprite> spriteGetter, ModelState transforms, ItemOverrides overrides, ResourceLocation location) {
+  public BakedModel bake(IGeometryBakingContext owner, ModelBaker bakery, Function<Material,TextureAtlasSprite> spriteGetter, ModelState transforms, ItemOverrides overrides, ResourceLocation location) {
     Shelf model = new Shelf(owner, this.model, transforms, this.books);
     BakedModel baked = model.bake(spriteGetter, location);
-    return new Baked(baked, model, RetexturedModel.getAllRetextured(owner, this.model, retextured), items);
+    return new Baked(baked, model, RetexturedModel.getAllRetextured(owner, this.model, retextured));
   }
 
   /** Model loader logic */
@@ -96,16 +87,15 @@ public class ShelfModel implements IUnbakedGeometry<ShelfModel> {
 
     // books
     JsonArray bookArray = GsonHelper.getAsJsonArray(json, "books");
-    if (bookArray.size() == 0) {
+    if (bookArray.isEmpty()) {
       throw new JsonSyntaxException("Must have at least one book element");
     }
     ImmutableList.Builder<List<BlockElement>> builder = ImmutableList.builder();
     for (int i = 0; i < bookArray.size(); i++) {
       builder.add(SimpleBlockModel.getModelElements(context, bookArray.get(i), "books[" + i + "]"));
     }
-    List<ModelItem> items = ModelItem.listFromJson(json, "items");
     // final model
-    return new ShelfModel(model, retextured, builder.build(), items);
+    return new ShelfModel(model, retextured, builder.build());
   }
 
   /**
@@ -149,7 +139,7 @@ public class ShelfModel implements IUnbakedGeometry<ShelfModel> {
       if (baked == null) {
         List<BlockElement> elements = Lists.newArrayList(model.getElements());
         books.forEach(elements::addAll);
-        baked = SimpleBlockModel.bakeDynamic(owner, elements, transform);
+        baked = model.bakeWithElements(owner, elements, transform);
       }
       return baked;
     }
@@ -177,14 +167,14 @@ public class ShelfModel implements IUnbakedGeometry<ShelfModel> {
           elements.addAll(books.get(i));
         }
       }
-      return SimpleBlockModel.bakeDynamic(owner, elements, transform);
+      return model.bakeWithElements(owner, elements, transform);
     }
   }
 
   /**
    * Baked shelf model instance
    */
-  public static class Baked extends DynamicBakedWrapper<BakedModel> {
+  private static class Baked extends DynamicBakedWrapper<BakedModel> {
     /** Cache of texture to shelf model, used for items and to make crafting the shelf with books faster */
     private final Map<ResourceLocation,Shelf> texturedCache = new HashMap<>();
     /** Cache of shelf with books and texture, limited size */
@@ -194,21 +184,19 @@ public class ShelfModel implements IUnbakedGeometry<ShelfModel> {
     private final Shelf model;
     /** List to retexture */
     private final Set<String> retextured;
-    /** List of items to render in the TESR */
-    private final List<ModelItem> items;
+    /** Overrides instance */
+    private final ItemOverrides overrides = new RetexturedOverride();
 
     /**
      * Gets a baked model with the given properties
      * @param baked       Default model
      * @param model       Shelf model for baking new shelves
      * @param retextured  List of textures for retexturing
-     * @param items       List of model items for the TESR
      */
-    protected Baked(BakedModel baked, Shelf model, Set<String> retextured, List<ModelItem> items) {
+    protected Baked(BakedModel baked, Shelf model, Set<String> retextured) {
       super(baked);
       this.model = model;
       this.retextured = retextured;
-      this.items = items;
     }
 
     /**
@@ -278,32 +266,25 @@ public class ShelfModel implements IUnbakedGeometry<ShelfModel> {
 
     @Override
     public ItemOverrides getOverrides() {
-      return RetexturedOverride.INSTANCE;
+      return overrides;
     }
 
-    /** Gets the items to render in the TESR */
-    public List<ModelItem> getItems() {
-      return items;
-    }
-  }
-
-  /** Override list to swap the texture in from NBT */
-  private static class RetexturedOverride extends ItemOverrides {
-    private static final RetexturedOverride INSTANCE = new RetexturedOverride();
-
-    @Nullable
-    @Override
-    public BakedModel resolve(BakedModel originalModel, ItemStack stack, @Nullable ClientLevel world, @Nullable LivingEntity entity, int seed) {
-      if (stack.isEmpty() || !stack.hasTag()) {
-        return originalModel;
+    /** Override list to swap the texture in from NBT */
+    private class RetexturedOverride extends ItemOverrides {
+      @Nullable
+      @Override
+      public BakedModel resolve(BakedModel originalModel, ItemStack stack, @Nullable ClientLevel world, @Nullable LivingEntity entity, int seed) {
+        if (stack.isEmpty() || !stack.hasTag()) {
+          return originalModel;
+        }
+        // get the block first, ensuring its valid
+        Block block = RetexturedHelper.getTexture(stack);
+        if (block == Blocks.AIR) {
+          return originalModel;
+        }
+        // if valid, use the block
+        return getTexturedShelf(block).getBaked();
       }
-      // get the block first, ensuring its valid
-      Block block = RetexturedBlockItem.getTexture(stack);
-      if (block == Blocks.AIR) {
-        return originalModel;
-      }
-      // if valid, use the block
-      return ((Baked)originalModel).getTexturedShelf(block).getBaked();
     }
   }
 

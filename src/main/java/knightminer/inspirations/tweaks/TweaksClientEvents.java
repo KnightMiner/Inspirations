@@ -2,15 +2,12 @@ package knightminer.inspirations.tweaks;
 
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.common.AbstractClientEvents;
-import knightminer.inspirations.common.CommonsClientEvents;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.client.model.TrimModel;
 import knightminer.inspirations.tweaks.client.PortalColorHandler;
 import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.renderer.BiomeColors;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -39,11 +36,6 @@ import java.util.List;
 public class TweaksClientEvents extends AbstractClientEvents {
   @SubscribeEvent
   static void clientSetup(FMLClientSetupEvent event) {
-    // add model replacements to the config pack
-    CommonsClientEvents.configPack.addBlockstateReplacement(Config.customPortalColor, Blocks.NETHER_PORTAL, "nether_portal");
-    CommonsClientEvents.configPack.addItemModelReplacement(Config.coloredEnchantedRibbons, Items.ENCHANTED_BOOK, "enchanted_book");
-    CommonsClientEvents.configPack.addItemModelReplacement(Config.coloredFireworkItems, Items.FIREWORK_ROCKET, "fireworks");
-    CommonsClientEvents.configPack.addItemModelReplacement(Config.betterCauldronItem, Items.CAULDRON, "cauldron");
 
     MinecraftForge.EVENT_BUS.addListener(TweaksClientEvents::fixShieldTooltip);
   }

@@ -3,15 +3,12 @@ package knightminer.inspirations.building.block;
 import com.google.common.collect.ImmutableMap;
 import knightminer.inspirations.building.block.entity.ShelfBlockEntity;
 import knightminer.inspirations.common.Config;
-import knightminer.inspirations.common.IHidable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.NonNullList;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -39,7 +36,7 @@ import slimeknights.mantle.block.RetexturedBlock;
 import javax.annotation.Nullable;
 import java.util.Map;
 
-public class ShelfBlock extends InventoryBlock implements IHidable {
+public class ShelfBlock extends InventoryBlock {
   public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
 
   public ShelfBlock(Properties properties) {
@@ -68,21 +65,6 @@ public class ShelfBlock extends InventoryBlock implements IHidable {
   public void setPlacedBy(Level world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
     super.setPlacedBy(world, pos, state, placer, stack);
     RetexturedBlock.updateTextureBlock(world, pos, stack);
-  }
-
-
-  /* Enable/Disabling */
-
-  @Override
-  public boolean isEnabled() {
-    return Config.enableBookshelf.getAsBoolean();
-  }
-
-  @Override
-  public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
-    if (shouldAddtoItemGroup(group)) {
-      super.fillItemCategory(group, items);
-    }
   }
 
 

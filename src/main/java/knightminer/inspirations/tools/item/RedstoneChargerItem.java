@@ -1,7 +1,5 @@
 package knightminer.inspirations.tools.item;
 
-import knightminer.inspirations.common.Config;
-import knightminer.inspirations.common.item.HidableItem;
 import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.tools.block.RedstoneChargeBlock;
 import net.minecraft.advancements.CriteriaTriggers;
@@ -12,7 +10,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -24,11 +21,9 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import static knightminer.inspirations.tools.InspirationsTools.redstoneCharge;
 
-public class RedstoneChargerItem extends HidableItem {
-  public RedstoneChargerItem() {
-    super(new Item.Properties()
-              .durability(120)
-              .tab(CreativeModeTab.TAB_TOOLS), Config.enableRedstoneCharger);
+public class RedstoneChargerItem extends Item {
+  public RedstoneChargerItem(Item.Properties props) {
+    super(props);
   }
 
   @Override

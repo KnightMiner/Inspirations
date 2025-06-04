@@ -60,7 +60,7 @@ public class TweaksEvents {
       if (target instanceof Pig pig) {
         if (pig.isSaddled()) {
           pig.steering.setSaddle(false);
-          pig.level.playSound(player, pig.getX(), pig.getY(), pig.getZ(), SoundEvents.PIG_SADDLE, SoundSource.NEUTRAL, 0.5F, 1.0F);
+          pig.level().playSound(player, pig.getX(), pig.getY(), pig.getZ(), SoundEvents.PIG_SADDLE, SoundSource.NEUTRAL, 0.5F, 1.0F);
           ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(Items.SADDLE), player.getInventory().selected);
           event.setCanceled(true);
         }

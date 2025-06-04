@@ -1,19 +1,17 @@
 package knightminer.inspirations.utility.block;
 
-import knightminer.inspirations.common.Config;
-import knightminer.inspirations.common.IHidable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.TrapDoorBlock;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraft.world.level.block.state.properties.Half;
-import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-public class CarpetedTrapdoorBlock extends TrapDoorBlock implements IHidable {
+public class CarpetedTrapdoorBlock extends TrapDoorBlock {
   private static final VoxelShape EAST_OPEN_CARP_AABB = Block.box(0.0D, 0.0D, 0.0D, 4.0D, 16.0D, 16.0D);
   private static final VoxelShape WEST_OPEN_CARP_AABB = Block.box(12.0D, 0.0D, 0.0D, 16.0D, 16.0D, 16.0D);
   private static final VoxelShape SOUTH_OPEN_CARP_AABB = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 16.0D, 4.0D);
@@ -21,12 +19,8 @@ public class CarpetedTrapdoorBlock extends TrapDoorBlock implements IHidable {
   private static final VoxelShape BOTTOM_CARP_AABB = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 4.0D, 16.0D);
   private static final VoxelShape TOP_CARP_AABB = Block.box(0.0D, 13.0D, 0.0D, 16.0D, 16.9D, 16.0D);
 
-  public CarpetedTrapdoorBlock() {
-    super(Block.Properties
-              .of(Material.WOOD)
-              .strength(3.0F)
-              .sound(SoundType.WOOL)
-         );
+  public CarpetedTrapdoorBlock(BlockBehaviour.Properties properties) {
+    super(properties, BlockSetType.OAK);
   }
 
   @Override
@@ -43,10 +37,5 @@ public class CarpetedTrapdoorBlock extends TrapDoorBlock implements IHidable {
         case EAST -> isTop ? EAST_OPEN_CARP_AABB : EAST_OPEN_AABB;
       };
     }
-  }
-
-  @Override
-  public boolean isEnabled() {
-    return Config.enableCarpetedTrapdoor.getAsBoolean();
   }
 }

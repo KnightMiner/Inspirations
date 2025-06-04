@@ -2,10 +2,8 @@ package knightminer.inspirations.cauldrons.item;
 
 import knightminer.inspirations.cauldrons.InspirationsCaudrons;
 import knightminer.inspirations.library.MiscUtil;
-import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -14,11 +12,6 @@ public class MixedDyedBottleItem extends Item {
   private static final String TAG_COLOR = "color";
   public MixedDyedBottleItem(Properties props) {
     super(props);
-  }
-
-  @Override
-  public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
-    // hide from creative as means nothing without NBT, and the simple ones do the NBT
   }
 
   /**

@@ -34,7 +34,7 @@ public class NorthCompassPropertyGetter implements ItemPropertyFunction {
     }
     Level world = clientWorld;
     if (world == null) {
-      world = entity.level;
+      world = entity.level();
     }
 
     double angle = Mth.positiveModulo(entity.getYRot() / 360, 1);

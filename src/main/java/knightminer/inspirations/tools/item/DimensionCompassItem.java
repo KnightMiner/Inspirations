@@ -1,11 +1,7 @@
 package knightminer.inspirations.tools.item;
 
 import knightminer.inspirations.Inspirations;
-import knightminer.inspirations.common.Config;
-import knightminer.inspirations.common.IHidable;
-import knightminer.inspirations.common.item.HidableItem;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.NbtUtils;
@@ -15,7 +11,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CompassItem;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.DyeableLeatherItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
@@ -23,21 +18,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 
 /* Yes, the interface says armor, but in mojmappings its not armor, its just dyeable */
-public class DimensionCompassItem extends CompassItem implements DyeableLeatherItem, IHidable {
+public class DimensionCompassItem extends CompassItem implements DyeableLeatherItem {
 	public DimensionCompassItem(Properties builder) {
 		super(builder);
-	}
-
-	@Override
-	public boolean isEnabled() {
-		return Config.enableDimensionCompass.getAsBoolean();
-	}
-
-	@Override
-	public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
-		if (shouldAddtoItemGroup(group)) {
-			super.fillItemCategory(group, items);
-		}
 	}
 
 	@Override

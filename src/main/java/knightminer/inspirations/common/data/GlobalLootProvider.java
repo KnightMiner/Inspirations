@@ -3,7 +3,7 @@ package knightminer.inspirations.common.data;
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import net.minecraft.advancements.critereon.StatePropertiesPredicate;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -18,8 +18,8 @@ import slimeknights.mantle.loot.ReplaceItemLootModifier;
 import slimeknights.mantle.recipe.helper.ItemOutput;
 
 public class GlobalLootProvider extends GlobalLootModifierProvider {
-  public GlobalLootProvider(DataGenerator gen) {
-    super(gen, Inspirations.modID);
+  public GlobalLootProvider(PackOutput packOutput) {
+    super(packOutput, Inspirations.modID);
   }
 
   @Override

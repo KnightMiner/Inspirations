@@ -1,11 +1,8 @@
 package knightminer.inspirations.utility.block;
 
-import knightminer.inspirations.common.Config;
-import knightminer.inspirations.common.IHidable;
 import knightminer.inspirations.utility.block.entity.CollectorBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.NonNullList;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
@@ -13,22 +10,19 @@ import net.minecraft.world.Container;
 import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
-import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
-import net.minecraft.world.level.material.Material;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.network.NetworkHooks;
@@ -36,34 +30,18 @@ import slimeknights.mantle.block.InventoryBlock;
 
 import javax.annotation.Nullable;
 
-public class CollectorBlock extends InventoryBlock implements IHidable {
+public class CollectorBlock extends InventoryBlock {
 
   public static final DirectionProperty FACING = BlockStateProperties.FACING;
   private static final BooleanProperty TRIGGERED = BlockStateProperties.TRIGGERED;
 
-  public CollectorBlock() {
-    super(Block.Properties.of(Material.STONE)
-                          .strength(3.5F)
-                          .sound(SoundType.STONE)
-         );
+  public CollectorBlock(BlockBehaviour.Properties props) {
+    super(props);
     this.registerDefaultState(this.getStateDefinition().any()
                              .setValue(FACING, Direction.NORTH)
                              .setValue(TRIGGERED, false));
   }
 
-  /* IHidable */
-
-  @Override
-  public boolean isEnabled() {
-    return Config.enableCollector.getAsBoolean();
-  }
-
-  @Override
-  public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> stacks) {
-    if (shouldAddtoItemGroup(group)) {
-      super.fillItemCategory(group, stacks);
-    }
-  }
 
   /* Block state settings */
 
@@ -77,6 +55,7 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
     return state.setValue(FACING, direction.rotate(state.getValue(FACING)));
   }
 
+  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public BlockState mirror(BlockState state, Mirror mirror) {
@@ -94,6 +73,8 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
     return this.defaultBlockState().setValue(FACING, facing);
   }
 
+  @SuppressWarnings("deprecation")
+  @Deprecated
   @Override
   public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
     // If destroyed, drop contents.
@@ -130,6 +111,7 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
 
   /* Comparator logic */
 
+  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public int getAnalogOutputSignal(BlockState blockState, Level world, BlockPos pos) {
@@ -142,6 +124,7 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
     return 0;
   }
 
+  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public boolean hasAnalogOutputSignal(BlockState state) {
@@ -151,6 +134,7 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
 
   /* Collecting logic */
 
+  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, BlockPos neighbor, boolean isMoving) {
@@ -173,6 +157,7 @@ public class CollectorBlock extends InventoryBlock implements IHidable {
     }
   }
 
+  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public void tick(BlockState state, ServerLevel world, BlockPos pos, RandomSource random) {

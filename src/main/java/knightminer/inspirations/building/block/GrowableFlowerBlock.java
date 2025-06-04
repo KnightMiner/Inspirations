@@ -1,19 +1,14 @@
 package knightminer.inspirations.building.block;
 
 import knightminer.inspirations.Inspirations;
-import knightminer.inspirations.common.Config;
-import knightminer.inspirations.common.IHidable;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.NonNullList;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.world.level.block.DoublePlantBlock;
 import net.minecraft.world.level.block.FlowerBlock;
@@ -26,7 +21,7 @@ import net.minecraftforge.event.LootTableLoadEvent;
 
 import javax.annotation.Nullable;
 
-public class GrowableFlowerBlock extends FlowerBlock implements BonemealableBlock, IHidable {
+public class GrowableFlowerBlock extends FlowerBlock implements BonemealableBlock {
   private final DoublePlantBlock largePlant;
 
   public GrowableFlowerBlock(MobEffect effect, int duration, @Nullable DoublePlantBlock largePlant, Properties props) {
@@ -34,23 +29,11 @@ public class GrowableFlowerBlock extends FlowerBlock implements BonemealableBloc
     this.largePlant = largePlant;
   }
 
-  @Override
-  public boolean isEnabled() {
-    return Config.enableFlowers.getAsBoolean();
-  }
-
-  @Override
-  public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
-    if (shouldAddtoItemGroup(group)) {
-      super.fillItemCategory(group, items);
-    }
-  }
-
 
   /* Doubling up */
 
   @Override
-  public boolean isValidBonemealTarget(BlockGetter world, BlockPos pos, BlockState state, boolean isClient) {
+  public boolean isValidBonemealTarget(LevelReader pLevel, BlockPos pPos, BlockState pState, boolean pIsClient) {
     return largePlant != null;
   }
 
@@ -72,10 +55,12 @@ public class GrowableFlowerBlock extends FlowerBlock implements BonemealableBloc
   }
 
   /** Injects the ability to drop this flower into the loot table for the large version. */
+  @SuppressWarnings("deprecation")
   public void injectLoot(LootTableLoadEvent event) {
+    // TODO: migrate to mantle loot injectors or GLMs?
     if (largePlant == null ||
         !event.getName().getNamespace().equals("minecraft") ||
-        !event.getName().getPath().equals("blocks/" + Registry.BLOCK.getKey(largePlant).getPath())
+        !event.getName().getPath().equals("blocks/" + BuiltInRegistries.BLOCK.getKey(largePlant).getPath())
     ) {
       return;
     }
@@ -86,7 +71,7 @@ public class GrowableFlowerBlock extends FlowerBlock implements BonemealableBloc
     if (table.removePool("main") == null) {
       return; // Wasn't removed.
     }
-    ResourceLocation location = Inspirations.getResource("blocks/inject/" + Registry.BLOCK.getKey(this).getPath());
+    ResourceLocation location = Inspirations.getResource("blocks/inject/" + BuiltInRegistries.BLOCK.getKey(this).getPath());
     table.addPool(new LootPool.Builder()
                       .name(location.toString())
                       .setRolls(ConstantValue.exactly(1))

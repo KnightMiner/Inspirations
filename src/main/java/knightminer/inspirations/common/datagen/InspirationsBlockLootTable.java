@@ -9,7 +9,9 @@ import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import knightminer.inspirations.utility.InspirationsUtility;
 import net.minecraft.advancements.critereon.StatePropertiesPredicate;
-import net.minecraft.data.loot.BlockLoot;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.data.loot.BlockLootSubProvider;
+import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
@@ -23,31 +25,41 @@ import net.minecraft.world.level.storage.loot.entries.LootTableReference;
 import net.minecraft.world.level.storage.loot.functions.CopyNameFunction;
 import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
 import net.minecraft.world.level.storage.loot.predicates.LootItemBlockStatePropertyCondition;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.common.ToolActions;
+import net.minecraftforge.common.loot.CanToolPerformAction;
 import slimeknights.mantle.loot.function.RetexturedLootFunction;
 
 import javax.annotation.Nonnull;
 import java.util.Map.Entry;
+import java.util.Set;
 
-public class InspirationsBlockLootTable extends BlockLoot {
+public class InspirationsBlockLootTable extends BlockLootSubProvider {
+  // replacing the vanilla definition with the forge tool action
+  private static final LootItemCondition.Builder HAS_SHEARS = CanToolPerformAction.canToolPerformAction(ToolActions.SHEARS_DIG);
+  private static final LootItemCondition.Builder HAS_SHEARS_OR_SILK_TOUCH = HAS_SHEARS.or(HAS_SILK_TOUCH);
+
+  protected InspirationsBlockLootTable() {
+    super(Set.of(), FeatureFlags.REGISTRY.allFlags());
+  }
+
+  @SuppressWarnings("deprecation")
   @Nonnull
   @Override
   protected Iterable<Block> getKnownBlocks() {
     // We only care about our blocks.
-    return ForgeRegistries.BLOCKS.getEntries().stream()
+    return BuiltInRegistries.BLOCK.entrySet().stream()
                                  .filter(entry -> {
                                    String ns = entry.getKey().location().getNamespace();
-                                   return ns.equals(Inspirations.modID) || ns.equals("minecraft");
+                                   return ns.equals(Inspirations.modID);
                                  })
                                  .map(Entry::getValue)
                                  .toList();
   }
 
   @Override
-  protected void addTables() {
-    super.addTables();
-
+  protected void generate() {
     this.addBuilding();
     this.addRecipes();
     this.addTools();

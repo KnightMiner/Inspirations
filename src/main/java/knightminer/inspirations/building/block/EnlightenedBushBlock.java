@@ -1,31 +1,22 @@
 package knightminer.inspirations.building.block;
 
 import knightminer.inspirations.building.block.entity.EnlightenedBushBlockEntity;
-import knightminer.inspirations.common.Config;
-import knightminer.inspirations.common.IHidable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import slimeknights.mantle.block.RetexturedBlock;
 
 import javax.annotation.Nullable;
 
-public class EnlightenedBushBlock extends RetexturedBlock implements IHidable {
+public class EnlightenedBushBlock extends RetexturedBlock {
   private final int color;
 
-  public EnlightenedBushBlock(int color) {
-    super(Block.Properties.of(Material.LEAVES)
-                          .lightLevel((state) -> 15)
-                          .strength(0.2F)
-                          .sound(SoundType.GRASS)
-                          .noOcclusion()
-         );
+  public EnlightenedBushBlock(Block.Properties props, int color) {
+    super(props);
     this.color = color;
   }
 
@@ -42,11 +33,6 @@ public class EnlightenedBushBlock extends RetexturedBlock implements IHidable {
   @Override
   public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
     return new EnlightenedBushBlockEntity(pos, state);
-  }
-
-  @Override
-  public boolean isEnabled() {
-    return Config.enableEnlightenedBush.getAsBoolean();
   }
 
   /*

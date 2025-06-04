@@ -6,8 +6,11 @@ import knightminer.inspirations.library.client.ClientUtil;
 import knightminer.inspirations.library.client.ConfigurableResourcePack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.model.ModelBakery;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ModelEvent.BakingCompleted;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -24,9 +27,21 @@ public class CommonsClientEvents extends AbstractClientEvents {
    */
   public static void onConstruct() {
     Minecraft minecraft = Minecraft.getInstance();
+    //noinspection ConstantValue  null during datagen
     if (minecraft != null) {
-      configPack = new ConfigurableResourcePack(Inspirations.class, Inspirations.getResource("config_resources"), "Inspirations Config", ImmutableSet.of("minecraft"));
+      configPack = new ConfigurableResourcePack(
+        Inspirations.class,
+        Inspirations.getResource("config_resources"),
+        Component.translatable("pack.inspirations.config.name"),
+        Component.translatable("pack.inspirations.config.description"),
+        ImmutableSet.of("minecraft"));
       minecraft.getResourcePackRepository().addPackFinder(configPack);
+
+      // add model replacements to the config pack
+      configPack.addBlockstateReplacement(Config.customPortalColor, Blocks.NETHER_PORTAL, "nether_portal");
+      configPack.addItemModelReplacement(Config.coloredEnchantedRibbons, Items.ENCHANTED_BOOK, "enchanted_book");
+      configPack.addItemModelReplacement(Config.coloredFireworkItems, Items.FIREWORK_ROCKET, "fireworks");
+      configPack.addItemModelReplacement(Config.betterCauldronItem, Items.CAULDRON, "cauldron");
     }
   }
 

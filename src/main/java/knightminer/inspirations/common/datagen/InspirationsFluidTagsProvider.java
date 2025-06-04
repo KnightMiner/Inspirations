@@ -1,15 +1,18 @@
 package knightminer.inspirations.common.datagen;
 
 import knightminer.inspirations.Inspirations;
-import knightminer.inspirations.library.InspirationsTags;
 import knightminer.inspirations.cauldrons.InspirationsCaudrons;
-import net.minecraft.data.DataGenerator;
+import knightminer.inspirations.library.InspirationsTags;
+import net.minecraft.core.HolderLookup.Provider;
+import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.FluidTagsProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
+import java.util.concurrent.CompletableFuture;
+
 public class InspirationsFluidTagsProvider extends FluidTagsProvider {
-  public InspirationsFluidTagsProvider(DataGenerator gen, ExistingFileHelper existing) {
-    super(gen, Inspirations.modID, existing);
+  public InspirationsFluidTagsProvider(PackOutput packOutput, CompletableFuture<Provider> lookupProvider, ExistingFileHelper existing) {
+    super(packOutput, lookupProvider, Inspirations.modID, existing);
   }
 
   @Override
@@ -18,7 +21,7 @@ public class InspirationsFluidTagsProvider extends FluidTagsProvider {
   }
 
   @Override
-  protected void addTags() {
+  protected void addTags(Provider pProvider) {
     this.tag(InspirationsTags.Fluids.HONEY        ).add(InspirationsCaudrons.honey, InspirationsCaudrons.honey.getFlowing());
     this.tag(InspirationsTags.Fluids.BEETROOT_SOUP).add(InspirationsCaudrons.beetrootSoup, InspirationsCaudrons.beetrootSoup.getFlowing());
     this.tag(InspirationsTags.Fluids.MUSHROOM_STEW).add(InspirationsCaudrons.mushroomStew, InspirationsCaudrons.mushroomStew.getFlowing());

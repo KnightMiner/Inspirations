@@ -1,32 +1,28 @@
 package knightminer.inspirations.cauldrons.item;
 
-import knightminer.inspirations.common.Config;
-import knightminer.inspirations.common.IHidable;
+import net.minecraft.core.BlockPos;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.FluidTags;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BottleItem;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
-import net.minecraft.tags.FluidTags;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.core.NonNullList;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 
 import java.util.function.Supplier;
 
 /**
  * Item representing an empty potion bottle. Can be filled with water from a source block
  */
-public class EmptyBottleItem extends BottleItem implements IHidable {
+public class EmptyBottleItem extends BottleItem {
   private final Supplier<Item> filled;
 
   /**
@@ -37,18 +33,6 @@ public class EmptyBottleItem extends BottleItem implements IHidable {
   public EmptyBottleItem(Properties properties, Supplier<Item> filled) {
     super(properties);
     this.filled = filled;
-  }
-
-  @Override
-  public boolean isEnabled() {
-    return Config.enableCauldronPotions.getAsBoolean();
-  }
-
-  @Override
-  public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
-    if (shouldAddtoItemGroup(group)) {
-      super.fillItemCategory(group, items);
-    }
   }
 
   @Override

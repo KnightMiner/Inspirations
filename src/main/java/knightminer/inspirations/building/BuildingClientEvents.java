@@ -32,8 +32,8 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import slimeknights.mantle.block.entity.IRetexturedBlockEntity;
-import slimeknights.mantle.item.RetexturedBlockItem;
 import slimeknights.mantle.util.BlockEntityHelper;
+import slimeknights.mantle.util.RetexturedHelper;
 
 import java.util.Optional;
 
@@ -155,7 +155,7 @@ public class BuildingClientEvents extends AbstractClientEvents {
         return -1;
       }
       // redirect to block for colors
-      Block block = RetexturedBlockItem.getTexture(stack);
+      Block block = RetexturedHelper.getTexture(stack);
       if (block != Blocks.AIR) {
         return itemColors.getColor(new ItemStack(block), 0);
       } else {

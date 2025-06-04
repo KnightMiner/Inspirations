@@ -7,8 +7,9 @@ import net.minecraft.advancements.critereon.EnchantmentPredicate;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.advancements.critereon.NbtPredicate;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.world.item.Items;
@@ -19,8 +20,8 @@ import java.util.Collections;
 import java.util.function.Consumer;
 
 public class TweaksRecipeProvider extends RecipeProvider implements IConditionBuilder, IInspirationsRecipeBuilder {
-  public TweaksRecipeProvider(DataGenerator gen) {
-    super(gen);
+  public TweaksRecipeProvider(PackOutput packOutput) {
+    super(packOutput);
   }
 
   @Override
@@ -29,12 +30,12 @@ public class TweaksRecipeProvider extends RecipeProvider implements IConditionBu
   }
 
   @Override
-  protected void buildCraftingRecipes(Consumer<FinishedRecipe> consumer) {
+  protected void buildRecipes(Consumer<FinishedRecipe> consumer) {
     // Since these are mass-production recipes, show them after the user makes
     // several of the original.
 
     // stackable collector
-    ShapedRecipeBuilder.shaped(InspirationsUtility.collector)
+    ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, InspirationsUtility.collector)
                        // builder is missing count, so use ItemPredicate constructor
                        .unlockedBy("many_collectors", inventoryTrigger(new ItemPredicate(
                            null, // tag
@@ -55,7 +56,7 @@ public class TweaksRecipeProvider extends RecipeProvider implements IConditionBu
                        .save(withCondition(consumer, ConfigEnabledCondition.COLLECTOR, ConfigEnabledCondition.UNSTACKABLE_ALTS), location("tweaks/collector_stackable"));
 
     // stackable dispenser
-    ShapedRecipeBuilder.shaped(Items.DISPENSER)
+    ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, Items.DISPENSER)
                        // builder is missing count, so use ItemPredicate constructor
                        .unlockedBy("many_collectors", inventoryTrigger(new ItemPredicate(
                            null, // tag

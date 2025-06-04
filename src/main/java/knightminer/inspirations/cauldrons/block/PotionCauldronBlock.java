@@ -19,7 +19,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import javax.annotation.Nullable;
 import java.util.List;
 
-import static knightminer.inspirations.cauldrons.block.BoilingFourLayerCauldronBlock.DAMAGE_BOIL;
 import static knightminer.inspirations.cauldrons.block.BoilingFourLayerCauldronBlock.isBoiling;
 
 /** Cauldron that contains a data instance for the potion */
@@ -32,7 +31,7 @@ public class PotionCauldronBlock extends BoilingThreeLayerCauldronBlock implemen
 	public void entityInside(BlockState state, Level world, BlockPos pos, Entity entity) {
 		if (!world.isClientSide && isEntityInsideContent(state, pos, entity)) {
 			if (isBoiling(world, pos)) {
-				entity.hurt(DAMAGE_BOIL, 2.0F);
+				BoilingFourLayerCauldronBlock.boil(entity);
 			}
 			if (entity instanceof LivingEntity living) {
 				PotionCauldronBlockEntity be = InspirationsCaudrons.potionCauldronEntity.getBlockEntity(world, pos);

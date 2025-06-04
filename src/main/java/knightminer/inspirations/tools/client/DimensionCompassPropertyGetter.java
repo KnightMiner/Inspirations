@@ -38,7 +38,7 @@ public class DimensionCompassPropertyGetter implements ItemPropertyFunction {
 		// ensure we have a world
 		Level world = clientWorld;
 		if (world == null) {
-			world = entity.level;
+			world = entity.level();
 		}
 
 		// start by selecting our target position

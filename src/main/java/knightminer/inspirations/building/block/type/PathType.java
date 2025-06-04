@@ -1,10 +1,10 @@
 package knightminer.inspirations.building.block.type;
 
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.material.MaterialColor;
 import net.minecraft.util.StringRepresentable;
-import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.Locale;
 
@@ -13,18 +13,18 @@ import java.util.Locale;
  */
 public enum PathType implements StringRepresentable {
   // There's multiple variants for these, just use a square
-  ROCK(MaterialColor.STONE, Block.box(.5, 0, .5, 15.5, 1, 15.5)),
-  ROUND(MaterialColor.STONE, Shapes.or(
+  ROCK(MapColor.STONE, Block.box(.5, 0, .5, 15.5, 1, 15.5)),
+  ROUND(MapColor.STONE, Shapes.or(
       Block.box(1, 0, 5, 15, 1, 11),
       Block.box(5, 0, 1, 11, 1, 15),
       Block.box(2, 0, 3, 14, 1, 13),
       Block.box(3, 0, 2, 13, 1, 14)).optimize()),
-  TILE(MaterialColor.STONE, Shapes.or(
+  TILE(MapColor.STONE, Shapes.or(
       Block.box(1, 0, 1, 7, 1, 7),
       Block.box(9, 0, 1, 15, 1, 7),
       Block.box(9, 0, 9, 15, 1, 15),
       Block.box(1, 0, 9, 7, 1, 15))),
-  BRICK(MaterialColor.COLOR_RED, Shapes.or(
+  BRICK(MapColor.COLOR_RED, Shapes.or(
       Block.box(0, 0, 0, 3, 1, 3),
       Block.box(4, 0, 0, 7, 1, 7),
       Block.box(0, 0, 4, 3, 1, 11),
@@ -37,10 +37,10 @@ public enum PathType implements StringRepresentable {
       Block.box(0, 0, 12, 7, 1, 15)));
 
   private final String name = name().toLowerCase(Locale.ROOT);
-  private final MaterialColor color;
+  private final MapColor color;
   private final VoxelShape shape;
 
-  PathType(MaterialColor color, VoxelShape shape) {
+  PathType(MapColor color, VoxelShape shape) {
     this.color = color;
     this.shape = shape;
   }
@@ -49,7 +49,7 @@ public enum PathType implements StringRepresentable {
    * Gets the material color for this mulch type
    * @return Material color
    */
-  public MaterialColor getColor() {
+  public MapColor getColor() {
     return this.color;
   }
 

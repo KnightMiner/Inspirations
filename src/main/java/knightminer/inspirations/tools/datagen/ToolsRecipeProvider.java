@@ -7,8 +7,9 @@ import net.minecraft.advancements.critereon.EnchantmentPredicate;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.advancements.critereon.NbtPredicate;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
@@ -24,8 +25,8 @@ import java.util.Collections;
 import java.util.function.Consumer;
 
 public class ToolsRecipeProvider extends RecipeProvider implements IConditionBuilder, IInspirationsRecipeBuilder {
-  public ToolsRecipeProvider(DataGenerator gen) {
-    super(gen);
+  public ToolsRecipeProvider(PackOutput packOutput) {
+    super(packOutput);
   }
 
   @Override
@@ -34,9 +35,9 @@ public class ToolsRecipeProvider extends RecipeProvider implements IConditionBui
   }
 
   @Override
-  protected void buildCraftingRecipes(Consumer<FinishedRecipe> consumer) {
+  protected void buildRecipes(Consumer<FinishedRecipe> consumer) {
     // photometer
-    ShapedRecipeBuilder.shaped(InspirationsTools.photometer)
+    ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, InspirationsTools.photometer)
                        .unlockedBy("has_glowstone", has(Tags.Items.DUSTS_GLOWSTONE))
                        .unlockedBy("has_redstone", has(Tags.Items.DUSTS_REDSTONE))
                        .define('B', Items.GLASS_BOTTLE)
@@ -59,7 +60,7 @@ public class ToolsRecipeProvider extends RecipeProvider implements IConditionBui
         Potions.WATER,
         NbtPredicate.ANY
     );
-    ShapedRecipeBuilder.shaped(InspirationsTools.barometer)
+    ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, InspirationsTools.barometer)
                        .unlockedBy("has_bottle", inventoryTrigger(hasWaterBottle))
                        .define('W', PartialNBTIngredient.of(PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.WATER).getTag(), Items.POTION))
                        .define('B', Items.GLASS_BOTTLE)
@@ -70,14 +71,14 @@ public class ToolsRecipeProvider extends RecipeProvider implements IConditionBui
 
     // lock and key
     Consumer<FinishedRecipe> lockCondition = withCondition(consumer, ConfigEnabledCondition.LOCK);
-    ShapedRecipeBuilder.shaped(InspirationsTools.lock)
+    ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, InspirationsTools.lock)
                        .unlockedBy("has_iron", has(Tags.Items.INGOTS_IRON))
                        .define('I', Tags.Items.INGOTS_IRON)
                        .define('N', Tags.Items.NUGGETS_IRON)
                        .pattern("I")
                        .pattern("N")
                        .save(lockCondition, prefix(id(InspirationsTools.lock), "tools/"));
-    ShapedRecipeBuilder.shaped(InspirationsTools.key)
+    ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, InspirationsTools.key)
                        .unlockedBy("has_iron", has(Tags.Items.INGOTS_IRON))
                        .define('I', Tags.Items.INGOTS_IRON)
                        .define('N', Tags.Items.NUGGETS_IRON)
@@ -85,7 +86,7 @@ public class ToolsRecipeProvider extends RecipeProvider implements IConditionBui
                        .save(lockCondition, prefix(id(InspirationsTools.key), "tools/"));
 
     // north compass
-    ShapedRecipeBuilder.shaped(InspirationsTools.northCompass)
+    ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, InspirationsTools.northCompass)
                        .unlockedBy("has_iron", has(Tags.Items.INGOTS_IRON))
                        .define('I', Tags.Items.INGOTS_IRON)
                        .define('N', Tags.Items.NUGGETS_IRON)
@@ -96,7 +97,7 @@ public class ToolsRecipeProvider extends RecipeProvider implements IConditionBui
 
     // waypoint compasses
     // white
-    ShapedRecipeBuilder.shaped(InspirationsTools.dimensionCompass)
+    ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, InspirationsTools.dimensionCompass)
                        .unlockedBy("has_ender", has(Tags.Items.ENDER_PEARLS))
                        .define('G', Tags.Items.INGOTS_GOLD)
                        .define('E', Tags.Items.ENDER_PEARLS)
@@ -106,7 +107,7 @@ public class ToolsRecipeProvider extends RecipeProvider implements IConditionBui
                        .save(withCondition(consumer, ConfigEnabledCondition.DIMENSION_COMPASS), location("tools/dimension_compass"));
 
     // redstone arrow
-    ShapedRecipeBuilder.shaped(InspirationsTools.redstoneArrow, 8)
+    ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, InspirationsTools.redstoneArrow, 8)
                        .unlockedBy("has_redstone", has(Tags.Items.DUSTS_REDSTONE))
                        .define('R', Tags.Items.DUSTS_REDSTONE)
                        .define('S', Tags.Items.RODS_WOODEN)
@@ -117,7 +118,7 @@ public class ToolsRecipeProvider extends RecipeProvider implements IConditionBui
                        .save(withCondition(consumer, ConfigEnabledCondition.CHARGED_ARROW), prefix(id(InspirationsTools.redstoneArrow), "tools/"));
 
     // redstone charger
-    ShapelessRecipeBuilder.shapeless(InspirationsTools.redstoneCharger)
+    ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, InspirationsTools.redstoneCharger)
                           .unlockedBy("has_redstone", has(Tags.Items.DUSTS_REDSTONE))
                           .unlockedBy("has_gold", has(Tags.Items.INGOTS_GOLD))
                           .requires(Tags.Items.DUSTS_REDSTONE)

@@ -1,28 +1,25 @@
 package knightminer.inspirations.common.item;
 
 import knightminer.inspirations.library.MiscUtil;
-import net.minecraft.core.NonNullList;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.DyeableLeatherItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 
 /** Hidable item that is dyeable */
-public class DyeableItem extends HidableItem implements DyeableLeatherItem {
-  public DyeableItem(Properties properties, BooleanSupplier condition) {
-    super(properties, condition);
+public class DyeableItem extends Item implements DyeableLeatherItem {
+  public DyeableItem(Properties properties) {
+    super(properties);
   }
 
-  @Override
-  public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
-    if (shouldAddtoItemGroup(group) && allowedIn(group)) {
-      for (DyeColor color : DyeColor.values()) {
-        ItemStack stack = new ItemStack(this);
-        setColor(stack, MiscUtil.getColor(color));
-        items.add(stack);
-      }
+  /** Adds all variants to the given consumer */
+  public void addVariants(Consumer<ItemStack> consumer) {
+    for (DyeColor color : DyeColor.values()) {
+      ItemStack stack = new ItemStack(this);
+      setColor(stack, MiscUtil.getColor(color));
+      consumer.accept(stack);
     }
   }
 }

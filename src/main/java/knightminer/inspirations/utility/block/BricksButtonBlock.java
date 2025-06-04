@@ -1,7 +1,6 @@
 package knightminer.inspirations.utility.block;
 
 import com.google.common.collect.ImmutableMap;
-import knightminer.inspirations.common.block.HidableBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -20,34 +19,25 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ButtonBlock;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
-import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
-import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 
 import javax.annotation.Nullable;
+import java.util.Map;
 
-public class BricksButtonBlock extends HidableBlock {
-
+public class BricksButtonBlock extends Block {
   public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
   private static final BooleanProperty POWERED = ButtonBlock.POWERED;
-  private final ImmutableMap<Direction,AABB> buttonBounds;
+  private final Map<Direction,AABB> buttonBounds;
 
-  public BricksButtonBlock(ImmutableMap<Direction,AABB> buttonBounds) {
-    super(Block.Properties
-              .of(Material.STONE)
-              .strength(1.5F, 10.0F)
-              .sound(SoundType.STONE)
-              .randomTicks(),
-          () -> false
-         );
+  public BricksButtonBlock(Block.Properties props, Map<Direction,AABB> buttonBounds) {
+    super(props);
     this.buttonBounds = buttonBounds;
-
     this.registerDefaultState(this.getStateDefinition().any()
                              .setValue(FACING, Direction.NORTH)
                              .setValue(POWERED, false));

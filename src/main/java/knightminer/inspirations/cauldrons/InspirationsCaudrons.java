@@ -56,16 +56,18 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.cauldron.CauldronInteraction;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
 import net.minecraft.world.entity.ai.village.poi.PoiTypes;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.BowlFoodItem;
 import net.minecraft.world.item.BucketItem;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.DyeableLeatherItem;
@@ -85,7 +87,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.SoundActions;
 import net.minecraftforge.common.Tags;
@@ -150,6 +152,9 @@ public class InspirationsCaudrons extends ModuleBase {
   public static BlockEntityType<PotionCauldronBlockEntity> potionCauldronEntity;
   public static BlockEntityType<SuspiciousStewCauldronBlockEntity> suspiciousStewCauldronEntity;
 
+  /** Standard damage source for melting most mobs */
+  public static final ResourceKey<DamageType> DAMAGE_BOIL = ResourceKey.create(Registries.DAMAGE_TYPE, Inspirations.getResource("boiling"));
+
   // items
   public static Item splashBottle;
   public static Item lingeringBottle;
@@ -202,7 +207,7 @@ public class InspirationsCaudrons extends ModuleBase {
       potatoSoupType = adapter.register(new TextureFluidType(fluidBuilder("potato_soup").temperature(373).viscosity(4000)), "potato_soup");
       honeyType = adapter.register(new TextureFluidType(fluidBuilder("honey").temperature(373).viscosity(4000)), "honey");
     }
-    else if (registryKey == Registry.FLUID_REGISTRY) {
+    else if (registryKey == Registries.FLUID) {
       FluidRegistryAdapter adapter = new FluidRegistryAdapter(ForgeRegistries.FLUIDS);
 
       mushroomStew = adapter.register(FluidBuilder.create(() -> mushroomStewType).block(() -> mushroomStewBlock).bucket(() -> mushroomStewBucket), "mushroom_stew");
@@ -211,7 +216,7 @@ public class InspirationsCaudrons extends ModuleBase {
       potatoSoup = adapter.register(FluidBuilder.create(() -> potatoSoupType).block(() -> potatoSoupBlock).bucket(() -> potatoSoupBucket), "potato_soup");
       honey = adapter.register(FluidBuilder.create(() -> honeyType).block(() -> honeyFluidBlock).bucket(() -> honeyBucket), "honey");
     }
-    else if (registryKey == Registry.BLOCK_REGISTRY) {
+    else if (registryKey == Registries.BLOCK) {
       BlockRegistryAdapter registry = new BlockRegistryAdapter(ForgeRegistries.BLOCKS);
 
       BlockBehaviour.Properties cauldronProps = Properties.copy(Blocks.CAULDRON);
@@ -222,11 +227,11 @@ public class InspirationsCaudrons extends ModuleBase {
       honeyCauldron = registry.register(new FourLayerCauldronBlock(cauldronProps, HONEY_CAULDRON_INTERACTIONS), "honey_cauldron");
       milkCauldron = registry.register(new BoilingFourLayerCauldronBlock(cauldronProps, MILK_CAULDRON_INTERACTIONS), "milk_cauldron");
 
-      mushroomStewBlock = registry.registerFluidBlock(() -> mushroomStew, Material.WATER, 0, "mushroom_stew");
-      beetrootSoupBlock = registry.registerFluidBlock(() -> beetrootSoup, Material.WATER, 0, "beetroot_soup");
-      rabbitStewBlock = registry.registerFluidBlock(() -> rabbitStew, Material.WATER, 0, "rabbit_stew");
-      potatoSoupBlock = registry.registerFluidBlock(() -> potatoSoup, Material.WATER, 0, "potato_soup");
-      honeyFluidBlock = registry.registerFluidBlock(() -> honey, Material.WATER, 0, "honey");
+      mushroomStewBlock = registry.registerFluidBlock(() -> mushroomStew, MapColor.TERRACOTTA_LIGHT_GRAY, 0, "mushroom_stew");
+      beetrootSoupBlock = registry.registerFluidBlock(() -> beetrootSoup, MapColor.NETHER, 0, "beetroot_soup");
+      rabbitStewBlock = registry.registerFluidBlock(() -> rabbitStew, MapColor.PODZOL, 0, "rabbit_stew");
+      potatoSoupBlock = registry.registerFluidBlock(() -> potatoSoup, MapColor.TERRACOTTA_WHITE, 0, "potato_soup");
+      honeyFluidBlock = registry.registerFluidBlock(() -> honey, MapColor.COLOR_ORANGE, 0, "honey");
 
       dyeCauldron = registry.register(new DyeCauldronBlock(cauldronProps), "dye_cauldron");
       potionCauldron = registry.register(new PotionCauldronBlock(cauldronProps), "potion_cauldron");
@@ -236,14 +241,14 @@ public class InspirationsCaudrons extends ModuleBase {
         waterCauldron = registry.registerOverride(props -> new BoilingThreeLayerCauldronBlock(props, LayeredCauldronBlock.RAIN, CauldronInteraction.WATER), Blocks.WATER_CAULDRON);
       }
     }
-    else if (registryKey == Registry.BLOCK_ENTITY_TYPE_REGISTRY) {
+    else if (registryKey == Registries.BLOCK_ENTITY_TYPE) {
       BlockEntityTypeRegistryAdapter registry = new BlockEntityTypeRegistryAdapter(ForgeRegistries.BLOCK_ENTITY_TYPES);
 
       dyeCauldronEntity = registry.register(DyeCauldronBlockEntity::new, dyeCauldron, "dye_cauldron");
       potionCauldronEntity = registry.register(PotionCauldronBlockEntity::new, potionCauldron, "potion_cauldron");
       suspiciousStewCauldronEntity = registry.register(SuspiciousStewCauldronBlockEntity::new, suspiciousStewCauldron, "suspicious_stew_cauldron");
     }
-    else if (registryKey == Registry.ITEM_REGISTRY) {
+    else if (registryKey == Registries.ITEM) {
       ItemRegistryAdapter registry = new ItemRegistryAdapter(ForgeRegistries.ITEMS);
 
       // buckets
@@ -254,27 +259,22 @@ public class InspirationsCaudrons extends ModuleBase {
       honeyBucket = registry.registerBucket(() -> honey, "honey");
 
       // potato soup
-      potatoSoupItem = registry.register(
-          new BowlFoodItem(new Item.Properties().stacksTo(1)
-                                                .tab(CreativeModeTab.TAB_FOOD)
-                                                .food(new FoodProperties.Builder().nutrition(8).saturationMod(0.6F).build())),
-          "potato_soup");
+      potatoSoupItem = registry.register(new BowlFoodItem(
+        new Item.Properties().stacksTo(1).food(new FoodProperties.Builder().nutrition(8).saturationMod(0.6F).build())
+      ), "potato_soup");
 
       // empty bottles
-      Item.Properties brewingProps = new Item.Properties().tab(CreativeModeTab.TAB_BREWING);
-      splashBottle = registry.register(new EmptyBottleItem(brewingProps, () -> Items.SPLASH_POTION), "splash_bottle");
-      lingeringBottle = registry.register(new EmptyBottleItem(brewingProps, () -> Items.LINGERING_POTION), "lingering_bottle");
-      milkBottle = registry.register(new MilkBottleItem((new Item.Properties()).craftRemainder(Items.GLASS_BOTTLE).tab(CreativeModeTab.TAB_FOOD).stacksTo(16)), "milk_bottle");
+      Item.Properties props = new Item.Properties();
+      splashBottle = registry.register(new EmptyBottleItem(props, () -> Items.SPLASH_POTION), "splash_bottle");
+      lingeringBottle = registry.register(new EmptyBottleItem(props, () -> Items.LINGERING_POTION), "lingering_bottle");
+      Item.Properties bottleProps = new Item.Properties().stacksTo(16).craftRemainder(Items.GLASS_BOTTLE);
+      milkBottle = registry.register(new MilkBottleItem(bottleProps), "milk_bottle");
 
       // dyed bottles
-      Item.Properties bottleProps = new Item.Properties()
-          .tab(CreativeModeTab.TAB_MATERIALS)
-          .stacksTo(16)
-          .craftRemainder(Items.GLASS_BOTTLE);
       simpleDyedWaterBottle = registry.registerEnum(color -> new SimpleDyedBottleItem(bottleProps, DyeItem.byColor(color)), DyeColor.values(), "dyed_bottle");
       mixedDyedWaterBottle = registry.register(new MixedDyedBottleItem(bottleProps), "mixed_dyed_bottle");
     }
-    else if (registryKey == Registry.PARTICLE_TYPE_REGISTRY) {
+    else if (registryKey == Registries.PARTICLE_TYPE) {
       RegistryAdapter<ParticleType<?>> registry = new RegistryAdapter<>(ForgeRegistries.PARTICLE_TYPES);
       boilingParticle = registry.register(new SimpleParticleType(false), "boiling");
     }
@@ -283,11 +283,12 @@ public class InspirationsCaudrons extends ModuleBase {
   @SubscribeEvent
   void gatherData(GatherDataEvent event) {
     DataGenerator gen = event.getGenerator();
-    gen.addProvider(event.includeServer(), new RecipesRecipeProvider(gen));
+    PackOutput packOutput = gen.getPackOutput();
+    gen.addProvider(event.includeServer(), new RecipesRecipeProvider(packOutput));
     boolean client = event.includeClient();
-    gen.addProvider(client, new FluidBlockstateModelProvider(gen, Inspirations.modID));
-    gen.addProvider(client, new FluidBucketModelProvider(gen, Inspirations.modID));
-    gen.addProvider(client, new FluidTextureProvider(gen));
+    gen.addProvider(client, new FluidBlockstateModelProvider(packOutput, Inspirations.modID));
+    gen.addProvider(client, new FluidBucketModelProvider(packOutput, Inspirations.modID));
+    gen.addProvider(client, new FluidTextureProvider(packOutput));
   }
 
   @SubscribeEvent

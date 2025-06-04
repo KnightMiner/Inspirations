@@ -9,7 +9,6 @@ import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
@@ -22,11 +21,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -34,7 +30,6 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
-import java.util.List;
 
 public class MiscUtil {
   private static final String TAG_DISPLAY = "display";
@@ -57,46 +52,6 @@ public class MiscUtil {
   private static final ItemStack silkTouchItem = new ItemStack(Items.STICK);
   static {
     silkTouchItem.enchant(Enchantments.SILK_TOUCH, 1);
-  }
-
-  /**
-   * Gets an item stack from a block state. Uses Silk Touch drops
-   * @param state Input state
-   * @return ItemStack for the state, or ItemStack.EMPTY if a valid item cannot be found
-   */
-  public static ItemStack getStackFromState(ServerLevel world, @Nullable BlockState state) {
-    if (state == null) {
-      return ItemStack.EMPTY;
-    }
-    Block block = state.getBlock();
-
-    // skip air
-    if (block == Blocks.AIR) {
-      return ItemStack.EMPTY;
-    }
-
-    // Fill a fake context in to get Silk Touch drops.
-    // From LootParameterSets.Block,
-    // BLOCK_STATE, POSITION and TOOL is required and
-    // THIS_ENTITY, BLOCK_ENTITY and EXPLOSION_RADIUS are optional.
-    // BLOCK_STATE is provided by getDrops().
-    List<ItemStack> drops = state.getDrops(new LootContext.Builder(world)
-                                               .withParameter(LootContextParams.ORIGIN, new Vec3(0.5, 64, 0.5))
-                                               .withParameter(LootContextParams.TOOL, silkTouchItem)
-                                          );
-    if (drops.size() > 0) {
-      return drops.get(0);
-    }
-
-    // if it fails, do a fallback of item.getItemFromBlock
-    InspirationsRegistry.log.error("Failed to get silk touch drop for {}, using fallback", state);
-
-    // fallback, use item dropped
-    Item item = Item.byBlock(block);
-    if (item == Items.AIR) {
-      return ItemStack.EMPTY;
-    }
-    return new ItemStack(item);
   }
 
   /**
@@ -244,8 +199,8 @@ public class MiscUtil {
   public static ItemStack clearColor(ItemStack stack) {
     Item item = stack.getItem();
     // use the interface if present
-    if (item instanceof DyeableLeatherItem) {
-      ((DyeableLeatherItem) item).clearColor(stack);
+    if (item instanceof DyeableLeatherItem dyeable) {
+      dyeable.clearColor(stack);
     } else {
       CompoundTag displayTag = stack.getTagElement(TAG_DISPLAY);
       if (displayTag != null && displayTag.contains(TAG_COLOR)) {

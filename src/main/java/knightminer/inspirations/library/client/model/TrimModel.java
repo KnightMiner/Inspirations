@@ -4,7 +4,6 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.datafixers.util.Pair;
-import com.mojang.math.Vector3f;
 import net.minecraft.client.renderer.block.model.BlockElement;
 import net.minecraft.client.renderer.block.model.BlockElementFace;
 import net.minecraft.client.renderer.block.model.BlockFaceUV;
@@ -12,7 +11,7 @@ import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.Material;
-import net.minecraft.client.resources.model.ModelBakery;
+import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.core.Direction;
@@ -22,17 +21,16 @@ import net.minecraft.util.GsonHelper;
 import net.minecraftforge.client.model.geometry.IGeometryBakingContext;
 import net.minecraftforge.client.model.geometry.IGeometryLoader;
 import net.minecraftforge.client.model.geometry.IUnbakedGeometry;
+import org.joml.Vector3f;
 import slimeknights.mantle.client.model.util.SimpleBlockModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -56,12 +54,12 @@ public class TrimModel implements IUnbakedGeometry<TrimModel> {
   }
 
   @Override
-  public Collection<Material> getMaterials(IGeometryBakingContext owner, Function<ResourceLocation,UnbakedModel> modelGetter, Set<Pair<String,String>> missingTextureErrors) {
-    return model.getMaterials(owner, modelGetter, missingTextureErrors);
+  public void resolveParents(Function<ResourceLocation, UnbakedModel> modelGetter, IGeometryBakingContext context) {
+    model.resolveParents(modelGetter, context);
   }
 
   @Override
-  public BakedModel bake(IGeometryBakingContext owner, ModelBakery bakery, Function<Material,TextureAtlasSprite> spriteGetter, ModelState transform, ItemOverrides overrides, ResourceLocation location) {
+  public BakedModel bake(IGeometryBakingContext owner, ModelBaker bakery, Function<Material,TextureAtlasSprite> spriteGetter, ModelState transform, ItemOverrides overrides, ResourceLocation location) {
     // first, determine the highest pixel for each xz location, this is needed as there may be multiple elements in a column
     List<BlockElement> originalElements = model.getElements();
     // map of XZ to highest height
@@ -155,6 +153,7 @@ public class TrimModel implements IUnbakedGeometry<TrimModel> {
   private static BlockElementFace trimUV(BlockElementFace face, float amount) {
     // if no UV is set, we can return the original face, auto UV will handle it
     BlockFaceUV uv = face.uv;
+    //noinspection ConstantValue  no it's not
     if (uv.uvs == null) {
       return face;
     }

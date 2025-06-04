@@ -1,7 +1,5 @@
 package knightminer.inspirations.building.block;
 
-import knightminer.inspirations.common.Config;
-import knightminer.inspirations.common.block.HidableBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.BlockTags;
@@ -38,7 +36,7 @@ import javax.annotation.Nullable;
 import java.util.Locale;
 
 @SuppressWarnings("WeakerAccess")
-public class RopeBlock extends HidableBlock implements SimpleWaterloggedBlock {
+public class RopeBlock extends Block implements SimpleWaterloggedBlock {
   public static final EnumProperty<Rungs> RUNGS = EnumProperty.create("rungs", Rungs.class);
   public static final BooleanProperty BOTTOM = BooleanProperty.create("bottom");
   private static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
@@ -48,7 +46,7 @@ public class RopeBlock extends HidableBlock implements SimpleWaterloggedBlock {
 
   private final Item rungsItem;
   public RopeBlock(Item rungsItem, Properties props) {
-    super(props, Config.enableRope);
+    super(props);
     this.registerDefaultState(this.stateDefinition.any()
                                             .setValue(BOTTOM, false)
                                             .setValue(RUNGS, Rungs.NONE)

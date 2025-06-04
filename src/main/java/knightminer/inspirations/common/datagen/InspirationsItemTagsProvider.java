@@ -8,21 +8,25 @@ import knightminer.inspirations.common.InspirationsCommons;
 import knightminer.inspirations.library.InspirationsTags;
 import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.utility.InspirationsUtility;
-import net.minecraft.data.DataGenerator;
-import net.minecraft.data.tags.BlockTagsProvider;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.HolderLookup.Provider;
+import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
+import java.util.concurrent.CompletableFuture;
+
 public class InspirationsItemTagsProvider extends ItemTagsProvider {
 
-  public InspirationsItemTagsProvider(DataGenerator gen, ExistingFileHelper existing, BlockTagsProvider blocks) {
-    super(gen, blocks, Inspirations.modID, existing);
+  public InspirationsItemTagsProvider(PackOutput output, CompletableFuture<Provider> lookupProvider, CompletableFuture<TagLookup<Block>> blockTagProvider, ExistingFileHelper existing) {
+    super(output, lookupProvider, blockTagProvider, Inspirations.modID, existing);
   }
 
   @Override
@@ -31,7 +35,7 @@ public class InspirationsItemTagsProvider extends ItemTagsProvider {
   }
 
   @Override
-  protected void addTags() {
+  protected void addTags(HolderLookup.Provider provider) {
     registerInspTags();
     registerForgeTags();
     registerVanillaTags();
@@ -46,23 +50,23 @@ public class InspirationsItemTagsProvider extends ItemTagsProvider {
     this.tag(ItemTags.DOORS).add(InspirationsBuilding.glassDoorItem);
     this.copy(BlockTags.TRAPDOORS, ItemTags.TRAPDOORS);
 
-    TagAppender<Item> bookBuilder = this.tag(InspirationsTags.Items.FORGE_BOOKS)
+    this.tag(InspirationsTags.Items.COMMON_BOOKS)
         .add(InspirationsBuilding.redstoneBook)
         .add(Items.BOOK, Items.WRITABLE_BOOK, Items.WRITTEN_BOOK)
         .add(Items.ENCHANTED_BOOK, Items.KNOWLEDGE_BOOK, InspirationsBuilding.coloredBook);
-    this.tag(InspirationsTags.Items.BOOKS).addTag(InspirationsTags.Items.FORGE_BOOKS);
+    this.tag(InspirationsTags.Items.SHELF_BOOKS).addTag(InspirationsTags.Items.COMMON_BOOKS);
 
     // item list of all relevant carpets
-    TagAppender<Item> carpetBuilder = this.tag(InspirationsTags.Items.CARPETS);
+    IntrinsicTagAppender<Item> carpetBuilder = this.tag(InspirationsTags.Items.CARPETS);
     InspirationsCommons.VANILLA_CARPETS.forEach(block -> carpetBuilder.add(block.asItem()));
 
     // item list of all relevant shulker boxes
-    TagAppender<Item> shulkerBoxBuilder = this.tag(InspirationsTags.Items.SHULKER_BOXES);
+    IntrinsicTagAppender<Item> shulkerBoxBuilder = this.tag(InspirationsTags.Items.SHULKER_BOXES);
     shulkerBoxBuilder.add(Items.SHULKER_BOX);
     VanillaEnum.SHULKER_BOX.forEach(block -> shulkerBoxBuilder.add(block.asItem()));
 
     // relevant terracotta
-    TagAppender<Item> terracottaBuilder = this.tag(InspirationsTags.Items.TERRACOTTA);
+    IntrinsicTagAppender<Item> terracottaBuilder = this.tag(InspirationsTags.Items.TERRACOTTA);
     terracottaBuilder.add(Items.TERRACOTTA);
     VanillaEnum.TERRACOTTA.forEach(block -> terracottaBuilder.add(block.asItem()));
 

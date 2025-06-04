@@ -4,7 +4,6 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ItemLike;
@@ -41,7 +40,7 @@ public class CactusCropBlock extends BlockCropBlock {
   /* spiky! */
   @Override
   public void entityInside(BlockState state, Level worldIn, BlockPos pos, Entity entity) {
-    entity.hurt(DamageSource.CACTUS, 1.0F);
+    entity.hurt(worldIn.damageSources().cactus(), 1.0F);
   }
 
   @Deprecated
@@ -61,6 +60,6 @@ public class CactusCropBlock extends BlockCropBlock {
     }
 
     // otherwise, do cactus logic, but without the horizontal checks
-    return soil.canSustainPlant(world, down, Direction.UP, getPlant()) && !world.getBlockState(pos.above()).getMaterial().isLiquid();
+    return soil.canSustainPlant(world, down, Direction.UP, getPlant()) && !world.getBlockState(pos.above()).liquid();
   }
 }

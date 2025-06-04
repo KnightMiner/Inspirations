@@ -1,6 +1,5 @@
 package knightminer.inspirations.tweaks.recipe;
 
-import knightminer.inspirations.common.IHidable;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -14,7 +13,7 @@ import java.util.function.BooleanSupplier;
 /**
  * A brewing recipe type which can be applied to all three potion item types.
  */
-public class NormalBrewingRecipe implements IHidable, IBrewingRecipe {
+public class NormalBrewingRecipe implements IBrewingRecipe {
   private final BooleanSupplier enabled;
   private final Potion start;
   private final Ingredient catalyst;
@@ -25,11 +24,6 @@ public class NormalBrewingRecipe implements IHidable, IBrewingRecipe {
     this.catalyst = catalyst;
     this.output = output;
     this.enabled = enabledFunc;
-  }
-
-  @Override
-  public boolean isEnabled() {
-    return enabled.getAsBoolean();
   }
 
   public Ingredient getCatalyst() {
@@ -60,7 +54,7 @@ public class NormalBrewingRecipe implements IHidable, IBrewingRecipe {
 
   @Override
   public ItemStack getOutput(ItemStack input, ItemStack ingredient) {
-    if (!isEnabled()) {
+    if (!enabled.getAsBoolean()) {
       return ItemStack.EMPTY;
     }
     if (!catalyst.test(ingredient)) {

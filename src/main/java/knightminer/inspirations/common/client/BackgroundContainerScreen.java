@@ -1,8 +1,7 @@
 package knightminer.inspirations.common.client;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import knightminer.inspirations.Inspirations;
-import knightminer.inspirations.library.client.ClientUtil;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.MenuScreens.ScreenConstructor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
@@ -16,10 +15,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
  */
 @SuppressWarnings("WeakerAccess")
 public class BackgroundContainerScreen<T extends AbstractContainerMenu> extends AbstractContainerScreen<T> {
-
-  /**
-   * Background drawn for this screen
-   */
+  /** Background drawn for this screen */
   protected final ResourceLocation background;
 
   /**
@@ -43,16 +39,15 @@ public class BackgroundContainerScreen<T extends AbstractContainerMenu> extends 
   }
 
   @Override
-  public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-    this.renderBackground(matrixStack);
-    super.render(matrixStack, mouseX, mouseY, partialTicks);
-    this.renderTooltip(matrixStack, mouseX, mouseY);
+  public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+    this.renderBackground(graphics);
+    super.render(graphics, mouseX, mouseY, partialTicks);
+    this.renderTooltip(graphics, mouseX, mouseY);
   }
 
   @Override
-  protected void renderBg(PoseStack matrixStack, float partialTicks, int mouseX, int mouseY) {
-    ClientUtil.setup(this.background);
-    this.blit(matrixStack, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
+  protected void renderBg(GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
+    graphics.blit(this.background, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
   }
 
   public static class Factory<T extends AbstractContainerMenu> implements ScreenConstructor<T,BackgroundContainerScreen<T>> {

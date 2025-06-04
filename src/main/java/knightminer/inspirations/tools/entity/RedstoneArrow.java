@@ -7,6 +7,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
@@ -40,7 +41,7 @@ public class RedstoneArrow extends AbstractArrow implements IEntityAdditionalSpa
   }
 
   @Override
-  public Packet<?> getAddEntityPacket() {
+  public Packet<ClientGamePacketListener> getAddEntityPacket() {
     return NetworkHooks.getEntitySpawningPacket(this);
   }
 
@@ -52,7 +53,7 @@ public class RedstoneArrow extends AbstractArrow implements IEntityAdditionalSpa
 
   @Override
   public void readSpawnData(FriendlyByteBuf buffer) {
-    Entity shooter = this.level.getEntity(buffer.readInt());
+    Entity shooter = level().getEntity(buffer.readInt());
     if (shooter != null) {
       this.setOwner(shooter);
     }
@@ -88,6 +89,7 @@ public class RedstoneArrow extends AbstractArrow implements IEntityAdditionalSpa
     BlockPos pos = raytrace.getBlockPos().relative(sideHit);
 
     // if there is a block there, try the block next to that
+    Level level = level();
     if (!level.getBlockState(pos).canBeReplaced(new DirectionalPlaceContext(level, pos, sideHit, ItemStack.EMPTY, sideHit))) {
       pos = pos.relative(sideHit);
       if (!level.getBlockState(pos).canBeReplaced(new DirectionalPlaceContext(level, pos, sideHit, ItemStack.EMPTY, sideHit))) {

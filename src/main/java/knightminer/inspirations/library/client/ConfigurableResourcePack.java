@@ -1,31 +1,33 @@
 package knightminer.inspirations.library.client;
 
 import knightminer.inspirations.Inspirations;
-import net.minecraft.core.Registry;
+import net.minecraft.SharedConstants;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.AbstractPackResources;
 import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.ResourcePackFileNotFoundException;
 import net.minecraft.server.packs.repository.Pack;
-import net.minecraft.server.packs.repository.Pack.PackConstructor;
+import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.repository.RepositorySource;
+import net.minecraft.server.packs.resources.IoSupplier;
+import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
+import slimeknights.mantle.data.loadable.Loadables;
 
-import java.io.File;
+import javax.annotation.Nullable;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 /**
  * Resource pack that overrides resources based on config
@@ -36,7 +38,9 @@ public class ConfigurableResourcePack extends AbstractPackResources implements R
   /** Namespaced pack name, used to pass to resource pack loaders and for the translation key */
   private final String packId;
   /** Display name of the pack */
-  private final String displayName;
+  private final Component displayName;
+  /** Pack description */
+  private final Component description;
   /** Prefix for where to find pack resources */
   private final String pathPrefix;
   /** Set of namespaces relevant to this pack */
@@ -52,8 +56,8 @@ public class ConfigurableResourcePack extends AbstractPackResources implements R
    * @param displayName     Display name of the pack for UIs
    * @param namespaces      List of namespaces that have resources replaced
    */
-  public ConfigurableResourcePack(Class<?> resourceLoader, ResourceLocation packId, String displayName, Set<String> namespaces) {
-    this(resourceLoader, packId.toString(), String.format("/%s/%s/%s/", PackType.CLIENT_RESOURCES.getDirectory(), packId.getNamespace(), packId.getPath()), displayName, namespaces);
+  public ConfigurableResourcePack(Class<?> resourceLoader, ResourceLocation packId, Component displayName, Component description, Set<String> namespaces) {
+    this(resourceLoader, packId.toString(), String.format(Locale.ROOT, "/%s/%s/%s/", PackType.CLIENT_RESOURCES.getDirectory(), packId.getNamespace(), packId.getPath()), displayName, description, namespaces);
   }
 
   /**
@@ -63,18 +67,26 @@ public class ConfigurableResourcePack extends AbstractPackResources implements R
    * @param pathPrefix      Path resource prefix
    * @param namespaces      List of namepsaces that have resources replaced
    */
-  private ConfigurableResourcePack(Class<?> resourceLoader, String packId, String pathPrefix, String displayName, Set<String> namespaces) {
-    super(new File(pathPrefix));
+  private ConfigurableResourcePack(Class<?> resourceLoader, String packId, String pathPrefix, Component displayName, Component description, Set<String> namespaces) {
+    super(packId, true);
     this.resourceLoader = resourceLoader;
     this.packId = packId;
     this.displayName = displayName;
+    this.description = description;
     this.pathPrefix = pathPrefix;
     this.namespaces = namespaces;
   }
 
+  @Nullable
   @Override
-  public String getName() {
-    return displayName;
+  public IoSupplier<InputStream> getRootResource(String... elements) {
+    return this.getResource(String.join("/", elements));
+  }
+
+  @Nullable
+  @Override
+  public IoSupplier<InputStream> getResource(PackType packType, ResourceLocation location) {
+    return this.getResource(String.format(Locale.ROOT, "%s/%s/%s", packType.getDirectory(), location.getNamespace(), location.getPath()));
   }
 
   @Override
@@ -95,45 +107,62 @@ public class ConfigurableResourcePack extends AbstractPackResources implements R
     throw new FileNotFoundException("Failed to open resource at " + pathPrefix + name);
   }
 
-  @Override
-  protected InputStream getResource(String name) throws IOException {
-    // pack.mcmeta and pack.png are requested without prefix, and requird directly
-    if (name.equals("pack.mcmeta") || name.equals("pack.png")) {
-      return getPackResource(name);
-    }
+  /** Common code for getting an IO supplier */
+  private IoSupplier<InputStream> getIoSupplier(String name) {
+    return () -> getPackResource(name);
+  }
 
-    // if its a replacement, treat as such
+  /** Gets a resource supplier for the given name */
+  @Nullable
+  private IoSupplier<InputStream> getResource(String name) {
+    // pack.mcmeta and pack.png are requested without prefix, and required directly
+    if (name.equals("pack.mcmeta") || name.equals("pack.png")) {
+      return getIoSupplier(name);
+    }
+    // if it's a replacement, treat as such
     Replacement replacement = replacements.get(name);
     if (replacement != null && replacement.isEnabled()) {
-      return getPackResource(replacement.getName());
+      return getIoSupplier(replacement.name());
+    } else if (replacement != null && !replacement.isEnabled()) {
+      Inspirations.log.warn("Replacement {} for {} not enabled", replacement.name, name);
     }
-
-    // not a replacement or replacement is disabled, error
-    throw new ResourcePackFileNotFoundException(this.file, name);
+    // not a replacement or replacement is disabled, return nothing
+    return null;
   }
 
   @Override
-  protected boolean hasResource(String name) {
-    Replacement replacement = replacements.get(name);
-    return replacement != null && replacement.isEnabled();
-  }
-
-  @Override
-  public Collection<ResourceLocation> getResources(PackType type, String domain, String path, Predicate<ResourceLocation> filter) {
-    // this method appears to only be called for fonts and GUIs, so just return an empty list as neither is used here
-    return Collections.emptyList();
+  public void listResources(PackType packType, String namespace, String folder, ResourceOutput output) {
+    String root = packType.getDirectory() + '/' + namespace + '/';
+    String prefix = root + folder + '/';
+    for (Entry<String,Replacement> entry : replacements.entrySet()) {
+      Replacement replacement = entry.getValue();
+      if (replacement.isEnabled()) {
+        String path = entry.getKey();
+        if (path.startsWith(prefix)) {
+          ResourceLocation location = ResourceLocation.tryBuild(namespace, path.substring(root.length()));
+          if (location != null) {
+            output.accept(location, getIoSupplier(replacement.name));
+          }
+        }
+      }
+    }
   }
 
   @Override
   public void close() {}
 
   @Override
-  public void loadPacks(Consumer<Pack> consumer, PackConstructor factory) {
+  public void loadPacks(Consumer<Pack> consumer) {
     // add a new always enabled pack. Config is how you disable the replacements
-    consumer.accept(Pack.create(
-        packId, true, () -> this, factory, Pack.Position.TOP,
-        name -> Component.translatable("pack.nameAndSource", name, Inspirations.modID)));
+    consumer.accept(Pack.create(packId, displayName, true, id -> this, new Pack.Info(
+      description,
+      SharedConstants.getCurrentVersion().getPackVersion(PackType.SERVER_DATA),
+      SharedConstants.getCurrentVersion().getPackVersion(PackType.CLIENT_RESOURCES),
+      FeatureFlags.REGISTRY.allFlags(),
+      false
+    ), PackType.CLIENT_RESOURCES, Pack.Position.TOP, false, PackSource.BUILT_IN));
   }
+
 
   /* Replacement additions */
 
@@ -167,7 +196,7 @@ public class ConfigurableResourcePack extends AbstractPackResources implements R
    * @param resource   Name of blockstate replacement
    */
   public void addBlockstateReplacement(BooleanSupplier condition, Block block, String resource) {
-    addReplacement(condition, makePath(Registry.BLOCK.getKey(block), "blockstates", "json"), "blockstates/" + resource + ".json");
+    addReplacement(condition, makePath(Loadables.BLOCK.getKey(block), "blockstates", "json"), "blockstates/" + resource + ".json");
   }
 
   /**
@@ -187,7 +216,7 @@ public class ConfigurableResourcePack extends AbstractPackResources implements R
    * @param resource   New name supplier
    */
   public void addItemModelReplacement(BooleanSupplier condition, ItemLike item, String resource) {
-    addReplacement(condition, makePath(Registry.ITEM.getKey(item.asItem()), "models/item", "json"), "item_models/" + resource + ".json");
+    addReplacement(condition, makePath(Loadables.ITEM.getKey(item.asItem()), "models/item", "json"), "item_models/" + resource + ".json");
   }
 
   /**
@@ -202,29 +231,11 @@ public class ConfigurableResourcePack extends AbstractPackResources implements R
 
   /**
    * Data class holding a single replacement pair
+   * @param condition Condition for the replacement
+   * @param name      New file name, relative to pack root
    */
-  private static class Replacement {
-    private final BooleanSupplier condition;
-    private final String name;
-
-    /**
-     * Creates a new replacement
-     * @param condition  Condition for the replacement
-     * @param name       New file name, relative to pack root
-     */
-    public Replacement(BooleanSupplier condition, String name) {
-      this.name = name;
-      this.condition = condition;
-    }
-
-    public String getName() {
-      return name;
-    }
-
-    /**
-     * If true, this replacement is enabled
-     * @return  True if enabled
-     */
+  private record Replacement(BooleanSupplier condition, String name) {
+    /** {@return true if enabled} */
     public boolean isEnabled() {
       return condition.getAsBoolean();
     }

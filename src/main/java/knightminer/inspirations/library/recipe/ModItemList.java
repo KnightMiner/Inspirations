@@ -3,9 +3,9 @@ package knightminer.inspirations.library.recipe;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.GsonHelper;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.common.crafting.CompoundIngredient;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.IIngredientSerializer;
@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/** Compound ingredient variant where each entry is optional, skipped if the containing mod is absent */
 @SuppressWarnings("WeakerAccess")
 public class ModItemList extends CompoundIngredient {
 
@@ -50,9 +51,9 @@ public class ModItemList extends CompoundIngredient {
 
         // if supplied with ingredient, parse that as the ingredent, otherwise parse the object itself
         if (GsonHelper.isValidNode(object, "ingredient")) {
-          ingredientList.add(CraftingHelper.getIngredient(object.get("ingredient")));
+          ingredientList.add(CraftingHelper.getIngredient(object.get("ingredient"), false));
         } else {
-          ingredientList.add(CraftingHelper.getIngredient(object));
+          ingredientList.add(CraftingHelper.getIngredient(object, false));
         }
       }
 

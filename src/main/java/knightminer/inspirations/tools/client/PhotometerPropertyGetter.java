@@ -24,7 +24,7 @@ public class PhotometerPropertyGetter implements ItemPropertyFunction {
       return 0;
     }
     if (world == null) {
-      world = entity.level;
+      world = entity.level();
     }
 
     // if currently holding the item, use the block the player is looking at

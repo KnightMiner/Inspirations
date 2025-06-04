@@ -1,47 +1,25 @@
 package knightminer.inspirations.building.block;
 
-import knightminer.inspirations.common.Config;
-import knightminer.inspirations.common.IHidable;
 import knightminer.inspirations.library.MiscUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.NonNullList;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraft.world.level.block.state.properties.DoorHingeSide;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-import javax.annotation.Nullable;
-
-public class GlassDoorBlock extends DoorBlock implements IHidable {
+public class GlassDoorBlock extends DoorBlock {
+  public static final BlockSetType GLASS_TYPE = BlockSetType.register(new BlockSetType("inspirations:glass", true, SoundType.GLASS, SoundEvents.WOODEN_DOOR_CLOSE, SoundEvents.WOODEN_DOOR_OPEN, SoundEvents.WOODEN_TRAPDOOR_CLOSE, SoundEvents.WOODEN_TRAPDOOR_OPEN, SoundEvents.WOODEN_PRESSURE_PLATE_CLICK_OFF, SoundEvents.WOODEN_PRESSURE_PLATE_CLICK_ON, SoundEvents.WOODEN_BUTTON_CLICK_OFF, SoundEvents.WOODEN_BUTTON_CLICK_ON));
 
   public GlassDoorBlock(Properties props) {
-    super(props);
-  }
-
-  @Override
-  public BlockPathTypes getBlockPathType(BlockState state, BlockGetter level, BlockPos pos, @Nullable Mob mob) {
-    return state.getValue(OPEN) ? BlockPathTypes.DOOR_OPEN : BlockPathTypes.DOOR_WOOD_CLOSED;
-  }
-
-  @Override
-  public boolean isEnabled() {
-    return Config.enableGlassDoor.getAsBoolean();
-  }
-
-  @Override
-  public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
-    if (shouldAddtoItemGroup(group)) {
-      super.fillItemCategory(group, items);
-    }
+    super(props, GLASS_TYPE);
   }
 
   // Custom shape to include the protruding handle.

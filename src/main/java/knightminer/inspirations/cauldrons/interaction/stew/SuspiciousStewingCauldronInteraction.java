@@ -1,9 +1,9 @@
 package knightminer.inspirations.cauldrons.interaction.stew;
 
-import knightminer.inspirations.library.MiscUtil;
 import knightminer.inspirations.cauldrons.InspirationsCaudrons;
 import knightminer.inspirations.cauldrons.block.entity.SuspiciousStewCauldronBlockEntity;
 import knightminer.inspirations.cauldrons.interaction.TransformCauldronInteraction;
+import knightminer.inspirations.library.MiscUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.cauldron.CauldronInteraction;
 import net.minecraft.sounds.SoundEvents;
@@ -39,7 +39,7 @@ public enum SuspiciousStewingCauldronInteraction implements CauldronInteraction 
 				level.setBlockAndUpdate(pos, InspirationsCaudrons.suspiciousStewCauldron.defaultBlockState().setValue(LEVEL, oldState.getValue(LEVEL)));
 				SuspiciousStewCauldronBlockEntity cauldron = InspirationsCaudrons.suspiciousStewCauldronEntity.getBlockEntity(level, pos);
 				if (cauldron != null) {
-					cauldron.addEffect(flower.getSuspiciousStewEffect(), flower.getEffectDuration());
+					cauldron.addEffect(flower.getSuspiciousEffect(), flower.getEffectDuration());
 				}
 
 				// consume items, update stats

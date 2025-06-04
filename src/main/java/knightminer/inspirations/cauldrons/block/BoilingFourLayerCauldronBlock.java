@@ -1,11 +1,11 @@
 package knightminer.inspirations.cauldrons.block;
 
-import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.cauldrons.InspirationsCaudrons;
 import knightminer.inspirations.library.InspirationsTags;
 import knightminer.inspirations.library.MiscUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.cauldron.CauldronInteraction;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -18,16 +18,19 @@ import java.util.Map;
 
 /** Cauldron block that has four layers and emits boiling particles when over fire */
 public class BoilingFourLayerCauldronBlock extends FourLayerCauldronBlock {
-	public static final DamageSource DAMAGE_BOIL = new DamageSource(Inspirations.prefix("boiling")).bypassArmor();
-
 	public BoilingFourLayerCauldronBlock(Properties props, Map<Item,CauldronInteraction> interactions) {
 		super(props, interactions);
+	}
+
+	/** Deals boiling damage to the given entity */
+	public static void boil(Entity target) {
+		target.hurt(new DamageSource(target.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(InspirationsCaudrons.DAMAGE_BOIL)), 2.0F);
 	}
 
 	@Override
 	public void entityInside(BlockState state, Level world, BlockPos pos, Entity entity) {
 		if (!world.isClientSide && isEntityInsideContent(state, pos, entity) && isBoiling(world, pos)) {
-			entity.hurt(DAMAGE_BOIL, 2.0F);
+			boil(entity);
 		}
 	}
 

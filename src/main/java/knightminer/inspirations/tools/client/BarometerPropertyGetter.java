@@ -18,7 +18,7 @@ public class BarometerPropertyGetter implements ItemPropertyFunction {
     }
     Level world = clientWorld;
     if (world == null) {
-      world = entity.level;
+      world = entity.level();
     }
 
     // if negative position, just 0

@@ -8,6 +8,7 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootTableReference;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraftforge.event.LootTableLoadEvent;
+import net.minecraftforge.registries.IForgeRegistry;
 
 public class ModuleBase {
   /* Loaded */
@@ -27,6 +28,20 @@ public class ModuleBase {
    */
   protected static <T, V extends T> V register(Registry<T> registry, String name, V value) {
     return Registry.register(registry, Inspirations.getResource(name), value);
+  }
+
+  /**
+   * Registers an object with a vanilla registry
+   * @param registry Registry
+   * @param name     Registry name
+   * @param value    Value to registry
+   * @param <T>      Registry type
+   * @param <V>      Value type
+   * @return Value registered
+   */
+  protected static <T, V extends T> V register(IForgeRegistry<T> registry, String name, V value) {
+    registry.register(Inspirations.getResource(name), value);
+    return value;
   }
 
   /**

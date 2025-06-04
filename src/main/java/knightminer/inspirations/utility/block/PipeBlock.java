@@ -1,21 +1,17 @@
 package knightminer.inspirations.utility.block;
 
 import knightminer.inspirations.common.Config;
-import knightminer.inspirations.common.IHidable;
 import knightminer.inspirations.utility.InspirationsUtility;
 import knightminer.inspirations.utility.block.entity.PipeBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.NonNullList;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -26,7 +22,6 @@ import net.minecraft.world.level.block.HopperBlock;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
-import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -37,8 +32,6 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.world.level.material.MaterialColor;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -49,7 +42,7 @@ import slimeknights.mantle.util.BlockEntityHelper;
 
 import javax.annotation.Nullable;
 
-public class PipeBlock extends InventoryBlock implements IHidable, SimpleWaterloggedBlock {
+public class PipeBlock extends InventoryBlock implements SimpleWaterloggedBlock {
   // Facing is the direction we output to.
   public static final DirectionProperty FACING = BlockStateProperties.FACING;
   // These six values specify if another pipe/hopper is in this direction for us
@@ -69,12 +62,8 @@ public class PipeBlock extends InventoryBlock implements IHidable, SimpleWaterlo
   // Direction.getIndex() -> Property. Order is D-U-N-S-W-E
   public static final BooleanProperty[] DIR_ENABLED = new BooleanProperty[]{DOWN, UP, NORTH, SOUTH, WEST, EAST};
 
-  public PipeBlock() {
-    super(Block.Properties
-              .of(Material.METAL, MaterialColor.STONE)  // Darker than iron blocks.
-              .strength(3.0F, 8.0F)
-              .sound(SoundType.METAL)
-         );
+  public PipeBlock(Properties props) {
+    super(props);
     this.registerDefaultState(this.getStateDefinition().any()
                              .setValue(FACING, Direction.NORTH)
                              .setValue(NORTH, false)
@@ -88,19 +77,6 @@ public class PipeBlock extends InventoryBlock implements IHidable, SimpleWaterlo
                         );
   }
 
-  /* IHidable */
-
-  @Override
-  public boolean isEnabled() {
-    return Config.enablePipe.getAsBoolean();
-  }
-
-  @Override
-  public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> stacks) {
-    if (shouldAddtoItemGroup(group)) {
-      super.fillItemCategory(group, stacks);
-    }
-  }
 
   /* Block state settings */
 

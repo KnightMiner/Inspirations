@@ -9,19 +9,26 @@ import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.InspirationsCommons;
 import knightminer.inspirations.common.data.GlobalLootProvider;
 import knightminer.inspirations.common.datagen.InspirationsBlockTagsProvider;
+import knightminer.inspirations.common.datagen.InspirationsDamageTypeProvider;
 import knightminer.inspirations.common.datagen.InspirationsFluidTagsProvider;
 import knightminer.inspirations.common.datagen.InspirationsItemTagsProvider;
 import knightminer.inspirations.common.datagen.InspirationsLootTableProvider;
+import knightminer.inspirations.common.datagen.RenderItemProvider;
+import knightminer.inspirations.common.datagen.SpriteSourcesProvider;
 import knightminer.inspirations.common.network.InspirationsNetwork;
 import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.tweaks.InspirationsTweaks;
 import knightminer.inspirations.utility.InspirationsUtility;
-import net.minecraft.core.Registry;
+import net.minecraft.core.HolderLookup.Provider;
+import net.minecraft.core.RegistrySetBuilder;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.tags.BlockTagsProvider;
+import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.data.BlockTagsProvider;
+import net.minecraftforge.common.data.DatapackBuiltinEntriesProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -38,6 +45,8 @@ import org.apache.logging.log4j.Logger;
 import slimeknights.mantle.registration.RegistrationHelper;
 
 import java.util.Locale;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 //import knightminer.inspirations.recipes.InspirationsRecipes;
 
@@ -82,28 +91,39 @@ public class Inspirations {
   @SubscribeEvent
   void gatherData(GatherDataEvent event) {
     DataGenerator gen = event.getGenerator();
+    PackOutput packOutput = gen.getPackOutput();
+    CompletableFuture<Provider> lookupProvider = event.getLookupProvider();
     boolean server = event.includeServer();
     ExistingFileHelper existing = event.getExistingFileHelper();
-    BlockTagsProvider blockTags = new InspirationsBlockTagsProvider(gen, existing);
+    BlockTagsProvider blockTags = new InspirationsBlockTagsProvider(packOutput, lookupProvider, existing);
     gen.addProvider(server, blockTags);
-    gen.addProvider(server, new InspirationsItemTagsProvider(gen, existing, blockTags));
-    gen.addProvider(server, new InspirationsFluidTagsProvider(gen, existing));
-    gen.addProvider(server, new InspirationsLootTableProvider(gen));
-    gen.addProvider(server, new GlobalLootProvider(gen));
+    gen.addProvider(server, new InspirationsItemTagsProvider(packOutput, lookupProvider, blockTags.contentsGetter(), existing));
+    gen.addProvider(server, new InspirationsFluidTagsProvider(packOutput, lookupProvider, existing));
+    gen.addProvider(server, new InspirationsLootTableProvider(packOutput));
+    gen.addProvider(server, new GlobalLootProvider(packOutput));
+
+    RegistrySetBuilder registrySetBuilder = new RegistrySetBuilder();
+    InspirationsDamageTypeProvider.registerGenerator(registrySetBuilder);
+    DatapackBuiltinEntriesProvider datapackRegistryProvider = new DatapackBuiltinEntriesProvider(packOutput, lookupProvider, registrySetBuilder, Set.of(modID));
+    gen.addProvider(server, datapackRegistryProvider);
+    gen.addProvider(server, new InspirationsDamageTypeProvider(packOutput, datapackRegistryProvider.getRegistryProvider(), existing));
+
+    boolean client = event.includeClient();
+    gen.addProvider(client, new SpriteSourcesProvider(packOutput, existing));
+    gen.addProvider(client, new RenderItemProvider(packOutput));
   }
 
   /** Handles missing mappings of all types */
   private static void missingMappings(MissingMappingsEvent event) {
-    RegistrationHelper.handleMissingMappings(event, modID, Registry.ITEM_REGISTRY, name -> {
-      return switch (name) {
+    RegistrationHelper.handleMissingMappings(event, modID, Registries.ITEM, name ->
+      switch (name) {
         // combined colored books into one item
         case "white_book",     "orange_book", "magenta_book", "light_blue_book",
             "yellow_book",     "lime_book",   "pink_book",    "gray_book",
             "light_gray_book", "cyan_book",   "purple_book",  "blue_book",
             "brown_book",      "green_book",  "red_book",     "black_book" -> InspirationsBuilding.coloredBook;
         default -> null;
-      };
-    });
+      });
   }
 
 

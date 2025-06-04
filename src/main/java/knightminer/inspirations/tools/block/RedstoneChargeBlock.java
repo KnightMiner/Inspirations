@@ -17,11 +17,11 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DirectionalBlock;
 import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
-import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -34,11 +34,8 @@ public class RedstoneChargeBlock extends Block {
   public static final BooleanProperty QUICK = BooleanProperty.create("quick");
   public static final DirectionProperty FACING = DirectionalBlock.FACING;
 
-  public RedstoneChargeBlock() {
-    super(Block.Properties.of(Material.DECORATION)
-                          .strength(0)
-                          .lightLevel((state) -> 2)
-         );
+  public RedstoneChargeBlock(BlockBehaviour.Properties props) {
+    super(props);
 
     this.registerDefaultState(this.getStateDefinition().any().setValue(FACING, Direction.DOWN).setValue(QUICK, false));
   }

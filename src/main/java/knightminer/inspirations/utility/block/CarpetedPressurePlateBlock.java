@@ -9,9 +9,9 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.PressurePlateBlock;
-import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -28,11 +28,8 @@ public class CarpetedPressurePlateBlock extends PressurePlateBlock {
   private final DyeColor color;
   private final String transKey;
 
-  public CarpetedPressurePlateBlock(DyeColor color) {
-    super(Sensitivity.MOBS, Block.Properties.of(Material.CLOTH_DECORATION, color)
-                                            .strength(0.5F)
-                                            .sound(SoundType.WOOL)
-         );
+  public CarpetedPressurePlateBlock(BlockBehaviour.Properties props, DyeColor color) {
+    super(Sensitivity.MOBS, props, BlockSetType.STONE);
     this.color = color;
     this.transKey = String.format("block.minecraft.%s_carpet", color.getName());
   }

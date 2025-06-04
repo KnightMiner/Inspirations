@@ -274,6 +274,9 @@
     "item.minecraft.tipped_arrow.effect.blindness": "Arrow of Blindness",
     "item.minecraft.tipped_arrow.effect.decay": "Arrow of Decay",
 
+    "pack.inspirations.config.name": "Inspirations Config",
+    "pack.inspirations.config.description": "Internal pack to handle resource replacements.",
+
     "_comment": "############",
     "_comment": "TANPlugin #",
     "_comment": "############",

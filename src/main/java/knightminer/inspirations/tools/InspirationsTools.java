@@ -2,7 +2,6 @@ package knightminer.inspirations.tools;
 
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.ModuleBase;
-import knightminer.inspirations.common.item.HidableItem;
 import knightminer.inspirations.tools.block.RedstoneChargeBlock;
 import knightminer.inspirations.tools.capability.DimensionCompass;
 import knightminer.inspirations.tools.datagen.ToolsRecipeProvider;
@@ -24,6 +23,7 @@ import net.minecraft.core.Position;
 import net.minecraft.core.Registry;
 import net.minecraft.core.dispenser.AbstractProjectileDispenseBehavior;
 import net.minecraft.core.dispenser.OptionalDispenseItemBehavior;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
@@ -32,7 +32,6 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ArrowItem;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -44,6 +43,8 @@ import net.minecraft.world.item.enchantment.ProtectionEnchantment;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DispenserBlock;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -56,8 +57,6 @@ import slimeknights.mantle.registration.adapter.ItemRegistryAdapter;
 import slimeknights.mantle.registration.adapter.RegistryAdapter;
 
 public class InspirationsTools extends ModuleBase {
-  public static final String pulseID = "InspirationsTools";
-
   // items
   public static Item lock;
   public static Item key;
@@ -87,33 +86,33 @@ public class InspirationsTools extends ModuleBase {
   @SubscribeEvent
   public void register(RegisterEvent event) {
     ResourceKey<? extends Registry<?>> registryKey = event.getRegistryKey();
-    if (registryKey == Registry.BLOCK_REGISTRY) {
+    if (registryKey == Registries.BLOCK) {
       BlockRegistryAdapter registry = new BlockRegistryAdapter(ForgeRegistries.BLOCKS);
-      redstoneCharge = registry.register(new RedstoneChargeBlock(), "redstone_charge");
+      redstoneCharge = registry.register(new RedstoneChargeBlock(
+        Block.Properties.of().mapColor(MapColor.NONE).pushReaction(PushReaction.DESTROY).strength(0).lightLevel((state) -> 2)
+      ), "redstone_charge");
     }
-    else if (registryKey == Registry.ITEM_REGISTRY) {
+    else if (registryKey == Registries.ITEM) {
       ItemRegistryAdapter registry = new ItemRegistryAdapter(ForgeRegistries.ITEMS);
-      Item.Properties materialsProps = new Item.Properties().tab(CreativeModeTab.TAB_MATERIALS);
-      Item.Properties toolProps = new Item.Properties().tab(CreativeModeTab.TAB_TOOLS);
+      Item.Properties props = new Item.Properties();
 
-      redstoneArrow = registry.register(new RedstoneArrowItem(toolProps), "charged_arrow");
+      redstoneArrow = registry.register(new RedstoneArrowItem(props), "charged_arrow");
+      redstoneCharger = registry.register(new RedstoneChargerItem(new Item.Properties().durability(120)), "redstone_charger");
 
-      redstoneCharger = registry.register(new RedstoneChargerItem(), "redstone_charger");
+      lock = registry.register(props, "lock");
+      key = registry.register(props, "key");
 
-      lock = registry.register(new HidableItem(materialsProps, Config.enableLock), "lock");
-      key = registry.register(new HidableItem(materialsProps, Config.enableLock), "key");
-
-      northCompass = registry.register(new HidableItem(toolProps, Config.enableNorthCompass), "north_compass");
-      barometer = registry.register(new HidableItem(toolProps, Config.enableBarometer), "barometer");
-      photometer = registry.register(new HidableItem(toolProps, Config.enablePhotometer), "photometer");
-
-      dimensionCompass = registry.register(new DimensionCompassItem(toolProps), "dimension_compass");
+      northCompass = registry.register(props, "north_compass");
+      barometer = registry.register(props, "barometer");
+      photometer = registry.register(props, "photometer");
+      dimensionCompass = registry.register(new DimensionCompassItem(props), "dimension_compass");
 
       if (Config.shieldEnchantmentTable.getAsBoolean()) {
-        shield = registry.register(new EnchantableShieldItem(new Item.Properties().durability(Items.SHIELD.getMaxDamage()).tab(CreativeModeTab.TAB_COMBAT)), Items.SHIELD);
+        //noinspection deprecation  not how I am using it
+        shield = registry.register(new EnchantableShieldItem(new Item.Properties().durability(Items.SHIELD.getMaxDamage())), Items.SHIELD);
       }
     }
-    else if (registryKey == Registry.ENTITY_TYPE_REGISTRY) {
+    else if (registryKey == Registries.ENTITY_TYPE) {
       EntityTypeRegistryAdapter registry = new EntityTypeRegistryAdapter(ForgeRegistries.ENTITY_TYPES);
       entRSArrow = registry.register(EntityType.Builder
                                          .<RedstoneArrow>of(RedstoneArrow::new, MobCategory.MISC)
@@ -123,7 +122,7 @@ public class InspirationsTools extends ModuleBase {
                                          .setCustomClientFactory((packet, world) -> new RedstoneArrow(InspirationsTools.entRSArrow, world)),
                                      "redstone_arrow");
     }
-    else if (registryKey == Registry.ENCHANTMENT_REGISTRY) {
+    else if (registryKey == Registries.ENCHANTMENT) {
       RegistryAdapter<Enchantment> registry = new RegistryAdapter<>(ForgeRegistries.ENCHANTMENTS);
 
       if (Config.moreShieldEnchantments.getAsBoolean()) {
@@ -165,7 +164,7 @@ public class InspirationsTools extends ModuleBase {
   @SubscribeEvent
   void gatherData(GatherDataEvent event) {
     DataGenerator gen = event.getGenerator();
-    gen.addProvider(event.includeServer(), new ToolsRecipeProvider(gen));
+    gen.addProvider(event.includeServer(), new ToolsRecipeProvider(gen.getPackOutput()));
   }
 
   private void registerDispenserBehavior() {

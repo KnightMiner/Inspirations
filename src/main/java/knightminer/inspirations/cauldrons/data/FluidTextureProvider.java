@@ -2,7 +2,7 @@ package knightminer.inspirations.cauldrons.data;
 
 import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.cauldrons.InspirationsCaudrons;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fluids.FluidType;
 import slimeknights.mantle.fluid.texture.AbstractFluidTextureProvider;
@@ -11,8 +11,8 @@ import slimeknights.mantle.fluid.texture.FluidTexture;
 public class FluidTextureProvider extends AbstractFluidTextureProvider {
   private static final ResourceLocation COLORLESS = Inspirations.getResource("fluid/colorless_");
   private static final ResourceLocation TRANSPARENT = Inspirations.getResource("fluid/transparent_");
-  public FluidTextureProvider(DataGenerator generator) {
-    super(generator, Inspirations.modID);
+  public FluidTextureProvider(PackOutput packOutput) {
+    super(packOutput, Inspirations.modID);
   }
 
   @Override

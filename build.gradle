@@ -107,10 +107,10 @@ repositories {
             includeGroup "curse.maven"
         }
     }
-    // If you have mod jar dependencies in ./libs, you can declare them as a repository like so:
-    // flatDir {
-    //     dir 'libs'
-    // }
+    // pull in Mantle builds for testing in dev changes
+    flatDir {
+        dir '../Mantle/build/libs'
+    }
 }
 
 configurations {
