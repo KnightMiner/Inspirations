@@ -97,7 +97,7 @@ public class ConfigurableResourcePack extends AbstractPackResources implements R
 
   @Override
   protected InputStream getResource(String name) throws IOException {
-    // pack.mcmeta and pack.png are requested without prefix, and requird directly
+    // pack.mcmeta and pack.png are requested without prefix, and required directly
     if (name.equals("pack.mcmeta") || name.equals("pack.png")) {
       return getPackResource(name);
     }
