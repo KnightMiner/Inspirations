@@ -28,5 +28,6 @@
     "recipes": [
       "inspirations:utility/carpeted_trapdoor/magenta"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

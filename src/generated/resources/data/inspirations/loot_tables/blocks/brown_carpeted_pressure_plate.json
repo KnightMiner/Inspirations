@@ -31,5 +31,6 @@
       ],
       "rolls": 1.0
     }
-  ]
+  ],
+  "random_sequence": "inspirations:blocks/brown_carpeted_pressure_plate"
 }

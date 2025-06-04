@@ -1,5 +1,6 @@
 {
   "type": "inspirations:shapeless_no_container",
+  "category": "misc",
   "conditions": [
     {
       "type": "inspirations:config",

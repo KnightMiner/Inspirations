@@ -30,5 +30,6 @@
     "recipes": [
       "inspirations:cauldron/bottle/stained_glass_pane/gray"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

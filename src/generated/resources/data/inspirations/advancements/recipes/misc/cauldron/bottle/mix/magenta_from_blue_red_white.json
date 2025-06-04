@@ -56,5 +56,6 @@
     "recipes": [
       "inspirations:cauldron/bottle/mix/magenta_from_blue_red_white"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

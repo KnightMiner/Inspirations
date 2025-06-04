@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "redstone",
   "conditions": [
     {
       "type": "inspirations:config",
@@ -18,5 +19,6 @@
   ],
   "result": {
     "item": "inspirations:glass_door"
-  }
+  },
+  "show_notification": true
 }

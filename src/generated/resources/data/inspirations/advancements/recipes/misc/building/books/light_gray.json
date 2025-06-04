@@ -28,5 +28,6 @@
     "recipes": [
       "inspirations:building/books/light_gray"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

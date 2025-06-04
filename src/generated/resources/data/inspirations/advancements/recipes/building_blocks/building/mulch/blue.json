@@ -30,5 +30,6 @@
     "recipes": [
       "inspirations:building/mulch/blue"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

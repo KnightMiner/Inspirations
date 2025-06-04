@@ -30,5 +30,6 @@
     "recipes": [
       "inspirations:cauldron/bottle/concrete_powder/orange"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

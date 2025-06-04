@@ -41,5 +41,6 @@
     "recipes": [
       "inspirations:building/bookshelves/rainbow_rgb"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

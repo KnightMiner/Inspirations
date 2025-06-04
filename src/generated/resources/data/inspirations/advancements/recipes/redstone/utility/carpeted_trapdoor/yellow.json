@@ -28,5 +28,6 @@
     "recipes": [
       "inspirations:utility/carpeted_trapdoor/yellow"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

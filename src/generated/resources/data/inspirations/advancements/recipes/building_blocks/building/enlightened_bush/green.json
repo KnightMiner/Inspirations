@@ -23,7 +23,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "inspirations:building/enlightened_bush/red"
+        "recipe": "inspirations:building/enlightened_bush/green"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -37,7 +37,8 @@
   ],
   "rewards": {
     "recipes": [
-      "inspirations:building/enlightened_bush/red"
+      "inspirations:building/enlightened_bush/green"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

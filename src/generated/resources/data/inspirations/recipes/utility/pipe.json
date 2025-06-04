@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "redstone",
   "conditions": [
     {
       "type": "inspirations:config",
@@ -20,5 +21,6 @@
   "result": {
     "count": 4,
     "item": "inspirations:pipe"
-  }
+  },
+  "show_notification": true
 }

@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "misc",
   "conditions": [
     {
       "type": "inspirations:config",
@@ -19,5 +20,6 @@
   "result": {
     "count": 3,
     "item": "inspirations:rope"
-  }
+  },
+  "show_notification": true
 }

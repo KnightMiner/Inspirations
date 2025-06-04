@@ -1,13 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_the_dragon": {
+    "has_iron": {
       "conditions": {
         "items": [
           {
-            "items": [
-              "minecraft:dragon_breath"
-            ]
+            "tag": "forge:ingots/iron"
           }
         ]
       },
@@ -15,20 +13,21 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "inspirations:cauldron/bottle/lingering_bottle"
+        "recipe": "inspirations:tools/key"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_the_dragon",
+      "has_iron",
       "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "inspirations:cauldron/bottle/lingering_bottle"
+      "inspirations:tools/key"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

@@ -39,5 +39,6 @@
     "recipes": [
       "inspirations:tools/redstone_charger"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

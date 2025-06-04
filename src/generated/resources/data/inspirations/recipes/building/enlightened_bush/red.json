@@ -1,5 +1,6 @@
 {
   "type": "mantle:crafting_shaped_retextured",
+  "category": "building",
   "conditions": [
     {
       "type": "inspirations:config",
@@ -26,6 +27,7 @@
   "result": {
     "item": "inspirations:red_enlightened_bush"
   },
+  "show_notification": true,
   "texture": {
     "tag": "minecraft:leaves"
   }

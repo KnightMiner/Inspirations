@@ -28,5 +28,6 @@
     "recipes": [
       "inspirations:tools/dimension_compass"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

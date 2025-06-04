@@ -1,5 +1,6 @@
 {
   "type": "mantle:crafting_shaped_retextured",
+  "category": "misc",
   "conditions": [
     {
       "type": "inspirations:config",
@@ -25,6 +26,7 @@
     "count": 2,
     "item": "inspirations:ancient_shelf"
   },
+  "show_notification": true,
   "texture": {
     "tag": "minecraft:wooden_slabs"
   }

@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "inspirations:tools/key"
+        "recipe": "inspirations:tools/lock"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -26,7 +26,8 @@
   ],
   "rewards": {
     "recipes": [
-      "inspirations:tools/key"
+      "inspirations:tools/lock"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

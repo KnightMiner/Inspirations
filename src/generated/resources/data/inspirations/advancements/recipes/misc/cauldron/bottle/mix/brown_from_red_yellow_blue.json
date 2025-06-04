@@ -56,5 +56,6 @@
     "recipes": [
       "inspirations:cauldron/bottle/mix/brown_from_red_yellow_blue"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

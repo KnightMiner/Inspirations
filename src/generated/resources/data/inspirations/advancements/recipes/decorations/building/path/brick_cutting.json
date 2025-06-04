@@ -30,5 +30,6 @@
     "recipes": [
       "inspirations:building/path/brick_cutting"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

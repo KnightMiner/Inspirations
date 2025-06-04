@@ -43,5 +43,6 @@
     "recipes": [
       "inspirations:cauldron/bottle/mix/cyan_from_blue_green"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

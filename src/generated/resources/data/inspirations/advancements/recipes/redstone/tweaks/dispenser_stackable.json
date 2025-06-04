@@ -33,5 +33,6 @@
     "recipes": [
       "inspirations:tweaks/dispenser_stackable"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

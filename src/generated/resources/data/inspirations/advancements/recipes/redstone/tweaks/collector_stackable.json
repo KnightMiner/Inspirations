@@ -33,5 +33,6 @@
     "recipes": [
       "inspirations:tweaks/collector_stackable"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

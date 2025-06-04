@@ -39,5 +39,6 @@
     "recipes": [
       "inspirations:tools/photometer"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

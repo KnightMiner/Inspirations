@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "building",
   "conditions": [
     {
       "type": "inspirations:config",
@@ -23,5 +24,6 @@
   "result": {
     "count": 8,
     "item": "minecraft:green_stained_glass"
-  }
+  },
+  "show_notification": true
 }

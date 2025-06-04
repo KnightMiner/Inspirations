@@ -30,5 +30,6 @@
     "recipes": [
       "inspirations:cauldron/bottle/carpet/gray"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

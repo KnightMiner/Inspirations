@@ -30,5 +30,6 @@
     "recipes": [
       "inspirations:building/flower/cyan_dye"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

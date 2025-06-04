@@ -28,5 +28,6 @@
     "recipes": [
       "inspirations:tools/north_compass"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

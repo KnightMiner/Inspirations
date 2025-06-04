@@ -41,5 +41,6 @@
     "recipes": [
       "inspirations:building/bookshelves/normal"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

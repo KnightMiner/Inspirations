@@ -28,5 +28,6 @@
     "recipes": [
       "inspirations:building/path/rock_cutting"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

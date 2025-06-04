@@ -43,5 +43,6 @@
     "recipes": [
       "inspirations:cauldron/bottle/mix/magenta_from_purple_pink"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

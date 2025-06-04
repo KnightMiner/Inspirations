@@ -28,5 +28,6 @@
     "recipes": [
       "inspirations:tools/charged_arrow"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

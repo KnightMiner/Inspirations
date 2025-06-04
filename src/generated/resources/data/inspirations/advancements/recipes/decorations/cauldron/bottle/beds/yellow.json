@@ -30,5 +30,6 @@
     "recipes": [
       "inspirations:cauldron/bottle/beds/yellow"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

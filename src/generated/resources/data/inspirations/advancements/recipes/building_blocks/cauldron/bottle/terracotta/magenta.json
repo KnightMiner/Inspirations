@@ -30,5 +30,6 @@
     "recipes": [
       "inspirations:cauldron/bottle/terracotta/magenta"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

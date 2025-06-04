@@ -39,5 +39,6 @@
     "recipes": [
       "inspirations:building/enlightened_bush/blue"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

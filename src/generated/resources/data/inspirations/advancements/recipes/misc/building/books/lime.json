@@ -28,5 +28,6 @@
     "recipes": [
       "inspirations:building/books/lime"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

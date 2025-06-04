@@ -43,5 +43,6 @@
     "recipes": [
       "inspirations:cauldron/bottle/mix/pink_from_red_white"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

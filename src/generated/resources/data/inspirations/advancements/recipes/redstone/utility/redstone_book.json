@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_gunpowder": {
+    "has_bookshelf": {
       "conditions": {
         "items": [
           {
-            "tag": "forge:gunpowder"
+            "tag": "inspirations:bookshelves"
           }
         ]
       },
@@ -13,20 +13,21 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "inspirations:cauldron/bottle/splash_bottle"
+        "recipe": "inspirations:utility/redstone_book"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_gunpowder",
+      "has_bookshelf",
       "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "inspirations:cauldron/bottle/splash_bottle"
+      "inspirations:utility/redstone_book"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

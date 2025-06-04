@@ -43,5 +43,6 @@
     "recipes": [
       "inspirations:cauldron/bottle/mix/orange_from_red_yellow"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

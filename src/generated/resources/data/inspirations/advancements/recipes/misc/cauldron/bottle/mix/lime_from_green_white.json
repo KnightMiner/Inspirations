@@ -43,5 +43,6 @@
     "recipes": [
       "inspirations:cauldron/bottle/mix/lime_from_green_white"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

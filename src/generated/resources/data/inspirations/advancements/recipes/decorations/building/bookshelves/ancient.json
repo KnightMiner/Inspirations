@@ -41,5 +41,6 @@
     "recipes": [
       "inspirations:building/bookshelves/ancient"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

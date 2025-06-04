@@ -28,5 +28,6 @@
     "recipes": [
       "inspirations:building/books/brown"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

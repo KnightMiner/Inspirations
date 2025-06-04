@@ -43,5 +43,6 @@
     "recipes": [
       "inspirations:cauldron/bottle/mix/green_from_blue_yellow"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

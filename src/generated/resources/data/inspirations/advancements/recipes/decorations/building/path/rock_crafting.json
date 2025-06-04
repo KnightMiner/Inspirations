@@ -28,5 +28,6 @@
     "recipes": [
       "inspirations:building/path/rock_crafting"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

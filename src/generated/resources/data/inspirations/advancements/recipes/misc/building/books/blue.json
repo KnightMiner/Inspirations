@@ -28,5 +28,6 @@
     "recipes": [
       "inspirations:building/books/blue"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

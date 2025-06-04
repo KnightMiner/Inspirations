@@ -28,5 +28,6 @@
     "recipes": [
       "inspirations:building/rope"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

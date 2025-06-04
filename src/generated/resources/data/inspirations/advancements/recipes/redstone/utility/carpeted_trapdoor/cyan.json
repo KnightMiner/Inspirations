@@ -28,5 +28,6 @@
     "recipes": [
       "inspirations:utility/carpeted_trapdoor/cyan"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

@@ -28,5 +28,6 @@
     "recipes": [
       "inspirations:building/mulch/plain"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

@@ -43,5 +43,6 @@
     "recipes": [
       "inspirations:utility/torch_lever"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

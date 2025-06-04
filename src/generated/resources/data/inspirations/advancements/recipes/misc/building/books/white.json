@@ -28,5 +28,6 @@
     "recipes": [
       "inspirations:building/books/white"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

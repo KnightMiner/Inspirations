@@ -31,5 +31,6 @@
     "recipes": [
       "inspirations:tools/barometer"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

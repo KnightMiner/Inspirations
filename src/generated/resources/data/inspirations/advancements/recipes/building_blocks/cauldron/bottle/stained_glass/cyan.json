@@ -30,5 +30,6 @@
     "recipes": [
       "inspirations:cauldron/bottle/stained_glass/cyan"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

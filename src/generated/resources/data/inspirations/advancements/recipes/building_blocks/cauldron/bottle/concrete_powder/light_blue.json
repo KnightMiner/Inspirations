@@ -30,5 +30,6 @@
     "recipes": [
       "inspirations:cauldron/bottle/concrete_powder/light_blue"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

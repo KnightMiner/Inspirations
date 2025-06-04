@@ -43,5 +43,6 @@
     "recipes": [
       "inspirations:cauldron/bottle/mix/purple_from_blue_red"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

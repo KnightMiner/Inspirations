@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "equipment",
   "conditions": [
     {
       "type": "inspirations:config",
@@ -26,5 +27,6 @@
   ],
   "result": {
     "item": "inspirations:photometer"
-  }
+  },
+  "show_notification": true
 }

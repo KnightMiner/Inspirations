@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "equipment",
   "conditions": [
     {
       "type": "inspirations:config",
@@ -19,5 +20,6 @@
   ],
   "result": {
     "item": "inspirations:key"
-  }
+  },
+  "show_notification": true
 }

@@ -43,5 +43,6 @@
     "recipes": [
       "inspirations:cauldron/bottle/mix/light_blue_from_blue_white"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }
