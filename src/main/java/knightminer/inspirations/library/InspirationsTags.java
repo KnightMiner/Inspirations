@@ -69,10 +69,6 @@ public class InspirationsTags {
 
     public static final TagKey<Item> DYE_BOTTLES = tag("dyed_water_bottles");
 
-    /* Inputs for potion cauldron recipes */
-    public static final TagKey<Item> SPLASH_BOTTLES = commonTag("bottles/splash");
-    public static final TagKey<Item> LINGERING_BOTTLES = commonTag("bottles/lingering");
-
     /**
      * Creates an item tag for Inspirations
      */
@@ -85,13 +81,19 @@ public class InspirationsTags {
   }
 
   public static class Fluids {
-    public static final TagKey<Fluid> HONEY = commonTag("honey");
-    public static final TagKey<Fluid> BEETROOT_SOUP = commonTag("beetroot_soup");
-    public static final TagKey<Fluid> MUSHROOM_STEW = commonTag("mushroom_stew");
-    public static final TagKey<Fluid> RABBIT_STEW = commonTag("rabbit_stew");
+    /** Contains Inspirations honey fluids (still and flowing)). See {@link slimeknights.mantle.datagen.MantleTags} for common. */
+    public static final TagKey<Fluid> HONEY = tag("honey");
+    /** Contains Inspirations beetroot soup fluids (still and flowing)). See {@link slimeknights.mantle.datagen.MantleTags} for common. */
+    public static final TagKey<Fluid> BEETROOT_SOUP = tag("beetroot_soup");
+    /** Contains Inspirations mushroom stew fluids (still and flowing)). See {@link slimeknights.mantle.datagen.MantleTags} for common. */
+    public static final TagKey<Fluid> MUSHROOM_STEW = tag("mushroom_stew");
+    /** Contains Inspirations rabbit stew fluids (still and flowing). See {@link slimeknights.mantle.datagen.MantleTags} for common. */
+    public static final TagKey<Fluid> RABBIT_STEW = tag("rabbit_stew");
+    /** Contains Inspirations potato soup fluids (still and flowing) */
+    public static final TagKey<Fluid> POTATO_SOUP = tag("potato_soup");
 
-    private static TagKey<Fluid> commonTag(String name) {
-      return FluidTags.create(Mantle.commonResource(name));
+    private static TagKey<Fluid> tag(String name) {
+      return FluidTags.create(Inspirations.getResource(name));
     }
   }
 }

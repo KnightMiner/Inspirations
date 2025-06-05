@@ -46,7 +46,6 @@ import knightminer.inspirations.cauldrons.item.SimpleDyedBottleItem;
 import knightminer.inspirations.cauldrons.recipe.BottleBrewingRecipe;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.ModuleBase;
-import knightminer.inspirations.library.InspirationsTags;
 import knightminer.inspirations.library.MiscUtil;
 import knightminer.inspirations.library.recipe.cauldron.CauldronRegistry;
 import knightminer.inspirations.tools.InspirationsTools;
@@ -100,6 +99,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.GameData;
 import net.minecraftforge.registries.RegisterEvent;
+import slimeknights.mantle.datagen.MantleTags;
 import slimeknights.mantle.fluid.TextureFluidType;
 import slimeknights.mantle.registration.FluidBuilder;
 import slimeknights.mantle.registration.adapter.BlockEntityTypeRegistryAdapter;
@@ -370,7 +370,7 @@ public class InspirationsCaudrons extends ModuleBase {
         // honey buckets
         CauldronInteraction fillHoney = new FillCauldronInteraction(honeyCauldron);
         addToAll.accept(honeyBucket, fillHoney);
-        CauldronRegistry.register(ALL_CAULDRONS, fluidTag(InspirationsTags.Fluids.HONEY), fillHoney);
+        CauldronRegistry.register(ALL_CAULDRONS, fluidTag(MantleTags.Fluids.HONEY), fillHoney);
         HONEY_CAULDRON_INTERACTIONS.put(Items.BUCKET, new EmptyCauldronInteraction(honeyBucket, SoundEvents.BUCKET_FILL));
 
         // honey bottles
@@ -393,17 +393,17 @@ public class InspirationsCaudrons extends ModuleBase {
         // mushroom
         CauldronInteraction fillMushroomStew = new FillCauldronInteraction(mushroomStewCauldron);
         addToAll.accept(mushroomStewBucket, fillMushroomStew);
-        CauldronRegistry.register(ALL_CAULDRONS, fluidTag(InspirationsTags.Fluids.MUSHROOM_STEW), fillMushroomStew);
+        CauldronRegistry.register(ALL_CAULDRONS, fluidTag(MantleTags.Fluids.MUSHROOM_STEW), fillMushroomStew);
         // potato
         addToAll.accept(potatoSoupBucket, new FillCauldronInteraction(potatoSoupCauldron));
         // rabbit
         CauldronInteraction fillRabbitStew = new FillCauldronInteraction(rabbitStewCauldron);
         addToAll.accept(rabbitStewBucket, fillRabbitStew);
-        CauldronRegistry.register(ALL_CAULDRONS, fluidTag(InspirationsTags.Fluids.RABBIT_STEW), fillRabbitStew);
+        CauldronRegistry.register(ALL_CAULDRONS, fluidTag(MantleTags.Fluids.RABBIT_STEW), fillRabbitStew);
         // beetroot
         CauldronInteraction fillBeetrootSoup = new FillCauldronInteraction(beetrootSoupCauldron);
         addToAll.accept(beetrootSoupBucket, fillBeetrootSoup);
-        CauldronRegistry.register(ALL_CAULDRONS, fluidTag(InspirationsTags.Fluids.BEETROOT_SOUP), fillBeetrootSoup);
+        CauldronRegistry.register(ALL_CAULDRONS, fluidTag(MantleTags.Fluids.BEETROOT_SOUP), fillBeetrootSoup);
         // empty buckets
         MUSHROOM_STEW_CAULDRON_INTERACTIONS.put(Items.BUCKET, new EmptyCauldronInteraction(mushroomStewBucket, SoundEvents.BUCKET_FILL));
         POTATO_SOUP_CAULDRON_INTERACTIONS  .put(Items.BUCKET, new EmptyCauldronInteraction(potatoSoupBucket,   SoundEvents.BUCKET_FILL));
@@ -591,7 +591,7 @@ public class InspirationsCaudrons extends ModuleBase {
       if (Config.enableCauldronPotions.getAsBoolean()) {
         if (Config.brewPotionBottles.getAsBoolean()) {
           BrewingRecipeRegistry.addRecipe(new BottleBrewingRecipe(Ingredient.of(Items.GLASS_BOTTLE), Items.POTION, Items.SPLASH_POTION, new ItemStack(splashBottle)));
-          BrewingRecipeRegistry.addRecipe(new BottleBrewingRecipe(Ingredient.of(InspirationsTags.Items.SPLASH_BOTTLES), Items.SPLASH_POTION, Items.LINGERING_POTION, new ItemStack(lingeringBottle)));
+          BrewingRecipeRegistry.addRecipe(new BottleBrewingRecipe(Ingredient.of(MantleTags.Items.SPLASH_BOTTLE), Items.SPLASH_POTION, Items.LINGERING_POTION, new ItemStack(lingeringBottle)));
         }
 
         // fill the potion
@@ -599,11 +599,11 @@ public class InspirationsCaudrons extends ModuleBase {
         // splash
         CauldronInteraction fillSplashPotion = new FillPotionCauldronInteraction(Items.SPLASH_POTION);
         POTION_CAULDRON_INTERACTIONS.put(splashBottle, fillSplashPotion);
-        CauldronRegistry.register(exactBlock(potionCauldron), itemTag(InspirationsTags.Items.SPLASH_BOTTLES), fillSplashPotion);
+        CauldronRegistry.register(exactBlock(potionCauldron), itemTag(MantleTags.Items.SPLASH_BOTTLE), fillSplashPotion);
         // lingering
         CauldronInteraction fillLingeringBottle = new FillPotionCauldronInteraction(Items.LINGERING_POTION);
         POTION_CAULDRON_INTERACTIONS.put(lingeringBottle, fillLingeringBottle);
-        CauldronRegistry.register(exactBlock(potionCauldron), itemTag(InspirationsTags.Items.LINGERING_BOTTLES), fillLingeringBottle);
+        CauldronRegistry.register(exactBlock(potionCauldron), itemTag(MantleTags.Items.LINGERING_BOTTLE), fillLingeringBottle);
 
         // drain the potion
         POTION_CAULDRON_INTERACTIONS.put(Items.POTION, new PotionIntoPotionCauldron(Items.GLASS_BOTTLE));
