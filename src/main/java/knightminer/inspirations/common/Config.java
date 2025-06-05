@@ -113,6 +113,7 @@ public class Config {
   public static final BooleanValue coloredEnchantedRibbons;
   public static final BooleanValue coloredFireworkItems;
   public static final BooleanValue customPortalColor;
+  public static final BooleanValue tintLecternBook;
 
   // heartbeet
   public static final BooleanSupplier enableHeartbeet;
@@ -389,6 +390,8 @@ public class Config {
       coloredEnchantedRibbons = client.comment("The ribbon on enchanted books colors based on the enchantment rarity").worldRestart().define("coloredEnchantedRibbons", true);
       // portal color
       customPortalColor = client.comment("Allows the portal color to be changed by placing colored blocks under the portal. Any block that tints a beacon beam will work for the color.").worldRestart().define("customPortalColor", true);
+      // colored enchanted book ribbons
+      tintLecternBook = client.comment("If true, tints the color of the lectern book based on the color of the contained item").worldRestart().define("tintLecternBook", true);
     }
     client.pop();
 

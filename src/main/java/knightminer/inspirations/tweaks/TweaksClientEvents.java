@@ -5,6 +5,7 @@ import knightminer.inspirations.common.AbstractClientEvents;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.library.client.model.TrimModel;
 import knightminer.inspirations.tweaks.client.PortalColorHandler;
+import knightminer.inspirations.tweaks.client.TintedLecternRenderer;
 import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.renderer.BiomeColors;
@@ -19,7 +20,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.ModelEvent.RegisterGeometryLoaders;
 import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -36,8 +39,13 @@ import java.util.List;
 public class TweaksClientEvents extends AbstractClientEvents {
   @SubscribeEvent
   static void clientSetup(FMLClientSetupEvent event) {
-
     MinecraftForge.EVENT_BUS.addListener(TweaksClientEvents::fixShieldTooltip);
+  }
+
+  @SubscribeEvent
+  static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
+    // this runs before config loads, so config is internal to disable our feature
+    event.registerBlockEntityRenderer(BlockEntityType.LECTERN, TintedLecternRenderer::new);
   }
 
   @SubscribeEvent

@@ -1,6 +1,8 @@
 package knightminer.inspirations.common.network;
 
 import knightminer.inspirations.Inspirations;
+import knightminer.inspirations.tweaks.network.LecternBookPacket;
+import knightminer.inspirations.tweaks.network.RequestLecternBookPacket;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.server.level.ServerLevel;
@@ -28,6 +30,10 @@ public class InspirationsNetwork extends NetworkWrapper {
     registerPacket(CauldronColorUpdatePacket.class, CauldronColorUpdatePacket::new, NetworkDirection.PLAY_TO_CLIENT);
     registerPacket(CauldronPotionUpdatePacket.class, CauldronPotionUpdatePacket::new, NetworkDirection.PLAY_TO_CLIENT);
     registerPacket(DimensionCompassPositionPacket.class, DimensionCompassPositionPacket::new, NetworkDirection.PLAY_TO_CLIENT);
+
+    // lectern syncing
+    registerPacket(RequestLecternBookPacket.class, RequestLecternBookPacket::new, NetworkDirection.PLAY_TO_SERVER);
+    registerPacket(LecternBookPacket.class, LecternBookPacket::new, NetworkDirection.PLAY_TO_CLIENT);
   }
 
   /**

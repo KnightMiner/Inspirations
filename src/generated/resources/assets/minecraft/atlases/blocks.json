@@ -4,6 +4,10 @@
       "type": "minecraft:directory",
       "prefix": "fluid/",
       "source": "fluid"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "inspirations:entity/lectern_book"
     }
   ]
 }
