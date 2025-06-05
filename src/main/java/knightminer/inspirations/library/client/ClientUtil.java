@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 public final class ClientUtil {
   private static final Minecraft mc = Minecraft.getInstance();
@@ -46,16 +47,13 @@ public final class ClientUtil {
    * @return Color for the stack
    */
   public static int getItemColor(Item item) {
-    return COLOR_CACHE.computeIfAbsent(item, ClientUtil::getItemColorRaw);
+    return COLOR_CACHE.computeIfAbsent(item, GET_ITEM_COLOR);
   }
 
   /**
    * Gets the color for an item stack, used internally by colorCache. Licensed under <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache 2.0</a>
-   * @param key Item meta cache combination
-   * @return Color for the item meta combination
-   * @author InsomniaKitten
    */
-  private static Integer getItemColorRaw(Item key) {
+  private static final Function<Item,Integer> GET_ITEM_COLOR = key -> {
     BakedModel model = mc.getItemRenderer().getModel(new ItemStack(key), null, null, 0);
     if (model == mc.getModelManager().getMissingModel()) {
       return -1;
@@ -99,7 +97,7 @@ public final class ClientUtil {
       b /= count;
     }
     return 0xFF000000 | (int)r << 16 | (int)g << 8 | (int)b;
-  }
+  };
 
   /**
    * Gets the sprite for the given texture location, or Missing Texture if no sprite is found
