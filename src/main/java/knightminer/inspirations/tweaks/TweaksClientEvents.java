@@ -44,8 +44,9 @@ public class TweaksClientEvents extends AbstractClientEvents {
 
   @SubscribeEvent
   static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
-    // this runs before config loads, so config is internal to disable our feature
-    event.registerBlockEntityRenderer(BlockEntityType.LECTERN, TintedLecternRenderer::new);
+    if (Config.tintLecternBook.getAsBoolean()) {
+      event.registerBlockEntityRenderer(BlockEntityType.LECTERN, TintedLecternRenderer::new);
+    }
   }
 
   @SubscribeEvent

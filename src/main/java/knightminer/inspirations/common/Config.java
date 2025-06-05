@@ -113,7 +113,7 @@ public class Config {
   public static final BooleanValue coloredEnchantedRibbons;
   public static final BooleanValue coloredFireworkItems;
   public static final BooleanValue customPortalColor;
-  public static final BooleanValue tintLecternBook;
+  public static final BooleanSupplier tintLecternBook;
 
   // heartbeet
   public static final BooleanSupplier enableHeartbeet;
@@ -324,6 +324,8 @@ public class Config {
       enableFittedCarpets = and(tweaksModule, common.comment("Replace carpet blocks, allowing them to fit to stairs below them. Requires a registry sub on all vanilla carpet blocks.").worldRestart().define("fittedCarpets", true));
       // waterloggable hoppers
       waterlogHopper = and(tweaksModule, common.comment("Replace hopper blocks, allowing them to be waterlogged. Requires a registry sub on hoppers").worldRestart().define("waterlogHoppers", true));
+      // tint the book in the lectern
+      tintLecternBook = and(tweaksModule, common.comment("If true, tints the color of the lectern book based on the color of the contained item").worldRestart().define("tintLecternBook", true));
 
       // bonemeal
       server.push("bonemeal");
@@ -390,8 +392,6 @@ public class Config {
       coloredEnchantedRibbons = client.comment("The ribbon on enchanted books colors based on the enchantment rarity").worldRestart().define("coloredEnchantedRibbons", true);
       // portal color
       customPortalColor = client.comment("Allows the portal color to be changed by placing colored blocks under the portal. Any block that tints a beacon beam will work for the color.").worldRestart().define("customPortalColor", true);
-      // colored enchanted book ribbons
-      tintLecternBook = client.comment("If true, tints the color of the lectern book based on the color of the contained item").worldRestart().define("tintLecternBook", true);
     }
     client.pop();
 
