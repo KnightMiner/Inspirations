@@ -1,0 +1,18 @@
+{
+  "type": "mantle:fill_item",
+  "conditions": [
+    {
+      "type": "mantle:tag_filled",
+      "registry": "minecraft:fluid",
+      "tag": "forge:milk"
+    }
+  ],
+  "fluid": {
+    "amount": 250,
+    "tag": "forge:milk"
+  },
+  "input": {
+    "item": "minecraft:glass_bottle"
+  },
+  "result": "inspirations:milk_bottle"
+}

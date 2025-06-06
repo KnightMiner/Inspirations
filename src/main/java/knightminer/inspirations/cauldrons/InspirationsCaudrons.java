@@ -65,7 +65,6 @@ import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
 import net.minecraft.world.entity.ai.village.poi.PoiTypes;
 import net.minecraft.world.food.FoodProperties;
-import net.minecraft.world.item.BowlFoodItem;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.DyeItem;
@@ -93,6 +92,7 @@ import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -100,7 +100,9 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.GameData;
 import net.minecraftforge.registries.RegisterEvent;
 import slimeknights.mantle.datagen.MantleTags;
+import slimeknights.mantle.datagen.MantleValues;
 import slimeknights.mantle.fluid.TextureFluidType;
+import slimeknights.mantle.item.ContainerFoodItem.FluidContainerFoodItem;
 import slimeknights.mantle.registration.FluidBuilder;
 import slimeknights.mantle.registration.adapter.BlockEntityTypeRegistryAdapter;
 import slimeknights.mantle.registration.adapter.BlockRegistryAdapter;
@@ -160,7 +162,7 @@ public class InspirationsCaudrons extends ModuleBase {
   public static Item lingeringBottle;
   public static EnumObject<DyeColor,SimpleDyedBottleItem> simpleDyedWaterBottle = EnumObject.empty();
   public static MixedDyedBottleItem mixedDyedWaterBottle;
-  public static BowlFoodItem potatoSoupItem;
+  public static Item potatoSoupItem;
   public static Item milkBottle;
 
   // fluids
@@ -259,8 +261,9 @@ public class InspirationsCaudrons extends ModuleBase {
       honeyBucket = registry.registerBucket(() -> honey, "honey");
 
       // potato soup
-      potatoSoupItem = registry.register(new BowlFoodItem(
-        new Item.Properties().stacksTo(1).food(new FoodProperties.Builder().nutrition(8).saturationMod(0.6F).build())
+      potatoSoupItem = registry.register(new FluidContainerFoodItem(
+        new Item.Properties().stacksTo(1).food(new FoodProperties.Builder().nutrition(8).saturationMod(0.6F).build()),
+        () -> new FluidStack(potatoSoup, MantleValues.BOWL)
       ), "potato_soup");
 
       // empty bottles

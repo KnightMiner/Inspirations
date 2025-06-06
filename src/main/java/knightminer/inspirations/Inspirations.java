@@ -8,6 +8,7 @@ import knightminer.inspirations.common.CommonsClientEvents;
 import knightminer.inspirations.common.Config;
 import knightminer.inspirations.common.InspirationsCommons;
 import knightminer.inspirations.common.data.GlobalLootProvider;
+import knightminer.inspirations.common.datagen.FluidTransferProvider;
 import knightminer.inspirations.common.datagen.InspirationsBlockTagsProvider;
 import knightminer.inspirations.common.datagen.InspirationsDamageTypeProvider;
 import knightminer.inspirations.common.datagen.InspirationsFluidTagsProvider;
@@ -107,6 +108,7 @@ public class Inspirations {
     DatapackBuiltinEntriesProvider datapackRegistryProvider = new DatapackBuiltinEntriesProvider(packOutput, lookupProvider, registrySetBuilder, Set.of(modID));
     gen.addProvider(server, datapackRegistryProvider);
     gen.addProvider(server, new InspirationsDamageTypeProvider(packOutput, datapackRegistryProvider.getRegistryProvider(), existing));
+    gen.addProvider(server, new FluidTransferProvider(packOutput));
 
     boolean client = event.includeClient();
     gen.addProvider(client, new SpriteSourcesProvider(packOutput, existing));

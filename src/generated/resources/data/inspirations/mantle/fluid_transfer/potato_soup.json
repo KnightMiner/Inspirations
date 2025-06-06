@@ -1,0 +1,11 @@
+{
+  "type": "mantle:fill_item",
+  "fluid": {
+    "amount": 250,
+    "tag": "inspirations:potato_soup"
+  },
+  "input": {
+    "item": "minecraft:bowl"
+  },
+  "result": "inspirations:potato_soup"
+}
