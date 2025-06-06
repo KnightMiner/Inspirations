@@ -67,8 +67,6 @@ public class InspirationsTags {
     public static final TagKey<Item> SHULKER_BOXES = tag("shulker_boxes");
     public static final TagKey<Item> TERRACOTTA = tag("terracotta");
 
-    public static final TagKey<Item> DYE_BOTTLES = tag("dyed_water_bottles");
-
     /**
      * Creates an item tag for Inspirations
      */
