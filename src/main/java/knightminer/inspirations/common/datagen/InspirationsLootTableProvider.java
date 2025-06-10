@@ -21,5 +21,6 @@ public class InspirationsLootTableProvider extends LootTableProvider {
   @Override
   protected void validate(Map<ResourceLocation, LootTable> map, ValidationContext validationcontext) {
     // Do not validate against all registered loot tables
+    // TODO: consider: can we run validation if we trim the required table to no minecraft?
   }
 }
