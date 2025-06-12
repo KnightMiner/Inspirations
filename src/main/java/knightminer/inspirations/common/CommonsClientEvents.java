@@ -7,16 +7,14 @@ import knightminer.inspirations.library.client.ConfigurableResourcePack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.packs.resources.ReloadableResourceManager;
-import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ModelEvent.BakingCompleted;
+import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 @EventBusSubscriber(modid = Inspirations.modID, value = Dist.CLIENT, bus = Bus.MOD)
 public class CommonsClientEvents extends AbstractClientEvents {
@@ -46,14 +44,8 @@ public class CommonsClientEvents extends AbstractClientEvents {
   }
 
   @SubscribeEvent
-  static void setup(FMLCommonSetupEvent event) {
-    // listener to clear color cache from client utils
-    ResourceManager manager = Minecraft.getInstance().getResourceManager();
-    if (manager instanceof ReloadableResourceManager) {
-      ((ReloadableResourceManager)manager).registerReloadListener(ClientUtil.RELOAD_LISTENER);
-    } else {
-      Inspirations.log.error("Failed to register resource reload listener, expected instance of IReloadableResourceManager but got {}", manager.getClass());
-    }
+  static void reloadListeners(RegisterClientReloadListenersEvent event) {
+    event.registerReloadListener(ClientUtil.RELOAD_LISTENER);
   }
 
   // For the textured blocks, we need to rebake the blocks with the new texture.
