@@ -149,4 +149,27 @@ public class FittedCarpetBlock extends FlatCarpetBlock {
     return newState;
   }
 
+  @Override
+  public BlockState mirror(BlockState state, Mirror mirror) {
+    return switch (mirror.rotation()) {
+      case INVERT_X -> {
+        BlockState newState = defaultBlockState();
+        newState = state.getValue(SOUTHWEST) ? newState.setValue(SOUTHEAST, true): newState;
+        newState = state.getValue(SOUTHEAST) ? newState.setValue(SOUTHWEST, true): newState;
+        newState = state.getValue(NORTHWEST) ? newState.setValue(NORTHEAST, true): newState;
+        newState = state.getValue(NORTHEAST) ? newState.setValue(NORTHWEST, true): newState;
+        yield newState;
+      }
+      case INVERT_Z -> {
+        BlockState newState = defaultBlockState();
+        newState = state.getValue(SOUTHWEST) ? newState.setValue(NORTHWEST, true): newState;
+        newState = state.getValue(SOUTHEAST) ? newState.setValue(NORTHEAST, true): newState;
+        newState = state.getValue(NORTHWEST) ? newState.setValue(SOUTHWEST, true): newState;
+        newState = state.getValue(NORTHEAST) ? newState.setValue(SOUTHEAST, true): newState;
+        yield newState;
+      }
+      default -> state; //identity or unsupported operation
+    };
+  }
+
 }
