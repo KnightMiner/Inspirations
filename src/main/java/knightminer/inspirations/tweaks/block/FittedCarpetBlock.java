@@ -1,11 +1,16 @@
 package knightminer.inspirations.tweaks.block;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -100,4 +105,48 @@ public class FittedCarpetBlock extends FlatCarpetBlock {
   public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
     return BOUNDS[getBoundsKey(state)];
   }
+
+  @Override
+  public BlockState rotate(BlockState state, Rotation rotation) {
+    BlockState newState = defaultBlockState();
+
+    if (state.getValue(NORTHWEST)) {
+      newState = switch (rotation) {
+        case CLOCKWISE_90 -> newState.setValue(NORTHEAST, true);
+        case CLOCKWISE_180 -> newState.setValue(SOUTHEAST, true);
+        case COUNTERCLOCKWISE_90 -> newState.setValue(SOUTHWEST, true);
+        case NONE -> newState.setValue(NORTHWEST, true); //identity
+      };
+    }
+
+    if (state.getValue(NORTHEAST)) {
+      newState = switch (rotation) {
+        case CLOCKWISE_90 -> newState.setValue(SOUTHEAST, true);
+        case CLOCKWISE_180 -> newState.setValue(SOUTHWEST, true);
+        case COUNTERCLOCKWISE_90 -> newState.setValue(NORTHWEST, true);
+        case NONE -> newState.setValue(NORTHEAST, true); //identity
+      };
+    }
+
+    if (state.getValue(SOUTHEAST)) {
+      newState = switch (rotation) {
+        case CLOCKWISE_90 -> newState.setValue(SOUTHWEST, true);
+        case CLOCKWISE_180 -> newState.setValue(NORTHWEST, true);
+        case COUNTERCLOCKWISE_90 -> newState.setValue(NORTHEAST, true);
+        case NONE -> newState.setValue(SOUTHEAST, true); //identity
+      };
+    }
+
+    if (state.getValue(SOUTHWEST)) {
+      newState = switch (rotation) {
+        case CLOCKWISE_90 -> newState.setValue(NORTHWEST, true);
+        case CLOCKWISE_180 -> newState.setValue(NORTHEAST, true);
+        case COUNTERCLOCKWISE_90 -> newState.setValue(SOUTHEAST, true);
+        case NONE -> newState.setValue(SOUTHWEST, true); //identity
+      };
+    }
+
+    return newState;
+  }
+
 }
