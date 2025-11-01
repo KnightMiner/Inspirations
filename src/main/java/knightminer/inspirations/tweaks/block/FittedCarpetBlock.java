@@ -108,66 +108,44 @@ public class FittedCarpetBlock extends FlatCarpetBlock {
 
   @Override
   public BlockState rotate(BlockState state, Rotation rotation) {
-    BlockState newState = defaultBlockState();
+    return switch (rotation) {
+      case CLOCKWISE_90 -> defaultBlockState()
+              .setValue(NORTHEAST, state.getValue(NORTHWEST))
+              .setValue(SOUTHEAST, state.getValue(NORTHEAST))
+              .setValue(SOUTHWEST, state.getValue(SOUTHEAST))
+              .setValue(NORTHWEST, state.getValue(SOUTHWEST));
 
-    if (state.getValue(NORTHWEST)) {
-      newState = switch (rotation) {
-        case CLOCKWISE_90 -> newState.setValue(NORTHEAST, true);
-        case CLOCKWISE_180 -> newState.setValue(SOUTHEAST, true);
-        case COUNTERCLOCKWISE_90 -> newState.setValue(SOUTHWEST, true);
-        case NONE -> newState.setValue(NORTHWEST, true); //identity
-      };
-    }
+      case CLOCKWISE_180 -> defaultBlockState()
+              .setValue(SOUTHEAST, state.getValue(NORTHWEST))
+              .setValue(SOUTHWEST, state.getValue(NORTHEAST))
+              .setValue(NORTHWEST, state.getValue(SOUTHEAST))
+              .setValue(NORTHEAST, state.getValue(SOUTHWEST));
 
-    if (state.getValue(NORTHEAST)) {
-      newState = switch (rotation) {
-        case CLOCKWISE_90 -> newState.setValue(SOUTHEAST, true);
-        case CLOCKWISE_180 -> newState.setValue(SOUTHWEST, true);
-        case COUNTERCLOCKWISE_90 -> newState.setValue(NORTHWEST, true);
-        case NONE -> newState.setValue(NORTHEAST, true); //identity
-      };
-    }
+      case COUNTERCLOCKWISE_90 -> defaultBlockState()
+              .setValue(SOUTHWEST, state.getValue(NORTHWEST))
+              .setValue(NORTHWEST, state.getValue(NORTHEAST))
+              .setValue(NORTHEAST, state.getValue(SOUTHEAST))
+              .setValue(SOUTHEAST, state.getValue(SOUTHWEST));
 
-    if (state.getValue(SOUTHEAST)) {
-      newState = switch (rotation) {
-        case CLOCKWISE_90 -> newState.setValue(SOUTHWEST, true);
-        case CLOCKWISE_180 -> newState.setValue(NORTHWEST, true);
-        case COUNTERCLOCKWISE_90 -> newState.setValue(NORTHEAST, true);
-        case NONE -> newState.setValue(SOUTHEAST, true); //identity
-      };
-    }
-
-    if (state.getValue(SOUTHWEST)) {
-      newState = switch (rotation) {
-        case CLOCKWISE_90 -> newState.setValue(NORTHWEST, true);
-        case CLOCKWISE_180 -> newState.setValue(NORTHEAST, true);
-        case COUNTERCLOCKWISE_90 -> newState.setValue(SOUTHEAST, true);
-        case NONE -> newState.setValue(SOUTHWEST, true); //identity
-      };
-    }
-
-    return newState;
+      case NONE -> state; //identity
+    };
   }
 
   @Override
   public BlockState mirror(BlockState state, Mirror mirror) {
     return switch (mirror.rotation()) {
-      case INVERT_X -> {
-        BlockState newState = defaultBlockState();
-        newState = state.getValue(SOUTHWEST) ? newState.setValue(SOUTHEAST, true): newState;
-        newState = state.getValue(SOUTHEAST) ? newState.setValue(SOUTHWEST, true): newState;
-        newState = state.getValue(NORTHWEST) ? newState.setValue(NORTHEAST, true): newState;
-        newState = state.getValue(NORTHEAST) ? newState.setValue(NORTHWEST, true): newState;
-        yield newState;
-      }
-      case INVERT_Z -> {
-        BlockState newState = defaultBlockState();
-        newState = state.getValue(SOUTHWEST) ? newState.setValue(NORTHWEST, true): newState;
-        newState = state.getValue(SOUTHEAST) ? newState.setValue(NORTHEAST, true): newState;
-        newState = state.getValue(NORTHWEST) ? newState.setValue(SOUTHWEST, true): newState;
-        newState = state.getValue(NORTHEAST) ? newState.setValue(SOUTHEAST, true): newState;
-        yield newState;
-      }
+      case INVERT_X -> defaultBlockState()
+              .setValue(SOUTHEAST, state.getValue(SOUTHWEST))
+              .setValue(SOUTHWEST, state.getValue(SOUTHEAST))
+              .setValue(NORTHEAST, state.getValue(NORTHWEST))
+              .setValue(NORTHWEST, state.getValue(NORTHEAST));
+
+      case INVERT_Z -> defaultBlockState()
+              .setValue(NORTHWEST, state.getValue(SOUTHWEST))
+              .setValue(NORTHEAST, state.getValue(SOUTHEAST))
+              .setValue(SOUTHWEST, state.getValue(NORTHWEST))
+              .setValue(SOUTHEAST, state.getValue(NORTHEAST));
+
       default -> state; //identity or unsupported operation
     };
   }
