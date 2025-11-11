@@ -1,11 +1,16 @@
 package knightminer.inspirations.tweaks.block;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -100,4 +105,49 @@ public class FittedCarpetBlock extends FlatCarpetBlock {
   public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
     return BOUNDS[getBoundsKey(state)];
   }
+
+  @Override
+  public BlockState rotate(BlockState state, Rotation rotation) {
+    return switch (rotation) {
+      case CLOCKWISE_90 -> defaultBlockState()
+              .setValue(NORTHEAST, state.getValue(NORTHWEST))
+              .setValue(SOUTHEAST, state.getValue(NORTHEAST))
+              .setValue(SOUTHWEST, state.getValue(SOUTHEAST))
+              .setValue(NORTHWEST, state.getValue(SOUTHWEST));
+
+      case CLOCKWISE_180 -> defaultBlockState()
+              .setValue(SOUTHEAST, state.getValue(NORTHWEST))
+              .setValue(SOUTHWEST, state.getValue(NORTHEAST))
+              .setValue(NORTHWEST, state.getValue(SOUTHEAST))
+              .setValue(NORTHEAST, state.getValue(SOUTHWEST));
+
+      case COUNTERCLOCKWISE_90 -> defaultBlockState()
+              .setValue(SOUTHWEST, state.getValue(NORTHWEST))
+              .setValue(NORTHWEST, state.getValue(NORTHEAST))
+              .setValue(NORTHEAST, state.getValue(SOUTHEAST))
+              .setValue(SOUTHEAST, state.getValue(SOUTHWEST));
+
+      case NONE -> state; //identity
+    };
+  }
+
+  @Override
+  public BlockState mirror(BlockState state, Mirror mirror) {
+    return switch (mirror.rotation()) {
+      case INVERT_X -> defaultBlockState()
+              .setValue(SOUTHEAST, state.getValue(SOUTHWEST))
+              .setValue(SOUTHWEST, state.getValue(SOUTHEAST))
+              .setValue(NORTHEAST, state.getValue(NORTHWEST))
+              .setValue(NORTHWEST, state.getValue(NORTHEAST));
+
+      case INVERT_Z -> defaultBlockState()
+              .setValue(NORTHWEST, state.getValue(SOUTHWEST))
+              .setValue(NORTHEAST, state.getValue(SOUTHEAST))
+              .setValue(SOUTHWEST, state.getValue(NORTHWEST))
+              .setValue(SOUTHEAST, state.getValue(NORTHEAST));
+
+      default -> state; //identity or unsupported operation
+    };
+  }
+
 }
