@@ -122,6 +122,7 @@ import static knightminer.inspirations.library.recipe.cauldron.CauldronRegistry.
 import static knightminer.inspirations.library.recipe.cauldron.CauldronRegistry.exactBlock;
 import static knightminer.inspirations.library.recipe.cauldron.CauldronRegistry.fluidTag;
 import static knightminer.inspirations.library.recipe.cauldron.CauldronRegistry.itemTag;
+import static net.minecraft.core.cauldron.CauldronInteraction.addDefaultInteractions;
 
 public class InspirationsCaudrons extends ModuleBase {
   /** Interactions for the mushroom stew cauldron */
@@ -299,8 +300,7 @@ public class InspirationsCaudrons extends ModuleBase {
     // get a list of all cauldrons
     List<AbstractCauldronBlock> allCauldrons = new ArrayList<>();
     for (Block block : ForgeRegistries.BLOCKS) {
-      // nothing should have empty interactions
-      if (block instanceof AbstractCauldronBlock cauldron && !cauldron.interactions.isEmpty()) {
+      if (block instanceof AbstractCauldronBlock cauldron) {
         allCauldrons.add(cauldron);
       }
     }
@@ -310,9 +310,23 @@ public class InspirationsCaudrons extends ModuleBase {
       // helper to add to all cauldrons
       BiConsumer<Item,CauldronInteraction> addToAll = (item, interaction) -> {
         for (AbstractCauldronBlock cauldron : allCauldrons) {
-          cauldron.interactions.put(item, interaction);
+          // skip empty to fix issues with fake cauldrons that don't have a modifiable map
+          if (!cauldron.interactions.isEmpty()) {
+            cauldron.interactions.put(item, interaction);
+          }
         }
       };
+
+      // default interactions - lets you replace cauldron contents with water/milk
+      addDefaultInteractions(MUSHROOM_STEW_CAULDRON_INTERACTIONS);
+      addDefaultInteractions(BEETROOT_SOUP_CAULDRON_INTERACTIONS);
+      addDefaultInteractions(RABBIT_STEW_CAULDRON_INTERACTIONS);
+      addDefaultInteractions(POTATO_SOUP_CAULDRON_INTERACTIONS);
+      addDefaultInteractions(HONEY_CAULDRON_INTERACTIONS);
+      addDefaultInteractions(MILK_CAULDRON_INTERACTIONS);
+      addDefaultInteractions(DYE_CAULDRON_INTERACTIONS);
+      addDefaultInteractions(POTION_CAULDRON_INTERACTIONS);
+      addDefaultInteractions(SUSPICIOUS_STEW_CAULDRON_INTERACTIONS);
 
       // make concrete in a cauldron
       if (Config.cauldronConcrete.getAsBoolean()) {
