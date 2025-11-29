@@ -299,7 +299,8 @@ public class InspirationsCaudrons extends ModuleBase {
     // get a list of all cauldrons
     List<AbstractCauldronBlock> allCauldrons = new ArrayList<>();
     for (Block block : ForgeRegistries.BLOCKS) {
-      if (block instanceof AbstractCauldronBlock cauldron) {
+      // nothing should have empty interactions
+      if (block instanceof AbstractCauldronBlock cauldron && !cauldron.interactions.isEmpty()) {
         allCauldrons.add(cauldron);
       }
     }
