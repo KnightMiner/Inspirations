@@ -1,5 +1,6 @@
 {
   "values": [
-    "#forge:books"
+    "#forge:books",
+    "#minecraft:bookshelf_books"
   ]
 }

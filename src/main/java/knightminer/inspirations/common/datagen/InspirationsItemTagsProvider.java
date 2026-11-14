@@ -55,7 +55,9 @@ public class InspirationsItemTagsProvider extends ItemTagsProvider {
         .add(InspirationsBuilding.redstoneBook)
         .add(Items.BOOK, Items.WRITABLE_BOOK, Items.WRITTEN_BOOK)
         .add(Items.ENCHANTED_BOOK, Items.KNOWLEDGE_BOOK, InspirationsBuilding.coloredBook);
-    this.tag(InspirationsTags.Items.SHELF_BOOKS).addTag(InspirationsTags.Items.COMMON_BOOKS);
+    // shelves also take anything other mods mark as a chiseled bookshelf book (vanilla's tag), so modded
+    // books show up as books on a shelf without each mod needing to know about Inspirations
+    this.tag(InspirationsTags.Items.SHELF_BOOKS).addTag(InspirationsTags.Items.COMMON_BOOKS).addTag(ItemTags.BOOKSHELF_BOOKS);
 
     // item list of all relevant carpets
     IntrinsicTagAppender<Item> carpetBuilder = this.tag(InspirationsTags.Items.CARPETS);
