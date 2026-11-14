@@ -17,6 +17,7 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -244,6 +245,23 @@ public class RopeBlock extends Block implements SimpleWaterloggedBlock {
   public VoxelShape getCollisionShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
     // if no rungs, no collision
     return state.getValue(RUNGS) != Rungs.NONE ? state.getShape(worldIn, pos) : Shapes.empty();
+  }
+
+  /* Rotation */
+
+  // Rope ladder rungs run along X or Z; a quarter turn of a structure has to swap them, or rotated ladders
+  // have their rungs sideways. Mirroring keeps the axis, so the default mirror (no change) is right.
+  @Override
+  @SuppressWarnings("deprecation")
+  @Deprecated
+  public BlockState rotate(BlockState state, Rotation rotation) {
+    if (rotation == Rotation.CLOCKWISE_90 || rotation == Rotation.COUNTERCLOCKWISE_90) {
+      Rungs rungs = state.getValue(RUNGS);
+      if (rungs != Rungs.NONE) {
+        return state.setValue(RUNGS, rungs == Rungs.X ? Rungs.Z : Rungs.X);
+      }
+    }
+    return state;
   }
 
   public enum Rungs implements StringRepresentable {

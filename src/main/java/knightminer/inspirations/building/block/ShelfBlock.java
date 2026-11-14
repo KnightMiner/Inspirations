@@ -202,8 +202,13 @@ public class ShelfBlock extends InventoryBlock {
   /*
    * Block properties
    */
+  // Override the vanilla rotate, not only Forge's level-aware one: structure templates and jigsaw pieces call
+  // BlockState#rotate(Rotation), which never reaches the Forge overload, so shelves in rotated structures kept
+  // their unrotated facing. Forge's default overload delegates here, so both paths are covered.
+  @SuppressWarnings("deprecation")
+  @Deprecated
   @Override
-  public BlockState rotate(BlockState state, LevelAccessor world, BlockPos pos, Rotation direction) {
+  public BlockState rotate(BlockState state, Rotation direction) {
     return state.setValue(FACING, direction.rotate(state.getValue(FACING)));
   }
 
