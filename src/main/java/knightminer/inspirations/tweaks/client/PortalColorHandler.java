@@ -16,15 +16,15 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nullable;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Logic to handle getting the color for a portal from stained glass below
  */
 public class PortalColorHandler implements BlockColor {
   private static final int DEFAULT_COLOR = 0x9928FF;
-  private static final Set<Block> BEACON_COLOR_BLACKLIST = new HashSet<>();
+  private static final Set<Block> BEACON_COLOR_BLACKLIST = ConcurrentHashMap.newKeySet();
   public static final PortalColorHandler INSTANCE = new PortalColorHandler();
 
   private PortalColorHandler() {}

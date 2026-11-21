@@ -43,11 +43,11 @@ import slimeknights.mantle.util.RetexturedHelper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 
@@ -176,7 +176,7 @@ public class ShelfModel implements IUnbakedGeometry<ShelfModel> {
    */
   private static class Baked extends DynamicBakedWrapper<BakedModel> {
     /** Cache of texture to shelf model, used for items and to make crafting the shelf with books faster */
-    private final Map<ResourceLocation,Shelf> texturedCache = new HashMap<>();
+    private final Map<ResourceLocation,Shelf> texturedCache = new ConcurrentHashMap<>();
     /** Cache of shelf with books and texture, limited size */
     private final Cache<BookshelfCacheKey,BakedModel> bookshelfCache = CacheBuilder.newBuilder().maximumSize(30).build();
 

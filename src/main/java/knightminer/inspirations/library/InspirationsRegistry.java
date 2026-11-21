@@ -8,8 +8,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import slimeknights.mantle.util.RegistryHelper;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 // This is an API.
 public class InspirationsRegistry {
@@ -18,7 +18,7 @@ public class InspirationsRegistry {
   /*
    * Books
    */
-  private static final Map<Item,Float> bookCache = new HashMap<>();
+  private static final Map<Item,Float> bookCache = new ConcurrentHashMap<>();
 
   /**
    * Checks if the given item stack is a book

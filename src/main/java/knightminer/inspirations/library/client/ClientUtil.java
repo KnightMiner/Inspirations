@@ -28,10 +28,9 @@ import slimeknights.mantle.data.loadable.Loadables;
 
 import javax.annotation.Nullable;
 import java.awt.Color;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 public final class ClientUtil {
@@ -39,7 +38,7 @@ public final class ClientUtil {
 
   private ClientUtil() { }
 
-  private static final Map<Item,Integer> COLOR_CACHE = new HashMap<>();
+  private static final Map<Item,Integer> COLOR_CACHE = new ConcurrentHashMap<>();
 
   /**
    * Gets the color for an Item
@@ -140,7 +139,7 @@ public final class ClientUtil {
   /**
    * Any items which have blockColors methods that throw an exception
    */
-  private static final Set<Item> UNSAFE_COLORS = new HashSet<>();
+  private static final Set<Item> UNSAFE_COLORS = ConcurrentHashMap.newKeySet();
 
   /**
    * Gets the block colors for a block from an itemstack, logging an exception if it fails. Use this to get block colors when the implementation is unknown
@@ -187,7 +186,7 @@ public final class ClientUtil {
     return mc.getBlockColors().getColor(state, world, pos, index);
   }
 
-  private static final Map<String,String> NORMALIZED_NAMES = new HashMap<>();
+  private static final Map<String,String> NORMALIZED_NAMES = new ConcurrentHashMap<>();
 
   /**
    * Normalizes a name by replacing underscores with spaces and capitalizing first letters
