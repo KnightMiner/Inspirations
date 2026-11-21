@@ -17,6 +17,7 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -246,16 +247,38 @@ public class RopeBlock extends Block implements SimpleWaterloggedBlock {
     return state.getValue(RUNGS) != Rungs.NONE ? state.getShape(worldIn, pos) : Shapes.empty();
   }
 
+  @SuppressWarnings("deprecation")
+  @Override
+  public BlockState rotate(BlockState state, Rotation direction) {
+    if (direction == Rotation.CLOCKWISE_90 || direction == Rotation.COUNTERCLOCKWISE_90) {
+      Rungs rungs = state.getValue(RUNGS);
+      if (rungs != Rungs.NONE) {
+        return state.setValue(RUNGS, rungs.getClockwise());
+      }
+    }
+    return state;
+  }
+
   public enum Rungs implements StringRepresentable {
     NONE,
     X,
     Z;
+
+    /** Mirrors {@link Direction#getClockWise()}, rotating the rungs for strucutres. */
+    public Rungs getClockwise() {
+      return switch (this) {
+        case NONE -> NONE;
+        case X -> Z;
+        case Z -> X;
+      };
+    }
 
     @Override
     public String getSerializedName() {
       return this.name().toLowerCase(Locale.US);
     }
 
+    /** Creates the rungs from an axis */
     public static Rungs fromAxis(Direction.Axis axis) {
       return switch (axis) {
         case X -> X;
