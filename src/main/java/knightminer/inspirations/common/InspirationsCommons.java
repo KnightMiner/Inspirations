@@ -110,7 +110,7 @@ public class InspirationsCommons extends ModuleBase {
         event.accept(InspirationsBuilding.vine);
       }
       if (Config.enableBookshelf.getAsBoolean()) {
-        accept(event, InspirationsBuilding.shelf, ItemTags.PLANKS);
+        accept(event, InspirationsBuilding.shelf, ItemTags.WOODEN_SLABS);
       }
       if (Config.enableColoredBooks.getAsBoolean()) {
         InspirationsBuilding.coloredBook.addVariants(event::accept);
