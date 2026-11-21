@@ -10,7 +10,7 @@
   "group": "carpet",
   "key": {
     "#": {
-      "tag": "inspirations:carpets"
+      "tag": "minecraft:wool_carpets"
     },
     "x": {
       "item": "inspirations:brown_dyed_bottle"

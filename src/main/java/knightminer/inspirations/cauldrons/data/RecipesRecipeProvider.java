@@ -4,7 +4,6 @@ import knightminer.inspirations.cauldrons.InspirationsCaudrons;
 import knightminer.inspirations.common.InspirationsCommons;
 import knightminer.inspirations.common.data.ConfigEnabledCondition;
 import knightminer.inspirations.common.datagen.IInspirationsRecipeBuilder;
-import knightminer.inspirations.library.InspirationsTags;
 import net.minecraft.advancements.CriterionTriggerInstance;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.FinishedRecipe;
@@ -76,14 +75,14 @@ public class RecipesRecipeProvider extends RecipeProvider implements IConditionB
 
       // wool
       addComboRecipe(bottleConsumer, RecipeCategory.BUILDING_BLOCKS, VanillaEnum.WOOL.get(dye), "wool", ItemTags.WOOL, bottle, location(bottleFolder + "wool/" + name));
-      addSurroundRecipe(bottleConsumer, RecipeCategory.DECORATIONS, VanillaEnum.CARPET.get(dye), "carpet", InspirationsTags.Items.CARPETS, bottle, location(bottleFolder + "carpet/" + name));
+      addSurroundRecipe(bottleConsumer, RecipeCategory.DECORATIONS, VanillaEnum.CARPET.get(dye), "carpet", ItemTags.WOOL_CARPETS, bottle, location(bottleFolder + "carpet/" + name));
       addComboRecipe(bottleConsumer, RecipeCategory.DECORATIONS, VanillaEnum.BED.get(dye), "dyed_bed", ItemTags.BEDS, bottle, location(bottleFolder + "beds/" + name));
 
       // stained glass
       addSurroundRecipe(bottleConsumer, RecipeCategory.BUILDING_BLOCKS, VanillaEnum.STAINED_GLASS.get(dye), "stained_glass", Tags.Items.GLASS_COLORLESS, bottle, location(bottleFolder + "stained_glass/" + name));
       addSurroundRecipe(bottleConsumer, RecipeCategory.DECORATIONS, VanillaEnum.STAINED_GLASS_PANE.get(dye), "stained_glass_pane", Tags.Items.GLASS_PANES_COLORLESS, bottle, location(bottleFolder + "stained_glass_pane/" + name));
       // terracotta
-      addSurroundRecipe(bottleConsumer, RecipeCategory.BUILDING_BLOCKS, VanillaEnum.TERRACOTTA.get(dye), "stained_terracotta", InspirationsTags.Items.TERRACOTTA, bottle, location(bottleFolder + "terracotta/" + name));
+      addSurroundRecipe(bottleConsumer, RecipeCategory.BUILDING_BLOCKS, VanillaEnum.TERRACOTTA.get(dye), "stained_terracotta", ItemTags.TERRACOTTA, bottle, location(bottleFolder + "terracotta/" + name));
       // concrete powder
       ShapelessRecipeBuilder.shapeless(RecipeCategory.BUILDING_BLOCKS, InspirationsCaudrons.getConcretePowder(dye), 8)
                             .group("concrete_powder")

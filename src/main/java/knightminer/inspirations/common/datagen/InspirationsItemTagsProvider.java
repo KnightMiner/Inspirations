@@ -4,7 +4,6 @@ import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.building.InspirationsBuilding;
 import knightminer.inspirations.cauldrons.InspirationsCaudrons;
 import knightminer.inspirations.cauldrons.data.VanillaEnum;
-import knightminer.inspirations.common.InspirationsCommons;
 import knightminer.inspirations.library.InspirationsTags;
 import knightminer.inspirations.tools.InspirationsTools;
 import knightminer.inspirations.utility.InspirationsUtility;
@@ -42,6 +41,7 @@ public class InspirationsItemTagsProvider extends ItemTagsProvider {
     registerVanillaTags();
   }
 
+  @SuppressWarnings("unchecked")
   private void registerInspTags() {
     this.copy(InspirationsTags.Blocks.MULCH, InspirationsTags.Items.MULCH);
     this.copy(BlockTags.SMALL_FLOWERS, ItemTags.SMALL_FLOWERS);
@@ -55,11 +55,7 @@ public class InspirationsItemTagsProvider extends ItemTagsProvider {
         .add(InspirationsBuilding.redstoneBook)
         .add(Items.BOOK, Items.WRITABLE_BOOK, Items.WRITTEN_BOOK)
         .add(Items.ENCHANTED_BOOK, Items.KNOWLEDGE_BOOK, InspirationsBuilding.coloredBook);
-    this.tag(InspirationsTags.Items.SHELF_BOOKS).addTag(InspirationsTags.Items.COMMON_BOOKS);
-
-    // item list of all relevant carpets
-    IntrinsicTagAppender<Item> carpetBuilder = this.tag(InspirationsTags.Items.CARPETS);
-    InspirationsCommons.VANILLA_CARPETS.forEach(block -> carpetBuilder.add(block.asItem()));
+    this.tag(InspirationsTags.Items.SHELF_BOOKS).addTags(InspirationsTags.Items.COMMON_BOOKS, ItemTags.BOOKSHELF_BOOKS, ItemTags.LECTERN_BOOKS);
 
     // item list of all relevant shulker boxes
     IntrinsicTagAppender<Item> shulkerBoxBuilder = this.tag(InspirationsTags.Items.SHULKER_BOXES);
@@ -67,10 +63,6 @@ public class InspirationsItemTagsProvider extends ItemTagsProvider {
     VanillaEnum.SHULKER_BOX.forEach(block -> shulkerBoxBuilder.add(block.asItem()));
 
     // relevant terracotta
-    IntrinsicTagAppender<Item> terracottaBuilder = this.tag(InspirationsTags.Items.TERRACOTTA);
-    terracottaBuilder.add(Items.TERRACOTTA);
-    VanillaEnum.TERRACOTTA.forEach(block -> terracottaBuilder.add(block.asItem()));
-
     this.tag(InspirationsTags.Items.MILK_CONTAINERS).add(Items.BUCKET, Items.GLASS_BOTTLE, Items.BOWL)
         .addOptional(new ResourceLocation("ceramics:clay_bucket"))
         .addOptional(new ResourceLocation("simplytea:teapot"));

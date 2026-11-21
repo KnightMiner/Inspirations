@@ -45,7 +45,7 @@ public class InspirationsBlockTagsProvider extends BlockTagsProvider {
     this.tag(BlockTags.CLIMBABLE).add(InspirationsBuilding.rope, InspirationsBuilding.vine);
     this.tag(BlockTags.DOORS).add(InspirationsBuilding.glassDoor);
     this.tag(BlockTags.TRAPDOORS).add(InspirationsBuilding.glassTrapdoor);
-
+    // technically not wooden, but many mobs use this for AI behaviors to open doors
     this.tag(BlockTags.WOODEN_DOORS).add(InspirationsBuilding.glassDoor);
 
     // utility
@@ -65,14 +65,12 @@ public class InspirationsBlockTagsProvider extends BlockTagsProvider {
     IntrinsicTagAppender<Block> carpets = this.tag(BlockTags.WOOL_CARPETS);
     InspirationsTweaks.fitCarpets.forEach(block -> carpets.add(block));
     this.tag(BlockTags.PIGLIN_REPELLENTS).add(InspirationsUtility.soulLeverWall, InspirationsUtility.soulLeverFloor);
-    this.tag(BlockTags.WALL_POST_OVERRIDE).add(
-            InspirationsUtility.torchLeverFloor, InspirationsUtility.torchLeverWall,
-            InspirationsUtility.soulLeverFloor, InspirationsUtility.soulLeverWall
-    );
+    this.tag(BlockTags.WALL_POST_OVERRIDE).add(InspirationsUtility.torchLeverFloor, InspirationsUtility.soulLeverFloor);
     this.tag(BlockTags.CAULDRONS).add(
         InspirationsCaudrons.beetrootSoupCauldron, InspirationsCaudrons.mushroomStewCauldron, InspirationsCaudrons.potatoSoupCauldron,
         InspirationsCaudrons.rabbitStewCauldron, InspirationsCaudrons.honeyCauldron, InspirationsCaudrons.milkCauldron,
         InspirationsCaudrons.dyeCauldron, InspirationsCaudrons.potionCauldron, InspirationsCaudrons.suspiciousStewCauldron);
+    tag(BlockTags.BEE_GROWABLES).add(InspirationsTweaks.cactus, InspirationsTweaks.sugarCane);
   }
 
   private void registerHarvestTags() {

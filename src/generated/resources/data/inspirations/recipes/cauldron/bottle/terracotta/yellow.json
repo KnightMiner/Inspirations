@@ -10,7 +10,7 @@
   "group": "stained_terracotta",
   "key": {
     "#": {
-      "tag": "inspirations:terracotta"
+      "tag": "minecraft:terracotta"
     },
     "x": {
       "item": "inspirations:yellow_dyed_bottle"

@@ -82,14 +82,14 @@ public class UtilityRecipeProvider extends RecipeProvider implements IConditionB
     Consumer<FinishedRecipe> trapdoorConfig = withCondition(consumer, ConfigEnabledCondition.CARPETED_TRAPDOOR);
     String carpetedGroup = prefix("carpeted_trapdoor");
     InspirationsUtility.carpetedTrapdoors.forEach((color, trapdoor) ->
-                                                      ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, trapdoor)
-                                                                         .unlockedBy("has_carpet", has(InspirationsTags.Items.CARPETS))
-                                                                         .group(carpetedGroup)
-                                                                         .define('C', InspirationsCommons.VANILLA_CARPETS.get(color))
-                                                                         .define('T', ItemTags.WOODEN_TRAPDOORS)
-                                                                         .pattern("C")
-                                                                         .pattern("T")
-                                                                         .save(trapdoorConfig, location("utility/carpeted_trapdoor/" + color.getSerializedName()))
-                                                 );
+        ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, trapdoor)
+          .unlockedBy("has_carpet", has(ItemTags.WOOL_CARPETS))
+          .group(carpetedGroup)
+          .define('C', InspirationsCommons.VANILLA_CARPETS.get(color))
+          .define('T', ItemTags.WOODEN_TRAPDOORS)
+          .pattern("C")
+          .pattern("T")
+          .save(trapdoorConfig, location("utility/carpeted_trapdoor/" + color.getSerializedName()))
+    );
   }
 }

@@ -38,34 +38,20 @@ public class InspirationsTags {
     public static final TagKey<Item> BOOKSHELVES = tag("bookshelves");
     public static final TagKey<Item> ENLIGHTENED_BUSHES = tag("enlightened_bushes");
 
-    /**
-     * Items with this tag are registered to perform cauldron recipes.
-     */
-    public static final TagKey<Item> DISP_CAULDRON_RECIPES = tag("cauldron_recipes");
-
-    /**
-     * Items with this tag are registered to have fluid tank functionality.
-     */
+    /** Items with this tag are registered to have fluid tank functionality. This is currently unimplemented due to changes to how cauldrons work. */
     public static final TagKey<Item> DISP_FLUID_TANKS = tag("fluid_containers");
 
+    /** Items which can be filled by milking a cow, causing the milk cooldown to apply. */
     public static final TagKey<Item> MILK_CONTAINERS = tag("milk_containers");
 
-    /**
-     * Forge tags for anything that is a book
-     */
+    /** Forge tags for anything that is a book */
     public static final TagKey<Item> COMMON_BOOKS = commonTag("books");
 
-    /**
-     * Items which are valid to be placed on bookshelves.
-     */
+    /** Items which are valid to be placed on bookshelves. */
     public static final TagKey<Item> SHELF_BOOKS = tag("books");
 
-    /**
-     * Vanilla carpets and shulker boxes, for recipe use.
-     */
-    public static final TagKey<Item> CARPETS = tag("carpets");
+    /** Mirror of {@link BlockTags#SHULKER_BOXES} for items, since vanilla does not copy the tag to items. */
     public static final TagKey<Item> SHULKER_BOXES = tag("shulker_boxes");
-    public static final TagKey<Item> TERRACOTTA = tag("terracotta");
 
     /**
      * Creates an item tag for Inspirations
