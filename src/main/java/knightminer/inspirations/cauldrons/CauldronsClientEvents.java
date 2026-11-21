@@ -7,8 +7,6 @@ import knightminer.inspirations.cauldrons.client.BoilingParticle;
 import knightminer.inspirations.cauldrons.item.MixedDyedBottleItem;
 import knightminer.inspirations.common.AbstractClientEvents;
 import knightminer.inspirations.library.MiscUtil;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
@@ -37,8 +35,7 @@ public class CauldronsClientEvents extends AbstractClientEvents {
 
   @SubscribeEvent
   static void registerBlockColors(RegisterColorHandlersEvent.Block event) {
-    BlockColors colors = event.getBlockColors();
-    colors.register((state, level, pos, index) -> {
+    event.register((state, level, pos, index) -> {
       if (index == 0 && level != null && pos != null) {
         BlockEntity be = level.getBlockEntity(pos);
         if (be != null && be.getType() == InspirationsCaudrons.dyeCauldronEntity) {
@@ -47,7 +44,7 @@ public class CauldronsClientEvents extends AbstractClientEvents {
       }
       return -1;
     }, InspirationsCaudrons.dyeCauldron);
-    colors.register((state, level, pos, index) -> {
+    event.register((state, level, pos, index) -> {
       if (index == 0 && level != null && pos != null) {
         BlockEntity be = level.getBlockEntity(pos);
         if (be != null && be.getType() == InspirationsCaudrons.potionCauldronEntity) {
@@ -61,7 +58,7 @@ public class CauldronsClientEvents extends AbstractClientEvents {
 
   @SubscribeEvent
   static void registerParticleFactories(RegisterParticleProvidersEvent event) {
-    Minecraft.getInstance().particleEngine.register(InspirationsCaudrons.boilingParticle, BoilingParticle.Factory::new);
+    event.registerSpriteSet(InspirationsCaudrons.boilingParticle, BoilingParticle.Factory::new);
   }
 
   @SubscribeEvent
